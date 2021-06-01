@@ -40,7 +40,7 @@
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-typescript": "^7.12.1",
     "@metamask/inpage-provider": "^7.0.0",
-    "@openzeppelin/test-helpers": "^0.5.10",
+    "@openzeppelin/test-helpers": "^0.5.11",
     "@types/big.js": "^6.0.0",
     "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.167",
