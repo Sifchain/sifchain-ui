@@ -14,9 +14,8 @@ const cmdStack: ChildProcess[] = [];
 const uiFolder = resolve(__dirname, "../");
 export async function restartStack() {
   if (process.env.NOSTACK) return;
-  console.log("^^^  START RESTART  ^^^");
 
-  const cmd = spawn("./scripts/run-stack-backend.sh", [], {
+  const cmd = spawn("yarn", ["stack"], {
     cwd: uiFolder,
     stdio: ["ignore", "pipe", "pipe"],
     detached: true,
@@ -53,11 +52,10 @@ function treeKillProm(pid: number) {
 
 export async function killStack() {
   if (process.env.NOSTACK) return;
-  console.log("⬇⬇⬇  START SHUTDOWN  ⬇⬇⬇");
   console.log(cmdStack.map((c) => c.pid).join(":"));
 
   await new Promise<void>((resolve, reject) => {
-    exec("./scripts/kill-stack-backend.sh", { cwd: uiFolder }, (err, out) => {
+    exec("yarn stack --kill", { cwd: uiFolder }, (err, out) => {
       if (err) return reject(err);
       resolve();
     });
@@ -68,8 +66,6 @@ export async function killStack() {
     await treeKillProm(cmd.pid);
     console.log("...finished killing");
   }
-
-  console.log("⬇⬇⬇  S.T.A.C.K  ⬇⬇⬇");
 }
 
 /**

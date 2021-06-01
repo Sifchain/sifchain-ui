@@ -1,13 +1,13 @@
 name: Build then Deploy to Pinata
 # run run on merge
-on: 
+on:
   push:
     branches:
-      - 'develop'
-      - 'testnet'
-      - 'master'
+      - "develop"
+      - "testnet"
+      - "master"
     paths:
-      - 'ui/**'
+      - "ui/**"
 
 jobs:
   build:
@@ -19,7 +19,16 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2.1.4
         with:
-          node-version: '14.x'
+          node-version: "14.x"
+
+      - name: Log into registry
+        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Pull instant stack image
+        run: docker pull $(cat scripts/latest)
+
+      - name: Extracting ABIs
+        run: cd ./ui && yarn install --frozen-lockfile --silent && yarn stack --setup-only
 
       - name: Set environment for IPFS build
         run: |
@@ -54,8 +63,8 @@ jobs:
         id: pinata
         uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
         with:
-          pin-name: 'Sifchain ${{ env.VUE_APP_DEPLOYMENT_TAG }} - ${{ github.sha }}-${{ env.GITHUB_REF }}'
-          path: './ui/app/dist'
+          pin-name: "Sifchain ${{ env.VUE_APP_DEPLOYMENT_TAG }} - ${{ github.sha }}-${{ env.GITHUB_REF }}"
+          path: "./ui/app/dist"
           pinata-api-key: ${{ secrets.PINATA_API_KEY }}
           pinata-secret-api-key: ${{ secrets.PINATA_SECRET_KEY }}
           verbose: true
@@ -90,7 +99,7 @@ jobs:
         id: dnslink
         uses: textileio/cloudflare-update-dnslink@master
         with:
-            cid: ${{ steps.pinata.outputs.hash }}
+          cid: ${{ steps.pinata.outputs.hash }}
 
       - name: Write Code Comment
         uses: mshick/add-pr-comment@v1
@@ -100,6 +109,5 @@ jobs:
             IPFS Hash: ${{ steps.pinata.outputs.hash }}\
             URL: <https://gateway.pinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}>
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]'
+          repo-token-user-login: "github-actions[bot]"
           allow-repeats: false
-
