@@ -39,7 +39,7 @@
     "@babel/plugin-proposal-decorators": "^7.10.5",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-typescript": "^7.12.1",
-    "@metamask/inpage-provider": "^7.0.0",
+    "@metamask/inpage-provider": "^8.1.0",
     "@openzeppelin/test-helpers": "^0.5.10",
     "@types/big.js": "^6.0.0",
     "@types/jest": "^26.0.14",
