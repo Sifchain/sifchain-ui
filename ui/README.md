@@ -14,3 +14,5 @@
 | `yarn storybook`         | Launch storybook                                                                      |
 | `yarn storybook --build` | Build storybook to the `storybook-static` folder                                      |
 | `yarn advance`           | Advance the blockchain by the given amount of blocks. Eg. `yarn advance 51`           |
+
+Running a command with the `--help` flag will display a help message explaining what the command does.
