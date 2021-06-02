@@ -70,36 +70,36 @@ jobs:
           verbose: true
           remove-old: true
 
-      - name: Set environment for dnslink
-        run: |
-          echo $GITHUB_REF
+      # - name: Set environment for dnslink
+      #   run: |
+      #     echo $GITHUB_REF
 
-          if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            echo "Config set for DevNet deployment"
-            echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.devnet" >> $GITHUB_ENV
-          fi
+      #     if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
+      #       echo "Config set for DevNet deployment"
+      #       echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
+      #       echo "RECORD_NAME=_dnslink.devnet" >> $GITHUB_ENV
+      #     fi
 
-          if [[ $GITHUB_REF == 'refs/heads/testnet' ]]; then
-            echo "Config set for TestNet deployment"
-            echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
-          fi
+      #     if [[ $GITHUB_REF == 'refs/heads/testnet' ]]; then
+      #       echo "Config set for TestNet deployment"
+      #       echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
+      #       echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
+      #     fi
 
-          if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
-            echo "Config set for MainNet deployment"
-            echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
-          fi
+      #     if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
+      #       echo "Config set for MainNet deployment"
+      #       echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
+      #       echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
+      #     fi
 
-      - name: Update cloudflare DNSLink
-        env:
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
-        id: dnslink
-        uses: textileio/cloudflare-update-dnslink@master
-        with:
-          cid: ${{ steps.pinata.outputs.hash }}
+      # - name: Update cloudflare DNSLink
+      #   env:
+      #     CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+      #     CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
+      #   id: dnslink
+      #   uses: textileio/cloudflare-update-dnslink@master
+      #   with:
+      #     cid: ${{ steps.pinata.outputs.hash }}
 
       - name: Write Code Comment
         uses: mshick/add-pr-comment@v1
