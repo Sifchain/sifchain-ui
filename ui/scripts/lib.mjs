@@ -1,5 +1,6 @@
 import { resolve } from "path";
 import argDep from "arg";
+import chalk from "chalk";
 import untildify from "untildify";
 import treekill from "tree-kill";
 
@@ -9,16 +10,6 @@ export async function lint() {
 
 export async function lintQuick() {
   return $`yarn pretty-quick --staged --pattern 'ui/**/*.{vue,ts,js,json}'`;
-}
-
-export async function e2eTest(opt) {
-  if (opt?.port) process.env.PORT = opt.port;
-  const e2e = resolve(__dirname, "../e2e");
-  return await $`cd ${e2e} && ./scripts/test.sh`;
-}
-
-export async function e2eTestDebug() {
-  return $`cd e2e && DEBUG=pw:api NOSTACK=1 ./scripts/test.sh`;
 }
 
 // NOTE: not making this fn async as we need access to the child
@@ -34,11 +25,7 @@ export async function waitOn(...requirements) {
 
 export async function load(path) {
   try {
-    const q = $.quote;
-    $.quote = (a) => a;
-    const out = JSON.parse(await fs.readFile(resolve(path)));
-    $.quote = q;
-    return out;
+    return JSON.parse(await fs.readFile(resolve(path)));
   } catch (err) {
     console.log(err);
     return null;
@@ -72,12 +59,20 @@ export async function runStack() {
   return await $`docker start -ai sif-ui-stack`;
 }
 
-export async function setupStack(imageName) {
-  const IMAGE_NAME = imageName || `${await $`cat ./scripts/latest`}`;
+export async function setupStack(tagName) {
+  const defaultImageName = `${await fs.readFile(
+    resolve(__dirname, "./latest"),
+  )}`;
+
+  const imageName = tagName
+    ? defaultImageName.replace(/\:(.+)$/, ":" + tagName)
+    : defaultImageName;
+
+  console.log(`Using image ${chalk.yellow(imageName)}`);
 
   await killStack();
 
-  await createStack(IMAGE_NAME);
+  await createStack(imageName);
 
   await extractABIs();
 }
@@ -108,9 +103,7 @@ export async function race(...procs) {
   for (const child of children) {
     try {
       const pid = child.pid;
-      console.log("Killing server (" + pid + ")...");
       await treekill(pid);
-      console.log("Killed");
     } catch (err) {
       console.log({ err });
     }

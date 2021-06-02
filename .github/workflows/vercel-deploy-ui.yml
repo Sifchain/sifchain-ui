@@ -7,8 +7,6 @@ on:
       - "!develop"
       - "!testnet"
       - "!master"
-    paths:
-      - "ui/**"
 
 jobs:
   deploy:

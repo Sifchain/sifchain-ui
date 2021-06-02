@@ -15,7 +15,21 @@ const uiFolder = resolve(__dirname, "../");
 export async function restartStack() {
   if (process.env.NOSTACK) return;
 
-  const cmd = spawn("yarn", ["stack"], {
+  await killStack();
+
+  const startMsg = process.env.STACK_TAG
+    ? `Starting stack (${process.env.STACK_TAG})...`
+    : "Starting stack...";
+
+  // Need to write to stderr because jest chews up stdout
+  process.stderr.write(`${startMsg}\n`);
+
+  // If an env var is set externally we use that specific stack tag
+  const args = process.env.STACK_TAG
+    ? ["stack", "--tag", process.env.STACK_TAG]
+    : ["stack"];
+
+  const cmd = spawn("yarn", args, {
     cwd: uiFolder,
     stdio: ["ignore", "pipe", "pipe"],
     detached: true,
@@ -29,11 +43,11 @@ export async function restartStack() {
     };
     handler = (data: Buffer) => {
       const dataStr = data.toString().replace(/\n$/, "");
-      console.log(chalk.blue(dataStr));
       if (dataStr.includes("cosmos process events for blocks")) {
         cmd.stdout.off("data", handler);
         cmd.stderr.off("data", handler);
         cmd.off("error", errHandler);
+
         setTimeout(resolve, 3000); // Adding a timeout here seems to stabilize keplr
       }
     };
@@ -41,7 +55,8 @@ export async function restartStack() {
     cmd.stderr.on("data", handler);
     cmd.on("error", errHandler);
   });
-  console.log(chalk.green("DONE"));
+  // Need to write to stderr because jest chews up stdout
+  process.stderr.write("Stack started.\n");
 }
 
 function treeKillProm(pid: number) {
@@ -52,7 +67,9 @@ function treeKillProm(pid: number) {
 
 export async function killStack() {
   if (process.env.NOSTACK) return;
-  console.log(cmdStack.map((c) => c.pid).join(":"));
+  const isRunning = cmdStack.length > 0;
+  // Need to write to stderr because jest chews up stdout
+  if (isRunning) process.stderr.write("Stopping stack...\n");
 
   await new Promise<void>((resolve, reject) => {
     exec("yarn stack --kill", { cwd: uiFolder }, (err, out) => {
@@ -61,11 +78,11 @@ export async function killStack() {
     });
   });
 
-  for (let cmd of cmdStack) {
-    console.log("...killing");
+  let cmd;
+  while ((cmd = cmdStack.shift())) {
     await treeKillProm(cmd.pid);
-    console.log("...finished killing");
   }
+  if (isRunning) process.stderr.write("Stopped.\n");
 }
 
 /**

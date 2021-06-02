@@ -9,7 +9,9 @@
     "compile": "tsc --noEmit",
     "build": "tsc --noEmit && tsc -p ./tsconfig.compile.json",
     "watch": "tsc -p ./tsconfig.compile.json -w",
-    "test": "jest --coverage --runInBand",
+    "unit": "jest --coverage --projects jest-unit.config.js",
+    "integration": "jest --coverage --runInBand --projects jest-integration.config.js",
+    "test": "yarn unit && yarn integration",
     "prepare": "npm run build"
   },
   "files": [
@@ -51,13 +53,5 @@
     "tinyify": "^3.0.0",
     "tsify": "^5.0.2",
     "typescript": "~3.9.3"
-  },
-  "jest": {
-    "testMatch": [
-      "**/**.test.ts",
-      "**/tests/unit/*.js"
-    ],
-    "testTimeout": 1000000,
-    "bail": true
   }
 }
