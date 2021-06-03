@@ -45,7 +45,7 @@ async function runCoreTests(tag, isUnit, isIntegration, isWatch, rest) {
     return await $`cd ${core} && yarn compile && yarn integration ${testArgs}`;
   }
 
-  return await $`cd ${core} && yarn compile && yarn unit ${testArgs}`;
+  return await $`cd ${core} && yarn compile && yarn test ${testArgs}`;
 }
 
 await runCoreTests(
