@@ -7,12 +7,6 @@ export enum SifEnv {
   LOCALNET,
 }
 
-const envKeys = Object.values(SifEnv).filter((s) => typeof s === "number");
-
-export function isSifEnv(a: any): a is SifEnv {
-  return envKeys.includes(parseInt(a));
-}
-
 const profileLookup = {
   [SifEnv.DEVNET]: {
     tag: "devnet",
@@ -36,12 +30,31 @@ const profileLookup = {
   },
 };
 
+// Here we list hostnames that have default env settings
+const hostDefaultEnvs = {
+  "dex.sifchain.finance": SifEnv.MAINNET,
+  "testnet.sifchain.finance": SifEnv.TESTNET,
+  "devnet.sifchain.finance": SifEnv.DEVNET,
+  "gateway.pinata.cloud": SifEnv.DEVNET,
+  localhost: SifEnv.LOCALNET,
+};
+
+type SifchainHostname = keyof typeof hostDefaultEnvs;
+
+export function isSifchainHostname(val: string): val is SifchainHostname {
+  return typeof hostDefaultEnvs[val as SifchainHostname] === "number";
+}
+
+export function isSifEnv(a: any): a is SifEnv {
+  const envKeys = Object.values(SifEnv).filter((s) => typeof s === "number");
+  return envKeys.includes(parseInt(a));
+}
+
 type GetEnvArgs = {
-  location: {
-    hostname: string;
-  };
+  location: { hostname: string };
   cookies?: Pick<AppCookies, "getEnv">;
 };
+
 export function getEnv({
   location: { hostname },
   cookies = AppCookies(),
@@ -49,20 +62,8 @@ export function getEnv({
   const cookieTag = (cookies.getEnv() as unknown) as SifEnv;
 
   if (!cookieTag) {
-    if (hostname === "dex.sifchain.finance") {
-      return profileLookup[SifEnv.MAINNET];
-    }
-    if (hostname === "testnet.sifchain.finance") {
-      return profileLookup[SifEnv.TESTNET];
-    }
-    if (
-      hostname === "devnet.sifchain.finance" ||
-      hostname === "gateway.pinata.cloud"
-    ) {
-      return profileLookup[SifEnv.DEVNET];
-    }
-    if (hostname === "localhost") {
-      return profileLookup[SifEnv.LOCALNET];
+    if (isSifchainHostname(hostname)) {
+      return profileLookup[hostDefaultEnvs[hostname]];
     }
   }
 

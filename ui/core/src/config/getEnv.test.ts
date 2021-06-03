@@ -62,3 +62,18 @@ cases.forEach(({ hostname, tag }) => {
     });
   });
 });
+
+test("unknown hosts should bork", () => {
+  expect(() => {
+    getEnv({
+      location: { hostname: "evil.com" },
+      cookies: { getEnv: () => "mainnet" },
+    });
+  }).toThrow();
+  expect(() => {
+    getEnv({
+      location: { hostname: "evil.com" },
+      cookies: { getEnv: () => undefined },
+    });
+  }).toThrow();
+});
