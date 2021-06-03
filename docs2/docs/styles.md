@@ -18,9 +18,7 @@ to get started.
 
 ## Design Language
 
-```
-A design language or design vocabulary is an overarching scheme or style that guides the design of a complement of products or architectural settings.
-```
+> A design language or design vocabulary is an overarching scheme or style that guides the design of a complement of products or architectural settings.
 
 As developers, we should work in tandem with our designers.
 
