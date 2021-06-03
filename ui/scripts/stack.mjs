@@ -5,7 +5,13 @@ import { dockerLoggedIn, setupStack, runStack, killStack } from "./lib.mjs";
 import { arg } from "./lib.mjs";
 
 const args = arg(
-  { "--kill": Boolean, "-k": "--kill", "--setup-only": Boolean },
+  {
+    "--kill": Boolean,
+    "-k": "--kill",
+    "--setup-only": Boolean,
+    "--tag": String,
+    "-t": "--tag",
+  },
   `
 Usage: 
 
@@ -22,8 +28,9 @@ Our docker container is built under sifchain/ui-stack which is published per com
 
 Options:
 
---kill --k - Kill any stack processes and remove all existing docker ui-stack containers 
---setup-only - This only pulls the docker stack image and extracts some build dependencies such as contract ABIs
+--tag -t       Provide an image tag to use. Usually a stable tag ie. \`develop\` or a commit hash ie. \`649e35193c8ef0730458f058d52693b1a1ca5d77\`
+--kill --k     Kill any stack processes and remove all existing docker ui-stack containers 
+--setup-only   This only pulls the docker stack image and extracts some build dependencies such as contract ABIs
 `,
 );
 
@@ -55,7 +62,7 @@ Create a personal access token and log into docker using the above link then try
   process.exit(1);
 }
 
-await setupStack();
+await setupStack(args["--tag"] || undefined);
 
 try {
   await runStack();
