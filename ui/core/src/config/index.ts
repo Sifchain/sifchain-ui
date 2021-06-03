@@ -1,25 +1,25 @@
 // TODO - Conditional load or build-time tree shake
-import localnetconfig from "./config.localnet.json";
-import devnetconfig from "./config.devnet.json";
-import testnetconfig from "./config.testnet.json";
-import mainnnetconfig from "./config.mainnet.json";
+import localnetconfig from "../config.localnet.json";
+import devnetconfig from "../config.devnet.json";
+import testnetconfig from "../config.testnet.json";
+import mainnnetconfig from "../config.mainnet.json";
 
-import assetsEthereumLocalnet from "./assets.ethereum.localnet.json";
-import assetsEthereumDevnet from "./assets.ethereum.sifchain-devnet.json";
-import assetsEthereumTestnet from "./assets.ethereum.sifchain-testnet.json";
-import assetsEthereumMainnet from "./assets.ethereum.mainnet.json";
+import assetsEthereumLocalnet from "../assets.ethereum.localnet.json";
+import assetsEthereumDevnet from "../assets.ethereum.sifchain-devnet.json";
+import assetsEthereumTestnet from "../assets.ethereum.sifchain-testnet.json";
+import assetsEthereumMainnet from "../assets.ethereum.mainnet.json";
 
-import assetsSifchainLocalnet from "./assets.sifchain.localnet.json";
-import assetsSifchainMainnet from "./assets.sifchain.mainnet.json";
+import assetsSifchainLocalnet from "../assets.sifchain.localnet.json";
+import assetsSifchainMainnet from "../assets.sifchain.mainnet.json";
 
 import {
   parseConfig,
   parseAssets,
   ChainConfig,
   AssetConfig,
-} from "./utils/parseConfig";
-import { Asset } from "./entities";
-import { ServiceContext } from "./services";
+} from "../utils/parseConfig";
+import { Asset } from "../entities";
+import { ServiceContext } from "../services";
 
 type ConfigMap = { [s: string]: ServiceContext };
 type AssetMap = { [s: string]: Asset[] };
