@@ -59,16 +59,15 @@ export function getEnv({
   location: { hostname },
   cookies = AppCookies(),
 }: GetEnvArgs) {
-  const cookieTag = (cookies.getEnv() as unknown) as SifEnv;
+  const cookieTag = cookies.getEnv();
 
-  if (!cookieTag) {
-    if (isSifchainHostname(hostname)) {
+  if (isSifchainHostname(hostname)) {
+    if (typeof cookieTag === "undefined") {
       return profileLookup[hostDefaultEnvs[hostname]];
     }
-  }
-
-  if (profileLookup[cookieTag]) {
-    return profileLookup[cookieTag];
+    if (isSifEnv(cookieTag) && profileLookup[cookieTag]) {
+      return profileLookup[cookieTag];
+    }
   }
 
   throw new Error("Cannot render environment");

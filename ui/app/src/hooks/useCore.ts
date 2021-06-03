@@ -9,6 +9,7 @@ import {
 } from "ui-core";
 
 switchEnv({ location: window.location });
+
 const { tag, sifAssetTag, ethAssetTag } = getEnv({
   location: window.location,
 });

@@ -55,7 +55,7 @@ cases.forEach(({ hostname, tag }) => {
         expect(
           getEnv({
             location: { hostname },
-            cookies: { getEnv: () => cookie?.toString() },
+            cookies: { getEnv: () => cookie },
           }),
         ).toEqual(output);
       });
@@ -67,13 +67,22 @@ test("unknown hosts should bork", () => {
   expect(() => {
     getEnv({
       location: { hostname: "evil.com" },
-      cookies: { getEnv: () => "mainnet" },
+      cookies: { getEnv: () => SifEnv.MAINNET },
     });
   }).toThrow();
   expect(() => {
     getEnv({
       location: { hostname: "evil.com" },
       cookies: { getEnv: () => undefined },
+    });
+  }).toThrow();
+});
+
+test("weird cookie values should bork", () => {
+  expect(() => {
+    getEnv({
+      location: { hostname: "dex.sifchain.finance" },
+      cookies: { getEnv: () => 56 },
     });
   }).toThrow();
 });
