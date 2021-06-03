@@ -18,3 +18,25 @@
 | `yarn advance`           | Advance the blockchain by the given amount of blocks. Eg. `yarn advance 51`                 |
 
 Running a command with the `--help` flag will display a help message explaining what the command does.
+
+# Testing against environments
+
+The following urls will set cookies to point your build to any environment you want:
+
+| url                            | env                    |
+| ------------------------------ | ---------------------- |
+| http://localhost:8080?\_env=0  | MAINNET                |
+| http://localhost:8080?\_env=1  | TESTNET                |
+| http://localhost:8080?\_env=2  | DEVNET                 |
+| http://localhost:8080?\_env=3  | LOCALNET               |
+| http://localhost:8080?\_env=\_ | DEFAULT (Based on url) |
+
+We recommend using bookmarklets:
+
+| name     | location                                               |
+| -------- | ------------------------------------------------------ |
+| CLEAR    | `javascript:(() => window.location.href='/?_env=_')()` |
+| MAINNET  | `javascript:(() => window.location.href='/?_env=0')()` |
+| TESTNET  | `javascript:(() => window.location.href='/?_env=1')()` |
+| DEVNET   | `javascript:(() => window.location.href='/?_env=2')()` |
+| LOCALNET | `javascript:(() => window.location.href='/?_env=3')()` |
