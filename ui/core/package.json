@@ -11,7 +11,7 @@
     "watch": "tsc -p ./tsconfig.compile.json -w",
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
-    "test": "yarn unit && yarn integration",
+    "test": "./scripts/test.sh",
     "prepare": "npm run build"
   },
   "files": [
