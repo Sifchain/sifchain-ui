@@ -21,7 +21,7 @@ Running a command with the `--help` flag will display a help message explaining 
 
 # Testing against environments
 
-The following urls will set cookies to point your build to any environment you want:
+Attaching a query string var `_env` will set cookies to point your build to any environment you want:
 
 | url                            | env                    |
 | ------------------------------ | ---------------------- |
