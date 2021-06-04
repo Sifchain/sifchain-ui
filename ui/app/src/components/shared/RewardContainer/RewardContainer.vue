@@ -23,7 +23,11 @@ const REWARD_INFO = {
 
 export default {
   props: {
-    type: {
+    claimDisabled: {
+      type: Boolean,
+      default: true,
+    },
+    claimType: {
       type: String,
     },
     data: {
@@ -70,9 +74,9 @@ export default {
 <template>
   <Box>
     <div class="reward-container">
-      <SubHeading>{{ REWARD_INFO[type].label }}</SubHeading>
+      <SubHeading>{{ REWARD_INFO[claimType].label }}</SubHeading>
       <Copy>
-        {{ REWARD_INFO[type].description }}
+        {{ REWARD_INFO[claimType].description }}
       </Copy>
       <div class="details-container">
         <Loader v-if="!data" black />
@@ -90,7 +94,7 @@ export default {
               </div>
               <AssetItem symbol="Rowan" :label="false" />
             </div>
-            <div v-if="type === 'vs'" class="reward-row">
+            <div v-if="claimType === 'vs'" class="reward-row">
               <div class="row-label">
                 Reserved Commission Rewards
                 <Tooltip>
@@ -187,6 +191,7 @@ export default {
               <AssetItem symbol="Rowan" :label="false" />
             </div>
           </div>
+
           <div class="reward-buttons">
             <a
               class="more-info-button mr-8"
@@ -194,12 +199,14 @@ export default {
               :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${type}`"
               >More Info</a
             >
-
             <!-- :disabled="(data.claimableReward - data.claimed) === 0" -->
             <SifButton
-              @click="$emit('openModal', type)"
+              @click="$emit('openModal', claimType)"
               :primary="true"
-              :disabled="true"
+              :disabled="
+                claimDisabled ||
+                data.totalClaimableCommissionsAndClaimableRewards === 0
+              "
               >Claim</SifButton
             >
           </div>
