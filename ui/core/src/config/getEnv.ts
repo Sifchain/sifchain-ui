@@ -31,18 +31,22 @@ const profileLookup = {
 };
 
 // Here we list hostnames that have default env settings
-const hostDefaultEnvs = {
-  "dex.sifchain.finance": SifEnv.MAINNET,
-  "testnet.sifchain.finance": SifEnv.TESTNET,
-  "devnet.sifchain.finance": SifEnv.DEVNET,
-  "gateway.pinata.cloud": SifEnv.DEVNET,
-  localhost: SifEnv.LOCALNET,
-};
+const hostDefaultEnvs = [
+  { test: /dex\.sifchain\.finance$/, net: SifEnv.MAINNET },
+  { test: /testnet\.sifchain\.finance$/, net: SifEnv.TESTNET },
+  { test: /devnet\.sifchain\.finance$/, net: SifEnv.DEVNET },
+  { test: /sifchain\.vercel\.app$/, net: SifEnv.DEVNET },
+  { test: /gateway\.pinata\.cloud$/, net: SifEnv.DEVNET },
+  { test: /localhost$/, net: SifEnv.LOCALNET },
+];
 
-type SifchainHostname = keyof typeof hostDefaultEnvs;
-
-export function isSifchainHostname(val: string): val is SifchainHostname {
-  return typeof hostDefaultEnvs[val as SifchainHostname] === "number";
+export function getSifEnv(hostname: string) {
+  for (const { test, net } of hostDefaultEnvs) {
+    if (test.test(hostname)) {
+      return net;
+    }
+  }
+  return null;
 }
 
 export function isSifEnv(a: any): a is SifEnv {
@@ -61,14 +65,15 @@ export function getEnv({
 }: GetEnvArgs) {
   const cookieTag = cookies.getEnv();
 
-  if (isSifchainHostname(hostname)) {
+  const sifEnv = getSifEnv(hostname);
+  if (sifEnv !== null) {
     if (typeof cookieTag === "undefined") {
-      return profileLookup[hostDefaultEnvs[hostname]];
+      return profileLookup[sifEnv];
     }
     if (isSifEnv(cookieTag) && profileLookup[cookieTag]) {
       return profileLookup[cookieTag];
     }
   }
 
-  throw new Error("Cannot render environment");
+  throw new Error("Canno:t render environment");
 }
