@@ -21,10 +21,12 @@ export class ConnectPopup {
   }
 
   async isKeplrConnected() {
+    await page.waitForLoadState();
     return await page.$("text='Keplr Connected'");
   }
 
   async isMetamaskConnected() {
+    await page.waitForLoadState();
     return await page.$("text='Metamask Connected'");
   }
 
