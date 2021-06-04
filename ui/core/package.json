@@ -9,9 +9,9 @@
     "compile": "tsc --noEmit",
     "build": "tsc --noEmit && tsc -p ./tsconfig.compile.json",
     "watch": "tsc -p ./tsconfig.compile.json -w",
-    "unit": "jest --coverage --projects jest-unit.config.js",
-    "integration": "jest --coverage --runInBand --projects jest-integration.config.js",
-    "test": "yarn unit && yarn integration"
+    "unit": "./scripts/unit.sh",
+    "integration": "./scripts/integration.sh",
+    "test": "./scripts/test.sh"
   },
   "files": [
     "lib/**/*"
