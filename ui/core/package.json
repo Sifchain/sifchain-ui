@@ -11,8 +11,7 @@
     "watch": "tsc -p ./tsconfig.compile.json -w",
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
-    "test": "./scripts/test.sh",
-    "prepare": "npm run build"
+    "test": "./scripts/test.sh"
   },
   "files": [
     "lib/**/*"
@@ -26,9 +25,11 @@
     "coingecko-api": "^1.0.10",
     "decimal.js-light": "^2.5.1",
     "eventemitter2": "^6.4.3",
+    "js-cookie": "^2.2.1",
     "jsbi": "^3.1.4",
     "lodash": "^4.17.20",
     "numbro": "^2.3.2",
+    "query-string": "^7.0.0",
     "reconnecting-websocket": "^4.4.0",
     "tiny-invariant": "^1.1.0",
     "toformat": "^2.0.0",
@@ -45,6 +46,7 @@
     "@openzeppelin/test-helpers": "^0.5.11",
     "@types/big.js": "^6.0.0",
     "@types/jest": "^26.0.14",
+    "@types/js-cookie": "^2.2.6",
     "@types/lodash": "^4.14.167",
     "babel-jest": "^26.5.2",
     "concurrently": "^5.3.0",

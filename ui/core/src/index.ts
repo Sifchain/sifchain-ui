@@ -5,4 +5,6 @@ export * from "./store";
 export * from "./usecases/clp/calculators";
 export * from "./usecases/clp/calculators/utils";
 export * from "./config";
+export * from "./config/getEnv";
+export * from "./config/switchEnv";
 export * from "./utils";
