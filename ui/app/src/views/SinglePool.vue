@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent, watch, onMounted } from "vue";
 import { computed, ref, ComputedRef } from "@vue/reactivity";
-import Layout from "@/components/layout/Layout.vue";
-import SifButton from "@/components/shared/SifButton.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
 import {
   getAssetLabel,
   getBlockExplorerUrl,

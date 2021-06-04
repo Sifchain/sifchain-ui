@@ -3,7 +3,7 @@ import { computed, defineComponent, PropType, useCssModule } from "vue";
 import Icon from "@/components/shared/Icon.vue";
 import Tooltip from "@/components/shared/Tooltip.vue";
 import { getMantissaLength, format, IAssetAmount } from "ui-core";
-import { useAssetItem } from "../utils";
+import { useAssetItem } from "../shared/utils";
 
 export default defineComponent({
   props: {

@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { PropType, defineComponent } from "vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import { formatAssetAmount } from "@/components/shared/utils";
 import { Asset, IAssetAmount, TransactionStatus } from "ui-core";
 export default defineComponent({

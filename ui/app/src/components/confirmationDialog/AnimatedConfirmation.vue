@@ -1,7 +1,7 @@
 <script lang="tsx">
 import { defineComponent, PropType, useCssModule } from "vue";
 import Loader from "@/components/shared/Loader.vue";
-import SifButton from "@/components/shared/SifButton.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
 import { useCore } from "@/hooks/useCore";
 import { getBlockExplorerUrl } from "../shared/utils";
 import { ErrorCode, format, IAssetAmount, TransactionStatus } from "ui-core";

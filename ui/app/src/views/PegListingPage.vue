@@ -1,11 +1,11 @@
 <script lang="ts">
 import Tab from "@/components/shared/Tab.vue";
 import Tabs from "@/components/shared/Tabs.vue";
-import Layout from "@/components/layout/Layout.vue";
-import AssetList from "@/components/shared/AssetList.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import AssetList from "@/components/AssetList/AssetList.vue";
 import SifInput from "@/components/shared/SifInput.vue";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
-import SifButton from "@/components/shared/SifButton.vue";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
 import Tooltip from "@/components/shared/Tooltip.vue";
 import Icon from "@/components/shared/Icon.vue";
 

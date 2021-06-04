@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from "vue";
-import PoolStatsListItem from "@/components/poolStats/PoolStatsListItem.vue";
-import PoolStatsListHeader from "@/components/poolStats/PoolStatsListHeader.vue";
+import PoolStatsListItem from "@/components/PoolStats/PoolStatsListItem.vue";
+import PoolStatsListHeader from "@/components/PoolStats/PoolStatsListHeader.vue";
 
 export default defineComponent({
   components: {

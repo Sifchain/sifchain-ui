@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import AssetItemPool from "@/components/shared/AssetItemPool.vue";
+import AssetItemPool from "@/components/AssetItemPool/AssetItemPool.vue";
 
 export default {
   components: {

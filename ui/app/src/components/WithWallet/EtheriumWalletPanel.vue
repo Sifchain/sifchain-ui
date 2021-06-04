@@ -1,23 +1,22 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import { useCore } from "@/hooks/useCore";
-import SifButton from "@/components/shared/SifButton.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
 import Icon from "@/components/shared/Icon.vue";
 
 export default defineComponent({
-  name: "KeplrWalletController",
-  components: { SifButton, Icon },
+  name: "EtheriumWalletController",
+  components: {
+    SifButton,
+    Icon,
+  },
   setup() {
     const { store, usecases } = useCore();
     async function handleConnectClicked() {
-      try {
-        await usecases.wallet.sif.connectToWallet();
-      } catch (error) {
-        console.log("KeplrWalletController", error);
-      }
+      await usecases.wallet.eth.connectToWallet();
     }
-    const address = computed(() => store.wallet.sif.address);
-    const connected = computed(() => store.wallet.sif.isConnected);
+    const address = computed(() => store.wallet.eth.address);
+    const connected = computed(() => store.wallet.eth.isConnected);
     return {
       address,
       connected,
@@ -31,26 +30,26 @@ export default defineComponent({
   <div class="wrapper">
     <div v-if="connected">
       <p class="mb-2" v-if="address">{{ address }} <Icon icon="tick" /></p>
-      <SifButton connect disabled data-handle="keplr-connect-button">
-        <img class="image" src="../../assets/keplr.jpg" />
-        Keplr Connected
+      <SifButton connect disabled data-handle="metamask-connect-button">
+        <img class="image" src="../../assets/metamask.png" />
+        Metamask Connected
       </SifButton>
     </div>
     <SifButton
       connect
       v-else
       @click="handleConnectClicked"
-      data-handle="keplr-connect-button"
-      >Connect Keplr</SifButton
+      data-handle="metamask-connect-button"
+      >Connect Metamask</SifButton
     >
   </div>
 </template>
 
 <style lang="scss" scoped>
 .image {
+  width: 23px;
   height: 100%;
-  width: 20px;
-  margin-right: 16px;
-  margin-top: 2px;
+  margin-top: 0px;
+  margin-right: 12px;
 }
 </style>

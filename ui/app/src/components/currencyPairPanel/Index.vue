@@ -50,10 +50,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import CurrencyField from "@/components/currencyfield/CurrencyField.vue";
-import ArrowIconButton from "@/components/shared/ArrowIconButton.vue";
+import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
+import ArrowIconButton from "@/components/ArrowIconButton/ArrowIconButton.vue";
 import Icon from "@/components/shared/Icon.vue";
-import Checkbox from "@/components/shared/Checkbox.vue";
+import Checkbox from "@/components/Checkbox/Checkbox.vue";
 export default defineComponent({
   components: { CurrencyField, ArrowIconButton, Icon, Checkbox },
   props: {

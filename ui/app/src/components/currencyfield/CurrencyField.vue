@@ -2,15 +2,15 @@
 import { defineComponent } from "vue";
 import { computed } from "@vue/reactivity";
 import BalanceField from "./BalanceField.vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
-import SifButton from "@/components/shared/SifButton.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
 import SifInput from "@/components/shared/SifInput.vue";
-import Caret from "@/components/shared/Caret.vue";
+import Caret from "@/components/Caret/Caret.vue";
 import RaisedPanel from "@/components/shared/RaisedPanel.vue";
 import Label from "@/components/shared/Label.vue";
 import RaisedPanelColumn from "@/components/shared/RaisedPanelColumn.vue";
 import RaisedPanelRow from "@/components/shared/RaisedPanelRow.vue";
-import Checkbox from "@/components/shared/Checkbox.vue";
+import Checkbox from "@/components/Checkbox/Checkbox.vue";
 
 export type BalanceShape = {
   symbol: string;

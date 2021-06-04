@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Layout from "@/components/layout/Layout.vue";
+import Layout from "@/components/Layout/Layout.vue";
 import Loader from "@/components/shared/Loader.vue";
 
 export default defineComponent({

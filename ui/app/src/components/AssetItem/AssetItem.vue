@@ -2,7 +2,7 @@
 import { computed, ref } from "@vue/reactivity";
 import { Asset } from "ui-core";
 import { defineComponent, PropType } from "vue";
-import { useAssetItem } from "./utils";
+import { useAssetItem } from "../shared/utils";
 
 export default defineComponent({
   props: {

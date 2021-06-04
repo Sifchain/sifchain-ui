@@ -50,8 +50,8 @@
 import { defineComponent, PropType } from "vue";
 import { computed } from "@vue/reactivity";
 import ModalView from "@/components/shared/ModalView.vue";
-import ConfirmationModalAsk from "@/components/shared/ConfirmationModalAsk.vue";
-import ConfirmationModalSigning from "@/components/shared/ConfirmationModalSigning.vue";
+import ConfirmationModalAsk from "@/components/ConfirmationModalAsk/ConfirmationModalAsk.vue";
+import ConfirmationModalSigning from "@/components/ConfirmationModalSigning/ConfirmationModalSigning.vue";
 import { ConfirmState } from "../../types";
 
 export default defineComponent({

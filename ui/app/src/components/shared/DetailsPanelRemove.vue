@@ -52,7 +52,7 @@
 </style>
 <script lang="ts">
 import { defineComponent } from "vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
 
 export default defineComponent({
   components: {

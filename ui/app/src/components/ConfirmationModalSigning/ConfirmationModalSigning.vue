@@ -10,11 +10,11 @@
           "
         /><br />
         <div class="text-wrapper">
-          <!-- 
-            TODO: This could be abstracted to AnimatedLoaderStateModal 
+          <!--
+            TODO: This could be abstracted to AnimatedLoaderStateModal
             that takes screens and switches them based on arbitrary state
             with arbitrary content that can be specified in page.
-            The content below isn't really flexible enough and can be 
+            The content below isn't really flexible enough and can be
             templed into components
 
             Perhaps we could use render functions to accomplish this?
@@ -100,8 +100,8 @@
 import { defineComponent } from "vue";
 import { useCore } from "@/hooks/useCore";
 import Loader from "@/components/shared/Loader.vue";
-import SifButton from "@/components/shared/SifButton.vue";
-import { getBlockExplorerUrl } from "./utils";
+import SifButton from "@/components/SifButton/SifButton.vue";
+import { getBlockExplorerUrl } from "../shared/utils";
 
 export default defineComponent({
   inheritAttrs: false,

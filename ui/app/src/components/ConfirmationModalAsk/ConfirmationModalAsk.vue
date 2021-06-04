@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import SifButton from "@/components/shared/SifButton.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({

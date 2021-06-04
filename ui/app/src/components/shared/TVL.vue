@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Pill from "./Pill/Pill.vue";
+import Pill from "../Pill/Pill.vue";
 
 export default defineComponent({
   components: { Pill },

@@ -3,7 +3,7 @@ import { defineComponent, PropType } from "vue"; /* eslint-disable-line */
 import { Ref, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "../../hooks/useCore";
 import { sortAssetAmount } from "../../views/utils/sortAssetAmount";
-import AssetItem from "@/components/shared/AssetItem.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import { format } from "ui-core/src/utils/format";
 import { computed } from "@vue/reactivity";
 import {

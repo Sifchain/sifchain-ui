@@ -36,10 +36,10 @@
 </style>
 <script lang="tsx">
 import { defineComponent, PropType, useCssModule } from "vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import { computed } from "@vue/reactivity";
 import { IAssetAmount } from "ui-core";
-import AskConfirmationInfo from "@/components/shared/AskConfirmationInfo/Index.vue";
+import AskConfirmationInfo from "@/components/AskConfirmationInfo/Index.vue";
 
 export default defineComponent({
   components: {
