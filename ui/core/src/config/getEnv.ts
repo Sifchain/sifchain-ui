@@ -75,5 +75,5 @@ export function getEnv({
     }
   }
 
-  throw new Error("Canno:t render environment");
+  throw new Error("Cannot render environment");
 }
