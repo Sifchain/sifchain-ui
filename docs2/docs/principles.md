@@ -137,7 +137,9 @@ it("should set the env as a cookie", () => {
 
 # Test Driven Development
 
-By writing your tests first you will begin to apply good code design without even realising it. If something is hard to test you probably have poor code design and should break out ou. So if you save your code design until after you have written a set of unit tests your code will be more composable with a better and more modular API and better separation of concerns by default. I normally start a feature in a test file in core and then move it out to it's own file before checking in progress.
+By writing your tests first you will begin to apply good code design without even realising it. If something is hard to test you probably have poor code design and should try to modularize it. So if you save your code design until after you have written a set of unit tests your code will be more composable with a better and more modular API and better separation of concerns by default. I normally start a feature in a test file in core and then move it out to it's own file before checking in progress. It is slower to refactor without tests so writing tests as you write your code will actually mean you get your feature out quicker with better design and with fewer bugs.
+
+Sometimes you need to experiment with a design to prototype a feature to see if something is possible. This could be kept on a separate branch as a sketch to influence the final implementation. That is fine. A good practice in this case would be to open the branch on github and then in your editor on a fresh branch write a failing testcases for your idea as you create each module. You will probably find you have made it hard to test or not modular enough and will need to tweak your design.
 
 # Clean Architecture
 
