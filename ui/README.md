@@ -33,10 +33,10 @@ Attaching a query string var `_env` will set cookies to point your build to any 
 
 We recommend using bookmarklets:
 
-| name     | location                                               |
-| -------- | ------------------------------------------------------ |
-| CLEAR    | `javascript:(() => window.location.href='/?_env=_')()` |
-| MAINNET  | `javascript:(() => window.location.href='/?_env=0')()` |
-| TESTNET  | `javascript:(() => window.location.href='/?_env=1')()` |
-| DEVNET   | `javascript:(() => window.location.href='/?_env=2')()` |
-| LOCALNET | `javascript:(() => window.location.href='/?_env=3')()` |
+| name     | location                                                        |
+| -------- | --------------------------------------------------------------- |
+| CLEAR    | `javascript:(() => {l=location;l.href=l.pathname+'?_env=_'})()` |
+| MAINNET  | `javascript:(() => {l=location;l.href=l.pathname+'?_env=0'})()` |
+| TESTNET  | `javascript:(() => {l=location;l.href=l.pathname+'?_env=1'})()` |
+| DEVNET   | `javascript:(() => {l=location;l.href=l.pathname+'?_env=2'})()` |
+| LOCALNET | `javascript:(() => {l=location;l.href=l.pathname+'?_env=3'})()` |
