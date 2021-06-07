@@ -7,7 +7,7 @@ import SifButton from "@/components/SifButton/SifButton.vue";
 import SifInput from "@/components/shared/SifInput.vue";
 import Caret from "@/components/Caret/Caret.vue";
 import RaisedPanel from "@/components/shared/RaisedPanel.vue";
-import Label from "@/components/shared/Label.vue";
+import Label from "@/components/Label/Label.vue";
 import RaisedPanelColumn from "@/components/shared/RaisedPanelColumn.vue";
 import RaisedPanelRow from "@/components/shared/RaisedPanelRow.vue";
 import Checkbox from "@/components/Checkbox/Checkbox.vue";

@@ -25,7 +25,6 @@ export default {
 
   methods: {
     toggleDropdown() {
-      console.log("TOGGLEEE");
       this.toggle = !this.toggle;
     },
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-import Tab from "@/components/shared/Tab.vue";
-import Tabs from "@/components/shared/Tabs.vue";
+import Tab from "@/components/Tab/Tab.vue";
+import Tabs from "@/components/Tabs/Tabs.vue";
 import Layout from "@/components/Layout/Layout.vue";
 import AssetList from "@/components/AssetList/AssetList.vue";
 import SifInput from "@/components/shared/SifInput.vue";

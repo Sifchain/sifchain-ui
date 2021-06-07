@@ -18,9 +18,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import LoaderTick from "@/components/shared/LoaderTick.vue";
-import LoaderCircle from "@/components/shared/LoaderCircle.vue";
-import LoaderFailed from "@/components/shared/LoaderFailed.vue";
+import LoaderTick from "@/components/LoaderTick/LoaderTick.vue";
+import LoaderCircle from "@/components/LoaderCircle/LoaderCircle.vue";
+import LoaderFailed from "@/components/LoaderFailed/LoaderFailed.vue";
 
 export default defineComponent({
   components: { LoaderCircle, LoaderTick, LoaderFailed },
