@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import { SifEnv } from "./getEnv";
-export type CookieService = Pick<typeof Cookies, "set" | "get">;
+export type CookieService = Pick<typeof Cookies, "set" | "get" | "remove">;
 
 const COOKIE_NAME_SIF_ENV = "__sif_env";
 
@@ -13,11 +13,13 @@ const COOKIE_NAME_SIF_ENV = "__sif_env";
 export function AppCookies(service: CookieService = Cookies) {
   return {
     getEnv() {
-      return service.get(COOKIE_NAME_SIF_ENV);
+      return service.get(COOKIE_NAME_SIF_ENV) as SifEnv | undefined;
     },
     setEnv(env: SifEnv) {
-      console.log({ env });
-      return service.set(COOKIE_NAME_SIF_ENV, env.toString());
+      service.set(COOKIE_NAME_SIF_ENV, env.toString());
+    },
+    clearEnv() {
+      service.remove(COOKIE_NAME_SIF_ENV);
     },
   };
 }
