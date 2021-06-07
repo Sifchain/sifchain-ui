@@ -1,8 +1,8 @@
 <script lang="ts">
 import { computed, defineComponent, watch, onMounted } from "vue";
-import { ref, ComputedRef } from "@vue/reactivity";
+import { ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { getCryptoeconomicsUrl, getLMData } from "@/components/shared/utils";
+import { getVSData, getLMData } from "@/components/shared/utils";
 import Layout from "@/components/layout/Layout.vue";
 import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
 import { Copy } from "@/components/shared/Text";
@@ -19,92 +19,6 @@ const claimTypeMap = {
   vs: "3",
 };
 type IClaimType = "lm" | "vs" | null;
-
-async function getVSData(address: ComputedRef<any>, chainId: string) {
-  if (!address.value) return;
-  // const ceUrl = getCryptoeconomicsUrl(chainId);
-  // const data = await fetch(
-  //   `${ceUrl}/vs/?key=userData&address=${address.value}&timestamp=now`,
-  // );
-  // if (data.status !== 200) return {};
-  const parsedData = {
-    totalDepositedAmount: 24205454.32624847,
-    timestamp: 147600,
-    rewardBuckets: [
-      {
-        rowan: 17301918.265222006,
-        initialRowan: 45000000,
-        duration: 1200,
-      },
-    ],
-    user: {
-      tickets: [
-        {
-          commission: 0,
-          amount: 515.075,
-          mul: 0.5112847222222296,
-          reward: 259.84093497171625,
-          validatorRewardAddress: "sif1avau6q23mrmmuz2nlyqk0mgrdzna5tf6yvc0et",
-          validatorStakeAddress:
-            "sifvaloper1avau6q23mrmmuz2nlyqk0mgrdzna5tf6dws9em",
-          timestamp: "April 20th 2021, 11:28:43 pm",
-          rewardDelta: 0.7991189486285039,
-          poolDominanceRatio: 0.000021292080431235025,
-          commissionRewardsByValidator: {
-            sif1avau6q23mrmmuz2nlyqk0mgrdzna5tf6yvc0et: 0,
-          },
-        },
-        {
-          commission: 0,
-          amount: 590,
-          mul: 0.5052083333333406,
-          reward: 289.3530824379835,
-          validatorRewardAddress: "sif1lnhxf6war6qlldemkqzp0t3g57hpe9a664epyu",
-          validatorStakeAddress:
-            "sifvaloper1lnhxf6war6qlldemkqzp0t3g57hpe9a6nh3tyv",
-          timestamp: "April 21st 2021, 10:48:43 pm",
-          rewardDelta: 0.9153621893720666,
-          poolDominanceRatio: 0.000024389317001269062,
-          commissionRewardsByValidator: {
-            sif1lnhxf6war6qlldemkqzp0t3g57hpe9a664epyu: 0,
-          },
-        },
-      ],
-      claimableRewardsOnWithdrawnAssets: 0,
-      dispensed: 0,
-      forfeited: 0,
-      totalAccruedCommissionsAndClaimableRewards: 279.0362887823368,
-      totalClaimableCommissionsAndClaimableRewards: 279.0362887823368,
-      reservedReward: 549.1940174096998,
-      totalDepositedAmount: 1105.075,
-      totalClaimableRewardsOnDepositedAssets: 279.0362887823368,
-      currentTotalCommissionsOnClaimableDelegatorRewards: 0,
-      totalAccruedCommissionsAtMaturity: 0,
-      totalCommissionsAndRewardsAtMaturity: 1340.756646783233,
-      claimableCommissions: 0,
-      delegatorAddresses: [],
-      totalRewardsOnDepositedAssetsAtMaturity: 1340.756646783233,
-      ticketAmountAtMaturity: 1105.075,
-      yieldAtMaturity: 1.2132720826941457,
-      nextRewardShare: 0.000045653966461668654,
-      currentYieldOnTickets: 0.9607676926913524,
-      maturityDate: "August 19th 2021, 10:48:43 pm",
-      maturityDateISO: "2021-08-19T22:48:43.000Z",
-      yearsToMaturity: 0.2168949771689498,
-      currentAPYOnTickets: 4.4296447305138145,
-      maturityDateMs: 0,
-      futureReward: 1061.7203580008963,
-      nextReward: 1.7120237423125746,
-      nextRewardProjectedFutureReward: 4499.198394797446,
-      nextRewardProjectedAPYOnTickets: 4.07139641634952,
-      maturityAPY: 0,
-    },
-  };
-  if (!parsedData.user || !parsedData.user) {
-    return {};
-  }
-  return parsedData.user;
-}
 
 export default defineComponent({
   components: {
