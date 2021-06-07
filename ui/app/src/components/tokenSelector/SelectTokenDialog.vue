@@ -11,7 +11,7 @@ import {
   filterTokenList,
   generateTokenSearchLists,
 } from "./tokenLists";
-import SifInput from "@/components/shared/SifInput.vue";
+import SifInput from "@/components/SifInput/SifInput.vue";
 import { Asset } from "ui-core";
 
 type Balances = {

@@ -9,7 +9,7 @@ import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 
 import RaisedPanel from "@/components/shared/RaisedPanel.vue";
 import { useRouter } from "vue-router";
-import SifInput from "@/components/shared/SifInput.vue";
+import SifInput from "@/components/SifInput/SifInput.vue";
 import DetailsTable from "@/components/DetailsTable/DetailsTable.vue";
 import Label from "@/components/Label/Label.vue";
 import RaisedPanelColumn from "@/components/shared/RaisedPanelColumn.vue";

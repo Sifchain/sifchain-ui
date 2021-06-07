@@ -99,7 +99,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useCore } from "@/hooks/useCore";
-import Loader from "@/components/shared/Loader.vue";
+import Loader from "@/components/Loader/Loader.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
 import { getBlockExplorerUrl } from "../shared/utils";
 

@@ -4,7 +4,7 @@
 x
 
 <script lang="ts">
-import Icon from "@/components/shared/Icon.vue";
+import Icon from "@/components/Icon/Icon.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({

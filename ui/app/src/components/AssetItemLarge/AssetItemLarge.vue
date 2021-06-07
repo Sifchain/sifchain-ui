@@ -1,7 +1,7 @@
 <script lang="tsx">
 import { computed, defineComponent, PropType, useCssModule } from "vue";
-import Icon from "@/components/shared/Icon.vue";
-import Tooltip from "@/components/shared/Tooltip.vue";
+import Icon from "@/components/Icon/Icon.vue";
+import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import { getMantissaLength, format, IAssetAmount } from "ui-core";
 import { useAssetItem } from "../shared/utils";
 

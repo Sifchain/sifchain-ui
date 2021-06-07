@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import jsonp from "jsonp";
-import Icon from "@/components/shared/Icon.vue";
+import Icon from "@/components/Icon/Icon.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
 
 const MAILCHIMP_URL = "https://finance.us2.list-manage.com/subscribe/post-json";

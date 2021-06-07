@@ -2,7 +2,7 @@
 import { defineComponent, PropType } from "vue";
 import WithWallet from "@/components/WithWallet/WithWallet.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Icon from "@/components/Icon/Icon.vue";
 
 export default defineComponent({
   components: {

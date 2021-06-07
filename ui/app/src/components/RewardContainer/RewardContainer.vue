@@ -1,9 +1,9 @@
 <script>
 import Box from "@/components/Box/Box.vue";
 import { Copy, SubHeading } from "@/components/Text";
-import Loader from "@/components/shared/Loader.vue";
-import Tooltip from "@/components/shared/Tooltip.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Loader from "@/components/Loader/Loader.vue";
+import Tooltip from "@/components/Tooltip/Tooltip.vue";
+import Icon from "@/components/Icon/Icon.vue";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
 import { format } from "ui-core/src/utils/format";

@@ -7,9 +7,9 @@ import Layout from "@/components/Layout/Layout.vue";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
 import { Copy } from "@/components/Text";
 import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
-import Modal from "@/components/shared/Modal.vue";
-import ModalView from "@/components/shared/ModalView.vue";
-import PairTable from "@/components/shared/PairTable.vue";
+import Modal from "@/components/Modal/Modal.vue";
+import ModalView from "@/components/ModalView/ModalView.vue";
+import PairTable from "@/components/PairTable/PairTable.vue";
 import { ConfirmState } from "@/types";
 import RewardContainer from "@/components/RewardContainer/RewardContainer.vue";
 

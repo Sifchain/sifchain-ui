@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Menu from "../Menu/Menu.vue";
-import RowanPrice from "../shared/RowanPrice.vue";
-import TVL from "../shared/TVL.vue";
+import RowanPrice from "../RowanPrice/RowanPrice.vue";
+import TVL from "../TVL/TVL.vue";
 
 export default defineComponent({
   components: {

@@ -3,11 +3,11 @@ import Tab from "@/components/Tab/Tab.vue";
 import Tabs from "@/components/Tabs/Tabs.vue";
 import Layout from "@/components/Layout/Layout.vue";
 import AssetList from "@/components/AssetList/AssetList.vue";
-import SifInput from "@/components/shared/SifInput.vue";
+import SifInput from "@/components/SifInput/SifInput.vue";
 import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
-import Tooltip from "@/components/shared/Tooltip.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Tooltip from "@/components/Tooltip/Tooltip.vue";
+import Icon from "@/components/Icon/Icon.vue";
 
 import { sortAssetAmount } from "./utils/sortAssetAmount";
 import { useCore } from "@/hooks/useCore";

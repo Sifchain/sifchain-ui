@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Icon from "../shared/Icon.vue";
+import Icon from "../Icon/Icon.vue";
 export default defineComponent({
   components: { Icon },
   props: {

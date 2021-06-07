@@ -2,7 +2,7 @@
 import { computed, defineComponent } from "vue";
 import { useCore } from "@/hooks/useCore";
 import SifButton from "@/components/SifButton/SifButton.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Icon from "@/components/Icon/Icon.vue";
 
 export default defineComponent({
   name: "KeplrWalletController",

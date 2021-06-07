@@ -1,5 +1,5 @@
 <script lang="ts">
-import Panel from "@/components/shared/Panel.vue";
+import Panel from "@/components/Panel/Panel.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({

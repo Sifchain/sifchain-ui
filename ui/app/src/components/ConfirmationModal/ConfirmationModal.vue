@@ -49,7 +49,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { computed } from "@vue/reactivity";
-import ModalView from "@/components/shared/ModalView.vue";
+import ModalView from "@/components/ModalView/ModalView.vue";
 import ConfirmationModalAsk from "@/components/ConfirmationModalAsk/ConfirmationModalAsk.vue";
 import ConfirmationModalSigning from "@/components/ConfirmationModalSigning/ConfirmationModalSigning.vue";
 import { ConfirmState } from "../../types";

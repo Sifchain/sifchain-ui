@@ -52,7 +52,7 @@
 import { defineComponent } from "vue";
 import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
 import ArrowIconButton from "@/components/ArrowIconButton/ArrowIconButton.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Icon from "@/components/Icon/Icon.vue";
 import Checkbox from "@/components/Checkbox/Checkbox.vue";
 export default defineComponent({
   components: { CurrencyField, ArrowIconButton, Icon, Checkbox },

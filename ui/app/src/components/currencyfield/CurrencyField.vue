@@ -4,7 +4,7 @@ import { computed } from "@vue/reactivity";
 import BalanceField from "./BalanceField.vue";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
-import SifInput from "@/components/shared/SifInput.vue";
+import SifInput from "@/components/SifInput/SifInput.vue";
 import Caret from "@/components/Caret/Caret.vue";
 import RaisedPanel from "@/components/shared/RaisedPanel.vue";
 import Label from "@/components/Label/Label.vue";

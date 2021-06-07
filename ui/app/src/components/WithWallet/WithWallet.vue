@@ -36,7 +36,7 @@ import { defineComponent, PropType } from "vue";
 import { useWalletButton } from "./useWalletButton";
 import EtheriumWalletPanel from "./EtheriumWalletPanel.vue";
 import KeplrWalletPanel from "./KeplrWalletPanel.vue";
-import Modal from "@/components/shared/Modal.vue";
+import Modal from "@/components/Modal/Modal.vue";
 
 export default defineComponent({
   name: "WithWallet",

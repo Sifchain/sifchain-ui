@@ -31,10 +31,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Panel from "@/components/shared/Panel.vue";
+import Panel from "@/components/Panel/Panel.vue";
 import Footer from "@/components/Footer/Footer.vue";
 import PanelNav from "@/components/PanelNav/PanelNav.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Icon from "@/components/Icon/Icon.vue";
 import { SubHeading } from "@/components/Text";
 
 export default defineComponent({
