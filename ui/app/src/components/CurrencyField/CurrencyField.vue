@@ -6,10 +6,10 @@ import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
 import SifInput from "@/components/SifInput/SifInput.vue";
 import Caret from "@/components/Caret/Caret.vue";
-import RaisedPanel from "@/components/shared/RaisedPanel.vue";
+import RaisedPanel from "@/components/RaisedPanel/RaisedPanel.vue";
 import Label from "@/components/Label/Label.vue";
-import RaisedPanelColumn from "@/components/shared/RaisedPanelColumn.vue";
-import RaisedPanelRow from "@/components/shared/RaisedPanelRow.vue";
+import RaisedPanelColumn from "@/components/RaisedPanelColumn/RaisedPanelColumn.vue";
+import RaisedPanelRow from "@/components/RaisedPanelRow/RaisedPanelRow.vue";
 import Checkbox from "@/components/Checkbox/Checkbox.vue";
 
 export type BalanceShape = {

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import { formatNumber, formatPercentage } from "./utils";
+import { formatNumber, formatPercentage } from "../shared/utils";
 import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";
 
