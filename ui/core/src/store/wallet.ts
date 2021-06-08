@@ -13,6 +13,8 @@ export type WalletStore = {
     balances: IAssetAmount[];
     isConnected: boolean;
     address: Address;
+    vsUserData: Object;
+    lmUserData: Object;
   };
 };
 

@@ -14,6 +14,17 @@ type ErrorEvent = {
   };
 };
 
+type SuccessEvent = {
+  type: "SuccessEvent";
+  payload: {
+    message: string;
+    detail?: {
+      type: "etherscan" | "info";
+      message: string;
+    };
+  };
+};
+
 type TransactionErrorEvent = {
   type: "TransactionErrorEvent";
   payload: {
@@ -64,6 +75,7 @@ type NoLiquidityPoolsFoundEvent = {
 
 export type AppEvent =
   | ErrorEvent
+  | SuccessEvent
   | WalletConnectedEvent
   | WalletDisconnectedEvent
   | WalletConnectionErrorEvent

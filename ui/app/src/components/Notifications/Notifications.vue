@@ -78,9 +78,9 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
     };
   }
 
-  if (event.type === "ErrorEvent") {
+  if (event.type === "ErrorEvent" || event.type === "SuccessEvent") {
     return {
-      type: "error",
+      type: event.type === "SuccessEvent" ? "success" : "error",
       message: event.payload.message,
       detail: event.payload.detail,
     };

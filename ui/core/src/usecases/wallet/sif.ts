@@ -4,6 +4,8 @@ import { Mnemonic } from "../../entities/Wallet";
 import { UsecaseContext } from "..";
 import { effect } from "@vue/reactivity";
 
+const BLOCK_TIME_MS = 1000 * 60 * 200;
+
 export default ({
   services,
   store,
@@ -45,6 +47,35 @@ export default ({
         });
       }
     },
+
+    getUserLmData() {
+      return pollUserData("lm", (lmData) => {
+        store.wallet.sif.lmUserData = lmData;
+      });
+    },
+    getUserVsData() {
+      return pollUserData("vs", (vsData) => {
+        store.wallet.sif.vsUserData = vsData;
+      });
+    },
+
+    notifyLmMaturity() {
+      maybeNotifyUserMaturity(
+        store.wallet.sif.lmUserData,
+        "NOTIFIED_LM_MATURITY",
+        "Your liquidity mining has reached full maturity! Please feel free to claim these rewards. If you have already submitted a claim, these will be processed at week end.",
+      );
+      return () => {};
+    },
+
+    notifyVsMaturity() {
+      maybeNotifyUserMaturity(
+        store.wallet.sif.vsUserData,
+        "NOTIFIED_VS_MATURITY",
+        "Your validator staking has reached full maturity! Please feel free to claim these rewards. If you have already submitted a claim, these will be processed at week end.",
+      );
+      return () => {};
+    },
   };
 
   effect(() => {
@@ -69,6 +100,49 @@ export default ({
   effect(() => {
     store.wallet.sif.balances = state.balances;
   });
+
+  function pollUserData(type: any, onChange: (Object) => void) {
+    let intervalId: any;
+    if (store.wallet.sif.address) {
+      fetchData();
+      intervalId = setInterval(fetchData, BLOCK_TIME_MS);
+    }
+    return () => {
+      clearInterval(intervalId);
+    };
+    async function fetchData() {
+      const params = new URLSearchParams();
+      params.set("address", store.wallet.sif.address);
+      params.set("key", "userData");
+      params.set("timestamp", "now");
+      const res = await fetch(
+        `https://api-cryptoeconomics.sifchain.finance/api/${type}?${params.toString()}`,
+      );
+      onChange(await res.json());
+    }
+  }
+
+  function maybeNotifyUserMaturity(
+    userData: any,
+    key: string,
+    message: string,
+  ) {
+    if (!userData) return;
+    const hasMatured = new Date() > new Date(userData.maturityDateISO);
+    const shouldNotify =
+      hasMatured && userData.totalClaimableCommissionsAndClaimableRewards > 0;
+    if (shouldNotify && !window.localStorage.getItem(key)) {
+      services.bus.dispatch({
+        type: "SuccessEvent",
+        payload: { message },
+      });
+      try {
+        window.localStorage.setItem(key, true);
+      } catch (error) {
+        // localStorage error. Private browser likely. ignore it!
+      }
+    }
+  }
 
   return actions;
 };
