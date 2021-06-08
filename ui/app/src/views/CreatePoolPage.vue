@@ -21,7 +21,7 @@ import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { ConfirmState } from "@/types";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
-import DetailsPanelPool from "@/components/shared/DetailsPanelPool.vue";
+import DetailsPanelPool from "@/components/DetailsPanelPool/DetailsPanelPool.vue";
 import { formatNumber } from "@/components/shared/utils";
 import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";

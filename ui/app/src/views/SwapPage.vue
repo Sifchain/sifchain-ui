@@ -12,7 +12,7 @@ import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 import ModalView from "@/components/ModalView/ModalView.vue";
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog.vue";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
-import DetailsPanel from "@/components/shared/DetailsPanel.vue";
+import DetailsPanel from "@/components/DetailsPanel/DetailsPanel.vue";
 import SlippagePanel from "@/components/SlippagePanel/Index.vue";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { format } from "ui-core/src/utils/format";

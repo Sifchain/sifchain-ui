@@ -17,7 +17,7 @@ import Slider from "@/components/Slider/Slider.vue";
 import { toConfirmState } from "./utils/toConfirmState";
 import { ConfirmState } from "@/types";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
-import DetailsPanelRemove from "@/components/shared/DetailsPanelRemove.vue";
+import DetailsPanelRemove from "@/components/DetailsPanelRemove/DetailsPanelRemove.vue";
 
 export default defineComponent({
   components: {

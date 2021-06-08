@@ -7,12 +7,12 @@ import { Asset, AssetAmount } from "ui-core";
 import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
 import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 
-import RaisedPanel from "@/components/shared/RaisedPanel.vue";
+import RaisedPanel from "@/components/RaisedPanel/RaisedPanel.vue";
 import { useRouter } from "vue-router";
 import SifInput from "@/components/SifInput/SifInput.vue";
 import DetailsTable from "@/components/DetailsTable/DetailsTable.vue";
 import Label from "@/components/Label/Label.vue";
-import RaisedPanelColumn from "@/components/shared/RaisedPanelColumn.vue";
+import RaisedPanelColumn from "@/components/RaisedPanelColumn/RaisedPanelColumn.vue";
 import { trimZeros } from "ui-core";
 import BigNumber from "bignumber.js";
 import {
