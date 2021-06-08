@@ -60,20 +60,54 @@ export default ({
     },
 
     notifyLmMaturity() {
-      maybeNotifyUserMaturity(
-        store.wallet.sif.lmUserData,
-        "NOTIFIED_LM_MATURITY",
-        "Your liquidity mining has reached full maturity! Please feel free to claim these rewards. If you have already submitted a claim, these will be processed at week end.",
-      );
+      const key = "NOTIFIED_LM_MATURITY";
+      if (
+        hasUserReachedMaturity(store.wallet.sif.lmUserData) &&
+        !window.localStorage.getItem(key)
+      ) {
+        services.bus.dispatch({
+          type: "SuccessEvent",
+          payload: {
+            message: "Your liquidity mining has reached full maturity!",
+            detail: {
+              type: "info",
+              message:
+                "Please feel free to claim these rewards. If you have already submitted a claim, these will be processed at week end.",
+            },
+          },
+        });
+        try {
+          window.localStorage.setItem(key, true);
+        } catch (error) {
+          // localStorage error. Private browser likely. ignore it!
+        }
+      }
       return () => {};
     },
 
     notifyVsMaturity() {
-      maybeNotifyUserMaturity(
-        store.wallet.sif.vsUserData,
-        "NOTIFIED_VS_MATURITY",
-        "Your validator staking has reached full maturity! Please feel free to claim these rewards. If you have already submitted a claim, these will be processed at week end.",
-      );
+      const key = "NOTIFIED_VS_MATURITY";
+      if (
+        hasUserReachedMaturity(store.wallet.sif.vsUserData) &&
+        !window.localStorage.getItem(key)
+      ) {
+        services.bus.dispatch({
+          type: "SuccessEvent",
+          payload: {
+            message: "Your validator staking has reached full maturity!",
+            detail: {
+              type: "info",
+              message:
+                "Please feel free to claim these rewards. If you have already submitted a claim, these will be processed at week end.",
+            },
+          },
+        });
+        try {
+          window.localStorage.setItem(key, true);
+        } catch (error) {
+          // localStorage error. Private browser likely. ignore it!
+        }
+      }
       return () => {};
     },
   };
@@ -122,26 +156,13 @@ export default ({
     }
   }
 
-  function maybeNotifyUserMaturity(
-    userData: any,
-    key: string,
-    message: string,
-  ) {
-    if (!userData) return;
+  function hasUserReachedMaturity(userData: any) {
+    if (!userData) return false;
+
     const hasMatured = new Date() > new Date(userData.maturityDateISO);
     const shouldNotify =
       hasMatured && userData.totalClaimableCommissionsAndClaimableRewards > 0;
-    if (shouldNotify && !window.localStorage.getItem(key)) {
-      services.bus.dispatch({
-        type: "SuccessEvent",
-        payload: { message },
-      });
-      try {
-        window.localStorage.setItem(key, true);
-      } catch (error) {
-        // localStorage error. Private browser likely. ignore it!
-      }
-    }
+    return shouldNotify;
   }
 
   return actions;
