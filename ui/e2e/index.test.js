@@ -36,8 +36,6 @@ const {
 
 // dex pages
 const { balancesPage } = require("./pages/BalancesPage.js");
-const { swapPage } = require("./pages/SwapPage.js");
-const { confirmSwapModal } = require("./pages/ConfirmSwapModal.js");
 const { poolPage } = require("./pages/PoolPage.js");
 const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
 const { connectPopup } = require("./pages/ConnectPopup.js");
@@ -208,105 +206,6 @@ it("imports tokens", async () => {
 
   const expectedAmount = (Number(cBalance) + Number(importAmount)).toFixed(6);
   await balancesPage.verifyAssetAmount("cusdc", expectedAmount);
-});
-
-it("swaps", async () => {
-  const tokenA = "cusdc";
-  const tokenB = "rowan";
-
-  await swapPage.navigate();
-
-  await swapPage.selectTokenA(tokenA);
-  await page.waitForTimeout(1000); // slowing down to avoid tokens not updating
-  await swapPage.selectTokenB(tokenB);
-
-  await swapPage.fillTokenAValue("100");
-  await swapPage.verifyTokenBValue("99.99800003");
-
-  // Check expected output (XXX: hmmm - might have to pull in formulae from core??)
-
-  await swapPage.fillTokenBValue("100");
-  await swapPage.verifyTokenAValue("100.00200005");
-
-  await swapPage.clickTokenAMax();
-  await swapPage.verifyTokenAValue("10000.0"); // TODO: trim mantissa
-  await swapPage.verifyTokenBValue("9980.0299600499");
-  await swapPage.verifyDetails({
-    expPriceMessage: "0.998003 ROWAN per cUSDC",
-    expMinimumReceived: "9880.229660 ROWAN",
-    expPriceImpact: "0.10%",
-    expLiquidityProviderFee: "9.9800 ROWAN",
-  });
-
-  // Input Amount A
-  await swapPage.fillTokenAValue("50");
-  await swapPage.verifyDetails({
-    expPriceMessage: "0.999990 ROWAN per cUSDC",
-    expMinimumReceived: "49.499505 ROWAN",
-    expPriceImpact: "< 0.01%",
-    expLiquidityProviderFee: "0.00025 ROWAN",
-  });
-  await swapPage.verifyTokenBValue("49.9995000037");
-
-  await swapPage.clickSwap();
-
-  // Confirm dialog shows the expected values
-  await confirmSwapModal.verifyDetails({
-    tokenA: tokenA,
-    tokenB: tokenB,
-    expTokenAAmount: "50.000000",
-    expTokenBAmount: "49.999500",
-    expPriceMessage: "0.999990 ROWAN per cUSDC",
-    expMinimumReceived: "49.499505 ROWAN",
-    expPriceImpact: "< 0.01%",
-    expLiquidityProviderFee: "0.00025 ROWAN",
-  });
-
-  await confirmSwapModal.clickConfirmSwap();
-
-  // Confirm transaction popup
-  await page.waitForTimeout(1000);
-  await keplrNotificationPopup.navigate();
-  await keplrNotificationPopup.clickApprove();
-  await page.waitForTimeout(10000); // wait for blockchain to update...
-
-  // Wait for balances to be the amounts expected
-  await confirmSwapModal.verifySwapMessage(
-    "Swapped 50 cUSDC for 49.9995000037 ROWAN",
-  );
-
-  await confirmSwapModal.clickClose();
-
-  await swapPage.verifyTokenBalance(tokenA, "Balance: 9,950.00 cUSDC");
-  await swapPage.verifyTokenBalance(tokenB, "Balance: 10,050.00 ROWAN");
-});
-
-it("fails to swap when it can't pay gas with rowan", async () => {
-  const tokenA = "rowan";
-  const tokenB = "cusdc";
-  // Navigate to swap page
-  await swapPage.navigate();
-
-  // Get values of token A and token B in account
-  await swapPage.selectTokenA(tokenA);
-  await page.waitForTimeout(1000); // slowing down to avoid tokens not updating
-  await swapPage.selectTokenB(tokenB);
-
-  await swapPage.fillTokenAValue("10000");
-  await swapPage.clickSwap();
-  await confirmSwapModal.clickConfirmSwap();
-
-  // Confirm transaction popup
-  await page.waitForTimeout(1000);
-  await keplrNotificationPopup.navigate();
-  await keplrNotificationPopup.clickApprove();
-
-  await page.waitForTimeout(10000); // wait for blockchain to update...
-
-  await expect(page).toHaveText("Transaction Failed");
-  await expect(page).toHaveText("Not enough ROWAN to cover the gas fees.");
-
-  await confirmSwapModal.closeModal();
 });
 
 it("adds liquidity", async () => {
