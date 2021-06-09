@@ -1,5 +1,7 @@
 #!/usr/bin/env zx
 
+import { resolve } from "path";
+
 import { dockerLoggedIn, setupStack, runStack, killStack } from "./lib.mjs";
 
 import { arg } from "./lib.mjs";
@@ -9,6 +11,7 @@ const args = arg(
     "--kill": Boolean,
     "-k": "--kill",
     "--setup-only": Boolean,
+    "--set-default-tag": String,
     "--tag": String,
     "-t": "--tag",
   },
@@ -28,11 +31,22 @@ Our docker container is built under sifchain/ui-stack which is published per com
 
 Options:
 
---tag -t       Provide an image tag to use. Usually a stable tag ie. \`develop\` or a commit hash ie. \`649e35193c8ef0730458f058d52693b1a1ca5d77\`
---kill --k     Kill any stack processes and remove all existing docker ui-stack containers 
---setup-only   This only pulls the docker stack image and extracts some build dependencies such as contract ABIs
+--tag -t            Provide an image tag to use. Usually a stable tag ie. \`develop\` or a commit hash ie. \`649e35193c8ef0730458f058d52693b1a1ca5d77\`
+--kill --k          Kill any stack processes and remove all existing docker ui-stack containers 
+--setup-only        This only pulls the docker stack image and extracts some build dependencies such as contract ABIs
+--set-default-tag   Set the default docker image tag used by the stack command. This alters the latest file on disk which needs to be checked in.
+
 `,
 );
+
+if (args["--set-default-tag"]) {
+  const tag = args["--set-default-tag"];
+  await fs.writeFile(
+    resolve(__dirname, "./latest"),
+    `ghcr.io/sifchain/sifnode/ui-stack:${tag}`,
+  );
+  process.exit(0);
+}
 
 if (args["--setup-only"]) {
   await setupStack();
