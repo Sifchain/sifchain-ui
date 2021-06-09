@@ -37,7 +37,7 @@ export default function createCryptoeconomicsService(
     if (!res.ok) {
       return null;
     } else {
-      const json: any = res.json();
+      const json = await res.json();
       json.maturityDate = new Date(json.maturityDate);
       return json;
     }
