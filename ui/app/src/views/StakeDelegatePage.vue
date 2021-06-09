@@ -11,6 +11,7 @@ export default defineComponent({
   data() {
     return {
       data: null,
+      validatorSubsidyAPY: 0,
     };
   },
   async mounted() {
@@ -19,6 +20,19 @@ export default defineComponent({
     );
     const json = await data.json();
     this.data = json.body;
+
+    const params = new URLSearchParams();
+    const DEFAULT_ADDRESS = "sif1003l39amhtmlmh6eupj3w94xg6ljh5zz37dy8j";
+
+    params.set("address", DEFAULT_ADDRESS);
+    params.set("key", "userData");
+    params.set("timestamp", "now");
+    const vsRes = await fetch(
+      `https://api-cryptoeconomics.sifchain.finance/api/vs?${params.toString()}`,
+    );
+    const vsJson = await vsRes.json();
+
+    this.validatorSubsidyAPY = vsJson.user.currentAPYOnTickets * 100;
   },
 });
 </script>
@@ -40,9 +54,9 @@ export default defineComponent({
             target="_blank"
             >Validator Subsidy</a
           >:
-          <span v-if="data.liqValRewards === ''">TBD</span>
+          <span v-if="validatorSubsidyAPY === 0">TBD</span>
           <span v-else>
-            {{ parseFloat(data.liqValRewards).toFixed(2) }} % APY
+            {{ parseFloat(validatorSubsidyAPY).toFixed(2) }} % APY
           </span>
         </p>
         <p class="mb-8">
