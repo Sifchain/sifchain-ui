@@ -120,12 +120,13 @@ const notificationSuites = [
   },
 ];
 notificationSuites.forEach(({ storeKey, rewardType, storageKey }) => {
-  const serviceFn =
-    rewardType === "vs"
-      ? rewardActions.notifyVsMaturity
-      : rewardActions.notifyLmMaturity;
   describe(rewardType, () => {
     test("do not send notification: maturityDate not reached", async () => {
+      const serviceFn =
+        rewardType === "vs"
+          ? rewardActions.notifyVsMaturity
+          : rewardActions.notifyLmMaturity;
+
       mockStore.wallet.sif.address = "123";
       mockStore.wallet.sif[storeKey] = {
         maturityDate: new Date(Date.now() + 100 * 1000),
@@ -136,6 +137,11 @@ notificationSuites.forEach(({ storeKey, rewardType, storageKey }) => {
     });
 
     test("do not send notification: no claimable commissions", async () => {
+      const serviceFn =
+        rewardType === "vs"
+          ? rewardActions.notifyVsMaturity
+          : rewardActions.notifyLmMaturity;
+
       mockStore.wallet.sif.address = "123";
       mockStore.wallet.sif[storeKey] = {
         maturityDate: new Date(Date.now() - 100 * 1000),
@@ -146,6 +152,11 @@ notificationSuites.forEach(({ storeKey, rewardType, storageKey }) => {
     });
 
     test("only send once after conditions reached", async () => {
+      const serviceFn =
+        rewardType === "vs"
+          ? rewardActions.notifyVsMaturity
+          : rewardActions.notifyLmMaturity;
+
       mockStore.wallet.sif.address = "123";
       mockStore.wallet.sif[storeKey] = {
         maturityDate: new Date(Date.now() - 100 * 1000),
