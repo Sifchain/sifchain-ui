@@ -7,6 +7,7 @@ import createActions, {
 import { Address, Asset, Network, TxParams } from "../../entities";
 import { Msg } from "@cosmjs/launchpad";
 import { IWalletService } from "../../services/IWalletService";
+
 let mockCryptoeconomicsService: any;
 let mockEventBusService: any;
 let mockStore: any;
@@ -53,11 +54,9 @@ afterEach(() => {
 
 test("Do nothing if no wallet", async () => {
   rewardActions.notifyLmMaturity();
-  expect(mockStorage.get(LM_STORAGE_KEY)).toBeUndefined();
   expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
 
   rewardActions.notifyVsMaturity();
-  expect(mockStorage.get(VS_STORAGE_KEY)).toBeUndefined();
   expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
 });
 
@@ -129,7 +128,6 @@ notificationSuites.forEach(
           totalClaimableCommissionsAndClaimableRewards: 100,
         };
         rewardActions[serviceFn]();
-        expect(mockStorage.get(storageKey)).toBeUndefined();
         expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
       });
 
@@ -140,7 +138,6 @@ notificationSuites.forEach(
           totalClaimableCommissionsAndClaimableRewards: 0,
         };
         rewardActions[serviceFn]();
-        expect(mockStorage.get(storageKey)).toBeUndefined();
         expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
       });
 
@@ -151,7 +148,6 @@ notificationSuites.forEach(
           totalClaimableCommissionsAndClaimableRewards: 100,
         };
         rewardActions[serviceFn]();
-        expect(mockStorage.get(storageKey)).toEqual("true");
         expect(mockEventBusService.dispatch).toHaveBeenCalledTimes(1);
         mockEventBusService.dispatch.mockClear();
 
