@@ -1,6 +1,6 @@
 <script>
 import { defineComponent } from "vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import { format } from "ui-core/src/utils/format";
 
 export default defineComponent({

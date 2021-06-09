@@ -3,15 +3,15 @@ import { computed, defineComponent, watch, onMounted } from "vue";
 import { ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { getVSData, getLMData } from "@/components/shared/utils";
-import Layout from "@/components/layout/Layout.vue";
-import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
-import { Copy } from "@/components/shared/Text";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
-import Modal from "@/components/shared/Modal.vue";
-import ModalView from "@/components/shared/ModalView.vue";
-import PairTable from "@/components/shared/PairTable.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import { Copy } from "@/components/Text";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import Modal from "@/components/Modal/Modal.vue";
+import ModalView from "@/components/Modal/Modal.vue";
+import PairTable from "@/components/PairTable/PairTable.vue";
 import { ConfirmState } from "@/types";
-import RewardContainer from "@/components/shared/RewardContainer/RewardContainer.vue";
+import RewardContainer from "@/components/RewardContainer/RewardContainer.vue";
 import { toConfirmState } from "./utils/toConfirmState";
 
 const claimTypeMap = {

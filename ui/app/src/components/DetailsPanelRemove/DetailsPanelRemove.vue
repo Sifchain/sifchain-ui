@@ -74,9 +74,9 @@
 </style>
 <script lang="ts">
 import { defineComponent } from "vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
-import { Copy } from "@/components/shared/Text";
-import PairTable from "@/components/shared/PairTable.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
+import { Copy } from "@/components/Text";
+import PairTable from "@/components/PairTable/PairTable.vue";
 
 export default defineComponent({
   components: {
