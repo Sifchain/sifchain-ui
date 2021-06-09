@@ -3,6 +3,7 @@ import createActions, {
   LM_STORAGE_KEY,
   BLOCK_TIME_MS,
 } from "./";
+import { CryptoeconomicsRewardType } from "../../services/CryptoeconomicsService";
 
 import { Address, Asset, Network, TxParams } from "../../entities";
 import { Msg } from "@cosmjs/launchpad";
@@ -13,7 +14,7 @@ let mockEventBusService: any;
 let mockStore: any;
 let rewardActions: ReturnType<typeof createActions>;
 let dispatch = jest.fn();
-let mockStorage: Map;
+let mockStorage: any;
 let mockCryptoeconomicsData: any;
 
 beforeEach(() => {
@@ -39,8 +40,8 @@ beforeEach(() => {
       cryptoeconomics: mockCryptoeconomicsService,
       bus: mockEventBusService,
       storage: {
-        getItem: (key) => mockStorage.get(key),
-        setItem: (key, value) => mockStorage.set(key, value),
+        getItem: (key: string) => mockStorage.get(key),
+        setItem: (key: string, value: string) => mockStorage.set(key, value),
       },
     },
     store: mockStore,
@@ -73,7 +74,9 @@ subscribeTests.forEach(({ storeKey, rewardType }) => {
     };
 
     mockCryptoeconomicsService.fetchData.mockReturnValueOnce(rewardData);
-    const cleanup = rewardActions.subscribeToRewardData(rewardType);
+    const cleanup = rewardActions.subscribeToRewardData(
+      rewardType as CryptoeconomicsRewardType,
+    );
 
     await new Promise((resolve) => process.nextTick(resolve)); // wait for promise
     expect(mockStore.wallet.sif[storeKey]).toEqual(rewardData);
@@ -108,52 +111,52 @@ const notificationSuites = [
   {
     storeKey: "vsUserData",
     rewardType: "vs",
-    serviceFn: "notifyVsMaturity",
     storageKey: VS_STORAGE_KEY,
   },
   {
     storeKey: "lmUserData",
     rewardType: "lm",
-    serviceFn: "notifyLmMaturity",
     storageKey: LM_STORAGE_KEY,
   },
 ];
-notificationSuites.forEach(
-  ({ storeKey, rewardType, serviceFn, storageKey }) => {
-    describe(serviceFn, () => {
-      test("do not send notification: maturityDate not reached", async () => {
-        mockStore.wallet.sif.address = "123";
-        mockStore.wallet.sif[storeKey] = {
-          maturityDate: new Date(Date.now() + 100 * 1000),
-          totalClaimableCommissionsAndClaimableRewards: 100,
-        };
-        rewardActions[serviceFn]();
-        expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
-      });
-
-      test("do not send notification: no claimable commissions", async () => {
-        mockStore.wallet.sif.address = "123";
-        mockStore.wallet.sif[storeKey] = {
-          maturityDate: new Date(Date.now() - 100 * 1000),
-          totalClaimableCommissionsAndClaimableRewards: 0,
-        };
-        rewardActions[serviceFn]();
-        expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
-      });
-
-      test("only send once after conditions reached", async () => {
-        mockStore.wallet.sif.address = "123";
-        mockStore.wallet.sif[storeKey] = {
-          maturityDate: new Date(Date.now() - 100 * 1000),
-          totalClaimableCommissionsAndClaimableRewards: 100,
-        };
-        rewardActions[serviceFn]();
-        expect(mockEventBusService.dispatch).toHaveBeenCalledTimes(1);
-        mockEventBusService.dispatch.mockClear();
-
-        rewardActions[serviceFn]();
-        expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
-      });
+notificationSuites.forEach(({ storeKey, rewardType, storageKey }) => {
+  const serviceFn =
+    rewardType === "vs"
+      ? rewardActions.notifyVsMaturity
+      : rewardActions.notifyLmMaturity;
+  describe(rewardType, () => {
+    test("do not send notification: maturityDate not reached", async () => {
+      mockStore.wallet.sif.address = "123";
+      mockStore.wallet.sif[storeKey] = {
+        maturityDate: new Date(Date.now() + 100 * 1000),
+        totalClaimableCommissionsAndClaimableRewards: 100,
+      };
+      serviceFn();
+      expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
     });
-  },
-);
+
+    test("do not send notification: no claimable commissions", async () => {
+      mockStore.wallet.sif.address = "123";
+      mockStore.wallet.sif[storeKey] = {
+        maturityDate: new Date(Date.now() - 100 * 1000),
+        totalClaimableCommissionsAndClaimableRewards: 0,
+      };
+      serviceFn();
+      expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
+    });
+
+    test("only send once after conditions reached", async () => {
+      mockStore.wallet.sif.address = "123";
+      mockStore.wallet.sif[storeKey] = {
+        maturityDate: new Date(Date.now() - 100 * 1000),
+        totalClaimableCommissionsAndClaimableRewards: 100,
+      };
+      serviceFn();
+      expect(mockEventBusService.dispatch).toHaveBeenCalledTimes(1);
+      mockEventBusService.dispatch.mockClear();
+
+      serviceFn();
+      expect(mockEventBusService.dispatch).not.toHaveBeenCalled();
+    });
+  });
+});
