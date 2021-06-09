@@ -59,7 +59,58 @@ export async function runStack() {
   return await $`docker start -ai sif-ui-stack`;
 }
 
+async function getLatestCommitForBranch(branch) {
+  const res = await fetch(
+    `https://api.github.com/repos/Sifchain/sifnode/branches/${branch}`,
+  );
+  const {
+    commit: { sha: commit },
+  } = await res.json();
+  return commit;
+}
+
+async function dockerImageExistsWithTag(tag) {
+  const name = `ghcr.io/sifchain/sifnode/ui-stack:` + tag;
+  try {
+    await $`docker manifest inspect ${name} > /dev/null`;
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 export async function setupStack(tagName) {
+  if (tagName && ["develop", "master"].includes(tagName)) {
+    const commit = await getLatestCommitForBranch(tagName);
+
+    const imageExists = await dockerImageExistsWithTag(commit);
+    // Check if the latest commit in GHs develop branch matches what is in the registry
+    if (!imageExists) {
+      console.error(
+        `
+
+=========================
+|     HOW ERRONEOUS!    |
+=========================
+
+It appears that the latest commit hash from '${tagName}' cannot be found in the registry. 
+We were looking for the following commit hash: 
+
+  ${commit}
+
+This could happen because either there has been a recent commit in the last few minutes 
+and the image has not been pushed up yet or something went horribly wrong while preparing the image.
+
+We suggest you investigate over in the sifnode repo then try running this script again.
+
+  https://github.com/Sifchain/sifnode/tree/${tagName}
+        
+        `,
+      );
+      process.exit(1);
+    }
+  }
+
   const defaultImageName = `${await fs.readFile(
     resolve(__dirname, "./latest"),
   )}`;
