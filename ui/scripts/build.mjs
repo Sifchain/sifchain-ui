@@ -19,11 +19,14 @@ Options:
 `,
 );
 
+const noSetup = args["--no-setup"];
+const tagName = args["--tag"];
+
 const core = resolve(__dirname, "../core");
 const app = resolve(__dirname, "../app");
 
-if (!args["--no-setup"]) {
-  await setupStack(args["--tag"]);
+if (!noSetup) {
+  await setupStack(tagName);
 }
 await lint();
 await $`cd ${core} && yarn build`;

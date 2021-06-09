@@ -81,10 +81,13 @@ async function dockerImageExistsWithTag(tag) {
 
 export async function setupStack(tagName) {
   if (tagName && ["develop", "master"].includes(tagName)) {
-    const commit = await getLatestCommitForBranch(tagName);
-
-    const imageExists = await dockerImageExistsWithTag(commit);
     // Check if the latest commit in GHs develop branch matches what is in the registry
+
+    console.log("Getting latest commit...");
+    const commit = await getLatestCommitForBranch(tagName);
+    console.log("Checking latest commit exists in registry...");
+    const imageExists = await dockerImageExistsWithTag(commit);
+
     if (!imageExists) {
       console.error(
         `
