@@ -16,6 +16,7 @@ export class MetamaskConnectPage {
       MM_CONFIG.id,
       "/notification.html#connect",
     );
+    await this.page.waitForLoadState();
   }
 
   async clickNext() {

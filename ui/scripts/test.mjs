@@ -11,6 +11,7 @@ const args = arg(
     "-u": "--unit",
     "--integration": Boolean,
     "-i": "--integration",
+    "--watch": Boolean,
   },
   `
 Usage: 
@@ -26,7 +27,7 @@ Options:
 `,
 );
 
-async function runCoreTests(tag, isUnit, isIntegration) {
+async function runCoreTests(tag, isUnit, isIntegration, isWatch, rest) {
   const core = resolve(__dirname, "../core");
 
   await setupStack(tag);
@@ -34,15 +35,23 @@ async function runCoreTests(tag, isUnit, isIntegration) {
   // Set the env var to run against a specific tag
   if (tag) process.env.STACK_TAG = tag;
 
+  const testArgs = isWatch ? [...rest, "--watch"] : rest;
+
   if (isUnit) {
-    return await $`cd ${core} && yarn compile && yarn unit`;
+    return await $`cd ${core} && yarn compile && yarn unit ${testArgs}`;
   }
 
   if (isIntegration) {
-    return await $`cd ${core} && yarn compile && yarn integration`;
+    return await $`cd ${core} && yarn compile && yarn integration ${testArgs}`;
   }
 
-  return await $`cd ${core} && yarn compile && yarn unit`;
+  return await $`cd ${core} && yarn compile && yarn test ${testArgs}`;
 }
 
-await runCoreTests(args["--tag"], args["--unit"], args["--integration"]);
+await runCoreTests(
+  args["--tag"],
+  args["--unit"],
+  args["--integration"],
+  args["--watch"],
+  args._.slice(1),
+);

@@ -57,9 +57,10 @@ beforeAll(async () => {
 
   // goto dex page
   await balancesPage.navigate();
-  await page.waitForTimeout(4000); // wait a second before keplr is finished being setup
 
-  // Keplr will automatically connect and cause the add chain popup to come up
+  // once keplr has finished setup, connection page will be invoked automatically
+  await context.waitForEvent("page");
+
   await connectKeplrAccount();
   await connectMetaMaskAccount();
   await page.close();

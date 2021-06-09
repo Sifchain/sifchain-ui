@@ -9,6 +9,7 @@ export class KeplrNotificationPopup {
 
   async navigate(url = urls.keplr.notificationPopup.generic) {
     this.page = await getExtensionPage(this.config.id, url);
+    await this.page.waitForLoadState();
   }
 
   async clickApprove() {

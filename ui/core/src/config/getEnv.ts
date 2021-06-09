@@ -7,12 +7,6 @@ export enum SifEnv {
   LOCALNET,
 }
 
-const envKeys = Object.values(SifEnv).filter((s) => typeof s === "number");
-
-export function isSifEnv(a: any): a is SifEnv {
-  return envKeys.includes(parseInt(a));
-}
-
 const profileLookup = {
   [SifEnv.DEVNET]: {
     tag: "devnet",
@@ -36,38 +30,49 @@ const profileLookup = {
   },
 };
 
+// Here we list hostnames that have default env settings
+const hostDefaultEnvs = [
+  { test: /dex\.sifchain\.finance$/, net: SifEnv.MAINNET },
+  { test: /testnet\.sifchain\.finance$/, net: SifEnv.TESTNET },
+  { test: /devnet\.sifchain\.finance$/, net: SifEnv.DEVNET },
+  { test: /sifchain\.vercel\.app$/, net: SifEnv.DEVNET },
+  { test: /gateway\.pinata\.cloud$/, net: SifEnv.DEVNET },
+  { test: /localhost$/, net: SifEnv.LOCALNET },
+];
+
+export function getSifEnv(hostname: string) {
+  for (const { test, net } of hostDefaultEnvs) {
+    if (test.test(hostname)) {
+      return net;
+    }
+  }
+  return null;
+}
+
+export function isSifEnv(a: any): a is SifEnv {
+  const envKeys = Object.values(SifEnv).filter((s) => typeof s === "number");
+  return envKeys.includes(parseInt(a));
+}
+
 type GetEnvArgs = {
-  location: {
-    hostname: string;
-  };
+  location: { hostname: string };
   cookies?: Pick<AppCookies, "getEnv">;
 };
+
 export function getEnv({
   location: { hostname },
   cookies = AppCookies(),
 }: GetEnvArgs) {
-  const cookieTag = (cookies.getEnv() as unknown) as SifEnv;
+  const cookieTag = cookies.getEnv();
 
-  if (!cookieTag) {
-    if (hostname === "dex.sifchain.finance") {
-      return profileLookup[SifEnv.MAINNET];
+  const sifEnv = getSifEnv(hostname);
+  if (sifEnv !== null) {
+    if (typeof cookieTag === "undefined") {
+      return profileLookup[sifEnv];
     }
-    if (hostname === "testnet.sifchain.finance") {
-      return profileLookup[SifEnv.TESTNET];
+    if (isSifEnv(cookieTag) && profileLookup[cookieTag]) {
+      return profileLookup[cookieTag];
     }
-    if (
-      hostname === "devnet.sifchain.finance" ||
-      hostname === "gateway.pinata.cloud"
-    ) {
-      return profileLookup[SifEnv.DEVNET];
-    }
-    if (hostname === "localhost") {
-      return profileLookup[SifEnv.LOCALNET];
-    }
-  }
-
-  if (profileLookup[cookieTag]) {
-    return profileLookup[cookieTag];
   }
 
   throw new Error("Cannot render environment");

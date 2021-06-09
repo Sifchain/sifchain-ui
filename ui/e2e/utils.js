@@ -46,7 +46,6 @@ export async function getExtensionPage(extensionId, suffixUrl = undefined) {
   } else {
     matchingUrl = `chrome-extension://${extensionId}${suffixUrl}`;
   }
-
   const pages = await context.pages();
   const foundPages = pages.filter((page) => page.url().includes(matchingUrl));
 
