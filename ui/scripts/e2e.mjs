@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 import { resolve } from "path";
-import { serveBuiltApp, race, waitOn } from "./lib.mjs";
+import { serveBuiltApp, setupStack, race, waitOn } from "./lib.mjs";
 import { arg } from "./lib.mjs";
 
 const args = arg(
@@ -39,6 +39,8 @@ if (isDebug) {
 
 async function runTests(tag) {
   await waitOn("http://localhost:5000");
+
+  await setupStack(tag);
 
   process.env.PORT = "5000";
 
