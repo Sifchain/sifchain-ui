@@ -90,7 +90,7 @@ export async function setupStack(tagName) {
         `
 
 =========================
-|     HOW ERRONIOUS!    |
+|     HOW ERRONEOUS!    |
 =========================
 
 It appears that the latest commit hash from '${tagName}' cannot be found in the registry. 
