@@ -4,8 +4,6 @@ import { Mnemonic } from "../../entities/Wallet";
 import { UsecaseContext } from "..";
 import { effect } from "@vue/reactivity";
 
-const BLOCK_TIME_MS = 1000 * 60 * 200;
-
 export default ({
   services,
   store,
