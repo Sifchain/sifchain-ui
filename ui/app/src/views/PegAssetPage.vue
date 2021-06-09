@@ -1,18 +1,18 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Layout from "@/components/layout/Layout.vue";
+import Layout from "@/components/Layout/Layout.vue";
 import { computed, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { Asset, AssetAmount } from "ui-core";
-import CurrencyField from "@/components/currencyfield/CurrencyField.vue";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
+import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 
-import RaisedPanel from "@/components/shared/RaisedPanel.vue";
+import RaisedPanel from "@/components/RaisedPanel/RaisedPanel.vue";
 import { useRouter } from "vue-router";
-import SifInput from "@/components/shared/SifInput.vue";
-import DetailsTable from "@/components/shared/DetailsTable.vue";
-import Label from "@/components/shared/Label.vue";
-import RaisedPanelColumn from "@/components/shared/RaisedPanelColumn.vue";
+import SifInput from "@/components/SifInput/SifInput.vue";
+import DetailsTable from "@/components/DetailsTable/DetailsTable.vue";
+import Label from "@/components/Label/Label.vue";
+import RaisedPanelColumn from "@/components/RaisedPanelColumn/RaisedPanelColumn.vue";
 import { trimZeros } from "ui-core";
 import BigNumber from "bignumber.js";
 import {
@@ -24,7 +24,7 @@ import {
 import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { ConfirmState } from "../types";
-import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
+import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
 import { format, toBaseUnits } from "ui-core";
 
 function capitalize(value: string) {

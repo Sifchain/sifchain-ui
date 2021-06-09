@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent, watch, onMounted } from "vue";
 import { computed, ref, ComputedRef } from "@vue/reactivity";
-import Layout from "@/components/layout/Layout.vue";
-import SifButton from "@/components/shared/SifButton.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
 import {
   getAssetLabel,
   getBlockExplorerUrl,
@@ -13,9 +13,9 @@ import { useCore } from "@/hooks/useCore";
 import { useRoute } from "vue-router";
 import { format } from "ui-core/src/utils/format";
 import { Amount } from "ui-core";
-import Tooltip from "@/components/shared/Tooltip.vue";
-import Icon from "@/components/shared/Icon.vue";
-import Loader from "@/components/shared/Loader.vue";
+import Tooltip from "@/components/Tooltip/Tooltip.vue";
+import Icon from "@/components/Icon/Icon.vue";
+import Loader from "@/components/Loader/Loader.vue";
 
 const DECIMALS = 5;
 
