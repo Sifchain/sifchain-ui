@@ -2,7 +2,6 @@
 import { computed, defineComponent, watch, onMounted } from "vue";
 import { ref, ComputedRef } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { getCryptoeconomicsUrl } from "@/components/shared/utils";
 import Layout from "@/components/Layout/Layout.vue";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
 import { Copy } from "@/components/Text";
@@ -15,13 +14,14 @@ import RewardContainer from "@/components/RewardContainer/RewardContainer.vue";
 
 async function getLMData(address: ComputedRef<any>, chainId: string) {
   if (!address.value) return;
-  const ceUrl = getCryptoeconomicsUrl(chainId);
-  const data = await fetch(
-    `${ceUrl}/lm/?key=userData&address=${address.value}&timestamp=now`,
-  );
-  if (data.status !== 200) return {};
-  const parsedData = await data.json();
-  if (!parsedData.user || !parsedData.user) {
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "lm",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+  });
+  if (!parsedData?.user) {
     return {};
   }
   return parsedData.user;
@@ -29,13 +29,14 @@ async function getLMData(address: ComputedRef<any>, chainId: string) {
 
 async function getVSData(address: ComputedRef<any>, chainId: string) {
   if (!address.value) return;
-  const ceUrl = getCryptoeconomicsUrl(chainId);
-  const data = await fetch(
-    `${ceUrl}/vs/?key=userData&address=${address.value}&timestamp=now`,
-  );
-  if (data.status !== 200) return {};
-  const parsedData = await data.json();
-  if (!parsedData.user || !parsedData.user) {
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "vs",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+  });
+  if (!parsedData?.user) {
     return {};
   }
   return parsedData.user;

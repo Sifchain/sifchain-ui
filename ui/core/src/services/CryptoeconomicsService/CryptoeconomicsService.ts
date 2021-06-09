@@ -1,10 +1,16 @@
 export type CryptoeconomicsUserData = null | {
-  currentAPYOnTickets: Number;
   maturityDate: Date;
-  totalClaimableCommissionsAndClaimableRewards: Number;
+  totalClaimableCommissionsAndClaimableRewards: number;
+  user: {
+    claimableReward: number;
+    totalRewardAtMaturity: number;
+    currentAPYOnTickets: number;
+  };
 };
 
-export type CryptoeconomicsServiceContext = {};
+export type CryptoeconomicsServiceContext = {
+  cryptoeconomicsUrl: string;
+};
 
 export type CryptoeconomicsRewardType = "vs" | "lm";
 
@@ -15,7 +21,9 @@ export interface FetchDataProps {
   timestamp: string;
 }
 
-export default function createCryptoeconomicsService({}: CryptoeconomicsServiceContext) {
+export default function createCryptoeconomicsService(
+  config: CryptoeconomicsServiceContext,
+) {
   async function fetchData(
     props: FetchDataProps,
   ): Promise<CryptoeconomicsUserData> {
@@ -24,13 +32,15 @@ export default function createCryptoeconomicsService({}: CryptoeconomicsServiceC
     params.set("key", props.key || "userData");
     params.set("timestamp", props.timestamp || "now");
     const res = await fetch(
-      `https://api-cryptoeconomics.sifchain.finance/api/${
-        props.rewardType
-      }?${params.toString()}`,
+      `${config.cryptoeconomicsUrl}/${props.rewardType}?${params.toString()}`,
     );
-    const json: any = res.json();
-    json.maturityDate = new Date(json.maturityDate);
-    return json;
+    if (!res.ok) {
+      return null;
+    } else {
+      const json: any = res.json();
+      json.maturityDate = new Date(json.maturityDate);
+      return json;
+    }
   }
 
   return {
