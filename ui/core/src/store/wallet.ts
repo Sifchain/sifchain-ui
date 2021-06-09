@@ -1,4 +1,5 @@
 import { reactive } from "@vue/reactivity";
+import { CryptoeconomicsUserData } from "../services/CryptoeconomicsService";
 
 import { Address, IAssetAmount } from "../entities";
 
@@ -13,8 +14,8 @@ export type WalletStore = {
     balances: IAssetAmount[];
     isConnected: boolean;
     address: Address;
-    vsUserData: Object;
-    lmUserData: Object;
+    vsUserData: CryptoeconomicsUserData;
+    lmUserData: CryptoeconomicsUserData;
   };
 };
 
@@ -28,5 +29,7 @@ export const wallet = reactive<WalletStore>({
     isConnected: false,
     address: "",
     balances: [],
+    vsUserData: null,
+    lmUserData: null,
   },
 }) as WalletStore;

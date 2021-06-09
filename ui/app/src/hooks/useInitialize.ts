@@ -12,18 +12,19 @@ export function useInitialize() {
 
   useSubscription(
     computed(() => store.wallet.sif.address),
-    usecases.wallet.sif.getUserLmData,
+    () => usecases.reward.subscribeToRewardData("vs"),
   );
   useSubscription(
     computed(() => store.wallet.sif.address),
-    usecases.wallet.sif.getUserVsData,
+    () => usecases.reward.subscribeToRewardData("lm"),
   );
+
   useSubscription(
     computed(() => store.wallet.sif.lmUserData),
-    usecases.wallet.sif.notifyLmMaturity,
+    usecases.reward.notifyLmMaturity,
   );
   useSubscription(
     computed(() => store.wallet.sif.vsUserData),
-    usecases.wallet.sif.notifyVsMaturity,
+    usecases.reward.notifyVsMaturity,
   );
 }
