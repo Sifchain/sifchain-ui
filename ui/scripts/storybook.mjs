@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 import { arg } from "./lib.mjs";
 
-arg(
+const args = arg(
   { "--build": Boolean, "-b": "--build" },
   `
 Normal Mode Usage: 
