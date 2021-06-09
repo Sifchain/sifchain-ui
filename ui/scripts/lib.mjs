@@ -89,7 +89,9 @@ export async function setupStack(tagName) {
       console.error(
         `
 
-YE GADS!
+=========================
+|     HOW ERRONIOUS!    |
+=========================
 
 It appears that the latest commit hash from '${tagName}' cannot be found in the registry. 
 We were looking for the following commit hash: 
