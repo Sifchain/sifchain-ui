@@ -23,6 +23,10 @@ const REWARD_INFO = {
 
 export default {
   props: {
+    alreadyClaimed: {
+      type: Boolean || Object,
+      default: false,
+    },
     claimDisabled: {
       type: Boolean,
       default: true,
@@ -58,6 +62,15 @@ export default {
     },
     claimRewards() {
       alert("claim logic/keplr goes here");
+    },
+    getClaimButtonText() {
+      if (this.alreadyClaimed) {
+        return "Already Claimed";
+      } else if (!this.data.totalClaimableCommissionsAndClaimableRewards) {
+        return "Nothing to Claim";
+      } else {
+        return "Claim";
+      }
     },
   },
   data() {
@@ -199,15 +212,14 @@ export default {
               :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${type}`"
               >More Info</a
             >
-            <!-- :disabled="(data.claimableReward - data.claimed) === 0" -->
             <SifButton
               @click="$emit('openModal', claimType)"
               :primary="true"
               :disabled="
-                claimDisabled ||
-                data.totalClaimableCommissionsAndClaimableRewards === 0
+                alreadyClaimed ||
+                !data.totalClaimableCommissionsAndClaimableRewards
               "
-              >Claim</SifButton
+              >{{ getClaimButtonText() }}</SifButton
             >
           </div>
         </div>

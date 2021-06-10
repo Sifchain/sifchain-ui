@@ -121,6 +121,46 @@ export async function getVSData(address: ComputedRef<any>, chainId: string) {
   return parsedData.user;
 }
 
+async function getClaimsData(
+  apiUrl: string,
+  address: string,
+  type: "LiquidityMining" | "ValidatorSubsidy",
+) {
+  return (
+    await (await fetch(`${apiUrl}dispensation/getClaims?type=${type}`)).json()
+  ).result.find((item: any) => {
+    return item.user_address === address;
+  });
+}
+
+export type IHasClaimed = {
+  lm: object | false;
+  vs: object | false;
+};
+
+export async function getExistingClaimsData(
+  address: ComputedRef<string>,
+  apiUrl: string,
+): Promise<IHasClaimed> {
+  if (!address.value || !apiUrl) throw "Missing input";
+
+  const lmClaimData = await getClaimsData(
+    apiUrl,
+    address.value,
+    "LiquidityMining",
+  );
+  const vsClaimData = await getClaimsData(
+    apiUrl,
+    address.value,
+    "ValidatorSubsidy",
+  );
+
+  return {
+    lm: lmClaimData || false,
+    vs: vsClaimData || false,
+  };
+}
+
 export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
   switch (chainId) {
     case "sifchain":

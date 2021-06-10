@@ -2,7 +2,12 @@
 import { computed, defineComponent, watch, onMounted } from "vue";
 import { ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { getVSData, getLMData } from "@/components/shared/utils";
+import {
+  getVSData,
+  getLMData,
+  getExistingClaimsData,
+  IHasClaimed,
+} from "@/components/shared/utils";
 import Layout from "@/components/Layout/Layout.vue";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
 import { Copy } from "@/components/Text";
@@ -60,17 +65,29 @@ export default defineComponent({
     // TODO - We can do this better later
     let lmRewards = ref<any>();
     let vsRewards = ref<any>();
+    let alreadyClaimed = ref<IHasClaimed>({
+      lm: false,
+      vs: false,
+    });
     let loadingVs = ref<Boolean>(true);
     let claimType = ref<IClaimType>(null);
 
     watch(address, async () => {
       lmRewards.value = await getLMData(address, config.sifChainId);
       vsRewards.value = await getVSData(address, config.sifChainId);
+      alreadyClaimed.value = await getExistingClaimsData(
+        address,
+        config.sifApiUrl,
+      );
     });
 
     onMounted(async () => {
       lmRewards.value = await getLMData(address, config.sifChainId);
       vsRewards.value = await getVSData(address, config.sifChainId);
+      alreadyClaimed.value = await getExistingClaimsData(
+        address,
+        config.sifApiUrl,
+      );
     });
 
     async function handleAskConfirmClicked() {
@@ -113,6 +130,7 @@ export default defineComponent({
     return {
       lmRewards,
       vsRewards,
+      alreadyClaimed,
       computedPairPanel,
       handleAskConfirmClicked,
       transactionState,
@@ -145,6 +163,7 @@ export default defineComponent({
         :data="lmRewards"
         :address="address"
         :claimDisabled="false"
+        :alreadyClaimed="alreadyClaimed['lm']"
         @openModal="handleOpenModal"
       />
       <RewardContainer
@@ -152,6 +171,7 @@ export default defineComponent({
         :data="vsRewards"
         :address="address"
         :claimDisabled="false"
+        :alreadyClaimed="alreadyClaimed['vs']"
         @openModal="handleOpenModal"
       />
     </div>
