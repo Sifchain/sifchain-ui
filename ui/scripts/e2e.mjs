@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 import { resolve } from "path";
-import { serveBuiltApp, race, waitOn } from "./lib.mjs";
+import { serveBuiltApp, setupStack, race, waitOn } from "./lib.mjs";
 import { arg } from "./lib.mjs";
 
 const args = arg(
@@ -30,6 +30,7 @@ Options:
 );
 
 const isDebug = args["--debug"];
+const tagName = args["--tag"] || "develop";
 
 // Only run test script
 if (isDebug) {
@@ -39,6 +40,8 @@ if (isDebug) {
 
 async function runTests(tag) {
   await waitOn("http://localhost:5000");
+
+  await setupStack(tag);
 
   process.env.PORT = "5000";
 
@@ -64,4 +67,4 @@ try {
 }
 
 // Run server and test script concurrently
-await race(serveBuiltApp(), runTests(args["--tag"]));
+await race(serveBuiltApp(), runTests(tagName));

@@ -26,6 +26,8 @@ const cases = [
   { hostname: "testnet.sifchain.finance", tag: "testnet" },
   { hostname: "devnet.sifchain.finance", tag: "devnet" },
   { hostname: "gateway.pinata.cloud", tag: "devnet" },
+  { hostname: "myawesomebranch.sifchain.vercel.app", tag: "devnet" },
+  { hostname: "dingfoo.sifchain.vercel.app", tag: "devnet" },
   { hostname: "dex.sifchain.finance", tag: "mainnet" },
   { hostname: "localhost", tag: "localnet" },
 ];
@@ -55,10 +57,43 @@ cases.forEach(({ hostname, tag }) => {
         expect(
           getEnv({
             location: { hostname },
-            cookies: { getEnv: () => cookie?.toString() },
+            cookies: { getEnv: () => cookie },
           }),
         ).toEqual(output);
       });
     });
   });
+});
+
+test("unknown hosts should bork", () => {
+  expect(() => {
+    getEnv({
+      location: { hostname: "evil.com" },
+      cookies: { getEnv: () => SifEnv.MAINNET },
+    });
+  }).toThrow();
+  expect(() => {
+    getEnv({
+      location: { hostname: "evil.com" },
+      cookies: { getEnv: () => undefined },
+    });
+  }).toThrow();
+});
+
+test("weird cookie values should bork", () => {
+  expect(() => {
+    getEnv({
+      location: { hostname: "dex.sifchain.finance" },
+      cookies: { getEnv: () => 56 },
+    });
+  }).toThrow();
+});
+
+test("hosts that contain valid hosts but are not subdomains of valid hosts will bork", () => {
+  expect(() => {
+    getEnv({
+      location: { hostname: "devnet.sifchain.finance.evil.com" },
+      cookies: { getEnv: () => SifEnv.MAINNET },
+    });
+  }).toThrow();
 });

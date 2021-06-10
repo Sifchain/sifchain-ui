@@ -3,15 +3,15 @@ import { computed, defineComponent, watch, onMounted } from "vue";
 import { ref, ComputedRef } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { getCryptoeconomicsUrl } from "@/components/shared/utils";
-import Layout from "@/components/layout/Layout.vue";
-import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
-import { Copy } from "@/components/shared/Text";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
-import Modal from "@/components/shared/Modal.vue";
-import ModalView from "@/components/shared/ModalView.vue";
-import PairTable from "@/components/shared/PairTable.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import { Copy } from "@/components/Text";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import Modal from "@/components/Modal/Modal.vue";
+import ModalView from "@/components/ModalView/ModalView.vue";
+import PairTable from "@/components/PairTable/PairTable.vue";
 import { ConfirmState } from "@/types";
-import RewardContainer from "@/components/shared/RewardContainer/RewardContainer.vue";
+import RewardContainer from "@/components/RewardContainer/RewardContainer.vue";
 
 async function getLMData(address: ComputedRef<any>, chainId: string) {
   if (!address.value) return;
@@ -83,7 +83,7 @@ export default defineComponent({
     // TODO - We can do this better later
     let lmRewards = ref<any>();
     let vsRewards = ref<any>();
-    let loadingVs = ref<Boolean>(true);
+    let loadingVs = ref<boolean>(true);
 
     watch(address, async () => {
       lmRewards.value = await getLMData(address, config.sifChainId);

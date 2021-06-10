@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
-import Layout from "@/components/layout/Layout.vue";
-import { useWalletButton } from "@/components/wallet/useWalletButton";
+import Layout from "@/components/Layout/Layout.vue";
+import { useWalletButton } from "@/components/WithWallet/useWalletButton";
 import {
   Asset,
   LiquidityProvider,
@@ -11,13 +11,13 @@ import {
 import { useCore } from "@/hooks/useCore";
 import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
-import Slider from "@/components/shared/Slider.vue";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
+import Slider from "@/components/Slider/Slider.vue";
 import { toConfirmState } from "./utils/toConfirmState";
 import { ConfirmState } from "@/types";
-import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
-import DetailsPanelRemove from "@/components/shared/DetailsPanelRemove.vue";
+import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import DetailsPanelRemove from "@/components/DetailsPanelRemove/DetailsPanelRemove.vue";
 
 export default defineComponent({
   components: {

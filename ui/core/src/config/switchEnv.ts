@@ -8,7 +8,7 @@ export function switchEnv({
   cookies = AppCookies(),
 }: {
   location: { search: string; href: string };
-  cookies?: Pick<AppCookies, "setEnv">;
+  cookies?: Pick<AppCookies, "setEnv" | "clearEnv">;
 }) {
   const parsed = queryString.parse(location.search);
 
@@ -20,6 +20,11 @@ export function switchEnv({
 
   if (isSifEnv(env)) {
     cookies.setEnv(env);
+    location.href = "/";
+  }
+
+  if (env === "_") {
+    cookies.clearEnv();
     location.href = "/";
   }
 }

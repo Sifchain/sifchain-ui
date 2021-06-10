@@ -3,11 +3,11 @@ import { defineComponent, ref } from "vue";
 import { computed, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { LiquidityProvider, Pool } from "ui-core";
-import Layout from "@/components/layout/Layout.vue";
-import PoolList from "@/components/poolList/PoolList.vue";
-import PoolListItem from "@/components/poolList/PoolListItem.vue";
-import SifButton from "@/components/shared/SifButton.vue";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import PoolList from "@/components/PoolList/PoolList.vue";
+import PoolListItem from "@/components/PoolList/PoolListItem.vue";
+import SifButton from "@/components/SifButton/SifButton.vue";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 
 type AccountPool = { lp: LiquidityProvider; pool: Pool };
 
