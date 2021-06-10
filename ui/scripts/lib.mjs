@@ -59,14 +59,12 @@ export async function runStack() {
   return await $`docker start -ai sif-ui-stack`;
 }
 
-async function getLatestCommitForBranch(branch) {
+async function gitLogOneline(branch) {
   const res = await fetch(
-    `https://api.github.com/repos/Sifchain/sifnode/branches/${branch}`,
+    `https://api.github.com/repos/Sifchain/sifnode/commits?sha=${branch}`,
   );
-  const {
-    commit: { sha: commit },
-  } = await res.json();
-  return commit;
+
+  return await res.json();
 }
 
 async function dockerImageExistsWithTag(tag) {
@@ -79,12 +77,67 @@ async function dockerImageExistsWithTag(tag) {
   }
 }
 
+function timeSinceLessThanMinutes(zuluDate, minutes, now = Date.now()) {
+  const millisecondsBetweenDates = now - new Date(zuluDate).getTime();
+  const milliseconds = minutes * 60 * 1000;
+  return millisecondsBetweenDates < milliseconds;
+}
+
+function validDate(zuluDate) {
+  return typeof zuluDate !== "string" || !zuluDate ? false : true;
+}
+
+// If the top commit is too young we need to roll back to the previous one
+async function getBestCommitFromBranch(tagName) {
+  let commitSha;
+
+  const gitLog = await gitLogOneline(tagName);
+
+  for (const entry of gitLog.slice(0, 4)) {
+    // lets try 4 max
+    // Lets get the date
+    const zuluDate = entry?.commit?.author?.date;
+
+    // validate
+    if (!validDate(zuluDate)) {
+      throw new Error(
+        "Date from github not valid '" +
+          entry.commit.author.date +
+          "' in the following object: \n" +
+          JSON.stringify(entry),
+      );
+    }
+
+    if (timeSinceLessThanMinutes(zuluDate, 15)) {
+      console.log(
+        "\nSO THE FIRST COMMIT HERE WAS TOO YOUNG AND HAS PROBABLY NOT BEEN PUSHED TO THE REGISTRY\n   ...fetching another\n\n",
+      );
+
+      // This commit wont be deployed yet lets just get the next one instead of failing
+      continue;
+    }
+
+    commitSha = entry.sha;
+    break;
+  }
+
+  if (!commitSha) {
+    throw new Error(
+      "There were NO commits young enough in the commit list! This is pretty weird honestly.",
+    );
+  }
+
+  return commitSha;
+}
+
 export async function setupStack(tagName) {
   if (tagName && ["develop", "master"].includes(tagName)) {
     // Check if the latest commit in GHs develop branch matches what is in the registry
 
-    console.log("Getting latest commit...");
-    const commit = await getLatestCommitForBranch(tagName);
+    console.log("Getting latest commits...");
+
+    const commit = await getBestCommitFromBranch(tagName);
+    // const commit = await getLatestCommitForBranch(tagName);
     console.log("Checking latest commit exists in registry...");
     const imageExists = await dockerImageExistsWithTag(commit);
 
@@ -101,8 +154,7 @@ We were looking for the following commit hash:
 
   ${commit}
 
-This could happen because either there has been a recent commit in the last few minutes 
-and the image has not been pushed up yet or something went horribly wrong while preparing the image.
+This could happen because something went wrong while preparing the image.
 
 We suggest you investigate over in the sifnode repo then try running this script again.
 
