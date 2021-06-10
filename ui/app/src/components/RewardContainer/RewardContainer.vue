@@ -65,7 +65,7 @@ export default {
     },
     getClaimButtonText() {
       if (this.alreadyClaimed) {
-        return "Already Claimed";
+        return "Pending Claim";
       } else if (!this.data.totalClaimableCommissionsAndClaimableRewards) {
         return "Nothing to Claim";
       } else {
@@ -98,7 +98,10 @@ export default {
           <div class="reward-rows">
             <div class="reward-row">
               <div class="row-label">Claimable Amount</div>
-              <div class="row-amount">
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-claimable-amount'"
+              >
                 {{
                   format(data.totalClaimableCommissionsAndClaimableRewards, {
                     mantissa: 4,
@@ -124,7 +127,10 @@ export default {
                   <Icon icon="info-box-black" />
                 </Tooltip>
               </div>
-              <div class="row-amount">
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-reserved-commission-rewards'"
+              >
                 {{
                   format(
                     data.currentTotalCommissionsOnClaimableDelegatorRewards,
@@ -149,7 +155,10 @@ export default {
                   <Icon icon="info-box-black" />
                 </Tooltip>
               </div>
-              <div class="row-amount">
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-dispensed-rewards'"
+              >
                 {{ format(data.dispensed, { mantissa: 4 }) || "0" }}
               </div>
               <AssetItem symbol="Rowan" :label="false" />
@@ -194,7 +203,10 @@ export default {
                   <Icon icon="info-box-black" />
                 </Tooltip>
               </div>
-              <div class="row-amount">
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-projected-full-amount'"
+              >
                 {{
                   format(data.totalCommissionsAndRewardsAtMaturity, {
                     mantissa: 4,
@@ -209,7 +221,7 @@ export default {
             <a
               class="more-info-button mr-8"
               target="_blank"
-              :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${type}`"
+              :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${claimType}`"
               >More Info</a
             >
             <SifButton
@@ -219,6 +231,7 @@ export default {
                 alreadyClaimed ||
                 !data.totalClaimableCommissionsAndClaimableRewards
               "
+              :data-handle="claimType + '-claim-button'"
               >{{ getClaimButtonText() }}</SifButton
             >
           </div>
