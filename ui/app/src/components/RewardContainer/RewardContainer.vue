@@ -66,8 +66,6 @@ export default {
     getClaimButtonText() {
       if (this.alreadyClaimed) {
         return "Pending Claim";
-      } else if (!this.data.totalClaimableCommissionsAndClaimableRewards) {
-        return "Nothing to Claim";
       } else {
         return "Claim";
       }
@@ -137,6 +135,34 @@ export default {
                     {
                       mantissa: 4,
                     },
+                  ) || "0"
+                }}
+              </div>
+              <AssetItem symbol="Rowan" :label="false" />
+            </div>
+
+            <div class="reward-row">
+              <div class="row-label">
+                Pending Dispensation
+                <Tooltip>
+                  <template #message>
+                    <div class="tooltip">
+                      This is the amount that will be dispensed on Friday. Any
+                      new claimable amounts will need to be claimed after the
+                      next dispensation.
+                    </div>
+                  </template>
+                  <Icon icon="info-box-black" />
+                </Tooltip>
+              </div>
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-pending-rewards'"
+              >
+                {{
+                  format(
+                    data.claimedCommissionsAndRewardsAwaitingDispensation,
+                    { mantissa: 4 },
                   ) || "0"
                 }}
               </div>
