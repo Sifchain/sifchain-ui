@@ -58,11 +58,11 @@ jobs:
             echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
           fi
 
-      #     if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
-      #       echo "Config set for MainNet deployment"
-      #       echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-      #       echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
-      #     fi
+          if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
+            echo "Config set for MainNet deployment"
+            echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
+          fi
 
       - name: Update cloudflare DNSLink
         env:
