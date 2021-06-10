@@ -85,7 +85,7 @@ export function useAssetItem(symbol: Ref<string | undefined>) {
 
 // Note: This is new CE pattern https://github.com/Sifchain/cryptoeconomics/pull/57
 function getParsedChainId(chainId: string) {
-  return chainId === "sifchain" ? "mainnet" : "testnet";
+  return chainId === "sifchain" ? "mainnet" : "devnet";
 }
 
 export async function getLMData(address: ComputedRef<any>, chainId: string) {
