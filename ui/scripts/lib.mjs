@@ -108,7 +108,7 @@ async function getBestCommitFromBranch(tagName) {
       );
     }
 
-    if (timeSinceLessThanMinutes(zuluDate, 15)) {
+    if (timeSinceLessThanMinutes(zuluDate, 12)) {
       console.log(
         "\nSO THE FIRST COMMIT HERE WAS TOO YOUNG AND HAS PROBABLY NOT BEEN PUSHED TO THE REGISTRY\n   ...fetching another\n\n",
       );
