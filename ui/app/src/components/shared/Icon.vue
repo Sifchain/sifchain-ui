@@ -9,8 +9,7 @@ import Cross from "./icons/Cross.vue";
 import Back from "./icons/Back.vue";
 import Plus from "./icons/Plus.vue";
 import Eye from "./icons/Eye.vue";
-import InfoBoxBlack from "./icons/InfoBoxBlack.vue";
-import InfoBoxWhite from "./icons/InfoBoxWhite.vue";
+import InfoBox from "./icons/InfoBox.vue";
 import Bang from "./icons/Bang.vue";
 import Sif from "./icons/Sif.vue";
 import Exclaimation from "./icons/Exclaimation.vue";
@@ -29,6 +28,7 @@ export default defineComponent({
         | "tick"
         | "cross"
         | "info-box-black"
+        | "info-box-gold"
         | "info-box-white"
         | "sif"
         | "exclaimation"
@@ -46,8 +46,7 @@ export default defineComponent({
     PoolIcon,
     Back,
     Plus,
-    InfoBoxBlack,
-    InfoBoxWhite,
+    InfoBox,
     Sif,
     Exclaimation,
     Soon,
@@ -57,7 +56,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <span>
+  <span class="icon-wrapper">
     <CircleArrows v-if="icon === 'circle-arrows'" />
     <CircleHalf v-if="icon === 'circle-half'" />
     <PoolIcon v-if="icon === 'pool'" />
@@ -66,11 +65,20 @@ export default defineComponent({
     <Cross v-if="icon === 'cross'" />
     <Back v-if="icon === 'back'" />
     <Plus v-if="icon === 'plus'" />
-    <InfoBoxBlack v-if="icon === 'info-box-black'" />
-    <InfoBoxWhite v-if="icon === 'info-box-white'" />
+    <InfoBox v-if="icon === 'info-box-gold'" />
+    <InfoBox v-if="icon === 'info-box-black'" color="#818181" />
+    <InfoBox v-if="icon === 'info-box-white'" color="#fff" />
     <Sif v-if="icon === 'sif'" />
     <Exclaimation v-if="icon === 'exclaimation'" />
     <Soon v-if="icon === 'soon'" />
     <Eye v-if="icon === 'eye'" />
   </span>
 </template>
+
+<style lang="scss" scoped>
+span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

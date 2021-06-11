@@ -12,7 +12,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="header">
+  <div class="header pool-stats-list-header">
     <div class="col-sm col-sm-s">
       <span>Token</span>
     </div>
@@ -141,6 +141,15 @@ export default defineComponent({
       padding-left: 5px;
       padding-top: 3px;
     }
+  }
+}
+</style>
+<style lang="scss">
+.pool-stats-list-header .icon-wrapper {
+  margin-left: 4px;
+  svg {
+    width: 16px !important;
+    height: 16px !important;
   }
 }
 </style>
