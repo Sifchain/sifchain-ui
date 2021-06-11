@@ -51,6 +51,8 @@ beforeEach(() => {
           balances: [],
           address: "",
           isConnected: true,
+          vsUserData: null,
+          lmUserData: null,
         },
       },
     },
