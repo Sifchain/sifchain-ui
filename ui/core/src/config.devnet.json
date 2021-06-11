@@ -1,8 +1,8 @@
 {
   "sifAddrPrefix": "sif",
-  "sifApiUrl": "https://api-devnet.sifchain.finance/",
+  "sifApiUrl": "https://api-devnet.sifchain.finance",
   "sifWsUrl": "wss://rpc-devnet.sifchain.finance/websocket",
-  "sifRpcUrl": "https://rpc-devnet.sifchain.finance/",
+  "sifRpcUrl": "https://rpc-devnet.sifchain.finance",
   "sifChainId": "sifchain-devnet",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
