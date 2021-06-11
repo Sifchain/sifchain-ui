@@ -126,9 +126,15 @@ async function getClaimsData(
   address: string,
   type: "LiquidityMining" | "ValidatorSubsidy",
 ) {
-  return (
-    await (await fetch(`${apiUrl}dispensation/getClaims?type=${type}`)).json()
-  ).result.find((item: any) => {
+  const data = await (
+    await fetch(`${apiUrl}/dispensation/getClaims?type=${type}`)
+  ).json();
+
+  if (!data.result) {
+    return false;
+  }
+
+  return data.result.find((item: any) => {
     return item.user_address === address;
   });
 }
@@ -154,7 +160,6 @@ export async function getExistingClaimsData(
     address.value,
     "ValidatorSubsidy",
   );
-
   return {
     lm: lmClaimData || false,
     vs: vsClaimData || false,
