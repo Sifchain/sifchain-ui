@@ -36,6 +36,22 @@ export class KeplrPage {
     await this.page.click("text=Done");
     // await this.page.close();
   }
+
+  async setKeplrRouteOverrides() {
+    // This broke my test locally, so mocked it out
+    // May be worth expanding upon this to rm all internet fetches
+    await page.route(
+      "https://api.coingecko.com/api/v3/simple/price?ids=cosmos&vs_currencies=usd",
+      (route) => {
+        route.fulfill({
+          contentType: "application/json",
+          headers: { "access-control-allow-origin": "*" },
+          status: 200,
+          body: JSON.stringify({ cosmos: { usd: 12.75 } }),
+        });
+      },
+    );
+  }
 }
 
 export const keplrPage = new KeplrPage();
