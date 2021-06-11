@@ -19,7 +19,7 @@ beforeAll(async () => {
   // exposing "context" object globally
   context = await chromium.launchPersistentContext(userDataDir, {
     // headless required with extensions. xvfb used for ci/cd
-    devtools: true,
+    // devtools: true,
     headless: false,
     args: [
       `--disable-extensions-except=${pathToKeplrExtension},${pathToMmExtension}`,
