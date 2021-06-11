@@ -6,9 +6,14 @@
     <div class="ask-body">
       <slot name="body"></slot>
     </div>
-    <SifButton block primary class="confirm-btn" @click="$emit('confirmed')">{{
-      confirmButtonText
-    }}</SifButton>
+    <SifButton
+      block
+      primary
+      class="confirm-btn"
+      data-handle="confirm-button"
+      @click="$emit('confirmed')"
+      >{{ confirmButtonText }}</SifButton
+    >
   </div>
 </template>
 

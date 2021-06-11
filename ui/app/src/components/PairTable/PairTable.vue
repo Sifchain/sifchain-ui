@@ -26,10 +26,10 @@ export default defineComponent({
     <table class="pair-table" border="1">
       <tr v-for="item in items" :key="item.key">
         <td>{{ item.key }}</td>
-        <td v-if="item.type === 'date'" class="mr-5">
+        <td v-if="item.type === 'date'" class="mr-5" data-handle="date">
           {{ new Date(item.value).toLocaleString() }}
         </td>
-        <td v-else class="token">
+        <td v-else class="token" data-handle="token">
           {{ format(item.value, { mantissa: 4 }) }}
           <AssetItem symbol="Rowan" class="ml-3" :label="false" />
         </td>

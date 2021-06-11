@@ -217,13 +217,14 @@ export default {
                         <br /><br />
                       </div>
                       This is your estimated projected full reward amount that
-                      you can earn if you were to leave your current liquidity
+                      you can earn if you were to leave your current
+                      {{ claimType === "lm" ? "liquidity" : "stake" }}
                       positions in place to the above mentioned date. This
-                      includes projected future rewards, and already
-                      claimed/disbursed previous rewards. This number can
-                      fluctuate due to other market conditions and this number
-                      is a representation of the current market as it is in this
-                      very moment.
+                      includes your projected future rewards, and excludes your
+                      already disbursed amounts. This number can fluctuate due
+                      to other market conditions and this number is a
+                      representation of the current market as it is in this very
+                      moment.
                     </div>
                   </template>
                   <Icon icon="info-box-black" />
@@ -250,6 +251,7 @@ export default {
               :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${claimType}`"
               >More Info</a
             >
+
             <SifButton
               @click="$emit('openModal', claimType)"
               :primary="true"

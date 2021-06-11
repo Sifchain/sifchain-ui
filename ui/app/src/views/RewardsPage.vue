@@ -102,6 +102,10 @@ export default defineComponent({
       transactionHash.value = tx.hash;
       transactionState.value = toConfirmState(tx.state); // TODO: align states
       transactionStateMsg.value = tx.memo ?? "";
+      alreadyClaimed.value = await getExistingClaimsData(
+        address,
+        config.sifApiUrl,
+      );
     }
 
     const computedPairPanel = computed(() => {
@@ -217,9 +221,15 @@ export default defineComponent({
 
         <template v-slot:common>
           <p class="text--normal" data-handle="confirmation-wait-message">
-            {{ claimType === "lm" ? "Liquidity Mining" : "Validator Subsidy" }}
+            <span :data-handle="claimType + '-claim-type'">
+              {{
+                claimType === "lm" ? "Liquidity Mining" : "Validator Subsidy"
+              }}</span
+            >
             Rewards <br /><br />
-            Claim {{ computedPairPanel[0].value }} Rowan
+            <span :data-handle="claimType + '-claim-value'">
+              Claim {{ computedPairPanel[0].value }} Rowan</span
+            >
           </p>
         </template>
       </ConfirmationModal>
