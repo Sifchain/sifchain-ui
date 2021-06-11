@@ -465,7 +465,7 @@ it("claims liquidity mining rewards", async () => {
   await rewardsPage.verifyTx({
     type: "lm",
     claimableAmountNumber: "200.0000",
-    maturityDate: "10/8/2021, 5:48:43 AM",
+    maturityDate: new Date("10/8/2021, 5:48:43 AM").toLocaleString(),
   });
 
   await rewardsPage.clickClaimOnConfirmation();
