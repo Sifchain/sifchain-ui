@@ -1,6 +1,6 @@
-import { ApiContext } from "../api";
+import { ServiceContext } from "../services";
 import { Asset, Network } from "../entities";
-import { getMetamaskProvider } from "../api/EthereumService/utils/getMetamaskProvider";
+import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
 
 type TokenConfig = {
   symbol: string;
@@ -85,6 +85,7 @@ export type ChainConfig = {
   sifWsUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
+  cryptoeconomicsUrl: string;
   web3Provider: "metamask" | string;
   // assets: AssetConfig[];
   nativeAsset: string; // symbol
@@ -96,7 +97,10 @@ export function parseAssets(configAssets: AssetConfig[]): Asset[] {
   return configAssets.map(parseAsset);
 }
 
-export function parseConfig(config: ChainConfig, assets: Asset[]): ApiContext {
+export function parseConfig(
+  config: ChainConfig,
+  assets: Asset[],
+): ServiceContext {
   const nativeAsset = assets.find((a) => a.symbol === config.nativeAsset);
 
   if (!nativeAsset)
@@ -124,6 +128,7 @@ export function parseConfig(config: ChainConfig, assets: Asset[]): ApiContext {
     sifWsUrl: config.sifWsUrl,
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
+    cryptoeconomicsUrl: config.cryptoeconomicsUrl,
     getWeb3Provider:
       config.web3Provider === "metamask"
         ? getMetamaskProvider

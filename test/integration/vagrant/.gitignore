@@ -1,6 +1,0 @@
-/vagrantenv.sh
-/.vagrant/
-/.depend/
-/data/
-/datafiles*tar.gz
-/.goBuild

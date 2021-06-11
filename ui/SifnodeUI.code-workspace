@@ -1,25 +1,21 @@
 {
-	"folders": [
-		{
-			"name": "app",
-			"path": "./app"
-		},
-		{
-			"name": "core",
-			"path": "./core"
-		},
-		{
-			"name": "chains",
-			"path": "./chains"
-		},
-		{
-			"name": "root",
-			"path": "../"
-		},
-		{
-			"name": "ui",
-			"path": "."
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "name": "root",
+      "path": "../"
+    },
+    {
+      "name": "app",
+      "path": "./app"
+    },
+    {
+      "name": "core",
+      "path": "./core"
+    },
+    {
+      "name": "ui",
+      "path": "."
+    }
+  ],
+  "settings": {}
 }

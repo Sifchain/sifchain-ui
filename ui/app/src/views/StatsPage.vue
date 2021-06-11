@@ -1,9 +1,9 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useCore } from "@/hooks/useCore";
-import Layout from "@/components/layout/Layout.vue";
-import PoolStatsList from "@/components/poolStats/PoolStatsList.vue";
-import PoolStatsListHeader from "@/components/poolStats/PoolStatsListHeader.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import PoolStatsList from "@/components/PoolStats/PoolStatsList.vue";
+import PoolStatsListHeader from "@/components/PoolStats/PoolStatsListHeader.vue";
 
 export default defineComponent({
   components: {
@@ -24,18 +24,16 @@ export default defineComponent({
     const json = await data.json();
     this.poolData = json.body;
 
-    const params = new URLSearchParams();
-    const DEFAULT_ADDRESS = "sif100snz8vss9gqhchg90mcgzkjaju2k76y7h9n6d";
+    const { services } = useCore();
 
-    params.set("address", DEFAULT_ADDRESS);
-    params.set("key", "userData");
-    params.set("timestamp", "now");
-    const lmRes = await fetch(
-      `https://api-cryptoeconomics.sifchain.finance/api/lm?${params.toString()}`,
-    );
-    const lmJson = await lmRes.json();
+    const lmJson: any = await services.cryptoeconomics.fetchData({
+      rewardType: "lm",
+      address: "sif100snz8vss9gqhchg90mcgzkjaju2k76y7h9n6d",
+      key: "userData",
+      timestamp: "now",
+    });
 
-    this.liqAPY = lmJson.user.currentAPYOnTickets * 100;
+    this.liqAPY = lmJson ? lmJson.user.currentAPYOnTickets * 100 : 0;
   },
 });
 </script>

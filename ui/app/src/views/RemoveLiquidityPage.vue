@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
-import Layout from "@/components/layout/Layout.vue";
-import { useWalletButton } from "@/components/wallet/useWalletButton";
+import Layout from "@/components/Layout/Layout.vue";
+import { useWalletButton } from "@/components/WithWallet/useWalletButton";
 import {
   Asset,
   LiquidityProvider,
@@ -11,13 +11,13 @@ import {
 import { useCore } from "@/hooks/useCore";
 import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
-import Slider from "@/components/shared/Slider.vue";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import AssetItem from "@/components/AssetItem/AssetItem.vue";
+import Slider from "@/components/Slider/Slider.vue";
 import { toConfirmState } from "./utils/toConfirmState";
 import { ConfirmState } from "@/types";
-import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
-import DetailsPanelRemove from "@/components/shared/DetailsPanelRemove.vue";
+import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import DetailsPanelRemove from "@/components/DetailsPanelRemove/DetailsPanelRemove.vue";
 
 export default defineComponent({
   components: {
@@ -29,7 +29,7 @@ export default defineComponent({
     DetailsPanelRemove,
   },
   setup() {
-    const { store, actions, poolFinder, api } = useCore();
+    const { store, usecases, poolFinder, services } = useCore();
     const route = useRoute();
     const router = useRouter();
     const transactionState = ref<ConfirmState>("selecting");
@@ -50,12 +50,14 @@ export default defineComponent({
 
     effect(() => {
       if (!externalAssetSymbol.value) return null;
-      api.ClpService.getLiquidityProvider({
-        symbol: externalAssetSymbol.value,
-        lpAddress: store.wallet.sif.address,
-      }).then((liquidityProviderResult) => {
-        liquidityProvider.value = liquidityProviderResult;
-      });
+      services.clp
+        .getLiquidityProvider({
+          symbol: externalAssetSymbol.value,
+          lpAddress: store.wallet.sif.address,
+        })
+        .then((liquidityProviderResult) => {
+          liquidityProvider.value = liquidityProviderResult;
+        });
     });
 
     // if these values change, recalculate state and asset amounts
@@ -120,7 +122,7 @@ export default defineComponent({
           return;
 
         transactionState.value = "signing";
-        const tx = await actions.clp.removeLiquidity(
+        const tx = await usecases.clp.removeLiquidity(
           Asset.get(externalAssetSymbol.value),
           wBasisPoints.value,
           asymmetry.value,

@@ -2,45 +2,26 @@
 import { computed, defineComponent, watch, onMounted } from "vue";
 import { ref, ComputedRef } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { getCryptoeconomicsUrl } from "@/components/shared/utils";
-import Layout from "@/components/layout/Layout.vue";
-import SifButton from "@/components/shared/SifButton.vue";
-import AssetItem from "@/components/shared/AssetItem.vue";
-import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
-import Box from "@/components/shared/Box.vue";
-import { Copy, SubHeading } from "@/components/shared/Text";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
-import Modal from "@/components/shared/Modal.vue";
-import ModalView from "@/components/shared/ModalView.vue";
-import PairTable from "@/components/shared/PairTable.vue";
-import Tooltip from "@/components/shared/Tooltip.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import { Copy } from "@/components/Text";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import Modal from "@/components/Modal/Modal.vue";
+import ModalView from "@/components/ModalView/ModalView.vue";
+import PairTable from "@/components/PairTable/PairTable.vue";
 import { ConfirmState } from "@/types";
-import { format } from "ui-core/src/utils/format";
-import Loader from "@/components/shared/Loader.vue";
-
-const REWARD_INFO = {
-  lm: {
-    label: "Liquidity Mining",
-    description:
-      "Earn additional rewards by providing liquidity to any of Sifchain's pools.",
-  },
-  vs: {
-    label: "Validator Subsidy",
-    description:
-      "Earn additional rewards by staking a node or delegating to a staked node.",
-  },
-};
+import RewardContainer from "@/components/RewardContainer/RewardContainer.vue";
 
 async function getLMData(address: ComputedRef<any>, chainId: string) {
   if (!address.value) return;
-  const ceUrl = getCryptoeconomicsUrl(chainId);
-  const data = await fetch(
-    `${ceUrl}/lm/?key=userData&address=${address.value}&timestamp=now`,
-  );
-  if (data.status !== 200) return {};
-  const parsedData = await data.json();
-  if (!parsedData.user || !parsedData.user.claimableReward) {
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "lm",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+  });
+  if (!parsedData?.user) {
     return {};
   }
   return parsedData.user;
@@ -48,49 +29,29 @@ async function getLMData(address: ComputedRef<any>, chainId: string) {
 
 async function getVSData(address: ComputedRef<any>, chainId: string) {
   if (!address.value) return;
-  // const timestamp = Date.parse(new Date().toString());
-  const ceUrl = getCryptoeconomicsUrl(chainId);
-  const data = await fetch(
-    `${ceUrl}/vs/?key=userData&address=${address.value}&timestamp=now`,
-  );
-  if (data.status !== 200) return null;
-  const parsedData = await data.json();
-  // TODO - VS endpoint does not return the same thing as LM endpoint so
-  // mocking the data in the interim;
-  return {
-    claimableReward: 1133.5803574233153,
-    claimed: 1133.5803574233153,
-    dispensed: 0,
-    forfeited: 2820.4719248996316,
-    maturityDate: "June 12th 2021, 11:19:14 am",
-    nextRewardShare: 0,
-    reservedReward: 1133.5803574233153,
-    ticketAmountAtMaturity: 0,
-    tickets: [],
-    totalRewardAtMaturity: 1133.5803574233153,
-    totalTickets: 0,
-    yieldAtMaturity: null,
-  };
-  // if (!parsedData.user.claimableReward) return null;
-  // return parsedData.user;
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "vs",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+  });
+  if (!parsedData?.user) {
+    return {};
+  }
+  return parsedData.user;
 }
 
 export default defineComponent({
   components: {
     Layout,
-    SifButton,
-    AssetItem,
     ActionsPanel,
     Copy,
-    SubHeading,
-    Box,
     Modal,
     ModalView,
     PairTable,
-    Tooltip,
-    Icon,
     ConfirmationModal,
-    Loader,
+    RewardContainer,
   },
   methods: {
     openClaimModal() {
@@ -102,6 +63,9 @@ export default defineComponent({
     claimRewards() {
       alert("claim logic/keplr goes here");
     },
+    handleOpenModal(type: string) {
+      console.log("type", type);
+    },
   },
   data() {
     return {
@@ -111,7 +75,7 @@ export default defineComponent({
     };
   },
   setup() {
-    const { store, actions, config } = useCore();
+    const { store, config } = useCore();
     const address = computed(() => store.wallet.sif.address);
     const transactionState = ref<ConfirmState | string>("confirming");
     const transactionStateMsg = ref<string>("");
@@ -120,20 +84,16 @@ export default defineComponent({
     // TODO - We can do this better later
     let lmRewards = ref<any>();
     let vsRewards = ref<any>();
-    let loadingVs = ref<Boolean>(true);
+    let loadingVs = ref<boolean>(true);
 
     watch(address, async () => {
       lmRewards.value = await getLMData(address, config.sifChainId);
-      // loadingVs.value = true;
-      // vsRewards.value = await getVSData(address, config.sifChainId);
-      // loadingVs.value = false;
+      vsRewards.value = await getVSData(address, config.sifChainId);
     });
 
     onMounted(async () => {
       lmRewards.value = await getLMData(address, config.sifChainId);
-      // loadingVs.value = true;
-      // vsRewards.value = await getVSData(address, config.sifChainId);
-      // loadingVs.value = false;
+      vsRewards.value = await getVSData(address, config.sifChainId);
     });
 
     async function handleAskConfirmClicked() {
@@ -179,10 +139,8 @@ export default defineComponent({
     return {
       lmRewards,
       vsRewards,
-      REWARD_INFO,
       computedLMPairPanel,
       computedVSPairPanel,
-      format,
       handleAskConfirmClicked,
       transactionState,
       transactionStateMsg,
@@ -208,214 +166,20 @@ export default defineComponent({
       and how to become eligible.
     </Copy>
     <div class="rewards-container">
-      <!-- TODO make this a component that can also handle VS && DRY ME -->
-      <Box v-if="true">
-        <div class="reward-container">
-          <SubHeading>{{ REWARD_INFO["lm"].label }}</SubHeading>
-          <Copy>
-            {{ REWARD_INFO["lm"].description }}
-          </Copy>
-          <div class="details-container">
-            <Loader v-if="!lmRewards" black />
-
-            <div v-else class="amount-container">
-              <div class="reward-rows">
-                <div class="reward-row">
-                  <div class="row-label">Claimable Rewards</div>
-                  <div class="row-amount">
-                    {{
-                      format(lmRewards.claimableReward - lmRewards.claimed, {
-                        mantissa: 4,
-                      }) || "0"
-                    }}
-                  </div>
-                  <AssetItem symbol="Rowan" :label="false" />
-                </div>
-
-                <div class="reward-row">
-                  <div class="row-label">
-                    Pending Reward Dispensation
-                    <Tooltip>
-                      <template #message>
-                        <div class="tooltip">
-                          Rewards that have been claimed and are pending
-                          dispensation due to removal of liquidity or
-                          user-initiated claims. Pending rewards are dispensed
-                          every Friday once we have the dispensation module up
-                          and running.
-                        </div>
-                      </template>
-                      <Icon icon="info-box-black" />
-                    </Tooltip>
-                  </div>
-                  <div class="row-amount">
-                    {{
-                      format(lmRewards.claimed - lmRewards.dispensed, {
-                        mantissa: 4,
-                      }) || "0"
-                    }}
-                  </div>
-                  <AssetItem symbol="Rowan" :label="false" />
-                </div>
-
-                <div class="reward-row">
-                  <div class="row-label">
-                    Dispensed Rewards
-                    <Tooltip>
-                      <template #message>
-                        <div class="tooltip">
-                          Rewards that have already been dispensed.
-                        </div>
-                      </template>
-                      <Icon icon="info-box-black" />
-                    </Tooltip>
-                  </div>
-                  <div class="row-amount">
-                    {{ format(lmRewards.dispensed, { mantissa: 4 }) || "0" }}
-                  </div>
-                  <AssetItem symbol="Rowan" :label="false" />
-                </div>
-
-                <div class="reward-row secondary">
-                  <div class="row-label">
-                    Projected Full Amount
-                    <Tooltip>
-                      <template #message>
-                        <div class="tooltip">
-                          <div v-if="lmRewards.maturityDate">
-                            Projected Full Maturity Date: <br />
-                            <span class="tooltip-date">{{
-                              lmRewards.maturityDate
-                            }}</span>
-                            <span
-                              v-if="lmRewards.nextRewardProjectedAPYOnTickets"
-                            >
-                              Projected Fully Maturated APY: <br />
-                              <span class="tooltip-date">
-                                {{
-                                  format(
-                                    lmRewards.nextRewardProjectedAPYOnTickets *
-                                      100,
-                                    {
-                                      mantissa: 2,
-                                    },
-                                  )
-                                }}%</span
-                              >
-                            </span>
-                            <br /><br />
-                          </div>
-                          This is your estimated projected full reward amount
-                          that you can earn if you were to leave your current
-                          liquidity positions in place to the above mentioned
-                          date. This includes projected future rewards, and
-                          already claimed/disbursed previous rewards. This
-                          number can fluctuate due to other market conditions
-                          and this number is a representation of the current
-                          market as it is in this very moment.
-                        </div>
-                      </template>
-                      <Icon icon="info-box-black" />
-                    </Tooltip>
-                  </div>
-                  <div class="row-amount">
-                    {{
-                      format(lmRewards.totalRewardAtMaturity, {
-                        mantissa: 4,
-                      }) || "0"
-                    }}
-                  </div>
-                  <AssetItem symbol="Rowan" :label="false" />
-                </div>
-              </div>
-              <div class="reward-buttons">
-                <a
-                  class="more-info-button mr-8"
-                  target="_blank"
-                  :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=lm`"
-                  >More Info</a
-                >
-
-                <!-- :disabled="(lmRewards.claimableReward - lmRewards.claimed) === 0" -->
-                <SifButton
-                  @click="openClaimModal"
-                  :primary="true"
-                  :disabled="true"
-                  >Claim</SifButton
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-      </Box>
-
-      <!-- Validator Subsidy -->
-      <Box v-if="vsRewards">
-        <div class="reward-container">
-          <SubHeading>Validator Subsidy</SubHeading>
-          <Copy>
-            Missing copy here. Lorem ipsum dolor sit amet, consectetur
-            adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam.
-          </Copy>
-          <div class="details-container">
-            <div class="amount-container">
-              <div class="reward-rows">
-                <div class="reward-row">
-                  <div class="row-label">Claimable Rewards</div>
-                  <div class="row-amount">
-                    {{
-                      format(lmRewards.claimableReward - lmRewards.claimed, {
-                        mantissa: 4,
-                      })
-                    }}
-                  </div>
-                  <AssetItem symbol="Rowan" :label="false" />
-                </div>
-                <div class="reward-row">
-                  <div class="row-label">
-                    Projected Full Amount
-                    <Tooltip>
-                      <template #message>
-                        <div class="tooltip">
-                          Projected Full Maturity Date: <br />
-                          <span class="tooltip-date">{{
-                            lmRewards.maturityDate
-                          }}</span
-                          ><br /><br />
-                          This is your estimated projected full reward amount
-                          that you can earn if you were to leave your current
-                          liquidity positions in place to the above mentioned
-                          date. This number can fluctuate due to other market
-                          conditions and this number is a representation of the
-                          current market as it is in this very moment.
-                        </div>
-                      </template>
-                      <Icon icon="info-box-black" />
-                    </Tooltip>
-                  </div>
-                  <div class="row-amount">
-                    {{
-                      format(lmRewards.totalRewardAtMaturity, { mantissa: 4 })
-                    }}
-                  </div>
-                  <AssetItem symbol="Rowan" :label="false" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="reward-buttons">
-            <a
-              class="more-info-button mr-8"
-              target="_blank"
-              :href="`https://cryptoeconomics.vercel.app/#${address}&type=lm`"
-              >More Info</a
-            >
-            <SifButton @click="openClaimModal" :primary="true">Claim</SifButton>
-          </div>
-        </div>
-      </Box>
+      <RewardContainer
+        type="lm"
+        :data="lmRewards"
+        :address="address"
+        @openModal="handleOpenModal"
+      />
+      <RewardContainer
+        type="vs"
+        :data="vsRewards"
+        :address="address"
+        @openModal="handleOpenModal"
+      />
     </div>
+
     <ActionsPanel connectType="connectToSif" />
 
     <div v-if="modalOpen">
@@ -479,9 +243,6 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-// TODO - Get variable margin/padding sizes in
-// TODO - Discuss how we should manage positioning
-
 .rewards-container {
   display: flex;
   flex-direction: column;
@@ -492,102 +253,6 @@ export default defineComponent({
   > :nth-child(1) {
     margin-bottom: $margin_medium;
   }
-  .reward-container {
-    flex-direction: column;
-    > :nth-child(1),
-    > :nth-child(2) {
-      margin-bottom: $margin_small;
-    }
-    .amount-container {
-    }
-    .details-container {
-    }
-  }
-  .reward-rows {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-    color: #343434;
-  }
-  .reward-row {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    font-size: $fs;
-    font-weight: 400;
-    &.secondary {
-      color: #818181;
-    }
-    .row-label {
-      flex: 1 1 auto;
-      text-align: left;
-    }
-    .row-amount {
-      width: 100px;
-      text-align: right;
-    }
-    .row {
-      width: 15px;
-      margin-left: 2px;
-    }
-  }
-
-  /* TODO - TEMP - Need to componentize our loaders */
-  .loader-container {
-    margin-top: $margin-large;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .loader {
-    background: url("../../public/images/siflogo.png");
-    background-size: cover;
-    width: 64px;
-    height: 64px;
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
-    transform: scale(1);
-    animation: pulse 1s infinite;
-  }
-  @keyframes pulse {
-    0% {
-      transform: scale(0.85);
-    }
-    70% {
-      transform: scale(1);
-    }
-    100% {
-      transform: scale(0.85);
-    }
-  }
-}
-
-.reward-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  .more-info-button {
-    background: #f3f3f3;
-    color: #343434;
-    font-weight: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .more-info-button,
-  .btn {
-    width: 300px;
-    border-radius: 6px;
-    display: flex;
-    font-size: $fs;
-    height: 30px;
-  }
-  .reward-button {
-    text-align: center;
-  }
-}
-
-.tooltip-date {
-  font-weight: 600;
 }
 
 /* MODAL Styles */

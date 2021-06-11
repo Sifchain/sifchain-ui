@@ -7,14 +7,27 @@ on:
       - "!develop"
       - "!testnet"
       - "!master"
-    paths:
-      - "ui/**"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: "14.x"
+
       - uses: actions/checkout@v2
+
+      - name: Log into registry
+        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Pull instant stack image
+        run: docker pull $(cat ./ui/scripts/latest)
+
+      - name: Extracting ABIs
+        run: cd ./ui && yarn install --frozen-lockfile --silent && yarn stack --setup-only
+
       - uses: amondnet/vercel-action@v20
         with:
           scope: ${{ secrets.TEAM_ID }}
