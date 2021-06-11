@@ -12,10 +12,12 @@ export default ({
   "sif" | "clp" | "bus",
   "pools" | "wallet" | "accountpools"
 >) => {
-  const usecases = {
+  const syncPools = SyncPools(services, store);
+
+  return {
     init() {
       // Sync on load
-      usecases.syncPools().then(() => {
+      syncPools().then(() => {
         effect(() => {
           if (Object.keys(store.pools).length === 0) {
             services.bus.dispatch({
@@ -29,20 +31,18 @@ export default ({
       // Then every transaction
 
       services.sif.onNewBlock(async () => {
-        await usecases.syncPools();
+        await syncPools();
       });
 
       effect(() => {
         // When sif address changes syncPools
         store.wallet.sif.address;
-        usecases.syncPools();
+        syncPools();
       });
     },
     swap: Swap(services),
     addLiquidity: AddLiquidity(services, store),
     removeLiquidity: RemoveLiquidity(services),
-    syncPools: SyncPools(services, store),
+    syncPools,
   };
-
-  return usecases;
 };
