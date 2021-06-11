@@ -197,7 +197,7 @@ export default defineComponent({
             <Copy class="mb-8">
               Are you sure you want to claim your rewards? Claiming your rewards
               will reset all of your tickets at this very moment. Resetting your
-              tickers will release your rewards based on its current multiplier.
+              tickets will release your rewards based on its current multiplier.
               Reset tickets then start empty with a 25% multiplier again and
               will continue to accumulate if within the reward eligibility
               timeframe. Unless you have reached full maturity, we recommend
