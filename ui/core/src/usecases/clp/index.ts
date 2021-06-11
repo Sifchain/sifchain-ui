@@ -8,6 +8,7 @@ import { UsecaseContext } from "..";
 import { PoolStore } from "../../store/pools";
 import { effect } from "@vue/reactivity";
 import { ReportTransactionError } from "../utils";
+import { Swap } from "./swap";
 
 export default ({
   services,
@@ -97,43 +98,7 @@ export default ({
   });
 
   const actions = {
-    async swap(
-      sentAmount: IAssetAmount,
-      receivedAsset: IAsset,
-      minimumReceived: IAssetAmount,
-    ) {
-      if (!state.address) throw "No from address provided for swap";
-
-      const tx = await services.clp.swap({
-        fromAddress: state.address,
-        sentAmount,
-        receivedAsset,
-        minimumReceived,
-      });
-
-      const txStatus = await services.sif.signAndBroadcast(tx.value.msg);
-
-      if (txStatus.state !== "accepted") {
-        // Edge case where we have run out of native balance and need to represent that
-        if (
-          txStatus.code === ErrorCode.TX_FAILED_USER_NOT_ENOUGH_BALANCE &&
-          sentAmount.symbol === "rowan"
-        ) {
-          return reportTransactionError({
-            ...txStatus,
-            code: ErrorCode.TX_FAILED_NOT_ENOUGH_ROWAN_TO_COVER_GAS,
-            memo: getErrorMessage(
-              ErrorCode.TX_FAILED_NOT_ENOUGH_ROWAN_TO_COVER_GAS,
-            ),
-          });
-        }
-
-        return reportTransactionError(txStatus);
-      }
-
-      return txStatus;
-    },
-
+    swap: Swap(services),
     async addLiquidity(
       nativeAssetAmount: IAssetAmount,
       externalAssetAmount: IAssetAmount,
