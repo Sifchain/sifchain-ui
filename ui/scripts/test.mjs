@@ -27,10 +27,21 @@ Options:
 `,
 );
 
-async function runCoreTests(tag, isUnit, isIntegration, isWatch, rest) {
+async function runCoreTests(
+  tag = "develop",
+  isUnit,
+  isIntegration,
+  isWatch,
+  rest,
+) {
   const core = resolve(__dirname, "../core");
 
-  await setupStack(tag);
+  // Idea here is to avoid doing any docker things when we are only running unit tests
+  if (
+    isIntegration ||
+    (typeof isIntegration === "undefined" && typeof isUnit === "undefined")
+  )
+    await setupStack(tag);
 
   // Set the env var to run against a specific tag
   if (tag) process.env.STACK_TAG = tag;
@@ -49,7 +60,7 @@ async function runCoreTests(tag, isUnit, isIntegration, isWatch, rest) {
 }
 
 await runCoreTests(
-  args["--tag"],
+  args["--tag"] || "develop",
   args["--unit"],
   args["--integration"],
   args["--watch"],

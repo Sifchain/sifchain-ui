@@ -30,6 +30,7 @@ Options:
 );
 
 const isDebug = args["--debug"];
+const tagName = args["--tag"] || "develop";
 
 // Only run test script
 if (isDebug) {
@@ -66,4 +67,4 @@ try {
 }
 
 // Run server and test script concurrently
-await race(serveBuiltApp(), runTests(args["--tag"]));
+await race(serveBuiltApp(), runTests(tagName));
