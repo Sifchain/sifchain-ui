@@ -3,6 +3,7 @@ import {
   CryptoeconomicsRewardType,
   CryptoeconomicsUserData,
 } from "../../services/CryptoeconomicsService";
+import { Claim } from "./claim";
 
 export const BLOCK_TIME_MS = 1000 * 60 * 200;
 
@@ -88,10 +89,6 @@ export default function rewardActions({
       }
       return () => {};
     },
-    async claim(params: { claimType: "2" | "3"; fromAddress: string }) {
-      if (!store.wallet.sif.address) throw "No from address provided for swap";
-      const tx = await services.dispensation.claim(params);
-      return await services.sif.signAndBroadcast(tx.value.msg);
-    },
+    claim: Claim(services),
   };
 }
