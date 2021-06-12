@@ -16,7 +16,7 @@ export class RewardsPage {
       claimConfirmationButton: "[data-handle='confirm-button']",
       closeXButton: '[data-handle="modal-view-close"]',
       cryptoEconRoute:
-        "https://api-cryptoeconomics-devnet.sifchain.finance/api/lm/?key=userData&address=sif1m625hcmnkc84cgmef6upzzyfu6mxd4jkpnfwwl&timestamp=now&snapshot-source=devnet",
+        "http://localhost:3000/api/lm?address=sif1m625hcmnkc84cgmef6upzzyfu6mxd4jkpnfwwl&key=userData&timestamp=now&snapshot-source=testnet",
       getClaimsRoute:
         "http://127.0.0.1:1317/dispensation/getClaims?type=LiquidityMining",
     };

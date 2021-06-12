@@ -49,4 +49,71 @@ claimTests.forEach(({ rewardType }) => {
       fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
     });
   });
+
+  test(`make ${rewardType} claim`, async () => {
+    claim.mockReturnValue(
+      Promise.resolve({
+        type: "cosmos-sdk/StdTx",
+        value: {
+          msg: [
+            {
+              type: "dispensation/claim",
+              value: {
+                user_claim_address:
+                  "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
+                user_claim_type: "2",
+              },
+            },
+          ],
+        },
+      }),
+    );
+    signAndBroadcast.mockReturnValue(
+      Promise.resolve({
+        logs: [
+          {
+            msg_index: 0,
+            log: "",
+            events: [
+              {
+                type: "message",
+                attributes: [
+                  {
+                    key: "action",
+                    value: "createClaim",
+                  },
+                ],
+              },
+              {
+                type: "userClaim_new",
+                attributes: [
+                  {
+                    key: "userClaim_creator",
+                    value: "sif1m625hcmnkc84cgmef6upzzyfu6mxd4jkpnfwwl",
+                  },
+                  {
+                    key: "userClaim_type",
+                    value: "LiquidityMining",
+                  },
+                  {
+                    key: "userClaim_creationTime",
+                    value: "2021-06-12 08:10:48.226557 +0000 UTC",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        rawLog:
+          '[{"msg_index":0,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"createClaim"}]},{"type":"userClaim_new","attributes":[{"key":"userClaim_creator","value":"sif1m625hcmnkc84cgmef6upzzyfu6mxd4jkpnfwwl"},{"key":"userClaim_type","value":"LiquidityMining"},{"key":"userClaim_creationTime","value":"2021-06-12 08:10:48.226557 +0000 UTC"}]}]}]',
+        transactionHash:
+          "8A8B45638B92106DA7691093224CB276736D4CB93EF826567F983298228ABA6C",
+      }),
+    );
+    const claimFn = Claim(services);
+    await claimFn({
+      claimType: "2",
+      fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
+    });
+  });
 });
