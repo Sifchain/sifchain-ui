@@ -16,6 +16,8 @@ let rewardActions: ReturnType<typeof createActions>;
 let dispatch = jest.fn();
 let mockStorage: any;
 let mockCryptoeconomicsData: any;
+let mockDispensationService: any;
+let mockSifService: any;
 
 beforeEach(() => {
   mockCryptoeconomicsService = {
