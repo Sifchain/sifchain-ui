@@ -12,6 +12,8 @@ import { IWalletService } from "../../services/IWalletService";
 let mockCryptoeconomicsService: any;
 let mockEventBusService: any;
 let mockStore: any;
+let mockSifService: any;
+let mockDispensationService: any;
 let rewardActions: ReturnType<typeof createActions>;
 let dispatch = jest.fn();
 let mockStorage: any;
@@ -43,6 +45,8 @@ beforeEach(() => {
         getItem: (key: string) => mockStorage.get(key),
         setItem: (key: string, value: string) => mockStorage.set(key, value),
       },
+      dispensation: mockDispensationService,
+      sif: mockSifService,
     },
     store: mockStore,
   });
