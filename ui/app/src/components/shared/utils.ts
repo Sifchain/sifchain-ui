@@ -2,6 +2,7 @@ import { computed, Ref, ComputedRef } from "@vue/reactivity";
 import ColorHash from "color-hash";
 import { Asset, IAssetAmount, Network, toBaseUnits, TxHash } from "ui-core";
 import { format } from "ui-core/src/utils/format";
+import { useCore } from "@/hooks/useCore";
 
 export function formatSymbol(symbol: string) {
   if (symbol.indexOf("c") === 0) {
@@ -83,23 +84,17 @@ export function useAssetItem(symbol: Ref<string | undefined>) {
   };
 }
 
-// Note: This is new CE pattern https://github.com/Sifchain/cryptoeconomics/pull/57
-function getParsedChainId(chainId: string) {
-  return chainId === "sifchain" ? "mainnet" : "devnet";
-}
-
 export async function getLMData(address: ComputedRef<any>, chainId: string) {
   if (!address.value) return;
-  const ceUrl = getCryptoeconomicsUrl(chainId);
-  const data = await fetch(
-    `${ceUrl}/lm/?key=userData&address=${
-      address.value
-    }&timestamp=now&snapshot-source=${getParsedChainId(chainId)}`,
-  );
-  if (data.status !== 200) return {};
-  const parsedData = await data.json();
-
-  if (!parsedData.user || !parsedData.user) {
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "lm",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+    snapShotSource: chainId === "sifchain" ? "mainnet" : "testnet",
+  });
+  if (!parsedData?.user) {
     return {};
   }
   return parsedData.user;
@@ -107,15 +102,15 @@ export async function getLMData(address: ComputedRef<any>, chainId: string) {
 
 export async function getVSData(address: ComputedRef<any>, chainId: string) {
   if (!address.value) return;
-  const ceUrl = getCryptoeconomicsUrl(chainId);
-  const data = await fetch(
-    `${ceUrl}/vs/?key=userData&address=${
-      address.value
-    }&timestamp=now&snapshot-source=${getParsedChainId(chainId)}`,
-  );
-  if (data.status !== 200) return {};
-  const parsedData = await data.json();
-  if (!parsedData.user || !parsedData.user) {
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "vs",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+    snapShotSource: chainId === "sifchain" ? "mainnet" : "testnet",
+  });
+  if (!parsedData?.user) {
     return {};
   }
   return parsedData.user;
@@ -177,19 +172,6 @@ export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
     default:
       if (!txHash) return "https://blockexplorer-devnet.sifchain.finance/";
       return `https://blockexplorer-devnet.sifchain.finance/transactions/${txHash}`;
-  }
-}
-
-export function getCryptoeconomicsUrl(chainId: string): string {
-  switch (chainId) {
-    case "sifchain":
-      return `https://api-cryptoeconomics.sifchain.finance/api`;
-    case "sifchain-testnet":
-      return `https://api-cryptoeconomics-devnet.sifchain.finance/api`;
-    // case "sifchain-local":
-    //   return `http://localhost:3000/api`; // sifnode/cryptoeconomics/js/server
-    default:
-      return `https://api-cryptoeconomics-devnet.sifchain.finance/api`;
   }
 }
 

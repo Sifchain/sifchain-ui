@@ -1,7 +1,6 @@
 import { IAsset } from "../../entities";
 
 import { SifUnSignedClient } from "../utils/SifClient";
-import { toPool } from "../utils/SifClient/toPool";
 
 export type IDispensationServiceContext = {
   nativeAsset: IAsset;
@@ -15,11 +14,6 @@ export type IDispensationServiceContext = {
 type IDispensationService = {
   claim: (params: { claimType: "2" | "3"; fromAddress: string }) => any;
 };
-
-// TS not null type guard
-function notNull<T>(val: T | null): val is T {
-  return val !== null;
-}
 
 export default function createDispensationService({
   sifApiUrl,

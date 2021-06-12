@@ -9,4 +9,22 @@ export function useInitialize() {
     computed(() => store.wallet.eth.address), // Needs a ref
     usecases.peg.subscribeToUnconfirmedPegTxs,
   );
+
+  useSubscription(
+    computed(() => store.wallet.sif.address),
+    () => usecases.reward.subscribeToRewardData("vs"),
+  );
+  useSubscription(
+    computed(() => store.wallet.sif.address),
+    () => usecases.reward.subscribeToRewardData("lm"),
+  );
+
+  useSubscription(
+    computed(() => store.wallet.sif.lmUserData),
+    usecases.reward.notifyLmMaturity,
+  );
+  useSubscription(
+    computed(() => store.wallet.sif.vsUserData),
+    usecases.reward.notifyVsMaturity,
+  );
 }

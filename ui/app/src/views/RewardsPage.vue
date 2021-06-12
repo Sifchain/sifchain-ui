@@ -3,8 +3,8 @@ import { computed, defineComponent, watch, onMounted } from "vue";
 import { ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import {
-  getVSData,
   getLMData,
+  getVSData,
   getExistingClaimsData,
   IHasClaimed,
 } from "@/components/shared/utils";
@@ -44,7 +44,6 @@ export default defineComponent({
       this.transactionState = "selecting";
     },
     handleOpenModal(type: IClaimType) {
-      console.log("type", type);
       this.claimType = type;
       this.openClaimModal();
     },
@@ -73,21 +72,21 @@ export default defineComponent({
     let claimType = ref<IClaimType>(null);
 
     watch(address, async () => {
-      lmRewards.value = await getLMData(address, config.sifChainId);
-      vsRewards.value = await getVSData(address, config.sifChainId);
       alreadyClaimed.value = await getExistingClaimsData(
         address,
         config.sifApiUrl,
       );
+      lmRewards.value = await getLMData(address, config.sifChainId);
+      vsRewards.value = await getVSData(address, config.sifChainId);
     });
 
     onMounted(async () => {
-      lmRewards.value = await getLMData(address, config.sifChainId);
-      vsRewards.value = await getVSData(address, config.sifChainId);
       alreadyClaimed.value = await getExistingClaimsData(
         address,
         config.sifApiUrl,
       );
+      lmRewards.value = await getLMData(address, config.sifChainId);
+      vsRewards.value = await getVSData(address, config.sifChainId);
     });
 
     async function handleAskConfirmClicked() {
@@ -95,7 +94,7 @@ export default defineComponent({
         return console.error("No claim type");
       }
       transactionState.value = "signing";
-      const tx = await usecases.dispensation.claim({
+      const tx = await usecases.reward.claim({
         fromAddress: address.value,
         claimType: claimTypeMap[claimType.value] as "2" | "3",
       });
