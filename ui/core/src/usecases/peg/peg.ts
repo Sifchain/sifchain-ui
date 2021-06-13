@@ -16,15 +16,19 @@ type PegServices = {
 
 type PegStore = Pick<Store, "wallet" | "tx">;
 
-export type PegStartedEvent = { type: "started" };
+export type PegApproveStartedEvent = { type: "approve_started" };
 export type PegApprovedEvent = { type: "approved" };
 export type PegSentEvent = { type: "sent"; tx: TransactionStatus };
 export type PegTxError = { type: "tx_error"; tx: TransactionStatus };
+export type PegApproveError = { type: "approve_error" };
+export type PegSigningEvent = { type: "signing" };
 export type PegEvent =
-  | PegStartedEvent
+  | PegApproveStartedEvent
   | PegApprovedEvent
+  | PegSigningEvent
   | PegSentEvent
-  | PegTxError;
+  | PegTxError
+  | PegApproveError;
 
 export function Peg(
   services: PegServices,
@@ -34,9 +38,7 @@ export function Peg(
 ) {
   return async function* peg(
     assetAmount: IAssetAmount,
-  ): AsyncGenerator<PegEvent, PegEvent> {
-    yield { type: "started" } as PegStartedEvent;
-
+  ): AsyncGenerator<PegEvent> {
     if (
       assetAmount.asset.network === Network.ETHEREUM &&
       !isSupportedEVMChain(store.wallet.eth.chainId)
@@ -53,13 +55,23 @@ export function Peg(
           hash: "",
           state: "failed",
         },
-      } as PegTxError;
+      };
     }
 
-    const address = store.wallet.eth.address;
-    await services.ethbridge.approveBridgeBankSpend(address, assetAmount);
+    if (assetAmount.symbol !== "eth") {
+      yield { type: "approve_started" };
+      const address = store.wallet.eth.address;
+      try {
+        await services.ethbridge.approveBridgeBankSpend(address, assetAmount);
+      } catch (err) {
+        return yield {
+          type: "approve_error",
+        };
+      }
+      yield { type: "approved" };
+    }
 
-    yield { type: "approved" };
+    yield { type: "signing" };
 
     const subscribeToTx = SubscribeToTx({ services, store });
 
@@ -68,15 +80,17 @@ export function Peg(
       : services.ethbridge.lockToSifchain;
 
     const tx = await new Promise<TransactionStatus>((done) => {
+      console.log("getting tx from lockburn");
       const pegTx = lockOrBurnFn(
         store.wallet.sif.address,
         assetAmount,
         config.ethConfirmations,
       );
-
+      console.log({ pegTx });
       subscribeToTx(pegTx);
 
       pegTx.onTxHash((hash) => {
+        console.log("onTxHash:" + hash);
         done({
           hash: hash.txHash,
           memo: "Transaction Accepted",
@@ -85,6 +99,6 @@ export function Peg(
       });
     });
 
-    return { type: "sent", tx } as PegSentEvent;
+    yield { type: "sent", tx };
   };
 }

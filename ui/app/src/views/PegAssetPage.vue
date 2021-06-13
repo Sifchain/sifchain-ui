@@ -99,11 +99,15 @@ export default defineComponent({
       const assetAmount = AssetAmount(asset, toBaseUnits(amount.value, asset));
 
       for await (const event of usecases.peg.peg(assetAmount)) {
+        console.log({ event });
         switch (event.type) {
-          case "started":
+          case "approve_started":
             transactionState.value = "approving";
             break;
-          case "approved":
+          case "approve_error":
+            transactionState.value = "rejected";
+            break;
+          case "signing":
             transactionState.value = "signing";
             break;
           case "sent":
