@@ -116,6 +116,7 @@ export default defineComponent({
         }
       }
     }
+
     async function handleUnpegRequested() {
       transactionState.value = "signing";
       const asset = Asset.get(symbol.value);
