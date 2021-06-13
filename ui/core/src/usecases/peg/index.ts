@@ -1,5 +1,4 @@
 import { UsecaseContext } from "..";
-import { Address, IAssetAmount } from "../../entities";
 import { calculateUnpegFee } from "./utils/calculateUnpegFee";
 import { SubscribeToUnconfirmedPegTxs } from "./subscribeToUnconfirmedPegTxs";
 import { Unpeg } from "./unpeg";
@@ -10,13 +9,7 @@ import { Peg } from "./peg";
  */
 export type PegConfig = { ethConfirmations: number };
 
-export default ({
-  services,
-  store,
-}: UsecaseContext<
-  "sif" | "ethbridge" | "bus" | "eth", // Select the services you want to access
-  "wallet" | "tx" // Select the store keys you want to access
->) => {
+export default ({ services, store }: UsecaseContext) => {
   const config: PegConfig = {
     // listen for 50 confirmations
     // Eventually this should be set on ebrelayer
