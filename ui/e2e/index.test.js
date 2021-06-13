@@ -52,7 +52,7 @@ beforeAll(async () => {
 
   await metamaskPage.navigate();
   await metamaskPage.setup();
-  await keplrPage.setKeplrRouteOverrides();
+  // await keplrPage.setKeplrRouteOverrides();
   await keplrPage.navigate();
   await keplrPage.setup();
   // goto dex page
@@ -465,7 +465,7 @@ it("claims liquidity mining rewards", async () => {
   await rewardsPage.verifyTx({
     type: "lm",
     claimableAmountNumber: "200.0000",
-    maturityDate: new Date("2021-10-08T12:48:43.000Z").toLocaleString(),
+    maturityDate: "10/8/2021, 10:48:43 PM",
   });
 
   await rewardsPage.clickClaimOnConfirmation();
