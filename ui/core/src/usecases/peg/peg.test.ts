@@ -2,7 +2,7 @@ import { AssetAmount } from "../../entities";
 import { getTestingTokens } from "../../test/utils/getTestingToken";
 import { Peg, PegEvent, PegSentEvent } from "./peg";
 
-const [ETH] = getTestingTokens(["ETH"]);
+const [ETH, ATK] = getTestingTokens(["ETH", "ATK"]);
 
 function createPeg() {
   let ethbridge = {
@@ -28,32 +28,73 @@ function createPeg() {
 }
 
 describe("Peg", () => {
-  describe("when happy", () => {
+  describe("when pegging eth", () => {
     it("should peg transactions", async () => {
+      let amount = AssetAmount(ETH, "10");
       const { peg, ethbridge } = createPeg();
-      const amount = AssetAmount(ETH, "10");
-
       const iter = peg(amount);
 
       let packet: IteratorResult<PegEvent, PegEvent>;
 
       packet = await iter.next();
 
-      expect(packet.value.type).toBe("started");
-
-      // Approved
-      packet = await iter.next();
-
-      expect(packet.value.type).toBe("approved");
-      expect(ethbridge.approveBridgeBankSpend).toBeCalledWith("eth123", amount);
+      expect(packet.value.type).toBe("signing");
 
       ethbridge.lockToSifchain.mockReturnValue({
         onTxHash: (f: Function) => f({ txHash: "hash123" }),
       });
+      packet = await iter.next();
+      expect(packet.value.type).toBe("sent");
+      expect((packet.value as PegSentEvent).tx).toEqual({
+        hash: "hash123",
+        memo: "Transaction Accepted",
+        state: "accepted",
+      });
+      expect(ethbridge.burnToSifchain).not.toHaveBeenCalled();
+      expect(ethbridge.lockToSifchain).toHaveBeenCalledWith(
+        "sif123",
+        amount,
+        50,
+      );
+    });
+  });
+  describe("when pegging erc20", () => {
+    let amount = AssetAmount(ATK, "10");
 
-      // Send
+    test("rejecting approval", async () => {
+      const { peg, ethbridge } = createPeg();
+      ethbridge.approveBridgeBankSpend.mockRejectedValue("Yikes!");
+
+      const iter = peg(amount);
+      let packet: IteratorResult<PegEvent, PegEvent>;
+      packet = await iter.next();
+      expect(packet.value.type).toBe("approve_started");
+      packet = await iter.next();
+      expect(packet.value.type).toBe("approve_error");
+      packet = await iter.next();
+      expect(packet.done).toBe(true);
+    });
+
+    test("accepting approval", async () => {
+      const { peg, ethbridge } = createPeg();
+      ethbridge.approveBridgeBankSpend.mockReturnValue(Promise.resolve());
+      ethbridge.lockToSifchain.mockReturnValue({
+        onTxHash: (f: Function) => f({ txHash: "hash123" }),
+      });
+
+      const iter = peg(amount);
+
+      let packet: IteratorResult<PegEvent>;
       packet = await iter.next();
 
+      expect(packet.value.type).toBe("approve_started");
+      packet = await iter.next();
+      expect(packet.value.type).toBe("approved");
+
+      packet = await iter.next();
+
+      expect(packet.value.type).toBe("signing");
+      packet = await iter.next();
       expect(packet.value.type).toBe("sent");
       expect((packet.value as PegSentEvent).tx).toEqual({
         hash: "hash123",
@@ -79,8 +120,8 @@ describe("Peg", () => {
 
       let packet: IteratorResult<PegEvent, PegEvent>;
 
-      packet = await iter.next();
-      expect(packet.value.type).toBe("started");
+      // packet = await iter.next();
+      // expect(packet.value.type).toBe("started");
 
       // Dont recognise that chain!
       packet = await iter.next();

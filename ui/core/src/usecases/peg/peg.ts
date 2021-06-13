@@ -80,17 +80,14 @@ export function Peg(
       : services.ethbridge.lockToSifchain;
 
     const tx = await new Promise<TransactionStatus>((done) => {
-      console.log("getting tx from lockburn");
       const pegTx = lockOrBurnFn(
         store.wallet.sif.address,
         assetAmount,
         config.ethConfirmations,
       );
-      console.log({ pegTx });
       subscribeToTx(pegTx);
 
       pegTx.onTxHash((hash) => {
-        console.log("onTxHash:" + hash);
         done({
           hash: hash.txHash,
           memo: "Transaction Accepted",
