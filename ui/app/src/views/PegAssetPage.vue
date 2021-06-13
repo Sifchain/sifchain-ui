@@ -26,6 +26,7 @@ import { getMaxAmount } from "./utils/getMaxAmount";
 import { ConfirmState } from "../types";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
 import { format, toBaseUnits } from "ui-core";
+import { PegSentEvent, PegTxError } from "ui-core/src/usecases/peg/peg";
 
 function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -97,25 +98,24 @@ export default defineComponent({
       const asset = Asset.get(symbol.value);
       const assetAmount = AssetAmount(asset, toBaseUnits(amount.value, asset));
 
-      if (asset.symbol !== "eth") {
-        // if not eth you need to approve spend before peg
-        transactionState.value = "approving";
-        try {
-          await usecases.peg.approve(store.wallet.eth.address, assetAmount);
-        } catch (err) {
-          return (transactionState.value = "rejected");
+      for await (const event of usecases.peg.peg(assetAmount)) {
+        switch (event.type) {
+          case "started":
+            transactionState.value = "approving";
+            break;
+          case "approved":
+            transactionState.value = "signing";
+            break;
+          case "sent":
+          case "tx_error": {
+            const tx = (event as PegSentEvent | PegTxError).tx;
+            transactionHash.value = tx.hash;
+            transactionState.value = toConfirmState(tx.state); // TODO: align states
+            transactionStateMsg.value = tx.memo ?? "";
+          }
         }
       }
-
-      transactionState.value = "signing";
-
-      const tx = await usecases.peg.peg(assetAmount);
-
-      transactionHash.value = tx.hash;
-      transactionState.value = toConfirmState(tx.state); // TODO: align states
-      transactionStateMsg.value = tx.memo ?? "";
     }
-
     async function handleUnpegRequested() {
       transactionState.value = "signing";
       const asset = Asset.get(symbol.value);

@@ -4,19 +4,39 @@ import { Services } from "../../services";
 import { Store } from "../../store";
 import { isSupportedEVMChain } from "../utils";
 import { isOriginallySifchainNativeToken } from "./utils/isOriginallySifchainNativeToken";
-import { SubscribeToTx } from "./utils/subscribeToTx";
+import { SubscribeToTx as SubscribeToTxDep } from "./utils/subscribeToTx";
 
 type PegServices = {
-  ethbridge: Pick<Services["ethbridge"], "burnToSifchain" | "lockToSifchain">;
+  ethbridge: Pick<
+    Services["ethbridge"],
+    "burnToSifchain" | "lockToSifchain" | "approveBridgeBankSpend"
+  >;
   bus: Pick<Services["bus"], "dispatch">;
 };
 
 type PegStore = Pick<Store, "wallet" | "tx">;
 
-export function Peg(services: PegServices, store: PegStore, config: PegConfig) {
-  return async function peg(
+export type PegStartedEvent = { type: "started" };
+export type PegApprovedEvent = { type: "approved" };
+export type PegSentEvent = { type: "sent"; tx: TransactionStatus };
+export type PegTxError = { type: "tx_error"; tx: TransactionStatus };
+export type PegEvent =
+  | PegStartedEvent
+  | PegApprovedEvent
+  | PegSentEvent
+  | PegTxError;
+
+export function Peg(
+  services: PegServices,
+  store: PegStore,
+  config: PegConfig,
+  SubscribeToTx = SubscribeToTxDep,
+) {
+  return async function* peg(
     assetAmount: IAssetAmount,
-  ): Promise<TransactionStatus> {
+  ): AsyncGenerator<PegEvent, PegEvent> {
+    yield { type: "started" } as PegStartedEvent;
+
     if (
       assetAmount.asset.network === Network.ETHEREUM &&
       !isSupportedEVMChain(store.wallet.eth.chainId)
@@ -28,10 +48,18 @@ export function Peg(services: PegServices, store: PegStore, config: PegConfig) {
         },
       });
       return {
-        hash: "",
-        state: "failed",
-      };
+        type: "tx_error",
+        tx: {
+          hash: "",
+          state: "failed",
+        },
+      } as PegTxError;
     }
+
+    const address = store.wallet.eth.address;
+    await services.ethbridge.approveBridgeBankSpend(address, assetAmount);
+
+    yield { type: "approved" };
 
     const subscribeToTx = SubscribeToTx({ services, store });
 
@@ -39,7 +67,7 @@ export function Peg(services: PegServices, store: PegStore, config: PegConfig) {
       ? services.ethbridge.burnToSifchain
       : services.ethbridge.lockToSifchain;
 
-    return await new Promise<TransactionStatus>((done) => {
+    const tx = await new Promise<TransactionStatus>((done) => {
       const pegTx = lockOrBurnFn(
         store.wallet.sif.address,
         assetAmount,
@@ -56,5 +84,7 @@ export function Peg(services: PegServices, store: PegStore, config: PegConfig) {
         });
       });
     });
+
+    return { type: "sent", tx } as PegSentEvent;
   };
 }

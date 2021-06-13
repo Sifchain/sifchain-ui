@@ -36,16 +36,6 @@ export default ({
     calculateUnpegFee,
     unpeg: Unpeg(services, store),
     peg: Peg(services, store, config),
-
-    // TODO: Move this approval command to within peg and report status via store or some other means
-    //       This has been done for convenience but we should not have to know in the view that
-    //       approval is required before pegging as that is very much business domain knowledge
-    async approve(address: Address, assetAmount: IAssetAmount) {
-      return await services.ethbridge.approveBridgeBankSpend(
-        address,
-        assetAmount,
-      );
-    },
   };
 
   return actions;
