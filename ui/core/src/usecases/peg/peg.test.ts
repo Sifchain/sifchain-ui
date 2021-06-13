@@ -120,9 +120,6 @@ describe("Peg", () => {
 
       let packet: IteratorResult<PegEvent, PegEvent>;
 
-      // packet = await iter.next();
-      // expect(packet.value.type).toBe("started");
-
       // Dont recognise that chain!
       packet = await iter.next();
       expect(bus.dispatch).toHaveBeenCalledWith({
