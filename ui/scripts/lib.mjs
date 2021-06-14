@@ -44,15 +44,17 @@ export async function dockerLoggedIn() {
   return !(!config || config.auths["ghcr.io"].auto === null);
 }
 
-export function createStack(imageName) {
-  return $`docker create -it \\
+export async function createStack(imageName) {
+  const trimmedImageName = imageName.trim();
+  await $`docker pull ${trimmedImageName}`;
+  await $`docker create -it \\
   -p 1317:1317 \\
   -p 7545:7545 \\
   -p 26656:26656 \\
   -p 26657:26657 \\
   --name sif-ui-stack \\
   --platform linux/amd64 \\
-  ${imageName.trim()}`;
+  ${trimmedImageName}`;
 }
 
 export async function runStack() {

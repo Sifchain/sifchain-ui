@@ -85,6 +85,7 @@ export type ChainConfig = {
   sifWsUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
+  cryptoeconomicsUrl: string;
   web3Provider: "metamask" | string;
   // assets: AssetConfig[];
   nativeAsset: string; // symbol
@@ -127,6 +128,7 @@ export function parseConfig(
     sifWsUrl: config.sifWsUrl,
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
+    cryptoeconomicsUrl: config.cryptoeconomicsUrl,
     getWeb3Provider:
       config.web3Provider === "metamask"
         ? getMetamaskProvider
