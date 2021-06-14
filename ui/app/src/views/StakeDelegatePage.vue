@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useCore } from "@/hooks/useCore";
 import Layout from "@/components/Layout/Layout.vue";
 import Loader from "@/components/Loader/Loader.vue";
 
@@ -21,18 +22,18 @@ export default defineComponent({
     const json = await data.json();
     this.data = json.body;
 
-    const params = new URLSearchParams();
-    const DEFAULT_ADDRESS = "sif1003l39amhtmlmh6eupj3w94xg6ljh5zz37dy8j";
+    const { services } = useCore();
 
-    params.set("address", DEFAULT_ADDRESS);
-    params.set("key", "userData");
-    params.set("timestamp", "now");
-    const vsRes = await fetch(
-      `https://api-cryptoeconomics.sifchain.finance/api/vs?${params.toString()}`,
-    );
-    const vsJson = await vsRes.json();
+    const vsJson: any = await services.cryptoeconomics.fetchData({
+      rewardType: "vs",
+      address: "sif1003l39amhtmlmh6eupj3w94xg6ljh5zz37dy8j",
+      key: "userData",
+      timestamp: "now",
+    });
 
-    this.validatorSubsidyAPY = vsJson.user.currentAPYOnTickets * 100;
+    this.validatorSubsidyAPY = vsJson
+      ? vsJson.user.currentAPYOnTickets * 100
+      : 0;
   },
 });
 </script>

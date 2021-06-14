@@ -41,6 +41,7 @@ const { confirmSwapModal } = require("./pages/ConfirmSwapModal.js");
 const { poolPage } = require("./pages/PoolPage.js");
 const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
 const { connectPopup } = require("./pages/ConnectPopup.js");
+const { rewardsPage } = require("./pages/RewardsPage.js");
 
 useStack("every-test");
 
@@ -51,10 +52,9 @@ beforeAll(async () => {
 
   await metamaskPage.navigate();
   await metamaskPage.setup();
-
+  // await keplrPage.setKeplrRouteOverrides();
   await keplrPage.navigate();
   await keplrPage.setup();
-
   // goto dex page
   await balancesPage.navigate();
 
@@ -440,6 +440,44 @@ it("formats long amounts in confirmation screen", async () => {
   expect(await confirmSupplyModal.getTokenAmountText(tokenA)).toEqual(
     "1.000000",
   );
+});
+
+it("shows liquidity mining rewards", async () => {
+  await rewardsPage.navigate();
+  await rewardsPage.setCryptoeconRoute();
+  await page.reload();
+
+  await rewardsPage.verifyLMAmounts({
+    claimableAmountNumber: "200.0000",
+    pendingAmountNumber: "600.0000",
+    dispensedAmountNumber: "0",
+    projectedFullAmountNumber: "200000.0000",
+  });
+});
+
+it("claims liquidity mining rewards", async () => {
+  await rewardsPage.navigate();
+
+  await rewardsPage.setCryptoeconRoute();
+  await page.reload();
+
+  await rewardsPage.clickClaim("lm");
+  await rewardsPage.verifyTx({
+    type: "lm",
+    claimableAmountNumber: "200.0000",
+    maturityDate: "10/8/2021, 12:48:43 PM",
+  });
+
+  await rewardsPage.clickClaimOnConfirmation();
+  await rewardsPage.setGetClaimsRoute();
+  // popup
+  await page.waitForTimeout(1000);
+  await keplrNotificationPopup.navigate();
+  await keplrNotificationPopup.clickApprove();
+  await page.waitForTimeout(10000); // wait for blockchain to update...
+  await rewardsPage.closeModal();
+  // should be pending claim now
+  await rewardsPage.verifyPendingClaim("lm");
 });
 
 function prepareRowText(row) {

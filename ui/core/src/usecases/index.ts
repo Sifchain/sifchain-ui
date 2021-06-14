@@ -4,6 +4,7 @@ import ethWalletActions from "./wallet/eth";
 import clpActions from "./clp";
 import walletActions from "./wallet/sif";
 import pegActions from "./peg";
+import rewardActions from "./reward";
 
 export type UsecaseContext<
   T extends keyof Services = keyof Services,
@@ -18,5 +19,6 @@ export function createUsecases(context: UsecaseContext) {
       eth: ethWalletActions(context),
     },
     peg: pegActions(context),
+    reward: rewardActions(context),
   };
 }
