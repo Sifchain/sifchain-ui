@@ -18,7 +18,7 @@
               @click="requestDialog"
               color="success"
               class="connected-button"
-              >Connected</Pill
+              >CONNECTED</Pill
             >
           </template>
         </WithWallet>
@@ -26,27 +26,26 @@
     </Header>
     <router-view />
     <Notifications />
+    <EnvAlert />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import WithWallet from "@/components/wallet/WithWallet.vue";
-import Header from "./components/shared/Header/Header.vue";
-import Pill from "./components/shared/Pill/Pill.vue";
-import Footer from "./components/shared/Footer/Footer.vue";
-import SifButton from "./components/shared/SifButton.vue";
-import Notifications from "./components/Notifications.vue";
+import WithWallet from "@/components/WithWallet/WithWallet.vue";
+import Header from "./components/Header/Header.vue";
+import Pill from "./components/Pill/Pill.vue";
+import Notifications from "./components/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
+import EnvAlert from "@/components/shared/EnvAlert.vue";
 export default defineComponent({
   name: "App",
   components: {
     Header,
     Notifications,
     WithWallet,
-    SifButton,
-    Footer,
     Pill,
+    EnvAlert,
   },
   setup() {
     /// Initialize app
@@ -56,6 +55,15 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import "normalize-scss";
+
+// Import fonts:
+@import url("https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Rouge+Script&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+@import "@/scss/utilities.scss";
+@import "@/scss/reset.scss";
+
 #app,
 #portal-target,
 #tooltip-target {

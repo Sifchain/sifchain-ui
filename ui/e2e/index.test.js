@@ -3,249 +3,180 @@
  *
  * TODO
  * ==============
- * Playwright object models https://playwright.dev/docs/pom for maniplating windows
- * - MetaMask class should represent the metamask popup
- * - Keplr class should represent Keplr popup
  * Clients for inspecting the blockchain
  * - sifchainBlockchainAccount - class should represent sifchain blockain
  * - ethereumBlockchainAccount - class should represent ethereumBlockchain
  */
 require("@babel/polyfill");
-const path = require("path");
-const fs = require("fs");
-const { chromium } = require("playwright");
 
 // configs
-const { DEX_TARGET, MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
+const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
 const keplrConfig = require("../core/src/config.localnet.json");
 
 // extension
-const { MetaMask, connectMmAccount } = require("./metamask.js");
-const { importKeplrAccount, connectKeplrAccount } = require("./keplr");
+const { metamaskPage } = require("./pages/MetaMaskPage");
+const { keplrPage } = require("./pages/KeplrPage.js");
+const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
+const {
+  metamaskNotificationPopup,
+} = require("./pages/MetamaskNotificationPage.js");
 
 // services
 const { getSifchainBalances } = require("./sifchain.js");
-const { getEthBalance, advanceEthBlocks } = require("./ethereum.js");
-const { extractFile, getExtensionPage } = require("./utils");
+const { advanceEthBlocks } = require("./ethereum.js");
+const { extractExtensionPackage } = require("./utils");
 const { useStack } = require("../test/stack");
 
-async function getInputValue(page, selector) {
-  return await page.evaluate((el) => el.value, await page.$(selector));
-}
+// utils
+const {
+  connectMetaMaskAccount,
+  connectKeplrAccount,
+  reconnectKeplrAccount,
+} = require("./helpers.js");
 
-let browserContext;
-let dexPage;
+// dex pages
+const { balancesPage } = require("./pages/BalancesPage.js");
+const { swapPage } = require("./pages/SwapPage.js");
+const { confirmSwapModal } = require("./pages/ConfirmSwapModal.js");
+const { poolPage } = require("./pages/PoolPage.js");
+const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
+const { connectPopup } = require("./pages/ConnectPopup.js");
+const { rewardsPage } = require("./pages/RewardsPage.js");
 
 useStack("every-test");
 
 beforeAll(async () => {
   // extract extension zips
-  await extractExtensionPackages();
-  const pathToKeplrExtension = path.join(__dirname, KEPLR_CONFIG.path);
-  const pathToMmExtension = path.join(__dirname, MM_CONFIG.path);
-  const userDataDir = path.join(__dirname, "./playwright");
-  // need to rm userDataDir or else will store extension state
-  if (fs.existsSync(userDataDir)) {
-    fs.rmdirSync(userDataDir, { recursive: true });
-  }
+  await extractExtensionPackage(MM_CONFIG.id);
+  await extractExtensionPackage(KEPLR_CONFIG.id);
 
-  browserContext = await chromium.launchPersistentContext(userDataDir, {
-    // headless required with extensions. xvfb used for ci/cd
-    headless: false,
-    args: [
-      `--disable-extensions-except=${pathToKeplrExtension},${pathToMmExtension}`,
-      `--load-extension=${pathToKeplrExtension},${pathToMmExtension}`,
-    ],
-    // devtools: true,
-  });
-
-  // setup metamask
-  const MM = new MetaMask(browserContext, MM_CONFIG);
-  await MM.setup(browserContext);
-
-  // setup keplr account
-  const keplrPage = await browserContext.newPage();
-  await keplrPage.goto(
-    "chrome-extension://dmkamcknogkgcdfhhbddcghachkejeap/popup.html#/register",
-  );
-  await importKeplrAccount(keplrPage, KEPLR_CONFIG.options);
-  await keplrPage.close();
-
+  await metamaskPage.navigate();
+  await metamaskPage.setup();
+  // await keplrPage.setKeplrRouteOverrides();
+  await keplrPage.navigate();
+  await keplrPage.setup();
   // goto dex page
-  dexPage = await browserContext.newPage();
-  dexPage.setDefaultTimeout(60000);
-  dexPage.waitForTimeout(4000); // wait a second before keplr is finished being setup
+  await balancesPage.navigate();
 
-  await dexPage.goto(DEX_TARGET, { waitUntil: "domcontentloaded" });
+  // once keplr has finished setup, connection page will be invoked automatically
+  await context.waitForEvent("page");
 
-  // Keplr will automatically connect and cause the add chain popup to come up
-  await connectKeplrAccount(dexPage, browserContext);
-
-  await connectMmAccount(dexPage, browserContext, MM_CONFIG.id);
-});
-
-afterAll(async () => {
-  browserContext.close();
-});
-
-beforeEach(async () => {
-  const page = await browserContext.newPage();
-
-  await page.goto(
-    `chrome-extension://${MM_CONFIG.id}/home.html#settings/advanced`,
-    {
-      waitUntil: "domcontentloaded",
-    },
-  );
-  await page.waitForTimeout(1000);
-  await page.click('[data-testid="advanced-setting-reset-account"] button');
-  await page.waitForTimeout(1000);
-  await page.click('.modal-container button:has-text("Reset")');
+  await connectKeplrAccount();
+  await connectMetaMaskAccount();
   await page.close();
 });
 
-it("pegs rowan", async () => {
-  // First we need to unpeg rowan in order to have erowan on the bridgebank contract
-  // Navigate to peg page
-  await dexPage.goto(DEX_TARGET, {
-    waitUntil: "domcontentloaded",
-  });
+afterAll(async () => {
+  await context.close();
+});
 
-  const unpegAmount = "500";
-  await dexPage.click("[data-handle='native-tab']");
-  await dexPage.click("[data-handle='unpeg-rowan']");
-  await dexPage.click('[data-handle="peg-input"]');
-  await dexPage.fill('[data-handle="peg-input"]', unpegAmount);
-  await dexPage.click('button:has-text("Unpeg")');
+beforeEach(async () => {
+  page = await context.newPage(); // TODO: move it to global setup
+  await balancesPage.navigate();
 
-  const [confirmPopup] = await Promise.all([
-    browserContext.waitForEvent("page"),
-    dexPage.click('button:has-text("Confirm Unpeg")'),
-  ]);
+  await reconnectKeplrAccount();
+  await connectPopup.verifyKeplrConnected();
+  await connectPopup.close();
 
-  await Promise.all([
-    confirmPopup.waitForEvent("close"),
-    confirmPopup.click('button:has-text("Approve")'),
-  ]);
+  await metamaskPage.reset();
+  await page.bringToFront();
+});
 
-  await dexPage.waitForSelector("text=Transaction Submitted");
-  await dexPage.click("text=×");
-  await dexPage.waitForTimeout(10000); // wait for sifnode to validate the tx
+afterEach(async () => {
+  await page.close(); // TODO: move it to global teardown
+});
 
-  await dexPage.click("[data-handle='external-tab']");
-  await dexPage.waitForSelector("text=/600\\.000000/");
+it("imports rowan", async () => {
+  const assetNative = "rowan";
+  const exportAmount = "500";
+  const assetExternal = "erowan";
+  const importAmount = "100";
+  // First we need to export rowan in order to have erowan on the bridgebank contract
+  await balancesPage.navigate();
 
-  const rowAmount = await dexPage.innerText(
-    "[data-handle='erowan-row-amount']",
+  await balancesPage.openTab("native");
+  await balancesPage.export(assetNative, exportAmount);
+
+  await balancesPage.openTab("external");
+  await balancesPage.verifyAssetAmount(assetExternal, "600.000000");
+
+  // Now lets import erowan
+  await balancesPage.import(assetExternal, importAmount);
+
+  await balancesPage.clickConfirmImport();
+
+  await page.waitForTimeout(500);
+  await metamaskNotificationPopup.navigate();
+
+  await page.waitForTimeout(1000);
+  await metamaskNotificationPopup.clickViewFullTransactionDetails();
+  await metamaskNotificationPopup.verifyTransactionDetails(
+    `${importAmount} ${assetExternal}`,
   );
 
-  expect(rowAmount.trim()).toBe("600.000000");
+  await metamaskNotificationPopup.clickConfirm();
+  await page.waitForTimeout(1000);
 
-  // Now lets peg erowan
-  await dexPage.goto(DEX_TARGET, {
-    waitUntil: "domcontentloaded",
-  });
+  await metamaskNotificationPopup.navigate(); // this call is needed to reload this.page with a new popup page
+  await metamaskNotificationPopup.clickConfirm();
 
-  const pegAmount = "100";
-
-  await dexPage.click("[data-handle='external-tab']");
-  await dexPage.click("[data-handle='peg-erowan']");
-  await dexPage.click('[data-handle="peg-input"]');
-  await dexPage.fill('[data-handle="peg-input"]', pegAmount);
-  await dexPage.click('button:has-text("Peg")');
-
-  const [approveSpendPopup] = await Promise.all([
-    browserContext.waitForEvent("page"),
-    dexPage.click('button:has-text("Confirm Peg")'),
-  ]);
-
-  await approveSpendPopup.click("text=View full transaction details");
-  await expect(approveSpendPopup).toHaveText(pegAmount + " erowan");
-
-  // TODO: abstract away confirmation flow
-  const [confirmPopup2] = await Promise.all([
-    browserContext.waitForEvent("page"),
-    approveSpendPopup.click('button:has-text("Confirm")'),
-  ]);
-
-  await Promise.all([
-    confirmPopup2.waitForEvent("close"),
-    confirmPopup2.click('button:has-text("Confirm")'),
-  ]);
-
-  await dexPage.click("text=×");
-
+  await page.waitForTimeout(1000);
+  await balancesPage.closeSubmissionWindow();
   // Check that tx marker for the tx is there
-  await dexPage.waitForSelector(
-    "[data-handle='rowan-row-amount'] [data-handle='pending-tx-marker']",
-  );
+  await balancesPage.verifyTransactionPending(assetNative);
 
   // move chain forward
   await advanceEthBlocks(52);
 
-  await dexPage.waitForSelector("text=has succeded");
+  await page.waitForSelector("text=has succeded", { timeout: 60 * 1000 });
 
-  const rowAmount2 = await dexPage.innerText(
-    "[data-handle='rowan-row-amount']",
-  );
-
-  expect(rowAmount2.trim()).toBe("9600.000000");
+  await balancesPage.openTab("native");
+  await balancesPage.verifyAssetAmount(assetNative, "9600.000000");
 });
 
-it("pegs ether", async () => {
-  // Navigate to peg page
-  await dexPage.goto(DEX_TARGET, {
-    waitUntil: "domcontentloaded",
-  });
+it("imports ether", async () => {
+  const importAmount = "1";
+  const assetExternal = "eth";
+  const assetNative = "ceth";
+
+  await balancesPage.navigate();
 
   const cEthBalance = await getSifchainBalances(
     keplrConfig.sifApiUrl,
     KEPLR_CONFIG.options.address,
-    "ceth",
+    assetNative,
   );
 
-  const pegAmount = "1";
+  await balancesPage.openTab("external");
+  await balancesPage.import(assetExternal, importAmount);
 
-  await dexPage.click("[data-handle='external-tab']");
-  await dexPage.click("[data-handle='peg-eth']");
-  await dexPage.click('[data-handle="peg-input"]');
-  await dexPage.fill('[data-handle="peg-input"]', pegAmount);
-  await dexPage.click('button:has-text("Peg")');
+  await balancesPage.clickConfirmImport();
+  await page.waitForTimeout(1000);
 
-  const [confirmPopup] = await Promise.all([
-    browserContext.waitForEvent("page"),
-    dexPage.click('button:has-text("Confirm Peg")'),
-  ]);
+  await metamaskNotificationPopup.navigate();
+  await metamaskNotificationPopup.clickConfirm();
 
-  await Promise.all([
-    confirmPopup.waitForEvent("close"),
-    confirmPopup.click('button:has-text("Confirm")'),
-  ]);
-
-  await dexPage.click("text=×");
+  await page.waitForTimeout(1000);
+  await balancesPage.closeSubmissionWindow();
 
   // Check that tx marker for the tx is there
-  await dexPage.waitForSelector(
-    "[data-handle='ceth-row-amount'] [data-handle='pending-tx-marker']",
-  );
+  await balancesPage.verifyTransactionPending(assetNative);
 
   // move chain forward
   await advanceEthBlocks(52);
 
-  await dexPage.waitForSelector("text=has succeded");
+  await page.waitForSelector("text=has succeded", { timeout: 60 * 1000 });
 
-  const rowAmount = await dexPage.innerText("[data-handle='ceth-row-amount']");
-
-  const expected = (Number(cEthBalance) + Number(pegAmount)).toFixed(6);
-
-  expect(rowAmount.trim()).toBe(expected);
+  const expectedAmount = (Number(cEthBalance) + Number(importAmount)).toFixed(
+    6,
+  );
+  await balancesPage.verifyAssetAmount(assetNative, expectedAmount);
 });
 
-it("pegs tokens", async () => {
-  // Navigate to peg page
-  await dexPage.goto(DEX_TARGET, {
-    waitUntil: "domcontentloaded",
-  });
+it("imports tokens", async () => {
+  const importAmount = "1";
+  const importAsset = "usdc";
+  await balancesPage.navigate();
 
   const cBalance = await getSifchainBalances(
     keplrConfig.sifApiUrl,
@@ -253,331 +184,300 @@ it("pegs tokens", async () => {
     "cusdc",
   );
 
-  const pegAmount = "1";
+  await balancesPage.openTab("external");
+  await balancesPage.import(importAsset, importAmount);
 
-  await dexPage.click("[data-handle='external-tab']");
-  await dexPage.click("[data-handle='peg-usdc']");
-  await dexPage.click('[data-handle="peg-input"]');
-  await dexPage.fill('[data-handle="peg-input"]', pegAmount);
-  await dexPage.click('button:has-text("Peg")');
+  await balancesPage.clickConfirmImport();
+  await page.waitForTimeout(1000);
 
-  const [approveSpendPopup] = await Promise.all([
-    browserContext.waitForEvent("page"),
-    dexPage.click('button:has-text("Confirm Peg")'),
-  ]);
+  await metamaskNotificationPopup.navigate();
+  await metamaskNotificationPopup.clickViewFullTransactionDetails();
+  await metamaskNotificationPopup.verifyTransactionDetails(
+    `${importAmount} ${importAsset}`,
+  );
+  await metamaskNotificationPopup.clickConfirm();
+  await page.waitForTimeout(1000);
+  await metamaskNotificationPopup.navigate(); // this call is needed to reload this.page with a new popup page
+  await metamaskNotificationPopup.clickConfirm();
 
-  await approveSpendPopup.click("text=View full transaction details");
-  await expect(approveSpendPopup).toHaveText(pegAmount + " usdc");
-
-  const [confirmPopup] = await Promise.all([
-    browserContext.waitForEvent("page"),
-    approveSpendPopup.click('button:has-text("Confirm")'),
-  ]);
-
-  await Promise.all([
-    confirmPopup.waitForEvent("close"),
-    confirmPopup.click('button:has-text("Confirm")'),
-  ]);
-
-  await dexPage.click("text=×");
+  await balancesPage.closeSubmissionWindow();
 
   await advanceEthBlocks(52);
 
-  await dexPage.waitForSelector("text=has succeded");
+  await page.waitForSelector("text=has succeded", { timeout: 60 * 1000 });
 
-  const rowAmount = await dexPage.innerText("[data-handle='cusdc-row-amount']");
-
-  const expected = (Number(cBalance) + Number(pegAmount)).toFixed(6);
-
-  expect(rowAmount.trim()).toBe(expected);
+  const expectedAmount = (Number(cBalance) + Number(importAmount)).toFixed(6);
+  await balancesPage.verifyAssetAmount("cusdc", expectedAmount);
 });
 
 it("swaps", async () => {
-  // Navigate to swap page
-  await dexPage.goto(DEX_TARGET, {
-    waitUntil: "domcontentloaded",
-  });
+  const tokenA = "cusdc";
+  const tokenB = "rowan";
 
-  await dexPage.waitForTimeout(1000); // slowing down to avoid tokens not updating
+  await swapPage.navigate();
 
-  await dexPage.click("[data-handle='swap-page-button']");
+  await swapPage.selectTokenA(tokenA);
+  await page.waitForTimeout(1000); // slowing down to avoid tokens not updating
+  await swapPage.selectTokenB(tokenB);
 
-  await dexPage.waitForTimeout(1000); // slowing down to avoid tokens not updating
-
-  // Get values of token A and token B in account
-  // Select Token A
-  await dexPage.click("[data-handle='token-a-select-button']");
-  await dexPage.click("[data-handle='cusdc-select-button']");
-  // Select Token B
-  await dexPage.waitForTimeout(1000); // slowing down to avoid tokens not updating
-  await dexPage.click("[data-handle='token-b-select-button']");
-  await dexPage.waitForTimeout(1000); // slowing down to avoid tokens not updating
-  await dexPage.click("[data-handle='rowan-select-button']");
-  // Input amount A
-  await dexPage.click('[data-handle="token-a-input"]');
-  await dexPage.fill('[data-handle="token-a-input"]', "100");
-
-  expect(await getInputValue(dexPage, '[data-handle="token-b-input"]')).toBe(
-    "99.99800003",
-  );
+  await swapPage.fillTokenAValue("100");
+  await swapPage.verifyTokenBValue("99.99800003");
 
   // Check expected output (XXX: hmmm - might have to pull in formulae from core??)
 
-  // Input amount B
-  await dexPage.click('[data-handle="token-b-input"]');
-  await dexPage.fill('[data-handle="token-b-input"]', "100");
+  await swapPage.fillTokenBValue("100");
+  await swapPage.verifyTokenAValue("100.00200005");
 
-  expect(await getInputValue(dexPage, '[data-handle="token-a-input"]')).toBe(
-    "100.00200005",
-  );
-
-  // Click max
-  await dexPage.click("[data-handle='token-a-max-button']");
-
-  // Check expected estimated values
-  expect(await getInputValue(dexPage, '[data-handle="token-a-input"]')).toBe(
-    "10000.0", // TODO: trim mantissa
-  );
-  expect(await getInputValue(dexPage, '[data-handle="token-b-input"]')).toBe(
-    "9980.0299600499",
-  );
-  expect(await dexPage.innerText("[data-handle='details-price-message']")).toBe(
-    "0.998003 ROWAN per cUSDC",
-  );
-  expect(
-    await dexPage.innerText("[data-handle='details-minimum-received']"),
-  ).toBe("9880.229660 ROWAN");
-  expect(await dexPage.innerText("[data-handle='details-price-impact']")).toBe(
-    "0.10%",
-  );
-  expect(
-    await dexPage.innerText("[data-handle='details-liquidity-provider-fee']"),
-  ).toBe("9.9800 ROWAN");
+  await swapPage.clickTokenAMax();
+  await swapPage.verifyTokenAValue("10000.0"); // TODO: trim mantissa
+  await swapPage.verifyTokenBValue("9980.0299600499");
+  await swapPage.verifyDetails({
+    expPriceMessage: "0.998003 ROWAN per cUSDC",
+    expMinimumReceived: "9880.229660 ROWAN",
+    expPriceImpact: "0.10%",
+    expLiquidityProviderFee: "9.9800 ROWAN",
+  });
 
   // Input Amount A
-  await dexPage.click('[data-handle="token-a-input"]');
-  await dexPage.fill('[data-handle="token-a-input"]', "50");
+  await swapPage.fillTokenAValue("50");
+  await swapPage.verifyDetails({
+    expPriceMessage: "0.999990 ROWAN per cUSDC",
+    expMinimumReceived: "49.499505 ROWAN",
+    expPriceImpact: "< 0.01%",
+    expLiquidityProviderFee: "0.00025 ROWAN",
+  });
+  await swapPage.verifyTokenBValue("49.9995000037");
 
-  expect(await getInputValue(dexPage, '[data-handle="token-b-input"]')).toBe(
-    "49.9995000037",
-  );
-  expect(await dexPage.innerText("[data-handle='details-price-message']")).toBe(
-    "0.999990 ROWAN per cUSDC",
-  );
-  expect(
-    await dexPage.innerText("[data-handle='details-minimum-received']"),
-  ).toBe("49.499505 ROWAN");
-  expect(await dexPage.innerText("[data-handle='details-price-impact']")).toBe(
-    "< 0.01%",
-  );
-  expect(
-    await dexPage.innerText("[data-handle='details-liquidity-provider-fee']"),
-  ).toBe("0.00025 ROWAN");
-
-  // Click Swap Button
-  await dexPage.click('button:has-text("Swap")');
+  await swapPage.clickSwap();
 
   // Confirm dialog shows the expected values
-  expect(
-    await dexPage.innerText(
-      "[data-handle='confirm-swap-modal'] [data-handle='details-price-message']",
-    ),
-  ).toBe("0.999990 ROWAN per cUSDC");
-  expect(
-    await dexPage.innerText(
-      "[data-handle='confirm-swap-modal'] [data-handle='details-minimum-received']",
-    ),
-  ).toBe("49.499505 ROWAN");
-  expect(
-    await dexPage.innerText(
-      "[data-handle='confirm-swap-modal'] [data-handle='details-price-impact']",
-    ),
-  ).toBe("< 0.01%");
-  expect(
-    await dexPage.innerText(
-      "[data-handle='confirm-swap-modal'] [data-handle='details-liquidity-provider-fee']",
-    ),
-  ).toBe("0.00025 ROWAN");
+  await confirmSwapModal.verifyDetails({
+    tokenA: tokenA,
+    tokenB: tokenB,
+    expTokenAAmount: "50.000000",
+    expTokenBAmount: "49.999500",
+    expPriceMessage: "0.999990 ROWAN per cUSDC",
+    expMinimumReceived: "49.499505 ROWAN",
+    expPriceImpact: "< 0.01%",
+    expLiquidityProviderFee: "0.00025 ROWAN",
+  });
 
-  await dexPage.click('button:has-text("Confirm Swap")');
+  await confirmSwapModal.clickConfirmSwap();
 
-  // Confirm transactioni popup
-
-  const keplrPage = await getExtensionPage(browserContext, KEPLR_CONFIG.id);
-
-  await keplrPage.waitForLoadState();
-  await keplrPage.click("text=Approve");
-  await keplrPage.waitForLoadState();
-  await dexPage.waitForTimeout(10000); // wait for blockchain to update...
+  // Confirm transaction popup
+  await page.waitForTimeout(1000);
+  await keplrNotificationPopup.navigate();
+  await keplrNotificationPopup.clickApprove();
+  await page.waitForTimeout(10000); // wait for blockchain to update...
 
   // Wait for balances to be the amounts expected
-  expect(await dexPage.innerText('[data-handle="swap-message"]')).toBe(
-    "Swapped 50 cusdc for 49.9995000037 rowan",
+  await confirmSwapModal.verifySwapMessage(
+    "Swapped 50 cUSDC for 49.9995000037 ROWAN",
   );
 
-  await dexPage.click("[data-handle='modal-view-close']");
+  await confirmSwapModal.clickClose();
 
-  expect(await dexPage.innerText('[data-handle="cusdc-balance-label"]')).toBe(
-    "Balance: 9,950.00 cUSDC",
-  );
+  await swapPage.verifyTokenBalance(tokenA, "Balance: 9,950.00 cUSDC");
+  await swapPage.verifyTokenBalance(tokenB, "Balance: 10,050.00 ROWAN");
+});
 
-  expect(await dexPage.innerText('[data-handle="rowan-balance-label"]')).toBe(
-    "Balance: 10,050.00 ROWAN",
-  );
+it("fails to swap when it can't pay gas with rowan", async () => {
+  const tokenA = "rowan";
+  const tokenB = "cusdc";
+  // Navigate to swap page
+  await swapPage.navigate();
+
+  // Get values of token A and token B in account
+  await swapPage.selectTokenA(tokenA);
+  await page.waitForTimeout(1000); // slowing down to avoid tokens not updating
+  await swapPage.selectTokenB(tokenB);
+
+  await swapPage.fillTokenAValue("10000");
+  await swapPage.clickSwap();
+  await confirmSwapModal.clickConfirmSwap();
+
+  // Confirm transaction popup
+  await page.waitForTimeout(1000);
+  await keplrNotificationPopup.navigate();
+  await keplrNotificationPopup.clickApprove();
+
+  await page.waitForTimeout(10000); // wait for blockchain to update...
+
+  await expect(page).toHaveText("Transaction Failed");
+  await expect(page).toHaveText("Not enough ROWAN to cover the gas fees.");
+
+  await confirmSwapModal.closeModal();
 });
 
 it("adds liquidity", async () => {
-  // Navigate to swap page
-  await dexPage.goto(DEX_TARGET, {
-    waitUntil: "domcontentloaded",
+  const tokenA = "ceth";
+  const tokenB = "rowan";
+  await poolPage.navigate();
+
+  await poolPage.clickAddLiquidity();
+
+  await poolPage.selectTokenA(tokenA);
+  await poolPage.fillTokenAValue("10");
+  await poolPage.verifyTokenBValue("12048.19277");
+
+  await poolPage.fillTokenBValue("10000");
+  await poolPage.verifyTokenAValue("8.30000");
+
+  await poolPage.clickTokenAMax();
+  await poolPage.verifyTokenAValue("100.000000000000000000");
+  await poolPage.verifyTokenBValue("120481.92771");
+
+  expect((await poolPage.getActionsButtonText()).toUpperCase()).toBe(
+    "INSUFFICIENT FUNDS",
+  );
+
+  await poolPage.clickTokenAMax();
+  await poolPage.fillTokenAValue("5");
+  await poolPage.verifyTokenBValue("6024.09639");
+
+  expect((await poolPage.getActionsButtonText()).toUpperCase()).toBe(
+    "ADD LIQUIDITY",
+  );
+
+  await poolPage.verifyPoolPrices({
+    expForwardNumber: "0.000830",
+    expForwardSymbols: "cETH per ROWAN",
+    expBackwardNumber: "1204.819277",
+    expBackwardSymbols: "ROWAN per cETH",
   });
-  // Click pool page
-  await dexPage.click('[data-handle="pool-page-button"]');
 
-  // Click add liquidity button
-  await dexPage.click('[data-handle="add-liquidity-button"]');
+  await poolPage.verifyPoolEstimates({
+    expForwardNumber: "0.000830",
+    expForwardSymbols: "CETH per ROWAN", // <-- this is a bug TODO: cETH
+    expBackwardNumber: "1204.819277",
+    expBackwardSymbols: "ROWAN per CETH", // <-- this is a bug TODO: cETH
+    expShareNumber: "0.06%",
+  });
 
-  // Select ceth
-  await dexPage.click("[data-handle='token-a-select-button']");
-  await dexPage.click("[data-handle='ceth-select-button']");
+  // click Add Liquidity
+  await poolPage.clickActionsGo();
 
-  await dexPage.click('[data-handle="token-a-input"]');
-  await dexPage.fill('[data-handle="token-a-input"]', "10");
+  expect(await confirmSupplyModal.getTitle()).toBe("You are depositing");
 
-  expect(await getInputValue(dexPage, '[data-handle="token-b-input"]')).toBe(
-    "12048.19277",
+  expect(
+    prepareRowText(await confirmSupplyModal.getTokenInfoRowText(tokenA)),
+  ).toBe("cETH Deposited 5.000000");
+
+  expect(
+    prepareRowText(await confirmSupplyModal.getTokenInfoRowText(tokenB)),
+  ).toBe("ROWAN Deposited 6024.096390");
+
+  expect(prepareRowText(await confirmSupplyModal.getRatesBPerARowText())).toBe(
+    "Rates 1 cETH = 1204.81927711 ROWAN",
   );
-
-  await dexPage.click('[data-handle="token-b-input"]');
-  await dexPage.fill('[data-handle="token-b-input"]', "10000");
-
-  await dexPage.click('[data-handle="token-a-input"]');
-
-  expect(await getInputValue(dexPage, '[data-handle="token-a-input"]')).toBe(
-    "8.30000",
+  expect(prepareRowText(await confirmSupplyModal.getRatesAPerBRowText())).toBe(
+    "1 ROWAN = 0.00083000 cETH",
   );
-
-  await dexPage.click('[data-handle="token-a-max-button"]');
-
-  expect(await getInputValue(dexPage, '[data-handle="token-a-input"]')).toBe(
-    "100.000000000000000000",
-  );
-
-  await dexPage.click('[data-handle="token-b-input"]');
-
-  expect(await getInputValue(dexPage, '[data-handle="token-b-input"]')).toBe(
-    "120481.92771",
-  );
-
   expect(
-    (await dexPage.innerText('[data-handle="actions-go"]')).toUpperCase(),
-  ).toBe("INSUFFICIENT FUNDS");
-
-  await dexPage.click('[data-handle="token-a-max-button"]');
-  await dexPage.fill('[data-handle="token-a-input"]', "5");
-
-  expect(await getInputValue(dexPage, '[data-handle="token-b-input"]')).toBe(
-    "6024.09639",
-  );
-
-  expect(
-    (await dexPage.innerText('[data-handle="actions-go"]')).toUpperCase(),
-  ).toBe("ADD LIQUIDITY");
-
-  expect(
-    await dexPage.innerText('[data-handle="pool-prices-forward-number"]'),
-  ).toBe("0.000830");
-  expect(
-    await dexPage.innerText('[data-handle="pool-prices-forward-symbols"]'),
-  ).toBe("cETH per ROWAN");
-
-  expect(
-    await dexPage.innerText('[data-handle="pool-prices-backward-number"]'),
-  ).toBe("1204.819277");
-  expect(
-    await dexPage.innerText('[data-handle="pool-prices-backward-symbols"]'),
-  ).toBe("ROWAN per cETH");
-
-  expect(
-    await dexPage.innerText('[data-handle="pool-estimates-forwards-number"]'),
-  ).toBe("0.000830");
-  expect(
-    await dexPage.innerText('[data-handle="pool-estimates-forwards-symbols"]'),
-  ).toBe("CETH per ROWAN"); // <-- this is a bug TODO: cETH
-
-  expect(
-    await dexPage.innerText('[data-handle="pool-estimates-backwards-number"]'),
-  ).toBe("1204.819277");
-  expect(
-    await dexPage.innerText('[data-handle="pool-estimates-backwards-symbols"]'),
-  ).toBe("ROWAN per CETH"); // <-- this is a bug TODO: cETH
-  expect(
-    await dexPage.innerText('[data-handle="pool-estimates-share-number"]'),
-  ).toBe("0.06%");
-
-  await dexPage.click('[data-handle="actions-go"]');
-
-  expect(
-    await dexPage.innerText('[data-handle="confirmation-modal-title"]'),
-  ).toBe("You are depositing");
-
-  expect(
-    prepareRowText(
-      await dexPage.innerText('[data-handle="token-a-details-panel-pool-row"]'),
-    ),
-  ).toBe("cETH Deposited 5");
-
-  expect(
-    prepareRowText(
-      await dexPage.innerText('[data-handle="token-b-details-panel-pool-row"]'),
-    ),
-  ).toBe("ROWAN Deposited 6024.09639");
-
-  expect(
-    prepareRowText(await dexPage.innerText('[data-handle="real-b-per-a-row"]')),
-  ).toBe("Rates 1 cETH = 1204.81927711 ROWAN");
-  expect(
-    prepareRowText(await dexPage.innerText('[data-handle="real-a-per-b-row"]')),
-  ).toBe("1 ROWAN = 0.00083000 cETH");
-  expect(
-    prepareRowText(
-      await dexPage.innerText('[data-handle="real-share-of-pool"]'),
-    ),
+    prepareRowText(await confirmSupplyModal.getRatesShareOfPoolText()),
   ).toBe("Share of Pool: 0.06%"); // TODO: remove ":"
 
-  await dexPage.click("button:has-text('CONFIRM SUPPLY')");
+  await confirmSupplyModal.clickConfirmSupply();
 
-  expect(
-    await dexPage.innerText('[data-handle="confirmation-wait-message"]'),
-  ).toBe("Supplying 5 ceth and 6024.09639 rowan");
+  expect(await confirmSupplyModal.getConfirmationWaitText()).toBe(
+    "Supplying 5.00000 ceth and 6024.09639 rowan",
+  );
 
   // Confirm transaction popup
+  await page.waitForTimeout(1000);
+  await keplrNotificationPopup.navigate();
+  await keplrNotificationPopup.clickApprove();
+  await page.waitForTimeout(10000); // wait for blockchain to update...
 
-  const keplrPage = await getExtensionPage(browserContext, KEPLR_CONFIG.id);
+  await confirmSupplyModal.closeModal();
 
-  await keplrPage.waitForLoadState();
-  await keplrPage.click("text=Approve");
-  await keplrPage.waitForLoadState();
-  await dexPage.waitForTimeout(10000); // wait for blockchain to update...
+  await poolPage.clickManagePool(tokenA, tokenB);
+  expect(prepareRowText(await poolPage.getTotalPooledText(tokenA))).toBe(
+    "Total Pooled cETH: 8305.00000",
+  );
+  expect(prepareRowText(await poolPage.getTotalPooledText(tokenB))).toBe(
+    "Total Pooled ROWAN: 10006024.09639",
+  );
+  expect(prepareRowText(await poolPage.getTotalPoolShareText())).toBe(
+    "Your Pool Share (%): 0.0602",
+  );
+});
 
-  await dexPage.click("text=×");
-  await dexPage.click('[data-handle="ceth-rowan-pool-list-item"]');
+it("fails to add liquidity when can't pay gas with rowan", async () => {
+  const tokenA = "cusdc";
 
-  expect(
-    prepareRowText(
-      await dexPage.innerText('[data-handle="total-pooled-ceth"]'),
-    ),
-  ).toBe("Total Pooled cETH: 8305.00000");
+  await poolPage.navigate();
+  await poolPage.clickAddLiquidity();
+  await poolPage.selectTokenA(tokenA);
+  await poolPage.fillTokenBValue("10000");
+  await poolPage.clickActionsGo();
+  await confirmSupplyModal.clickConfirmSupply();
 
-  expect(
-    prepareRowText(
-      await dexPage.innerText('[data-handle="total-pooled-rowan"]'),
-    ),
-  ).toBe("Total Pooled ROWAN: 10006024.09639");
+  // Confirm transaction popup
+  await page.waitForTimeout(1000);
+  await keplrNotificationPopup.navigate();
+  await keplrNotificationPopup.clickApprove();
+  await page.waitForTimeout(10000); // wait for blockchain to update...
 
-  expect(
-    prepareRowText(await dexPage.innerText('[data-handle="total-pool-share"]')),
-  ).toBe("Your pool share: 0.0602 %");
+  await expect(page).toHaveText("Transaction Failed");
+  await expect(page).toHaveText("Not enough ROWAN to cover the gas fees");
+
+  await confirmSupplyModal.closeModal();
+});
+
+it("formats long amounts in confirmation screen", async () => {
+  const tokenA = "ceth";
+
+  await poolPage.navigate();
+  await poolPage.clickAddLiquidity();
+
+  // Select ceth
+  await poolPage.selectTokenA(tokenA);
+  await poolPage.fillTokenAValue("1.00000000000000000000000000000");
+
+  await poolPage.clickActionsGo();
+
+  expect(await confirmSupplyModal.getTokenAmountText(tokenA)).toEqual(
+    "1.000000",
+  );
+});
+
+it("shows liquidity mining rewards", async () => {
+  await rewardsPage.navigate();
+  await rewardsPage.setCryptoeconRoute();
+  await page.reload();
+
+  await rewardsPage.verifyLMAmounts({
+    claimableAmountNumber: "200.0000",
+    pendingAmountNumber: "600.0000",
+    dispensedAmountNumber: "0",
+    projectedFullAmountNumber: "200000.0000",
+  });
+});
+
+it("claims liquidity mining rewards", async () => {
+  await rewardsPage.navigate();
+
+  await rewardsPage.setCryptoeconRoute();
+  await page.reload();
+
+  await rewardsPage.clickClaim("lm");
+  await rewardsPage.verifyTx({
+    type: "lm",
+    claimableAmountNumber: "200.0000",
+    maturityDate: "10/8/2021, 12:48:43 PM",
+  });
+
+  await rewardsPage.clickClaimOnConfirmation();
+  await rewardsPage.setGetClaimsRoute();
+  // popup
+  await page.waitForTimeout(1000);
+  await keplrNotificationPopup.navigate();
+  await keplrNotificationPopup.clickApprove();
+  await page.waitForTimeout(10000); // wait for blockchain to update...
+  await rewardsPage.closeModal();
+  // should be pending claim now
+  await rewardsPage.verifyPendingClaim("lm");
 });
 
 function prepareRowText(row) {
@@ -586,10 +486,4 @@ function prepareRowText(row) {
     .map((s) => s.trim())
     .filter(Boolean)
     .join(" ");
-}
-
-async function extractExtensionPackages() {
-  await extractFile(`downloads/${KEPLR_CONFIG.id}.zip`, "./extensions");
-  await extractFile(`downloads/${MM_CONFIG.id}.zip`, "./extensions");
-  return;
 }

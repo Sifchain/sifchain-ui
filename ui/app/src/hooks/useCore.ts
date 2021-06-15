@@ -1,20 +1,22 @@
 import {
   createStore,
-  createApi,
-  createActions,
+  createServices,
+  createUsecases,
   createPoolFinder,
   getConfig,
+  getEnv,
+  switchEnv,
 } from "ui-core";
 
-const config = getConfig(
-  process.env.VUE_APP_DEPLOYMENT_TAG,
-  process.env.VUE_APP_SIFCHAIN_ASSET_TAG,
-  process.env.VUE_APP_ETHEREUM_ASSET_TAG,
-);
+switchEnv({ location: window.location });
 
-const api = createApi(config);
+const { tag, sifAssetTag, ethAssetTag } = getEnv({
+  location: window.location,
+});
+const config = getConfig(tag, sifAssetTag, ethAssetTag);
+const services = createServices(config);
 const store = createStore();
-const actions = createActions({ store, api });
+const usecases = createUsecases({ store, services });
 const poolFinder = createPoolFinder(store);
 
 // expose store on window so it is easy to inspect
@@ -60,8 +62,8 @@ Object.defineProperty(window, "store", {
 export function useCore() {
   return {
     store,
-    api,
-    actions,
+    services,
+    usecases,
     poolFinder,
     config,
   };
