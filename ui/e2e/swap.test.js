@@ -168,7 +168,7 @@ it("fails to swap when it can't pay gas with rowan", async () => {
   await confirmSwapModal.closeModal();
 });
 
-it("it swaps tokens with different precisions", async () => {
+it("swaps tokens with different precisions", async () => {
   let tokenA = "ctest";
   let tokenB = "rowan";
 
