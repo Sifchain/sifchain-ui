@@ -13,7 +13,7 @@ export class KeplrNotificationPopup {
   }
 
   async clickApprove() {
-    this.page.click('button:has-text("Approve")');
+    await this.page.click('button:has-text("Approve")');
   }
 }
 
