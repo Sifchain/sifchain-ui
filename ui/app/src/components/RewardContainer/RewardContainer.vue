@@ -103,6 +103,7 @@ export default {
                 {{
                   format(data.totalClaimableCommissionsAndClaimableRewards, {
                     mantissa: 4,
+                    zeroFormat: "0",
                   }) || "0"
                 }}
               </div>
@@ -134,6 +135,7 @@ export default {
                     data.currentTotalCommissionsOnClaimableDelegatorRewards,
                     {
                       mantissa: 4,
+                      zeroFormat: "0",
                     },
                   ) || "0"
                 }}
@@ -162,7 +164,7 @@ export default {
                 {{
                   format(
                     data.claimedCommissionsAndRewardsAwaitingDispensation,
-                    { mantissa: 4 },
+                    { mantissa: 4, zeroFormat: "0" },
                   ) || "0"
                 }}
               </div>
@@ -185,7 +187,10 @@ export default {
                 class="row-amount"
                 :data-handle="claimType + '-dispensed-rewards'"
               >
-                {{ format(data.dispensed, { mantissa: 4 }) || "0" }}
+                {{
+                  format(data.dispensed, { mantissa: 4, zeroFormat: "0" }) ||
+                  "0"
+                }}
               </div>
               <AssetItem symbol="Rowan" :label="false" />
             </div>
@@ -209,6 +214,7 @@ export default {
                                 data.nextRewardProjectedAPYOnTickets * 100,
                                 {
                                   mantissa: 2,
+                                  zeroFormat: "0",
                                 },
                               )
                             }}%</span
@@ -237,6 +243,7 @@ export default {
                 {{
                   format(data.totalCommissionsAndRewardsAtMaturity, {
                     mantissa: 4,
+                    zeroFormat: "0",
                   }) || "0"
                 }}
               </div>
