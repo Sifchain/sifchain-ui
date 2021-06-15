@@ -23,10 +23,12 @@ export class TokenSelection extends GenericPage {
   }
 
   async fillTokenAValue(value) {
+    await page.click(this.el.tokenInput("a"));
     await page.fill(this.el.tokenInput("a"), value);
   }
 
   async fillTokenBValue(value) {
+    await page.click(this.el.tokenInput("a"));
     await page.fill(this.el.tokenInput("b"), value);
   }
 

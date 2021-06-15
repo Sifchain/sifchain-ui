@@ -167,3 +167,120 @@ it("fails to swap when it can't pay gas with rowan", async () => {
 
   await confirmSwapModal.closeModal();
 });
+
+it("it swaps tokens with different precisions", async () => {
+  let tokenA = "ctest";
+  let tokenB = "rowan";
+
+  await swapPage.navigate();
+
+  await swapPage.selectTokenA(tokenA);
+  await page.waitForTimeout(1000); // slowing down to avoid tokens not updating
+  await swapPage.selectTokenB(tokenB);
+
+  await basicSwapFlow({
+    tokenA: tokenA,
+    tokenB: tokenB,
+    tokenASwapValue: "100",
+    assertions: {
+      tokenBSwapValue: "99.99800003",
+      details: {
+        tokenAAmount: "100.000000",
+        tokenBAmount: "99.998000",
+        priceMessage: "0.999980 ROWAN per cTEST",
+        minimumReceived: "98.998020 ROWAN",
+        priceImpact: "< 0.01%",
+        liquidityProviderFee: "0.0010 ROWAN",
+      },
+      swapMessage: "Swapped 100 cTEST for 99.99800003 ROWAN",
+      finalTokenABalance: "Balance: 99,999,999,999,900.00 cTEST",
+      finalTokenBBalance: "Balance: 10,100.00 ROWAN",
+    },
+  });
+
+  // now switch the selection of tokens
+  tokenA = "rowan";
+  tokenB = "ctest";
+  await swapPage.switchTokens();
+
+  await basicSwapFlow({
+    tokenA: tokenA,
+    tokenB: tokenB,
+    tokenASwapValue: "1000",
+    assertions: {
+      tokenBSwapValue: "999.820024",
+      details: {
+        tokenAAmount: "1000.000000",
+        tokenBAmount: "999.820024",
+        priceMessage: "0.999820 cTEST per ROWAN",
+        minimumReceived: "989.821824 cTEST",
+        priceImpact: "< 0.01%",
+        liquidityProviderFee: "0.1000 cTEST",
+      },
+      swapMessage: "Swapped 1000 ROWAN for 999.820024 cTEST",
+      finalTokenABalance: "Balance: 9,100.00 ROWAN",
+      finalTokenBBalance: "Balance: 100,000,000,000,899.82 cTEST",
+    },
+  });
+});
+
+async function basicSwapFlow({
+  tokenA,
+  tokenB,
+  tokenASwapValue,
+  assertions: {
+    tokenBSwapValue,
+    details: {
+      tokenAAmount,
+      tokenBAmount,
+      priceMessage,
+      minimumReceived,
+      priceImpact,
+      liquidityProviderFee,
+    },
+    swapMessage,
+    finalTokenABalance,
+    finalTokenBBalance,
+  },
+}) {
+  await swapPage.fillTokenAValue(tokenASwapValue);
+
+  await swapPage.verifyTokenBValue(tokenBSwapValue);
+
+  await swapPage.verifyDetails({
+    expPriceMessage: priceMessage,
+    expMinimumReceived: minimumReceived,
+    expPriceImpact: priceImpact,
+    expLiquidityProviderFee: liquidityProviderFee,
+  });
+
+  await swapPage.clickSwap();
+
+  // Confirm dialog shows the expected values
+  await confirmSwapModal.verifyDetails({
+    tokenA: tokenA,
+    tokenB: tokenB,
+    expTokenAAmount: tokenAAmount,
+    expTokenBAmount: tokenBAmount,
+    expPriceMessage: priceMessage,
+    expMinimumReceived: minimumReceived,
+    expPriceImpact: priceImpact,
+    expLiquidityProviderFee: liquidityProviderFee,
+  });
+
+  await confirmSwapModal.clickConfirmSwap();
+
+  // Confirm transaction popup
+  await page.waitForTimeout(1000);
+  await keplrNotificationPopup.navigate();
+  await keplrNotificationPopup.clickApprove();
+  await page.waitForTimeout(10000); // wait for blockchain to update...
+
+  // Wait for balances to be the amounts expected
+  await confirmSwapModal.verifySwapMessage(swapMessage);
+
+  await confirmSwapModal.clickClose();
+
+  await swapPage.verifyTokenBalance(tokenA, finalTokenABalance);
+  await swapPage.verifyTokenBalance(tokenB, finalTokenBBalance);
+}
