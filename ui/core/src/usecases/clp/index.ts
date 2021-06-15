@@ -1,7 +1,7 @@
 import { UsecaseContext } from "..";
 import { effect } from "@vue/reactivity";
 import { Swap } from "./swap";
-import { AddLiquidity } from "./addLIquidity";
+import { AddLiquidity } from "./addLiquidity";
 import { RemoveLiquidity } from "./removeLiquidity";
 import { SyncPools } from "./syncPools";
 

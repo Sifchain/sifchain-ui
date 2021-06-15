@@ -17,12 +17,12 @@ function createPeg() {
   };
   let tx: any = {};
   let subscribeToTx = jest.fn();
-  let SubScribeToTx = () => subscribeToTx;
+  let SubscribeToTx = () => subscribeToTx;
   let peg = Peg(
     { ethbridge, bus },
     { wallet, tx },
     { ethConfirmations: 50 },
-    SubScribeToTx,
+    SubscribeToTx,
   );
   return { peg, wallet, bus, ethbridge };
 }
