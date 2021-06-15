@@ -26,16 +26,18 @@
     </Header>
     <router-view />
     <Notifications />
+    <EnvAlert />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import WithWallet from "@/components/wallet/WithWallet.vue";
-import Header from "./components/shared/Header/Header.vue";
-import Pill from "./components/shared/Pill/Pill.vue";
-import Notifications from "./components/Notifications.vue";
+import WithWallet from "@/components/WithWallet/WithWallet.vue";
+import Header from "./components/Header/Header.vue";
+import Pill from "./components/Pill/Pill.vue";
+import Notifications from "./components/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
+import EnvAlert from "@/components/shared/EnvAlert.vue";
 export default defineComponent({
   name: "App",
   components: {
@@ -43,6 +45,7 @@ export default defineComponent({
     Notifications,
     WithWallet,
     Pill,
+    EnvAlert,
   },
   setup() {
     /// Initialize app

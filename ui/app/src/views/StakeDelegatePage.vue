@@ -1,7 +1,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Layout from "@/components/layout/Layout.vue";
-import Loader from "@/components/shared/Loader.vue";
+import { useCore } from "@/hooks/useCore";
+import Layout from "@/components/Layout/Layout.vue";
+import Loader from "@/components/Loader/Loader.vue";
 
 export default defineComponent({
   components: {
@@ -11,6 +12,7 @@ export default defineComponent({
   data() {
     return {
       data: null,
+      validatorSubsidyAPY: 0,
     };
   },
   async mounted() {
@@ -19,6 +21,19 @@ export default defineComponent({
     );
     const json = await data.json();
     this.data = json.body;
+
+    const { services } = useCore();
+
+    const vsJson: any = await services.cryptoeconomics.fetchData({
+      rewardType: "vs",
+      address: "sif1003l39amhtmlmh6eupj3w94xg6ljh5zz37dy8j",
+      key: "userData",
+      timestamp: "now",
+    });
+
+    this.validatorSubsidyAPY = vsJson
+      ? vsJson.user.currentAPYOnTickets * 100
+      : 0;
   },
 });
 </script>
@@ -40,9 +55,9 @@ export default defineComponent({
             target="_blank"
             >Validator Subsidy</a
           >:
-          <span v-if="data.liqValRewards === ''">TBD</span>
+          <span v-if="validatorSubsidyAPY === 0">TBD</span>
           <span v-else>
-            {{ parseFloat(data.liqValRewards).toFixed(2) }} % APY
+            {{ parseFloat(validatorSubsidyAPY).toFixed(2) }} % APY
           </span>
         </p>
         <p class="mb-8">

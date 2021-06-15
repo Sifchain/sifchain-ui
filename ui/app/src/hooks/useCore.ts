@@ -4,14 +4,16 @@ import {
   createUsecases,
   createPoolFinder,
   getConfig,
+  getEnv,
+  switchEnv,
 } from "ui-core";
 
-const config = getConfig(
-  process.env.VUE_APP_DEPLOYMENT_TAG,
-  process.env.VUE_APP_SIFCHAIN_ASSET_TAG,
-  process.env.VUE_APP_ETHEREUM_ASSET_TAG,
-);
+switchEnv({ location: window.location });
 
+const { tag, sifAssetTag, ethAssetTag } = getEnv({
+  location: window.location,
+});
+const config = getConfig(tag, sifAssetTag, ethAssetTag);
 const services = createServices(config);
 const store = createStore();
 const usecases = createUsecases({ store, services });

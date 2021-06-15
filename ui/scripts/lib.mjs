@@ -1,5 +1,6 @@
 import { resolve } from "path";
 import argDep from "arg";
+import chalk from "chalk";
 import untildify from "untildify";
 import treekill from "tree-kill";
 
@@ -9,16 +10,6 @@ export async function lint() {
 
 export async function lintQuick() {
   return $`yarn pretty-quick --staged --pattern 'ui/**/*.{vue,ts,js,json}'`;
-}
-
-export async function e2eTest(opt) {
-  if (opt?.port) process.env.PORT = opt.port;
-  const e2e = resolve(__dirname, "../e2e");
-  return await $`cd ${e2e} && ./scripts/test.sh`;
-}
-
-export async function e2eTestDebug() {
-  return $`cd e2e && DEBUG=pw:api NOSTACK=1 ./scripts/test.sh`;
 }
 
 // NOTE: not making this fn async as we need access to the child
@@ -34,11 +25,7 @@ export async function waitOn(...requirements) {
 
 export async function load(path) {
   try {
-    const q = $.quote;
-    $.quote = (a) => a;
-    const out = JSON.parse(await fs.readFile(resolve(path)));
-    $.quote = q;
-    return out;
+    return JSON.parse(await fs.readFile(resolve(path)));
   } catch (err) {
     console.log(err);
     return null;
@@ -57,27 +44,91 @@ export async function dockerLoggedIn() {
   return !(!config || config.auths["ghcr.io"].auto === null);
 }
 
-export function createStack(imageName) {
-  return $`docker create -it \\
+export async function createStack(imageName) {
+  const trimmedImageName = imageName.trim();
+  await $`docker pull ${trimmedImageName}`;
+  await $`docker create -it \\
   -p 1317:1317 \\
   -p 7545:7545 \\
   -p 26656:26656 \\
   -p 26657:26657 \\
   --name sif-ui-stack \\
   --platform linux/amd64 \\
-  ${imageName.trim()}`;
+  ${trimmedImageName}`;
 }
 
 export async function runStack() {
   return await $`docker start -ai sif-ui-stack`;
 }
 
-export async function setupStack(imageName) {
-  const IMAGE_NAME = imageName || `${await $`cat ./scripts/latest`}`;
+async function getLatestCommitForBranch(branch) {
+  const res = await fetch(
+    `https://api.github.com/repos/Sifchain/sifnode/branches/${branch}`,
+  );
+  const {
+    commit: { sha: commit },
+  } = await res.json();
+  return commit;
+}
+
+async function dockerImageExistsWithTag(tag) {
+  const name = `ghcr.io/sifchain/sifnode/ui-stack:` + tag;
+  try {
+    await $`docker manifest inspect ${name} > /dev/null`;
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+export async function setupStack(tagName) {
+  if (tagName && ["develop", "master"].includes(tagName)) {
+    // Check if the latest commit in GHs develop branch matches what is in the registry
+
+    console.log("Getting latest commit...");
+    const commit = await getLatestCommitForBranch(tagName);
+    console.log("Checking latest commit exists in registry...");
+    const imageExists = await dockerImageExistsWithTag(commit);
+
+    if (!imageExists) {
+      console.error(
+        `
+
+=========================
+|     HOW ERRONEOUS!    |
+=========================
+
+It appears that the latest commit hash from '${tagName}' cannot be found in the registry. 
+We were looking for the following commit hash: 
+
+  ${commit}
+
+This could happen because either there has been a recent commit in the last few minutes 
+and the image has not been pushed up yet or something went horribly wrong while preparing the image.
+
+We suggest you investigate over in the sifnode repo then try running this script again.
+
+  https://github.com/Sifchain/sifnode/tree/${tagName}
+        
+        `,
+      );
+      process.exit(1);
+    }
+  }
+
+  const defaultImageName = `${await fs.readFile(
+    resolve(__dirname, "./latest"),
+  )}`;
+
+  const imageName = tagName
+    ? defaultImageName.replace(/\:(.+)$/, ":" + tagName)
+    : defaultImageName;
+
+  console.log(`Using image ${chalk.yellow(imageName)}`);
 
   await killStack();
 
-  await createStack(IMAGE_NAME);
+  await createStack(imageName);
 
   await extractABIs();
 }
@@ -108,9 +159,7 @@ export async function race(...procs) {
   for (const child of children) {
     try {
       const pid = child.pid;
-      console.log("Killing server (" + pid + ")...");
       await treekill(pid);
-      console.log("Killed");
     } catch (err) {
       console.log({ err });
     }

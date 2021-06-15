@@ -1,30 +1,30 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import Layout from "@/components/layout/Layout.vue";
-import CurrencyPairPanel from "@/components/currencyPairPanel/Index.vue";
-import { useWalletButton } from "@/components/wallet/useWalletButton";
-import SelectTokenDialogSif from "@/components/tokenSelector/SelectTokenDialogSif.vue";
-import Modal from "@/components/shared/Modal.vue";
+import Layout from "@/components/Layout/Layout.vue";
+import CurrencyPairPanel from "@/components/CurrencyPairPanel/Index.vue";
+import { useWalletButton } from "@/components/WithWallet/useWalletButton";
+import SelectTokenDialogSif from "@/components/TokenSelector/SelectTokenDialogSif.vue";
+import Modal from "@/components/Modal/Modal.vue";
 import { Amount, PoolState, usePoolCalculator } from "ui-core";
 import { useCore } from "@/hooks/useCore";
 
 import { slipAdjustment } from "../../../core/src/entities/formulae";
 import { useWallet } from "@/hooks/useWallet";
 import { computed } from "@vue/reactivity";
-import FatInfoTable from "@/components/shared/FatInfoTable.vue";
-import Checkbox from "@/components/shared/Checkbox.vue";
-import FatInfoTableCell from "@/components/shared/FatInfoTableCell.vue";
-import ActionsPanel from "@/components/actionsPanel/ActionsPanel.vue";
+import FatInfoTable from "@/components/FatInfoTable/FatInfoTable.vue";
+import Checkbox from "@/components/Checkbox/Checkbox.vue";
+import FatInfoTableCell from "@/components/FatInfoTableCell/FatInfoTableCell.vue";
+import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { ConfirmState } from "@/types";
-import ConfirmationModal from "@/components/shared/ConfirmationModal.vue";
-import DetailsPanelPool from "@/components/shared/DetailsPanelPool.vue";
+import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import DetailsPanelPool from "@/components/DetailsPanelPool/DetailsPanelPool.vue";
 import { formatNumber } from "@/components/shared/utils";
-import Tooltip from "@/components/shared/Tooltip.vue";
-import Icon from "@/components/shared/Icon.vue";
+import Tooltip from "@/components/Tooltip/Tooltip.vue";
+import Icon from "@/components/Icon/Icon.vue";
 import { format } from "ui-core/src/utils/format";
 
 export default defineComponent({
