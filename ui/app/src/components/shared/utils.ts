@@ -1,7 +1,15 @@
-import { computed, Ref } from "@vue/reactivity";
+import { computed, Ref, ComputedRef } from "@vue/reactivity";
 import ColorHash from "color-hash";
-import { Asset, IAssetAmount, Network, toBaseUnits, TxHash } from "ui-core";
+import {
+  Asset,
+  IAssetAmount,
+  Network,
+  toBaseUnits,
+  TxHash,
+  Amount,
+} from "ui-core";
 import { format } from "ui-core/src/utils/format";
+import { useCore } from "@/hooks/useCore";
 
 export function formatSymbol(symbol: string) {
   if (symbol.indexOf("c") === 0) {
@@ -80,6 +88,97 @@ export function useAssetItem(symbol: Ref<string | undefined>) {
     token: token,
     label: tokenLabel,
     background: backgroundStyle,
+  };
+}
+
+export async function getLMData(address: ComputedRef<any>, chainId: string) {
+  if (!address.value) return;
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "lm",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+    snapShotSource: chainId === "sifchain" ? "mainnet" : "testnet",
+  });
+  if (!parsedData?.user) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(parsedData.user).map(([k, v]) => {
+      if (typeof v !== "number") {
+        return [k, v];
+      }
+      return [k, Amount(v.toFixed(18))];
+    }),
+  );
+}
+
+export async function getVSData(address: ComputedRef<any>, chainId: string) {
+  if (!address.value) return;
+  const { services } = useCore();
+  const parsedData = await services.cryptoeconomics.fetchData({
+    rewardType: "vs",
+    key: "userData",
+    address: address.value,
+    timestamp: "now",
+    snapShotSource: chainId === "sifchain" ? "mainnet" : "testnet",
+  });
+  if (!parsedData?.user) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(parsedData.user).map(([k, v]) => {
+      if (typeof v !== "number") {
+        return [k, v];
+      }
+      return [k, Amount(v.toFixed(18))];
+    }),
+  );
+}
+
+async function getClaimsData(
+  apiUrl: string,
+  address: string,
+  type: "LiquidityMining" | "ValidatorSubsidy",
+) {
+  const data = await (
+    await fetch(`${apiUrl}/dispensation/getClaims?type=${type}`)
+  ).json();
+
+  if (!data.result) {
+    return false;
+  }
+
+  return data.result.find((item: any) => {
+    return item.user_address === address;
+  });
+}
+
+export type IHasClaimed = {
+  lm: object | false;
+  vs: object | false;
+};
+
+export async function getExistingClaimsData(
+  address: ComputedRef<string>,
+  apiUrl: string,
+): Promise<IHasClaimed> {
+  if (!address.value || !apiUrl) throw "Missing input";
+
+  const lmClaimData = await getClaimsData(
+    apiUrl,
+    address.value,
+    "LiquidityMining",
+  );
+  const vsClaimData = await getClaimsData(
+    apiUrl,
+    address.value,
+    "ValidatorSubsidy",
+  );
+  return {
+    lm: lmClaimData || false,
+    vs: vsClaimData || false,
   };
 }
 

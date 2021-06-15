@@ -39,6 +39,8 @@ Options:
 `,
 );
 
+const tagName = args["--tag"] || undefined;
+
 if (args["--set-default-tag"]) {
   const tag = args["--set-default-tag"];
   await fs.writeFile(
@@ -49,7 +51,7 @@ if (args["--set-default-tag"]) {
 }
 
 if (args["--setup-only"]) {
-  await setupStack();
+  await setupStack(tagName);
   process.exit(0);
 }
 
@@ -76,7 +78,7 @@ Create a personal access token and log into docker using the above link then try
   process.exit(1);
 }
 
-await setupStack(args["--tag"] || undefined);
+await setupStack(tagName);
 
 try {
   await runStack();

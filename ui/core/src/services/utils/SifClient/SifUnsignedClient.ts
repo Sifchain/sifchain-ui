@@ -12,12 +12,17 @@ import {
 } from "./TendermintSocketPoll";
 
 import { ClpExtension, setupClpExtension } from "./x/clp";
+import {
+  DispensationExtension,
+  setupDispensationExtension,
+} from "./x/dispensation";
 import { EthbridgeExtension, setupEthbridgeExtension } from "./x/ethbridge";
 
 type CustomLcdClient = LcdClient &
   AuthExtension &
   ClpExtension &
-  EthbridgeExtension;
+  EthbridgeExtension &
+  DispensationExtension;
 
 function createLcdClient(
   apiUrl: string,
@@ -28,11 +33,13 @@ function createLcdClient(
     setupAuthExtension,
     setupClpExtension,
     setupEthbridgeExtension,
+    setupDispensationExtension,
   );
 }
 
 type IClpApi = ClpExtension["clp"];
 type IEthbridgeApi = EthbridgeExtension["ethbridge"];
+type IDispensationApi = DispensationExtension["dispensation"];
 
 type HandlerFn<T> = (a: T) => void;
 export class SifUnSignedClient
@@ -58,6 +65,7 @@ export class SifUnSignedClient
     this.getPool = this.lcdClient.clp.getPool;
     this.burn = this.lcdClient.ethbridge.burn;
     this.lock = this.lcdClient.ethbridge.lock;
+    this.claim = this.lcdClient.dispensation.claim;
     this.subscriber = createTendermintSocketPoll(rpcUrl);
   }
 
@@ -74,6 +82,9 @@ export class SifUnSignedClient
   // Ethbridge Extension
   burn: IEthbridgeApi["burn"];
   lock: IEthbridgeApi["lock"];
+
+  // Dispensation
+  claim: IDispensationApi["claim"];
 
   onNewBlock<T>(handler: HandlerFn<T>) {
     console.log("received onNewBlock handler");

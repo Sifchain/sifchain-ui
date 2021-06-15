@@ -3,6 +3,7 @@ import {
   CryptoeconomicsRewardType,
   CryptoeconomicsUserData,
 } from "../../services/CryptoeconomicsService";
+import { Claim } from "./claim";
 
 export const BLOCK_TIME_MS = 1000 * 60 * 200;
 
@@ -12,7 +13,10 @@ export const LM_STORAGE_KEY = "NOTIFIED_LM_STORAGE";
 export default function rewardActions({
   services,
   store,
-}: UsecaseContext<"bus" | "cryptoeconomics" | "storage", "wallet">) {
+}: UsecaseContext<
+  "bus" | "cryptoeconomics" | "dispensation" | "sif" | "storage",
+  "wallet"
+>) {
   function hasUserReachedMaturity(userData: CryptoeconomicsUserData) {
     if (!userData) return false;
 
@@ -85,5 +89,6 @@ export default function rewardActions({
       }
       return () => {};
     },
+    claim: Claim(services),
   };
 }
