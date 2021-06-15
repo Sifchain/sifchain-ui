@@ -1,8 +1,0 @@
-site_name: Sifchain Frontend
-nav:
-  - Getting Started: index.md
-  - Codebase: codebase.md
-  - Design: styles.md
-  - Contributing: contributions.md
-  - Proposals: proposals.md
-theme: readthedocs
