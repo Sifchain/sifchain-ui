@@ -1,6 +1,4 @@
-/**
- * THIS IS PROTOTYPAL
- *
+/*
  * TODO
  * ==============
  * Clients for inspecting the blockchain
@@ -10,12 +8,10 @@
 require("@babel/polyfill");
 
 // configs
-const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
+const { KEPLR_CONFIG } = require("./config.js");
 const keplrConfig = require("../core/src/config.localnet.json");
 
 // extension
-const { metamaskPage } = require("./pages/MetaMaskPage");
-const { keplrPage } = require("./pages/KeplrPage.js");
 const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
 const {
   metamaskNotificationPopup,
@@ -24,67 +20,28 @@ const {
 // services
 const { getSifchainBalances } = require("./sifchain.js");
 const { advanceEthBlocks } = require("./ethereum.js");
-const { extractExtensionPackage } = require("./utils");
 const { useStack } = require("../test/stack");
 
 // utils
-const {
-  connectMetaMaskAccount,
-  connectKeplrAccount,
-  reconnectKeplrAccount,
-} = require("./helpers.js");
+const { resetExtensionsConnection } = require("./helpers.js");
 
 // dex pages
 const { balancesPage } = require("./pages/BalancesPage.js");
 const { poolPage } = require("./pages/PoolPage.js");
 const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
-const { connectPopup } = require("./pages/ConnectPopup.js");
 const { rewardsPage } = require("./pages/RewardsPage.js");
 
 useStack("every-test");
 
-beforeAll(async () => {
-  // extract extension zips
-  await extractExtensionPackage(MM_CONFIG.id);
-  await extractExtensionPackage(KEPLR_CONFIG.id);
-
-  await metamaskPage.navigate();
-  await metamaskPage.setup();
-  // await keplrPage.setKeplrRouteOverrides();
-  await keplrPage.navigate();
-  await keplrPage.setup();
-  // goto dex page
-  await balancesPage.navigate();
-
-  // once keplr has finished setup, connection page will be invoked automatically
-  await context.waitForEvent("page");
-
-  await connectKeplrAccount();
-  await connectMetaMaskAccount();
-  await page.close();
-});
-
-afterAll(async () => {
-  await context.close();
-});
-
 beforeEach(async () => {
-  page = await context.newPage(); // TODO: move it to global setup
-  await balancesPage.navigate();
-
-  await reconnectKeplrAccount();
-  await connectPopup.verifyKeplrConnected();
-  await connectPopup.close();
-
-  await metamaskPage.reset();
-  await page.bringToFront();
+  await resetExtensionsConnection();
 });
 
 afterEach(async () => {
   await page.close(); // TODO: move it to global teardown
 });
 
-it("imports rowan", async () => {
+it.only("imports rowan", async () => {
   const assetNative = "rowan";
   const exportAmount = "500";
   const assetExternal = "erowan";

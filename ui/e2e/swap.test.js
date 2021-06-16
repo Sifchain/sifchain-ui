@@ -1,75 +1,29 @@
 require("@babel/polyfill");
 
-// configs
-const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
-
 // extension
-const { metamaskPage } = require("./pages/MetaMaskPage");
-const { keplrPage } = require("./pages/KeplrPage.js");
 const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
 
 // services
-const { extractExtensionPackage } = require("./utils");
 const { useStack } = require("../test/stack");
 
 // utils
-const {
-  connectMetaMaskAccount,
-  connectKeplrAccount,
-  reconnectKeplrAccount,
-} = require("./helpers.js");
 
 // dex pages
-const { balancesPage } = require("./pages/BalancesPage.js");
 const { swapPage } = require("./pages/SwapPage.js");
 const { confirmSwapModal } = require("./pages/ConfirmSwapModal.js");
-const { connectPopup } = require("./pages/ConnectPopup.js");
+const { resetExtensionsConnection } = require("./helpers.js");
 
 useStack("every-test");
 
-beforeAll(async () => {
-  // extract extension zips
-  await extractExtensionPackage(MM_CONFIG.id);
-  await extractExtensionPackage(KEPLR_CONFIG.id);
-
-  await metamaskPage.navigate();
-  await metamaskPage.setup();
-
-  await keplrPage.navigate();
-  await keplrPage.setup();
-
-  // goto dex page
-  await balancesPage.navigate();
-
-  // once keplr has finished setup, connection page will be invoked automatically
-  await context.waitForEvent("page");
-
-  await connectKeplrAccount();
-  await connectMetaMaskAccount();
-  await page.close();
-});
-
-afterAll(async () => {
-  await context.close();
-});
-
 beforeEach(async () => {
-  page = await context.newPage(); // TODO: move it to global setup
-  await balancesPage.navigate();
-
-  await reconnectKeplrAccount();
-  await connectPopup.verifyKeplrConnected();
-  await connectPopup.close();
-
-  await metamaskPage.reset();
-  await page.bringToFront();
+  await resetExtensionsConnection();
 });
 
 afterEach(async () => {
   await page.close(); // TODO: move it to global teardown
 });
 
-it("swaps", async () => {
+it.only("swaps", async () => {
   const tokenA = "cusdc";
   const tokenB = "rowan";
 
