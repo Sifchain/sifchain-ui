@@ -23,7 +23,15 @@ const REWARD_INFO = {
 
 export default {
   props: {
-    type: {
+    alreadyClaimed: {
+      type: Boolean || Object,
+      default: false,
+    },
+    claimDisabled: {
+      type: Boolean,
+      default: true,
+    },
+    claimType: {
       type: String,
     },
     data: {
@@ -55,6 +63,13 @@ export default {
     claimRewards() {
       alert("claim logic/keplr goes here");
     },
+    getClaimButtonText() {
+      if (this.alreadyClaimed) {
+        return "Pending Claim";
+      } else {
+        return "Claim";
+      }
+    },
   },
   data() {
     return {
@@ -70,9 +85,9 @@ export default {
 <template>
   <Box>
     <div class="reward-container">
-      <SubHeading>{{ REWARD_INFO[type].label }}</SubHeading>
+      <SubHeading>{{ REWARD_INFO[claimType].label }}</SubHeading>
       <Copy>
-        {{ REWARD_INFO[type].description }}
+        {{ REWARD_INFO[claimType].description }}
       </Copy>
       <div class="details-container">
         <Loader v-if="!data" black />
@@ -81,16 +96,20 @@ export default {
           <div class="reward-rows">
             <div class="reward-row">
               <div class="row-label">Claimable Amount</div>
-              <div class="row-amount">
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-claimable-amount'"
+              >
                 {{
                   format(data.totalClaimableCommissionsAndClaimableRewards, {
                     mantissa: 4,
+                    zeroFormat: "0",
                   }) || "0"
                 }}
               </div>
               <AssetItem symbol="Rowan" :label="false" />
             </div>
-            <div v-if="type === 'vs'" class="reward-row">
+            <div v-if="claimType === 'vs'" class="reward-row">
               <div class="row-label">
                 Reserved Commission Rewards
                 <Tooltip>
@@ -107,13 +126,45 @@ export default {
                   <Icon icon="info-box-black" />
                 </Tooltip>
               </div>
-              <div class="row-amount">
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-reserved-commission-rewards'"
+              >
                 {{
                   format(
                     data.currentTotalCommissionsOnClaimableDelegatorRewards,
                     {
                       mantissa: 4,
+                      zeroFormat: "0",
                     },
+                  ) || "0"
+                }}
+              </div>
+              <AssetItem symbol="Rowan" :label="false" />
+            </div>
+
+            <div class="reward-row">
+              <div class="row-label">
+                Pending Dispensation
+                <Tooltip>
+                  <template #message>
+                    <div class="tooltip">
+                      This is the amount that will be dispensed on Friday. Any
+                      new claimable amounts will need to be claimed after the
+                      next dispensation.
+                    </div>
+                  </template>
+                  <Icon icon="info-box-black" />
+                </Tooltip>
+              </div>
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-pending-rewards'"
+              >
+                {{
+                  format(
+                    data.claimedCommissionsAndRewardsAwaitingDispensation,
+                    { mantissa: 4, zeroFormat: "0" },
                   ) || "0"
                 }}
               </div>
@@ -132,8 +183,14 @@ export default {
                   <Icon icon="info-box-black" />
                 </Tooltip>
               </div>
-              <div class="row-amount">
-                {{ format(data.dispensed, { mantissa: 4 }) || "0" }}
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-dispensed-rewards'"
+              >
+                {{
+                  format(data.dispensed, { mantissa: 4, zeroFormat: "0" }) ||
+                  "0"
+                }}
               </div>
               <AssetItem symbol="Rowan" :label="false" />
             </div>
@@ -157,6 +214,7 @@ export default {
                                 data.nextRewardProjectedAPYOnTickets * 100,
                                 {
                                   mantissa: 2,
+                                  zeroFormat: "0",
                                 },
                               )
                             }}%</span
@@ -165,42 +223,51 @@ export default {
                         <br /><br />
                       </div>
                       This is your estimated projected full reward amount that
-                      you can earn if you were to leave your current liquidity
+                      you can earn if you were to leave your current
+                      {{ claimType === "lm" ? "liquidity" : "stake" }}
                       positions in place to the above mentioned date. This
-                      includes projected future rewards, and already
-                      claimed/disbursed previous rewards. This number can
-                      fluctuate due to other market conditions and this number
-                      is a representation of the current market as it is in this
-                      very moment.
+                      includes your projected future rewards, and excludes your
+                      already disbursed amounts. This number can fluctuate due
+                      to other market conditions and this number is a
+                      representation of the current market as it is in this very
+                      moment.
                     </div>
                   </template>
                   <Icon icon="info-box-black" />
                 </Tooltip>
               </div>
-              <div class="row-amount">
+              <div
+                class="row-amount"
+                :data-handle="claimType + '-projected-full-amount'"
+              >
                 {{
                   format(data.totalCommissionsAndRewardsAtMaturity, {
                     mantissa: 4,
+                    zeroFormat: "0",
                   }) || "0"
                 }}
               </div>
               <AssetItem symbol="Rowan" :label="false" />
             </div>
           </div>
+
           <div class="reward-buttons">
             <a
               class="more-info-button mr-8"
               target="_blank"
-              :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${type}`"
+              :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${claimType}`"
               >More Info</a
             >
 
-            <!-- :disabled="(data.claimableReward - data.claimed) === 0" -->
             <SifButton
-              @click="$emit('openModal', type)"
+              @click="$emit('openModal', claimType)"
               :primary="true"
-              :disabled="true"
-              >Claim</SifButton
+              :disabled="
+                alreadyClaimed ||
+                !data.totalClaimableCommissionsAndClaimableRewards
+              "
+              :data-handle="claimType + '-claim-button'"
+              >{{ getClaimButtonText() }}</SifButton
             >
           </div>
         </div>

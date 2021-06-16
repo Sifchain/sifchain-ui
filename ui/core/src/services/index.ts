@@ -6,6 +6,9 @@ import ethbridgeService, { EthbridgeServiceContext } from "./EthbridgeService";
 import sifService, { SifServiceContext } from "./SifService";
 import clpService, { ClpServiceContext } from "./ClpService";
 import eventBusService, { EventBusServiceContext } from "./EventBusService";
+import createDispensationService, {
+  IDispensationServiceContext,
+} from "./DispensationService";
 import cryptoeconomicsService, {
   CryptoeconomicsServiceContext,
 } from "./CryptoeconomicsService";
@@ -23,6 +26,7 @@ export type ServiceContext = EthereumServiceContext &
   EthbridgeServiceContext &
   ClpServiceContext &
   EventBusServiceContext &
+  IDispensationServiceContext & // add contexts from other APIs
   CryptoeconomicsServiceContext &
   StorageServiceContext; // add contexts from other APIs
 
@@ -32,6 +36,8 @@ export function createServices(context: ServiceContext) {
   const SifService = sifService(context);
   const ClpService = clpService(context);
   const EventBusService = eventBusService(context);
+  const DispensationService = createDispensationService(context);
+
   const CryptoeconomicsService = cryptoeconomicsService(context);
   const StorageService = storageService(context);
   return {
@@ -40,6 +46,7 @@ export function createServices(context: ServiceContext) {
     sif: SifService,
     ethbridge: EthbridgeService,
     bus: EventBusService,
+    dispensation: DispensationService,
     cryptoeconomics: CryptoeconomicsService,
     storage: StorageService,
   };

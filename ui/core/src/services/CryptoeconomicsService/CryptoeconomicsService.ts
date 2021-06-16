@@ -19,6 +19,7 @@ export interface FetchDataProps {
   address: string;
   key: string;
   timestamp: string;
+  snapShotSource?: string;
 }
 
 export default function createCryptoeconomicsService(
@@ -31,6 +32,9 @@ export default function createCryptoeconomicsService(
     params.set("address", props.address);
     params.set("key", props.key || "userData");
     params.set("timestamp", props.timestamp || "now");
+    props.snapShotSource
+      ? params.set("snapshot-source", props.snapShotSource)
+      : null;
     const res = await fetch(
       `${config.cryptoeconomicsUrl}/${props.rewardType}?${params.toString()}`,
     );
