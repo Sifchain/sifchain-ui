@@ -85,7 +85,7 @@ bus.emit();
 
 For Angular we can expose an RxJS stream that streams state changes.
 
-```
+```ts
 import api from "sifchain/angular";
 
 api.addLiquidity();
