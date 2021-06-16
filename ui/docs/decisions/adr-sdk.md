@@ -82,3 +82,25 @@ bus.onAny();
 bus.on();
 bus.emit();
 ```
+
+For Angular we can expose an RxJS stream that streams state changes.
+
+```
+import api from "sifchain/angular";
+
+api.addLiquidity();
+api.removeLiquidity();
+api.swap();
+api.import();
+api.export();
+api.claim();
+api.isSupportedNetwork();
+api.connectWallet();
+api.disconnectWallet();
+api.calculateAddLiquidity();
+api.calculateRemoveLiquidity();
+api.calculateSwap();
+
+api.$store()
+api.$bus()
+```
