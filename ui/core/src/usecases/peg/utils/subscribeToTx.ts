@@ -2,12 +2,17 @@ import { reactive } from "@vue/reactivity";
 import { UsecaseContext } from "../..";
 import { PegTxEventEmitter } from "../../../services/EthbridgeService/PegTxEventEmitter";
 import { TransactionStatus } from "../../../entities";
+import { Services } from "../../../services";
+import { Store } from "../../../store";
 
 // Using PascalCase to signify this is a factory
 export function SubscribeToTx({
   services,
   store,
-}: UsecaseContext<"bus", "wallet" | "tx">) {
+}: {
+  services: { bus: Pick<Services["bus"], "dispatch"> };
+  store: Pick<Store, "tx" | "wallet">;
+}) {
   // Helper to set store tx status
   // Should this live behind a store service API?
   function storeSetTxStatus(
