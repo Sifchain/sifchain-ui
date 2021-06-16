@@ -41,7 +41,7 @@ afterEach(async () => {
   await page.close(); // TODO: move it to global teardown
 });
 
-it.only("imports rowan", async () => {
+it("imports rowan", async () => {
   const assetNative = "rowan";
   const exportAmount = "500";
   const assetExternal = "erowan";

@@ -23,7 +23,7 @@ afterEach(async () => {
   await page.close(); // TODO: move it to global teardown
 });
 
-it.only("swaps", async () => {
+it("swaps", async () => {
   const tokenA = "cusdc";
   const tokenB = "rowan";
 
