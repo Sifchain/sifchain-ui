@@ -42,7 +42,8 @@
     "packages": [
       "core",
       "app",
-      "e2e"
+      "e2e",
+      "react-example"
     ]
   },
   "resolutions": {
