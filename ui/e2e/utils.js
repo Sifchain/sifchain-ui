@@ -39,6 +39,31 @@ export async function extractExtensionPackage(extensionId) {
   return;
 }
 
+export async function getMetamaskExtensionId() {
+  const pages = await context.pages();
+
+  const asyncFilter = async (arr, predicate) => {
+    const results = await Promise.all(arr.map(predicate));
+
+    return arr.filter((_v, index) => results[index]);
+  };
+
+  const mmPages = await asyncFilter(pages, async (page) => {
+    return (await page.title()) === "MetaMask";
+  });
+
+  if (mmPages.length === 0) return undefined;
+  else {
+    const mmPage = mmPages[0];
+    const regex = /:\/\/(.*?)\//;
+    const match = regex.exec(mmPage.url());
+    if (match.length <= 1) return undefined;
+    else {
+      return match[1];
+    }
+  }
+}
+
 export async function getExtensionPage(extensionId, suffixUrl = undefined) {
   let matchingUrl;
   if (!suffixUrl) {

@@ -1,19 +1,18 @@
-import { MM_CONFIG } from "../config";
 import { getExtensionPage } from "../utils";
 import expect from "expect-playwright";
+import { globals } from "../jest.config";
 
 export class MetamaskNotificationPopup {
-  constructor(config = MM_CONFIG) {
-    this.config = config;
+  constructor() {
     this.url = "/popup.html";
   }
 
   async navigate() {
-    const targetUrl = `chrome-extension://${this.config.id}${this.url}`;
+    const targetUrl = `chrome-extension://${globals.__MM_EXT_ID__}${this.url}`;
 
-    this.page = await getExtensionPage(this.config.id, this.url);
+    this.page = await getExtensionPage(globals.__MM_EXT_ID__, this.url);
     if (!this.page) {
-      this.page = await getExtensionPage(this.config.id);
+      this.page = await getExtensionPage(globals.__MM_EXT_ID__);
       if (!this.page) {
         this.page = await context.newPage();
       }

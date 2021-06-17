@@ -4,7 +4,7 @@ export const DEX_TARGET = process.env.PORT
 
 export const KEPLR_CONFIG = {
   id: "dmkamcknogkgcdfhhbddcghachkejeap",
-  ver: "0.8.1_0",
+  ver: "0.8.9_0",
   get path() {
     return `./extensions/${this.id}/${this.ver}`;
   },
@@ -17,10 +17,10 @@ export const KEPLR_CONFIG = {
 };
 
 export const MM_CONFIG = {
-  id: "nkbihfbeogaeaoehlefnkodbefgpgknn",
-  ver: "9.1.1_0",
+  fileId: "kbncgnhjhkdmacanlpmplcbbncoblkfo", // zip name id is static, where ext id is dynamic and now stored in jest globals config
+  ver: "9.6.1_0",
   get path() {
-    return `./extensions/${this.id}/${this.ver}`;
+    return `./extensions/${this.fileId}/${this.ver}`;
   },
   network: {
     name: "mm-e2e",
