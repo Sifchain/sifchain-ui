@@ -25,3 +25,5 @@ export const ReportTransactionError = (bus: {
   });
   return txStatus;
 };
+
+export type ReportTransactionError = ReturnType<typeof ReportTransactionError>;

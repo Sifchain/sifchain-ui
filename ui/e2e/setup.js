@@ -23,6 +23,7 @@ beforeAll(async () => {
     // devtools: true,
     headless: false,
     locale: "en-US",
+    timezoneId: "UTC",
     args: [
       `--disable-extensions-except=${pathToKeplrExtension},${pathToMmExtension}`,
       `--load-extension=${pathToKeplrExtension},${pathToMmExtension}`,
