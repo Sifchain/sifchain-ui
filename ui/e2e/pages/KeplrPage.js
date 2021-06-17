@@ -34,7 +34,7 @@ export class KeplrPage {
     await this.page.fill('input[name="confirmPassword"]', "juniper21");
     await this.page.click("text=Next");
     await this.page.click("text=Done");
-    // await this.page.close();
+    await this.page.close();
   }
 
   async setKeplrRouteOverrides() {

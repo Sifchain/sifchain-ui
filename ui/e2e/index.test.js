@@ -24,7 +24,7 @@ const {
 // services
 const { getSifchainBalances } = require("./sifchain.js");
 const { advanceEthBlocks } = require("./ethereum.js");
-const { extractExtensionPackage } = require("./utils");
+//const { extractExtensionPackage } = require("./utils");
 const { useStack } = require("../test/stack");
 
 // utils
@@ -47,8 +47,8 @@ useStack("every-test");
 
 beforeAll(async () => {
   // extract extension zips
-  await extractExtensionPackage(MM_CONFIG.id);
-  await extractExtensionPackage(KEPLR_CONFIG.id);
+  // await extractExtensionPackage(MM_CONFIG.id);
+  // await extractExtensionPackage(KEPLR_CONFIG.id);
 
   await metamaskPage.navigate();
   await metamaskPage.setup();

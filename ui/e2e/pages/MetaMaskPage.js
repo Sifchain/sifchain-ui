@@ -19,7 +19,7 @@ export class MetaMaskPage {
     await this.confirmWelcomeScreen();
     await this.importAccount();
     await this.addNetwork();
-    // await this.page.close();
+    await this.page.close();
   }
 
   async confirmWelcomeScreen() {
