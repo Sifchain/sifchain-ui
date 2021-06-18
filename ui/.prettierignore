@@ -5,3 +5,4 @@ chains/eth/build/contracts
 coverage
 e2e/extensions
 e2e/playwright
+react-example
