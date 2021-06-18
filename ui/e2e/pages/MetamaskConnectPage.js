@@ -1,4 +1,4 @@
-import { globals } from "../jest.config";
+import { MM_CONFIG } from "../config";
 import { getExtensionPage } from "../utils";
 
 export class MetamaskConnectPage {
@@ -13,7 +13,7 @@ export class MetamaskConnectPage {
 
   async navigate() {
     this.page = await getExtensionPage(
-      globals.__MM_EXT_ID__,
+      MM_CONFIG.id,
       "/notification.html#connect",
     );
     await this.page.waitForLoadState();

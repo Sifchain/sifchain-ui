@@ -39,6 +39,7 @@ export async function extractExtensionPackage(extensionId) {
   return;
 }
 
+// not used right now. It's not necessary to use it when id is static
 export async function getMetamaskExtensionId() {
   const pages = await context.pages();
 

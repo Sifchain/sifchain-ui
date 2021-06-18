@@ -1,5 +1,4 @@
 import { MM_CONFIG } from "../config";
-import { globals } from "../jest.config";
 import { getExtensionPage } from "../utils";
 export class MetaMaskPage {
   constructor(config = MM_CONFIG) {
@@ -10,15 +9,13 @@ export class MetaMaskPage {
     if (newPage) {
       this.page = await context.newPage();
     } else {
-      this.page = await getExtensionPage(globals.__MM_EXT_ID__);
+      this.page = await getExtensionPage(this.config.id);
     }
-    await this.page.goto(
-      `chrome-extension://${globals.__MM_EXT_ID__}/home.html`,
-    );
+    await this.page.goto(`chrome-extension://${this.config.id}/home.html`);
   }
 
   async setup() {
-    this.page = await getExtensionPage(globals.__MM_EXT_ID__);
+    this.page = await getExtensionPage(this.config.id);
     await this.confirmWelcomeScreen();
     await this.importAccount();
     await this.addNetwork();
@@ -31,7 +28,7 @@ export class MetaMaskPage {
 
   async importAccount() {
     await this.page.goto(
-      `chrome-extension://${globals.__MM_EXT_ID__}/home.html#initialize/create-password/import-with-seed-phrase`,
+      `chrome-extension://${this.config.id}/home.html#initialize/create-password/import-with-seed-phrase`,
     );
     await this.page.type(
       ".first-time-flow__seedphrase input",
@@ -47,7 +44,7 @@ export class MetaMaskPage {
 
   async addNetwork() {
     await this.page.goto(
-      `chrome-extension://${globals.__MM_EXT_ID__}/home.html#settings/networks`,
+      `chrome-extension://${this.config.id}/home.html#settings/networks`,
     );
     await this.page.click(
       "#app-content > div > div.main-container-wrapper > div > div.settings-page__content > div.settings-page__content__modules > div > div.settings-page__sub-header > div > button",
@@ -67,11 +64,11 @@ export class MetaMaskPage {
   }
 
   async reset() {
-    this.page = await getExtensionPage(globals.__MM_EXT_ID__);
+    this.page = await getExtensionPage(this.config.id);
     if (!this.page) this.page = await context.newPage();
 
     await this.page.goto(
-      `chrome-extension://${globals.__MM_EXT_ID__}/home.html#settings/advanced`,
+      `chrome-extension://${this.config.id}/home.html#settings/advanced`,
       {
         waitUntil: "domcontentloaded",
       },

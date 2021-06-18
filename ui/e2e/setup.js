@@ -1,13 +1,12 @@
 // setup.js
 const { chromium } = require("playwright");
-const { extractExtensionPackage, getMetamaskExtensionId } = require("./utils");
+const { extractExtensionPackage } = require("./utils");
 const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
 const path = require("path");
 const fs = require("fs");
-const { globals } = require("./jest.config");
 
 beforeAll(async () => {
-  await extractExtensionPackage(MM_CONFIG.fileId);
+  await extractExtensionPackage(MM_CONFIG.id);
   await extractExtensionPackage(KEPLR_CONFIG.id);
   const pathToKeplrExtension = path.join(__dirname, KEPLR_CONFIG.path);
   const pathToMmExtension = path.join(__dirname, MM_CONFIG.path);
@@ -31,8 +30,4 @@ beforeAll(async () => {
   });
   // exposing "page" object globally
   [page] = await context.pages();
-
-  await context.waitForEvent("page");
-  // set global MM extension id object
-  globals.__MM_EXT_ID__ = await getMetamaskExtensionId();
 });

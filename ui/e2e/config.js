@@ -17,10 +17,10 @@ export const KEPLR_CONFIG = {
 };
 
 export const MM_CONFIG = {
-  fileId: "kbncgnhjhkdmacanlpmplcbbncoblkfo", // zip name id is static, where ext id is dynamic and now stored in jest globals config
+  id: "nkbihfbeogaeaoehlefnkodbefgpgknn",
   ver: "9.6.1_0",
   get path() {
-    return `./extensions/${this.fileId}/${this.ver}`;
+    return `./extensions/${this.id}/${this.ver}`;
   },
   network: {
     name: "mm-e2e",
