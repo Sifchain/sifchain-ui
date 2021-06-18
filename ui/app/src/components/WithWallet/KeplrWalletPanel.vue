@@ -11,7 +11,7 @@ export default defineComponent({
     const { store, usecases } = useCore();
     async function handleConnectClicked() {
       try {
-        await usecases.wallet.sif.connectToWallet();
+        await usecases.wallet.sif.connectToSifWallet();
       } catch (error) {
         console.log("KeplrWalletController", error);
       }

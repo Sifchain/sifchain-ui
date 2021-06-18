@@ -48,8 +48,6 @@ export default function createSifService({
   keplrChainConfig,
   assets,
 }: SifServiceContext) {
-  const {} = sifAddrPrefix;
-
   const state: {
     connected: boolean;
     address: Address;
@@ -180,17 +178,17 @@ export default function createSifService({
       connecting = false;
     },
 
-    async initProvider() {
-      try {
-        keplrProvider = await keplrProviderPromise;
-        if (!keplrProvider) {
-          return;
-        }
-        triggerUpdate();
-      } catch (e) {
-        console.log("initProvider", e);
-      }
-    },
+    // async initProvider() {
+    //   try {
+    //     keplrProvider = await keplrProviderPromise;
+    //     if (!keplrProvider) {
+    //       return;
+    //     }
+    //     triggerUpdate();
+    //   } catch (e) {
+    //     console.log("initProvider", e);
+    //   }
+    // },
 
     async connect() {
       if (!keplrProvider) {
@@ -354,7 +352,7 @@ export default function createSifService({
     },
   };
 
-  instance.initProvider();
+  //instance.initProvider();
 
   return instance;
 }

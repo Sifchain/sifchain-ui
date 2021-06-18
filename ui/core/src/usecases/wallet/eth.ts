@@ -33,7 +33,7 @@ export default ({
       await services.eth.disconnect();
     },
 
-    async connectToWallet() {
+    async connectToEthWallet() {
       try {
         await services.eth.connect();
       } catch (err) {

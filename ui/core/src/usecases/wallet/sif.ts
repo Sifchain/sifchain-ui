@@ -30,7 +30,7 @@ export default ({
       services.sif.purgeClient();
     },
 
-    async connectToWallet() {
+    async connectToSifWallet() {
       try {
         // TODO type
         await services.sif.connect();
