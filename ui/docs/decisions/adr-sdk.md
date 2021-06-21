@@ -8,7 +8,7 @@ const [
   store, // store is immutable
   api, // api has all the usecase methods collected on an object
   bus, // bus can be used for global notifications
-] = useSifchain(...keys);
+] = useSifchain({keys,v:"1"});
 
 // Keys
 type Key =
