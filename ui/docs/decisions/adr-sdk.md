@@ -38,9 +38,9 @@ api.calculateAddLiquidity();
 api.calculateRemoveLiquidity();
 api.calculateSwap();
 
-bus.onAny();
-bus.on();
-bus.emit();
+api.bus().onAny();
+api.bus().on();
+api.bus().emit();
 ```
 
 Also no real reason we can't provide a very similar API to Vue
@@ -78,9 +78,9 @@ api.calculateAddLiquidity();
 api.calculateRemoveLiquidity();
 api.calculateSwap();
 
-bus.onAny();
-bus.on();
-bus.emit();
+api.bus().onAny();
+api.bus().on();
+api.bus().emit();
 ```
 
 For Angular we can expose an RxJS stream that streams state changes.
