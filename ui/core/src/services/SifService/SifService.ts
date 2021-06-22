@@ -113,6 +113,7 @@ export default function createSifService({
         state.address = client.senderAddress;
         state.accounts = await client.getAccounts();
         state.balances = await instance.getBalance(client.senderAddress);
+        console.log({ "state.balances": state.balances });
       } catch (e) {
         if (!e.toString().toLowerCase().includes("no address found on chain")) {
           state.connected = false;
@@ -178,17 +179,17 @@ export default function createSifService({
       connecting = false;
     },
 
-    // async initProvider() {
-    //   try {
-    //     keplrProvider = await keplrProviderPromise;
-    //     if (!keplrProvider) {
-    //       return;
-    //     }
-    //     triggerUpdate();
-    //   } catch (e) {
-    //     console.log("initProvider", e);
-    //   }
-    // },
+    async initProvider() {
+      try {
+        keplrProvider = await keplrProviderPromise;
+        if (!keplrProvider) {
+          return;
+        }
+        triggerUpdate();
+      } catch (e) {
+        console.log("initProvider", e);
+      }
+    },
 
     async connect() {
       if (!keplrProvider) {
@@ -217,15 +218,15 @@ export default function createSifService({
     },
 
     onSocketError(handler: HandlerFn<any>) {
-      unSignedClient.onSocketError(handler);
+      return unSignedClient.onSocketError(handler);
     },
 
     onTx(handler: HandlerFn<any>) {
-      unSignedClient.onTx(handler);
+      return unSignedClient.onTx(handler);
     },
 
     onNewBlock(handler: HandlerFn<any>) {
-      unSignedClient.onNewBlock(handler);
+      return unSignedClient.onNewBlock(handler);
     },
 
     // Required solely for testing purposes
@@ -249,6 +250,7 @@ export default function createSifService({
       address?: Address,
       asset?: Asset,
     ): Promise<IAssetAmount[]> {
+      console.log("getBalance");
       if (!client) {
         throw "No client. Please sign in.";
       }
@@ -280,6 +282,7 @@ export default function createSifService({
             return balance.asset.symbol === asset.symbol;
           });
       } catch (error) {
+        console.log({ error });
         throw error;
       }
     },
@@ -352,7 +355,7 @@ export default function createSifService({
     },
   };
 
-  //instance.initProvider();
+  instance.initProvider();
 
   return instance;
 }

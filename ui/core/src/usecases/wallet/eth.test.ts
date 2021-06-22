@@ -26,8 +26,8 @@ beforeEach(() => {
     signAndBroadcast: async (msg: Msg, memo?: string) => {},
     setPhrase: async (phrase: string) => "",
     purgeClient: () => {},
-    onProviderNotFound: () => {},
-    onChainIdDetected: () => {},
+    onProviderNotFound: () => () => {},
+    onChainIdDetected: () => () => {},
   };
 
   mockEventBusService = {

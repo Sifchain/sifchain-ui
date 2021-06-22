@@ -1,4 +1,4 @@
-import { effect } from "@vue/reactivity";
+import { effect, ReactiveEffect, stop } from "@vue/reactivity";
 import { UsecaseContext } from "../..";
 import { Asset, IAsset } from "../../entities";
 import B from "../../entities/utils/B";
@@ -8,23 +8,73 @@ export default ({
   services,
   store,
 }: UsecaseContext<"eth" | "bus", "wallet" | "asset">) => {
-  services.eth.onProviderNotFound(() => {
-    services.bus.dispatch({
-      type: "WalletConnectionErrorEvent",
-      payload: {
-        walletType: "eth",
-        message: "Metamask not found.",
-      },
-    });
-  });
-
-  services.eth.onChainIdDetected((chainId) => {
-    store.wallet.eth.chainId = chainId;
-  });
-
-  const etheriumState = services.eth.getState();
-
   const actions = {
+    initEthWallet() {
+      const effects: ReactiveEffect<any>[] = [];
+      const unsubscribeProvider = services.eth.onProviderNotFound(() => {
+        services.bus.dispatch({
+          type: "WalletConnectionErrorEvent",
+          payload: {
+            walletType: "eth",
+            message: "Metamask not found.",
+          },
+        });
+      });
+
+      const unsubscribeChainId = services.eth.onChainIdDetected((chainId) => {
+        store.wallet.eth.chainId = chainId;
+      });
+
+      const etheriumState = services.eth.getState();
+
+      effects.push(
+        effect(() => {
+          // Only show connected when we have an address
+          if (store.wallet.eth.isConnected !== etheriumState.connected) {
+            store.wallet.eth.isConnected =
+              etheriumState.connected && !!etheriumState.address;
+
+            if (store.wallet.eth.isConnected) {
+              services.bus.dispatch({
+                type: "WalletConnectedEvent",
+                payload: {
+                  walletType: "eth",
+                  address: store.wallet.eth.address,
+                },
+              });
+            }
+          }
+        }),
+      );
+
+      effects.push(
+        effect(() => {
+          store.wallet.eth.address = etheriumState.address;
+        }),
+      );
+
+      effects.push(
+        effect(() => {
+          store.wallet.eth.balances = etheriumState.balances;
+        }),
+      );
+
+      effects.push(
+        effect(async () => {
+          etheriumState.log; // trigger on log change
+          await services.eth.getBalance();
+        }),
+      );
+
+      return () => {
+        unsubscribeProvider();
+        unsubscribeChainId();
+        for (let ef of effects) {
+          stop(ef);
+        }
+      };
+    },
+
     isSupportedNetwork() {
       return isSupportedEVMChain(store.wallet.eth.chainId);
     },
@@ -56,37 +106,6 @@ export default ({
       return hash;
     },
   };
-
-  effect(() => {
-    // Only show connected when we have an address
-    if (store.wallet.eth.isConnected !== etheriumState.connected) {
-      store.wallet.eth.isConnected =
-        etheriumState.connected && !!etheriumState.address;
-
-      if (store.wallet.eth.isConnected) {
-        services.bus.dispatch({
-          type: "WalletConnectedEvent",
-          payload: {
-            walletType: "eth",
-            address: store.wallet.eth.address,
-          },
-        });
-      }
-    }
-  });
-
-  effect(() => {
-    store.wallet.eth.address = etheriumState.address;
-  });
-
-  effect(() => {
-    store.wallet.eth.balances = etheriumState.balances;
-  });
-
-  effect(async () => {
-    etheriumState.log; // trigger on log change
-    await services.eth.getBalance();
-  });
 
   return actions;
 };

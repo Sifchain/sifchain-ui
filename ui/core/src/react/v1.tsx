@@ -26,7 +26,7 @@ type Bus = Services["bus"];
 
 type SifchainEnv = "localnet" | "devnet" | "testnet" | "mainnet";
 
-function setupSifchainApi(environment: SifchainEnv) {
+function setupSifchainApi(environment: SifchainEnv = "localnet") {
   // Following should happen with an underlying shared API
   const { tag, ethAssetTag, sifAssetTag } = profileLookup[
     {
@@ -48,6 +48,9 @@ function setupSifchainApi(environment: SifchainEnv) {
     ...usecases.wallet.sif,
     bus: () => services.bus,
   };
+  usecases.clp.initClp();
+  usecases.wallet.sif.initSifWallet();
+  usecases.wallet.eth.initEthWallet();
   return { api, services, store };
 }
 
@@ -82,7 +85,7 @@ export function SifchainProvider(props: {
   children: React.ReactNode;
   environment: "localnet" | "devnet" | "testnet" | "mainnet";
 }) {
-  const ctx = useMemo(() => setupSifchainApi(props.environment), [
+  const ctx = useMemo(() => setupSifchainApi(props.environment || "localnet"), [
     props.environment,
   ]);
   return (
@@ -127,13 +130,16 @@ export function useEthState() {
 }
 
 export function useSifState() {
-  return useStateHook<Store["wallet"]["eth"]>(
+  return useStateHook<Store["wallet"]["sif"]>(
     "useEthState",
     (setState, store) => {
+      console.log("Updating sif state");
       setState({
         address: store.wallet.sif.address,
         balances: store.wallet.sif.balances,
         isConnected: store.wallet.sif.isConnected,
+        lmUserData: store.wallet.sif.lmUserData,
+        vsUserData: store.wallet.sif.vsUserData,
       });
     },
   );
