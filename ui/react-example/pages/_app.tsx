@@ -3,7 +3,7 @@ import { SifchainProvider } from "ui-core/lib/react/v1";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SifchainProvider environment="devnet">
+    <SifchainProvider environment="localnet">
       <Component {...pageProps} />
     </SifchainProvider>
   );

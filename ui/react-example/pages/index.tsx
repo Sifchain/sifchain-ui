@@ -8,6 +8,7 @@ import {
   useAssetState,
   useLpPoolsState,
 } from "ui-core/lib/react/v1";
+import SifchainInspector from "../components/SifchainInspector";
 
 export default function Home() {
   const sifchain = useSifchain();
@@ -28,7 +29,6 @@ export default function Home() {
 
   console.log("Re-rendering eth.isConnected:" + eth?.isConnected);
   console.log("Re-rendering sif.isConnected:" + sif?.isConnected);
-
   return (
     <>
       {!sif?.isConnected && (
@@ -40,31 +40,31 @@ export default function Home() {
       <div>
         <b>SIF</b>
         <code>
-          <JSONTree data={sif} />
+          <SifchainInspector data={sif} />
         </code>
       </div>
       <div>
         <b>ETH</b>
         <code>
-          <JSONTree data={eth} />
+          <SifchainInspector data={eth} />
         </code>
       </div>
       <div>
         <b>Pools</b>
         <code>
-          <JSONTree data={pools} />
+          <SifchainInspector data={pools} />
         </code>
       </div>
       <div>
         <b>LpPools</b>
         <code>
-          <JSONTree data={lpPools} />
+          <SifchainInspector data={lpPools} />
         </code>
       </div>
       <div>
         <b>Assets</b>
         <code>
-          <JSONTree data={assets} />
+          <SifchainInspector data={assets} />
         </code>
       </div>
     </>

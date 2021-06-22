@@ -14,6 +14,8 @@ import React, {
 import { profileLookup, SifEnv } from "../config/getEnv";
 import { Store } from "../store";
 import { effect, stop } from "@vue/reactivity";
+import { isAmount, isAssetAmount, LiquidityProvider } from "../entities";
+import { AccountPool } from "../store/pools";
 
 type Usecases = ReturnType<typeof createUsecases>;
 type Api = Usecases["clp"] &
@@ -36,6 +38,7 @@ function setupSifchainApi(environment: SifchainEnv = "localnet") {
       mainnet: SifEnv.MAINNET,
     }[environment]
   ];
+
   const config = getConfig(tag, sifAssetTag, ethAssetTag);
   const services = createServices(config);
   const store = createStore();
@@ -48,10 +51,18 @@ function setupSifchainApi(environment: SifchainEnv = "localnet") {
     ...usecases.wallet.sif,
     bus: () => services.bus,
   };
-  usecases.clp.initClp();
-  usecases.wallet.sif.initSifWallet();
-  usecases.wallet.eth.initEthWallet();
-  return { api, services, store };
+
+  const unsubscribers: (() => void)[] = [];
+  unsubscribers.push(usecases.clp.initClp());
+  unsubscribers.push(usecases.wallet.sif.initSifWallet());
+  unsubscribers.push(usecases.wallet.eth.initEthWallet());
+
+  function cleanup() {
+    for (let unsubscriber of unsubscribers) {
+      unsubscriber();
+    }
+  }
+  return { api, services, store, cleanup };
 }
 
 type ExtractorFn<T> = (
@@ -85,18 +96,64 @@ export function SifchainProvider(props: {
   children: React.ReactNode;
   environment: "localnet" | "devnet" | "testnet" | "mainnet";
 }) {
-  const ctx = useMemo(() => setupSifchainApi(props.environment || "localnet"), [
-    props.environment,
-  ]);
-  return (
+  const [ctx, setCtx] = useState<SifchainContext>();
+
+  useEffect(() => {
+    const { cleanup, ...ctx } = setupSifchainApi(
+      props.environment || "localnet",
+    );
+    setCtx(ctx);
+    return cleanup;
+  }, [props.environment]);
+  return ctx ? (
     <SifchainContext.Provider value={ctx}>
       {props.children}
     </SifchainContext.Provider>
-  );
+  ) : null;
 }
 
-function clone(obj: object) {
-  return JSON.parse(JSON.stringify(obj));
+// https://stackoverflow.com/questions/728360/how-do-i-correctly-clone-a-javascript-object
+function clone<T extends unknown>(obj: T): T {
+  let copy: T;
+
+  // Handle simple and custom immutable types
+  if (
+    null == obj ||
+    "object" !== typeof obj ||
+    isAssetAmount(obj) ||
+    isAmount(obj)
+  )
+    return obj;
+
+  // Handle our bespoke types
+
+  // Handle Date
+  if (obj instanceof Date) {
+    copy = new Date() as T;
+    (copy as Date).setTime(obj.getTime());
+    return copy;
+  }
+
+  // Handle Array
+  if (obj instanceof Array) {
+    copy = [] as T;
+    for (let i = 0, len = obj.length; i < len; i++) {
+      (copy as any)[i] = clone(obj[i]);
+    }
+    return copy;
+  }
+
+  // Handle Object
+  if (obj instanceof Object) {
+    copy = {} as T;
+    for (let attr in obj) {
+      if (obj.hasOwnProperty(attr))
+        (copy as any)[attr] = clone((obj as any)[attr]);
+    }
+    return copy;
+  }
+
+  throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
 export function useSifchain() {
@@ -152,7 +209,7 @@ export function usePoolState() {
 }
 
 export function useLpPoolsState(address?: string) {
-  return useStateHook<Store["accountpools"]>(
+  return useStateHook<Store["accountpools"] | { [h: string]: AccountPool }>(
     "useLpPoolsState",
     (setState, store) => {
       if (address) {
