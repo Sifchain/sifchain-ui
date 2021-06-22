@@ -1,32 +1,73 @@
-import { useEffect } from "react";
+import { useCallback } from "react";
 import JSONTree from "react-json-tree";
-import { useSifchain } from "ui-core/lib/react";
+import {
+  useEthState,
+  useSifchain,
+  useSifState,
+  usePoolState,
+  useAssetState,
+  useLpPoolsState,
+  useSifchainEvents,
+} from "ui-core/lib/react/v1";
 
 export default function Home() {
-  const [json, api] = useSifchain();
+  const sifchain = useSifchain();
 
-  useEffect(() => {
-    Promise.all([api.connectToEthWallet(), api.connectToSifWallet()]);
-  }, [api]);
+  const connectToSif = useCallback(() => {
+    sifchain.connectToSifWallet();
+  }, [sifchain]);
 
-  console.log("Re-rendering eth.isConnected:" + json?.wallet.eth.isConnected);
-  console.log("Re-rendering sif.isConnected:" + json?.wallet.sif.isConnected);
+  const connectToEth = useCallback(() => {
+    sifchain.connectToEthWallet();
+  }, [sifchain]);
+
+  const eth = useEthState();
+  const sif = useSifState();
+  const assets = useAssetState();
+  const pools = usePoolState();
+  const lpPools = useLpPoolsState();
+
+  console.log("Re-rendering eth.isConnected:" + eth?.isConnected);
+  console.log("Re-rendering sif.isConnected:" + sif?.isConnected);
 
   return (
     <>
-      {!json?.wallet.sif.isConnected && (
-        <button onClick={() => api.connectToSifWallet()}>
-          Connect to Sifchain
-        </button>
+      {!sif?.isConnected && (
+        <button onClick={connectToSif}>Connect to Sifchain</button>
       )}
-      {!json?.wallet.eth.isConnected && (
-        <button onClick={() => api.connectToEthWallet()}>
-          Connect to Metamask
-        </button>
+      {!eth?.isConnected && (
+        <button onClick={connectToEth}>Connect to Metamask</button>
       )}
-      <code>
-        <JSONTree data={json} />
-      </code>
+      <div>
+        <b>SIF</b>
+        <code>
+          <JSONTree data={sif} />
+        </code>
+      </div>
+      <div>
+        <b>ETH</b>
+        <code>
+          <JSONTree data={eth} />
+        </code>
+      </div>
+      <div>
+        <b>Pools</b>
+        <code>
+          <JSONTree data={pools} />
+        </code>
+      </div>
+      <div>
+        <b>LpPools</b>
+        <code>
+          <JSONTree data={lpPools} />
+        </code>
+      </div>
+      <div>
+        <b>Assets</b>
+        <code>
+          <JSONTree data={assets} />
+        </code>
+      </div>
     </>
   );
 }
