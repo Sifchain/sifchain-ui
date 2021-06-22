@@ -3,9 +3,7 @@ import StreamZip from "node-stream-zip";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
-// import mkdirp from "mkdirp";
 
-const mkdirp = require("mkdirp");
 const retry = require("retry-assert");
 
 // Not in use, don't have good place to get the extension zips, for now
@@ -65,8 +63,7 @@ export async function getInputValue(selector) {
 export async function assertWaitedText(
   selector,
   expectedText,
-  timeout = 5000,
-  // timeout = 30000,
+  timeout = 30000,
 ) {
   const text = await retry()
     .fn(() => page.innerText(selector))
