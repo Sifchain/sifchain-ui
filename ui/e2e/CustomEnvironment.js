@@ -1,7 +1,4 @@
-// import { closeAllPages, takeScreenshots } from "./utils";
-const utils = require("./utils2");
-// const takeScreenshots = require("./utils").takeScreenshots;
-// const closeAllPages = require("./utils").closeAllPages;
+const { takeScreenshots, closeAllPages } = require("./utils2");
 const PlaywrightEnvironment = require("jest-playwright-preset/lib/PlaywrightEnvironment")
   .default;
 
@@ -15,22 +12,18 @@ class CustomEnvironment extends PlaywrightEnvironment {
   }
 
   async handleTestEvent(event) {
-    // await super.handleTestEvent(event);
     switch (event.name) {
       case "hook_failure":
-        await utils.takeScreenshots("hook_failed", this.global.context);
+        await takeScreenshots("hook_failed", this.global.context);
         break;
       case "test_fn_failure":
         const parentName = event.test.parent.name.replace(/\W/g, "-");
         const specName = event.test.name.replace(/\W/g, "-");
 
-        await utils.takeScreenshots(
-          `${parentName}-${specName}`,
-          this.global.context,
-        );
+        await takeScreenshots(`${parentName}-${specName}`, this.global.context);
         break;
       case "test_done":
-        await utils.closeAllPages(this.global.context);
+        await closeAllPages(this.global.context);
         break;
       default:
         break;
@@ -39,4 +32,3 @@ class CustomEnvironment extends PlaywrightEnvironment {
 }
 
 module.exports = CustomEnvironment;
-// export default CustomEnvironment;
