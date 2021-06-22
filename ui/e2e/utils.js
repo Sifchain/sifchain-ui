@@ -3,8 +3,9 @@ import StreamZip from "node-stream-zip";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
-import mkdirp from "mkdirp";
+// import mkdirp from "mkdirp";
 
+const mkdirp = require("mkdirp");
 const retry = require("retry-assert");
 
 // Not in use, don't have good place to get the extension zips, for now
@@ -64,7 +65,8 @@ export async function getInputValue(selector) {
 export async function assertWaitedText(
   selector,
   expectedText,
-  timeout = 30000,
+  timeout = 5000,
+  // timeout = 30000,
 ) {
   const text = await retry()
     .fn(() => page.innerText(selector))
@@ -83,28 +85,32 @@ export async function assertWaitedValue(
     .until((value) => expect(value).toBe(expectedValue));
 }
 
-export async function takeScreenshot(name) {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getUTCMonth() + 1;
-  const dateOfMonth = date.getUTCDate();
-  const hour = date.getUTCHours();
-  const minute = date.getUTCMinutes();
-  const sec = date.getUTCSeconds();
-  const dateString = `${year}-${month}-${dateOfMonth}-${hour}-${minute}-${sec}`;
+// export async function takeScreenshots(name, context = global.context) {
+//   const date = new Date();
+//   const year = date.getFullYear();
+//   const month = date.getUTCMonth() + 1;
+//   const dateOfMonth = date.getUTCDate();
+//   const hour = date.getUTCHours();
+//   const minute = date.getUTCMinutes();
+//   const sec = date.getUTCSeconds();
+//   const dateString = `${year}-${month}-${dateOfMonth}-${hour}-${minute}-${sec}`;
 
-  const screenshotPath = `screenshots/${browserName}-${dateString}-${name.replace(
-    / /g,
-    "_",
-  )}`;
+//   const screenshotPath = `screenshots/${name.replace(/ /g, "_")}-${dateString}`;
 
-  await mkdirp("screenshots");
+//   await mkdirp("screenshots");
 
-  const pages = await context.pages();
-  await pages.forEach(async (page) => {
-    const title = await page.title();
-    await page.screenshot({
-      path: `${screenshotPath}_${title}.png`,
-    });
-  });
-}
+//   const pages = await context.pages();
+//   await pages.forEach(async (page) => {
+//     const title = await page.title();
+//     await page.screenshot({
+//       path: `${screenshotPath}_${title}.png`,
+//     });
+//   });
+// }
+
+// export async function closeAllPages() {
+//   const pages = await context.pages();
+//   await pages.forEach(async (page) => {
+//     await page.close();
+//   });
+// }
