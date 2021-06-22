@@ -7,7 +7,6 @@ import {
   usePoolState,
   useAssetState,
   useLpPoolsState,
-  useSifchainEvents,
 } from "ui-core/lib/react/v1";
 
 export default function Home() {

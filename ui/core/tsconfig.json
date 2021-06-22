@@ -14,7 +14,7 @@
     "outDir": "./lib",
     "types": ["node", "jest"],
     "baseUrl": ".",
-    "jsx": "preserve"
+    "jsx": "react"
   },
   "include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/**/*.vue"],
   "exclude": ["node_modules"]

@@ -4,7 +4,13 @@ import {
   createUsecases,
   getConfig,
 } from "../index";
-import { useEffect, createContext, useState, useContext, useMemo } from "react";
+import React, {
+  useEffect,
+  createContext,
+  useState,
+  useContext,
+  useMemo,
+} from "react";
 import { profileLookup, SifEnv } from "../config/getEnv";
 import { Store } from "../store";
 import { effect, stop } from "@vue/reactivity";
@@ -79,7 +85,6 @@ export function SifchainProvider(props: {
   const ctx = useMemo(() => setupSifchainApi(props.environment), [
     props.environment,
   ]);
-
   return (
     <SifchainContext.Provider value={ctx}>
       {props.children}
