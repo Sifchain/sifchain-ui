@@ -10,7 +10,7 @@ export class BalancesPage {
   }
 
   async navigate() {
-    await page.goto(`${DEX_TARGET}/#/import`, {
+    await page.goto(`${DEX_TARGET}/#/balances`, {
       waitUntil: "domcontentloaded",
     });
   }

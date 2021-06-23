@@ -49,7 +49,7 @@ export default defineComponent({
     const { store, usecases } = useCore();
     const router = useRouter();
     const mode = computed(() => {
-      return router.currentRoute.value.path.indexOf("/import/reverse") > -1
+      return router.currentRoute.value.path.indexOf("/balances/export") > -1
         ? "export"
         : "import";
     });
@@ -169,7 +169,7 @@ export default defineComponent({
     function requestTransactionModalClose() {
       if (transactionState.value === "confirmed") {
         transactionState.value = "selecting";
-        router.push("/import"); // TODO push back to peg, but load unpeg tab when unpegging -> dynamic routing?
+        router.push("/balances"); // TODO push back to peg, but load unpeg tab when unpegging -> dynamic routing?
       } else {
         transactionState.value = "selecting";
       }
@@ -235,7 +235,7 @@ export default defineComponent({
 <template>
   <Layout
     :title="mode === 'import' ? 'Import Asset' : 'Export Asset'"
-    backLink="/import"
+    backLink="/balances"
   >
     <div class="vspace">
       <CurrencyField

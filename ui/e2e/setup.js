@@ -31,6 +31,7 @@ beforeAll(async () => {
   });
   // exposing "page" object globally
   [page] = await context.pages();
+  global.context = context; // this is needed to generate screenshots inside custom environment. 'context' is not visible there
 
   await setupExtensions();
 });
