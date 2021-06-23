@@ -45,11 +45,14 @@ jobs:
         run: cd e2e && yarn install --frozen-lockfile
 
       - name: Run e2e Tests
+        id: e2e_run
         run: yarn build && yarn e2e
         env:
           CI: true
       
-      - uses: actions/upload-artifact@master
+      - name: Upload artifacts
+        if: ${{ success() || steps.e2e_run.outcome == failure() }}
+        uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
           path: ./e2e/screenshots
