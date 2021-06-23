@@ -48,6 +48,11 @@ jobs:
         run: yarn build && yarn e2e
         env:
           CI: true
+      
+      - uses: actions/upload-artifact@master
+        with:
+          name: fe-build-artifact-${{ github.sha }}
+          path: ./e2e/screenshots
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v1
