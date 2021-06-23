@@ -58,9 +58,6 @@ export default ({
       return await services.sif.transfer(params);
     },
 
-    /**
-     * This is the docs for connect to sif wallet
-     */
     async connectToSifWallet() {
       try {
         // TODO type
