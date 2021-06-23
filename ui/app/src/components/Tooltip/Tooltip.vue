@@ -57,7 +57,7 @@ export default defineComponent({
         </div>
       </div>
     </teleport>
-    <span class="trigger" ref="trigger">
+    <span class="tooltip-trigger trigger" :data-opened="opened" ref="trigger">
       <slot></slot>
     </span>
   </span>
@@ -92,6 +92,9 @@ export default defineComponent({
 }
 .trigger {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .tooltip-container-fit {
   width: auto !important;

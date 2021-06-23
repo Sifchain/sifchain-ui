@@ -4,6 +4,9 @@ import { useSubscription } from "./useSubscrition";
 
 export function useInitialize() {
   const { usecases, store } = useCore();
+
+  usecases.clp.init();
+
   // initialize subscriptions
   useSubscription(
     computed(() => store.wallet.eth.address), // Needs a ref

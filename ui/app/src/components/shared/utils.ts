@@ -1,6 +1,13 @@
 import { computed, Ref, ComputedRef } from "@vue/reactivity";
 import ColorHash from "color-hash";
-import { Asset, IAssetAmount, Network, toBaseUnits, TxHash } from "ui-core";
+import {
+  Asset,
+  IAssetAmount,
+  Network,
+  toBaseUnits,
+  TxHash,
+  Amount,
+} from "ui-core";
 import { format } from "ui-core/src/utils/format";
 import { useCore } from "@/hooks/useCore";
 
@@ -97,7 +104,14 @@ export async function getLMData(address: ComputedRef<any>, chainId: string) {
   if (!parsedData?.user) {
     return {};
   }
-  return parsedData.user;
+  return Object.fromEntries(
+    Object.entries(parsedData.user).map(([k, v]) => {
+      if (typeof v !== "number") {
+        return [k, v];
+      }
+      return [k, Amount(v.toFixed(18))];
+    }),
+  );
 }
 
 export async function getVSData(address: ComputedRef<any>, chainId: string) {
@@ -113,7 +127,14 @@ export async function getVSData(address: ComputedRef<any>, chainId: string) {
   if (!parsedData?.user) {
     return {};
   }
-  return parsedData.user;
+  return Object.fromEntries(
+    Object.entries(parsedData.user).map(([k, v]) => {
+      if (typeof v !== "number") {
+        return [k, v];
+      }
+      return [k, Amount(v.toFixed(18))];
+    }),
+  );
 }
 
 async function getClaimsData(
