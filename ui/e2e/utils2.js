@@ -13,7 +13,7 @@ async function takeScreenshots(name, context) {
     const sec = date.getUTCSeconds();
     const dateString = `${year}-${month}-${dateOfMonth}-${hour}-${minute}-${sec}`;
 
-    const screenshotPath = `screenshots/${name.replace(
+    const screenshotPath = `${screenshotsDir}/${name.replace(
       / /g,
       "_",
     )}-${dateString}`;
