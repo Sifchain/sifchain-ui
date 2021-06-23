@@ -36,6 +36,10 @@ export function Peg(
   config: PegConfig,
   SubscribeToTx = SubscribeToTxDep,
 ) {
+  /**
+   * Function to Peg assets to sifchain.
+   * First you do a thing then it is ok
+   */
   return async function* peg(
     assetAmount: IAssetAmount,
   ): AsyncGenerator<PegEvent> {

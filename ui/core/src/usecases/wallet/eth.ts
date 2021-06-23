@@ -79,7 +79,7 @@ export default ({
       return isSupportedEVMChain(store.wallet.eth.chainId);
     },
 
-    async disconnectWallet() {
+    async disconnectEthWallet() {
       await services.eth.disconnect();
     },
 

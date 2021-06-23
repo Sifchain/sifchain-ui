@@ -3,6 +3,7 @@ import {
   createServices,
   createUsecases,
   getConfig,
+  Usecases,
 } from "../index";
 import React, {
   useEffect,
@@ -16,15 +17,8 @@ import { Store } from "../store";
 import { effect, stop } from "@vue/reactivity";
 import { isAmount, isAssetAmount, LiquidityProvider } from "../entities";
 import { AccountPool } from "../store/pools";
-
-type Usecases = ReturnType<typeof createUsecases>;
-type Api = Usecases["clp"] &
-  Usecases["peg"] &
-  Usecases["reward"] &
-  Usecases["wallet"]["eth"] &
-  Usecases["wallet"]["sif"] & { bus: () => Bus };
-type Services = ReturnType<typeof createServices>;
-type Bus = Services["bus"];
+import { Api, createApi } from "../api";
+import { Services } from "../services";
 
 type SifchainEnv = "localnet" | "devnet" | "testnet" | "mainnet";
 
@@ -43,14 +37,7 @@ function setupSifchainApi(environment: SifchainEnv = "localnet") {
   const services = createServices(config);
   const store = createStore();
   const usecases = createUsecases({ store, services });
-  const api = {
-    ...usecases.clp,
-    ...usecases.peg,
-    ...usecases.reward,
-    ...usecases.wallet.eth,
-    ...usecases.wallet.sif,
-    bus: () => services.bus,
-  };
+  const api = createApi(usecases, services);
 
   const unsubscribers: (() => void)[] = [];
   unsubscribers.push(usecases.clp.initClp());

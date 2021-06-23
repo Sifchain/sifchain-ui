@@ -54,20 +54,23 @@ export default ({
       return await services.sif.getBalance(address);
     },
 
-    async connect(mnemonic: Mnemonic): Promise<string> {
-      if (!mnemonic) throw "Mnemonic must be defined";
-      if (!validateMnemonic(mnemonic)) throw "Invalid Mnemonic. Not sent.";
-      return await services.sif.setPhrase(mnemonic);
-    },
+    // async connect(mnemonic: Mnemonic): Promise<string> {
+    //   if (!mnemonic) throw "Mnemonic must be defined";
+    //   if (!validateMnemonic(mnemonic)) throw "Invalid Mnemonic. Not sent.";
+    //   return await services.sif.setPhrase(mnemonic);
+    // },
 
     async sendCosmosTransaction(params: TxParams) {
       return await services.sif.transfer(params);
     },
 
-    async disconnect() {
-      services.sif.purgeClient();
-    },
+    // async disconnect() {
+    //   services.sif.purgeClient();
+    // },
 
+    /**
+     * This is the docs for connect to sif wallet
+     */
     async connectToSifWallet() {
       try {
         // TODO type
