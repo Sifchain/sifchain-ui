@@ -51,7 +51,7 @@ jobs:
           CI: true
       
       - name: Upload artifacts
-        if: ${{ success() || steps.e2e_run.outcome == failure() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
