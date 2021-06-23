@@ -19,7 +19,7 @@ beforeEach(async () => {
   await resetExtensionsConnection();
 });
 
-describe("Swap", () => {
+describe.skip("Swap", () => {
   it("swaps", async () => {
     const tokenA = "cusdc";
     const tokenB = "rowan";

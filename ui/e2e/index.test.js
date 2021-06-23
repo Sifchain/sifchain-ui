@@ -86,7 +86,7 @@ describe("Import/export", () => {
     await balancesPage.verifyAssetAmount(assetNative, "9600.000000");
   });
 
-  it("imports ether", async () => {
+  it.only("imports ether", async () => {
     const importAmount = "1";
     const assetExternal = "eth";
     const assetNative = "ceth";
@@ -122,7 +122,8 @@ describe("Import/export", () => {
     const expectedAmount = (Number(cEthBalance) + Number(importAmount)).toFixed(
       6,
     );
-    await balancesPage.verifyAssetAmount(assetNative, expectedAmount);
+    await balancesPage.verifyAssetAmount(assetNative, expectedAmount + 1);
+    // await balancesPage.verifyAssetAmount(assetNative, expectedAmount);
   });
 
   it("imports tokens", async () => {
