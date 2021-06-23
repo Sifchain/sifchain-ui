@@ -1,6 +1,6 @@
-import { MM_CONFIG } from "../config";
 import { getExtensionPage } from "../utils";
 import expect from "expect-playwright";
+import { MM_CONFIG } from "../config";
 
 export class MetamaskNotificationPopup {
   constructor(config = MM_CONFIG) {
