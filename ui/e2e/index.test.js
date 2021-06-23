@@ -46,7 +46,7 @@ describe("Import/export", () => {
     // First we need to export rowan in order to have erowan on the bridgebank contract
     await balancesPage.navigate();
 
-    await balancesPage.openTab("native");
+    await balancesPage.openTab("native2"); // make test fail
     await balancesPage.export(assetNative, exportAmount);
 
     await balancesPage.openTab("external");
