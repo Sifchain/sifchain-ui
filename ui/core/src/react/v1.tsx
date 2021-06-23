@@ -1,10 +1,3 @@
-import {
-  createStore,
-  createServices,
-  createUsecases,
-  getConfig,
-  Usecases,
-} from "../index";
 import React, {
   useEffect,
   createContext,
@@ -12,53 +5,27 @@ import React, {
   useContext,
   useMemo,
 } from "react";
-import { profileLookup, SifEnv } from "../config/getEnv";
 import { Store } from "../store";
 import { effect, stop } from "@vue/reactivity";
-import { isAmount, isAssetAmount, LiquidityProvider } from "../entities";
+import { isAmount, isAssetAmount } from "../entities";
 import { AccountPool } from "../store/pools";
-import { Api, createApi } from "../api";
+import { Api } from "../api";
 import { Services } from "../services";
-
-type SifchainEnv = "localnet" | "devnet" | "testnet" | "mainnet";
-
-function setupSifchainApi(environment: SifchainEnv = "localnet") {
-  // Following should happen with an underlying shared API
-  const { tag, ethAssetTag, sifAssetTag } = profileLookup[
-    {
-      devnet: SifEnv.DEVNET,
-      localnet: SifEnv.LOCALNET,
-      testnet: SifEnv.TESTNET,
-      mainnet: SifEnv.MAINNET,
-    }[environment]
-  ];
-
-  const config = getConfig(tag, sifAssetTag, ethAssetTag);
-  const services = createServices(config);
-  const store = createStore();
-  const usecases = createUsecases({ store, services });
-  const api = createApi(usecases, services);
-
-  const unsubscribers: (() => void)[] = [];
-  unsubscribers.push(usecases.clp.initClp());
-  unsubscribers.push(usecases.wallet.sif.initSifWallet());
-  unsubscribers.push(usecases.wallet.eth.initEthWallet());
-
-  function cleanup() {
-    for (let unsubscriber of unsubscribers) {
-      unsubscriber();
-    }
-  }
-  return { api, services, store, cleanup };
-}
+import { setupSifchainApi } from "../setupSifchainApi";
 
 type ExtractorFn<T> = (
-  setter: React.Dispatch<React.SetStateAction<T | undefined>>,
+  setter: React.Dispatch<React.SetStateAction<T>>,
   store: Store,
 ) => void;
 
-function useStateHook<T>(name: string, extractor: ExtractorFn<T>) {
-  const [state, setState] = useState<T>();
+/**
+ * Abstraction to extract specific state from the store
+ * @param name the hook name
+ * @param extractor a function to convert between the native store and hook output
+ * @returns data output type
+ */
+function useStateHook<T>(name: string, extractor: ExtractorFn<T>, init: T) {
+  const [state, setState] = useState<T>(init);
   const ctx = useContext(SifchainContext);
   if (!ctx) {
     throw new Error(name + " must be used within a SifchainProvider");
@@ -170,6 +137,12 @@ export function useEthState() {
         isConnected: store.wallet.eth.isConnected,
       });
     },
+    {
+      chainId: "",
+      address: "",
+      balances: [],
+      isConnected: false,
+    },
   );
 }
 
@@ -177,7 +150,6 @@ export function useSifState() {
   return useStateHook<Store["wallet"]["sif"]>(
     "useEthState",
     (setState, store) => {
-      console.log("Updating sif state");
       setState({
         address: store.wallet.sif.address,
         balances: store.wallet.sif.balances,
@@ -186,13 +158,24 @@ export function useSifState() {
         vsUserData: store.wallet.sif.vsUserData,
       });
     },
+    {
+      address: "",
+      balances: [],
+      isConnected: false,
+      lmUserData: null,
+      vsUserData: null,
+    },
   );
 }
 
 export function usePoolState() {
-  return useStateHook<Store["pools"]>("usePoolsState", (setState, store) => {
-    setState(clone(store.pools));
-  });
+  return useStateHook<Store["pools"]>(
+    "usePoolsState",
+    (setState, store) => {
+      setState(clone(store.pools));
+    },
+    {},
+  );
 }
 
 export function useLpPoolsState(address?: string) {
@@ -206,11 +189,28 @@ export function useLpPoolsState(address?: string) {
 
       setState(clone(store.accountpools));
     },
+    {},
+  );
+}
+
+export function useTxState() {
+  return useStateHook<Store["tx"]>(
+    "useTxState",
+    (setState, store) => {
+      setState({
+        eth: store.tx.eth,
+      });
+    },
+    { eth: {} },
   );
 }
 
 export function useAssetState() {
-  return useStateHook<Store["asset"]>("useAssetState", (setState, store) => {
-    setState(clone(store.asset));
-  });
+  return useStateHook<Store["asset"]>(
+    "useAssetState",
+    (setState, store) => {
+      setState(clone(store.asset));
+    },
+    { topTokens: [] },
+  );
 }

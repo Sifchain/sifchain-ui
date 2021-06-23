@@ -8,7 +8,7 @@ import {
   useAssetState,
   useLpPoolsState,
 } from "ui-core/lib/react/v1";
-import { AssetAmount } from "../../core/src";
+import { Asset, AssetAmount } from "../../core/src";
 import SifchainInspector from "../components/SifchainInspector";
 
 export default function Home() {
