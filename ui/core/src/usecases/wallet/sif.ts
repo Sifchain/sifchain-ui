@@ -1,6 +1,4 @@
 import { Address, TxParams } from "../../entities";
-import { validateMnemonic } from "bip39";
-import { Mnemonic } from "../../entities/Wallet";
 import { UsecaseContext } from "..";
 import { effect, ReactiveEffect, stop } from "@vue/reactivity";
 
