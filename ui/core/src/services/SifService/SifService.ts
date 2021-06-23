@@ -113,7 +113,6 @@ export default function createSifService({
         state.address = client.senderAddress;
         state.accounts = await client.getAccounts();
         state.balances = await instance.getBalance(client.senderAddress);
-        console.log({ "state.balances": state.balances });
       } catch (e) {
         if (!e.toString().toLowerCase().includes("no address found on chain")) {
           state.connected = false;
@@ -250,7 +249,6 @@ export default function createSifService({
       address?: Address,
       asset?: Asset,
     ): Promise<IAssetAmount[]> {
-      console.log("getBalance");
       if (!client) {
         throw "No client. Please sign in.";
       }
@@ -282,7 +280,6 @@ export default function createSifService({
             return balance.asset.symbol === asset.symbol;
           });
       } catch (error) {
-        console.log({ error });
         throw error;
       }
     },
