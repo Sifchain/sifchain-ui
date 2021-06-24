@@ -3,6 +3,7 @@ import StreamZip from "node-stream-zip";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
+import mkdirp from "mkdirp";
 
 const retry = require("retry-assert");
 
@@ -106,4 +107,11 @@ export async function assertWaitedValue(
     .fn(() => getInputValue(selector))
     .withTimeout(timeout)
     .until((value) => expect(value).toBe(expectedValue));
+}
+
+export async function preparePath(path) {
+  if (!fs.existsSync(path)) {
+    await mkdirp(path);
+  }
+  return path;
 }

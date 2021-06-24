@@ -49,10 +49,14 @@ jobs:
         env:
           CI: true
       
-      - uses: actions/upload-artifact@master
+      - name: Upload artifacts
+        if: ${{ failure() }}  # runs when previous step failed
+        uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
-          path: ./e2e/screenshots
+          path: |
+            ./ui/e2e/screenshots
+            ./ui/e2e/logs
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v1
