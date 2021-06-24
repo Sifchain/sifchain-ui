@@ -2,4 +2,5 @@ extensions
 playwright
 coverage
 screenshots/*
+logs/*
 videos

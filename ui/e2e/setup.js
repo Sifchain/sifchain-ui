@@ -1,6 +1,6 @@
 // setup.js
 const { chromium } = require("playwright");
-const { extractExtensionPackage } = require("./utils");
+const { extractExtensionPackage, preparePath } = require("./utils");
 const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
 const path = require("path");
 const fs = require("fs");
@@ -27,6 +27,9 @@ beforeAll(async () => {
       `--disable-extensions-except=${pathToKeplrExtension},${pathToMmExtension}`,
       `--load-extension=${pathToKeplrExtension},${pathToMmExtension}`,
     ],
+    recordHar: {
+      path: `${await preparePath("./logs")}/har.json`,
+    },
   });
   // exposing "page" object globally
   [page] = await context.pages();
