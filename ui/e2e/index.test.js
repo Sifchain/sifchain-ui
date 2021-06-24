@@ -37,7 +37,7 @@ beforeEach(async () => {
   await resetExtensionsConnection();
 });
 
-describe("Import/export", () => {
+describe.only("Import/export", () => {
   it("imports rowan", async () => {
     const assetNative = "rowan";
     const exportAmount = "500";
