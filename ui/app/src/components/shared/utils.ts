@@ -196,13 +196,6 @@ export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
   }
 }
 
-export function getRewardEarningsUrl(chainId: string): string {
-  switch (chainId) {
-    case "sifchain":
-      return `https://vtdbgplqd6.execute-api.us-west-2.amazonaws.com/default/netchange`;
-    case "sifchain-testnet":
-      return `https://vtdbgplqd6.execute-api.us-west-2.amazonaws.com/default/netchange/testnet`;
-    default:
-      return `https://vtdbgplqd6.execute-api.us-west-2.amazonaws.com/default/netchange/devnet`;
-  }
+export function getRewardEarningsUrl(): string {
+  return `https://data.sifchain.finance/beta/network`;
 }
