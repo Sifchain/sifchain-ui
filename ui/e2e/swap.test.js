@@ -16,6 +16,7 @@ const { resetExtensionsConnection } = require("./helpers.js");
 useStack("every-test");
 
 beforeEach(async () => {
+  page = await context.newPage(); // TODO: move it to global setup
   await resetExtensionsConnection();
 });
 
