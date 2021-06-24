@@ -162,7 +162,7 @@ export const usePoolState = createStateHook<Store["pools"]>(
 
 type AccountPoolsStore = Store["accountpools"];
 type AccountPoolsHashLookup = { [h: string]: AccountPool };
-type HookArgs = [address: string];
+type HookArgs = [string];
 
 export const useLpPoolsState = createStateHook<
   AccountPoolsStore | AccountPoolsHashLookup,
