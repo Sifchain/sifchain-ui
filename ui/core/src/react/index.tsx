@@ -75,8 +75,6 @@ function clone<T extends unknown>(obj: T): T {
   )
     return obj;
 
-  // Handle our bespoke types
-
   // Handle Date
   if (obj instanceof Date) {
     copy = new Date() as T;
