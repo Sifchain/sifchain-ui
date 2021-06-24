@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import JSONTree from "react-json-tree";
 import {
   useEthState,
   useSifchain,
@@ -7,8 +6,7 @@ import {
   usePoolState,
   useAssetState,
   useLpPoolsState,
-} from "@sifchain/sdk/lib/react/v1";
-import { Asset, AssetAmount } from "../../core/src";
+} from "@sifchain/sdk/lib/react";
 import SifchainInspector from "../components/SifchainInspector";
 
 export default function Home() {
