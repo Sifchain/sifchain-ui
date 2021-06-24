@@ -16,6 +16,10 @@
   "files": [
     "lib/**/*"
   ],
+  "exports": {
+    ".": "./lib/index.js",
+    "./react": "./lib/sdk-react/index.js"
+  },
   "dependencies": {
     "@cosmjs/launchpad": "^0.23.0",
     "@metamask/detect-provider": "^1.1.0",

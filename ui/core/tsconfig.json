@@ -13,7 +13,7 @@
     "declaration": true,
     "outDir": "./lib",
     "types": ["node", "jest"],
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "jsx": "react",
     "removeComments": false
   },
