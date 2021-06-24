@@ -33,7 +33,7 @@ function createStateHook<T, A extends any[] = []>(
       });
 
       return () => stop(ef);
-    }, [ctx.store, extractor]);
+    }, [ctx.store]);
 
     return state;
   };
