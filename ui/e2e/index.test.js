@@ -34,6 +34,7 @@ const { rewardsPage } = require("./pages/RewardsPage.js");
 useStack("every-test");
 
 beforeEach(async () => {
+  page = await context.newPage(); // TODO: move it to global setup
   await resetExtensionsConnection();
 });
 
@@ -50,6 +51,7 @@ describe.only("Import/export", () => {
     await balancesPage.export(assetNative, exportAmount);
 
     await balancesPage.openTab("external");
+    await resetExtensionsConnection();
     await balancesPage.verifyAssetAmount(assetExternal, "600.000000");
 
     // Now lets import erowan
@@ -100,6 +102,7 @@ describe.only("Import/export", () => {
     );
 
     await balancesPage.openTab("external");
+    await resetExtensionsConnection();
     await balancesPage.import(assetExternal, importAmount);
 
     await balancesPage.clickConfirmImport();
@@ -137,6 +140,7 @@ describe.only("Import/export", () => {
     );
 
     await balancesPage.openTab("external");
+    await resetExtensionsConnection();
     await balancesPage.import(importAsset, importAmount);
 
     await balancesPage.clickConfirmImport();
