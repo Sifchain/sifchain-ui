@@ -51,7 +51,7 @@ jobs:
           CI: true
       
       - name: Upload artifacts
-        if: ${{ steps.e2e_run.output == failure() }}
+        if: ${{ failure() }}  # runs when previous step failed
         uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
