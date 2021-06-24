@@ -13,10 +13,7 @@ import { Api } from "../api";
 import { Services } from "../services";
 import { setupSifchainApi } from "../setupSifchainApi";
 
-type ExtractorFn<T> = (
-  setter: React.Dispatch<React.SetStateAction<T>>,
-  store: Store,
-) => void;
+type ExtractorFn<T> = (store: Store) => T;
 
 /**
  * Abstraction to extract specific state from the store
@@ -24,7 +21,13 @@ type ExtractorFn<T> = (
  * @param extractor a function to convert between the native store and hook output
  * @returns data output type
  */
-function useStateHook<T>(name: string, extractor: ExtractorFn<T>, init: T) {
+type UseStateHookArgs<T> = {
+  name: string;
+  extractor: ExtractorFn<T>;
+  init: T;
+};
+
+function useStateHook<T>({ name, extractor, init }: UseStateHookArgs<T>) {
   const [state, setState] = useState<T>(init);
   const ctx = useContext(SifchainContext);
   if (!ctx) {
@@ -34,7 +37,7 @@ function useStateHook<T>(name: string, extractor: ExtractorFn<T>, init: T) {
   useEffect(() => {
     const { store } = ctx;
     const ef = effect(() => {
-      extractor(setState, store);
+      setState(extractor(store));
     });
 
     return () => stop(ef);
@@ -126,91 +129,85 @@ export function useSifchainEvents() {
   return useMemo(() => ctx.services.bus, [ctx.services.bus]);
 }
 
+const useEthStateArgs: UseStateHookArgs<Store["wallet"]["eth"]> = {
+  name: "useEthState",
+  extractor: (store) => ({
+    chainId: store.wallet.eth.chainId,
+    address: store.wallet.eth.address,
+    balances: store.wallet.eth.balances,
+    isConnected: store.wallet.eth.isConnected,
+  }),
+  init: {
+    chainId: "",
+    address: "",
+    balances: [],
+    isConnected: false,
+  },
+};
 export function useEthState() {
-  return useStateHook<Store["wallet"]["eth"]>(
-    "useEthState",
-    (setState, store) => {
-      setState({
-        chainId: store.wallet.eth.chainId,
-        address: store.wallet.eth.address,
-        balances: store.wallet.eth.balances,
-        isConnected: store.wallet.eth.isConnected,
-      });
-    },
-    {
-      chainId: "",
-      address: "",
-      balances: [],
-      isConnected: false,
-    },
-  );
+  return useStateHook(useEthStateArgs);
 }
 
+const useSifStateArgs: UseStateHookArgs<Store["wallet"]["sif"]> = {
+  name: "useEthState",
+  extractor: (store) => ({
+    address: store.wallet.sif.address,
+    balances: store.wallet.sif.balances,
+    isConnected: store.wallet.sif.isConnected,
+    lmUserData: store.wallet.sif.lmUserData,
+    vsUserData: store.wallet.sif.vsUserData,
+  }),
+  init: {
+    address: "",
+    balances: [],
+    isConnected: false,
+    lmUserData: null,
+    vsUserData: null,
+  },
+};
 export function useSifState() {
-  return useStateHook<Store["wallet"]["sif"]>(
-    "useEthState",
-    (setState, store) => {
-      setState({
-        address: store.wallet.sif.address,
-        balances: store.wallet.sif.balances,
-        isConnected: store.wallet.sif.isConnected,
-        lmUserData: store.wallet.sif.lmUserData,
-        vsUserData: store.wallet.sif.vsUserData,
-      });
-    },
-    {
-      address: "",
-      balances: [],
-      isConnected: false,
-      lmUserData: null,
-      vsUserData: null,
-    },
-  );
+  return useStateHook(useSifStateArgs);
 }
 
+const usePoolStateArgs: UseStateHookArgs<Store["pools"]> = {
+  name: "usePoolsState",
+  extractor: (store) => clone(store.pools),
+  init: {},
+};
 export function usePoolState() {
-  return useStateHook<Store["pools"]>(
-    "usePoolsState",
-    (setState, store) => {
-      setState(clone(store.pools));
-    },
-    {},
-  );
+  return useStateHook(usePoolStateArgs);
 }
 
 export function useLpPoolsState(address?: string) {
-  return useStateHook<Store["accountpools"] | { [h: string]: AccountPool }>(
-    "useLpPoolsState",
-    (setState, store) => {
+  return useStateHook<Store["accountpools"] | { [h: string]: AccountPool }>({
+    name: "useLpPoolsState",
+    extractor: (store) => {
       if (address) {
-        setState(clone(store.accountpools[address]));
-        return;
+        return clone(store.accountpools[address]);
       }
 
-      setState(clone(store.accountpools));
+      return clone(store.accountpools);
     },
-    {},
-  );
+    init: {},
+  });
 }
 
+const useTxStateArgs: UseStateHookArgs<Store["tx"]> = {
+  name: "useTxState",
+  extractor: (store) => ({
+    eth: store.tx.eth,
+  }),
+  init: { eth: {} },
+};
 export function useTxState() {
-  return useStateHook<Store["tx"]>(
-    "useTxState",
-    (setState, store) => {
-      setState({
-        eth: store.tx.eth,
-      });
-    },
-    { eth: {} },
-  );
+  return useStateHook<Store["tx"]>(useTxStateArgs);
 }
 
+const useAssetStateArgs: UseStateHookArgs<Store["asset"]> = {
+  name: "useAssetState",
+  extractor: (store) => clone(store.asset),
+  init: { topTokens: [] },
+};
 export function useAssetState() {
-  return useStateHook<Store["asset"]>(
-    "useAssetState",
-    (setState, store) => {
-      setState(clone(store.asset));
-    },
-    { topTokens: [] },
-  );
+  return useStateHook(useAssetStateArgs);
 }
