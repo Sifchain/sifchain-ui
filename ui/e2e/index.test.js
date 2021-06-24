@@ -38,7 +38,7 @@ beforeEach(async () => {
 });
 
 describe("Import/export", () => {
-  it("imports rowan", async () => {
+  it.only("imports rowan", async () => {
     const assetNative = "rowan";
     const exportAmount = "500";
     const assetExternal = "erowan";
@@ -46,8 +46,8 @@ describe("Import/export", () => {
     // First we need to export rowan in order to have erowan on the bridgebank contract
     await balancesPage.navigate();
 
-    await balancesPage.openTab("native2"); // make test fail
-    await balancesPage.export(assetNative, exportAmount);
+    await balancesPage.openTab("native");
+    await balancesPage.export("blabla", exportAmount); // make test fail
 
     await balancesPage.openTab("external");
     await balancesPage.verifyAssetAmount(assetExternal, "600.000000");
@@ -86,7 +86,7 @@ describe("Import/export", () => {
     await balancesPage.verifyAssetAmount(assetNative, "9600.000000");
   });
 
-  it.only("imports ether", async () => {
+  it("imports ether", async () => {
     const importAmount = "1";
     const assetExternal = "eth";
     const assetNative = "ceth";
