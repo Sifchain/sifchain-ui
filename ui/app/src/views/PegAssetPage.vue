@@ -3,7 +3,7 @@ import { defineComponent } from "vue";
 import Layout from "@/components/Layout/Layout.vue";
 import { computed, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { Asset, AssetAmount } from "ui-core";
+import { Asset, AssetAmount } from "@sifchain/sdk";
 import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
 import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 
@@ -13,7 +13,7 @@ import SifInput from "@/components/SifInput/SifInput.vue";
 import DetailsTable from "@/components/DetailsTable/DetailsTable.vue";
 import Label from "@/components/Label/Label.vue";
 import RaisedPanelColumn from "@/components/RaisedPanelColumn/RaisedPanelColumn.vue";
-import { trimZeros } from "ui-core";
+import { trimZeros } from "@sifchain/sdk";
 import BigNumber from "bignumber.js";
 import {
   formatSymbol,
@@ -25,8 +25,8 @@ import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { ConfirmState } from "../types";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
-import { format, toBaseUnits } from "ui-core";
-import { PegSentEvent, PegTxError } from "ui-core/src/usecases/peg/peg";
+import { format, toBaseUnits } from "@sifchain/sdk";
+import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
 
 function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);

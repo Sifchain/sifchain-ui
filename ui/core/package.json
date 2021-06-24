@@ -1,6 +1,6 @@
 {
   "license": "SIF",
-  "name": "ui-core",
+  "name": "@sifchain/sdk",
   "version": "1.0.0",
   "main": "lib/index.js",
   "module": "lib/index.js",

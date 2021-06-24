@@ -6,7 +6,7 @@ import CurrencyPairPanel from "@/components/CurrencyPairPanel/Index.vue";
 import { useWalletButton } from "@/components/WithWallet/useWalletButton";
 import SelectTokenDialogSif from "@/components/TokenSelector/SelectTokenDialogSif.vue";
 import Modal from "@/components/Modal/Modal.vue";
-import { Amount, PoolState, usePoolCalculator } from "ui-core";
+import { Amount, PoolState, usePoolCalculator } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 
 import { slipAdjustment } from "../../../core/src/entities/formulae";
@@ -25,7 +25,7 @@ import DetailsPanelPool from "@/components/DetailsPanelPool/DetailsPanelPool.vue
 import { formatNumber } from "@/components/shared/utils";
 import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";
-import { format } from "ui-core/src/utils/format";
+import { format } from "@sifchain/sdk/src/utils/format";
 
 export default defineComponent({
   components: {

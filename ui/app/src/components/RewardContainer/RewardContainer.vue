@@ -6,7 +6,7 @@ import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
-import { format } from "ui-core/src/utils/format";
+import { format } from "@sifchain/sdk/src/utils/format";
 
 const REWARD_INFO = {
   lm: {

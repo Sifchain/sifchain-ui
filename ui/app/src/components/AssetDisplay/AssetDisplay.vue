@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Asset } from "ui-core";
+import { Asset } from "@sifchain/sdk";
 export default defineComponent({
   props: { asset: Object as PropType<Asset> },
 });

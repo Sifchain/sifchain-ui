@@ -11,8 +11,8 @@ import {
 } from "@/components/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { useRoute } from "vue-router";
-import { format } from "ui-core/src/utils/format";
-import { Amount } from "ui-core";
+import { format } from "@sifchain/sdk/src/utils/format";
+import { Amount } from "@sifchain/sdk";
 import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";
 import Loader from "@/components/Loader/Loader.vue";

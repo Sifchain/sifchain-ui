@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed, ref } from "@vue/reactivity";
-import { Asset } from "ui-core";
+import { Asset } from "@sifchain/sdk";
 import { defineComponent, PropType } from "vue";
 import { useAssetItem } from "../shared/utils";
 

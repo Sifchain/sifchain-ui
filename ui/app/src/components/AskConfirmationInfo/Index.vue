@@ -2,7 +2,7 @@
 import AssetItemLarge from "@/components/AssetItemLarge/AssetItemLarge.vue";
 import ArrowIconButton from "@/components/ArrowIconButton/ArrowIconButton.vue";
 import { defineComponent, PropType, useCssModule } from "vue";
-import { IAssetAmount } from "ui-core";
+import { IAssetAmount } from "@sifchain/sdk";
 
 export default defineComponent({
   props: {

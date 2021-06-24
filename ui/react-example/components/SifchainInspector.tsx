@@ -1,5 +1,5 @@
 import JSONTree from "react-json-tree";
-import { isAmount } from "ui-core";
+import { isAmount } from "@sifchain/sdk";
 
 function replacer(key: string, value: any) {
   // Filtering out properties

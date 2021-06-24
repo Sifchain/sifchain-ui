@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { SifchainProvider } from "ui-core/lib/react/v1";
+import { SifchainProvider } from "@sifchain/sdk/lib/react/v1";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

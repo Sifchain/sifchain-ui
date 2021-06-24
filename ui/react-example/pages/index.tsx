@@ -7,7 +7,7 @@ import {
   usePoolState,
   useAssetState,
   useLpPoolsState,
-} from "ui-core/lib/react/v1";
+} from "@sifchain/sdk/lib/react/v1";
 import { Asset, AssetAmount } from "../../core/src";
 import SifchainInspector from "../components/SifchainInspector";
 

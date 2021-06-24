@@ -7,8 +7,8 @@ import {
   toBaseUnits,
   TxHash,
   Amount,
-} from "ui-core";
-import { format } from "ui-core/src/utils/format";
+} from "@sifchain/sdk";
+import { format } from "@sifchain/sdk/src/utils/format";
 import { useCore } from "@/hooks/useCore";
 
 export function formatSymbol(symbol: string) {

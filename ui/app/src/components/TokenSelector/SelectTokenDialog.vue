@@ -4,7 +4,7 @@ import { Ref, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "../../hooks/useCore";
 import { sortAssetAmount } from "../../views/utils/sortAssetAmount";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
-import { format } from "ui-core/src/utils/format";
+import { format } from "@sifchain/sdk/src/utils/format";
 import { computed } from "@vue/reactivity";
 import {
   disableSelected,
@@ -12,7 +12,7 @@ import {
   generateTokenSearchLists,
 } from "./tokenLists";
 import SifInput from "@/components/SifInput/SifInput.vue";
-import { Asset } from "ui-core";
+import { Asset } from "@sifchain/sdk";
 
 type Balances = {
   age: number;

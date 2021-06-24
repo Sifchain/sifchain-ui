@@ -21,7 +21,7 @@
 import { PropType, defineComponent } from "vue";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import { formatAssetAmount } from "@/components/shared/utils";
-import { Asset, IAssetAmount, TransactionStatus } from "ui-core";
+import { Asset, IAssetAmount, TransactionStatus } from "@sifchain/sdk";
 export default defineComponent({
   components: {
     AssetItem,
