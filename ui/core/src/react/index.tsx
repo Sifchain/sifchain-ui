@@ -149,7 +149,7 @@ export function useEthState() {
 }
 
 const useSifStateArgs: UseStateHookArgs<Store["wallet"]["sif"]> = {
-  name: "useEthState",
+  name: "useSifState",
   extractor: (store) => ({
     address: store.wallet.sif.address,
     balances: store.wallet.sif.balances,
