@@ -35,13 +35,12 @@ function useStateHook<T>({ name, extractor, init }: UseStateHookArgs<T>) {
   }
 
   useEffect(() => {
-    const { store } = ctx;
     const ef = effect(() => {
-      setState(extractor(store));
+      setState(extractor(ctx.store));
     });
 
     return () => stop(ef);
-  }, [ctx.store]);
+  }, [ctx.store, extractor]);
 
   return state;
 }
@@ -179,17 +178,23 @@ export function usePoolState() {
 }
 
 export function useLpPoolsState(address?: string) {
-  return useStateHook<Store["accountpools"] | { [h: string]: AccountPool }>({
-    name: "useLpPoolsState",
-    extractor: (store) => {
-      if (address) {
-        return clone(store.accountpools[address]);
-      }
+  const args: UseStateHookArgs<
+    Store["accountpools"] | { [h: string]: AccountPool }
+  > = useMemo(
+    () => ({
+      name: "useLpPoolsState",
+      extractor: (store) => {
+        if (address) {
+          return clone(store.accountpools[address]);
+        }
 
-      return clone(store.accountpools);
-    },
-    init: {},
-  });
+        return clone(store.accountpools);
+      },
+      init: {},
+    }),
+    [address],
+  );
+  return useStateHook(args);
 }
 
 const useTxStateArgs: UseStateHookArgs<Store["tx"]> = {
