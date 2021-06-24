@@ -50,8 +50,9 @@ describe.only("Import/export", () => {
     await balancesPage.openTab("native");
     await balancesPage.export(assetNative, exportAmount);
 
-    await balancesPage.openTab("external");
     await resetExtensionsConnection();
+
+    await balancesPage.openTab("external");
     await balancesPage.verifyAssetAmount(assetExternal, "600.000000");
 
     // Now lets import erowan
@@ -101,8 +102,8 @@ describe.only("Import/export", () => {
       assetNative,
     );
 
-    await balancesPage.openTab("external");
     await resetExtensionsConnection();
+    await balancesPage.openTab("external");
     await balancesPage.import(assetExternal, importAmount);
 
     await balancesPage.clickConfirmImport();
@@ -138,9 +139,8 @@ describe.only("Import/export", () => {
       KEPLR_CONFIG.options.address,
       "cusdc",
     );
-
-    await balancesPage.openTab("external");
     await resetExtensionsConnection();
+    await balancesPage.openTab("external");
     await balancesPage.import(importAsset, importAmount);
 
     await balancesPage.clickConfirmImport();
