@@ -15,12 +15,8 @@ export class BalancesPage {
     });
   }
 
-  async openTab(tab) {
-    if (tab.toLowerCase() === "native") {
-      await page.click("[data-handle='native-tab']");
-    } else {
-      await page.click("[data-handle='external-tab']");
-    }
+  async openTab(tabName) {
+    await page.click(`[data-handle='${tabName.toLowerCase()}-tab']`);
   }
 
   // TODO: handling popup to be done outside of this page method
@@ -49,7 +45,7 @@ export class BalancesPage {
     await page.click(`[data-handle='import-${asset.toLowerCase()}']`);
     await page.click('[data-handle="import-input"]');
     await page.fill('[data-handle="import-input"]', amount);
-    await page.click('button:has-text("Import")');
+    await await page.click('button:has-text("Import")');
   }
 
   async clickConfirmImport() {
