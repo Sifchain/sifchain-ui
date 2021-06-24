@@ -45,7 +45,6 @@ jobs:
         run: cd e2e && yarn install --frozen-lockfile
 
       - name: Run e2e Tests
-        id: e2e_run
         run: yarn build && yarn e2e
         env:
           CI: true
