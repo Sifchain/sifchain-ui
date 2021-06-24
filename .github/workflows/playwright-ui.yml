@@ -55,7 +55,9 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
-          path: ./ui/e2e/screenshots
+          path: |
+            ./ui/e2e/screenshots
+            ./ui/e2e/logs
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v1
