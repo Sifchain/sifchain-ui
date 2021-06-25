@@ -1,4 +1,4 @@
-import { ref, Ref } from "@vue/reactivity";
+import { ref, Ref, effect } from "@vue/reactivity";
 import {
   Amount,
   Asset,
@@ -26,20 +26,20 @@ describe("addLiquidityCalculator", () => {
   const lastFocusedTokenField: Ref<"A" | "B" | null> = ref(null);
   const balances = ref([]) as Ref<IAssetAmount[]>;
   const selectedField: Ref<"from" | "to" | null> = ref("from");
-  const poolFinder = jest.fn<Ref<Pool> | null, any>(() => null);
+  const poolFinder = jest.fn<Pool | null, any>(() => null);
   const setTokenAAmount = jest.fn();
   const setTokenBAmount = jest.fn();
 
   // output
-  let aPerBRatioMessage: Ref<string>;
-  let bPerARatioMessage: Ref<string>;
-  let shareOfPool: Ref<IAmount>;
-  let aPerBRatioProjectedMessage: Ref<string>;
-  let bPerARatioProjectedMessage: Ref<string>;
-  let totalLiquidityProviderUnits: Ref<string>;
-  let totalPoolUnits: Ref<string>;
-  let shareOfPoolPercent: Ref<string>;
-  let state: Ref<PoolState>;
+  let aPerBRatioMessage: Ref<string> = ref("");
+  let bPerARatioMessage: Ref<string> = ref("");
+  let shareOfPool: Ref<IAmount> = ref(Amount("0"));
+  let aPerBRatioProjectedMessage: Ref<string> = ref("");
+  let bPerARatioProjectedMessage: Ref<string> = ref("");
+  let totalLiquidityProviderUnits: Ref<string> = ref("");
+  let totalPoolUnits: Ref<string> = ref("");
+  let shareOfPoolPercent: Ref<string> = ref("");
+  let state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
   let liquidityProvider = ref(
     LiquidityProvider(ATK, ZERO, akasha.address, ZERO, ZERO),
   ) as Ref<LiquidityProvider | null>; // ? not sure why we need to cast
@@ -48,29 +48,31 @@ describe("addLiquidityCalculator", () => {
     setTokenAAmount.mockReset();
     setTokenBAmount.mockReset();
 
-    ({
-      state,
-      aPerBRatioMessage,
-      bPerARatioMessage,
-      shareOfPool,
-      shareOfPoolPercent,
-      totalLiquidityProviderUnits,
-      totalPoolUnits,
-      aPerBRatioProjectedMessage,
-      bPerARatioProjectedMessage,
-    } = usePoolCalculator({
-      balances,
-      tokenAAmount,
-      tokenBAmount,
-      tokenASymbol,
-      tokenBSymbol,
-      guidedMode,
-      lastFocusedTokenField,
-      poolFinder,
-      liquidityProvider,
-      setTokenAAmount,
-      setTokenBAmount,
-    }));
+    effect(() => {
+      const vals = usePoolCalculator({
+        balances: balances.value,
+        tokenAAmount: tokenAAmount.value,
+        tokenBAmount: tokenBAmount.value,
+        tokenASymbol: tokenASymbol.value,
+        tokenBSymbol: tokenBSymbol.value,
+        guidedMode: guidedMode.value,
+        lastFocusedTokenField: lastFocusedTokenField.value,
+        poolFinder,
+        liquidityProvider: liquidityProvider.value,
+        setTokenAAmount,
+        setTokenBAmount,
+      });
+
+      state.value = vals.state;
+      aPerBRatioMessage.value = vals.aPerBRatioMessage;
+      bPerARatioMessage.value = vals.bPerARatioMessage;
+      shareOfPool.value = vals.shareOfPool;
+      shareOfPoolPercent.value = vals.shareOfPoolPercent;
+      totalLiquidityProviderUnits.value = vals.totalLiquidityProviderUnits;
+      totalPoolUnits.value = vals.totalPoolUnits;
+      aPerBRatioProjectedMessage.value = vals.aPerBRatioProjectedMessage;
+      bPerARatioProjectedMessage.value = vals.bPerARatioProjectedMessage;
+    });
 
     balances.value = [];
     guidedMode.value = false;
@@ -406,7 +408,7 @@ describe("addLiquidityCalculator", () => {
               Amount(poolUnits),
             );
 
-            return ref(pool) as Ref<Pool>;
+            return pool;
           });
           tokenAAmount.value = addedExternal;
           tokenBAmount.value = addedNative;
@@ -445,14 +447,11 @@ describe("addLiquidityCalculator", () => {
   });
 
   test("poolCalculator ratio messages", () => {
-    poolFinder.mockImplementation(
-      () =>
-        ref(
-          Pool(
-            AssetAmount(ATK, "2000000000000000000000000"),
-            AssetAmount(ROWAN, "1000000000000000000000000"),
-          ),
-        ) as Ref<Pool>,
+    poolFinder.mockImplementation(() =>
+      Pool(
+        AssetAmount(ATK, "2000000000000000000000000"),
+        AssetAmount(ROWAN, "1000000000000000000000000"),
+      ),
     );
 
     tokenAAmount.value = "100000";
@@ -469,15 +468,12 @@ describe("addLiquidityCalculator", () => {
 
   test("poolCalculator with preexisting pool", () => {
     // Pool exists with 1001000 preexisting units 1000 of which are owned by this lp
-    poolFinder.mockImplementation(
-      () =>
-        ref(
-          Pool(
-            AssetAmount(ATK, "1000000000000000000000000"),
-            AssetAmount(ROWAN, "1000000000000000000000000"),
-            Amount("1000000000000000000000000"),
-          ),
-        ) as Ref<Pool>,
+    poolFinder.mockImplementation(() =>
+      Pool(
+        AssetAmount(ATK, "1000000000000000000000000"),
+        AssetAmount(ROWAN, "1000000000000000000000000"),
+        Amount("1000000000000000000000000"),
+      ),
     );
 
     // Liquidity provider already owns 1000 pool units (1000000 from another investor)
@@ -511,15 +507,12 @@ describe("addLiquidityCalculator", () => {
 
   test("poolCalculator with preexisting pool but no preexisting liquidity", () => {
     // Pool exists with 1001000 preexisting units 1000 of which are owned by this lp
-    poolFinder.mockImplementation(
-      () =>
-        ref(
-          Pool(
-            AssetAmount(ATK, "1000000000000000000000000"),
-            AssetAmount(ROWAN, "1000000000000000000000000"),
-            Amount("1000000000000000000000000"),
-          ),
-        ) as Ref<Pool>,
+    poolFinder.mockImplementation(() =>
+      Pool(
+        AssetAmount(ATK, "1000000000000000000000000"),
+        AssetAmount(ROWAN, "1000000000000000000000000"),
+        Amount("1000000000000000000000000"),
+      ),
     );
 
     // Liquidity provider is null
@@ -589,14 +582,11 @@ describe("addLiquidityCalculator", () => {
       AssetAmount(ATK, "1000000000000000000000"),
       AssetAmount(ROWAN, "1000000000000000000000"),
     ];
-    poolFinder.mockImplementation(
-      () =>
-        ref(
-          Pool(
-            AssetAmount(ATK, "1000000000000000000000000"),
-            AssetAmount(ROWAN, "1000000000000000000000000"),
-          ),
-        ) as Ref<Pool>,
+    poolFinder.mockImplementation(() =>
+      Pool(
+        AssetAmount(ATK, "1000000000000000000000000"),
+        AssetAmount(ROWAN, "1000000000000000000000000"),
+      ),
     );
     tokenAAmount.value = "1000";
     tokenBAmount.value = "0";
@@ -614,14 +604,11 @@ describe("addLiquidityCalculator", () => {
       AssetAmount(ATK, "1000000000000000000000"),
       AssetAmount(ROWAN, "1000000000000000000000"),
     ];
-    poolFinder.mockImplementation(
-      () =>
-        ref(
-          Pool(
-            AssetAmount(ATK, "1000000000000000000000000"),
-            AssetAmount(ROWAN, "1000000000000000000000000"),
-          ),
-        ) as Ref<Pool>,
+    poolFinder.mockImplementation(() =>
+      Pool(
+        AssetAmount(ATK, "1000000000000000000000000"),
+        AssetAmount(ROWAN, "1000000000000000000000000"),
+      ),
     );
     tokenAAmount.value = "0";
     tokenBAmount.value = "1000";

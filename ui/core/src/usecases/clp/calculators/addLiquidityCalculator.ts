@@ -301,35 +301,37 @@ export function usePoolCalculator(input: {
     return format(bPerARatioProjected, { mantissa: 8 });
   });
 
-  // if in guided mode
-  // calculate the price ratio of A / B
-  // Only activates when it is a preexisting pool
-  if (
-    assetA &&
-    assetB &&
-    input.guidedMode &&
-    preExistingPool &&
-    input.lastFocusedTokenField !== null
-  ) {
-    if (bPerARatio === null || aPerBRatio === null || !assetA || !assetB) {
-      return null;
+  computed(() => {
+    // if in guided mode
+    // calculate the price ratio of A / B
+    // Only activates when it is a preexisting pool
+    if (
+      assetA &&
+      assetB &&
+      input.guidedMode &&
+      preExistingPool &&
+      input.lastFocusedTokenField !== null
+    ) {
+      if (bPerARatio === null || aPerBRatio === null || !assetA || !assetB) {
+        return null;
+      }
+      const assetAmountA = AssetAmount(assetA, tokenAField.fieldAmount || "0");
+      const assetAmountB = AssetAmount(assetB, tokenBField.fieldAmount || "0");
+      if (input.lastFocusedTokenField === "A") {
+        input.setTokenBAmount(
+          format(assetAmountA.toDerived().multiply(bPerARatio || "0"), {
+            mantissa: 5,
+          }),
+        );
+      } else if (input.lastFocusedTokenField === "B") {
+        input.setTokenAAmount(
+          format(assetAmountB.toDerived().multiply(aPerBRatio || "0"), {
+            mantissa: 5,
+          }),
+        );
+      }
     }
-    const assetAmountA = AssetAmount(assetA, tokenAField.fieldAmount || "0");
-    const assetAmountB = AssetAmount(assetB, tokenBField.fieldAmount || "0");
-    if (input.lastFocusedTokenField === "A") {
-      input.setTokenBAmount(
-        format(assetAmountA.toDerived().multiply(bPerARatio || "0"), {
-          mantissa: 5,
-        }),
-      );
-    } else if (input.lastFocusedTokenField === "B") {
-      input.setTokenAAmount(
-        format(assetAmountB.toDerived().multiply(aPerBRatio || "0"), {
-          mantissa: 5,
-        }),
-      );
-    }
-  }
+  });
 
   const state = computed(() => {
     // Select Tokens
