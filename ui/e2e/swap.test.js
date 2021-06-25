@@ -45,7 +45,7 @@ beforeAll(async () => {
 
   // once keplr has finished setup, connection page will be invoked automatically
   await context.waitForEvent("page");
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1000);
 
   await connectKeplrAccount();
   await connectMetaMaskAccount();
