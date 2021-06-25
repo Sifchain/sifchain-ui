@@ -30,6 +30,11 @@ const { balancesPage } = require("./pages/BalancesPage.js");
 const { poolPage } = require("./pages/PoolPage.js");
 const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
 const { rewardsPage } = require("./pages/RewardsPage.js");
+const { dexHeader } = require("./pages/components/DexHeader.js");
+const { takeScreenshots } = require("./utils2.js");
+const { connectPopup } = require("./pages/ConnectPopup.js");
+
+let cnt = 0;
 
 useStack("every-test");
 
@@ -50,9 +55,12 @@ describe.only("Import/export", () => {
     await balancesPage.openTab("native");
     await balancesPage.export(assetNative, exportAmount);
 
+    await checkConnection(`imports-rowan-${cnt++}`); // debug
     await resetExtensionsConnection();
 
     await balancesPage.openTab("external");
+    await checkConnection(`imports-rowan-${cnt++}`); // debug
+    await balancesPage.openTab("external"); // debug
     await balancesPage.verifyAssetAmount(assetExternal, "600.000000");
 
     // Now lets import erowan
@@ -102,8 +110,12 @@ describe.only("Import/export", () => {
       assetNative,
     );
 
+    await checkConnection(`imports-ether-${cnt++}`); // debug
     await resetExtensionsConnection();
     await balancesPage.openTab("external");
+    await takeScreenshots(`imports-ether-${cnt++}-tab`);
+    await checkConnection(`imports-ether-${cnt++}`); // debug
+    await balancesPage.openTab("external"); // debug
     await balancesPage.import(assetExternal, importAmount);
 
     await balancesPage.clickConfirmImport();
@@ -139,8 +151,11 @@ describe.only("Import/export", () => {
       KEPLR_CONFIG.options.address,
       "cusdc",
     );
+    await checkConnection(`imports-ether-${cnt++}`); // debug
     await resetExtensionsConnection();
     await balancesPage.openTab("external");
+    await takeScreenshots(`imports-ether-${cnt++}-tab`); // debug
+
     await balancesPage.import(importAsset, importAmount);
 
     await balancesPage.clickConfirmImport();
@@ -350,4 +365,10 @@ function prepareRowText(row) {
     .map((s) => s.trim())
     .filter(Boolean)
     .join(" ");
+}
+
+async function checkConnection(screenshotName) {
+  await dexHeader.clickConnected();
+  await takeScreenshots(screenshotName, context);
+  await connectPopup.close();
 }
