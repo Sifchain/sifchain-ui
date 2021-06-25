@@ -7,7 +7,7 @@ const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
 const { useStack } = require("../test/stack");
 
 // helpers
-const { resetExtensionsConnection } = require("./helpers.js");
+const { resetExtensionsConnection, setupExtensions } = require("./helpers.js");
 
 // dex pages
 const { swapPage } = require("./pages/SwapPage.js");
