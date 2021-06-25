@@ -1,4 +1,4 @@
-- [Home](index.md)
+- [Home](README.md)
 - [Principles](principles.md)
 - [Architecture](architecture.md)
 - [Codebase](codebase.md)
