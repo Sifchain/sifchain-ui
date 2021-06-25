@@ -77,6 +77,10 @@ export class SwapPage extends GenericPage {
   async clickSwap() {
     await page.click(this.el.swapButton);
   }
+
+  async switchTokens() {
+    await page.click(this.el.tokenSwitchButton);
+  }
 }
 
 export const swapPage = new SwapPage();
