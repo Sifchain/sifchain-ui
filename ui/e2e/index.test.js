@@ -10,12 +10,10 @@
 require("@babel/polyfill");
 
 // configs
-const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
+const { KEPLR_CONFIG } = require("./config.js");
 const keplrConfig = require("../core/src/config.localnet.json");
 
 // extension
-const { metamaskPage } = require("./pages/MetaMaskPage");
-const { keplrPage } = require("./pages/KeplrPage.js");
 const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
 const {
   metamaskNotificationPopup,
@@ -24,22 +22,15 @@ const {
 // services
 const { getSifchainBalances } = require("./sifchain.js");
 const { advanceEthBlocks } = require("./ethereum.js");
-const { extractExtensionPackage } = require("./utils");
 const { useStack } = require("../test/stack");
 
 // utils
-const {
-  connectMetaMaskAccount,
-  connectKeplrAccount,
-  reconnectKeplrAccount,
-  resetExtensionsConnection,
-} = require("./helpers.js");
+const { resetExtensionsConnection } = require("./helpers.js");
 
 // dex pages
 const { balancesPage } = require("./pages/BalancesPage.js");
 const { poolPage } = require("./pages/PoolPage.js");
 const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
-const { connectPopup } = require("./pages/ConnectPopup.js");
 const { rewardsPage } = require("./pages/RewardsPage.js");
 
 useStack("every-test");

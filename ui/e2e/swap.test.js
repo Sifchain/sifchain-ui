@@ -1,32 +1,17 @@
 require("@babel/polyfill");
 
-// configs
-const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
-
 // extension
 const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
-const { metamaskPage } = require("./pages/MetaMaskPage.js");
-const { keplrPage } = require("./pages/KeplrPage.js");
 
 // services
 const { useStack } = require("../test/stack");
 
-// utils
-const { extractExtensionPackage } = require("./utils.js");
-
 // helpers
-const {
-  connectKeplrAccount,
-  connectMetaMaskAccount,
-  reconnectKeplrAccount,
-  resetExtensionsConnection,
-} = require("./helpers.js");
+const { resetExtensionsConnection } = require("./helpers.js");
 
 // dex pages
 const { swapPage } = require("./pages/SwapPage.js");
 const { confirmSwapModal } = require("./pages/ConfirmSwapModal.js");
-const { balancesPage } = require("./pages/BalancesPage.js");
-const { connectPopup } = require("./pages/ConnectPopup.js");
 
 useStack("every-test");
 
