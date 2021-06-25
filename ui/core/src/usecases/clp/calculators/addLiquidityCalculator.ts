@@ -11,8 +11,8 @@ import {
 import { Amount } from "../../../entities";
 import { fromBaseUnits } from "../../../utils";
 import { format } from "../../../utils/format";
-import { useField } from "./useField";
-import { useBalances } from "./utils";
+// import { useField } from "./useField";
+// import { useBalances } from "./utils";
 
 export enum PoolState {
   SELECT_TOKENS,
@@ -21,6 +21,35 @@ export enum PoolState {
   VALID_INPUT,
   NO_LIQUIDITY,
   ZERO_AMOUNTS_NEW_POOL,
+}
+import { toBaseUnits } from "../../../utils";
+
+export function useField(amount: Ref<string>, symbol: Ref<string | null>) {
+  const asset = computed(() => {
+    if (!symbol.value) return null;
+    return Asset(symbol.value);
+  });
+
+  const fieldAmount = computed(() => {
+    if (!asset.value || !amount.value) return null;
+    return AssetAmount(asset.value, toBaseUnits(amount.value, asset.value));
+  });
+
+  return {
+    fieldAmount,
+    asset,
+  };
+}
+
+export function useBalances(balances: Ref<IAssetAmount[]>) {
+  return computed(() => {
+    const map = new Map<string, IAssetAmount>();
+
+    for (const item of balances.value) {
+      map.set(item.asset.symbol, item);
+    }
+    return map;
+  });
 }
 
 export function usePoolCalculator(input: {
