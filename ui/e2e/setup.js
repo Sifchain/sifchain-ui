@@ -4,7 +4,6 @@ const { extractExtensionPackage, preparePath } = require("./utils");
 const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
 const path = require("path");
 const fs = require("fs");
-const { setupExtensions } = require("./helpers");
 
 beforeAll(async () => {
   await extractExtensionPackage(MM_CONFIG.id);
@@ -35,8 +34,6 @@ beforeAll(async () => {
   // exposing "page" object globally
   [page] = await context.pages();
   global.context = context; // this is needed to generate screenshots inside custom environment. 'context' is not visible there
-
-  await setupExtensions();
 });
 
 afterAll(async () => {

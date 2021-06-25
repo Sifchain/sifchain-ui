@@ -6,14 +6,18 @@ const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
 // services
 const { useStack } = require("../test/stack");
 
-// utils
+// helpers
+const { resetExtensionsConnection, setupExtensions } = require("./helpers.js");
 
 // dex pages
 const { swapPage } = require("./pages/SwapPage.js");
 const { confirmSwapModal } = require("./pages/ConfirmSwapModal.js");
-const { resetExtensionsConnection } = require("./helpers.js");
 
 useStack("every-test");
+
+beforeAll(async () => {
+  await setupExtensions();
+});
 
 beforeEach(async () => {
   await resetExtensionsConnection();
