@@ -133,6 +133,14 @@ export default defineComponent({
       return rFactor.subtract(slipAdjustmentCalc);
     });
 
+    function setTokenAAmount(amount: string) {
+      fromAmount.value = amount;
+    }
+
+    function setTokenBAmount(amount: string) {
+      toAmount.value = amount;
+    }
+
     const {
       aPerBRatioMessage,
       bPerARatioMessage,
@@ -154,8 +162,10 @@ export default defineComponent({
       tokenBSymbol: toSymbol,
       poolFinder,
       liquidityProvider,
-      asyncPooling,
+      guidedMode: asyncPooling,
       lastFocusedTokenField,
+      setTokenAAmount,
+      setTokenBAmount,
     });
 
     function handleNextStepClicked() {

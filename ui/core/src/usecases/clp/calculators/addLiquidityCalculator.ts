@@ -31,8 +31,10 @@ export function usePoolCalculator(input: {
   balances: Ref<IAssetAmount[]>;
   liquidityProvider: Ref<LiquidityProvider | null>;
   poolFinder: (a: Asset | string, b: Asset | string) => Ref<Pool> | null;
-  asyncPooling: Ref<boolean>;
+  guidedMode: Ref<boolean>;
   lastFocusedTokenField: Ref<"A" | "B" | null>;
+  setTokenAAmount: (amount: string) => void;
+  setTokenBAmount: (amount: string) => void;
 }) {
   const tokenAField = useField(input.tokenAAmount, input.tokenASymbol);
   const tokenBField = useField(input.tokenBAmount, input.tokenBSymbol);
@@ -294,7 +296,7 @@ export function usePoolCalculator(input: {
     if (
       assetA.value &&
       assetB.value &&
-      input.asyncPooling.value &&
+      input.guidedMode.value &&
       preExistingPool.value &&
       input.lastFocusedTokenField.value !== null
     ) {
@@ -315,14 +317,16 @@ export function usePoolCalculator(input: {
         tokenBField.fieldAmount?.value || "0",
       );
       if (input.lastFocusedTokenField.value === "A") {
-        input.tokenBAmount.value = format(
-          assetAmountA.toDerived().multiply(bPerARatio.value || "0"),
-          { mantissa: 5 },
+        input.setTokenBAmount(
+          format(assetAmountA.toDerived().multiply(bPerARatio.value || "0"), {
+            mantissa: 5,
+          }),
         );
       } else if (input.lastFocusedTokenField.value === "B") {
-        input.tokenAAmount.value = format(
-          assetAmountB.toDerived().multiply(aPerBRatio.value || "0"),
-          { mantissa: 5 },
+        input.setTokenAAmount(
+          format(assetAmountB.toDerived().multiply(aPerBRatio.value || "0"), {
+            mantissa: 5,
+          }),
         );
       }
     }

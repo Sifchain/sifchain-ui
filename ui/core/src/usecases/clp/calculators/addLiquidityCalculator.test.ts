@@ -22,11 +22,13 @@ describe("addLiquidityCalculator", () => {
   const tokenASymbol: Ref<string | null> = ref(null);
   const tokenBAmount: Ref<string> = ref("0");
   const tokenBSymbol: Ref<string | null> = ref(null);
-  const asyncPooling: Ref<boolean> = ref(false);
+  const guidedMode: Ref<boolean> = ref(false);
   const lastFocusedTokenField: Ref<"A" | "B" | null> = ref(null);
   const balances = ref([]) as Ref<IAssetAmount[]>;
   const selectedField: Ref<"from" | "to" | null> = ref("from");
   const poolFinder = jest.fn<Ref<Pool> | null, any>(() => null);
+  const setTokenAAmount = jest.fn();
+  const setTokenBAmount = jest.fn();
 
   // output
   let aPerBRatioMessage: Ref<string>;
@@ -43,6 +45,9 @@ describe("addLiquidityCalculator", () => {
   ) as Ref<LiquidityProvider | null>; // ? not sure why we need to cast
 
   beforeEach(() => {
+    setTokenAAmount.mockReset();
+    setTokenBAmount.mockReset();
+
     ({
       state,
       aPerBRatioMessage,
@@ -59,16 +64,21 @@ describe("addLiquidityCalculator", () => {
       tokenBAmount,
       tokenASymbol,
       tokenBSymbol,
-      asyncPooling,
+      guidedMode,
       lastFocusedTokenField,
       poolFinder,
       liquidityProvider,
+      setTokenAAmount,
+      setTokenBAmount,
     }));
 
     balances.value = [];
+    guidedMode.value = false;
+    lastFocusedTokenField.value = null;
+    selectedField.value = "from";
     tokenAAmount.value = "0";
-    tokenBAmount.value = "0";
     tokenASymbol.value = null;
+    tokenBAmount.value = "0";
     tokenBSymbol.value = null;
   });
 
@@ -76,11 +86,41 @@ describe("addLiquidityCalculator", () => {
     poolFinder.mockReset();
     liquidityProvider.value = null;
   });
-
-  const ratios: any[] = [
+  type TestShape = {
+    only?: boolean;
+    skip?: boolean;
+    poolExternal: string;
+    poolNative: string;
+    guided: boolean;
+    poolUnits: string;
+    addedExternal: string;
+    addedNative: string;
+    externalSymbol: string;
+    nativeSymbol: string;
+    lastFocused?: "A" | "B";
+    preexistingLiquidity?: {
+      native: string;
+      external: string;
+      units: string;
+    };
+    expected: {
+      aPerBRatioMessage: string;
+      bPerARatioMessage: string;
+      aPerBRatioProjectedMessage: string;
+      bPerARatioProjectedMessage: string;
+      shareOfPool: string;
+      state: PoolState;
+      setTokenAAmountValue?: string;
+      setTokenBAmountValue?: string;
+    };
+  };
+  const ratios: TestShape[] = [
     {
+      only: false,
+      skip: false,
       poolExternal: "1000000000000000000000000000",
       poolNative: "1000000000000000000000000000",
+      guided: false,
       poolUnits: "1000000000000000000000000000",
       addedExternal: "10000000",
       addedNative: "10000000",
@@ -103,6 +143,7 @@ describe("addLiquidityCalculator", () => {
     {
       poolExternal: "1000000000000000000000000000",
       poolNative: "1000000000000000000000000000",
+      guided: false,
       poolUnits: "1000000000000000000000000000",
       addedExternal: "10000000",
       addedNative: "10000000",
@@ -126,6 +167,7 @@ describe("addLiquidityCalculator", () => {
     {
       poolExternal: "1000000000000000",
       poolNative: "1000000000000000000000000000",
+      guided: false,
       poolUnits: "1000000000000000000000000000",
       addedExternal: "10000",
       addedNative: "10000",
@@ -148,6 +190,7 @@ describe("addLiquidityCalculator", () => {
     {
       poolExternal: "1000000000000000000000000000",
       poolNative: "1000000000000000000000000000",
+      guided: false,
       poolUnits: "1000000000000000000000000000",
       addedExternal: "10000000",
       addedNative: "10000000",
@@ -170,6 +213,7 @@ describe("addLiquidityCalculator", () => {
     {
       poolExternal: "1000000000000000000000000000",
       poolNative: "1000000000000000000000000000",
+      guided: false,
       poolUnits: "1000000000000000000000000000",
       addedExternal: "10000000",
       addedNative: "10000000",
@@ -187,6 +231,7 @@ describe("addLiquidityCalculator", () => {
     {
       poolExternal: "20000000000000000000000000",
       poolNative: "10000000000000000000000000",
+      guided: false,
       poolUnits: "20000000000000000000000000",
       addedExternal: "10000000",
       addedNative: "40000000",
@@ -204,6 +249,7 @@ describe("addLiquidityCalculator", () => {
     {
       poolExternal: "40000000000000000000000000",
       poolNative: "10000000000000000000000000",
+      guided: false,
       poolUnits: "40000000000000000000000000",
       addedExternal: "10000000",
       addedNative: "40000000",
@@ -218,10 +264,10 @@ describe("addLiquidityCalculator", () => {
         state: PoolState.VALID_INPUT,
       },
     },
-
     {
       poolExternal: "100000000000000000000000000",
       poolNative: "100000000000000000000000000",
+      guided: false,
       poolUnits: "10000000000000000000000000000000000000000000",
       addedExternal: "100000000000",
       addedNative: "1",
@@ -239,6 +285,7 @@ describe("addLiquidityCalculator", () => {
     {
       poolExternal: "100000000000000000000000000",
       poolNative: "100000000000000000000000000",
+      guided: false,
       poolUnits: "10000000000000000000000000000000000000000000",
       addedExternal: "100000000000000", // more than balance
       addedNative: "1",
@@ -253,6 +300,67 @@ describe("addLiquidityCalculator", () => {
         state: PoolState.INSUFFICIENT_FUNDS,
       },
     },
+    {
+      // only: true,
+      poolExternal: "100000000000000000000000000",
+      poolNative: "100000000000000000000000000",
+      guided: true,
+      poolUnits: "10000000000000000000000000000000000000000000",
+      addedExternal: "100000000000",
+      addedNative: "100000000000",
+      externalSymbol: "atk",
+      lastFocused: "A",
+      nativeSymbol: "rowan",
+      expected: {
+        aPerBRatioMessage: "1.00000000",
+        bPerARatioMessage: "1.00000000",
+        aPerBRatioProjectedMessage: "1.00000000",
+        bPerARatioProjectedMessage: "1.00000000",
+        shareOfPool: "99.90%",
+        state: PoolState.VALID_INPUT,
+        setTokenBAmountValue: "100000000000.00000",
+      },
+    },
+    {
+      poolExternal: "50000000000000000000000000",
+      poolNative: "100000000000000000000000000",
+      guided: true,
+      poolUnits: "10000000000000000000000000000000000000000000",
+      addedExternal: "100000000000",
+      addedNative: "100000000000",
+      externalSymbol: "atk",
+      lastFocused: "A",
+      nativeSymbol: "rowan",
+      expected: {
+        aPerBRatioMessage: "0.50000000",
+        bPerARatioMessage: "2.00000000",
+        aPerBRatioProjectedMessage: "0.99950050",
+        bPerARatioProjectedMessage: "1.00049975",
+        shareOfPool: "99.93%",
+        state: PoolState.VALID_INPUT,
+        setTokenBAmountValue: "200000000000.00000",
+      },
+    },
+    {
+      poolExternal: "50000000000000000000000000",
+      poolNative: "100000000000000000000000000",
+      guided: true,
+      poolUnits: "10000000000000000000000000000000000000000000",
+      addedExternal: "100000000000",
+      addedNative: "100000000000",
+      externalSymbol: "atk",
+      lastFocused: "B",
+      nativeSymbol: "rowan",
+      expected: {
+        aPerBRatioMessage: "0.50000000",
+        bPerARatioMessage: "2.00000000",
+        aPerBRatioProjectedMessage: "0.99950050",
+        bPerARatioProjectedMessage: "1.00049975",
+        shareOfPool: "99.93%",
+        state: PoolState.VALID_INPUT,
+        setTokenAAmountValue: "50000000000.00000",
+      },
+    },
   ];
   describe("ratios", () => {
     ratios.forEach(
@@ -265,6 +373,8 @@ describe("addLiquidityCalculator", () => {
           poolUnits,
           addedExternal,
           addedNative,
+          guided,
+          lastFocused = null,
           externalSymbol,
           nativeSymbol,
           preexistingLiquidity,
@@ -298,11 +408,13 @@ describe("addLiquidityCalculator", () => {
 
             return ref(pool) as Ref<Pool>;
           });
-
           tokenAAmount.value = addedExternal;
           tokenBAmount.value = addedNative;
           tokenASymbol.value = externalSymbol;
           tokenBSymbol.value = nativeSymbol;
+          lastFocusedTokenField.value = lastFocused;
+          guidedMode.value = guided;
+
           expect(aPerBRatioMessage.value).toBe(expected.aPerBRatioMessage);
           expect(bPerARatioMessage.value).toBe(expected.bPerARatioMessage);
           expect(aPerBRatioProjectedMessage.value).toBe(
@@ -313,6 +425,20 @@ describe("addLiquidityCalculator", () => {
           );
           expect(shareOfPoolPercent.value).toBe(expected.shareOfPool);
           expect(state.value).toBe(expected.state);
+          if (expected.setTokenAAmountValue) {
+            expect(setTokenAAmount).toBeCalledWith(
+              expected.setTokenAAmountValue,
+            );
+          } else {
+            expect(setTokenAAmount).not.toBeCalled();
+          }
+          if (expected.setTokenBAmountValue) {
+            expect(setTokenBAmount).toBeCalledWith(
+              expected.setTokenBAmountValue,
+            );
+          } else {
+            expect(setTokenBAmount).not.toBeCalled();
+          }
         });
       },
     );
