@@ -15,7 +15,11 @@ const { useStack } = require("../test/stack");
 const { extractExtensionPackage } = require("./utils.js");
 
 // helpers
-const { connectKeplrAccount, connectMetaMaskAccount } = require("./helpers.js");
+const {
+  connectKeplrAccount,
+  connectMetaMaskAccount,
+  reconnectKeplrAccount,
+} = require("./helpers.js");
 
 // dex pages
 const { swapPage } = require("./pages/SwapPage.js");
