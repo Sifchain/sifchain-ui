@@ -1,17 +1,26 @@
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Layout from "@/components/Layout/Layout.vue";
 import CurrencyPairPanel from "@/components/CurrencyPairPanel/Index.vue";
 import { useWalletButton } from "@/components/WithWallet/useWalletButton";
 import SelectTokenDialogSif from "@/components/TokenSelector/SelectTokenDialogSif.vue";
 import Modal from "@/components/Modal/Modal.vue";
-import { Amount, PoolState, usePoolCalculator } from "ui-core";
+import {
+  Amount,
+  IAmount,
+  IAsset,
+  IAssetAmount,
+  LiquidityProvider,
+  Pool,
+  PoolState,
+  usePoolCalculator,
+} from "ui-core";
 import { useCore } from "@/hooks/useCore";
 
 import { slipAdjustment } from "../../../core/src/entities/formulae";
 import { useWallet } from "@/hooks/useWallet";
-import { computed } from "@vue/reactivity";
+import { computed, Ref } from "@vue/reactivity";
 import FatInfoTable from "@/components/FatInfoTable/FatInfoTable.vue";
 import Checkbox from "@/components/Checkbox/Checkbox.vue";
 import FatInfoTableCell from "@/components/FatInfoTableCell/FatInfoTableCell.vue";
@@ -46,7 +55,18 @@ export default defineComponent({
     const { usecases, poolFinder, store } = useCore();
     const selectedField = ref<"from" | "to" | null>(null);
     const lastFocusedTokenField = ref<"A" | "B" | null>(null);
-
+    const aPerBRatioMessage: Ref<string> = ref("");
+    const bPerARatioMessage: Ref<string> = ref("");
+    const aPerBRatioProjectedMessage: Ref<string> = ref("");
+    const bPerARatioProjectedMessage: Ref<string> = ref("");
+    const totalLiquidityProviderUnits: Ref<string> = ref("");
+    const totalPoolUnits: Ref<string> = ref("");
+    const shareOfPoolPercent: Ref<string> = ref("");
+    const state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
+    const tokenAFieldAmount: Ref<IAssetAmount | null> = ref(null);
+    const tokenBFieldAmount: Ref<IAssetAmount | null> = ref(null);
+    const preExistingPool: Ref<Pool | null> = ref(null);
+    const poolAmounts: Ref<IAssetAmount[] | null> = ref(null);
     const transactionState = ref<ConfirmState | string>("selecting");
     const transactionStateMsg = ref<string>("");
     const transactionHash = ref<string | null>(null);
@@ -141,31 +161,34 @@ export default defineComponent({
       toAmount.value = amount;
     }
 
-    const {
-      aPerBRatioMessage,
-      bPerARatioMessage,
-      aPerBRatioProjectedMessage,
-      bPerARatioProjectedMessage,
-      shareOfPoolPercent,
-      totalLiquidityProviderUnits,
-      totalPoolUnits,
-      poolAmounts,
-      tokenAFieldAmount,
-      tokenBFieldAmount,
-      preExistingPool,
-      state,
-    } = usePoolCalculator({
-      balances,
-      tokenAAmount: fromAmount,
-      tokenBAmount: toAmount,
-      tokenASymbol: fromSymbol,
-      tokenBSymbol: toSymbol,
-      poolFinder,
-      liquidityProvider,
-      guidedMode: asyncPooling,
-      lastFocusedTokenField,
-      setTokenAAmount,
-      setTokenBAmount,
+    watchEffect(() => {
+      const output = usePoolCalculator({
+        balances: balances.value,
+        tokenAAmount: fromAmount.value,
+        tokenBAmount: toAmount.value,
+        tokenASymbol: fromSymbol.value,
+        tokenBSymbol: toSymbol.value,
+        poolFinder: (a: string | IAsset, b: string | IAsset) =>
+          poolFinder(a, b)?.value || null,
+        liquidityProvider: liquidityProvider.value,
+        guidedMode: asyncPooling.value,
+        lastFocusedTokenField: lastFocusedTokenField.value,
+        setTokenAAmount,
+        setTokenBAmount,
+      });
+
+      aPerBRatioMessage.value = output.aPerBRatioMessage;
+      bPerARatioMessage.value = output.bPerARatioMessage;
+      aPerBRatioProjectedMessage.value = output.aPerBRatioProjectedMessage;
+      bPerARatioProjectedMessage.value = output.bPerARatioProjectedMessage;
+      shareOfPoolPercent.value = output.shareOfPoolPercent;
+      totalLiquidityProviderUnits.value = output.totalLiquidityProviderUnits;
+      totalPoolUnits.value = output.totalPoolUnits;
+      poolAmounts.value = output.poolAmounts;
+      tokenAFieldAmount.value = output.tokenAFieldAmount;
+      tokenBFieldAmount.value = output.tokenBFieldAmount;
+      preExistingPool.value = output.preExistingPool;
+      state.value = output.state;
     });
 
     function handleNextStepClicked() {
