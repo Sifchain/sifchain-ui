@@ -13,6 +13,7 @@ export class SwapPage extends GenericPage {
       detailsLiquidityProviderFee:
         "[data-handle='details-liquidity-provider-fee']",
       swapButton: 'button:has-text("Swap")',
+      tokenSwitchButton: '[data-handle="switch-currencies-button"]',
     };
   }
 

@@ -22,6 +22,7 @@
       :toggleLabel="toggleLabel"
     />
     <ArrowIconButton
+      data-handle="switch-currencies-button"
       @click="$emit('arrowclicked')"
       :enabled="canSwap"
       v-if="canSwapIcon === 'arrow'"
