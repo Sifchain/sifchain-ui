@@ -15,6 +15,10 @@ const { confirmSwapModal } = require("./pages/ConfirmSwapModal.js");
 
 useStack("every-test");
 
+beforeAll(async () => {
+  await setupExtensions();
+});
+
 beforeEach(async () => {
   page = await context.newPage(); // TODO: move it to global setup
   await resetExtensionsConnection();

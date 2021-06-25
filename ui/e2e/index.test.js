@@ -25,7 +25,7 @@ const { advanceEthBlocks } = require("./ethereum.js");
 const { useStack } = require("../test/stack");
 
 // utils
-const { resetExtensionsConnection } = require("./helpers.js");
+const { resetExtensionsConnection, setupExtensions } = require("./helpers.js");
 
 // dex pages
 const { balancesPage } = require("./pages/BalancesPage.js");
@@ -34,6 +34,10 @@ const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
 const { rewardsPage } = require("./pages/RewardsPage.js");
 
 useStack("every-test");
+
+beforeAll(async () => {
+  await setupExtensions();
+});
 
 beforeEach(async () => {
   page = await context.newPage(); // TODO: move it to global setup
