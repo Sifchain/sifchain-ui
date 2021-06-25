@@ -22,7 +22,7 @@ function computed<T>(fn: () => T) {
   return fn();
 }
 
-export function useField(amount: string, symbol: string | null) {
+function useField(amount: string, symbol: string | null) {
   const asset = computed(() => {
     if (!symbol) return null;
     return Asset(symbol);
@@ -39,7 +39,7 @@ export function useField(amount: string, symbol: string | null) {
   };
 }
 
-export function useBalances(balances: IAssetAmount[]) {
+function useBalances(balances: IAssetAmount[]) {
   return computed(() => {
     const map = new Map<string, IAssetAmount>();
 
