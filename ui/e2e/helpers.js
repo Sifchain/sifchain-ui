@@ -26,7 +26,6 @@ export async function setupExtensions() {
 }
 
 export async function resetExtensionsConnection() {
-  page = await context.newPage(); // TODO: move it to global setup
   await balancesPage.navigate();
 
   await reconnectKeplrAccount();

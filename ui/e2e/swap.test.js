@@ -19,6 +19,7 @@ const {
   connectKeplrAccount,
   connectMetaMaskAccount,
   reconnectKeplrAccount,
+  resetExtensionsConnection,
 } = require("./helpers.js");
 
 // dex pages
@@ -29,43 +30,9 @@ const { connectPopup } = require("./pages/ConnectPopup.js");
 
 useStack("every-test");
 
-beforeAll(async () => {
-  // extract extension zips
-  await extractExtensionPackage(MM_CONFIG.id);
-
-  await extractExtensionPackage(KEPLR_CONFIG.id);
-
-  await metamaskPage.navigate();
-  await metamaskPage.setup();
-  // await keplrPage.setKeplrRouteOverrides();
-  await keplrPage.navigate();
-  await keplrPage.setup();
-  // goto dex page
-  await balancesPage.navigate();
-
-  // once keplr has finished setup, connection page will be invoked automatically
-  await context.waitForEvent("page");
-  await page.waitForTimeout(1000);
-
-  await connectKeplrAccount();
-  await connectMetaMaskAccount();
-  await page.close();
-});
-
-afterAll(async () => {
-  await context.close();
-});
-
 beforeEach(async () => {
   page = await context.newPage(); // TODO: move it to global setup
-  await balancesPage.navigate();
-
-  await reconnectKeplrAccount();
-  await connectPopup.verifyKeplrConnected();
-  await connectPopup.close();
-
-  await metamaskPage.reset();
-  await page.bringToFront();
+  await resetExtensionsConnection();
 });
 
 describe("Swap", () => {
