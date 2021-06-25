@@ -48,6 +48,7 @@ useStack("every-test");
 beforeAll(async () => {
   // extract extension zips
   await extractExtensionPackage(MM_CONFIG.id);
+
   await extractExtensionPackage(KEPLR_CONFIG.id);
 
   await metamaskPage.navigate();
