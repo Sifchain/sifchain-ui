@@ -20,13 +20,9 @@ import Loader from "@/components/Loader/Loader.vue";
 const DECIMALS = 5;
 
 async function getEarnedRewards(address: string, symbol: string) {
-  const { config } = useCore();
-  const earnedRewardsUrl = getRewardEarningsUrl(config.sifChainId);
-  const res = await fetch(
-    `${earnedRewardsUrl}?symbol=${symbol}&address=${address}`,
-  );
-  const data = await res.json();
-  const parsedData = JSON.parse(data);
+  const earnedRewardsUrl = getRewardEarningsUrl();
+  const res = await fetch(`${earnedRewardsUrl}/${symbol}/netChange/${address}`);
+  const parsedData = await res.json();
   // TD - This should return Amount, method needs work
   // Rudis recent work should refactor this call too into a testable service
   return {
