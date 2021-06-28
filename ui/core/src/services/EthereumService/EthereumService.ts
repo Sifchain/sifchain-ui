@@ -98,10 +98,16 @@ export class EthereumService implements IWalletService {
 
   onChainIdDetected(handler: (chainId: string) => void) {
     this.chainIdDetectedHandler = handler;
+    return () => {
+      this.chainIdDetectedHandler = () => {};
+    };
   }
 
   onProviderNotFound(handler: () => void) {
     this.reportProviderNotFound = handler;
+    return () => {
+      this.reportProviderNotFound = () => {};
+    };
   }
 
   getState() {

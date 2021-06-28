@@ -5,7 +5,10 @@ import { useSubscription } from "./useSubscrition";
 export function useInitialize() {
   const { usecases, store } = useCore();
 
-  usecases.clp.init();
+  // Initialize usecases / watches
+  usecases.clp.initClp();
+  usecases.wallet.sif.initSifWallet();
+  usecases.wallet.eth.initEthWallet();
 
   // initialize subscriptions
   useSubscription(

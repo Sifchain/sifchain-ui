@@ -48,8 +48,6 @@ export default function createSifService({
   keplrChainConfig,
   assets,
 }: SifServiceContext) {
-  const {} = sifAddrPrefix;
-
   const state: {
     connected: boolean;
     address: Address;
@@ -219,15 +217,15 @@ export default function createSifService({
     },
 
     onSocketError(handler: HandlerFn<any>) {
-      unSignedClient.onSocketError(handler);
+      return unSignedClient.onSocketError(handler);
     },
 
     onTx(handler: HandlerFn<any>) {
-      unSignedClient.onTx(handler);
+      return unSignedClient.onTx(handler);
     },
 
     onNewBlock(handler: HandlerFn<any>) {
-      unSignedClient.onNewBlock(handler);
+      return unSignedClient.onNewBlock(handler);
     },
 
     // Required solely for testing purposes

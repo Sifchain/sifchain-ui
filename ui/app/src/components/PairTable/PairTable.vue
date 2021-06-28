@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from "vue";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
-import { format } from "ui-core/src/utils/format";
+import { format } from "@sifchain/sdk/src/utils/format";
 
 export default defineComponent({
   props: ["items"],

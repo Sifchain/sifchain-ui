@@ -2,7 +2,7 @@
 import { defineComponent, ref } from "vue";
 import { computed, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { LiquidityProvider, Pool } from "ui-core";
+import { LiquidityProvider, Pool } from "@sifchain/sdk";
 import Layout from "@/components/Layout/Layout.vue";
 import PoolList from "@/components/PoolList/PoolList.vue";
 import PoolListItem from "@/components/PoolList/PoolListItem.vue";

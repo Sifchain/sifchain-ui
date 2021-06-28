@@ -2,7 +2,7 @@
 import { computed, ref } from "@vue/reactivity";
 import { defineComponent, PropType } from "vue";
 import { getAssetLabel, useAssetItem } from "@/components/shared/utils";
-import { LiquidityProvider, Pool } from "ui-core";
+import { LiquidityProvider, Pool } from "@sifchain/sdk";
 import { useRouter } from "vue-router";
 import AssetItemPool from "@/components/AssetItemPool/AssetItemPool.vue";
 

@@ -1,4 +1,4 @@
-import { TransactionStatus } from "ui-core";
+import { TransactionStatus } from "@sifchain/sdk";
 import { ConfirmState } from "../../types";
 
 // So this acts as an adapter and maps between states feel free to change the ConfirmState to match this

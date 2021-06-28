@@ -3,7 +3,7 @@ import { defineComponent, PropType, useCssModule } from "vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
 import DetailsPanel from "@/components/DetailsPanel/DetailsPanel.vue";
 import AskConfirmationInfo from "@/components/AskConfirmationInfo/Index.vue";
-import { IAssetAmount } from "ui-core";
+import { IAssetAmount } from "@sifchain/sdk";
 
 export default defineComponent({
   components: { DetailsPanel, AskConfirmationInfo, SifButton },
