@@ -7,7 +7,7 @@
     "advance": "zx ./scripts/advance.mjs",
     "build": "zx ./scripts/build.mjs",
     "dev": "zx ./scripts/dev.mjs",
-    "e2e": "zx ./scripts/e2e.mjs",
+    "e2e": "zx ./scripts/e2e.mjs --tag 67fcb1a723add9d339538e63564aa85b64989959",
     "lint": "zx ./scripts/lint.mjs",
     "prepare": "cd .. && husky install ./ui/.husky",
     "stack": "zx ./scripts/stack.mjs",
