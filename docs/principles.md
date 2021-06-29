@@ -1,6 +1,10 @@
+# Style and Principles
+
+Here are some notes about programming style.
+
 # Principles of programming in practice
 
-SOLID is a slightly antiquated acronym where the letters there dont make much sense. Honestly it boils down to some key points:
+People talk about the [SOLID](https://en.wikipedia.org/wiki/SOLID) principles - generally it boils down to some key points:
 
 1. Stuff that **changes** together should live together
 1. **Encapsulate** things with a well thought out interface
@@ -147,18 +151,7 @@ If we follow the principles above and extend it to our architecture we will end 
 
 Here we focus on `Usecases` as the place where we store all the business logic in our system. We store all the logic here as it is the key place for testing that logic. We then inject all the services that those Usecases need to manage the state of the system.
 
-See core docs. for how we use the clean architecture.
-
-# TypeScript
-
-TypeScript makes refactoring much faster but can sometimes cause confusion if you are new to it.
-
-- Use `unknown` over `any`
-- Generics
-- Ensure your editor is displaying TypeScript errors.
-- ...
-
-[Complete me]
+See [architecture](architecture.md) docs for how we use the clean architecture.
 
 # Continuous Integration and feature flags
 
