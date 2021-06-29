@@ -17,7 +17,7 @@ So whilst testing is important in this space change is also to be expected so ou
 
 ### We are growing fast
 
-We are growing fast as an industry and some level of team churn should be expected we should strive to avoid knowledge silos and optimize for quick onboarding where possible. SO clarity and consistency should be somethign we value in our codebase.
+We are growing fast as an industry and some level of team churn should be expected we should strive to avoid knowledge silos and optimize for quick onboarding where possible. So clarity and consistency should be somethign we value in our codebase.
 
 ### Our architecture goals
 
