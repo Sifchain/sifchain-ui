@@ -25,57 +25,6 @@ function runWorkflow(afterWorkflow?: () => void) {
 }
 ```
 
-# Avoiding `this`
-
-Often in Javascript when we use `this` in a function it is not clear on how to use it or using it leads to a dependency overhead. Eg.
-
-```ts
-export class Cow {
-  sound: string;
-  constructor(sound: string) {
-    this.sound = sound;
-  }
-  say() {
-    return this.sound;
-  }
-}
-```
-
-```ts
-const c: Cow = new Cow("moo");
-
-const { say } = c;
-
-// We are 'dependent' on the this from the Cow class
-console.log(say()); // this is undefined
-```
-
-We can get more utility by forgoing inheritence and using the module pattern. Caveat being we need to export a shadow type for our function and we get class like type effects but without the `this` problem.
-
-```ts
-// ./Cow.ts
-export function Cow(sound: string) {
-  return {
-    say() {
-      return sound;
-    },
-  };
-}
-export type Cow = ReturnType<typeof Cow>;
-```
-
-```ts
-import { Cow } from "./Cow";
-
-const c: Cow = Cow("moo");
-
-const { say } = c;
-
-console.log(say()); // moo
-```
-
-Inheritence is always a bad idea so there is no drawback to using this pattern.
-
 # Dependency injection
 
 A trick that will make your code design much much better and far more testable is utilizing dependeny injection.
@@ -138,6 +87,66 @@ it("should set the env as a cookie", () => {
   expect(cookie.set).toHaveBeenCalledWith("foo");
 });
 ```
+
+Notice that by using `Pick` and injecting all our dependencies we are complying with the principles:
+
+- Encapsulate stuff using a well thought out interface
+- Interfaces should only require what they actually need.
+- Enable dynamic substitution (say for testing)
+- Utilize inversion of control
+
+The only thing we have not seen here directly is the single responsability principle.
+
+# Avoiding `this`
+
+Often in Javascript when we use `this` in a function it is not clear on how to use it or using it leads to a dependency overhead. Eg.
+
+```ts
+export class Cow {
+  sound: string;
+  constructor(sound: string) {
+    this.sound = sound;
+  }
+  say() {
+    return this.sound;
+  }
+}
+```
+
+```ts
+const c: Cow = new Cow("moo");
+
+const { say } = c;
+
+// We are 'dependent' on the this from the Cow class
+console.log(say()); // this is undefined
+```
+
+We can get more utility by forgoing inheritence and using the module pattern. Caveat being we need to export a shadow type for our function and we get class like type effects but without the `this` problem.
+
+```ts
+// ./Cow.ts
+export function Cow(sound: string) {
+  return {
+    say() {
+      return sound;
+    },
+  };
+}
+export type Cow = ReturnType<typeof Cow>;
+```
+
+```ts
+import { Cow } from "./Cow";
+
+const c: Cow = Cow("moo");
+
+const { say } = c;
+
+console.log(say()); // moo
+```
+
+Inheritence is always a bad idea so there is no drawback to using this pattern.
 
 # Test Driven Development
 
