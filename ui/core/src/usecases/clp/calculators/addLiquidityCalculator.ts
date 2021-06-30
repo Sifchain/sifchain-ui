@@ -18,6 +18,11 @@ export enum PoolState {
 }
 import { toBaseUnits } from "../../../utils";
 
+// The following has been done as a stepping stone for refactoring away from
+// @vue/reactivity - this was the quickest way to remove it from this api
+// for our react FE implementors. Here we are leaving this as we may want to
+// add a dependency array to utilize this as a memoization point if this function
+// becomes a slow point that we want to optimize. Eg. computed((var1,var2) => {...}, [var1,var2])
 function computed<T>(fn: () => T) {
   return fn();
 }
