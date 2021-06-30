@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Asset } from "ui-core";
+import { Asset } from "@sifchain/sdk";
 import { defineComponent, PropType } from "vue";
 import { useCore } from "../../hooks/useCore";
 import { generateTokenSearchLists } from "./tokenLists";

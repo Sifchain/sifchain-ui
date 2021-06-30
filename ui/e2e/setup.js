@@ -35,3 +35,7 @@ beforeAll(async () => {
   [page] = await context.pages();
   global.context = context; // this is needed to generate screenshots inside custom environment. 'context' is not visible there
 });
+
+afterAll(async () => {
+  await context.close();
+});

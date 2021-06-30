@@ -3,7 +3,7 @@ import { defineComponent } from "vue";
 import Layout from "@/components/Layout/Layout.vue";
 import { computed, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { SwapState, TransactionStatus, useSwapCalculator } from "ui-core";
+import { SwapState, TransactionStatus, useSwapCalculator } from "@sifchain/sdk";
 import { useWalletButton } from "@/components/WithWallet/useWalletButton";
 import CurrencyPairPanel from "@/components/CurrencyPairPanel/Index.vue";
 import Modal from "@/components/Modal/Modal.vue";
@@ -15,7 +15,7 @@ import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import DetailsPanel from "@/components/DetailsPanel/DetailsPanel.vue";
 import SlippagePanel from "@/components/SlippagePanel/Index.vue";
 import { getMaxAmount } from "./utils/getMaxAmount";
-import { format } from "ui-core/src/utils/format";
+import { format } from "@sifchain/sdk/src/utils/format";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality

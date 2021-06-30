@@ -2,7 +2,7 @@
 import { defineComponent, PropType } from "vue";
 import AskConfirmation from "./AskConfirmation.vue";
 import AnimatedConfirmation from "./AnimatedConfirmation.vue";
-import { IAssetAmount, TransactionStatus } from "ui-core";
+import { IAssetAmount, TransactionStatus } from "@sifchain/sdk";
 
 export default defineComponent({
   components: { AskConfirmation, AnimatedConfirmation },

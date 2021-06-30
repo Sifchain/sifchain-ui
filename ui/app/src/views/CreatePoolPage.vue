@@ -8,14 +8,12 @@ import SelectTokenDialogSif from "@/components/TokenSelector/SelectTokenDialogSi
 import Modal from "@/components/Modal/Modal.vue";
 import {
   Amount,
-  IAmount,
   IAsset,
   IAssetAmount,
-  LiquidityProvider,
   Pool,
   PoolState,
   usePoolCalculator,
-} from "ui-core";
+} from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 
 import { slipAdjustment } from "../../../core/src/entities/formulae";
@@ -34,7 +32,7 @@ import DetailsPanelPool from "@/components/DetailsPanelPool/DetailsPanelPool.vue
 import { formatNumber } from "@/components/shared/utils";
 import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";
-import { format } from "ui-core/src/utils/format";
+import { format } from "@sifchain/sdk";
 
 export default defineComponent({
   components: {

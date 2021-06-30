@@ -7,7 +7,7 @@ import {
   LiquidityProvider,
   PoolState,
   useRemoveLiquidityCalculator,
-} from "ui-core";
+} from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";

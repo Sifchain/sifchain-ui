@@ -13,10 +13,11 @@ type WindowWithPossibleMetaMask = typeof window & {
 
 // Detect mossible metamask provider from browser
 export const getMetamaskProvider = async (): Promise<provider> => {
-  const mmp = await detectMetaMaskProvider();
+  if (typeof window === "undefined") return null;
   const win = window as WindowWithPossibleMetaMask;
 
-  if (!mmp || !win) return null;
+  const mmp = await detectMetaMaskProvider();
+  if (!mmp) return null;
 
   if (mmp) {
     return mmp as provider;

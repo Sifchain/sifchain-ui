@@ -13,6 +13,7 @@ export class SwapPage extends GenericPage {
       detailsLiquidityProviderFee:
         "[data-handle='details-liquidity-provider-fee']",
       swapButton: 'button:has-text("Swap")',
+      tokenSwitchButton: '[data-handle="switch-currencies-button"]',
     };
   }
 
@@ -76,6 +77,10 @@ export class SwapPage extends GenericPage {
 
   async clickSwap() {
     await page.click(this.el.swapButton);
+  }
+
+  async switchTokens() {
+    await page.click(this.el.tokenSwitchButton);
   }
 }
 

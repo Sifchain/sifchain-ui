@@ -49,13 +49,11 @@ let numChecks = 0;
 
 // Detect mossible keplr provider from browser
 export default async function getKeplrProvider(): Promise<provider | null> {
+  if (typeof window === "undefined") return null;
+
   const win = window as WindowWithPossibleKeplr;
 
   if (!win) return null;
-  console.log({
-    "win.keplr": win.keplr,
-    "win.getOfflineSigner": win.getOfflineSigner,
-  });
 
   if (!win.keplr || !win.getOfflineSigner) {
     numChecks++;

@@ -6,7 +6,7 @@ import {
   getConfig,
   getEnv,
   switchEnv,
-} from "ui-core";
+} from "@sifchain/sdk";
 
 switchEnv({ location: window.location });
 
