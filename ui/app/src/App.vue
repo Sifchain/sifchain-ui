@@ -24,6 +24,7 @@
         </WithWallet>
       </template>
     </Header>
+    <SideBarVue />
     <router-view />
     <Notifications />
     <EnvAlert />
@@ -38,6 +39,8 @@ import Pill from "./components/Pill/Pill.vue";
 import Notifications from "./components/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/components/shared/EnvAlert.vue";
+import SideBarVue from "./SideBar.vue";
+
 export default defineComponent({
   name: "App",
   components: {
@@ -46,6 +49,7 @@ export default defineComponent({
     WithWallet,
     Pill,
     EnvAlert,
+    SideBarVue,
   },
   setup() {
     /// Initialize app
