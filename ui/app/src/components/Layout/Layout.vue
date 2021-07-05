@@ -1,6 +1,6 @@
 <template>
-  <div class="layout">
-    <Panel dark>
+  <div class="layout h-full w-full pt-[130px]">
+    <!-- <Panel dark>
       <template v-slot:header v-if="header">
         <PanelNav />
       </template>
@@ -19,13 +19,13 @@
           <SubHeading>{{ title }}</SubHeading>
         </div>
       </div>
-      <slot></slot>
-    </Panel>
-    <Panel v-if="!!$slots.after" class="after">
+    </Panel> -->
+    <!-- <Panel v-if="!!$slots.after" class="after">
       <slot name="after"></slot>
-    </Panel>
+    </Panel> -->
+    <slot></slot>
   </div>
-  <Footer />
+  <!-- <Footer /> -->
   <div class="layout-bg" />
 </template>
 
@@ -38,7 +38,7 @@ import Icon from "@/components/Icon/Icon.vue";
 import { SubHeading } from "@/components/Text";
 
 export default defineComponent({
-  components: { Panel, PanelNav, Icon, SubHeading, Footer },
+  // components: { Panel, PanelNav, Icon, SubHeading, Footer },
   props: {
     backLink: String,
     header: { type: Boolean, default: true },
@@ -54,50 +54,29 @@ export default defineComponent({
 <style lang="scss" scoped>
 .layout {
   box-sizing: border-box;
-  padding-top: $header_height;
-  width: 100%;
-  height: 100vh; /* TODO: header height */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  // padding-top: $header_height;
+  width: 100vw;
+  min-height: 100vmin; /* TODO: header height */
+  overflow-y: scroll;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: center;
+  // align-items: center;
+  padding-bottom: 200px;
 }
 .layout-bg {
   background: url("../../assets/World_Background_opt.jpg");
   background-size: cover;
-  background-position: bottom center;
+  background-position: top center;
+  background-attachment: fixed;
   // filter: blur(10px);
 
   z-index: -1;
   width: 100%;
   height: 100vh; /* TODO: header height */
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-}
-
-.after {
-  margin-top: 15px;
-  padding: 25px;
-  background: linear-gradient(180deg, $c_gray_50 0%, $c_gray_200 100%);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-.back-link {
-  text-align: left;
-  display: block;
-  text-decoration: none;
-  position: relative;
-  top: 2px;
-  cursor: pointer;
-}
-.title {
-  display: flex;
-  justify-content: center;
-  width: 100%;
 }
 </style>

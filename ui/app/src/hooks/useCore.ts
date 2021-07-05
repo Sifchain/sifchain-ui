@@ -19,6 +19,9 @@ const store = createStore();
 const usecases = createUsecases({ store, services });
 const poolFinder = createPoolFinder(store);
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+window["config"] = config;
 // expose store on window so it is easy to inspect
 Object.defineProperty(window, "store", {
   get: function () {

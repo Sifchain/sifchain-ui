@@ -40,11 +40,12 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
-    <div v-if="tlv" class="rowan">
+  <Suspense>
+    <template #default>
       <Pill color="info">{{ tlv }}</Pill>
-    </div>
-  </div>
+    </template>
+    <template #fallback>Loading...</template>
+  </Suspense>
 </template>
 
 <style lang="scss" scoped>

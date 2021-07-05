@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <Header>
+    <!-- <Header>
       <template v-slot:right>
         <WithWallet>
           <template v-slot:disconnected="{ requestDialog }">
@@ -23,9 +23,11 @@
           </template>
         </WithWallet>
       </template>
-    </Header>
+    </Header> -->
     <SideBarVue />
-    <router-view />
+    <Layout>
+      <router-view />
+    </Layout>
     <Notifications />
     <EnvAlert />
   </div>
@@ -39,8 +41,8 @@ import Pill from "./components/Pill/Pill.vue";
 import Notifications from "./components/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/components/shared/EnvAlert.vue";
-import SideBarVue from "./SideBar.vue";
-
+import SideBarVue from "@/components/NavSidePanel/NavSidePanel.vue";
+import Layout from "@/components/Layout/Layout.vue";
 export default defineComponent({
   name: "App",
   components: {
@@ -50,6 +52,7 @@ export default defineComponent({
     Pill,
     EnvAlert,
     SideBarVue,
+    Layout,
   },
   setup() {
     /// Initialize app

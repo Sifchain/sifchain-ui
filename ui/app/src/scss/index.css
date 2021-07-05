@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+button {
+  transition: all 450ms ease;
+  cursor: pointer;
+}
+button:hover {
+  opacity: 90%;
+}
+button:active {
+  filter: brightness(120%);
+}
+
+.flip-list-move {
+  transition: transform 300ms ease-out;
+}

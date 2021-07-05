@@ -1,10 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Pill from "../Pill/Pill.vue";
 export default defineComponent({
-  components: {
-    Pill,
-  },
+  components: {},
   data() {
     return {
       polling: undefined as ReturnType<typeof setTimeout> | undefined,

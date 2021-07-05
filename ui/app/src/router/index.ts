@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
-import Swap from "@/views/SwapPage.vue";
+import Swap from "@/views/SwapPage/SwapPage";
 import Pool from "@/views/PoolPage.vue";
 import StatsPage from "@/views/StatsPage.vue";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";

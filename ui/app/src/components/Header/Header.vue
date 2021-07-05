@@ -33,9 +33,9 @@ export default defineComponent({
       </div>
       <div class="third-container">
         <Suspense>
-          <div>
+          <span>
             <TVL />
-          </div>
+          </span>
         </Suspense>
         <Suspense>
           <div>
