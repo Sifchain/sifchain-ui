@@ -1,6 +1,5 @@
 import { defineComponent, TransitionGroup } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
-import PageCard from '@/components/PageCard'
 import { useSwapPageModule } from "./useSwapPageModule";
 import { TokenInputGroup } from "./TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData--old";
@@ -22,7 +21,7 @@ export default defineComponent({
     const core = useCore();
     console.log(data.fromSymbol.value, data.toSymbol.value);
     return () => (
-      <PageCard>
+      <div class="flex justify-start flex-col items-center bg-black relative right-0 left-[560px] w-[531px] rounded-[10px] p-[20px]">
         <div class="h-[42px] w-full flex-row flex justify-start items-center">
           <NavIconVue icon="swap" class="w-[32px] h-[32px]" active />
           <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
@@ -132,7 +131,7 @@ export default defineComponent({
             </div>
           </div>
         </div>
-      </PageCard>
+      </div>
     );
   },
 });
