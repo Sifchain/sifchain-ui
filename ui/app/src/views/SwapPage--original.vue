@@ -1,19 +1,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Layout from "@/components/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { computed, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { SwapState, TransactionStatus, useSwapCalculator } from "@sifchain/sdk";
-import { useWalletButton } from "@/components/WithWallet/useWalletButton";
-import CurrencyPairPanel from "@/components/CurrencyPairPanel/Index.vue";
-import Modal from "@/components/Modal/Modal.vue";
-import SelectTokenDialogSif from "@/components/TokenSelector/SelectTokenDialogSif.vue";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
-import ModalView from "@/components/ModalView/ModalView.vue";
-import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog.vue";
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
+import CurrencyPairPanel from "@/componentsLegacy/CurrencyPairPanel/Index.vue";
+import Modal from "@/componentsLegacy/Modal/Modal.vue";
+import SelectTokenDialogSif from "@/componentsLegacy/TokenSelector/SelectTokenDialogSif.vue";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
+import ModalView from "@/componentsLegacy/ModalView/ModalView.vue";
+import ConfirmationDialog from "@/componentsLegacy/ConfirmationDialog/ConfirmationDialog.vue";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
-import DetailsPanel from "@/components/DetailsPanel/DetailsPanel.vue";
-import SlippagePanel from "@/components/SlippagePanel/Index.vue";
+import DetailsPanel from "@/componentsLegacy/DetailsPanel/DetailsPanel.vue";
+import SlippagePanel from "@/componentsLegacy/SlippagePanel/Index.vue";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
 

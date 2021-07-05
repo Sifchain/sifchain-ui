@@ -1,7 +1,7 @@
 import { computed, effect, reactive, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { SwapState, TransactionStatus, useSwapCalculator } from "@sifchain/sdk";
-import { useWalletButton } from "@/components/WithWallet/useWalletButton";
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";

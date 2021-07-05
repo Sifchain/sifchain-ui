@@ -1,5 +1,5 @@
 import { defineComponent, TransitionGroup } from "vue";
-import NavIconVue from "@/components/NavSidePanel/NavIcon.vue";
+import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
 import { useSwapPageModule } from "./useSwapPageModule";
 import { TokenInputGroup } from "./TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData--old";

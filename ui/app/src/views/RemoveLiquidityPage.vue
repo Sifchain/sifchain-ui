@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch, onMounted } from "vue";
-import Layout from "@/components/Layout/Layout.vue";
-import { useWalletButton } from "@/components/WithWallet/useWalletButton";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
   Asset,
   LiquidityProvider,
@@ -11,14 +11,14 @@ import {
 import { useCore } from "@/hooks/useCore";
 import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
-import AssetItem from "@/components/AssetItem/AssetItem.vue";
-import Slider from "@/components/Slider/Slider.vue";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
+import AssetItem from "@/componentsLegacy/AssetItem/AssetItem.vue";
+import Slider from "@/componentsLegacy/Slider/Slider.vue";
 import { toConfirmState } from "./utils/toConfirmState";
 import { ConfirmState } from "@/types";
-import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
-import DetailsPanelRemove from "@/components/DetailsPanelRemove/DetailsPanelRemove.vue";
-import { getLMData } from "@/components/shared/utils";
+import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
+import DetailsPanelRemove from "@/componentsLegacy/DetailsPanelRemove/DetailsPanelRemove.vue";
+import { getLMData } from "@/componentsLegacy/shared/utils";
 
 export default defineComponent({
   components: {

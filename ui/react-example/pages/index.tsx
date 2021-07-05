@@ -7,7 +7,7 @@ import {
   useAssetState,
   useLpPoolsState,
 } from "@sifchain/sdk/react";
-import SifchainInspector from "../components/SifchainInspector";
+import SifchainInspector from "@/componentsLegacy/SifchainInspector";
 
 export default function Home() {
   const sifchain = useSifchain();

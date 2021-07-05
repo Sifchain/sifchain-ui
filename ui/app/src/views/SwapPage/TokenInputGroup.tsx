@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import AssetIconVue from "@/components/utilities/AssetIcon.vue";
+import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon.vue";
 import { computed, reactive } from "@vue/reactivity";
 import { IAsset } from "../../../../core/src";
 

@@ -6,12 +6,12 @@ import {
   TransactionStatus,
   useSwapCalculator,
 } from "@sifchain/sdk";
-import { useWalletButton } from "@/components/WithWallet/useWalletButton";
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { nextTick, onMounted, watch, watchEffect } from "vue";
-import { formatAssetAmount } from "@/components/shared/utils";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 
 export type TokenInputGroupModuleState = {
   symbol: string;

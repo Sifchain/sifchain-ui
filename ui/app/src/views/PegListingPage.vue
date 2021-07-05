@@ -1,19 +1,19 @@
 <script lang="ts">
-import Tab from "@/components/Tab/Tab.vue";
-import Tabs from "@/components/Tabs/Tabs.vue";
-import Layout from "@/components/Layout/Layout.vue";
-import AssetList from "@/components/AssetList/AssetList.vue";
-import SifInput from "@/components/SifInput/SifInput.vue";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
-import SifButton from "@/components/SifButton/SifButton.vue";
-import Tooltip from "@/components/Tooltip/Tooltip.vue";
-import Icon from "@/components/Icon/Icon.vue";
+import Tab from "@/componentsLegacy/Tab/Tab.vue";
+import Tabs from "@/componentsLegacy/Tabs/Tabs.vue";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import AssetList from "@/componentsLegacy/AssetList/AssetList.vue";
+import SifInput from "@/componentsLegacy/SifInput/SifInput.vue";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
+import SifButton from "@/componentsLegacy/SifButton/SifButton.vue";
+import Tooltip from "@/componentsLegacy/Tooltip/Tooltip.vue";
+import Icon from "@/componentsLegacy/Icon/Icon.vue";
 
 import { sortAssetAmount } from "./utils/sortAssetAmount";
 import { useCore } from "@/hooks/useCore";
 import { defineComponent, ref } from "vue";
 import { computed } from "@vue/reactivity";
-import { getUnpeggedSymbol } from "../components/shared/utils";
+import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
   IAsset,

@@ -35,14 +35,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import WithWallet from "@/components/WithWallet/WithWallet.vue";
-import Header from "./components/Header/Header.vue";
-import Pill from "./components/Pill/Pill.vue";
-import Notifications from "./components/Notifications/Notifications.vue";
+import WithWallet from "@/componentsLegacy/WithWallet/WithWallet.vue";
+import Header from "@/componentsLegacy/Header/Header.vue";
+import Pill from "@/componentsLegacy/Pill/Pill.vue";
+import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
-import EnvAlert from "@/components/shared/EnvAlert.vue";
-import SideBarVue from "@/components/NavSidePanel/NavSidePanel.vue";
-import Layout from "@/components/Layout/Layout.vue";
+import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
+import SideBarVue from "@/componentsLegacy/NavSidePanel/NavSidePanel.vue";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 export default defineComponent({
   name: "App",
   components: {

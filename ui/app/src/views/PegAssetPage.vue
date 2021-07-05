@@ -1,18 +1,18 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Layout from "@/components/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { computed, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { Asset, AssetAmount } from "@sifchain/sdk";
-import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import CurrencyField from "@/componentsLegacy/CurrencyField/CurrencyField.vue";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
 
-import RaisedPanel from "@/components/RaisedPanel/RaisedPanel.vue";
+import RaisedPanel from "@/componentsLegacy/RaisedPanel/RaisedPanel.vue";
 import { useRouter } from "vue-router";
-import SifInput from "@/components/SifInput/SifInput.vue";
-import DetailsTable from "@/components/DetailsTable/DetailsTable.vue";
-import Label from "@/components/Label/Label.vue";
-import RaisedPanelColumn from "@/components/RaisedPanelColumn/RaisedPanelColumn.vue";
+import SifInput from "@/componentsLegacy/SifInput/SifInput.vue";
+import DetailsTable from "@/componentsLegacy/DetailsTable/DetailsTable.vue";
+import Label from "@/componentsLegacy/Label/Label.vue";
+import RaisedPanelColumn from "@/componentsLegacy/RaisedPanelColumn/RaisedPanelColumn.vue";
 import { trimZeros } from "@sifchain/sdk";
 import BigNumber from "bignumber.js";
 import {
@@ -20,11 +20,11 @@ import {
   getPeggedSymbol,
   getUnpeggedSymbol,
   useAssetItem,
-} from "@/components/shared/utils";
+} from "@/componentsLegacy/shared/utils";
 import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { ConfirmState } from "../types";
-import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
 import { format, toBaseUnits } from "@sifchain/sdk";
 import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
 
