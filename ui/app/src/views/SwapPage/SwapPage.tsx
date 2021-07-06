@@ -62,7 +62,7 @@ export default defineComponent({
             }}
           >
             <img
-              class="mt-[10px] p-[20px] bg-gradient-to-b from-accent-base to-accent-accent_gradient_to rounded-[4px]"
+              class="mt-[10px] p-[20px] bg-accent-gradient rounded-[4px]"
               src={require("@/assets/icons/interactive/swap.svg")}
             />
           </button>
@@ -107,7 +107,7 @@ export default defineComponent({
                       }}
                       class={`box-border text-white text-[16px] mr-[7px] font-mono font-medium w-[57px] h-[33px] border-solid border-[1px] rounded-[4px] ${
                         +opt === +data.slippage.value
-                          ? "bg-gradient-to-b from-accent-base to-accent-accent_gradient_to border-accent-base"
+                          ? "bg-accent-gradient"
                           : "bg-darkfill-input border-darkfill-input_outline"
                       }`}
                     >

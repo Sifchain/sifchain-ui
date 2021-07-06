@@ -4,6 +4,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      backgroundImage: {
+        "accent-gradient": `linear-gradient(180deg, #D4B553 0%, #C1A04F 100%);`,
+      },
       fontFamily: {
         DEFAULT: "sans",
         sans: [

@@ -66,7 +66,7 @@ export const TokenInputGroup = (props: {
           />
           <button
             onClick={() => props.onSetToMaxAmount()}
-            class="z-10 ml-[16px] box-content text-[10px] p-[1px] font-semibold bg-gradient-to-b from-accent-base to-accent-accent_gradient_to rounded-full font-sans"
+            class="z-10 ml-[16px] box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans"
           >
             <div class="flex items-center px-[9px] h-[18px] bg-darkfill-input rounded-full text-accent-base">
               <span style="letter-spacing: -1%; line-height: 10px;">MAX</span>
