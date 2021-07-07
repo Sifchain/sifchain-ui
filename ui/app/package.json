@@ -21,7 +21,6 @@
     "style-loader": "^3.0.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "vue": "^3.0.0",
-    "vue-loader": "^16.1.2",
     "vue-router": "^4.0.0-0"
   },
   "devDependencies": {

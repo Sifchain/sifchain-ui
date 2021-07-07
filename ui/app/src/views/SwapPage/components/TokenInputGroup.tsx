@@ -10,17 +10,19 @@ import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon.vue";
 import { computed, reactive } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
 
-export const TokenInputGroup = (props: {
-  heading: string;
-  formattedBalance?: string;
-  asset: IAsset;
-  amount: string;
-  onSetToMaxAmount?: () => any;
-  onInputAmount: (amount: string) => any;
-  onBlur: HTMLAttributes["onBlur"];
-  onFocus: HTMLAttributes["onFocus"];
-  tokenIconUrl: string;
-}) => {
+export const TokenInputGroup = (
+  props: {
+    heading: string;
+    formattedBalance?: string;
+    asset: IAsset;
+    amount: string;
+    onSetToMaxAmount?: () => any;
+    onInputAmount: (amount: string) => any;
+    onBlur: HTMLAttributes["onBlur"];
+    onFocus: HTMLAttributes["onFocus"];
+    tokenIconUrl: string;
+  } & InputHTMLAttributes,
+) => {
   console.log(props.asset);
   console.log("hello");
   return (
