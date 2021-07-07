@@ -1,11 +1,14 @@
-import { defineComponent, TransitionGroup } from "vue";
+import { defineComponent, onDeactivated, TransitionGroup } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
-import PageCard from '@/components/PageCard'
+import PageCard from "@/components/PageCard";
 import { useSwapPageModule } from "./useSwapPageModule";
-import { TokenInputGroup } from "./TokenInputGroup";
-import { useSwapPageData } from "./useSwapPageData--old";
+import { TokenInputGroup } from "./components/TokenInputGroup";
+import { useSwapPageData } from "./useSwapPageData";
 import { useCore } from "@/hooks/useCore";
 import { IAsset } from "../../../../core/src";
+import { SlippageTolerance } from "./components/SlippageTolerance";
+import { SwapDetails } from "./components/SwapDetails";
+import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -21,21 +24,21 @@ export default defineComponent({
     const data = useSwapPageData();
     const core = useCore();
     console.log(data.fromSymbol.value, data.toSymbol.value);
+
     return () => (
-      <PageCard heading='Swap' navIconId='swap'>
+      <PageCard heading="Swap" navIconId="swap">
+        <TransitionGroup name="flip-list">
           <TokenInputGroup
+            tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
+            onFocus={() => data.handleFromFocused()}
+            onBlur={() => data.handleBlur()}
             heading="From"
             key={data.fromSymbol.value}
-            // key={data.modules.fromTokenInputGroup.state.symbol}
             onSetToMaxAmount={() => {
               data.handleFromMaxClicked();
-              // data.mutations.updateActiveFieldType("from");
-              // data.modules.fromTokenInputGroup.mutations.setAmountToMax();
             }}
             onInputAmount={(val) => {
               data.fromAmount.value = val;
-              // data.mutations.updateActiveFieldType("from");
-              // data.modules.fromTokenInputGroup.mutations.updateAmount(val);
             }}
             amount={data.fromAmount.value}
             asset={
@@ -62,14 +65,12 @@ export default defineComponent({
           </button>
 
           <TokenInputGroup
+            tokenIconUrl={data.toTokenIconUrl.value ?? ""}
+            onFocus={() => data.handleToFocused()}
+            onBlur={() => data.handleBlur()}
             heading="To"
             key={data.toSymbol.value}
             // key={data.modules.fromTokenInputGroup.state.symbol}
-            onSetToMaxAmount={() => {
-              // data.handleTo();
-              // data.mutations.updateActiveFieldType("from");
-              // data.modules.fromTokenInputGroup.mutations.setAmountToMax();
-            }}
             onInputAmount={(val) => {
               data.toAmount.value = val;
               // data.mutations.updateActiveFieldType("from");
@@ -81,49 +82,31 @@ export default defineComponent({
                 (asset) =>
                   asset.symbol == data.toSymbol.value ||
                   asset.symbol == `c${data.toSymbol.value}`,
-              ) || core.config.assets[0] as IAsset
+              ) || (core.config.assets[0] as IAsset)
             }
             formattedBalance={undefined}
           />
-        <div class="p-[20px] bg-darkfill-base rounded-[10px] mt-[10px] w-full">
-          <div class="w-full flex flex-col justify-between">
-            <div class="text-left w-full text-[16px] text-white font-sans font-medium capitalize">
-              Slippage Tolerance
-            </div>
-            <div class="flex items-center justify-center flex-row mt-[10px]">
-              <div class="flex flex-row items-center justify-center">
-                {["0.5", "1.0", "1.5"].map((opt) => {
-                  return (
-                    <button
-                      onClick={(e) => {
-                        data.slippage.value = opt;
-                      }}
-                      class={`box-border text-white text-[16px] mr-[7px] font-mono font-medium w-[57px] h-[33px] border-solid border-[1px] rounded-[4px] ${
-                        +opt === +data.slippage.value
-                          ? "bg-accent-gradient"
-                          : "bg-darkfill-input border-darkfill-input_outline"
-                      }`}
-                    >
-                      {opt}%
-                    </button>
-                  );
-                })}
-              </div>
-              <div class="flex flex-row items-center flex-nowrap box-border border-[1px] border-solid text-white font-mono border-white text-[16px] w-full bg-darkfill-input rounded-[4px]">
-                <input
-                  type="number"
-                  step="0.1"
-                  class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none  text-right"
-                  value={data.slippage.value}
-                  onInput={(e) => {
-                    data.slippage.value = (e.target as HTMLInputElement).value;
-                  }}
-                />
-                <div class="pr-[10px] pointer-events-none select-none">%</div>
-              </div>
-            </div>
-          </div>
-        </div> 
+        </TransitionGroup>
+        <SlippageTolerance
+          slippage={data.slippage.value}
+          onUpdate={(v) => {
+            data.slippage.value = v;
+          }}
+        ></SlippageTolerance>
+        <SwapDetails
+          price={data.priceMessage.value?.replace("per", "/")}
+          toTokenImageUrl={data.toTokenIconUrl.value ?? ""}
+          priceImpact={(data.priceImpact.value ?? "") + "%"}
+          liquidityProviderFee={data.providerFee.value ?? ""}
+          minimumReceived={data.minimumReceived.value}
+        ></SwapDetails>
+        <button class="mt-[10px] w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white">
+          <img
+            src={require("@/assets/icons/interactive/arrows-in.svg")}
+            class="w-[20px] h-[20px] mr-[4px]"
+          />{" "}
+          Connect Wallet
+        </button>
       </PageCard>
     );
   },
