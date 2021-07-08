@@ -16,10 +16,10 @@ body:not(.ready) [data-cloak] {
   display: none;
 }
 div#app {
-  font-size: 30px;
+  /* font-size: 30px;
   font-weight: lighter;
   margin: 40vh auto;
-  text-align: center;
+  text-align: center; */
 }
 div#app:empty:before {
   content: "Loading...";

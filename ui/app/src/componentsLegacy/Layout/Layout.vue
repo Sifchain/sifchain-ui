@@ -1,5 +1,7 @@
 <template>
-  <div class="layout h-full w-full pt-[130px]">
+  <div
+    class="layout flex absolute justify-center left-sidebar top-0 right-0 bottom-0"
+  >
     <!-- <Panel dark>
       <template v-slot:header v-if="header">
         <PanelNav />
@@ -56,14 +58,15 @@ export default defineComponent({
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.4);
   // padding-top: $header_height;
-  width: 100vw;
-  min-height: 100vmin; /* TODO: header height */
+  // padding-left: 131px;
+  // width: 100vw;
+  // min-height: 100vmin; /* TODO: header height */
   overflow-y: scroll;
   // display: flex;
   // flex-direction: column;
   // justify-content: center;
   // align-items: center;
-  padding-bottom: 200px;
+  // padding-bottom: 200px;
 }
 .layout-bg {
   background: url("../../assets/World_Background_opt.jpg");

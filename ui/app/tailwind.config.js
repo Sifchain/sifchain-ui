@@ -18,6 +18,22 @@ module.exports = {
           "monospace",
         ],
       },
+      spacing: {
+        1: "8px",
+        2: "12px",
+        3: "16px",
+        4: "20px",
+        5: "24px",
+        6: "28px",
+        7: "32px",
+        8: "48px",
+      },
+      width: {
+        sidebar: "210px",
+      },
+      inset: {
+        sidebar: "210px",
+      },
       colors: {
         accent: {
           // Tacha Gold
@@ -37,6 +53,8 @@ module.exports = {
           base: "#171717",
           input: "#232323",
           input_outline: "#353535",
+          disabled: "#565656",
+          500: "#666",
         },
       },
     },
