@@ -2,7 +2,7 @@ import { defineComponent, TransitionGroup } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
 import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon";
 import PageCard from "@/components/PageCard";
-import BalanceRow from "./BalanceRow2";
+import BalanceRow from "./BalanceRowReference";
 import { useBalancePageData } from "./useBalancePageData";
 import { RouterView } from "vue-router";
 import ImportModal from "./ImportModal/ImportModal";
