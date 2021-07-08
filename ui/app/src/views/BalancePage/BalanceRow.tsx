@@ -10,7 +10,7 @@ export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
 export default function BalanceRow(props: {
   tokenItem: TokenListItem;
-  onAction?: (type: BalanceRowActionType) => void;
+  onAction: (type: BalanceRowActionType) => void;
   onSetExpandedSymbol: (symbol: string) => void;
   last: Boolean;
   expandedSymbol: string;
@@ -28,22 +28,26 @@ export default function BalanceRow(props: {
     {
       icon: "interactive/arrow-down",
       name: "Import",
+      id: "import",
       class: !expanded && "order-10", // Put import button last if not expanded
     },
     {
       icon: "interactive/arrow-up",
       name: "Export",
+      id: "export",
       disabled: empty,
       class: !expanded && "invisible",
     },
     {
       icon: "navigation/pool",
       name: "Pool",
+      id: "pool",
       class: !expanded && "invisible",
     },
     {
       icon: "navigation/swap",
       name: "Swap",
+      id: "swap",
       class: !expanded && "invisible",
     },
   ];
@@ -80,6 +84,9 @@ export default function BalanceRow(props: {
                   "text-darkfill-disabled cursor-not-allowed",
                 definition.class,
               )}
+              onClick={() =>
+                props.onAction(definition.id as BalanceRowActionType)
+              }
             >
               <AssetIconVue
                 active={!definition.disabled}

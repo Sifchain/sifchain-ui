@@ -23,7 +23,8 @@ export type InteractiveIconName =
   | "chevron-down"
   | "search"
   | "arrow-down"
-  | "ellipsis";
+  | "ellipsis"
+  | "close";
 
 export type NavIconName =
   | "documents"

@@ -26,7 +26,7 @@ export default defineComponent({
     console.log(data.fromSymbol.value, data.toSymbol.value);
 
     return () => (
-      <PageCard heading="Swap" navIconId="swap">
+      <PageCard heading="Swap" iconName="navigation/swap">
         <TransitionGroup name="flip-list">
           <TokenInputGroup
             tokenIconUrl={data.fromTokenIconUrl.value ?? ""}

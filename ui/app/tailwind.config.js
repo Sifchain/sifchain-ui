@@ -28,6 +28,12 @@ module.exports = {
         7: "32px",
         8: "48px",
       },
+      width: {
+        sidebar: "210px",
+      },
+      inset: {
+        sidebar: "210px",
+      },
       colors: {
         accent: {
           // Tacha Gold
