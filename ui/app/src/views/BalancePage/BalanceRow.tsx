@@ -1,14 +1,23 @@
 import { TokenListItem } from "./useBalancePageData";
+import cx from "clsx";
 import { ref } from "@vue/reactivity";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 
-export default function BalanceRow(props: { tokenItem: TokenListItem }) {
+export default function BalanceRow(props: {
+  tokenItem: TokenListItem;
+  last: Boolean;
+}) {
   const iconUrlRef = useTokenIconUrl({
     symbol: ref(props.tokenItem.asset.symbol),
   });
 
   return (
-    <tr class="align-middle h-[52px]">
+    <tr
+      class={cx(
+        "align-middle h-[52px] border-b-1 border-white border-opacity-40",
+        props.last && "border-transparent",
+      )}
+    >
       <td class="text-left align-middle">
         <div class="flex items-center">
           <img class="w-4 h-4" src={iconUrlRef.value} />

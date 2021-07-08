@@ -9,8 +9,8 @@ export default function PageCard(
   context: SetupContext,
 ) {
   return (
-    <div class="flex-1 flex justify-center pt-[130px]">
-      <div class="flex justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4">
+    <div class="py-[130px]">
+      <div class="justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4">
         {!!props.heading && (
           <div class="w-full flex-row flex justify-start items-center">
             {!!props.navIconId && (

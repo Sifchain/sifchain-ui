@@ -37,8 +37,11 @@ export default defineComponent({
             </tr>
           </thead>
           <tbody>
-            {tokenList.value.map((item) => (
-              <BalanceRow tokenItem={item} />
+            {tokenList.value.map((item, index) => (
+              <BalanceRow
+                last={index === tokenList.value.length - 1}
+                tokenItem={item}
+              />
             ))}
           </tbody>
         </table>

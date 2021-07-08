@@ -1,5 +1,7 @@
 <template>
-  <div class="layout h-full w-full flex pl-[210px]">
+  <div
+    class="layout flex absolute justify-center left-[210px] top-0 right-0 bottom-0"
+  >
     <!-- <Panel dark>
       <template v-slot:header v-if="header">
         <PanelNav />
@@ -57,8 +59,8 @@ export default defineComponent({
   background-color: rgba(0, 0, 0, 0.4);
   // padding-top: $header_height;
   // padding-left: 131px;
-  width: 100vw;
-  min-height: 100vmin; /* TODO: header height */
+  // width: 100vw;
+  // min-height: 100vmin; /* TODO: header height */
   overflow-y: scroll;
   // display: flex;
   // flex-direction: column;
