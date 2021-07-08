@@ -115,3 +115,11 @@ export async function preparePath(path) {
   }
   return path;
 }
+
+export function prepareRowText(row) {
+  return row
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join(" ");
+}

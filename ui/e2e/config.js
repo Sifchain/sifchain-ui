@@ -1,3 +1,8 @@
+import axios from "axios";
+require("dotenv").config();
+
+axios.defaults.baseURL = process.env.API_URL;
+
 export const DEX_TARGET = process.env.PORT
   ? `localhost:${process.env.PORT}`
   : "localhost:8080";
