@@ -19,7 +19,11 @@ const navIcons = ((ctx) => {
   }, {});
 })(require.context("@/assets/icons", true, /.*/)) as Record<string, string>;
 
-export type InteractiveIconName = "chevron-down" | "search";
+export type InteractiveIconName =
+  | "chevron-down"
+  | "search"
+  | "arrow-down"
+  | "ellipsis";
 
 export type NavIconName =
   | "documents"
@@ -48,13 +52,21 @@ export default defineComponent({
     active: {
       type: Boolean,
     },
+    disabled: {
+      type: Boolean,
+    },
   },
   setup(props) {
     return () => {
       return (
         <img
           class={props.class}
-          src={navIcons[props.icon + (props.active ? "--active" : "")]}
+          src={
+            navIcons[
+              props.icon +
+                (props.disabled ? "--disabled" : props.active ? "--active" : "")
+            ]
+          }
         />
       );
     };

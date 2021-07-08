@@ -5,14 +5,19 @@ export default function PageCard(
   props: {
     navIconId: string;
     heading: string;
+    class?: string;
   },
   context: SetupContext,
 ) {
   return (
     <div class="py-[130px]">
-      <div class="justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4">
+      <div
+        class={`justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4 ${
+          props.class || ""
+        }`}
+      >
         {!!props.heading && (
-          <div class="w-full flex-row flex justify-start items-center">
+          <div class="w-full flex-row flex justify-start items-center pb-4">
             {!!props.navIconId && (
               <NavIconVue
                 icon={props.navIconId}

@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 button {
-  transition: all 450ms ease;
+  transition: 450ms ease;
+  transition-property: color, background-color, opacity, filter;
   cursor: pointer;
 }
 button:hover {

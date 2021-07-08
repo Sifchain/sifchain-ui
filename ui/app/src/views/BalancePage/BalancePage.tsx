@@ -12,10 +12,11 @@ export default defineComponent({
   setup() {
     const { state, tokenList } = useBalancePageData({
       searchQuery: "",
+      expandedSymbol: "",
     });
 
     return () => (
-      <PageCard heading="Balances" navIconId="balances">
+      <PageCard heading="Balances" navIconId="balances" class="w-[800px]">
         <div class="w-full bg-darkfill-input h-8 relative flex items-center rounded-lg overflow-hidden">
           <AssetIconVue icon="interactive/search" class="ml-3 w-4 h-4" />
           <input
@@ -41,6 +42,10 @@ export default defineComponent({
               <BalanceRow
                 last={index === tokenList.value.length - 1}
                 tokenItem={item}
+                expandedSymbol={state.expandedSymbol}
+                onSetExpandedSymbol={(symbol) => {
+                  state.expandedSymbol = symbol;
+                }}
               />
             ))}
           </tbody>

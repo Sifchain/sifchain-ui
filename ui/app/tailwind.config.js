@@ -47,6 +47,7 @@ module.exports = {
           base: "#171717",
           input: "#232323",
           input_outline: "#353535",
+          disabled: "#565656",
           500: "#666",
         },
       },

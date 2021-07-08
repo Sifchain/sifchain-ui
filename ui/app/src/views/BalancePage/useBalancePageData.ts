@@ -18,6 +18,7 @@ export type TokenListItem = {
 
 export type BalancePageState = {
   searchQuery: string;
+  expandedSymbol: string;
 };
 
 export const useBalancePageData = (initialState: BalancePageState) => {
