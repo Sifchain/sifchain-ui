@@ -1,6 +1,6 @@
 import { sortAssetAmount } from "../utils/sortAssetAmount";
 import { useCore } from "@/hooks/useCore";
-import { computed, reactive } from "@vue/reactivity";
+import { computed, reactive, effect } from "@vue/reactivity";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
@@ -108,6 +108,17 @@ export const useBalancePageData = (initialState: BalancePageState) => {
         if (b.asset.symbol === config.nativeAsset.symbol) return 1;
         return a.asset.symbol.localeCompare(b.asset.symbol);
       });
+  });
+
+  effect(() => {
+    if (
+      state.expandedSymbol &&
+      !tokenList.value.some(
+        (item) => item.asset.symbol === state.expandedSymbol,
+      )
+    ) {
+      state.expandedSymbol = "";
+    }
   });
 
   return {
