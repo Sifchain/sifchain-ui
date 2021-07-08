@@ -37,7 +37,7 @@ export const TokenInputGroup: FunctionalComponent<
   } & InputHTMLAttributes
 > = (props, ctx) => {
   return (
-    <div class="p-[20px] bg-darkfill-base rounded-[10px] mt-[10px]">
+    <div class="p-[20px] bg-gray-base rounded-[10px] mt-[10px]">
       <div class="w-full flex justify-between">
         <div class=" text-[16px] text-white font-sans font-medium capitalize">
           {props.heading}
@@ -52,7 +52,7 @@ export const TokenInputGroup: FunctionalComponent<
         </div>
       </div>
       <div class="relative flex flex-row mt-[10px]">
-        <button class="relative flex items-center w-[186px] h-[54px] p-[8px] pr-0 rounded-[4px] bg-darkfill-input border-solid border-darkfill-input_outline border-[1px]">
+        <button class="relative flex items-center w-[186px] h-[54px] p-[8px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
           <select
             onFocus={props.onFocus}
             onBlur={props.onBlur}
@@ -76,7 +76,7 @@ export const TokenInputGroup: FunctionalComponent<
             icon="interactive/chevron-down"
           />
         </button>
-        <div class="relative ml-[10px] flex items-center w-[254px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-darkfill-input border-solid border-darkfill-input_outline border-[1px]">
+        <div class="relative ml-[10px] flex items-center w-[254px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
           <input
             onFocus={props.onFocus}
             onBlur={props.onBlur}
@@ -97,7 +97,7 @@ export const TokenInputGroup: FunctionalComponent<
               props.onSetToMaxAmount ? "" : "opacity-0 pointer-events-none"
             } z-10 ml-[16px] box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans`}
           >
-            <div class="flex items-center px-[9px] h-[18px] bg-darkfill-input rounded-full text-accent-base">
+            <div class="flex items-center px-[9px] h-[18px] bg-gray-input rounded-full text-accent-base">
               <span style="letter-spacing: -1%; line-height: 10px;">MAX</span>
             </div>
           </button>

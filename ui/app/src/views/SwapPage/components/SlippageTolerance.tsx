@@ -3,7 +3,7 @@ export const SlippageTolerance = (props: {
   onUpdate: (val: string) => any;
 }) => {
   return (
-    <div class="p-[20px] bg-darkfill-base rounded-[10px] mt-[10px] w-full">
+    <div class="p-[20px] bg-gray-base rounded-[10px] mt-[10px] w-full">
       <div class="w-full flex flex-col justify-between">
         <div class="text-left w-full text-[16px] text-white font-sans font-medium capitalize">
           Slippage Tolerance
@@ -19,7 +19,7 @@ export const SlippageTolerance = (props: {
                   class={`transition-all box-border text-white text-[16px] mr-[7px] font-mono font-medium w-[57px] h-[33px] border-solid border-[1px] border-transparent rounded-[4px] ${
                     +opt === +props.slippage
                       ? "bg-accent-gradient"
-                      : "bg-darkfill-input border-darkfill-input_outline bg-gradient-to-b from-transparent to-transparent"
+                      : "bg-gray-input border-gray-input_outline bg-gradient-to-b from-transparent to-transparent"
                   }`}
                 >
                   {opt}%
@@ -27,7 +27,7 @@ export const SlippageTolerance = (props: {
               );
             })}
           </div>
-          <div class="flex flex-row items-center flex-nowrap box-border border-[1px] border-solid text-white font-mono border-white text-[16px] w-full bg-darkfill-input rounded-[4px]">
+          <div class="flex flex-row items-center flex-nowrap box-border border-[1px] border-solid text-white font-mono border-white text-[16px] w-full bg-gray-input rounded-[4px]">
             <input
               type="number"
               step="0.1"

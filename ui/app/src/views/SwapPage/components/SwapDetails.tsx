@@ -10,7 +10,7 @@ export const SwapDetails = (props: {
       <div
         class={`
           h-[49px] w-full flex justify-center items-center box-border
-          bg-darkfill-base border-darkfill-input_outline
+          bg-gray-base border-gray-input_outline
           border-[1px] border-b-[1px] border-solid rounded-[6px] rounded-br-none rounded-bl-none
         `}
       >
@@ -25,7 +25,7 @@ export const SwapDetails = (props: {
       <div
         class={`
           h-[49px] w-full flex justify-center items-center box-border
-          bg-darkfill-base border-darkfill-input_outline
+          bg-gray-base border-gray-input_outline
           border-[1px] border-b-[1px] border-t-0 border-solid 
         `}
       >
@@ -40,7 +40,7 @@ export const SwapDetails = (props: {
       <div
         class={`
           h-[49px] w-full flex justify-center items-center box-border
-          bg-darkfill-base border-darkfill-input_outline
+          bg-gray-base border-gray-input_outline
           border-[1px] border-b-[1px] border-t-0 border-solid 
         `}
       >
@@ -54,7 +54,7 @@ export const SwapDetails = (props: {
       <div
         class={`
           h-[49px] w-full flex justify-center items-center box-border
-          bg-darkfill-base border-darkfill-input_outline
+          bg-gray-base border-gray-input_outline
           border-[1px] border-b-[1px] border-t-0 border-solid rounded-b-[6px]
         `}
       >

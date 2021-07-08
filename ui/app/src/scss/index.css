@@ -31,6 +31,6 @@ body {
 },
 ::-webkit-scrollbar-track {
   border-radius: 8px;
-  @apply bg-darkfill-input;
+  @apply bg-gray-input;
 } */
 

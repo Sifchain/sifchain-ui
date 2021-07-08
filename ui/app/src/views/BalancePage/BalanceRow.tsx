@@ -1,52 +1,72 @@
-import { TokenListItem } from "./useBalancePageData";
 import cx from "clsx";
 import { ref } from "@vue/reactivity";
-import AssetIconVue, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import { RouterLink } from "vue-router";
+import { useBalancePageData } from "./useBalancePageData";
+import { TokenListItem } from "@/hooks/useTokenList";
+import AssetIconVue, {
+  IconName,
+} from "@/componentsLegacy/utilities/AssetIcon.vue";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
 export default function BalanceRow(props: {
   tokenItem: TokenListItem;
-  onAction: (type: BalanceRowActionType) => void;
-  onSetExpandedSymbol: (symbol: string) => void;
   last: Boolean;
-  expandedSymbol: string;
 }) {
+  const { state } = useBalancePageData();
   const iconUrlRef = useTokenIconUrl({
     symbol: ref(props.tokenItem.asset.symbol),
   });
 
-  const expanded = props.expandedSymbol === props.tokenItem.asset.symbol;
-  const showMask = props.expandedSymbol && !expanded;
+  const expanded = state.expandedSymbol === props.tokenItem.asset.symbol;
+  const showMask = state.expandedSymbol && !expanded;
   const empty = props.tokenItem.amount.amount.toString(false) === "0";
 
   // Always render all buttons, expanded or not, they will just be hidden.
   const buttons = [
     {
+      tag: "button",
       icon: "interactive/arrow-down",
       name: "Import",
-      id: "import",
-      class: !expanded && "order-10", // Put import button last if not expanded
+      props: {
+        onClick: () => (state.importSymbol = props.tokenItem.asset.symbol),
+        class: !expanded && "order-10", // Put import button last if not expanded
+      },
     },
     {
+      tag: "button",
       icon: "interactive/arrow-up",
       name: "Export",
-      id: "export",
-      disabled: empty,
-      class: !expanded && "invisible",
+      props: {
+        disabled: empty,
+        class: !expanded && "invisible",
+      },
     },
     {
       icon: "navigation/pool",
       name: "Pool",
       id: "pool",
       class: !expanded && "invisible",
+      tag: RouterLink,
+      props: {
+        to: {
+          path: "pool",
+        },
+      },
     },
     {
       icon: "navigation/swap",
       name: "Swap",
       id: "swap",
-      class: !expanded && "invisible",
+      tag: RouterLink,
+      props: {
+        class: !expanded && "invisible",
+        to: {
+          path: "swap",
+          query: { to: props.tokenItem.asset.symbol },
+        },
+      },
     },
   ];
 
@@ -61,7 +81,7 @@ export default function BalanceRow(props: {
         {showMask && (
           <div
             class="bg-black opacity-60 absolute inset-0"
-            onClick={() => props.onSetExpandedSymbol("")}
+            onClick={() => (state.expandedSymbol = "")}
           />
         )}
         <div class="flex items-center">
@@ -74,38 +94,39 @@ export default function BalanceRow(props: {
       </td>
       <td class="text-right align-middle">
         <div class="inline-flex items-center">
-          {buttons.map((definition) => (
-            <button
-              class={cx(
-                "mr-1 rounded inline-flex items-center py-[6px] px-1 text-accent-base text-xs font-semibold bg-darkfill-base",
-                definition.disabled &&
-                  "text-darkfill-disabled cursor-not-allowed",
-                definition.class,
-              )}
-              onClick={() =>
-                props.onAction(definition.id as BalanceRowActionType)
-              }
-            >
-              <AssetIconVue
-                active={!definition.disabled}
-                disabled={definition.disabled}
-                icon={definition.icon as IconName}
-                class="w-4 h-4 mr-[2px] text-accent-base"
-              />
-              {definition.name}
-            </button>
-          ))}
+          {buttons.map((definition) => {
+            const Cmp: any = definition.tag;
+            return (
+              <Cmp
+                class={cx(
+                  "mr-1 rounded inline-flex items-center py-[6px] px-1 text-accent-base text-xs font-semibold bg-gray-base",
+                  definition.props.disabled &&
+                    "text-gray-disabled cursor-not-allowed",
+                  definition.class,
+                )}
+                {...definition.props}
+              >
+                <AssetIconVue
+                  active={!definition.props.disabled}
+                  disabled={definition.props.disabled}
+                  icon={definition.icon as IconName}
+                  class="w-4 h-4 mr-[2px] text-accent-base"
+                />
+                {definition.name}
+              </Cmp>
+            );
+          })}
           <button
             class={cx(
               "order-last w-5 h-5 items-center justify-center cursor-pointer rounded-full",
               !expanded && "bg-transparent",
-              expanded && "bg-darkfill-base",
+              expanded && "bg-gray-base",
             )}
-            onClick={() =>
-              props.onSetExpandedSymbol(
-                expanded ? "" : props.tokenItem.asset.symbol,
-              )
-            }
+            onClick={() => {
+              state.expandedSymbol = expanded
+                ? ""
+                : props.tokenItem.asset.symbol;
+            }}
           >
             <AssetIconVue
               active

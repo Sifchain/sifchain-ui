@@ -4,6 +4,11 @@ import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon";
 import PageCard from "@/components/PageCard";
 import BalanceRow from "./BalanceRowReference";
 import { useBalancePageData } from "./useBalancePageData";
+import BalanceRow from "./BalanceRow";
+import {
+  useSetupBalancePageData,
+  useBalancePageData,
+} from "./useBalancePageData";
 import { RouterView } from "vue-router";
 import ImportModal from "./ImportModal/ImportModal";
 
@@ -11,18 +16,19 @@ export default defineComponent({
   name: "BalancePage",
   props: {},
   setup() {
-    const { state, tokenList } = useBalancePageData({
+    useSetupBalancePageData({
       searchQuery: "",
       expandedSymbol: "",
-      importAsset: undefined,
+      importSymbol: "",
     });
+    const { state, tokenList } = useBalancePageData();
 
     return () => (
       <>
-        {!!state.importAsset && (
+        {!!state.importSymbol && (
           <ImportModal
-            onClose={() => (state.importAsset = undefined)}
-            asset={state.importAsset}
+            onClose={() => (state.importSymbol = "")}
+            symbol={state.importSymbol}
           />
         )}
         <PageCard
@@ -30,7 +36,7 @@ export default defineComponent({
           iconName="navigation/balances"
           class="w-[800px]"
         >
-          <div class="w-full bg-darkfill-input h-8 relative flex items-center rounded-lg overflow-hidden">
+          <div class="w-full bg-gray-input_outline h-8 relative flex items-center rounded-lg overflow-hidden">
             <AssetIconVue icon="interactive/search" class="ml-3 w-4 h-4" />
             <input
               type="text"
@@ -55,19 +61,6 @@ export default defineComponent({
                 <BalanceRow
                   last={index === tokenList.value.length - 1}
                   tokenItem={item}
-                  expandedSymbol={state.expandedSymbol}
-                  onAction={(type) => {
-                    switch (type) {
-                      case "import": {
-                        state.importAsset = item.asset;
-                      }
-                      default:
-                        console.log("action", type);
-                    }
-                  }}
-                  onSetExpandedSymbol={(symbol) => {
-                    state.expandedSymbol = symbol;
-                  }}
                 />
               ))}
             </tbody>

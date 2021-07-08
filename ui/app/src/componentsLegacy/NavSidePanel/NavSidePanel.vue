@@ -33,7 +33,7 @@ export default defineComponent({
         .length;
     });
     return () => (
-      <div class="overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-darkfill-base text-white fixed left-0 top-0 bottom-0">
+      <div class="overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
         <div class="w-full text-center">
           <div class="w-[119px] ml-[46px] mr-[45px] mt-[38px] flex justify-center">
             <img src={require("@/assets/logo-lg.svg")} alt="" />
@@ -102,7 +102,7 @@ export default defineComponent({
                 Wallets Connected
               </span>
               <div class="inline pr-[4px] py-[5px] pl-[10px]">
-                <div class="inline-flex items-center justify-center rounded-full w-[16px] h-[16px] bg-connected-base text-darkfill-base">
+                <div class="inline-flex items-center justify-center rounded-full w-[16px] h-[16px] bg-connected-base text-gray-base">
                   {connectedWalletsCount.value}
                 </div>
               </div>
