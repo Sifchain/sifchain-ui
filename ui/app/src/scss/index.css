@@ -16,3 +16,20 @@ button:active {
 .flip-list-move {
   transition: transform 300ms ease-out;
 }
+
+body {
+  @apply font-sans bg-black text-white text-base;
+  /* scrollbar-color: dark; */
+}
+/* ::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(115, 130, 161, 0.6);
+},
+::-webkit-scrollbar-track {
+  border-radius: 8px;
+  @apply bg-darkfill-input;
+} */
+

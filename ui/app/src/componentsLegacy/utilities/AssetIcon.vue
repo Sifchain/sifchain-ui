@@ -19,8 +19,7 @@ const navIcons = ((ctx) => {
   }, {});
 })(require.context("@/assets/icons", true, /.*/)) as Record<string, string>;
 
-console.log({ navIcons });
-export type InteractiveIconName = "chevron-down";
+export type InteractiveIconName = "chevron-down" | "search";
 
 export type NavIconName =
   | "documents"

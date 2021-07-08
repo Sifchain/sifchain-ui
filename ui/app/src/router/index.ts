@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
 import Swap from "@/views/SwapPage/SwapPage";
+import Balance from "@/views/BalancePage/BalancePage";
 import Pool from "@/views/PoolPage.vue";
 import StatsPage from "@/views/StatsPage.vue";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
@@ -88,9 +89,9 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/balances",
     name: "Balances",
-    component: PegListingPage,
+    component: Balance,
     meta: {
-      title: "Balances - Import - Sifchain",
+      title: "Balances - Sifchain",
     },
   },
   {
