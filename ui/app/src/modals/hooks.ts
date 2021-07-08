@@ -1,5 +1,5 @@
 import Modal from "@/components/Modal";
-import { IconName } from "@/componentsLegacy/utilities/AssetIcon.vue";
+import { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import router from "@/router";
 import { computed, reactive } from "vue";
 import { effect } from "@vue/reactivity";

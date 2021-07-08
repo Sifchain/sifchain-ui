@@ -1,16 +1,15 @@
 import { defineComponent, TransitionGroup } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
-import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
 import PageCard from "@/components/PageCard";
-import BalanceRow from "./BalanceRowReference";
-import { useBalancePageData } from "./useBalancePageData";
 import BalanceRow from "./BalanceRow";
 import {
   useSetupBalancePageData,
   useBalancePageData,
 } from "./useBalancePageData";
 import { RouterView } from "vue-router";
-import ImportModal from "./ImportModal/ImportModal";
+
+import { useSetupRouteModals } from "@/modals/hooks";
 
 export default defineComponent({
   name: "BalancePage",
@@ -19,25 +18,19 @@ export default defineComponent({
     useSetupBalancePageData({
       searchQuery: "",
       expandedSymbol: "",
-      importSymbol: "",
+      importSymbol: "rowan",
     });
     const { state, tokenList } = useBalancePageData();
 
     return () => (
       <>
-        {!!state.importSymbol && (
-          <ImportModal
-            onClose={() => (state.importSymbol = "")}
-            symbol={state.importSymbol}
-          />
-        )}
         <PageCard
           heading="Balances"
           iconName="navigation/balances"
           class="w-[800px]"
         >
           <div class="w-full bg-gray-input_outline h-8 relative flex items-center rounded-lg overflow-hidden">
-            <AssetIconVue icon="interactive/search" class="ml-3 w-4 h-4" />
+            <AssetIcon icon="interactive/search" class="ml-3 w-4 h-4" />
             <input
               type="text"
               placeholder="Search Token..."

@@ -1,4 +1,4 @@
-import { IconName } from "@/componentsLegacy/utilities/AssetIcon.vue";
+import { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import ImportModal from "./ImportModal/ImportModal";
 import ConnectWalletModal from "./ConnectWalletModal/ConnectWalletModal";
 

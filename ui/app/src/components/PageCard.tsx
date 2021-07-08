@@ -1,4 +1,4 @@
-import AssetIconVue, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { SetupContext } from "vue";
 
 export type PageCardProps = {
@@ -19,7 +19,7 @@ export default function PageCard(props: PageCardProps, context: SetupContext) {
           <div class="w-full flex-row flex justify-between items-center pb-4">
             <div class="flex items-center">
               {!!props.iconName && (
-                <AssetIconVue
+                <AssetIcon
                   icon={props.iconName}
                   class="w-[32px] h-[32px]"
                   active

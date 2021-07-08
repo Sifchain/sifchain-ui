@@ -1,5 +1,5 @@
 import { defineComponent, computed } from "vue";
-import { IconName } from "@/componentsLegacy/utilities/AssetIcon.vue";
+import { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import Modal from "@/components/Modal";
 import { useSetupRouteModals } from "./hooks";
 

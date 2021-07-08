@@ -1,4 +1,4 @@
-import AssetIconVue, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 
 import { SetupContext, Teleport } from "vue";
 import PageCard, { PageCardProps } from "./PageCard";
@@ -8,7 +8,9 @@ export type ModalProps = {
   onClose: () => void;
   class?: string;
   heading: string;
-  iconName: IconName;
+  icon?: IconName;
+  showClose?: Boolean;
+  showBack?: Boolean;
 };
 
 export default function Modal(props: ModalProps, context: SetupContext) {
@@ -28,24 +30,34 @@ export default function Modal(props: ModalProps, context: SetupContext) {
           {!!props.heading && (
             <div class="w-full flex-row flex justify-between items-center pb-4">
               <div class="flex items-center">
-                {!!props.iconName && (
-                  <AssetIconVue
-                    icon={props.iconName}
+                {props.showBack ? (
+                  <button onClick={() => props.onClose()} aria-label="Back">
+                    <AssetIcon
+                      icon="interactive/arrow-down"
+                      style={{ transform: "rotate(90deg)" }}
+                      class="w-[32px] h-[32px]"
+                    />
+                  </button>
+                ) : props.icon ? (
+                  <AssetIcon
+                    icon={props.icon}
                     class="w-[32px] h-[32px]"
                     active
                   />
-                )}
+                ) : null}
                 <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
                   {props.heading}
                 </span>
               </div>
               <div class="flex items-center">
-                <button onClick={() => props.onClose()}>
-                  <AssetIconVue
-                    icon="interactive/close"
-                    class="w-[14px] h-[14px]"
-                  />
-                </button>
+                {props.showClose && (
+                  <button onClick={() => props.onClose()}>
+                    <AssetIcon
+                      icon="interactive/close"
+                      class="w-[14px] h-[14px]"
+                    />
+                  </button>
+                )}
               </div>
             </div>
           )}

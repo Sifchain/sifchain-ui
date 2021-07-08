@@ -1,7 +1,7 @@
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import { effect } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon.vue";
+import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
 
 export type ConnectWalletModalProps = {
   closeOnSifchainConnect?: boolean;
@@ -22,10 +22,20 @@ export default defineComponent({
   setup(props) {
     const { usecases, store } = useCore();
 
+    const initialSifConnected = ref(store.wallet.sif.isConnected);
+    const initialEthConnected = ref(store.wallet.eth.isConnected);
     effect(() => {
-      if (props.closeOnSifchainConnect && store.wallet.sif.isConnected) {
+      if (
+        !initialSifConnected &&
+        props.closeOnSifchainConnect &&
+        store.wallet.sif.isConnected
+      ) {
         props.onClose();
-      } else if (props.closeOnEthereumConnect && store.wallet.eth.isConnected) {
+      } else if (
+        !initialEthConnected &&
+        props.closeOnEthereumConnect &&
+        store.wallet.eth.isConnected
+      ) {
         props.onClose();
       }
     });
@@ -48,7 +58,7 @@ export default defineComponent({
             <>
               <p class="flex items-center">
                 Metamask Connected{" "}
-                <AssetIconVue icon="interactive/tick" class="w-3 h-3 ml-1" />
+                <AssetIcon icon="interactive/tick" class="w-3 h-3 ml-1" />
               </p>
               <div class="bg-black text-white relative h-[48px] rounded w-full overflow-hidden">
                 <input
@@ -76,7 +86,7 @@ export default defineComponent({
             <>
               <p class="flex items-center">
                 Keplr Connected{" "}
-                <AssetIconVue icon="interactive/tick" class="w-3 h-3 ml-1" />
+                <AssetIcon icon="interactive/tick" class="w-3 h-3 ml-1" />
               </p>
               <div class="bg-black text-white relative h-[48px] rounded w-full overflow-hidden">
                 <input

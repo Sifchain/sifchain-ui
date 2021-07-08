@@ -2,9 +2,7 @@ import { defineComponent, PropType, ref, computed, Ref } from "vue";
 import { effect } from "@vue/reactivity";
 import cx from "clsx";
 import Modal from "@/components/Modal";
-import AssetIconVue, {
-  IconName,
-} from "@/componentsLegacy/utilities/AssetIcon.vue";
+import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { IAsset, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useTokenList, TokenListItem } from "@/hooks/useTokenList";
@@ -23,7 +21,7 @@ export default defineComponent({
   name: "ImportModal",
   props: {
     amount: { type: String },
-    network: { type: String },
+    network: { type: String as PropType<Network> },
     symbol: { type: String as PropType<string> },
     onClose: { type: Function as PropType<() => void> },
   },
@@ -73,26 +71,36 @@ export default defineComponent({
         networkRef.value = tokenListRef.value[0].asset.network;
     });
 
-    const buttonCases = [
-      {
-        condition: () => !store.wallet.sif.address || true,
-        name: "Connect Sifchain Wallet",
-        icon: "interactive/arrows-in" as IconName,
-        props: {
-          onClick: () =>
-            openConnectWalletModal({
-              closeOnSifchainConnect: true,
-            }),
-        },
-      },
-      {
-        condition: () => true,
-        name: "Import",
-        icon: null,
-      },
-    ];
     const buttonRef = computed(() => {
-      return buttonCases.find((button) => button.condition());
+      return [
+        {
+          condition: !store.wallet.sif.address,
+          name: "Connect Sifchain Wallet",
+          icon: "interactive/arrows-in" as IconName,
+          props: {
+            onClick: () =>
+              openConnectWalletModal({
+                closeOnSifchainConnect: true,
+              }),
+          },
+        },
+        {
+          condition: networkRef.value === Network.ETHEREUM,
+          name: "Connect Ethereum Wallet",
+          icon: "interactive/arrows-in" as IconName,
+          props: {
+            onClick: () =>
+              openConnectWalletModal({
+                closeOnEthereumConnect: true,
+              }),
+          },
+        },
+        {
+          condition: true,
+          name: "Import",
+          icon: null,
+        },
+      ].find((item) => item.condition);
     });
 
     return () => (
@@ -103,13 +111,14 @@ export default defineComponent({
               Network
               <div class={selectClasses.container}>
                 <span class="capitalize">{networkRef.value}</span>
-                <AssetIconVue icon="interactive/chevron-down" class="w-5 h-5" />
+                <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
                 <select
                   class={selectClasses.select}
                   value={networkRef.value}
-                  onChange={(e) =>
-                    (networkRef.value = (e.target as HTMLSelectElement)?.value)
-                  }
+                  onChange={(e) => {
+                    const select = e.target as HTMLSelectElement;
+                    networkRef.value = select.value as Network;
+                  }}
                 >
                   {networkListRef.value.map((network: string) => (
                     <option value={network}>
@@ -126,10 +135,7 @@ export default defineComponent({
                 <img src={symbolIconRef.value} class="w-[38px] h-[38px]" />
                 <div class="flex items-center">
                   <div class="mr-2 uppercase">{symbolRef.value}</div>
-                  <AssetIconVue
-                    icon="interactive/chevron-down"
-                    class="w-5 h-5"
-                  />
+                  <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
                 </div>
                 <select
                   class={selectClasses.select}
@@ -220,7 +226,7 @@ export default defineComponent({
             {...buttonRef.value.props}
           >
             {!!buttonRef.value.icon && (
-              <AssetIconVue
+              <AssetIcon
                 icon={buttonRef.value.icon}
                 class="w-[20px] h-[20px] mr-[4px]"
               />

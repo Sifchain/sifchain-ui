@@ -7,7 +7,7 @@ import {
   InputHTMLAttributes,
   SetupContext,
 } from "vue";
-import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
 import { computed, reactive } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
 export const SampleBoundChildComponent = defineComponent<
@@ -71,7 +71,7 @@ export const TokenInputGroup: FunctionalComponent<
             {props.asset.label.replace(/^c/gim, "")}
           </div>
 
-          <AssetIconVue
+          <AssetIcon
             class="w-[24px] h-[24px] mr-[20px] ml-auto"
             icon="interactive/chevron-down"
           />
