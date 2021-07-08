@@ -1,6 +1,4 @@
-import AssetIconVue, {
-  IconName,
-} from "@/componentsLegacy/utilities/AssetIcon.vue";
+import AssetIconVue, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { SetupContext } from "vue";
 
 export type PageCardProps = {

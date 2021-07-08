@@ -2,7 +2,10 @@ import { defineComponent, onDeactivated, TransitionGroup } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
 import PageCard from "@/components/PageCard";
 import { useSwapPageModule } from "./useSwapPageModule";
-import { TokenInputGroup } from "./components/TokenInputGroup";
+import {
+  TokenInputGroup,
+  SampleBoundChildComponent,
+} from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
 import { useCore } from "@/hooks/useCore";
 import { IAsset } from "../../../../core/src";
@@ -65,8 +68,8 @@ export default defineComponent({
           </button>
 
           <TokenInputGroup
-            onKeydown={() => {
-              alert("helo from keydown");
+            onInput={() => {
+              console.log("helo from keydown");
               data.fromSymbol.value = "USD";
             }}
             tokenIconUrl={data.toTokenIconUrl.value ?? ""}

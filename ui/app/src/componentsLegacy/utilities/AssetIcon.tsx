@@ -1,4 +1,3 @@
-<script lang="tsx">
 import { defineComponent, PropType } from "vue";
 const navIcons = ((ctx) => {
   let keys = ctx.keys();
@@ -73,4 +72,3 @@ export default defineComponent({
     };
   },
 });
-</script>

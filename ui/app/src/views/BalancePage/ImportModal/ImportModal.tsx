@@ -1,7 +1,7 @@
 import { defineComponent, PropType } from "vue";
 import Modal from "@/components/Modal";
 import { reactive } from "@vue/reactivity";
-import { IconName } from "@/componentsLegacy/utilities/AssetIcon.vue";
+import { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { IAsset } from "@sifchain/sdk";
 
 export default defineComponent({

@@ -1,8 +1,8 @@
 import { TokenListItem } from "./useBalancePageData";
-import cx from "clsx";
 import { ref } from "@vue/reactivity";
 import AssetIconVue, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import { stateful } from "./stateful";
 
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
@@ -10,7 +10,7 @@ export default function BalanceRow(props: {
   tokenItem: TokenListItem;
   onAction: (type: BalanceRowActionType) => void;
   onSetExpandedSymbol: (symbol: string) => void;
-  last: Boolean;
+  last: boolean;
   expandedSymbol: string;
 }) {
   const iconUrlRef = useTokenIconUrl({
@@ -52,10 +52,10 @@ export default function BalanceRow(props: {
 
   return (
     <tr
-      class={cx(
+      class={[
         "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden",
-        props.last && "border-transparent",
-      )}
+        { "border-transparent": props.last },
+      ]}
     >
       <td class="text-left align-middle min-w-[130px]">
         {showMask && (
@@ -76,12 +76,14 @@ export default function BalanceRow(props: {
         <div class="inline-flex items-center">
           {buttons.map((definition) => (
             <button
-              class={cx(
+              class={[
                 "mr-1 rounded inline-flex items-center py-[6px] px-1 text-accent-base text-xs font-semibold bg-darkfill-base",
-                definition.disabled &&
-                  "text-darkfill-disabled cursor-not-allowed",
-                definition.class,
-              )}
+                {
+                  "text-darkfill-disabled cursor-not-allowed":
+                    definition.disabled,
+                },
+                definition.class || "",
+              ]}
               onClick={() =>
                 props.onAction(definition.id as BalanceRowActionType)
               }
@@ -96,11 +98,10 @@ export default function BalanceRow(props: {
             </button>
           ))}
           <button
-            class={cx(
+            class={[
               "order-last w-5 h-5 items-center justify-center cursor-pointer rounded-full",
-              !expanded && "bg-transparent",
-              expanded && "bg-darkfill-base",
-            )}
+              { "bg-transparent": !expanded, "bg-darkfill-base": expanded },
+            ]}
             onClick={() =>
               props.onSetExpandedSymbol(
                 expanded ? "" : props.tokenItem.asset.symbol,

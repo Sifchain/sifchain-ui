@@ -7,9 +7,21 @@ import {
   InputHTMLAttributes,
   SetupContext,
 } from "vue";
-import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon.vue";
+import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon";
 import { computed, reactive } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
+export const SampleBoundChildComponent = defineComponent<
+  { exampleProp: boolean } & InputHTMLAttributes
+>({
+  // explicitly don't apply all non-prop attrs to the root element
+  inheritAttrs: false,
+  setup: (props, ctx) => () => (
+    <div>
+      <div class="h-20"></div>
+      <input type="text" {...ctx.attrs} />
+    </div>
+  ),
+});
 
 export const TokenInputGroup: FunctionalComponent<
   {
@@ -26,7 +38,6 @@ export const TokenInputGroup: FunctionalComponent<
 > = (props, ctx) => {
   return (
     <div class="p-[20px] bg-darkfill-base rounded-[10px] mt-[10px]">
-      <input type="text" {...props} />
       <div class="w-full flex justify-between">
         <div class=" text-[16px] text-white font-sans font-medium capitalize">
           {props.heading}
@@ -59,6 +70,7 @@ export const TokenInputGroup: FunctionalComponent<
           <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
             {props.asset.label.replace(/^c/gim, "")}
           </div>
+
           <AssetIconVue
             class="w-[24px] h-[24px] mr-[20px] ml-auto"
             icon="interactive/chevron-down"
