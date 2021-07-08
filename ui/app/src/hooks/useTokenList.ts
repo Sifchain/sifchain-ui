@@ -1,5 +1,5 @@
 import { useCore } from "./useCore";
-import { computed } from "vue";
+import { computed, Ref } from "vue";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
@@ -15,7 +15,7 @@ export type TokenListItem = {
   supported: boolean;
 };
 
-export const useTokenList = (props: { filter?: string }) => {
+export const useTokenList = () => {
   const { store, config, usecases } = useCore();
 
   const pendingPegTxList = computed(() => {
@@ -67,13 +67,6 @@ export const useTokenList = (props: { filter?: string }) => {
     const pegList = pendingPegTxList.value;
 
     return config.assets
-      .filter((asset: IAsset) => {
-        if (!props.filter) return true;
-        return (
-          asset.symbol.toLowerCase().indexOf(props.filter) !== -1 ||
-          asset.label.toLowerCase().indexOf(props.filter) !== -1
-        );
-      })
       .map((asset: IAsset) => {
         const amount = store.wallet.sif.balances.find(
           ({ asset: { symbol } }) => {

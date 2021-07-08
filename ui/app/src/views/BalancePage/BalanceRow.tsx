@@ -1,4 +1,4 @@
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, computed } from "vue";
 import cx from "clsx";
 import { ref } from "@vue/reactivity";
 import { RouterLink } from "vue-router";
@@ -20,19 +20,31 @@ export default defineComponent({
     last: {
       type: Boolean,
     },
+    expandedSymbol: {
+      type: String,
+    },
+    onSetExpandedSymbol: {
+      type: Function as PropType<(symbol: string) => void>,
+      required: true,
+    },
   },
   setup(props) {
-    const { state } = useBalancePageData();
     const iconUrlRef = useTokenIconUrl({
       symbol: ref(props.tokenItem.asset.symbol),
     });
 
-    const expanded = state.expandedSymbol === props.tokenItem.asset.symbol;
-    const showMask = state.expandedSymbol && !expanded;
-    const empty = props.tokenItem.amount.amount.toString(false) === "0";
+    const expandedRef = computed(
+      () => props.expandedSymbol === props.tokenItem.asset.symbol,
+    );
+    const showMaskRef = computed(
+      () => props.expandedSymbol && !expandedRef.value,
+    );
+    const emptyRef = computed(
+      () => props.tokenItem.amount.amount.toString(false) === "0",
+    );
 
-    // Always render all buttons, expanded or not, they will just be hidden.
-    const buttons = [
+    // Always render all buttons, expandedRef.value or not, they will just be hidden.
+    const buttonsRef = computed(() => [
       {
         tag: "button",
         icon: "interactive/arrow-down",
@@ -42,7 +54,7 @@ export default defineComponent({
             openImportModal({
               symbol: props.tokenItem.asset.symbol,
             }),
-          class: !expanded && "order-10", // Put import button last if not expanded
+          class: !expandedRef.value && "order-10", // Put import button last if not expanded
         },
       },
       {
@@ -50,15 +62,15 @@ export default defineComponent({
         icon: "interactive/arrow-up",
         name: "Export",
         props: {
-          disabled: empty,
-          class: !expanded && "invisible",
+          disabled: emptyRef.value,
+          class: !expandedRef.value && "invisible",
         },
       },
       {
         icon: "navigation/pool",
         name: "Pool",
         id: "pool",
-        class: !expanded && "invisible",
+        class: !expandedRef.value && "invisible",
         tag: RouterLink,
         props: {
           to: {
@@ -72,14 +84,14 @@ export default defineComponent({
         id: "swap",
         tag: RouterLink,
         props: {
-          class: !expanded && "invisible",
+          class: !expandedRef.value && "invisible",
           to: {
             path: "swap",
             query: { to: props.tokenItem.asset.symbol },
           },
         },
       },
-    ];
+    ]);
 
     return () => (
       <tr
@@ -89,10 +101,10 @@ export default defineComponent({
         )}
       >
         <td class="text-left align-middle min-w-[130px]">
-          {showMask && (
+          {showMaskRef.value && (
             <div
               class="bg-black opacity-60 absolute inset-0"
-              onClick={() => (state.expandedSymbol = "")}
+              onClick={() => props.onSetExpandedSymbol("")}
             />
           )}
           <div class="flex items-center">
@@ -101,11 +113,13 @@ export default defineComponent({
           </div>
         </td>
         <td class="text-right align-middle min-w-[200px]">
-          {empty ? null : props.tokenItem.amount.amount.toString(false)}
+          {emptyRef.value
+            ? null
+            : props.tokenItem.amount.amount.toString(false)}
         </td>
         <td class="text-right align-middle">
           <div class="inline-flex items-center">
-            {buttons.map((definition) => {
+            {buttonsRef.value.map((definition) => {
               const Cmp: any = definition.tag;
               return (
                 <Cmp
@@ -130,22 +144,24 @@ export default defineComponent({
             <button
               class={cx(
                 "order-last w-5 h-5 items-center justify-center cursor-pointer rounded-full",
-                !expanded && "bg-transparent",
-                expanded && "bg-gray-base",
+                !expandedRef.value && "bg-transparent",
+                expandedRef.value && "bg-gray-base",
               )}
               onClick={() => {
-                state.expandedSymbol = expanded
-                  ? ""
-                  : props.tokenItem.asset.symbol;
+                props.onSetExpandedSymbol(
+                  expandedRef.value ? "" : props.tokenItem.asset.symbol,
+                );
               }}
             >
               <AssetIcon
                 active
                 icon={
-                  expanded ? "interactive/chevron-down" : "interactive/ellipsis"
+                  expandedRef.value
+                    ? "interactive/chevron-down"
+                    : "interactive/ellipsis"
                 }
                 style={{
-                  transform: !expanded ? "" : "rotate(270deg)",
+                  transform: !expandedRef.value ? "" : "rotate(270deg)",
                 }}
               />
             </button>

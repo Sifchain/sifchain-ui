@@ -1,26 +1,38 @@
-import { defineComponent, TransitionGroup } from "vue";
+import { defineComponent, TransitionGroup, ref, computed } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
 import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
 import PageCard from "@/components/PageCard";
 import BalanceRow from "./BalanceRow";
-import {
-  useSetupBalancePageData,
-  useBalancePageData,
-} from "./useBalancePageData";
+import { useBalancePageData } from "./useBalancePageData";
 import { RouterView } from "vue-router";
 
 import { useSetupRouteModals } from "@/modals/hooks";
+import { effect } from "@vue/reactivity";
 
 export default defineComponent({
   name: "BalancePage",
   props: {},
   setup() {
-    useSetupBalancePageData({
+    const { state, tokenList } = useBalancePageData({
       searchQuery: "",
       expandedSymbol: "",
-      importSymbol: "rowan",
     });
-    const { state, tokenList } = useBalancePageData();
+
+    effect(() => {
+      if (state.searchQuery) {
+        state.expandedSymbol = "";
+      }
+    });
+
+    const displayedTokenList = computed(() =>
+      tokenList.value.filter((token) => {
+        if (!state.searchQuery) return true;
+        return (
+          token.asset.symbol.toLowerCase().indexOf(state.searchQuery) !== -1 ||
+          token.asset.label.toLowerCase().indexOf(state.searchQuery) !== -1
+        );
+      }),
+    );
 
     return () => (
       <>
@@ -50,10 +62,14 @@ export default defineComponent({
               </tr>
             </thead>
             <tbody>
-              {tokenList.value.map((item, index) => (
+              {displayedTokenList.value.map((item, index) => (
                 <BalanceRow
                   last={index === tokenList.value.length - 1}
                   tokenItem={item}
+                  expandedSymbol={state.expandedSymbol}
+                  onSetExpandedSymbol={(symbol) => {
+                    state.expandedSymbol = symbol;
+                  }}
                 />
               ))}
             </tbody>

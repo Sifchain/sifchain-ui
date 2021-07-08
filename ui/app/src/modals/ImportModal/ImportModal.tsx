@@ -33,7 +33,7 @@ export default defineComponent({
 
     const { store } = useCore();
 
-    const tokenListRef = useTokenList({});
+    const tokenListRef = useTokenList();
     const tokenRef = computed<TokenListItem>(() => {
       return tokenListRef.value.find(
         (token) => token.asset.symbol === symbolRef.value,
