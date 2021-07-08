@@ -65,6 +65,10 @@ export default defineComponent({
           </button>
 
           <TokenInputGroup
+            onKeydown={() => {
+              alert("helo from keydown");
+              data.fromSymbol.value = "USD";
+            }}
             tokenIconUrl={data.toTokenIconUrl.value ?? ""}
             onFocus={() => data.handleToFocused()}
             onBlur={() => data.handleBlur()}

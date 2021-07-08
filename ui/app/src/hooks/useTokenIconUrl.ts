@@ -22,6 +22,7 @@ const icons = ((ctx) => {
   string,
   string
 >;
+
 export const useTokenIconUrl = (props: { symbol: Ref<string> }) => {
   const core = useCore();
   const svgIconsUrl = computed(() => {

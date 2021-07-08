@@ -2,6 +2,7 @@ import {
   defineComponent,
   EmitsOptions,
   Events,
+  FunctionalComponent,
   HTMLAttributes,
   InputHTMLAttributes,
   SetupContext,
@@ -10,8 +11,8 @@ import AssetIconVue from "@/componentsLegacy/utilities/AssetIcon.vue";
 import { computed, reactive } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
 
-export const TokenInputGroup = (
-  props: {
+export const TokenInputGroup: FunctionalComponent<
+  {
     heading: string;
     formattedBalance?: string;
     asset: IAsset;
@@ -21,12 +22,11 @@ export const TokenInputGroup = (
     onBlur: HTMLAttributes["onBlur"];
     onFocus: HTMLAttributes["onFocus"];
     tokenIconUrl: string;
-  } & InputHTMLAttributes,
-) => {
-  console.log(props.asset);
-  console.log("hello");
+  } & InputHTMLAttributes
+> = (props, ctx) => {
   return (
     <div class="p-[20px] bg-darkfill-base rounded-[10px] mt-[10px]">
+      <input type="text" {...props} />
       <div class="w-full flex justify-between">
         <div class=" text-[16px] text-white font-sans font-medium capitalize">
           {props.heading}
