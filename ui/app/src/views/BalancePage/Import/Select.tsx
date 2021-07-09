@@ -1,40 +1,33 @@
-import { defineComponent, ref, computed, watch, reactive } from "vue";
+import { defineComponent, ref, computed, watch, reactive, PropType } from "vue";
 import { useRoute } from "vue-router";
-import { effect } from "@vue/reactivity";
 import cx from "clsx";
-import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
-import { IAsset, Network } from "@sifchain/sdk";
+import { Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
-import { useTokenList, TokenListItem } from "@/hooks/useTokenList";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import router from "@/router";
-
-export type ImportParams = {
-  amount?: string;
-  network?: string;
-  symbol?: string;
-};
+import { ImportData, getImportLocation } from "./useImportData";
 
 export default defineComponent({
-  name: "ImportMainModal",
-  props: {},
+  name: "ImportSelect",
+  props: {
+    importData: {
+      type: Object as PropType<ImportData>,
+      required: true,
+    },
+  },
   setup(props) {
+    const { store } = useCore();
     const selectClasses = useSelectClasses();
     const route = useRoute();
 
-    const importParams = reactive<ImportParams>(route.query);
-
-    const { store } = useCore();
-
-    const tokenListRef = useTokenList();
-    const tokenRef = computed<TokenListItem>(() => {
-      return tokenListRef.value.find(
-        (token) => token.asset.symbol === importParams.symbol,
-      ) as TokenListItem;
-    });
+    const {
+      importParams,
+      networksRef,
+      pickableTokensRef,
+      tokenRef,
+    } = props.importData;
 
     const symbolIconRef = computed(
       () =>
@@ -42,36 +35,6 @@ export default defineComponent({
           symbol: ref(importParams.symbol || ""),
         })?.value,
     );
-
-    const networkListRef = computed<Network[]>(() => {
-      const networks = new Set<Network>();
-      tokenListRef.value.forEach((token) => {
-        networks.add(token.asset.network);
-      });
-      return [...networks];
-    });
-
-    const pickableTokensRef = computed(() => {
-      return tokenListRef.value.filter((token) => {
-        return token.asset.network === importParams.network;
-      });
-    });
-
-    effect(() => {
-      if (
-        tokenRef.value &&
-        tokenRef.value.asset.network !== importParams.network
-      ) {
-        importParams.symbol = "";
-      }
-    });
-    effect(() => {
-      if (!tokenListRef.value.length) return;
-      if (!importParams.symbol)
-        importParams.symbol = tokenListRef.value[0].asset.symbol;
-      if (!importParams.network)
-        importParams.network = tokenListRef.value[0].asset.network;
-    });
 
     const buttonRef = computed(() => {
       return [
@@ -100,10 +63,7 @@ export default defineComponent({
           icon: null,
           props: {
             onClick: () => {
-              router.replace({
-                name: "ImportConfirm",
-                query: importParams,
-              });
+              router.replace(getImportLocation("confirm", importParams));
             },
           },
         },
@@ -111,16 +71,7 @@ export default defineComponent({
     });
 
     return () => (
-      <Modal
-        showClose
-        icon="interactive/arrow-down"
-        heading="Import"
-        onClose={() => {
-          router.replace({
-            name: "Balances",
-          });
-        }}
-      >
+      <>
         <section class="bg-gray-base p-4 rounded">
           <div class="flex">
             <label class={cx(selectClasses.label, "flex-1")}>
@@ -136,7 +87,7 @@ export default defineComponent({
                     importParams.network = select.value as Network;
                   }}
                 >
-                  {networkListRef.value.map((network: string) => (
+                  {networksRef.value.map((network: string) => (
                     <option value={network}>
                       {network[0].toUpperCase() +
                         network.slice(1).toLowerCase()}
@@ -176,11 +127,11 @@ export default defineComponent({
                 class="text-sm opacity-50 hover:text-accent-base cursor-pointer"
                 onClick={() => {
                   importParams.amount = String(
-                    tokenRef.value.amount.amount.toBigInt().valueOf(),
+                    tokenRef.value?.amount.amount.toBigInt().valueOf(),
                   );
                 }}
               >
-                Balance: {tokenRef.value.amount.amount.toString()}
+                Balance: {tokenRef.value?.amount.amount.toString()}
               </span>
             )}
           </div>
@@ -191,7 +142,7 @@ export default defineComponent({
                 class="z-10 box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans"
                 onClick={() =>
                   (importParams.amount = String(
-                    tokenRef.value.amount.amount.toBigInt().valueOf(),
+                    tokenRef.value?.amount.amount.toBigInt().valueOf() || "",
                   ))
                 }
               >
@@ -253,7 +204,7 @@ export default defineComponent({
               </button>
             );
           })()}
-      </Modal>
+      </>
     );
   },
 });

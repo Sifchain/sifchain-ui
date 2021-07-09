@@ -1,16 +1,12 @@
 import { defineComponent } from "@vue/runtime-core";
 import { ref } from "vue";
-import { useRoute } from "vue-router";
-import Modal from "@/components/Modal";
 import router from "@/router";
-import { ImportParams } from "./Main";
+import Modal from "@/components/Modal";
 
 export default defineComponent({
   name: "ImportPendingModal",
   props: {},
   setup() {
-    const route = useRoute();
-    const importParams = route.query as ImportParams;
     return () => (
       <Modal
         showClose

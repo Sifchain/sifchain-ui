@@ -6,6 +6,11 @@ import { useBalancePageData } from "./useBalancePageData";
 import { TokenListItem } from "@/hooks/useTokenList";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import {
+  getAssetLabel,
+  getUnpeggedSymbol,
+} from "@/componentsLegacy/shared/utils";
+import { getImportLocation } from "./Import/useImportData";
 
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
@@ -15,9 +20,6 @@ export default defineComponent({
     tokenItem: {
       type: Object as PropType<TokenListItem>,
       required: true,
-    },
-    last: {
-      type: Boolean,
     },
     expandedSymbol: {
       type: String,
@@ -52,11 +54,12 @@ export default defineComponent({
         icon: "interactive/arrow-down",
         name: "Import",
         props: {
-          to: {
-            name: "Import",
-            query: { symbol: props.tokenItem.asset.symbol },
-          },
           class: !expandedRef.value && "order-10", // Put import button last if not expanded
+          to: getImportLocation("select", {
+            symbol: getUnpeggedSymbol(
+              props.tokenItem.asset.symbol,
+            ).toLowerCase(),
+          }),
         },
       },
       {
@@ -98,15 +101,16 @@ export default defineComponent({
     return () => (
       <tr
         class={cx(
-          "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden",
-          props.last && "border-transparent",
+          "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden last:border-transparent",
           showMaskRef.value && "opacity-40",
         )}
       >
         <td class="text-left align-middle min-w-[130px]">
           <div class="flex items-center">
             <img class="w-4 h-4" src={iconUrlRef.value} />
-            <span class="ml-1 uppercase">{props.tokenItem.asset.symbol}</span>
+            <span class="ml-1 uppercase">
+              {getAssetLabel(props.tokenItem.asset)}
+            </span>
           </div>
         </td>
         <td class="text-right align-middle min-w-[200px]">
