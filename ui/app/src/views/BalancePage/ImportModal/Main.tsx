@@ -1,4 +1,5 @@
-import { defineComponent, PropType, ref, computed, Ref } from "vue";
+import { defineComponent, ref, computed, watch, reactive } from "vue";
+import { useRoute } from "vue-router";
 import { effect } from "@vue/reactivity";
 import cx from "clsx";
 import Modal from "@/components/Modal";
@@ -9,40 +10,38 @@ import { useTokenList, TokenListItem } from "@/hooks/useTokenList";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
-import { openConnectWalletModal } from "../hooks";
+import router from "@/router";
 
-export type ImportModalProps = {
+export type ImportParams = {
   amount?: string;
   network?: string;
   symbol?: string;
 };
 
 export default defineComponent({
-  name: "ImportModal",
-  props: {
-    amount: { type: String },
-    network: { type: String as PropType<Network> },
-    symbol: { type: String as PropType<string> },
-    onClose: { type: Function as PropType<() => void> },
-  },
+  name: "ImportMainModal",
+  props: {},
   setup(props) {
-    const amountRef = ref(props.amount);
-    const networkRef = ref(props.network);
-    const symbolRef = ref(props.symbol);
     const selectClasses = useSelectClasses();
+    const route = useRoute();
+
+    const importParams = reactive<ImportParams>(route.query);
 
     const { store } = useCore();
 
     const tokenListRef = useTokenList();
     const tokenRef = computed<TokenListItem>(() => {
       return tokenListRef.value.find(
-        (token) => token.asset.symbol === symbolRef.value,
+        (token) => token.asset.symbol === importParams.symbol,
       ) as TokenListItem;
     });
 
-    const symbolIconRef = useTokenIconUrl({
-      symbol: symbolRef as Ref<string>,
-    });
+    const symbolIconRef = computed(
+      () =>
+        useTokenIconUrl({
+          symbol: ref(importParams.symbol || ""),
+        })?.value,
+    );
 
     const networkListRef = computed<Network[]>(() => {
       const networks = new Set<Network>();
@@ -54,70 +53,87 @@ export default defineComponent({
 
     const pickableTokensRef = computed(() => {
       return tokenListRef.value.filter((token) => {
-        return token.asset.network === networkRef.value;
+        return token.asset.network === importParams.network;
       });
     });
 
     effect(() => {
-      if (tokenRef.value && tokenRef.value.asset.network !== networkRef.value) {
-        symbolRef.value = "";
+      if (
+        tokenRef.value &&
+        tokenRef.value.asset.network !== importParams.network
+      ) {
+        importParams.symbol = "";
       }
     });
     effect(() => {
       if (!tokenListRef.value.length) return;
-      if (!symbolRef.value)
-        symbolRef.value = tokenListRef.value[0].asset.symbol;
-      if (!networkRef.value)
-        networkRef.value = tokenListRef.value[0].asset.network;
+      if (!importParams.symbol)
+        importParams.symbol = tokenListRef.value[0].asset.symbol;
+      if (!importParams.network)
+        importParams.network = tokenListRef.value[0].asset.network;
     });
 
     const buttonRef = computed(() => {
       return [
         {
-          condition: !store.wallet.sif.address,
+          condition: false && !store.wallet.sif.isConnected,
           name: "Connect Sifchain Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () =>
-              openConnectWalletModal({
-                closeOnSifchainConnect: true,
-              }),
+            onClick: () => window.alert("Open Wallet Window Sif"),
           },
         },
         {
-          condition: networkRef.value === Network.ETHEREUM,
+          condition:
+            false &&
+            importParams.network === Network.ETHEREUM &&
+            !store.wallet.eth.isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () =>
-              openConnectWalletModal({
-                closeOnEthereumConnect: true,
-              }),
+            onClick: () => window.alert("Open Wallet Window Eth"),
           },
         },
         {
           condition: true,
           name: "Import",
           icon: null,
+          props: {
+            onClick: () => {
+              router.replace({
+                name: "ImportConfirm",
+                query: importParams,
+              });
+            },
+          },
         },
       ].find((item) => item.condition);
     });
 
     return () => (
-      <>
+      <Modal
+        showClose
+        icon="interactive/arrow-down"
+        heading="Import"
+        onClose={() => {
+          router.replace({
+            name: "Balances",
+          });
+        }}
+      >
         <section class="bg-gray-base p-4 rounded">
           <div class="flex">
             <label class={cx(selectClasses.label, "flex-1")}>
               Network
               <div class={selectClasses.container}>
-                <span class="capitalize">{networkRef.value}</span>
+                <span class="capitalize">{importParams.network}</span>
                 <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
                 <select
                   class={selectClasses.select}
-                  value={networkRef.value}
+                  value={importParams.network}
                   onChange={(e) => {
                     const select = e.target as HTMLSelectElement;
-                    networkRef.value = select.value as Network;
+                    importParams.network = select.value as Network;
                   }}
                 >
                   {networkListRef.value.map((network: string) => (
@@ -134,14 +150,14 @@ export default defineComponent({
               <div class={selectClasses.container}>
                 <img src={symbolIconRef.value} class="w-[38px] h-[38px]" />
                 <div class="flex items-center">
-                  <div class="mr-2 uppercase">{symbolRef.value}</div>
+                  <div class="mr-2 uppercase">{importParams.symbol}</div>
                   <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
                 </div>
                 <select
                   class={selectClasses.select}
-                  value={symbolRef.value}
+                  value={importParams.symbol}
                   onChange={(e) =>
-                    (symbolRef.value = (e.target as HTMLSelectElement)?.value)
+                    (importParams.symbol = (e.target as HTMLSelectElement)?.value)
                   }
                 >
                   {pickableTokensRef.value.map((token) => (
@@ -159,7 +175,7 @@ export default defineComponent({
               <span
                 class="text-sm opacity-50 hover:text-accent-base cursor-pointer"
                 onClick={() => {
-                  amountRef.value = String(
+                  importParams.amount = String(
                     tokenRef.value.amount.amount.toBigInt().valueOf(),
                   );
                 }}
@@ -174,7 +190,7 @@ export default defineComponent({
               <button
                 class="z-10 box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans"
                 onClick={() =>
-                  (amountRef.value = String(
+                  (importParams.amount = String(
                     tokenRef.value.amount.amount.toBigInt().valueOf(),
                   ))
                 }
@@ -195,12 +211,12 @@ export default defineComponent({
               onInput={(e) => {
                 const value = (e.target as HTMLInputElement).value;
                 if (isNaN(parseFloat(value))) {
-                  amountRef.value = "";
+                  importParams.amount = "";
                 } else {
-                  amountRef.value = value;
+                  importParams.amount = value;
                 }
               }}
-              value={amountRef.value}
+              value={importParams.amount}
               class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pr-[16px] pl-[68px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium"
             />
           </div>
@@ -220,21 +236,24 @@ export default defineComponent({
           </div>
         </section>
 
-        {!!buttonRef.value && (
-          <button
-            class="mt-[10px] w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white"
-            {...buttonRef.value.props}
-          >
-            {!!buttonRef.value.icon && (
-              <AssetIcon
-                icon={buttonRef.value.icon}
-                class="w-[20px] h-[20px] mr-[4px]"
-              />
-            )}{" "}
-            {buttonRef.value.name}
-          </button>
-        )}
-      </>
+        {!!buttonRef.value &&
+          (() => {
+            return (
+              <button
+                class="mt-[10px] w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white"
+                {...buttonRef.value.props}
+              >
+                {!!buttonRef.value.icon && (
+                  <AssetIcon
+                    icon={buttonRef.value.icon}
+                    class="w-[20px] h-[20px] mr-[4px]"
+                  />
+                )}{" "}
+                {buttonRef.value.name}
+              </button>
+            );
+          })()}
+      </Modal>
     );
   },
 });

@@ -25,7 +25,6 @@
       </template>
     </Header> -->
     <SideBarVue />
-    <RouteModals />
     <Layout>
       <router-view />
     </Layout>
@@ -37,7 +36,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import WithWallet from "@/componentsLegacy/WithWallet/WithWallet.vue";
-import RouteModals from "@/modals/RouteModals";
 import Header from "@/componentsLegacy/Header/Header.vue";
 import Pill from "@/componentsLegacy/Pill/Pill.vue";
 import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
@@ -49,7 +47,6 @@ export default defineComponent({
   name: "App",
   components: {
     Header,
-    RouteModals,
     Notifications,
     WithWallet,
     Pill,
