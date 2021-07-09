@@ -6,7 +6,6 @@ import BalanceRow from "./BalanceRow";
 import { useBalancePageData } from "./useBalancePageData";
 import { RouterView } from "vue-router";
 
-import { useSetupRouteModals } from "@/modals/hooks";
 import { effect } from "@vue/reactivity";
 
 export default defineComponent({
@@ -36,6 +35,7 @@ export default defineComponent({
 
     return () => (
       <>
+        <RouterView />
         <PageCard
           heading="Balances"
           iconName="navigation/balances"

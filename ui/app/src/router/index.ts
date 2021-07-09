@@ -1,12 +1,15 @@
 import {
   createRouter,
-  createWebHistory,
+  createWebHashHistory,
   RouteRecord,
   RouteRecordRaw,
 } from "vue-router";
 
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
+import ImportMainModal from "@/views/BalancePage/ImportModal/Main";
+import ImportConfirmModal from "@/views/BalancePage/ImportModal/Confirm";
+import ImportPendingModal from "@/views/BalancePage/ImportModal/Pending";
 import StatsPage from "@/views/StatsPage.vue";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import CreatePool from "@/views/CreatePoolPage.vue";
@@ -98,6 +101,23 @@ const routes = [
     meta: {
       title: "Balances - Sifchain",
     },
+    children: [
+      {
+        name: "Import",
+        path: "import",
+        component: ImportMainModal,
+      },
+      {
+        name: "ImportConfirm",
+        path: "import/confirm",
+        component: ImportConfirmModal,
+      },
+      {
+        name: "ImportPending",
+        path: "import/pending",
+        component: ImportPendingModal,
+      },
+    ],
   },
   {
     path: "/balances/import/:assetFrom/:assetTo",
@@ -118,7 +138,7 @@ const routes = [
 ] as const;
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes: [...routes] as Array<RouteRecordRaw>,
 });
 

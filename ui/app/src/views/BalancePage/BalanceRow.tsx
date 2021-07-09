@@ -6,7 +6,6 @@ import { useBalancePageData } from "./useBalancePageData";
 import { TokenListItem } from "@/hooks/useTokenList";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import { openImportModal } from "@/modals/hooks";
 
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
@@ -29,9 +28,12 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const iconUrlRef = useTokenIconUrl({
-      symbol: ref(props.tokenItem.asset.symbol),
-    });
+    const iconUrlRef = computed(
+      () =>
+        useTokenIconUrl({
+          symbol: ref(props.tokenItem.asset.symbol),
+        })?.value,
+    );
 
     const expandedRef = computed(
       () => props.expandedSymbol === props.tokenItem.asset.symbol,
@@ -46,14 +48,14 @@ export default defineComponent({
     // Always render all buttons, expandedRef.value or not, they will just be hidden.
     const buttonsRef = computed(() => [
       {
-        tag: "button",
+        tag: RouterLink,
         icon: "interactive/arrow-down",
         name: "Import",
         props: {
-          onClick: () =>
-            openImportModal({
-              symbol: props.tokenItem.asset.symbol,
-            }),
+          to: {
+            name: "Import",
+            query: { symbol: props.tokenItem.asset.symbol },
+          },
           class: !expandedRef.value && "order-10", // Put import button last if not expanded
         },
       },

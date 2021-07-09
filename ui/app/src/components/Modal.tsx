@@ -6,6 +6,7 @@ import PageCard, { PageCardProps } from "./PageCard";
 export type ModalProps = {
   teleportTo?: string;
   onClose: () => void;
+  onBack?: () => void;
   class?: string;
   heading: string;
   icon?: IconName;
@@ -31,7 +32,7 @@ export default function Modal(props: ModalProps, context: SetupContext) {
             <div class="w-full flex-row flex justify-between items-center pb-4">
               <div class="flex items-center">
                 {props.showBack ? (
-                  <button onClick={() => props.onClose()} aria-label="Back">
+                  <button onClick={() => props.onBack?.()} aria-label="Back">
                     <AssetIcon
                       icon="interactive/arrow-down"
                       style={{ transform: "rotate(90deg)" }}
