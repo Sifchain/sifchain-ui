@@ -1,6 +1,7 @@
 import { useCore } from "./useCore";
 import { computed, Ref } from "vue";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
+import { Network } from "@sifchain/sdk";
 import {
   AssetAmount,
   IAsset,
@@ -15,7 +16,11 @@ export type TokenListItem = {
   supported: boolean;
 };
 
-export const useTokenList = () => {
+export const useTokenList = (
+  props: {
+    networks?: Ref<Network[]>;
+  } = {},
+) => {
   const { store, config, usecases } = useCore();
 
   const pendingPegTxList = computed(() => {
@@ -66,7 +71,13 @@ export const useTokenList = () => {
   const tokenList = computed<TokenListItem[]>(() => {
     const pegList = pendingPegTxList.value;
 
+    const networksSet = new Set(props.networks?.value || []);
+
     return config.assets
+      .filter((asset) => {
+        if (!networksSet.size) return true;
+        return networksSet.has(asset.network);
+      })
       .map((asset: IAsset) => {
         const amount = store.wallet.sif.balances.find(
           ({ asset: { symbol } }) => {

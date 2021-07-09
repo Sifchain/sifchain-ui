@@ -54,7 +54,7 @@ export function getUnpeggedSymbol(symbol: string) {
 
 export function getAssetLabel(t: Asset) {
   if (t.network === Network.SIFCHAIN) {
-    return formatSymbol(t.symbol);
+    return formatSymbol(t.displaySymbol || t.symbol);
   }
 
   if (t.network === Network.ETHEREUM && t.symbol.toLowerCase() === "erowan") {

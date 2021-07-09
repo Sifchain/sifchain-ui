@@ -7,9 +7,7 @@ import {
 
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
-import ImportMainModal from "@/views/BalancePage/ImportModal/Main";
-import ImportConfirmModal from "@/views/BalancePage/ImportModal/Confirm";
-import ImportPendingModal from "@/views/BalancePage/ImportModal/Pending";
+import BalanceImport from "@/views/BalancePage/Import";
 import StatsPage from "@/views/StatsPage.vue";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import CreatePool from "@/views/CreatePoolPage.vue";
@@ -104,18 +102,8 @@ const routes = [
     children: [
       {
         name: "Import",
-        path: "import",
-        component: ImportMainModal,
-      },
-      {
-        name: "ImportConfirm",
-        path: "import/confirm",
-        component: ImportConfirmModal,
-      },
-      {
-        name: "ImportPending",
-        path: "import/pending",
-        component: ImportPendingModal,
+        path: "import/:symbol/:step",
+        component: BalanceImport,
       },
     ],
   },

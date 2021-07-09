@@ -4,7 +4,7 @@ import { SetupContext, Teleport } from "vue";
 
 export type ModalProps = {
   teleportTo?: string;
-  onClose: () => void;
+  onClose?: () => void;
   onBack?: () => void;
   class?: string;
   heading: string;
@@ -19,7 +19,7 @@ export default function Modal(props: ModalProps, context: SetupContext) {
       <div class="absolute bg-white opacity-30 z-[1] inset-0 left-sidebar" />
       <div
         class="absolute inset-0 left-sidebar flex items-center justify-center z-10"
-        onClick={() => props.onClose()}
+        onClick={() => props.onClose?.()}
       >
         <div
           class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
@@ -47,7 +47,7 @@ export default function Modal(props: ModalProps, context: SetupContext) {
               </div>
               <div class="flex items-center">
                 {props.showClose && (
-                  <button onClick={() => props.onClose()}>
+                  <button onClick={() => props.onClose?.()}>
                     <AssetIcon
                       icon="interactive/close"
                       class="w-[14px] h-[14px]"

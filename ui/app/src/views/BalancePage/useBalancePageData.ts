@@ -3,7 +3,7 @@ import { sortAssetAmount } from "../utils/sortAssetAmount";
 import { useCore } from "@/hooks/useCore";
 import { computed, reactive, effect } from "@vue/reactivity";
 import { useTokenList } from "@/hooks/useTokenList";
-import { IAsset } from "@sifchain/sdk";
+import { IAsset, Network } from "@sifchain/sdk";
 
 export type BalancePageState = {
   searchQuery: string;
@@ -12,7 +12,9 @@ export type BalancePageState = {
 
 export const useBalancePageData = (initialState: BalancePageState) => {
   const state = reactive(initialState);
-  const tokenList = useTokenList();
+  const tokenList = useTokenList({
+    networks: ref([Network.SIFCHAIN]),
+  });
 
   return {
     state,
