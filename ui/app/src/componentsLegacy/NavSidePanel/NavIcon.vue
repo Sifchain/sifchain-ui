@@ -1,5 +1,11 @@
 <script lang="tsx">
-import { defineComponent } from "vue";
+import {
+  Component,
+  DefineComponent,
+  defineComponent,
+  PropType,
+  SVGAttributes,
+} from "vue";
 const navIcons = ((ctx) => {
   let keys = ctx.keys();
   let values = keys.map(ctx);
@@ -46,13 +52,23 @@ export default defineComponent({
     active: {
       type: Boolean,
     },
+    size: {
+      type: String,
+      default: () => "20px",
+    },
   },
   setup(props) {
+    const InlineSvg = (navIcons[
+      props.icon + (props.active ? "--active" : "")
+    ] as unknown) as DefineComponent<
+      PropType<Record<string, unknown>> & SVGAttributes
+    >;
     return () => {
       return (
-        <img
-          class={props.class}
-          src={navIcons[props.icon + (props.active ? "--active" : "")]}
+        <InlineSvg
+          width={props.size}
+          height={props.size}
+          class={[props.class]}
         />
       );
     };

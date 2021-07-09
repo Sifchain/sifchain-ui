@@ -1,4 +1,10 @@
-import { defineComponent, PropType } from "vue";
+import {
+  DefineComponent,
+  defineComponent,
+  HTMLAttributes,
+  PropType,
+  SVGAttributes,
+} from "vue";
 const navIcons = ((ctx) => {
   let keys = ctx.keys();
   let values = keys.map(ctx);
@@ -16,8 +22,14 @@ const navIcons = ((ctx) => {
     o[`${folderName}/${rest.reverse().join("--") || ""}`] = values[i];
     return o;
   }, {});
-})(require.context("@/assets/icons", true, /.*/)) as Record<string, string>;
+})(require.context("@/assets/icons", true, /.*/)) as Record<
+  string,
+  {
+    default: DefineComponent<PropType<Record<string, unknown>> & SVGAttributes>;
+  }
+>;
 console.log(navIcons);
+
 export type InteractiveIconName =
   | "chevron-down"
   | "search"
@@ -46,7 +58,7 @@ export type IconName =
 export default defineComponent({
   props: {
     class: {
-      type: String,
+      type: [String, Object, Array] as HTMLAttributes["class"],
     },
     icon: {
       type: (String as unknown) as PropType<IconName>,
@@ -58,19 +70,27 @@ export default defineComponent({
     disabled: {
       type: Boolean,
     },
+    size: {
+      type: Number,
+      default: () => 20,
+    },
   },
   setup(props) {
+    const InlineSvg = navIcons[props.icon]?.default;
+    console.log({ InlineSvg });
     return () => {
       return (
-        <img
-          class={[props.class]}
-          style="max-width: initial;"
-          src={
-            navIcons[
-              props.icon +
-                (props.disabled ? "--disabled" : props.active ? "--active" : "")
-            ]
-          }
+        <InlineSvg
+          // viewBox={`0 0 ${props.size} ${props.size}`}
+          preserveAspectRatio="none"
+          width={props.size}
+          height={props.size}
+          class={[
+            "stroke-current",
+            props.active ? "text-accent-base" : "",
+            props.disabled ? "text-gray-500" : "",
+            props.class,
+          ]}
         />
       );
     };

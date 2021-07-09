@@ -34,7 +34,7 @@
     "truffle": "^5.1.48",
     "untildify": "^4.0.0",
     "vercel": "^21.0.1",
-    "vue-loader": "^16.1.2",
+    "vue-loader": "^16.3.0",
     "wait-on": "^5.2.1",
     "wscat": "^4.0.1",
     "zx": "^1.14.1"

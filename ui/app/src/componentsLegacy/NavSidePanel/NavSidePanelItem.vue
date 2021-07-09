@@ -1,12 +1,10 @@
 <script lang="tsx">
 import { defineComponent, PropType } from "vue";
 import { useLink, useRouter } from "vue-router";
-import NavIconVue, { NavIconName } from "./NavIcon.vue";
+import AssetIcon, { IconName, NavIconName } from "../utilities/AssetIcon";
 
 export default defineComponent({
-  components: {
-    NavIconVue,
-  },
+  components: {},
   props: {
     displayName: {
       required: true,
@@ -41,11 +39,9 @@ export default defineComponent({
               link.isActive.value ? "bg-[#232323] text-accent-base" : ""
             } hover:opacity-80 cursor-pointer rounded-[6px] pr-[12px] mt-[10px] w-full font-sans text-left flex flex-row justify-start font-semibold items-center`}
           >
-            <NavIconVue
-              class={`transition-all ${
-                link.isActive.value ? "fill-current" : ""
-              } w-[20px] h-[20px] ml-[8px] inline-block`}
-              icon={props.icon}
+            <AssetIcon
+              class={`transition-all w-[20px] h-[20px] ml-[8px] inline-block`}
+              icon={`navigation/${props.icon}` as IconName}
               active={link.isActive.value}
             />
 

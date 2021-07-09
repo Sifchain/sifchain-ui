@@ -31,11 +31,7 @@ export default defineComponent({
             <div class="w-full flex-row flex justify-between items-center pb-4">
               <div class="flex items-center">
                 {!!props.iconName && (
-                  <AssetIcon
-                    icon={props.iconName}
-                    class="w-[32px] h-[32px]"
-                    active
-                  />
+                  <AssetIcon icon={props.iconName} size={32} active />
                 )}
                 <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
                   {props.heading}

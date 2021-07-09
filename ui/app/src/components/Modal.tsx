@@ -35,15 +35,11 @@ export default function Modal(props: ModalProps, context: SetupContext) {
                     <AssetIcon
                       icon="interactive/arrow-down"
                       style={{ transform: "rotate(90deg)" }}
-                      class="w-[32px] h-[32px]"
+                      size={32}
                     />
                   </button>
                 ) : props.icon ? (
-                  <AssetIcon
-                    icon={props.icon}
-                    class="w-[32px] h-[32px]"
-                    active
-                  />
+                  <AssetIcon icon={props.icon} active size={32} />
                 ) : null}
                 <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
                   {props.heading}

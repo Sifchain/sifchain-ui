@@ -6,7 +6,7 @@ import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
 import { useCore } from "../../hooks/useCore";
 import { computed } from "@vue/reactivity";
 import NavSidePanelItemVue from "./NavSidePanelItem.vue";
-
+import Logo from "@/assets/logo-large.svg";
 // const navLinks: Array<{ displayName: string; routePath: string }> = [
 //   "Dashboard",
 //   "Swap",
@@ -36,7 +36,7 @@ export default defineComponent({
       <div class="overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
         <div class="w-full text-center">
           <div class="w-[119px] ml-[46px] mr-[45px] mt-[38px] flex justify-center">
-            <img src={require("@/assets/logo-lg.svg")} alt="" />
+            <Logo />
           </div>
           <div class="pl-[11px] pr-[12px] mt-[96px]">
             <NavSidePanelItemVue

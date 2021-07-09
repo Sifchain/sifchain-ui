@@ -33,6 +33,7 @@ export default defineComponent({
       }),
     );
 
+    let isDisabled = false;
     return () => (
       <>
         <RouterView />
@@ -42,7 +43,10 @@ export default defineComponent({
           class="w-[800px]"
         >
           <div class="w-full bg-gray-input_outline h-8 relative flex items-center rounded-lg overflow-hidden">
-            <AssetIcon icon="interactive/search" class="ml-3 w-4 h-4" />
+            <AssetIcon
+              icon="interactive/search"
+              class={[`ml-3 w-4 h-4`, isDisabled ? "text-[#6E6E6E]" : ""]}
+            />
             <input
               type="text"
               placeholder="Search Token..."
