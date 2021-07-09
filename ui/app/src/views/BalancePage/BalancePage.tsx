@@ -61,7 +61,7 @@ export default defineComponent({
                 <td /> {/* Actions */}
               </tr>
             </thead>
-            <tbody>
+            <tbody class="w-full relative">
               {displayedTokenList.value.map((item, index) => (
                 <BalanceRow
                   last={index === tokenList.value.length - 1}

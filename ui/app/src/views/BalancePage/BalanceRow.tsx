@@ -98,15 +98,10 @@ export default defineComponent({
         class={cx(
           "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden",
           props.last && "border-transparent",
+          showMaskRef.value && "opacity-40",
         )}
       >
         <td class="text-left align-middle min-w-[130px]">
-          {showMaskRef.value && (
-            <div
-              class="bg-black opacity-60 absolute inset-0"
-              onClick={() => props.onSetExpandedSymbol("")}
-            />
-          )}
           <div class="flex items-center">
             <img class="w-4 h-4" src={iconUrlRef.value} />
             <span class="ml-1 uppercase">{props.tokenItem.asset.symbol}</span>
