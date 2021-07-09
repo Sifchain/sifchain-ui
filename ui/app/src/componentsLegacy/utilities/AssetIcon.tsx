@@ -17,7 +17,7 @@ const navIcons = ((ctx) => {
     return o;
   }, {});
 })(require.context("@/assets/icons", true, /.*/)) as Record<string, string>;
-
+console.log(navIcons);
 export type InteractiveIconName =
   | "chevron-down"
   | "search"
@@ -25,7 +25,8 @@ export type InteractiveIconName =
   | "arrows-in"
   | "ellipsis"
   | "tick"
-  | "close";
+  | "close"
+  | "swap";
 
 export type NavIconName =
   | "documents"
@@ -62,7 +63,8 @@ export default defineComponent({
     return () => {
       return (
         <img
-          class={props.class}
+          class={[props.class]}
+          style="max-width: initial;"
           src={
             navIcons[
               props.icon +

@@ -1,7 +1,6 @@
 import { defineComponent, onDeactivated, TransitionGroup } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
 import PageCard from "@/components/PageCard";
-import { useSwapPageModule } from "./useSwapPageModule";
 import {
   TokenInputGroup,
   SampleBoundChildComponent,
@@ -12,6 +11,7 @@ import { IAsset } from "../../../../core/src";
 import { SlippageTolerance } from "./components/SlippageTolerance";
 import { SwapDetails } from "./components/SwapDetails";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -54,17 +54,17 @@ export default defineComponent({
             formattedBalance={data.formattedFromTokenBalance.value || undefined}
           />
           <button
-            class="relative z-10 overflow-hidden"
+            class="flex items-center relative overflow-hidden mt-[10px] p-[20px] h-[32px] w-[42px] bg-gray-base border-gray-input_outline border-[1px] rounded-[4px]"
             key="button"
             onClick={() => {
               data.handleArrowClicked();
               // data.mutations.invertPair();
             }}
           >
-            <img
-              class="mt-[10px] p-[20px] bg-accent-gradient rounded-[4px]"
-              src={require("@/assets/icons/interactive/swap.svg")}
-            />
+            <AssetIcon
+              class="w-[22px] h-[22px] block"
+              icon="interactive/swap"
+            ></AssetIcon>
           </button>
 
           <TokenInputGroup

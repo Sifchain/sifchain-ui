@@ -45,7 +45,6 @@ module.exports = {
           base: "#459FEE",
         },
         connected: {
-          // Ash Black
           base: "#39C357",
         },
         gray: {

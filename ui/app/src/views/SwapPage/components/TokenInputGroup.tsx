@@ -35,7 +35,7 @@ export const TokenInputGroup: FunctionalComponent<{
   tokenIconUrl: string;
 }> = (props, ctx) => {
   return (
-    <div class="p-[20px] bg-gray-base rounded-[10px] mt-[10px]">
+    <div class="p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-[10px] mt-[10px]">
       <div class="w-full flex justify-between">
         <div class=" text-[16px] text-white font-sans font-medium capitalize">
           {props.heading}
