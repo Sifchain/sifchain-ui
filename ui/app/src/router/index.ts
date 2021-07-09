@@ -18,7 +18,7 @@ import SinglePool from "@/views/SinglePool.vue";
 import PegListingPage from "@/views/PegListingPage.vue";
 import PegAssetPage from "@/views/PegAssetPage.vue";
 import RewardsPage from "@/views/RewardsPage.vue";
-// import Pool from "@/views/PoolPage/PoolPage";
+import Pool from "@/views/PoolPage/PoolPage";
 
 const routes = [
   {
@@ -48,14 +48,14 @@ const routes = [
       title: "Swap - Sifchain",
     },
   },
-  // {
-  //   path: "/pool",
-  //   name: "Pool",
-  //   component: Pool,
-  //   meta: {
-  //     title: "Pool - Sifchain",
-  //   },
-  // },
+  {
+    path: "/pool",
+    name: "Pool",
+    component: Pool,
+    meta: {
+      title: "Pool - Sifchain",
+    },
+  },
   {
     path: "/pool/:externalAsset",
     name: "SinglePool",
