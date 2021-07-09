@@ -14,7 +14,7 @@ import ConfirmationDialog from "@/componentsLegacy/ConfirmationDialog/Confirmati
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import DetailsPanel from "@/componentsLegacy/DetailsPanel/DetailsPanel.vue";
 import SlippagePanel from "@/componentsLegacy/SlippagePanel/Index.vue";
-import { getMaxAmount } from "./utils/getMaxAmount";
+import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
 
 // This is a little generic but these UI Flows
