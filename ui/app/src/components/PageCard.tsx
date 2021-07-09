@@ -1,19 +1,20 @@
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
-import { SetupContext } from "vue";
+import { HTMLAttributes, SetupContext } from "vue";
 
 export type PageCardProps = {
   iconName?: IconName;
   heading: string;
-  class?: string;
+  class?: HTMLAttributes["class"];
 };
 
 export default function PageCard(props: PageCardProps, context: SetupContext) {
   return (
     <div class="py-[130px]">
       <div
-        class={`justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4 ${
-          props.class || ""
-        }`}
+        class={[
+          `justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4`,
+          props.class,
+        ]}
       >
         {!!props.heading && (
           <div class="w-full flex-row flex justify-between items-center pb-4">

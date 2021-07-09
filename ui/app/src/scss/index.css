@@ -22,6 +22,10 @@ body {
   @apply font-sans bg-black text-white text-base;
   /* scrollbar-color: dark; */
 }
+
+
+
+
 /* ::-webkit-scrollbar {
   width: 9px;
 }
@@ -33,4 +37,5 @@ body {
   border-radius: 8px;
   @apply bg-gray-input;
 } */
+
 

@@ -23,19 +23,17 @@ export const SampleBoundChildComponent = defineComponent<
   ),
 });
 
-export const TokenInputGroup: FunctionalComponent<
-  {
-    heading: string;
-    formattedBalance?: string;
-    asset: IAsset;
-    amount: string;
-    onSetToMaxAmount?: () => any;
-    onInputAmount: (amount: string) => any;
-    onBlur: HTMLAttributes["onBlur"];
-    onFocus: HTMLAttributes["onFocus"];
-    tokenIconUrl: string;
-  } & InputHTMLAttributes
-> = (props, ctx) => {
+export const TokenInputGroup: FunctionalComponent<{
+  heading: string;
+  formattedBalance?: string;
+  asset: IAsset;
+  amount: string;
+  onSetToMaxAmount?: () => any;
+  onInputAmount: (amount: string) => any;
+  onBlur: HTMLAttributes["onBlur"];
+  onFocus: HTMLAttributes["onFocus"];
+  tokenIconUrl: string;
+}> = (props, ctx) => {
   return (
     <div class="p-[20px] bg-gray-base rounded-[10px] mt-[10px]">
       <div class="w-full flex justify-between">

@@ -1,8 +1,12 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteRecord,
+  RouteRecordRaw,
+} from "vue-router";
 
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
-import Pool from "@/views/PoolPage.vue";
 import StatsPage from "@/views/StatsPage.vue";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import CreatePool from "@/views/CreatePoolPage.vue";
@@ -11,8 +15,9 @@ import SinglePool from "@/views/SinglePool.vue";
 import PegListingPage from "@/views/PegListingPage.vue";
 import PegAssetPage from "@/views/PegAssetPage.vue";
 import RewardsPage from "@/views/RewardsPage.vue";
+import Pool from "@/views/PoolPage/PoolPage";
 
-const routes: Array<RouteRecordRaw> = [
+const routes = [
   {
     path: "/",
     redirect: { name: "Balances" },
@@ -110,11 +115,11 @@ const routes: Array<RouteRecordRaw> = [
       title: "Export Asset - Sifchain",
     },
   },
-];
+] as const;
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes,
+  routes: [...routes] as Array<RouteRecordRaw>,
 });
 
 router.beforeEach((to, from, next) => {
