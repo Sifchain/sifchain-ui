@@ -95,10 +95,15 @@ export default defineComponent({
 
     return () => (
       <tr
+        onClick={(e) => {
+          if (showMaskRef.value) {
+            props.onSetExpandedSymbol("");
+          }
+        }}
         class={cx(
           "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden",
           props.last && "border-transparent",
-          showMaskRef.value && "opacity-40",
+          showMaskRef.value && "opacity-40 cursor-default",
         )}
       >
         <td class="text-left align-middle min-w-[130px]">
