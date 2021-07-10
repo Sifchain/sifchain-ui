@@ -3,7 +3,6 @@ import { ref } from "vue";
 import router from "@/router";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
-import ImportConfirmationDetails from "./ImportConfirmationDetails";
 import Modal from "@/components/Modal";
 import { ImportData, getImportLocation } from "./useImportData";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";

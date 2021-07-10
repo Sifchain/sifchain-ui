@@ -5,7 +5,6 @@ import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
 import Modal from "@/components/Modal";
 import { ImportData, getImportLocation } from "./useImportData";
-import ImportConfirmationDetails from "./ImportConfirmationDetails";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { PegEvent, PegApproveError } from "@sifchain/sdk/src/usecases/peg/peg";
 import { useCore } from "@/hooks/useCore";
