@@ -7,6 +7,9 @@ export default defineComponent({
     message: {
       type: String,
     },
+    hidden: {
+      type: Boolean,
+    },
   },
   setup: function (props) {
     const { fit } = props;
@@ -44,7 +47,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <span v-on:click="open()">
+  <span v-if="!hidden" v-on:click="open()">
     <teleport to="#tooltip-target">
       <div class="tooltip-background" v-if="opened" @click="close">
         <div class="tooltip-positioner" :style="containerLocation" @click.stop>
@@ -61,6 +64,7 @@ export default defineComponent({
       <slot></slot>
     </span>
   </span>
+  <slot v-else />
 </template>
 
 <style lang="scss" scoped>

@@ -2,7 +2,7 @@ import { ref } from "vue";
 import { sortAssetAmount } from "../utils/sortAssetAmount";
 import { useCore } from "@/hooks/useCore";
 import { computed, reactive, effect } from "@vue/reactivity";
-import { useTokenList } from "@/hooks/useTokenList";
+import { useTokenList } from "@/hooks/useToken";
 import { IAsset, Network } from "@sifchain/sdk";
 
 export type BalancePageState = {

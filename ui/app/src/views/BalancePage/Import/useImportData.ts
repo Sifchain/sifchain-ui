@@ -1,11 +1,13 @@
+import { PegEvent } from "./../../../../../core/src/usecases/peg/peg";
 import { RouteLocationRaw, useRoute } from "vue-router";
-import { ConfirmState } from "./../../../types";
 import { reactive, ref, computed, Ref, watch } from "vue";
 import router from "@/router";
 import { effect } from "@vue/reactivity";
-import { TokenListItem, useTokenList } from "@/hooks/useTokenList";
+import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
-import { Network } from "@sifchain/sdk";
+import { useCore } from "@/hooks/useCore";
+import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
+import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
 
 export type ImportInputParams = {
   amount?: string;
@@ -13,13 +15,16 @@ export type ImportInputParams = {
   symbol?: string;
 };
 
-export type ImportStep = "select" | "confirm" | "pending";
+export type ImportStep = "select" | "confirm" | "processing";
 
 export type ImportData = {
   importParams: ImportInputParams;
   networksRef: Ref<Network[]>;
   tokenRef: Ref<TokenListItem>;
   pickableTokensRef: Ref<TokenListItem[]>;
+  importAmountRef: Ref<IAssetAmount | null>;
+  runImport: () => void;
+  pegEventRef: Ref<PegEvent>;
 };
 
 export function getImportLocation(
@@ -37,13 +42,14 @@ export function getImportLocation(
 }
 
 export const useImportData = () => {
+  const { store, usecases } = useCore();
   const route = useRoute();
+
   const importParams = reactive<ImportInputParams>({
-    symbol: String(route.params.symbol),
-    network: String(route.query.network),
-    amount: String(route.query.amount),
+    symbol: String(route.params.symbol || ""),
+    network: String(route.query.network || ""),
+    amount: String(route.query.amount || ""),
   });
-  const transactionState = ref<ConfirmState>("selecting");
 
   const networksRef = ref(
     Object.values(Network).filter((network) => network !== Network.SIFCHAIN),
@@ -77,11 +83,30 @@ export const useImportData = () => {
     return token;
   });
 
+  const importAmountRef = computed(() => {
+    if (!tokenRef.value) return null;
+    console.log(tokenRef.value, importParams.amount);
+    return AssetAmount(
+      tokenRef.value?.asset,
+      importParams.amount?.trim() || "0.0",
+    );
+  });
+
   const pickableTokensRef = computed(() => {
     return tokenListRef.value.filter((token) => {
       return token.asset.network === importParams.network;
     });
   });
+
+  const pegEventRef = ref<PegEvent>();
+  async function runImport() {
+    if (!importAmountRef.value) throw new Error("Please provide an amount");
+    pegEventRef.value = undefined;
+    for await (const event of usecases.peg.peg(importAmountRef.value)) {
+      console.log("GOT EVENT", event);
+      pegEventRef.value = event;
+    }
+  }
 
   effect(() => {
     if (
@@ -104,5 +129,8 @@ export const useImportData = () => {
     networksRef,
     pickableTokensRef,
     tokenRef,
+    importAmountRef,
+    runImport,
+    pegEventRef,
   } as ImportData;
 };

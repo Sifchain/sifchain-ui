@@ -182,8 +182,14 @@ export async function getExistingClaimsData(
   };
 }
 
-export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
-  switch (chainId) {
+export function getBlockExplorerUrl(
+  sifchainId: string,
+  txHash?: TxHash,
+): string {
+  if (txHash?.startsWith("0x")) {
+    return `https://etherscan.io/tx/${txHash}`;
+  }
+  switch (sifchainId) {
     case "sifchain":
       if (!txHash) return "https://blockexplorer.sifchain.finance/";
       return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;

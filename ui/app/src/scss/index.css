@@ -7,7 +7,7 @@ button {
   transition-property: color, background-color, opacity, filter;
   cursor: pointer;
 }
-button:hover {
+button:not(:disabled):hover {
   opacity: 90%;
 }
 button:active {

@@ -8,6 +8,7 @@ import {
   IAssetAmount,
   TransactionStatus,
 } from "@sifchain/sdk";
+import { getNetworkBalances } from "./useWallet";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -79,11 +80,10 @@ export const useTokenList = (
         return networksSet.has(asset.network);
       })
       .map((asset: IAsset) => {
-        const amount = store.wallet.sif.balances.find(
-          ({ asset: { symbol } }) => {
-            return asset.symbol.toLowerCase() === symbol.toLowerCase();
-          },
-        );
+        const balances = getNetworkBalances(store, asset.network);
+        const amount = balances?.find(({ asset: { symbol } }) => {
+          return asset.symbol.toLowerCase() === symbol.toLowerCase();
+        });
 
         // Get pegTxs for asset
         const pegTxs = pegList
@@ -108,4 +108,20 @@ export const useTokenList = (
   });
 
   return tokenList;
+};
+
+export const useToken = (props: {
+  network: Ref<Network>;
+  symbol: Ref<string>;
+}) => {
+  const tokenListRef = useTokenList();
+
+  return computed(() => {
+    return tokenListRef.value?.find((token) => {
+      return (
+        token.asset.network === props.network.value &&
+        token.asset.symbol === props.symbol.value
+      );
+    });
+  });
 };

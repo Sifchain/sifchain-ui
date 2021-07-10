@@ -3,7 +3,8 @@ import cx from "clsx";
 import { ref } from "@vue/reactivity";
 import { RouterLink } from "vue-router";
 import { useBalancePageData } from "./useBalancePageData";
-import { TokenListItem } from "@/hooks/useTokenList";
+import { TokenListItem } from "@/hooks/useToken";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import {
@@ -119,9 +120,7 @@ export default defineComponent({
           </div>
         </td>
         <td class="text-right align-middle min-w-[200px]">
-          {emptyRef.value
-            ? null
-            : props.tokenItem.amount.amount.toString(false)}
+          {emptyRef.value ? null : formatAssetAmount(props.tokenItem.amount)}
         </td>
         <td class="text-right align-middle">
           <div class="inline-flex items-center">

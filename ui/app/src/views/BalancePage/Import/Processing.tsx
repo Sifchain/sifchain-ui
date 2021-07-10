@@ -3,13 +3,20 @@ import { ref } from "vue";
 import router from "@/router";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
-import ImportConfirmationDetails from "./ImportConfirmationDetails";
 import Modal from "@/components/Modal";
 import { ImportData, getImportLocation } from "./useImportData";
+import ImportConfirmationDetails from "./ImportConfirmationDetails";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import { PegEvent, PegApproveError } from "@sifchain/sdk/src/usecases/peg/peg";
+import { useCore } from "@/hooks/useCore";
+import {
+  TransactionDetails,
+  usePegEventDetails,
+} from "@/hooks/useTransactionDetails";
+import { effect } from "@vue/reactivity";
 
 export default defineComponent({
-  name: "ImportConfirmModal",
+  name: "ImportProcessingModal",
   props: {
     importData: {
       type: Object as PropType<ImportData>,
@@ -17,7 +24,25 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { importParams, runImport } = props.importData;
+    const pegEvent = ref<PegEvent>();
+    const { config, usecases } = useCore();
+
+    const { pegEventRef, importParams } = props.importData;
+
+    const transactionDetails = usePegEventDetails({
+      config,
+      pegEvent: pegEventRef,
+    });
+
+    // If user refreshed on confirm screen, just clsoe it...
+    // We don't have the tx in memory anymore.
+    // This doesn't work right now
+    // effect(() => {
+    //   if (!transactionDetails.value) {
+    //     router.replace({ name: "Balances" });
+    //   }
+    // });
+
     const listClasses = useDetailListClasses();
     const buttonClasses = useButtonClasses();
 
@@ -54,21 +79,30 @@ export default defineComponent({
               </span>
             </div>
           </div>
+          {transactionDetails.value?.txLink && (
+            <a
+              class="text-white block text-center cursor-pointer mt-[10px] text-sm"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={transactionDetails.value?.txLink}
+            >
+              View Transaction on the Block Explorer
+            </a>
+          )}
         </div>
-        <p class="mt-[10px] text-sm">
-          <div class="font-bold">Please Note *</div>
-          Your funds will be available for use on Sifchain only after 50
-          Ethereum block confirmations. This can take upwards of 20 minutes.
+        <p class="mt-[10px] text-sm text-center">
+          {transactionDetails.value?.description}
         </p>
-        <button
-          class={[buttonClasses.button, "w-full mt-[10px]"]}
-          onClick={() => {
-            runImport();
-            router.replace(getImportLocation("processing", importParams));
-          }}
-        >
-          Confirm
-        </button>
+        {!!transactionDetails.value?.tx && (
+          <button
+            class={[buttonClasses.button, "w-full mt-[10px]"]}
+            onClick={() => {
+              router.replace({ name: "Balances" });
+            }}
+          >
+            Close
+          </button>
+        )}
       </>
     );
   },
