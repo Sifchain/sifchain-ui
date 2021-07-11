@@ -21,7 +21,6 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const importData = useImportData();
-    const { config } = useCore();
 
     watch(
       () => importData.importParams,
@@ -34,7 +33,6 @@ export default defineComponent({
     );
 
     const transactionDetails = usePegEventDetails({
-      config,
       pegEvent: importData.pegEventRef,
     });
 

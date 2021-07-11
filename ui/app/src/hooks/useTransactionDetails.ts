@@ -1,30 +1,26 @@
 import { computed } from "vue";
-import { AppConfig, TransactionStatus } from "@sifchain/sdk";
+import { TransactionStatus } from "@sifchain/sdk";
 import { Ref, ComputedRef } from "vue";
 import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
-import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 
 export function usePegEventDetails(props: {
-  config: AppConfig;
   pegEvent: Ref<PegEvent>;
 }): ComputedRef<TransactionDetails> {
   return computed(() => {
-    return getPegEventDetails(props.config, props.pegEvent.value);
+    return getPegEventDetails(props.pegEvent.value);
   });
 }
 
 export function useTransactionDetails(props: {
-  config: AppConfig;
   tx: Ref<TransactionStatus>;
 }): ComputedRef<TransactionDetails> {
   return computed(() => {
-    return getTransactionDetails(props.config, props.tx.value);
+    return getTransactionDetails(props.tx.value);
   });
 }
 
 export type TransactionDetails = null | {
   tx?: TransactionStatus;
-  txLink?: string;
   heading: string;
   description: string;
   isError?: boolean;
@@ -32,10 +28,7 @@ export type TransactionDetails = null | {
 
 // For peg transactions, they will transition into using the
 // full getTransactionDetails below
-export function getPegEventDetails(
-  config: AppConfig,
-  pegEvent: PegEvent,
-): TransactionDetails {
+export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
   const type = pegEvent?.type || null;
   switch (pegEvent?.type) {
     case "approve_started": {
@@ -60,7 +53,7 @@ export function getPegEventDetails(
     }
     case "sent":
     case "tx_error": {
-      return getTransactionDetails(config, pegEvent.tx);
+      return getTransactionDetails(pegEvent.tx);
     }
     default: {
       return null;
@@ -70,15 +63,9 @@ export function getPegEventDetails(
 
 // For any old transaction
 export function getTransactionDetails(
-  config: AppConfig,
   tx: TransactionStatus,
 ): TransactionDetails {
-  const txLink = tx.hash
-    ? getBlockExplorerUrl(config.sifChainId, tx.hash)
-    : null;
-
   const payload = {
-    txLink,
     tx,
   };
   Object.assign(

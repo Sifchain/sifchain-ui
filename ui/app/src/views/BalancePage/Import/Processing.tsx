@@ -8,6 +8,7 @@ import { ImportData, getImportLocation } from "./useImportData";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { PegEvent, PegApproveError } from "@sifchain/sdk/src/usecases/peg/peg";
 import { useCore } from "@/hooks/useCore";
+import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import {
   TransactionDetails,
   usePegEventDetails,
@@ -29,7 +30,6 @@ export default defineComponent({
     const { pegEventRef, importParams } = props.importData;
 
     const transactionDetails = usePegEventDetails({
-      config,
       pegEvent: pegEventRef,
     });
 
@@ -78,12 +78,15 @@ export default defineComponent({
               </span>
             </div>
           </div>
-          {transactionDetails.value?.txLink && (
+          {transactionDetails.value?.tx && (
             <a
               class="text-white block text-center cursor-pointer mt-[10px] text-sm"
               target="_blank"
               rel="noopener noreferrer"
-              href={transactionDetails.value?.txLink}
+              href={getBlockExplorerUrl(
+                config.sifChainId,
+                transactionDetails.value.tx.hash,
+              )}
             >
               View Transaction on the Block Explorer
             </a>
