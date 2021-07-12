@@ -46,10 +46,10 @@ import Layout from "@/componentsLegacy/Layout/Layout.vue";
 export default defineComponent({
   name: "App",
   components: {
-    Header,
+    // Header,
     Notifications,
-    WithWallet,
-    Pill,
+    // WithWallet,
+    // Pill,
     EnvAlert,
     SideBarVue,
     Layout,
@@ -62,7 +62,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "normalize-scss";
+// @import "normalize-scss";
 
 // Import fonts:
 @import url("https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Rouge+Script&display=swap");
