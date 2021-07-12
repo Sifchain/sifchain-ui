@@ -53,7 +53,7 @@ export default defineComponent({
         </p>
         {!!transactionDetails.value?.tx && (
           <button
-            class={[buttonClasses.button, "w-full mt-[10px]"]}
+            class={`${buttonClasses.button} w-full mt-[10px]`}
             onClick={() => {
               router.replace({ name: "Balances" });
             }}

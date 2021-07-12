@@ -228,11 +228,10 @@ export default defineComponent({
 
         <button
           {...buttonRef.value.props}
-          class={[
-            "w-full mt-[10px]",
+          class={cx(
             buttonClasses.button,
             buttonRef.value.props.disabled && buttonClasses.disabled,
-          ]}
+          )}
         >
           {!!buttonRef.value.icon && (
             <AssetIcon

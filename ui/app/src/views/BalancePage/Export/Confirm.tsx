@@ -36,7 +36,7 @@ export default defineComponent({
           <ExportDetailsDisplay withDestination exportData={props.exportData} />
         </div>
         <button
-          class={[buttonClasses.button, "w-full mt-[10px]"]}
+          class={`${buttonClasses.button} w-full mt-[10px]`}
           onClick={() => {
             runExport();
             router.replace(getExportLocation("processing", exportParams));

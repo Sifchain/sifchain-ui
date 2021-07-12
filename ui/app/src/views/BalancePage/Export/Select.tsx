@@ -173,7 +173,7 @@ export default defineComponent({
             />
           </div>
 
-          <label class={[selectClasses.label, "block mt-[10px]"]}>
+          <label class={`${selectClasses.label} block mt-[10px]`}>
             Network
             <div class={selectClasses.container}>
               <span class="capitalize">{exportParams.network}</span>
@@ -202,11 +202,11 @@ export default defineComponent({
 
         <button
           {...buttonRef.value.props}
-          class={[
+          class={cx(
             "w-full mt-[10px]",
             buttonClasses.button,
             buttonRef.value.props.disabled && buttonClasses.disabled,
-          ]}
+          )}
         >
           {!!buttonRef.value.icon && (
             <AssetIcon
