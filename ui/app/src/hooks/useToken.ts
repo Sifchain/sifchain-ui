@@ -1,13 +1,14 @@
 import { useCore } from "./useCore";
 import { computed, Ref } from "vue";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
-import { Network } from "@sifchain/sdk";
 import {
   AssetAmount,
+  Network,
   IAsset,
   IAssetAmount,
   TransactionStatus,
 } from "@sifchain/sdk";
+import { getNetworkBalances } from "./useWallet";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -29,7 +30,7 @@ export const useTokenList = (
       !store.tx.eth ||
       !store.tx.eth[store.wallet.eth.address]
     )
-      return null;
+      return [];
 
     const txs = store.tx.eth[store.wallet.eth.address];
 
@@ -70,20 +71,20 @@ export const useTokenList = (
 
   const tokenList = computed<TokenListItem[]>(() => {
     const pegList = pendingPegTxList.value;
+    console.log({ pegList });
 
     const networksSet = new Set(props.networks?.value || []);
 
     return config.assets
-      .filter((asset) => {
+      .filter((asset: IAsset) => {
         if (!networksSet.size) return true;
         return networksSet.has(asset.network);
       })
       .map((asset: IAsset) => {
-        const amount = store.wallet.sif.balances.find(
-          ({ asset: { symbol } }) => {
-            return asset.symbol.toLowerCase() === symbol.toLowerCase();
-          },
-        );
+        const balances = getNetworkBalances(store, asset.network);
+        const amount = balances?.find(({ asset: { symbol } }) => {
+          return asset.symbol.toLowerCase() === symbol.toLowerCase();
+        });
 
         // Get pegTxs for asset
         const pegTxs = pegList
@@ -108,4 +109,20 @@ export const useTokenList = (
   });
 
   return tokenList;
+};
+
+export const useToken = (props: {
+  network: Ref<Network>;
+  symbol: Ref<string>;
+}) => {
+  const tokenListRef = useTokenList();
+
+  return computed(() => {
+    return tokenListRef.value?.find((token) => {
+      return (
+        token.asset.network === props.network.value &&
+        token.asset.symbol === props.symbol.value
+      );
+    });
+  });
 };

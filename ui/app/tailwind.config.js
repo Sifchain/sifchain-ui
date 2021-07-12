@@ -62,14 +62,30 @@ module.exports = {
           200: "#232323",
           input: "#232323",
 
+          ring: "#272727",
+
           300: "#353535",
           input_outline: "#353535",
 
           500: "#565656",
           disabled: "#565656",
 
-          600: "#666",
+          600: "#636363",
         },
+      },
+      fontSize: {
+        xs: "12px",
+        sm: "14px",
+        base: "16px",
+        lg: "18px",
+        xl: "20px",
+        "2xl": "24px",
+        "3xl": "26px",
+      },
+      borderRadius: {
+        sm: "4px",
+        DEFAULT: "6px",
+        lg: "10px",
       },
     },
   },

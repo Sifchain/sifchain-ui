@@ -38,6 +38,7 @@ export default defineComponent({
 </script>
 <style lang="scss" module>
 .panel {
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;

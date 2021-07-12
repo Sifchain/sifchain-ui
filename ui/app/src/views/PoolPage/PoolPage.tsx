@@ -102,7 +102,12 @@ const UserPoolItem = defineComponent({
     return () => {
       return (
         <div class="w-full">
-          <div class="font-mono w-full py-[10px] flex justify-start items-center gap-[10px] pb-[18px] capitalize text-right font-medium">
+          <div
+            onClick={() => {
+              isExpandedRef.value = !isExpandedRef.value;
+            }}
+            class="cursor-pointer z-10 overflow-hidden relative font-mono w-full py-[10px] flex justify-start items-center gap-[10px] pb-[18px] capitalize text-right font-medium"
+          >
             <div
               class={`min-w-[196px] text-left font-sans font-medium flex flex-row`}
             >
@@ -130,11 +135,7 @@ const UserPoolItem = defineComponent({
             </div>
             <div class={`min-w-[142px]`}>{userPoolData.myPoolShare.value}%</div>
             <div class={`min-w-[0px] ml-auto`}>
-              <button
-                onClick={() => {
-                  isExpandedRef.value = !isExpandedRef.value;
-                }}
-              >
+              <button>
                 <AssetIcon
                   size={24}
                   class={[
@@ -148,10 +149,10 @@ const UserPoolItem = defineComponent({
           </div>
           <div
             class={[
-              "flex transition-all origin-top overflow-y-scroll duration-1000 flex-row items-center bg-[#191919] pa-[20px] w-full rounded-[6px] py-[8px] pl-[7px]",
+              "flex z-0 transition-all origin-top overflow-y-scroll flex-row items-center bg-[#191919] pa-[20px] w-full rounded-[6px] py-[8px] pl-[7px]",
               isExpandedRef.value
                 ? ""
-                : " scale-y-0  opacity-0 pointer-events-none",
+                : "h-0 opacity-0 scale-y-0 p-0 pointer-events-none",
             ]}
           >
             <div class="flex flex-col w-full gap-[4px] text-left text-[12px]">

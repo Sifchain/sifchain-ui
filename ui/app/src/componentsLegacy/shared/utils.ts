@@ -42,6 +42,17 @@ export function formatAssetAmount(value: IAssetAmount) {
     : format(amount, asset, { mantissa: 6 });
 }
 
+export function isOpposingSymbol(symbol1: string, symbol2: string) {
+  symbol1 = symbol1.toLowerCase();
+  symbol2 = symbol2.toLowerCase();
+  return (
+    symbol1 === symbol2 ||
+    symbol1.slice(1) === symbol2 ||
+    symbol1 === symbol2.slice(1) ||
+    symbol1.slice(1) === symbol2.slice(1)
+  );
+}
+
 // TODO: These could be replaced with a look up table
 export function getPeggedSymbol(symbol: string) {
   if (symbol.toLowerCase() === "erowan") return "ROWAN";
@@ -182,8 +193,14 @@ export async function getExistingClaimsData(
   };
 }
 
-export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
-  switch (chainId) {
+export function getBlockExplorerUrl(
+  sifchainId: string,
+  txHash?: TxHash,
+): string {
+  if (txHash?.startsWith("0x")) {
+    return `https://etherscan.io/tx/${txHash}`;
+  }
+  switch (sifchainId) {
     case "sifchain":
       if (!txHash) return "https://blockexplorer.sifchain.finance/";
       return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;

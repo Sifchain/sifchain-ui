@@ -1,11 +1,23 @@
-import { defineComponent, ref, computed, watch, reactive, PropType } from "vue";
+import {
+  defineComponent,
+  ref,
+  computed,
+  watch,
+  reactive,
+  PropType,
+  Ref,
+} from "vue";
 import { useRoute } from "vue-router";
 import cx from "clsx";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
-import { Network } from "@sifchain/sdk";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { AssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
+import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
+import { format } from "@sifchain/sdk/src/utils/format";
+import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import router from "@/router";
 import { ImportData, getImportLocation } from "./useImportData";
 
@@ -20,6 +32,7 @@ export default defineComponent({
   setup(props) {
     const { store } = useCore();
     const selectClasses = useSelectClasses();
+    const buttonClasses = useButtonClasses();
     const route = useRoute();
 
     const {
@@ -27,7 +40,19 @@ export default defineComponent({
       networksRef,
       pickableTokensRef,
       tokenRef,
+      importAmountRef,
     } = props.importData;
+
+    const handleSetMax = () => {
+      const maxAmount = getMaxAmount(
+        { value: tokenRef.value.asset.symbol } as Ref,
+        tokenRef.value.amount,
+      );
+      importParams.amount = format(maxAmount, tokenRef.value.asset, {
+        mantissa: tokenRef.value.asset.decimals,
+        trimMantissa: true,
+      });
+    };
 
     const symbolIconRef = computed(
       () =>
@@ -36,13 +61,33 @@ export default defineComponent({
         })?.value,
     );
 
+    const validationErrorRef = computed(() => {
+      if (!tokenRef.value) {
+        return "Please provide a valid token to import.";
+      }
+      if (!importAmountRef.value) {
+        return "Please select an amount.";
+      }
+      if (importAmountRef.value?.lessThanOrEqual("0.0")) {
+        return "Please enter an amount greater than 0 to import.";
+      }
+      if (tokenRef.value.amount.lessThan(importParams.amount || "0")) {
+        return (
+          "You do not have that much " +
+          tokenRef.value.asset.symbol.toUpperCase() +
+          " available."
+        );
+      }
+    });
+
     const buttonRef = computed(() => {
-      return [
+      const buttons = [
         {
           condition: false && !store.wallet.sif.isConnected,
           name: "Connect Sifchain Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
+            disabled: false,
             onClick: () => window.alert("Open Wallet Window Sif"),
           },
         },
@@ -62,12 +107,14 @@ export default defineComponent({
           name: "Import",
           icon: null,
           props: {
+            disabled: !!validationErrorRef.value,
             onClick: () => {
               router.replace(getImportLocation("confirm", importParams));
             },
           },
         },
-      ].find((item) => item.condition);
+      ];
+      return buttons.find((item) => item.condition) || buttons[0];
     });
 
     return () => (
@@ -125,13 +172,9 @@ export default defineComponent({
             {!!tokenRef.value && (
               <span
                 class="text-sm opacity-50 hover:text-accent-base cursor-pointer"
-                onClick={() => {
-                  importParams.amount = String(
-                    tokenRef.value?.amount.amount.toBigInt().valueOf(),
-                  );
-                }}
+                onClick={handleSetMax}
               >
-                Balance: {tokenRef.value?.amount.amount.toString()}
+                Balance: {formatAssetAmount(tokenRef.value?.amount)}
               </span>
             )}
           </div>
@@ -140,11 +183,7 @@ export default defineComponent({
             {!!tokenRef.value && (
               <button
                 class="z-10 box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans"
-                onClick={() =>
-                  (importParams.amount = String(
-                    tokenRef.value?.amount.amount.toBigInt().valueOf() || "",
-                  ))
-                }
+                onClick={handleSetMax}
               >
                 <div class="flex items-center px-[9px] h-[18px] bg-gray-input rounded-full text-accent-base">
                   <span style="letter-spacing: -1%; line-height: 10px;">
@@ -187,23 +226,22 @@ export default defineComponent({
           </div>
         </section>
 
-        {!!buttonRef.value &&
-          (() => {
-            return (
-              <button
-                class="mt-[10px] w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white"
-                {...buttonRef.value.props}
-              >
-                {!!buttonRef.value.icon && (
-                  <AssetIcon
-                    icon={buttonRef.value.icon}
-                    class="w-[20px] h-[20px] mr-[4px]"
-                  />
-                )}{" "}
-                {buttonRef.value.name}
-              </button>
-            );
-          })()}
+        <button
+          {...buttonRef.value.props}
+          class={[
+            "w-full mt-[10px]",
+            buttonClasses.button,
+            buttonRef.value.props.disabled && buttonClasses.disabled,
+          ]}
+        >
+          {!!buttonRef.value.icon && (
+            <AssetIcon
+              icon={buttonRef.value.icon}
+              class="w-[20px] h-[20px] mr-[4px]"
+            />
+          )}{" "}
+          {buttonRef.value.name}
+        </button>
       </>
     );
   },
