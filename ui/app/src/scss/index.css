@@ -8,7 +8,7 @@ button {
   cursor: pointer;
 }
 button:hover {
-  opacity: 90%;
+  opacity: 0.9;
 }
 button:active {
   filter: brightness(120%);
@@ -37,25 +37,7 @@ button:active {
 
 body {
   @apply font-sans bg-black text-white text-base;
-  /* scrollbar-color: dark; */
 }
-
-/* ::-webkit-scrollbar {
-  width: 9px;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: rgba(115, 130, 161, 0.6);
-},
-::-webkit-scrollbar-track {
-  border-radius: 8px;
-  @apply bg-gray-input;
-} */
-
-/* 
- * NOTE(ajoslin): having issues with build process properly importing tippy.js/dist/tippy.css..
- * so copy paste.
- */
 
 .tippy-box[data-animation="fade"][data-state="hidden"] {
   opacity: 0;

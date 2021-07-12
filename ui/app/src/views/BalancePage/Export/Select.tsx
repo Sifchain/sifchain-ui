@@ -10,22 +10,25 @@ import {
 import { useRoute } from "vue-router";
 import cx from "clsx";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import Tooltip from "@/components/Tooltip";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { AssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
+import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import router from "@/router";
-import { ImportData, getImportLocation } from "./useImportData";
+import { ExportData, getExportLocation } from "./useExportData";
+import ExportDetailsDisplay from "./ExportDetailsDisplay";
 
 export default defineComponent({
-  name: "ImportSelect",
+  name: "ExportSelect",
   props: {
-    importData: {
-      type: Object as PropType<ImportData>,
+    exportData: {
+      type: Object as PropType<ExportData>,
       required: true,
     },
   },
@@ -33,23 +36,25 @@ export default defineComponent({
     const { store } = useCore();
     const selectClasses = useSelectClasses();
     const buttonClasses = useButtonClasses();
+    const listClasses = useDetailListClasses();
     const route = useRoute();
 
     const {
-      importParams,
+      exportParams,
       networksRef,
-      pickableTokensRef,
-      tokenRef,
-      importAmountRef,
-    } = props.importData;
+      exportTokenRef,
+      targetTokenRef,
+      exportAmountRef,
+      feeAmountRef,
+    } = props.exportData;
 
     const handleSetMax = () => {
       const maxAmount = getMaxAmount(
-        { value: tokenRef.value.asset.symbol } as Ref,
-        tokenRef.value.amount,
+        { value: exportTokenRef.value.asset.symbol } as Ref,
+        exportTokenRef.value.amount,
       );
-      importParams.amount = format(maxAmount, tokenRef.value.asset, {
-        mantissa: tokenRef.value.asset.decimals,
+      exportParams.amount = format(maxAmount, exportTokenRef.value.asset, {
+        mantissa: exportTokenRef.value.asset.decimals,
         trimMantissa: true,
       });
     };
@@ -57,24 +62,24 @@ export default defineComponent({
     const symbolIconRef = computed(
       () =>
         useTokenIconUrl({
-          symbol: ref(importParams.symbol || ""),
+          symbol: ref(exportParams.symbol || ""),
         })?.value,
     );
 
     const validationErrorRef = computed(() => {
-      if (!tokenRef.value) {
+      if (!exportTokenRef.value) {
         return "Please provide a valid token to import.";
       }
-      if (!importAmountRef.value) {
+      if (!exportAmountRef.value) {
         return "Please select an amount.";
       }
-      if (importAmountRef.value?.lessThanOrEqual("0.0")) {
+      if (exportAmountRef.value?.lessThanOrEqual("0.0")) {
         return "Please enter an amount greater than 0 to import.";
       }
-      if (tokenRef.value.amount.lessThan(importParams.amount || "0")) {
+      if (exportTokenRef.value.amount.lessThan(exportParams.amount || "0")) {
         return (
           "You do not have that much " +
-          tokenRef.value.asset.symbol.toUpperCase() +
+          exportTokenRef.value.asset.symbol.toUpperCase() +
           " available."
         );
       }
@@ -94,7 +99,7 @@ export default defineComponent({
         {
           condition:
             false &&
-            importParams.network === Network.ETHEREUM &&
+            exportParams.network === Network.ETHEREUM &&
             !store.wallet.eth.isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
@@ -104,12 +109,12 @@ export default defineComponent({
         },
         {
           condition: true,
-          name: "Import",
+          name: "Export",
           icon: null,
           props: {
             disabled: !!validationErrorRef.value,
             onClick: () => {
-              router.replace(getImportLocation("confirm", importParams));
+              router.replace(getExportLocation("confirm", exportParams));
             },
           },
         },
@@ -120,67 +125,23 @@ export default defineComponent({
     return () => (
       <>
         <section class="bg-gray-base p-4 rounded">
-          <div class="flex">
-            <label class={cx(selectClasses.label, "flex-1")}>
-              Network
-              <div class={selectClasses.container}>
-                <span class="capitalize">{importParams.network}</span>
-                <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
-                <select
-                  class={selectClasses.select}
-                  value={importParams.network}
-                  onChange={(e) => {
-                    const select = e.target as HTMLSelectElement;
-                    importParams.network = select.value as Network;
-                  }}
-                >
-                  {networksRef.value.map((network: string) => (
-                    <option value={network}>
-                      {network[0].toUpperCase() +
-                        network.slice(1).toLowerCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </label>
-            <label class={cx(selectClasses.label, "flex-1 ml-[10px]")}>
-              Token
-              <div class={selectClasses.container}>
-                <img src={symbolIconRef.value} class="w-[38px] h-[38px]" />
-                <div class="flex items-center">
-                  <div class="mr-2 uppercase">{importParams.symbol}</div>
-                  <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
-                </div>
-                <select
-                  class={selectClasses.select}
-                  value={importParams.symbol}
-                  onChange={(e) =>
-                    (importParams.symbol = (e.target as HTMLSelectElement)?.value)
-                  }
-                >
-                  {pickableTokensRef.value.map((token) => (
-                    <option value={token.asset.symbol}>
-                      {token.asset.symbol.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </label>
-          </div>
-
-          <div class="h-[40px] flex items-end justify-end">
-            {!!tokenRef.value && (
+          <label
+            for="exportAmount"
+            class={"flex relative items-center justify-between"}
+          >
+            <span>Amount</span>
+            {!!exportTokenRef.value && (
               <span
-                class="text-sm opacity-50 hover:text-accent-base cursor-pointer"
+                class="text-sm opacity-50 hover:text-accent-base cursor-pointer self-end"
                 onClick={handleSetMax}
               >
-                Balance: {formatAssetAmount(tokenRef.value?.amount)}
+                Balance: {formatAssetAmount(exportTokenRef.value?.amount)}
               </span>
             )}
-          </div>
+          </label>
 
-          <div class="relative flex items-center h-[54px] px-3 rounded bg-gray-input border-solid border-gray-input_outline border">
-            {!!tokenRef.value && (
+          <div class="relative flex items-center h-[54px] px-3 rounded bg-gray-input border-solid border-gray-input_outline border mt-[10px]">
+            {!!exportTokenRef.value && (
               <button
                 class="z-10 box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans"
                 onClick={handleSetMax}
@@ -193,6 +154,7 @@ export default defineComponent({
               </button>
             )}
             <input
+              id="exportAmount"
               type="number"
               min="0"
               style={{
@@ -201,34 +163,47 @@ export default defineComponent({
               onInput={(e) => {
                 const value = (e.target as HTMLInputElement).value;
                 if (isNaN(parseFloat(value))) {
-                  importParams.amount = "";
+                  exportParams.amount = "";
                 } else {
-                  importParams.amount = value;
+                  exportParams.amount = value;
                 }
               }}
-              value={importParams.amount}
+              value={exportParams.amount}
               class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pr-[16px] pl-[68px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium"
             />
           </div>
+
+          <label class={`${selectClasses.label} block mt-[10px]`}>
+            Network
+            <div class={selectClasses.container}>
+              <span class="capitalize">{exportParams.network}</span>
+              <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
+              <select
+                class={[selectClasses.select, "text-right"]}
+                value={exportParams.network}
+                onChange={(e) => {
+                  const select = e.target as HTMLSelectElement;
+                  exportParams.network = select.value as Network;
+                }}
+              >
+                {networksRef.value.map((network: string) => (
+                  <option value={network}>
+                    {network[0].toUpperCase() + network.slice(1).toLowerCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </label>
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
-          <div class="text-white">Sifchain Recipient Address</div>
-          <div class="relative border h-[54px] border-solid border-white bg-gray-input">
-            <input
-              readonly
-              value={store.wallet.sif.address}
-              class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none"
-              onClick={(e) => {
-                (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
-              }}
-            />
-          </div>
+          <ExportDetailsDisplay exportData={props.exportData} />
         </section>
 
         <button
           {...buttonRef.value.props}
           class={cx(
+            "w-full mt-[10px]",
             buttonClasses.button,
             buttonRef.value.props.disabled && buttonClasses.disabled,
           )}

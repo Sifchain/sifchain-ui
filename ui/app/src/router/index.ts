@@ -8,6 +8,7 @@ import {
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
 import BalanceImport from "@/views/BalancePage/Import";
+import BalanceExport from "@/views/BalancePage/Export";
 import StatsPage from "@/views/StatsPage.vue";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import CreatePool from "@/views/CreatePoolPage.vue";
@@ -104,6 +105,11 @@ const routes = [
         name: "Import",
         path: "import/:symbol/:step",
         component: BalanceImport,
+      },
+      {
+        name: "Export",
+        path: "export/:symbol/:step",
+        component: BalanceExport,
       },
     ],
   },

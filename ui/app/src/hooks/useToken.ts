@@ -71,7 +71,6 @@ export const useTokenList = (
 
   const tokenList = computed<TokenListItem[]>(() => {
     const pegList = pendingPegTxList.value;
-    console.log({ pegList });
 
     const networksSet = new Set(props.networks?.value || []);
 
@@ -118,10 +117,13 @@ export const useToken = (props: {
   const tokenListRef = useTokenList();
 
   return computed(() => {
+    console.log(
+      tokenListRef.value?.filter((s) => s.asset.symbol.match(/rowan/i)),
+    );
     return tokenListRef.value?.find((token) => {
       return (
         token.asset.network === props.network.value &&
-        token.asset.symbol === props.symbol.value
+        token.asset.symbol.toLowerCase() === props.symbol.value.toLowerCase()
       );
     });
   });

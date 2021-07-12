@@ -4,12 +4,15 @@ import { reactive, ref, computed, Ref, watch } from "vue";
 import router from "@/router";
 import { effect } from "@vue/reactivity";
 import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
-import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
+import {
+  getPeggedSymbol,
+  getUnpeggedSymbol,
+} from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
 import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
 
-export type ImportInputParams = {
+export type ImportParams = {
   amount?: string;
   network?: string;
   symbol?: string;
@@ -18,7 +21,7 @@ export type ImportInputParams = {
 export type ImportStep = "select" | "confirm" | "processing";
 
 export type ImportData = {
-  importParams: ImportInputParams;
+  importParams: ImportParams;
   networksRef: Ref<Network[]>;
   tokenRef: Ref<TokenListItem>;
   pickableTokensRef: Ref<TokenListItem[]>;
@@ -29,7 +32,7 @@ export type ImportData = {
 
 export function getImportLocation(
   step: ImportStep,
-  params: ImportInputParams,
+  params: ImportParams,
 ): RouteLocationRaw {
   return {
     name: "Import",
@@ -45,7 +48,7 @@ export const useImportData = () => {
   const { store, usecases } = useCore();
   const route = useRoute();
 
-  const importParams = reactive<ImportInputParams>({
+  const importParams = reactive<ImportParams>({
     symbol: String(route.params.symbol || ""),
     network: String(route.query.network || ""),
     amount: String(route.query.amount || ""),
@@ -67,7 +70,7 @@ export const useImportData = () => {
       return tokenListRef.value[0];
     }
 
-    const mappedSymbol = getUnpeggedSymbol(
+    const mappedSymbol = getPeggedSymbol(
       importParams.symbol || "",
     ).toLowerCase();
     const token =

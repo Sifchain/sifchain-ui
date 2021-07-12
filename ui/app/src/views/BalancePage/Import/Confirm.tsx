@@ -60,7 +60,7 @@ export default defineComponent({
           Ethereum block confirmations. This can take upwards of 20 minutes.
         </p>
         <button
-          class={[buttonClasses.button, "w-full mt-[10px]"]}
+          class={`${buttonClasses.button} w-full mt-[10px]`}
           onClick={() => {
             runImport();
             router.replace(getImportLocation("processing", importParams));

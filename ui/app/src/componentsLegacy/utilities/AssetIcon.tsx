@@ -43,7 +43,8 @@ export type InteractiveIconName =
   | "swap"
   | "plus"
   | "chevron-up"
-  | "minus";
+  | "minus"
+  | "help";
 
 export type NavIconName =
   | "documents"

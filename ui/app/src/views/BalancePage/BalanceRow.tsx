@@ -4,7 +4,10 @@ import { ref, toRefs } from "@vue/reactivity";
 import { RouterLink } from "vue-router";
 import { useBalancePageData } from "./useBalancePageData";
 import { TokenListItem } from "@/hooks/useToken";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import {
+  formatAssetAmount,
+  getPeggedSymbol,
+} from "@/componentsLegacy/shared/utils";
 import ProgressRing from "@/components/ProgressRing";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import Tooltip from "@/components/Tooltip";
@@ -16,7 +19,9 @@ import {
 } from "@/componentsLegacy/shared/utils";
 import { getImportLocation } from "./Import/useImportData";
 import { TokenIcon } from "@/components/TokenIcon";
+import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
+import { Network } from "@sifchain/sdk";
 
 // TODO: add to utils
 function shortenHash(hash: string) {
@@ -63,6 +68,7 @@ export default defineComponent({
         icon: "interactive/arrow-down",
         name: "Import",
         props: {
+          replace: true,
           class: !expandedRef.value && "order-10", // Put import button last if not expanded
           to: getImportLocation("select", {
             symbol: getUnpeggedSymbol(
@@ -71,15 +77,26 @@ export default defineComponent({
           }),
         },
       },
-      {
-        tag: "button",
-        icon: "interactive/arrow-up",
-        name: "Export",
-        props: {
-          disabled: emptyRef.value,
-          class: !expandedRef.value && "invisible",
-        },
-      },
+      emptyRef.value
+        ? {
+            tag: "button",
+            icon: "interactive/arrow-up",
+            name: "Export",
+            props: { disabled: true, class: !expandedRef.value && "invisible" },
+          }
+        : {
+            tag: RouterLink,
+            icon: "interactive/arrow-up",
+            name: "Export",
+            props: {
+              class: !expandedRef.value && "invisible",
+              replace: true,
+              to: getExportLocation("select", {
+                symbol: props.tokenItem.asset.symbol,
+                network: Network.ETHEREUM,
+              }),
+            },
+          },
       {
         icon: "navigation/pool",
         name: "Pool",
