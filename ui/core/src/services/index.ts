@@ -1,3 +1,4 @@
+import { ChainConfig } from "./../utils/parseConfig";
 // Everything here represents services that are effectively remote data storage
 export * from "./EthereumService/utils/getMetamaskProvider";
 
@@ -20,7 +21,9 @@ export type WithService<T extends keyof Services = keyof Services> = {
   services: Pick<Services, T>;
 };
 
-export type ServiceContext = EthereumServiceContext &
+export type ServiceContext = {
+  blockExplorerUrl: string;
+} & EthereumServiceContext &
   SifServiceContext &
   ClpServiceContext &
   EthbridgeServiceContext &

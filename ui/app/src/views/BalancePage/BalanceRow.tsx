@@ -11,7 +11,10 @@ import {
 import ProgressRing from "@/components/ProgressRing";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import Tooltip from "@/components/Tooltip";
-import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
+import {
+  getBlockExplorerUrl,
+  shortenHash,
+} from "@/componentsLegacy/shared/utils";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import {
   getAssetLabel,
@@ -22,13 +25,6 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
 import { Network } from "@sifchain/sdk";
-
-// TODO: add to utils
-function shortenHash(hash: string) {
-  const start = hash.slice(0, 7);
-  const end = hash.slice(-7);
-  return `${start}...${end}`;
-}
 
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 

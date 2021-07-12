@@ -1,6 +1,5 @@
-<script lang="tsx">
 import { defineComponent, PropType } from "vue";
-import { useLink, useRouter } from "vue-router";
+import { useLink, useRouter, RouterLink } from "vue-router";
 import AssetIcon, { IconName, NavIconName } from "../utilities/AssetIcon";
 
 export default defineComponent({
@@ -30,8 +29,11 @@ export default defineComponent({
 
     return () => {
       return (
-        <router-link
-          class={`${props.isComingSoon ? "pointer-events-none" : ""}`}
+        <RouterLink
+          class={
+            props.isComingSoon &&
+            "pointer-events-none flex items-center justify-between"
+          }
           to={props.routerLink}
         >
           <div
@@ -40,7 +42,7 @@ export default defineComponent({
             } hover:opacity-80 cursor-pointer rounded-[6px] pr-[12px] mt-[10px] w-full font-sans text-left flex flex-row justify-start font-semibold items-center`}
           >
             <AssetIcon
-              class={`transition-all w-[20px] h-[20px] ml-[8px] inline-block`}
+              class={`transition-all w-[20px] h-[20px] ml-[8px] inline-block flex-shrink-0`}
               icon={`navigation/${props.icon}` as IconName}
               active={link.isActive.value}
             />
@@ -49,16 +51,13 @@ export default defineComponent({
               {props.displayName}
             </span>
             {props.isComingSoon && (
-              <div class="ml-auto">
-                <span class="my-auto py-[2px] px-[6px] text-[10px] text-info-base border-solid border-[1px] rounded-full border-info-base">
-                  Soon
-                </span>
-              </div>
+              <span class="py-[2px] px-[6px] text-[10px] text-info-base border-solid border-[1px] rounded-full border-info-base">
+                Soon
+              </span>
             )}
           </div>
-        </router-link>
+        </RouterLink>
       );
     };
   },
 });
-</script>

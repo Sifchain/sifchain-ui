@@ -28,7 +28,6 @@ export const TokenIcon = defineComponent({
     watch(
       [props.asset],
       async () => {
-        console.log(props.asset.value);
         const img = new Image();
         img.src = `/images/tokens/${(
           props.asset?.value?.displaySymbol ?? props.asset?.value?.symbol

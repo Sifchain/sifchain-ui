@@ -1,6 +1,6 @@
 <template>
   <div
-    class="layout flex absolute justify-center portrait:left-0 left-sidebar top-0 right-0 bottom-0"
+    class="layout flex absolute justify-center portrait:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background"
   >
     <!-- <Panel dark>
       <template v-slot:header v-if="header">

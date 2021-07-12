@@ -24,7 +24,7 @@
         </WithWallet>
       </template>
     </Header> -->
-    <SideBarVue />
+    <SideBar />
     <Layout>
       <router-view />
     </Layout>
@@ -35,23 +35,17 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import WithWallet from "@/componentsLegacy/WithWallet/WithWallet.vue";
-import Header from "@/componentsLegacy/Header/Header.vue";
-import Pill from "@/componentsLegacy/Pill/Pill.vue";
 import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
-import SideBarVue from "@/componentsLegacy/NavSidePanel/NavSidePanel.vue";
+import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
 import Layout from "@/componentsLegacy/Layout/Layout.vue";
 export default defineComponent({
   name: "App",
   components: {
-    // Header,
     Notifications,
-    // WithWallet,
-    // Pill,
     EnvAlert,
-    SideBarVue,
+    SideBar,
     Layout,
   },
   setup() {

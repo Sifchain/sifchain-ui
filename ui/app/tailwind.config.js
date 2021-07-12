@@ -53,7 +53,7 @@ module.exports = {
           base: "#459FEE",
         },
         connected: {
-          base: "#39C357",
+          base: "#5AF37C",
         },
         danger: {
           base: "#FF4F4F",
@@ -75,6 +75,8 @@ module.exports = {
           disabled: "#565656",
 
           600: "#636363",
+
+          800: "#808080",
         },
       },
       fontSize: {

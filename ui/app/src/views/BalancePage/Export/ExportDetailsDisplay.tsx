@@ -59,6 +59,7 @@ export default function ExportDetailsDisplay(props: {
               <div class="cursor-pointer ml-[4px]">
                 <AssetIcon
                   icon="interactive/help"
+                  active
                   class="w-4 h-4"
                   style={{ stroke: "none" }}
                 />

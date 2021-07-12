@@ -70,7 +70,8 @@ export default defineComponent({
           id: "processing",
           Component: ExportPending,
           modalProps: {
-            heading: transactionDetails.value?.heading,
+            heading:
+              transactionDetails.value?.heading || "Waiting for Confirmation",
             icon: "interactive/arrow-up",
             onClose: cancel,
           },

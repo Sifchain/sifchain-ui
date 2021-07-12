@@ -44,7 +44,11 @@ export type InteractiveIconName =
   | "plus"
   | "chevron-up"
   | "minus"
-  | "help";
+  | "help"
+  | "link"
+  | "wallet"
+  | "copy"
+  | "open-external";
 
 export type NavIconName =
   | "documents"
