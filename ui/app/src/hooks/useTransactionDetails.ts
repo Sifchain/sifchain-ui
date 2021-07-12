@@ -68,10 +68,11 @@ export function getTransactionDetails(
   const payload = {
     tx,
   };
+  const state = tx?.state || null;
   Object.assign(
     payload,
     (() => {
-      switch (tx.state) {
+      switch (state) {
         case "requested": {
           return {
             heading: "Waiting for Confirmation",
@@ -106,6 +107,8 @@ export function getTransactionDetails(
             description: tx.memo || "",
           };
         }
+        default:
+          return null;
       }
     })(),
   );

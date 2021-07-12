@@ -78,7 +78,7 @@ export default defineComponent({
               </span>
             </div>
           </div>
-          {transactionDetails.value?.tx && (
+          {transactionDetails.value?.tx?.hash && (
             <a
               class="text-white block text-center cursor-pointer mt-[10px] text-sm"
               target="_blank"
