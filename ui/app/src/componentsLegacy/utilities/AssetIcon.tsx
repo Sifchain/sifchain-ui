@@ -28,7 +28,6 @@ const navIcons = ((ctx) => {
     default: DefineComponent<PropType<Record<string, unknown>> & SVGAttributes>;
   }
 >;
-console.log(navIcons);
 
 export type InteractiveIconName =
   | "chevron-down"
@@ -77,7 +76,6 @@ export default defineComponent({
   },
   setup(props) {
     const InlineSvg = navIcons[props.icon]?.default;
-    console.log({ InlineSvg });
     return () => {
       return (
         <InlineSvg

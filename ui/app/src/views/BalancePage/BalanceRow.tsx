@@ -5,13 +5,24 @@ import { RouterLink } from "vue-router";
 import { useBalancePageData } from "./useBalancePageData";
 import { TokenListItem } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import ProgressRing from "@/components/ProgressRing";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import Tooltip from "@/components/Tooltip";
+import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import {
   getAssetLabel,
   getUnpeggedSymbol,
 } from "@/componentsLegacy/shared/utils";
 import { getImportLocation } from "./Import/useImportData";
+import { useCore } from "@/hooks/useCore";
+
+// TODO: add to utils
+function shortenHash(hash: string) {
+  const start = hash.slice(0, 7);
+  const end = hash.slice(-7);
+  return `${start}...${end}`;
+}
 
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
@@ -31,6 +42,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const { config } = useCore();
     const iconUrlRef = computed(
       () =>
         useTokenIconUrl({
@@ -120,7 +132,50 @@ export default defineComponent({
           </div>
         </td>
         <td class="text-right align-middle min-w-[200px]">
-          {emptyRef.value ? null : formatAssetAmount(props.tokenItem.amount)}
+          <div class="flex items-center">
+            {emptyRef.value ? null : formatAssetAmount(props.tokenItem.amount)}
+
+            {props.tokenItem.pegTxs.length > 0 && (
+              <Tooltip
+                arrow
+                interactive
+                content={
+                  <div class="text-left">
+                    <p class="mb-1">
+                      You have the following pending transactions:
+                    </p>
+                    <ul class="list-disc list-inside">
+                      {props.tokenItem.pegTxs.map((tx) => (
+                        <li>
+                          <a
+                            class="font-normal text-accent-base hover:text-underline"
+                            href={getBlockExplorerUrl(
+                              config.sifChainId,
+                              tx.hash,
+                            )}
+                            title={tx.hash}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {shortenHash(tx.hash)}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                }
+              >
+                <div>
+                  <ProgressRing
+                    class="ml-1"
+                    size={28}
+                    ringWidth={4}
+                    progress={50}
+                  />
+                </div>
+              </Tooltip>
+            )}
+          </div>
         </td>
         <td class="text-right align-middle">
           <div class="inline-flex items-center">

@@ -22,8 +22,10 @@
     "postcss": "^7",
     "style-loader": "^3.0.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "tippy.js": "^6.3.1",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "^4.0.0-0",
+    "vue-tippy": "^6.0.0-alpha.30"
   },
   "devDependencies": {
     "@babel/runtime": "^7.0.0-beta.56",

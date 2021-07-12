@@ -10,6 +10,9 @@ export default defineComponent({
     hidden: {
       type: Boolean,
     },
+    hover: {
+      type: Boolean,
+    },
   },
   setup: function (props) {
     const { fit } = props;
@@ -17,6 +20,7 @@ export default defineComponent({
       "tooltip-container-fit": fit,
       "tooltip-container": true,
     };
+
     return { fit, classes };
   },
   data: function () {
@@ -42,6 +46,16 @@ export default defineComponent({
 
       this.opened = true;
     },
+    mouseenter() {
+      if (this.$props.hover) {
+        this.open();
+      }
+    },
+    mouseleave() {
+      if (this.$props.hover && this.opened) {
+        this.close();
+      }
+    },
   },
 });
 </script>
@@ -49,7 +63,13 @@ export default defineComponent({
 <template>
   <span v-if="!hidden" v-on:click="open()">
     <teleport to="#tooltip-target">
-      <div class="tooltip-background" v-if="opened" @click="close">
+      <div
+        class="tooltip-background"
+        v-if="opened"
+        @click="close"
+        @mouseenter="mouseenter"
+        @mouseleave="mouseleave"
+      >
         <div class="tooltip-positioner" :style="containerLocation" @click.stop>
           <div :class="classes">
             <div class="tooltip-inner">
@@ -81,12 +101,8 @@ export default defineComponent({
 }
 .tooltip-container {
   transform: translateY(-100%);
-  background: #f9f9f9;
-  border-radius: 4px;
-  line-height: 16px;
-  font-size: 12px;
+  @apply bg-gray-base text-white rounded-sm text-sm;
   text-align: left;
-  font-weight: 400;
   z-index: 10000;
   width: 210px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.4);

@@ -1,9 +1,9 @@
 import { useCore } from "./useCore";
 import { computed, Ref } from "vue";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
-import { Network } from "@sifchain/sdk";
 import {
   AssetAmount,
+  Network,
   IAsset,
   IAssetAmount,
   TransactionStatus,
@@ -30,7 +30,7 @@ export const useTokenList = (
       !store.tx.eth ||
       !store.tx.eth[store.wallet.eth.address]
     )
-      return null;
+      return [];
 
     const txs = store.tx.eth[store.wallet.eth.address];
 
@@ -71,11 +71,12 @@ export const useTokenList = (
 
   const tokenList = computed<TokenListItem[]>(() => {
     const pegList = pendingPegTxList.value;
+    console.log({ pegList });
 
     const networksSet = new Set(props.networks?.value || []);
 
     return config.assets
-      .filter((asset) => {
+      .filter((asset: IAsset) => {
         if (!networksSet.size) return true;
         return networksSet.has(asset.network);
       })
