@@ -1,9 +1,12 @@
 import {
+  ComponentPublicInstance,
   DefineComponent,
   defineComponent,
   HTMLAttributes,
   PropType,
+  Ref,
   SVGAttributes,
+  VNode,
 } from "vue";
 const navIcons = ((ctx) => {
   let keys = ctx.keys();
@@ -38,7 +41,10 @@ export type InteractiveIconName =
   | "ellipsis"
   | "tick"
   | "close"
-  | "swap";
+  | "swap"
+  | "plus"
+  | "chevron-up"
+  | "minus";
 
 export type NavIconName =
   | "documents"
@@ -74,14 +80,14 @@ export default defineComponent({
       type: Number,
       default: () => 20,
     },
+    vectorRef: Object as PropType<Ref<ComponentPublicInstance | undefined>>,
   },
   setup(props) {
     const InlineSvg = navIcons[props.icon]?.default;
-    console.log({ InlineSvg });
     return () => {
       return (
         <InlineSvg
-          // viewBox={`0 0 ${props.size} ${props.size}`}
+          ref={props.vectorRef}
           preserveAspectRatio="none"
           width={props.size}
           height={props.size}

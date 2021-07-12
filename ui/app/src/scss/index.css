@@ -8,7 +8,6 @@ button {
   cursor: pointer;
 }
 button:hover {
-  opacity: 90%;
 }
 button:active {
   filter: brightness(120%);
@@ -16,6 +15,26 @@ button:active {
 
 .flip-list-move {
   transition: transform 300ms ease-out;
+}
+.list-complete-item {
+  transition: all 0.8s ease;
+}
+
+.list-complete-enter-from,
+.list-complete-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.list-complete-leave-active {
+  position: absolute;
+}
+
+
+
+
+* {
+  letter-spacing: -3% !important;
 }
 
 body {

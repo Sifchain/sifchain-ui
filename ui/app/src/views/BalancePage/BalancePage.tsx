@@ -44,11 +44,12 @@ export default defineComponent({
         >
           <div class="w-full bg-gray-input_outline h-8 relative flex items-center rounded-lg overflow-hidden">
             <AssetIcon
+              size={20}
               icon="interactive/search"
               class={[`ml-3 w-4 h-4`, isDisabled ? "text-[#6E6E6E]" : ""]}
             />
             <input
-              type="text"
+              type="search"
               placeholder="Search Token..."
               value={state.searchQuery}
               onInput={(e: Event) => {

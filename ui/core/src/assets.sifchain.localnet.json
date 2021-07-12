@@ -6,7 +6,8 @@
       "name": "Rowan",
       "address": "",
       "imageUrl": "./images/siflogo.png",
-      "network": "sifchain"
+      "network": "sifchain",
+      "displaySymbol": "rowan"
     },
     {
       "symbol": "ceth",

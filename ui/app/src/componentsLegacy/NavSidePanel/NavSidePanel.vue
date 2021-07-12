@@ -7,6 +7,8 @@ import { useCore } from "../../hooks/useCore";
 import { computed } from "@vue/reactivity";
 import NavSidePanelItemVue from "./NavSidePanelItem.vue";
 import Logo from "@/assets/logo-large.svg";
+import AssetIcon from "../utilities/AssetIcon";
+import NavIconVue from "./NavIcon.vue";
 // const navLinks: Array<{ displayName: string; routePath: string }> = [
 //   "Dashboard",
 //   "Swap",
@@ -33,7 +35,7 @@ export default defineComponent({
         .length;
     });
     return () => (
-      <div class="overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
+      <div class="portrait:hidden overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
         <div class="w-full text-center">
           <div class="w-[119px] ml-[46px] mr-[45px] mt-[38px] flex justify-center">
             <Logo />
@@ -85,10 +87,10 @@ export default defineComponent({
             <div class="line-height-[22px] align-middle font-medium text-[10px] text-info-base px-[10px] py-[1px] border-[1px] border-solid border-info-base rounded-full justify-start">
               TVL: {tvl.data || "..."}
             </div>
-            <div class="transition-all flex flex-row mt-[8px] align-middle font-medium text-[10px] text-accent-base pr-[9px] border-[1px] border-solid border-accent-base rounded-full justify-start">
+            <div class="transition-all flex flex-row mt-[8px] align-middle font-medium text-[10px] pr-[9px] text-accent-base border-[1px] border-solid border-accent-base rounded-full justify-start">
               <img
-                class="inline-block h-[20px] w-[20px] ml-[4px] my-[2px]"
-                src={require("@/assets/icons/navigation/rowan.svg")}
+                class="ml-[4px] my-[2px] w-[20px] h-[20px]"
+                src="/images/tokens/ROWAN.svg"
               />
               <span
                 style="line-height: 20px;"

@@ -1,9 +1,55 @@
 <script lang="ts">
+import { defineComponent, ref } from "vue";
+import { computed, toRefs } from "@vue/reactivity";
+import { useCore } from "@/hooks/useCore";
+import { LiquidityProvider, Pool } from "@sifchain/sdk";
 import Layout from "@/components/Layout/Layout.vue";
 import PoolList from "@/components/PoolList/PoolList.vue";
 import PoolListItem from "@/components/PoolList/PoolListItem.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
 import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+
+type AccountPool = { lp: LiquidityProvider; pool: Pool };
+
+export default defineComponent({
+  components: {
+    Layout,
+    SifButton,
+    PoolList,
+    PoolListItem,
+    ActionsPanel,
+  },
+
+  setup() {
+    const { store } = useCore();
+
+    const selectedPool = ref<AccountPool | null>(null);
+
+    // TODO: Sort pools?
+    const accountPools = computed(() => {
+      if (
+        !store.accountpools ||
+        !store.wallet.sif.address ||
+        !store.accountpools[store.wallet.sif.address]
+      )
+        return [];
+
+      return Object.entries(
+        store.accountpools[store.wallet.sif.address] ?? {},
+      ).map(([poolName, accountPool]) => {
+        return {
+          ...accountPool,
+          pool: store.pools[poolName],
+        } as AccountPool;
+      });
+    });
+
+    return {
+      accountPools,
+      selectedPool,
+    };
+  },
+});
 </script>
 
 <template>

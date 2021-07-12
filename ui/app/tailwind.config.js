@@ -7,6 +7,10 @@ module.exports = {
       backgroundImage: {
         "accent-gradient": `linear-gradient(180deg, #D4B553 0%, #C1A04F 100%);`,
       },
+      screens: {
+        portrait: { raw: "(orientation: portrait)" },
+        // => @media (orientation: portrait) { ... }
+      },
       fontFamily: {
         DEFAULT: "sans",
         sans: [
@@ -46,6 +50,9 @@ module.exports = {
         },
         connected: {
           base: "#39C357",
+        },
+        danger: {
+          base: "#FF4F4F",
         },
         gray: {
           // Ash Black

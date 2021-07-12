@@ -1,6 +1,11 @@
 import { computed, effect, reactive, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { SwapState, TransactionStatus, useSwapCalculator } from "@sifchain/sdk";
+import {
+  IAsset,
+  SwapState,
+  TransactionStatus,
+  useSwapCalculator,
+} from "@sifchain/sdk";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "../utils/getMaxAmount";
@@ -13,7 +18,7 @@ export const useSwapPageData = () => {
   const { usecases, poolFinder, store } = useCore();
 
   const fromSymbol = ref("rowan");
-  const toSymbol = ref("cdai");
+  const toSymbol = ref("cband");
   const fromAmount = ref("1");
   const toAmount = ref("0");
 
@@ -21,7 +26,26 @@ export const useSwapPageData = () => {
   const pageState = ref<SwapPageState>("idle");
   const txStatus = ref<TransactionStatus | null>(null);
 
-  const selectedField = ref<"from" | "to" | null>(null);
+  const selectedField = ref<"from" | "to" | null>("from");
+  const core = useCore();
+  const fromAsset = computed(() => {
+    return (
+      core.config.assets.find(
+        (asset) =>
+          asset.symbol == fromSymbol.value ||
+          asset.symbol == `c${fromSymbol.value}`,
+      ) || (core.config.assets[0] as IAsset)
+    );
+  });
+  const toAsset = computed(() => {
+    return (
+      core.config.assets.find(
+        (asset) =>
+          asset.symbol == toSymbol.value ||
+          asset.symbol == `c${toSymbol.value}`,
+      ) || (core.config.assets[0] as IAsset)
+    );
+  });
 
   const fromTokenIconUrl = useTokenIconUrl({
     symbol: fromSymbol,
@@ -173,6 +197,8 @@ export const useSwapPageData = () => {
       selectedField.value = null;
     },
     slippage,
+    fromAsset,
+    toAsset,
     fromAmount,
     toAmount,
     fromSymbol,

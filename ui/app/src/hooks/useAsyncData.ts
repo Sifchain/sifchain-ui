@@ -1,41 +1,48 @@
-import { computed, ComputedRef } from "@vue/reactivity";
-import { reactive, readonly, toRefs, watchEffect } from "vue";
+import { computed, ComputedRef, ref, Ref } from "@vue/reactivity";
+import { reactive, readonly, toRefs, watch, watchEffect } from "vue";
 const cache: Record<string, any> = {};
 
+type Await<T> = T extends {
+  then(onfulfilled?: (value: infer U) => unknown): unknown;
+}
+  ? U
+  : T;
 export const useAsyncData = <F extends () => Promise<any>>(
   fn: F,
   shouldReload: ComputedRef<boolean> = computed(() => false),
 ) => {
-  const publicState = reactive({
-    data: null,
-    error: null,
-    isError: false,
-    isSuccess: false,
-    isLoading: true,
-    reload: loadData,
-  });
+  const publicState = {
+    data: ref<Await<ReturnType<F>> | null>(null),
+    error: ref<any>(null),
+    isError: ref(false),
+    isSuccess: ref(false),
+    isLoading: ref(false),
+    reload: ref(loadData),
+  };
+
   function loadData() {
     fn()
       .then((data) => {
-        publicState.data = data;
-        publicState.isSuccess = true;
-        publicState.isLoading = false;
+        publicState.data.value = data;
+        publicState.isSuccess.value = true;
+        publicState.isLoading.value = false;
       })
       .catch((e) => {
-        publicState.isError = true;
-        publicState.isLoading = false;
+        publicState.isError.value = true;
+        publicState.isLoading.value = false;
         publicState.error = e;
       });
   }
-  const privateState = reactive({
-    hasRun: false,
-  });
+  const privateState = {
+    hasRun: ref(false),
+  };
 
   watchEffect(() => {
-    if (!privateState.hasRun || shouldReload.value) {
-      privateState.hasRun = true;
+    if (!privateState.hasRun.value || shouldReload.value) {
+      privateState.hasRun.value = true;
       loadData();
     }
   });
+
   return publicState;
 };

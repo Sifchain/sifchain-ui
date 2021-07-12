@@ -20,10 +20,11 @@ export default defineComponent({
   setup: function PageCard(props, context: SetupContext) {
     // debugger;
     return () => (
-      <div class="py-[130px]">
+      <div class="md:py-[90px] lg:py-[90px] xl:py-[90px] 2xl:py-[130px]">
         <div
+        key="view-layer"
           class={[
-            `justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4`,
+            `transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4`,
             props.class,
           ]}
         >

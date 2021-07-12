@@ -1,6 +1,6 @@
 import { defineComponent, PropType, computed } from "vue";
 import cx from "clsx";
-import { ref } from "@vue/reactivity";
+import { ref, toRefs } from "@vue/reactivity";
 import { RouterLink } from "vue-router";
 import { useBalancePageData } from "./useBalancePageData";
 import { TokenListItem } from "@/hooks/useTokenList";
@@ -11,6 +11,7 @@ import {
   getUnpeggedSymbol,
 } from "@/componentsLegacy/shared/utils";
 import { getImportLocation } from "./Import/useImportData";
+import { TokenIcon } from "@/components/TokenIcon";
 
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
@@ -30,13 +31,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const iconUrlRef = computed(
-      () =>
-        useTokenIconUrl({
-          symbol: ref(props.tokenItem.asset.symbol),
-        })?.value,
-    );
-
     const expandedRef = computed(
       () => props.expandedSymbol === props.tokenItem.asset.symbol,
     );
@@ -46,6 +40,7 @@ export default defineComponent({
     const emptyRef = computed(
       () => props.tokenItem.amount.amount.toString(false) === "0",
     );
+    const assetRef = computed(() => props.tokenItem.asset);
 
     // Always render all buttons, expandedRef.value or not, they will just be hidden.
     const buttonsRef = computed(() => [
@@ -112,7 +107,8 @@ export default defineComponent({
       >
         <td class="text-left align-middle min-w-[130px]">
           <div class="flex items-center">
-            <img class="w-4 h-4" src={iconUrlRef.value} />
+            <TokenIcon asset={assetRef}></TokenIcon>
+            {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>

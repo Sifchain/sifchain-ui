@@ -18,7 +18,7 @@ export const useRowanPrice = () => {
   });
 
   watchEffect(() => {
-    const i = setInterval(() => price.reload(), 10000);
+    const i = setInterval(() => price.reload.value(), 10000);
     return () => {
       clearInterval(i);
     };

@@ -5,7 +5,8 @@
       "decimals": 18,
       "name": "Rowan",
       "imageUrl": "./images/siflogo.png",
-      "network": "sifchain"
+      "network": "sifchain",
+      "displaySymbol": "rowan"
     },
     {
       "decimals": 6,

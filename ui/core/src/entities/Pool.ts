@@ -11,6 +11,7 @@ import {
 import { Amount, IAmount } from "./Amount";
 
 export type Pool = ReturnType<typeof Pool>;
+
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
 export function Pool(
