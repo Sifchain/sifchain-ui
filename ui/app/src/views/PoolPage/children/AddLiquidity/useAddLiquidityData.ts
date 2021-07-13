@@ -1,4 +1,4 @@
-import { ref, watchEffect } from "vue";
+import { ref, watch, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
@@ -50,8 +50,31 @@ export function createLiquidityDataProvider() {
   const router = useRouter();
   const route = useRoute();
 
-  const { fromSymbol, fromAmount, toAmount, toSymbol } = useCurrencyFieldState({
+  const {
+    fromSymbol: _fromSymbol,
+    fromAmount,
+    toAmount,
+    toSymbol,
+  } = useCurrencyFieldState({
     pooling: ref(true),
+  });
+  const fromSymbol = computed({
+    get() {
+      return (
+        router.currentRoute.value?.params?.externalAsset?.toString() ||
+        _fromSymbol.value ||
+        ""
+      );
+    },
+    set(v: string) {
+      _fromSymbol.value = v.toLowerCase();
+      router.replace({
+        ...router.currentRoute.value,
+        params: {
+          externalAsset: v.toLowerCase(),
+        },
+      });
+    },
   });
   const isFromMaxActive = computed(() => {
     const accountBalance = balances.value.find(
@@ -75,10 +98,6 @@ export function createLiquidityDataProvider() {
       toAmount.value === format(accountBalance.amount, accountBalance.asset)
     );
   });
-
-  fromSymbol.value = route.params.externalAsset
-    ? route.params.externalAsset.toString()
-    : fromSymbol.value;
 
   function clearAmounts() {
     fromAmount.value = "0.0";

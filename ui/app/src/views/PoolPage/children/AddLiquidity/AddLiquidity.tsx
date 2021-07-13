@@ -28,12 +28,14 @@ export default defineComponent({
         icon="interactive/plus"
         showClose
         headingAction={
-          <div class="flex items-center justify-start gap-[9px]">
+          <div
+            onClick={() => {
+              data.toggleAsyncPooling();
+              data.handleTokenAFocused();
+            }}
+            class="flex items-center justify-start gap-[9px] cursor-pointer"
+          >
             <button
-              onClick={() => {
-                data.toggleAsyncPooling();
-                data.handleTokenAFocused();
-              }}
               class={[
                 `cursor-pointer flex transition-all items-center h-[16px] w-[28px] border-solid active:bg-opacity-20  border-[1px] rounded-full`,
                 data.asyncPooling.value
