@@ -12,6 +12,7 @@ import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { nextTick, onMounted, watch, watchEffect } from "vue";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 export const useSwapPageData = () => {
@@ -28,6 +29,11 @@ export const useSwapPageData = () => {
 
   const selectedField = ref<"from" | "to" | null>("from");
   const core = useCore();
+  const getAccountBalance = () => {
+    return store.wallet.sif.balances.find(
+      (balance) => balance.asset.symbol === fromSymbol.value,
+    );
+  };
   const fromAsset = computed(() => {
     return (
       core.config.assets.find(
@@ -60,19 +66,7 @@ export const useSwapPageData = () => {
     pageState.value = "idle";
   }
 
-  const getAccountBalance = () => {
-    return store.wallet.sif.balances.find(
-      (balance) => balance.asset.symbol === fromSymbol.value,
-    );
-  };
-
-  const formattedFromTokenBalance = computed(() => {
-    console.log("accountbalances");
-    const accountBalance = getAccountBalance();
-    console.log({ accountBalance });
-    if (!accountBalance) return "0";
-    return format(accountBalance.amount, accountBalance.asset);
-  });
+  const formattedFromTokenBalance = useFormattedTokenBalance(fromSymbol);
   const isFromMaxActive = computed(() => {
     return fromAmount.value === formattedFromTokenBalance.value;
   });

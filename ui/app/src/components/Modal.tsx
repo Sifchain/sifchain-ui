@@ -1,22 +1,26 @@
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 
-import { SetupContext, Teleport } from "vue";
+import { Component, SetupContext, Teleport } from "vue";
 
 export type ModalProps = {
   teleportTo?: string;
   onClose?: () => void;
   onBack?: () => void;
   class?: string;
-  heading: string;
+  heading: any;
   icon?: IconName;
   showClose?: Boolean;
   showBack?: Boolean;
+  headingAction?: any;
 };
 
 export default function Modal(props: ModalProps, context: SetupContext) {
   return (
-    <Teleport to={props.teleportTo || "body"}>
-      <div class="absolute bg-white opacity-30 z-[1] inset-0 left-sidebar" />
+    <Teleport to={props.teleportTo || "#app"}>
+      <div
+        class="fixed bg-white opacity-30 z-[1] inset-0 left-sidebar"
+        onClick={props.onClose}
+      />
       <div
         class="absolute inset-0 left-sidebar flex items-center justify-center z-10"
         onClick={() => props.onClose?.()}
@@ -41,17 +45,15 @@ export default function Modal(props: ModalProps, context: SetupContext) {
                 ) : props.icon ? (
                   <AssetIcon icon={props.icon} active size={32} />
                 ) : null}
-                <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
+                <span class="text-accent-base font-sans text-[26px] ml-[10px] font-medium">
                   {props.heading}
                 </span>
               </div>
+              <div>{props.headingAction}</div>
               <div class="flex items-center">
                 {props.showClose && (
                   <button onClick={() => props.onClose?.()}>
-                    <AssetIcon
-                      icon="interactive/close"
-                      class="w-[14px] h-[14px]"
-                    />
+                    <AssetIcon icon="interactive/close" size={24} />
                   </button>
                 )}
               </div>

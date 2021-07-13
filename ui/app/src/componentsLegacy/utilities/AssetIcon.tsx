@@ -92,6 +92,7 @@ export default defineComponent({
           width={props.size}
           height={props.size}
           class={[
+            "font-normal",
             "stroke-current",
             props.active ? "text-accent-base" : "",
             props.disabled ? "text-gray-500" : "",

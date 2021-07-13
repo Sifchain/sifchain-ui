@@ -17,6 +17,9 @@ button:active {
 .flip-list-move {
   transition: transform 300ms ease-out;
 }
+.flip-list--fast-move {
+  transition: transform 150ms ease-in-out;
+}
 .list-complete-item {
   transition: all 0.8s ease;
 }

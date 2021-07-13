@@ -52,7 +52,7 @@ export const TokenInputGroup = defineComponent({
   props: {
     heading: required(String),
     formattedBalance: optional(String),
-    asset: required(Object as PropType<IAsset>),
+    asset: required(Object as PropType<IAsset | undefined>),
     amount: required(String),
     onSetToMaxAmount: optional(Function as PropType<() => any>),
     onInputAmount: required(Function as PropType<(amount: string) => any>),
@@ -62,7 +62,8 @@ export const TokenInputGroup = defineComponent({
     class: required([Object, String, Array] as PropType<
       HTMLAttributes["class"]
     >),
-    tokenIconUrl: required(String),
+    tokenIconUrl: optional(String),
+    shouldShowNumberInputOnLeft: optional(Boolean),
   },
   setup(props) {
     const propRefs = toRefs(props);
@@ -85,24 +86,29 @@ export const TokenInputGroup = defineComponent({
               }`}
             >
               Balance {props.formattedBalance}{" "}
-              {props.asset.label.replace(/^c/gim, "")}
+              {props.asset?.label.replace(/^c/gim, "")}
             </div>
           </div>
-          <div class="relative flex flex-row mt-[10px] overflow-visible">
+          <div
+            class={[
+              `relative flex flex-row mt-[10px] overflow-visible gap-[10px]`,
+              props.shouldShowNumberInputOnLeft ? "flex-row-reverse" : "",
+            ]}
+          >
             <button
               class={[
                 "transition-all duration-200 relative flex items-center w-[186px] h-[54px] p-[8px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]",
                 selectIsOpen.value ? "border-accent-base" : "",
               ]}
               onClick={(e: MouseEvent) => {
-                selectIsOpen.value = !selectIsOpen.value;
                 e.stopPropagation();
+                selectIsOpen.value = !selectIsOpen.value;
               }}
             >
               {/* <img class="h-[38px]" src={props.tokenIconUrl} /> */}
               <TokenIcon size={38} asset={propRefs.asset}></TokenIcon>
               <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                {props.asset.label.replace(/^c/gim, "")}
+                {props.asset?.label.replace(/^c/gim, "")}
               </div>
 
               <AssetIcon
@@ -113,7 +119,7 @@ export const TokenInputGroup = defineComponent({
                 icon="interactive/chevron-down"
               />
             </button>
-            <div class="relative ml-[10px] flex items-center w-[254px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
+            <div class="relative flex items-center w-[254px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
               <input
                 onFocus={props.onFocus}
                 onBlur={props.onBlur}

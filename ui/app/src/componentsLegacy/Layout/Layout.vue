@@ -1,6 +1,6 @@
 <template>
   <div
-    class="layout flex absolute justify-center portrait:left-0 left-sidebar top-0 right-0 bottom-0"
+    class="layout flex justify-center portrait:left-0 left-sidebar top-0 right-0 bottom-0"
   >
     <!-- <Panel dark>
       <template v-slot:header v-if="header">
@@ -26,6 +26,7 @@
       <slot name="after"></slot>
     </Panel> -->
     <slot></slot>
+    <div id="dropdown-target"></div>
   </div>
   <!-- <Footer /> -->
   <div class="layout-bg" />

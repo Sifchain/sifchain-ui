@@ -59,6 +59,7 @@ export const TokenIcon = defineComponent({
           backgroundImage: `url('${url.value}')`,
           backgroundSize: "contain",
         }}
+        class="transition-all duration-100"
       ></div>
     );
   },

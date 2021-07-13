@@ -20,16 +20,16 @@ export default defineComponent({
   setup: function PageCard(props, context: SetupContext) {
     // debugger;
     return () => (
-      <div class="md:py-[90px] lg:py-[90px] xl:py-[90px] 2xl:py-[130px]">
+      <div class="block pt-[90px] md:pt-[90px] lg:pt-[90px] xl:pt-[90px] 2xl:pt-[130px] pb-[530px] ">
         <div
-        key="view-layer"
+          key="view-layer"
           class={[
             `transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white p-4`,
             props.class,
           ]}
         >
           {!!props.heading && (
-            <div class="w-full flex-row flex justify-between items-center pb-4">
+            <div class="w-full flex-row flex justify-between items-center pb-[10px]">
               <div class="flex items-center">
                 {!!props.iconName && (
                   <AssetIcon icon={props.iconName} size={32} active />

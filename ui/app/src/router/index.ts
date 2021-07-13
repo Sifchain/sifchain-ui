@@ -11,15 +11,14 @@ import BalanceImport from "@/views/BalancePage/Import";
 import BalanceExport from "@/views/BalancePage/Export";
 import StatsPage from "@/views/StatsPage.vue";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
-import CreatePool from "@/views/CreatePoolPage.vue";
 import RemoveLiquidity from "@/views/RemoveLiquidityPage.vue";
 import SinglePool from "@/views/SinglePool.vue";
-import PegListingPage from "@/views/PegListingPage.vue";
 import PegAssetPage from "@/views/PegAssetPage.vue";
 import RewardsPage from "@/views/RewardsPage.vue";
 import Pool from "@/views/PoolPage/PoolPage";
+import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     redirect: { name: "Balances" },
@@ -54,6 +53,38 @@ const routes = [
     meta: {
       title: "Pool - Sifchain",
     },
+    children: [
+      {
+        path: "create-pool",
+        name: "CreatePool",
+        component: Pool_AddLiquidity,
+        props: {
+          title: "Create Pair",
+        },
+        meta: {
+          title: "Create Pool - Sifchain",
+        },
+      },
+      {
+        path: "add-liquidity/:externalAsset?",
+        name: "AddLiquidity",
+        component: Pool_AddLiquidity,
+        props: {
+          title: "Add Liquidity",
+        },
+        meta: {
+          title: "Add Liquidity - Sifchain",
+        },
+      },
+      {
+        path: "remove-liquidity/:externalAsset?",
+        name: "RemoveLiquidity",
+        component: RemoveLiquidity,
+        meta: {
+          title: "Remove Liquidity - Sifchain",
+        },
+      },
+    ],
   },
   {
     path: "/pool/:externalAsset",
@@ -61,36 +92,6 @@ const routes = [
     component: SinglePool,
     meta: {
       title: "Single Pool - Sifchain",
-    },
-  },
-  {
-    path: "/pool/add-liquidity/:externalAsset?",
-    name: "AddLiquidity",
-    component: CreatePool,
-    props: {
-      title: "Add Liquidity",
-    },
-    meta: {
-      title: "Add Liquidity - Sifchain",
-    },
-  },
-  {
-    path: "/pool/create-pool",
-    name: "CreatePool",
-    component: CreatePool,
-    props: {
-      title: "Create Pair",
-    },
-    meta: {
-      title: "Create Pool - Sifchain",
-    },
-  },
-  {
-    path: "/pool/remove-liquidity/:externalAsset?",
-    name: "RemoveLiquidity",
-    component: RemoveLiquidity,
-    meta: {
-      title: "Remove Liquidity - Sifchain",
     },
   },
   {
@@ -129,7 +130,7 @@ const routes = [
       title: "Export Asset - Sifchain",
     },
   },
-] as const;
+];
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),

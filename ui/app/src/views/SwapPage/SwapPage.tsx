@@ -21,6 +21,7 @@ import { SlippageTolerance } from "./components/SlippageTolerance";
 import { SwapDetails } from "./components/SwapDetails";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import { Button } from "@/components/Button/Button";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -45,7 +46,7 @@ export default defineComponent({
           onSelectAsset={(asset) => {
             data.fromSymbol.value = asset.symbol;
           }}
-          class="mt-[10px] z-10 overflow-hidden mb-[-12px]"
+          class="z-10 overflow-hidden mb-[-12px]"
           tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
           onFocus={() => data.handleFromFocused()}
           onBlur={() => data.handleBlur()}
@@ -89,7 +90,7 @@ export default defineComponent({
                   },
                 ],
                 {
-                  duration: 300,
+                  duration: 200,
                   iterations: 1,
                 },
               );
@@ -140,10 +141,10 @@ export default defineComponent({
           liquidityProviderFee={data.providerFee.value ?? ""}
           minimumReceived={data.minimumReceived.value}
         ></SwapDetails>
-        <button class="mt-[10px] w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white">
+        <Button.CTA class="mt-[10px]">
           <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" /> Connect
           Wallet
-        </button>
+        </Button.CTA>
       </PageCard>
     );
   },

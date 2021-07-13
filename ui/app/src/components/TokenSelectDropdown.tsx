@@ -130,7 +130,7 @@ export const TokenSelectDropdown = defineComponent({
     return () => (
       <div ref={selfRoot} class="w-full h-0">
         {
-          <Teleport to="body">
+          <Teleport to="#dropdown-target">
             <Transition
               onEnter={async () => {
                 if (!(dropdownRoot.value && iconScrollContainer.value)) {
@@ -184,10 +184,10 @@ export const TokenSelectDropdown = defineComponent({
                   ref={dropdownRoot}
                   style={{
                     boxShadow: "0px 20px 20px 0px #00000080",
-                    position: "fixed",
-                    top: (boundingClientRect.value?.top ?? 0) + "px",
+                    position: "absolute",
+                    top: (boundingClientRect.value?.y ?? 0) + "px",
                     left:
-                      (boundingClientRect.value?.left ?? 0) +
+                      (boundingClientRect.value?.x ?? 0) +
                       // (boundingClientRect.value?.width ?? 0) +
                       "px",
                   }}
@@ -201,6 +201,7 @@ export const TokenSelectDropdown = defineComponent({
                         class={[`ml-3 w-4 h-4`, false ? "text-[#6E6E6E]" : ""]}
                       />
                       <input
+                        autofocus
                         type="search"
                         placeholder="Search Token..."
                         value={searchQuery.value}
