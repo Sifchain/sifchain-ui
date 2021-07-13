@@ -1,3 +1,4 @@
+import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import { ServiceContext } from "../services";
 import { Asset, Network } from "../entities";
 import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
@@ -86,6 +87,7 @@ export type ChainConfig = {
   sifRpcUrl: string;
   sifChainId: string;
   cryptoeconomicsUrl: string;
+  blockExplorerUrl: string;
   web3Provider: "metamask" | string;
   // assets: AssetConfig[];
   nativeAsset: string; // symbol
@@ -129,6 +131,7 @@ export function parseConfig(
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
     cryptoeconomicsUrl: config.cryptoeconomicsUrl,
+    blockExplorerUrl: config.blockExplorerUrl,
     getWeb3Provider:
       config.web3Provider === "metamask"
         ? getMetamaskProvider

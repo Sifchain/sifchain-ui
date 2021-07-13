@@ -21,16 +21,6 @@ export function getNetworkBalances(store: Store, network?: Network) {
   }
 }
 
-// export function useNetworkWallet(
-//   store: Store,
-//   network: Ref<Network>,
-// ): WalletResult {
-//   const balances = computed(() => {
-//     return getNetworkBalances(store, network.value)
-//   });
-//   return { balances };
-// }
-
 // export function useAssetBalance(store: Store, asset: Ref<IAsset>) {
 //   let { balances } = useNetworkWallet(store, ref(asset.value.network));
 //   return computed(() => {

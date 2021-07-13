@@ -1,7 +1,13 @@
 import { useCore } from "@/hooks/useCore";
 import { computed, ref, Ref } from "@vue/reactivity";
-import { defineComponent, onMounted, PropType, watch } from "vue";
-import { IAsset } from "../../../core/src";
+import {
+  defineComponent,
+  onMounted,
+  PropType,
+  watch,
+  HTMLAttributes,
+} from "vue";
+import { IAsset } from "@sifchain/sdk";
 
 export const TokenIcon = defineComponent({
   props: {
@@ -12,6 +18,9 @@ export const TokenIcon = defineComponent({
     size: {
       type: Number,
       default: () => 20,
+    },
+    class: {
+      type: [String, Object, Array] as HTMLAttributes["class"],
     },
   },
   setup(props) {
@@ -28,7 +37,6 @@ export const TokenIcon = defineComponent({
     watch(
       [props.asset],
       async () => {
-        console.log(props.asset.value);
         const img = new Image();
         img.src = `/images/tokens/${(
           props.asset?.value?.displaySymbol ?? props.asset?.value?.symbol
@@ -59,8 +67,8 @@ export const TokenIcon = defineComponent({
           backgroundImage: `url('${url.value}')`,
           backgroundSize: "contain",
         }}
-        class="transition-all duration-100"
-      ></div>
+        class={[`transition-all duration-100`, props.class]}
+      />
     );
   },
 });

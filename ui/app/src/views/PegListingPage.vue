@@ -13,7 +13,10 @@ import { sortAssetAmount } from "./utils/sortAssetAmount";
 import { useCore } from "@/hooks/useCore";
 import { defineComponent, ref } from "vue";
 import { computed } from "@vue/reactivity";
-import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
+import {
+  getUnpeggedSymbol,
+  shortenHash,
+} from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
   IAsset,
@@ -147,13 +150,6 @@ export default defineComponent({
 
       return listedTokensSorted;
     });
-
-    // TODO: add to utils
-    function shortenHash(hash: string) {
-      const start = hash.slice(0, 7);
-      const end = hash.slice(-7);
-      return `${start}...${end}`;
-    }
 
     return {
       shortenHash,

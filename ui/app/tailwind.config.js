@@ -53,7 +53,7 @@ module.exports = {
           base: "#459FEE",
         },
         connected: {
-          base: "#39C357",
+          base: "#5AF37C",
         },
         danger: {
           base: "#FF4F4F",
@@ -75,6 +75,8 @@ module.exports = {
           disabled: "#565656",
 
           600: "#636363",
+
+          800: "#808080",
         },
       },
       fontSize: {
@@ -90,6 +92,20 @@ module.exports = {
         sm: "4px",
         DEFAULT: "6px",
         lg: "10px",
+      },
+      animation: {
+        "fade-in": "fadeIn 150ms ease-out 1",
+        "fade-in-up": "fadeInUp 200ms ease-out 1",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(1%) scale(1)" },
+          "100%": { opacity: "1", transform: "translateY(0%) scale(1)" },
+        },
       },
     },
   },

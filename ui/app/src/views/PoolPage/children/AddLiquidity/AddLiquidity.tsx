@@ -3,6 +3,7 @@ import { FormDetails } from "@/components/FormDetails";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { SwapDetails } from "@/views/SwapPage/components/SwapDetails";
@@ -19,6 +20,7 @@ export default defineComponent({
     const formattedToTokenBalance = useFormattedTokenBalance(data.toSymbol);
     data.fromAmount.value = "1";
     data.handleTokenAFocused();
+    const appWalletPicker = useAppWalletPicker();
     return () => (
       <Modal
         teleportTo="#app"
@@ -106,6 +108,7 @@ export default defineComponent({
           </button>
         </div>
         <TokenInputGroup
+          selectDisabled
           shouldShowNumberInputOnLeft
           heading="Input"
           asset={data.toAsset.value}
@@ -202,7 +205,7 @@ export default defineComponent({
             ],
           ]}
         ></FormDetails>
-        <Button.CTA class="mt-[10px]">
+        <Button.CTA onClick={() => appWalletPicker.show()} class="mt-[10px]">
           <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" /> Connect
           Wallet
         </Button.CTA>

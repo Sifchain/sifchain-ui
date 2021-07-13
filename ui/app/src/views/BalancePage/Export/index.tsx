@@ -13,10 +13,7 @@ import ExportConfirm from "./Confirm";
 import ExportPending from "./Processing";
 import Modal, { ModalProps } from "@/components/Modal";
 import router from "@/router";
-import {
-  usePegEventDetails,
-  useTransactionDetails,
-} from "@/hooks/useTransactionDetails";
+import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useCore } from "@/hooks/useCore";
 
 export default defineComponent({
@@ -70,7 +67,8 @@ export default defineComponent({
           id: "processing",
           Component: ExportPending,
           modalProps: {
-            heading: transactionDetails.value?.heading,
+            heading:
+              transactionDetails.value?.heading || "Waiting for Confirmation",
             icon: "interactive/arrow-up",
             onClose: cancel,
           },

@@ -11,6 +11,16 @@ import {
 import { format } from "@sifchain/sdk/src/utils/format";
 import { useCore } from "@/hooks/useCore";
 
+export function shortenHash(
+  hash: string,
+  startLength: number = 7,
+  endLength: number = 7,
+) {
+  const start = hash.slice(0, startLength);
+  const end = hash.slice(-endLength);
+  return `${start}...${end}`;
+}
+
 export function formatSymbol(symbol: string) {
   if (symbol.indexOf("c") === 0) {
     return ["c", symbol.slice(1).toUpperCase()].join("");
@@ -194,13 +204,13 @@ export async function getExistingClaimsData(
 }
 
 export function getBlockExplorerUrl(
-  sifchainId: string,
+  sifChainId: string,
   txHash?: TxHash,
 ): string {
   if (txHash?.startsWith("0x")) {
     return `https://etherscan.io/tx/${txHash}`;
   }
-  switch (sifchainId) {
+  switch (sifChainId) {
     case "sifchain":
       if (!txHash) return "https://blockexplorer.sifchain.finance/";
       return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;

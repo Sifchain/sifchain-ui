@@ -64,6 +64,7 @@ export const TokenInputGroup = defineComponent({
     >),
     tokenIconUrl: optional(String),
     shouldShowNumberInputOnLeft: optional(Boolean),
+    selectDisabled: optional(Boolean),
   },
   setup(props) {
     const propRefs = toRefs(props);
@@ -76,7 +77,7 @@ export const TokenInputGroup = defineComponent({
             props.class,
           ]}
         >
-          <div class="w-full flex justify-between">
+          <div class="w-full flex justify-between items-baseline">
             <div class=" text-[16px] text-white font-sans font-medium capitalize">
               {props.heading}
             </div>
@@ -99,9 +100,11 @@ export const TokenInputGroup = defineComponent({
               class={[
                 "transition-all duration-200 relative flex items-center w-[186px] h-[54px] p-[8px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]",
                 selectIsOpen.value ? "border-accent-base" : "",
+                props.selectDisabled ? "bg-transparent" : "",
               ]}
               onClick={(e: MouseEvent) => {
                 e.stopPropagation();
+                if (props.selectDisabled) return;
                 selectIsOpen.value = !selectIsOpen.value;
               }}
             >
@@ -111,13 +114,25 @@ export const TokenInputGroup = defineComponent({
                 {props.asset?.label.replace(/^c/gim, "")}
               </div>
 
-              <AssetIcon
-                class={[
-                  "w-[24px] h-[24px] mr-[20px] ml-auto transition-all duration-150",
-                  selectIsOpen.value ? "rotate-180 text-accent-base" : "",
-                ]}
-                icon="interactive/chevron-down"
-              />
+              {props.selectDisabled ? (
+                <AssetIcon
+                  class={[
+                    "w-[24px] h-[24px] mr-[20px] ml-auto transition-all duration-150",
+                    selectIsOpen.value ? "rotate-180 text-accent-base" : "",
+                  ]}
+                  size={24}
+                  icon="interactive/lock"
+                />
+              ) : (
+                <AssetIcon
+                  size={24}
+                  class={[
+                    "w-[24px] h-[24px] mr-[20px] ml-auto transition-all duration-150",
+                    selectIsOpen.value ? "rotate-180 text-accent-base" : "",
+                  ]}
+                  icon="interactive/chevron-down"
+                />
+              )}
             </button>
             <div class="relative flex items-center w-[254px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
               <input

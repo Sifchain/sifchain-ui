@@ -1,67 +1,112 @@
+import {
+  defineComponent,
+  PropType,
+  SetupContext,
+  Teleport,
+  HTMLAttributes,
+  onMounted,
+  onUnmounted,
+} from "vue";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
-
-import { Component, SetupContext, Teleport } from "vue";
+import { ProgressPlugin } from "webpack";
 
 export type ModalProps = {
   teleportTo?: string;
-  onClose?: () => void;
-  onBack?: () => void;
-  class?: string;
-  heading: any;
+  onClose: () => void;
+  showClose?: boolean;
+  class?: HTMLAttributes["class"];
+  heading?: string;
   icon?: IconName;
-  showClose?: Boolean;
-  showBack?: Boolean;
+  escapeToClose?: boolean;
   headingAction?: any;
 };
 
-export default function Modal(props: ModalProps, context: SetupContext) {
-  return (
-    <Teleport to={props.teleportTo || "#app"}>
-      <div
-        class="fixed bg-white opacity-30 z-[1] inset-0 left-sidebar"
-        onClick={props.onClose}
-      />
-      <div
-        class="absolute inset-0 left-sidebar flex items-center justify-center z-10"
-        onClick={() => props.onClose?.()}
-      >
+export default defineComponent({
+  props: {
+    teleportTo: {
+      type: String as PropType<ModalProps["teleportTo"]>,
+    },
+    onClose: {
+      type: Function as PropType<ModalProps["onClose"]>,
+      required: true,
+    },
+    showClose: {
+      type: Boolean as PropType<ModalProps["showClose"]>,
+    },
+    class: {
+      type: [String, Object, Array] as PropType<ModalProps["class"]>,
+    },
+    heading: {
+      type: String as PropType<ModalProps["heading"]>,
+    },
+    headingAction: {
+      type: [String, Object, Number, Array, Boolean] as PropType<
+        ModalProps["headingAction"]
+      >,
+      required: false,
+    },
+    icon: {
+      type: String as PropType<ModalProps["icon"]>,
+    },
+    escapeToClose: {
+      type: Boolean as PropType<ModalProps["escapeToClose"]>,
+      default: () => true,
+    },
+  },
+  name: "Modal",
+  setup(props, context: SetupContext) {
+    const onKeypress = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape" && props.onClose && props.escapeToClose) {
+        props.onClose();
+      }
+    };
+    onMounted(() => {
+      document.body.addEventListener("keydown", onKeypress);
+    });
+    onUnmounted(() => {
+      document.body.removeEventListener("keydown", onKeypress);
+    });
+    return () => (
+      <Teleport to={props.teleportTo || "#app"}>
+        <div class="absolute bg-white bg-opacity-30 z-[1] inset-0 left-sidebar animate-fade-in duration-300" />
         <div
-          class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
-            props.class || ""
-          }`}
-          onClick={(e) => e.stopPropagation()}
+          class="absolute inset-0 left-sidebar flex items-center justify-center z-10 animate-fade-in-up duration-500 "
+          onClick={() => props.onClose?.()}
         >
-          {!!props.heading && (
-            <div class="w-full flex-row flex justify-between items-center pb-4">
-              <div class="flex items-center">
-                {props.showBack ? (
-                  <button onClick={() => props.onBack?.()} aria-label="Back">
-                    <AssetIcon
-                      icon="interactive/arrow-down"
-                      style={{ transform: "rotate(90deg)" }}
-                      size={32}
-                    />
-                  </button>
-                ) : props.icon ? (
-                  <AssetIcon icon={props.icon} active size={32} />
-                ) : null}
-                <span class="text-accent-base font-sans text-[26px] ml-[10px] font-medium">
-                  {props.heading}
-                </span>
+          <div
+            class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
+              props.class || ""
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {!!props.heading && (
+              <div class="w-full flex-row flex justify-between items-center pb-4">
+                <div class="flex items-center">
+                  {props.icon ? (
+                    <AssetIcon icon={props.icon} active size={32} />
+                  ) : null}
+                  <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
+                    {props.heading}
+                  </span>
+                </div>
+                <div>{props.headingAction}</div>
+
+                <div class="flex items-center">
+                  {props.showClose && (
+                    <button onClick={() => props.onClose?.()}>
+                      <AssetIcon
+                        icon="interactive/close"
+                        class="w-[14px] h-[14px]"
+                      />
+                    </button>
+                  )}
+                </div>
               </div>
-              <div>{props.headingAction}</div>
-              <div class="flex items-center">
-                {props.showClose && (
-                  <button onClick={() => props.onClose?.()}>
-                    <AssetIcon icon="interactive/close" size={24} />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-          <div class="w-full">{context.slots.default?.()}</div>
+            )}
+            <div class="w-full">{context.slots.default?.()}</div>
+          </div>
         </div>
-      </div>
-    </Teleport>
-  );
-}
+      </Teleport>
+    );
+  },
+});
