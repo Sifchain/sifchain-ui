@@ -9,7 +9,7 @@ import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
 import BalanceImport from "@/views/BalancePage/Import";
 import BalanceExport from "@/views/BalancePage/Export";
-import StatsPage from "@/views/StatsPage.vue";
+import StatsPage from "@/views/StatsPage/StatsPage";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import RemoveLiquidity from "@/views/RemoveLiquidityPage.vue";
 import SinglePool from "@/views/SinglePool.vue";

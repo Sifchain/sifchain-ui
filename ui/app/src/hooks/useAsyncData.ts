@@ -21,6 +21,7 @@ export const useAsyncData = <F extends () => Promise<any>>(
   };
 
   function loadData() {
+    publicState.isLoading.value = true;
     fn()
       .then((data) => {
         publicState.data.value = data;
