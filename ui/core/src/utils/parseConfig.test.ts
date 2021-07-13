@@ -1,6 +1,6 @@
 import { Network } from "../entities";
-import { parseConfig } from "./parseConfig";
-const config = {
+import { ChainConfig, parseConfig } from "./parseConfig";
+const config: ChainConfig = {
   sifAddrPrefix: "sif",
   sifChainId: "sifchain",
   sifApiUrl: "http://127.0.0.1:1317",
@@ -9,6 +9,7 @@ const config = {
   cryptoeconomicsUrl: "http://localhost:3000/api",
   web3Provider: "metamask",
   nativeAsset: "rowan",
+  blockExplorerUrl: "https://blockexplorer.sifchain.finance/",
   bridgebankContractAddress: "0x2C2B9C9a4a25e24B174f26114e8926a9f2128FE4",
   keplrChainConfig: {
     chainName: "Sifchain",

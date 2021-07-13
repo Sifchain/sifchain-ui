@@ -1,4 +1,3 @@
-import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import { ServiceContext } from "../services";
 import { Asset, Network } from "../entities";
 import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
