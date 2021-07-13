@@ -1,7 +1,9 @@
+import { ref } from "vue";
 import Tooltip from "@/components/Tooltip";
 import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
 import { ExportData, getExportLocation } from "./useExportData";
 import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import { TokenIcon } from "@/components/TokenIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 
@@ -11,7 +13,9 @@ export default function ExportDetailsDisplay(props: {
 }) {
   const { store } = useCore();
   const listClasses = useDetailListClasses();
-  const { exportParams, feeAmountRef } = props.exportData;
+  const { exportParams, exportTokenRef, feeAmountRef } = props.exportData;
+
+  const assetRef = ref(exportTokenRef.value.asset);
 
   return (
     <>
@@ -38,8 +42,9 @@ export default function ExportDetailsDisplay(props: {
         )}
         <div class={listClasses.item}>
           <span>Export Amount</span>
-          <span>
+          <span class="flex items-center">
             {exportParams.amount} {exportParams.symbol.toUpperCase()}
+            <TokenIcon asset={assetRef} size={16} />
           </span>
         </div>
         <div class={listClasses.item}>

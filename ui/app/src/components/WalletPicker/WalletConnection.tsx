@@ -45,12 +45,10 @@ export default defineComponent({
           offset={[0, 0]}
           animation="scale"
           content={
-            stateRef.value.isConnected ? (
-              <WalletConnectionDropdown
-                connection={props.connection}
-                onAction={() => instanceRef.value?.hide()}
-              />
-            ) : null
+            <WalletConnectionDropdown
+              connection={props.connection}
+              onAction={() => instanceRef.value?.hide()}
+            />
           }
         >
           <button

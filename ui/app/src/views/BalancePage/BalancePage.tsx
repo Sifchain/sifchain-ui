@@ -69,6 +69,7 @@ export default defineComponent({
             <tbody class="w-full relative">
               {displayedTokenList.value.map((item, index) => (
                 <BalanceRow
+                  key={item.asset.symbol}
                   tokenItem={item}
                   expandedSymbol={state.expandedSymbol}
                   onSetExpandedSymbol={(symbol) => {

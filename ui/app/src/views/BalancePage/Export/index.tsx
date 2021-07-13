@@ -13,10 +13,7 @@ import ExportConfirm from "./Confirm";
 import ExportPending from "./Processing";
 import Modal, { ModalProps } from "@/components/Modal";
 import router from "@/router";
-import {
-  usePegEventDetails,
-  useTransactionDetails,
-} from "@/hooks/useTransactionDetails";
+import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useCore } from "@/hooks/useCore";
 
 export default defineComponent({

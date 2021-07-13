@@ -13,7 +13,7 @@ import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { AssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import { TokenIcon } from "@/components/TokenIcon";
 import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { format } from "@sifchain/sdk/src/utils/format";
@@ -43,6 +43,8 @@ export default defineComponent({
       importAmountRef,
     } = props.importData;
 
+    const assetRef = ref(tokenRef.value.asset);
+
     const handleSetMax = () => {
       const maxAmount = getMaxAmount(
         { value: tokenRef.value.asset.symbol } as Ref,
@@ -53,13 +55,6 @@ export default defineComponent({
         trimMantissa: true,
       });
     };
-
-    const symbolIconRef = computed(
-      () =>
-        useTokenIconUrl({
-          symbol: ref(importParams.symbol || ""),
-        })?.value,
-    );
 
     const validationErrorRef = computed(() => {
       if (!tokenRef.value) {
@@ -146,7 +141,7 @@ export default defineComponent({
             <label class={cx(selectClasses.label, "flex-1 ml-[10px]")}>
               Token
               <div class={selectClasses.container}>
-                <img src={symbolIconRef.value} class="w-[38px] h-[38px]" />
+                <TokenIcon asset={assetRef} size={38} />
                 <div class="flex items-center">
                   <div class="mr-2 uppercase">{importParams.symbol}</div>
                   <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
@@ -231,6 +226,7 @@ export default defineComponent({
           class={cx(
             buttonClasses.button,
             buttonRef.value.props.disabled && buttonClasses.disabled,
+            "w-full mt-[10px]",
           )}
         >
           {!!buttonRef.value.icon && (

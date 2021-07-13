@@ -98,7 +98,6 @@ export default defineComponent({
               }}
               appendTo={() => document.body}
               content={<WalletPicker />}
-              class="origin-bottom-left"
             >
               <button class="mt-[22px] text-xs text-bold flex items-center w-full px-1">
                 <AssetIcon
