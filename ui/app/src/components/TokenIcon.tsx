@@ -13,7 +13,9 @@ export const TokenIcon = defineComponent({
   props: {
     asset: {
       type: Object as PropType<Ref<IAsset | undefined>>,
-      required: true,
+    },
+    assetValue: {
+      type: Object as PropType<IAsset | undefined>,
     },
     size: {
       type: Number,
@@ -34,12 +36,14 @@ export const TokenIcon = defineComponent({
       // );
     });
     const url = ref<string | void>();
+
     watch(
-      [props.asset],
-      async () => {
+      () => props.asset?.value || props.assetValue,
+      async (asset) => {
+        if (!asset) return;
         const img = new Image();
         img.src = `/images/tokens/${(
-          props.asset?.value?.displaySymbol ?? props.asset?.value?.symbol
+          asset?.displaySymbol ?? asset?.symbol
         )?.toUpperCase()}.svg`;
         new Promise((r, rj) => {
           img.onerror = rj;
@@ -50,7 +54,7 @@ export const TokenIcon = defineComponent({
           })
           .catch((e) => {
             const coinGeckoUrl = core.config.assets
-              .find((a) => a.symbol == props.asset.value?.symbol)
+              .find((a) => a.symbol == asset?.symbol)
               ?.imageUrl?.replace("thumb", "large");
             url.value = coinGeckoUrl;
           });
