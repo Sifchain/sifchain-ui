@@ -3,6 +3,7 @@ import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
 import { usePoolStatItem } from "@/hooks/usePoolStatItem";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import router from "@/router";
 import { computed, ref, Ref } from "@vue/reactivity";
 import { Component, defineComponent, PropType, SetupContext } from "vue";
 import { RouterLink, RouterView } from "vue-router";
@@ -194,7 +195,17 @@ const UserPoolItem = defineComponent({
                 />
               </div>
               <div class="bg-black p-[6px] min-w-[200px] gap-[6px] mx-[8px] rounded-[6px] flex items-center">
-                <button class="w-1/2 flex gap-[4px]  items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-[12px] font-semibold bg-[#191919]">
+                <button
+                  onClick={() => {
+                    router.push({
+                      name: "AddLiquidity",
+                      params: {
+                        externalAsset: props.pool.lp.asset.symbol.toLowerCase(),
+                      },
+                    });
+                  }}
+                  class="w-1/2 flex gap-[4px]  items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-[12px] font-semibold bg-[#191919]"
+                >
                   <AssetIcon size={20} icon="interactive/plus"></AssetIcon>
                   <div>Add</div>
                 </button>

@@ -26,7 +26,6 @@
       <slot name="after"></slot>
     </Panel> -->
     <slot></slot>
-    <div id="dropdown-target"></div>
   </div>
   <!-- <Footer /> -->
   <div class="layout-bg" />

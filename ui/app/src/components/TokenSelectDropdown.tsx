@@ -74,12 +74,18 @@ export const TokenSelectDropdown = defineComponent({
     );
     onMounted(() => {
       if (props.active) {
-        document.body.addEventListener("click", externalClickListener.value);
+        document.documentElement.addEventListener(
+          "click",
+          externalClickListener.value,
+        );
       }
     });
 
     onUnmounted(() => {
-      document.body.removeEventListener("click", externalClickListener.value);
+      document.documentElement.removeEventListener(
+        "click",
+        externalClickListener.value,
+      );
     });
 
     const sortedAssets = computed(() => {
@@ -130,7 +136,7 @@ export const TokenSelectDropdown = defineComponent({
     return () => (
       <div ref={selfRoot} class="w-full h-0">
         {
-          <Teleport to="#dropdown-target">
+          <Teleport to="#app">
             <Transition
               onEnter={async () => {
                 if (!(dropdownRoot.value && iconScrollContainer.value)) {

@@ -66,7 +66,7 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "add-liquidity/:externalAsset?",
+        path: "add-liquidity/setup/:externalAsset?",
         name: "AddLiquidity",
         component: Pool_AddLiquidity,
         props: {

@@ -94,10 +94,7 @@ export default defineComponent({
                 <div class="flex items-center">
                   {props.showClose && (
                     <button onClick={() => props.onClose?.()}>
-                      <AssetIcon
-                        icon="interactive/close"
-                        class="w-[14px] h-[14px]"
-                      />
+                      <AssetIcon icon="interactive/close" size={24} />
                     </button>
                   )}
                 </div>
