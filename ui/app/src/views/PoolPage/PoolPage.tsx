@@ -209,7 +209,17 @@ const UserPoolItem = defineComponent({
                   <AssetIcon size={20} icon="interactive/plus"></AssetIcon>
                   <div>Add</div>
                 </button>
-                <button class="w-1/2 flex gap-[4px] items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-[12px] font-semibold bg-[#191919]">
+                <button
+                  onClick={() => {
+                    router.push({
+                      name: "RemoveLiquidity",
+                      params: {
+                        externalAsset: props.pool.lp.asset.symbol.toLowerCase(),
+                      },
+                    });
+                  }}
+                  class="w-1/2 flex gap-[4px] items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-[12px] font-semibold bg-[#191919]"
+                >
                   <AssetIcon size={20} icon="interactive/minus"></AssetIcon>
                   <div>Remove</div>
                 </button>{" "}

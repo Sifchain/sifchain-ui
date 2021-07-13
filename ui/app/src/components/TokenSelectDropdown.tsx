@@ -127,6 +127,9 @@ export const TokenSelectDropdown = defineComponent({
     });
     onMounted(() => {
       resizeListener.value();
+      nextTick(() => {
+        document.getElementById("token-search")?.focus();
+      });
       window.addEventListener("resize", resizeListener.value);
     });
     onUnmounted(() => {
@@ -207,6 +210,7 @@ export const TokenSelectDropdown = defineComponent({
                         class={[`ml-3 w-4 h-4`, false ? "text-[#6E6E6E]" : ""]}
                       />
                       <input
+                        id="token-search"
                         autofocus
                         type="search"
                         placeholder="Search Token..."

@@ -20,7 +20,14 @@ import { ConfirmState } from "@/types";
 import { formatNumber } from "@/componentsLegacy/shared/utils";
 import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
+
+let provider: ReturnType<typeof createLiquidityDataProvider>;
+
 export const useAddLiquidityData = () => {
+  provider = provider || createLiquidityDataProvider();
+  return provider;
+};
+export function createLiquidityDataProvider() {
   const { usecases, poolFinder, store, config } = useCore();
   const selectedField = ref<"from" | "to" | null>(null);
   const lastFocusedTokenField = ref<"A" | "B" | null>(null);
@@ -160,7 +167,6 @@ export const useAddLiquidityData = () => {
       throw new Error("from field amount is not defined");
     if (!tokenBFieldAmount.value)
       throw new Error("to field amount is not defined");
-
     transactionState.value = "confirming";
   }
 
@@ -321,4 +327,4 @@ export const useAddLiquidityData = () => {
       return status;
     }),
   };
-};
+}

@@ -66,7 +66,14 @@ export default defineComponent({
                 )}
               </TransitionGroup>
             </button>
-            <div class="font-medium">Pool Equally</div>
+            <div
+              class={[
+                `font-medium`,
+                !data.asyncPooling.value ? `line-through` : "",
+              ]}
+            >
+              Pool Equally
+            </div>
           </div>
         }
         onClose={() => {
@@ -205,10 +212,19 @@ export default defineComponent({
             ],
           ]}
         ></FormDetails>
-        <Button.CTA onClick={() => appWalletPicker.show()} class="mt-[10px]">
-          <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" /> Connect
-          Wallet
-        </Button.CTA>
+        {(data.nextStepAllowed.value && (
+          <Button.CTA
+            onClick={() => data.handleNextStepClicked()}
+            class="mt-[10px]"
+          >
+            Add Liquidity
+          </Button.CTA>
+        )) || (
+          <Button.CTA onClick={() => appWalletPicker.show()} class="mt-[10px]">
+            {/* <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" />{" "} */}
+            {data.nextStepMessage.value}
+          </Button.CTA>
+        )}
       </Modal>
     );
   },
