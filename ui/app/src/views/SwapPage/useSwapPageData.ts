@@ -7,10 +7,8 @@ import {
   useSwapCalculator,
 } from "@sifchain/sdk";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
-import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
-import { nextTick, onMounted, watch, watchEffect } from "vue";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";

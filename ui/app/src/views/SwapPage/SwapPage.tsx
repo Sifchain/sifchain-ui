@@ -7,6 +7,7 @@ import {
   ref,
   TransitionGroup,
   VNode,
+  watch,
 } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
 import PageCard from "@/components/PageCard";
@@ -22,6 +23,10 @@ import { SwapDetails } from "./components/SwapDetails";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
 import { Button } from "@/components/Button/Button";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import Modal from "@/components/Modal";
+import { FormDetails } from "@/components/FormDetails";
+import { TokenIcon } from "@/components/TokenIcon";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -35,18 +40,114 @@ export default defineComponent({
   setup() {
     // const data = useSwapPageModule();
     const data = useSwapPageData();
-    const core = useCore();
     console.log(data.fromSymbol.value, data.toSymbol.value);
     const swapIcon = ref<ComponentPublicInstance>();
     const isHoveringOverInvertButtonRef = ref(false);
+    const appWalletPicker = useAppWalletPicker();
+    watch([data.transactionModalOpen], () => {
+      if (data.transactionModalOpen.value) {
+        setTimeout((handler) => {
+          data.handleAskConfirmClicked();
+        }, 1000);
+      }
+    });
     return () => (
       <PageCard heading="Swap" iconName="navigation/swap" class="w-[531px]">
+        {data.transactionModalOpen.value &&
+          ["confirm", "submit"].includes(data.pageState.value) && (
+            <Modal
+              heading="Waiting For Confirmation"
+              icon="navigation/swap"
+              onClose={data.requestTransactionModalClose}
+            >
+              <FormDetails
+                details={[
+                  ["Swapping", null],
+                  [
+                    <div class="flex items-center">
+                      {data.fromAsset.value && (
+                        <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
+                      )}
+                      <span class="ml-[4px]">
+                        {data.fromSymbol.value.toUpperCase()}
+                      </span>
+                    </div>,
+                    data.fromAmount.value,
+                  ],
+                  [
+                    <div
+                      onClick={() => data.handleAskConfirmClicked()}
+                      class="flex items-center"
+                    >
+                      {data.toAsset.value && (
+                        <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
+                      )}
+                      <span class="ml-[4px]">
+                        {data.toAsset?.value?.displaySymbol?.toUpperCase()}
+                      </span>
+                    </div>,
+                    data.toAmount.value,
+                  ],
+                ]}
+              ></FormDetails>
+              {/* <Button.CTA
+              class="mt-[10px]"
+              onClick={() => data.handleAskConfirmClicked()}
+            >
+              Confirm
+            </Button.CTA> */}
+            </Modal>
+          )}
+        {data.transactionModalOpen.value && data.pageState.value == "success" && (
+          <Modal
+            heading="Transaction Submitted"
+            icon="navigation/swap"
+            onClose={data.requestTransactionModalClose}
+          >
+            <FormDetails
+              details={[
+                ["Swapped", null],
+                [
+                  <div class="flex items-center">
+                    {data.fromAsset.value && (
+                      <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
+                    )}
+                    <span class="ml-[4px]">
+                      {data.fromSymbol.value.toUpperCase()}
+                    </span>
+                  </div>,
+                  null,
+                ],
+                [
+                  <div
+                    onClick={() => data.handleAskConfirmClicked()}
+                    class="flex items-center"
+                  >
+                    {data.toAsset.value && (
+                      <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
+                    )}
+                    <span class="ml-[4px]">
+                      {data.toAsset?.value?.displaySymbol?.toUpperCase()}
+                    </span>
+                  </div>,
+                  null,
+                ],
+              ]}
+            ></FormDetails>
+            {/* <Button.CTA
+              class="mt-[10px]"
+              onClick={() => data.handleAskConfirmClicked()}
+            >
+              Confirm
+            </Button.CTA> */}
+          </Modal>
+        )}
         {/* <TransitionGroup name="flip-list"> */}
         <TokenInputGroup
           onSelectAsset={(asset) => {
             data.fromSymbol.value = asset.symbol;
           }}
-          class="z-10 overflow-hidden mb-[-12px]"
+          class="overflow-hidden mb-[-12px]"
           tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
           onFocus={() => data.handleFromFocused()}
           onBlur={() => data.handleBlur()}
@@ -64,7 +165,7 @@ export default defineComponent({
         />
         <div
           key="button"
-          class="flex relative items-center justify-center w-full z-20 overflow-hidden"
+          class="flex relative items-center justify-center w-full overflow-hidden"
         >
           <button
             // onMouseover={() => {
@@ -113,7 +214,7 @@ export default defineComponent({
           onSelectAsset={(asset) => {
             data.toSymbol.value = asset.symbol;
           }}
-          class="z-10 overflow-hidden mt-[-12px] "
+          class="overflow-hidden mt-[-12px] "
           tokenIconUrl={data.toTokenIconUrl.value ?? ""}
           onFocus={() => data.handleToFocused()}
           onBlur={() => data.handleBlur()}
@@ -141,10 +242,19 @@ export default defineComponent({
           liquidityProviderFee={data.providerFee.value ?? ""}
           minimumReceived={data.minimumReceived.value}
         ></SwapDetails>
-        <Button.CTA class="mt-[10px]">
-          <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" /> Connect
-          Wallet
-        </Button.CTA>
+        {
+          <Button.CTA
+            onClick={() => {
+              if (!data.nextStepAllowed.value) {
+                return appWalletPicker.show();
+              }
+              data.handleNextStepClicked();
+            }}
+            class="mt-[10px]"
+          >
+            {data.nextStepMessage.value}
+          </Button.CTA>
+        }
       </PageCard>
     );
   },

@@ -157,7 +157,7 @@ export const TokenInputGroup = defineComponent({
                 }
                 class={`${
                   props.onSetToMaxAmount ? "" : "opacity-0 pointer-events-none"
-                } z-10 ml-[16px] box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans`}
+                } z-[1] ml-[16px] box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans`}
               >
                 <div class="flex items-center px-[9px] h-[18px] bg-gray-input rounded-full text-accent-base">
                   <span style="letter-spacing: -1%; line-height: 10px;">

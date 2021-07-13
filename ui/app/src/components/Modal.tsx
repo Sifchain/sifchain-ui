@@ -68,7 +68,7 @@ export default defineComponent({
     });
     return () => (
       <Teleport to={props.teleportTo || "#app"}>
-        <div class="absolute bg-white bg-opacity-30 z-[1] inset-0 left-sidebar animate-fade-in duration-300" />
+        <div class="z-100 overflow-hidden absolute bg-white bg-opacity-30 z-[1] inset-0 left-sidebar animate-fade-in duration-300" />
         <div
           class="absolute inset-0 left-sidebar flex items-center justify-center z-10 animate-fade-in-up duration-500 "
           onClick={() => props.onClose?.()}
