@@ -26,6 +26,8 @@ import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
 import { Network } from "@sifchain/sdk";
 
+export const SYMBOL_COLUMN_WIDTH = 130;
+
 export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
 
 export default defineComponent({
@@ -132,7 +134,7 @@ export default defineComponent({
           showMaskRef.value && "opacity-40",
         )}
       >
-        <td class="text-left align-middle min-w-[130px]">
+        <td class="text-left align-middle w-[140px]">
           <div class="flex items-center">
             <TokenIcon asset={assetRef}></TokenIcon>
             {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
@@ -142,7 +144,7 @@ export default defineComponent({
           </div>
         </td>
         <td class="text-right align-middle min-w-[200px]">
-          <div class="flex items-center">
+          <div class="inline-flex items-center">
             {emptyRef.value ? null : formatAssetAmount(props.tokenItem.amount)}
 
             {props.tokenItem.pegTxs.length > 0 && (

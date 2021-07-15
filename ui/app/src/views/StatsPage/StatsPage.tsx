@@ -72,16 +72,6 @@ export default defineComponent({
           sortBy: "poolApy",
           class: "min-w-[80px] text-right",
         },
-        {
-          name: "Mining Bonus",
-          sortBy: "miningBonus",
-          class: "min-w-[100px] text-right",
-        },
-        {
-          name: "Total APY",
-          sortBy: "totalApy",
-          class: "min-w-[80px] text-right",
-        },
       ];
 
       return (
@@ -165,14 +155,6 @@ export default defineComponent({
                     </td>
                     <td class="align-middle text-right text-mono">
                       {prettyNumber(item.poolApy)}%
-                    </td>
-                    <td class="align-middle text-right text-mono">
-                      {item.miningBonus
-                        ? `${prettyNumber(item.miningBonus)}%`
-                        : ""}
-                    </td>
-                    <td class="align-middle text-right text-mono">
-                      {prettyNumber(item.totalApy)}%
                     </td>
                   </tr>
                 );

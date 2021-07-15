@@ -22,7 +22,6 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     return () => (
       <Modal
-        teleportTo="#app"
         heading="Remove Liquidity"
         icon="interactive/minus"
         showClose

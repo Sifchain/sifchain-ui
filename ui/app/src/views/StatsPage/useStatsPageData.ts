@@ -14,15 +14,7 @@ export type StatsItem = {
 };
 
 export type StatsPageState = {
-  sortBy:
-    | "asset"
-    | "price"
-    | "depth"
-    | "volume"
-    | "arbitrage"
-    | "poolApy"
-    | "miningBonus"
-    | "totalApy";
+  sortBy: "asset" | "price" | "depth" | "volume" | "arbitrage" | "poolApy";
   sortDirection: "asc" | "desc";
 };
 
@@ -45,8 +37,6 @@ export function useStatsPageData(initialState: StatsPageState) {
           arbitrage: parseFloat(pool.arb) || 0,
         };
         item.poolApy = (item.volume / item.depth) * 100;
-        item.miningBonus = liqAPY || 0;
-        item.totalApy = item.poolApy + item.miningBonus;
 
         return item as StatsItem;
       })
