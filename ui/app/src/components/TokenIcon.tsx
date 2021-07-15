@@ -69,7 +69,9 @@ export const TokenIcon = defineComponent({
           height: props.size + "px",
           width: props.size + "px",
           backgroundImage: `url('${url.value}')`,
-          backgroundSize: "contain",
+          // set to the size of the icon
+          backgroundSize: `${props.size}px ${props.size}px`,
+          backgroundRepeat: "no-repeat",
         }}
         class={[`transition-all duration-100`, props.class]}
       />

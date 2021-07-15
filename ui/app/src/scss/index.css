@@ -8,7 +8,7 @@ button {
   cursor: pointer;
 }
 button:hover {
-  opacity: 0.9;
+  filter: brightness(90%);
 }
 button:active {
   filter: brightness(120%);

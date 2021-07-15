@@ -68,14 +68,7 @@ export default defineComponent({
                 )}
               </TransitionGroup>
             </button>
-            <div
-              class={[
-                `font-medium`,
-                !data.asyncPooling.value ? `line-through` : "",
-              ]}
-            >
-              Pool Equally
-            </div>
+            <div class={[`font-medium`]}>Pool Equally</div>
           </div>
         }
         onClose={() => {

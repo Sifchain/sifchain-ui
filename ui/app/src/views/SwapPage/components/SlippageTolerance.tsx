@@ -23,11 +23,11 @@ export const SlippageTolerance = (props: {
             );
           })}
         </div>
-        <div class="flex flex-row items-center flex-nowrap box-border border-[1px] border-solid text-white font-mono border-white text-[16px] w-full bg-gray-input rounded-[4px]">
+        <div class="flex flex-row items-center flex-nowrap box-border border-[1px] border-solid text-white font-mono border-white text-[20px] w-full bg-gray-input rounded-[4px]">
           <input
             type="number"
             step="0.1"
-            class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none  text-right"
+            class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none font-mono text-right"
             value={props.slippage}
             onInput={(e) => {
               props.onUpdate((e.target as HTMLInputElement).value);
