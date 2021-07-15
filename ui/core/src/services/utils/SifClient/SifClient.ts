@@ -9,7 +9,7 @@ import {
   AuthAccountsResponse,
   logs,
   StdTx,
-  BroadcastTxResult
+  BroadcastTxResult,
 } from "@cosmjs/launchpad";
 import { fromHex } from "@cosmjs/encoding";
 import { Uint53 } from "@cosmjs/math";
@@ -61,25 +61,27 @@ export class SifClient extends SigningCosmosClient {
   async broadcastTx(tx: StdTx): Promise<BroadcastTxResult> {
     const result: any = await this.lcdClient.broadcastTx(tx);
     if (!result.txhash.match(/^([0-9A-F][0-9A-F])+$/)) {
-        throw new Error("Received ill-formatted txhash. Must be non-empty upper-case hex");
+      throw new Error(
+        "Received ill-formatted txhash. Must be non-empty upper-case hex",
+      );
     }
-    result.logs[0].msg_index = 0
-    result.logs[0].log = ""
+    result.logs[0].msg_index = 0;
+    result.logs[0].log = "";
 
     return result.code !== undefined
-        ? {
-            height: Uint53.fromString(result.height).toNumber(),
-            transactionHash: result.txhash,
-            code: result.code,
-            rawLog: result.raw_log || "",
+      ? {
+          height: Uint53.fromString(result.height).toNumber(),
+          transactionHash: result.txhash,
+          code: result.code,
+          rawLog: result.raw_log || "",
         }
-        : {
-            logs: result.logs ? logs.parseLogs(result.logs) : [],
-            rawLog: result.raw_log || "",
-            transactionHash: result.txhash,
-            data: result.data ? fromHex(result.data) : undefined,
+      : {
+          logs: result.logs ? logs.parseLogs(result.logs) : [],
+          rawLog: result.raw_log || "",
+          transactionHash: result.txhash,
+          data: result.data ? fromHex(result.data) : undefined,
         };
-}
+  }
 
   async getBankBalances(address: string): Promise<object[]> {
     const { result } = await this.lcdClient.get(`bank/balances/${address}`);
