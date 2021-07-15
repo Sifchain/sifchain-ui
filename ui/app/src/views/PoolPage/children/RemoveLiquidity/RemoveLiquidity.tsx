@@ -79,7 +79,6 @@ export default defineComponent({
             <div class="pr-[10px] pointer-events-none select-none">%</div>
           </div>
         </div>
-        <div>hello!</div>
         {(data.nextStepAllowed.value && (
           <Button.CTA
             onClick={() => data.handleNextStepClicked()}
