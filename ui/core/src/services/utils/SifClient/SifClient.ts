@@ -7,7 +7,12 @@ import {
   OfflineSigner,
   SigningCosmosClient,
   AuthAccountsResponse,
+  logs,
+  StdTx,
+  BroadcastTxResult
 } from "@cosmjs/launchpad";
+import { fromHex } from "@cosmjs/encoding";
+import { Uint53 } from "@cosmjs/math";
 import { SifUnSignedClient } from "./SifUnsignedClient";
 
 export class SifClient extends SigningCosmosClient {
@@ -50,6 +55,31 @@ export class SifClient extends SigningCosmosClient {
       return responseData as AuthAccountsResponse;
     };
   }
+
+  // NOTE(59023g): in 0.42, the result.logs array items do not include `msg_index` and
+  // `log` so we hardcode these values. It does assume logs array length is always 1
+  async broadcastTx(tx: StdTx): Promise<BroadcastTxResult> {
+    const result: any = await this.lcdClient.broadcastTx(tx);
+    if (!result.txhash.match(/^([0-9A-F][0-9A-F])+$/)) {
+        throw new Error("Received ill-formatted txhash. Must be non-empty upper-case hex");
+    }
+    result.logs[0].msg_index = 0
+    result.logs[0].log = ""
+
+    return result.code !== undefined
+        ? {
+            height: Uint53.fromString(result.height).toNumber(),
+            transactionHash: result.txhash,
+            code: result.code,
+            rawLog: result.raw_log || "",
+        }
+        : {
+            logs: result.logs ? logs.parseLogs(result.logs) : [],
+            rawLog: result.raw_log || "",
+            transactionHash: result.txhash,
+            data: result.data ? fromHex(result.data) : undefined,
+        };
+}
 
   async getBankBalances(address: string): Promise<object[]> {
     const { result } = await this.lcdClient.get(`bank/balances/${address}`);
