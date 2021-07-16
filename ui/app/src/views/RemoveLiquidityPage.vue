@@ -15,7 +15,7 @@ import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
 import AssetItem from "@/componentsLegacy/AssetItem/AssetItem.vue";
 import Slider from "@/componentsLegacy/Slider/Slider.vue";
 import { toConfirmState } from "./utils/toConfirmState";
-import { ConfirmState } from "@/types";
+import { ConfirmState, ConfirmStateEnum } from "@/types";
 import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
 import DetailsPanelRemove from "@/componentsLegacy/DetailsPanelRemove/DetailsPanelRemove.vue";
 import { getLMData } from "@/componentsLegacy/shared/utils";
@@ -33,7 +33,7 @@ export default defineComponent({
     const { store, usecases, poolFinder, services, config } = useCore();
     const route = useRoute();
     const router = useRouter();
-    const transactionState = ref<ConfirmState>("selecting");
+    const transactionState = ref<ConfirmState>(ConfirmStateEnum.Selecting);
     const transactionHash = ref<string | null>(null);
     const transactionStateMsg = ref<string>("");
     const asymmetry = ref("0");
@@ -118,7 +118,7 @@ export default defineComponent({
         )
           return;
 
-        transactionState.value = "confirming";
+        transactionState.value = ConfirmStateEnum.Confirming;
       },
       async handleAskConfirmClicked() {
         if (
@@ -128,7 +128,7 @@ export default defineComponent({
         )
           return;
 
-        transactionState.value = "signing";
+        transactionState.value = ConfirmStateEnum.Signing;
         const tx = await usecases.clp.removeLiquidity(
           Asset.get(externalAssetSymbol.value),
           wBasisPoints.value,
@@ -143,7 +143,7 @@ export default defineComponent({
         if (transactionState.value === "confirmed") {
           router.push("/pool");
         } else {
-          transactionState.value = "selecting";
+          transactionState.value = ConfirmStateEnum.Selecting;
         }
       },
       PoolState,

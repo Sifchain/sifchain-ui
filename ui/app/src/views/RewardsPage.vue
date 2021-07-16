@@ -15,7 +15,7 @@ import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
 import Modal from "@/componentsLegacy/Modal/Modal.vue";
 import ModalView from "@/componentsLegacy/Modal/Modal.vue";
 import PairTable from "@/componentsLegacy/PairTable/PairTable.vue";
-import { ConfirmState } from "@/types";
+import { ConfirmState, ConfirmStateEnum } from "@/types";
 import RewardContainer from "@/componentsLegacy/RewardContainer/RewardContainer.vue";
 import { toConfirmState } from "./utils/toConfirmState";
 
@@ -93,7 +93,7 @@ export default defineComponent({
       if (!claimType.value) {
         return console.error("No claim type");
       }
-      transactionState.value = "signing";
+      transactionState.value = ConfirmStateEnum.Signing;
       const tx = await usecases.reward.claim({
         fromAddress: address.value,
         claimType: claimTypeMap[claimType.value] as "2" | "3",

@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button/Button";
-import { FormDetails } from "@/components/FormDetails";
+import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
@@ -130,7 +130,7 @@ export default defineComponent({
         <div class="font-medium mt-[10px] pt-[1em] text-left">
           Pool Token Prices
         </div>
-        <FormDetails
+        <Form.Details
           details={[
             [
               <span>
@@ -163,11 +163,11 @@ export default defineComponent({
               </div>,
             ],
           ]}
-        ></FormDetails>
+        ></Form.Details>
         <div class="font-medium mt-[10px] pt-[1em] text-left">
           Est. prices after pooling & pool share
         </div>
-        <FormDetails
+        <Form.Details
           details={[
             [
               <span>
@@ -206,19 +206,22 @@ export default defineComponent({
               </div>,
             ],
           ]}
-        ></FormDetails>
+        ></Form.Details>
         {(data.nextStepAllowed.value && (
-          <Button.CTA
+          <Button.CallToAction
             onClick={() => data.handleNextStepClicked()}
             class="mt-[10px]"
           >
             Add Liquidity
-          </Button.CTA>
+          </Button.CallToAction>
         )) || (
-          <Button.CTA onClick={() => appWalletPicker.show()} class="mt-[10px]">
+          <Button.CallToAction
+            onClick={() => appWalletPicker.show()}
+            class="mt-[10px]"
+          >
             {/* <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" />{" "} */}
             {data.nextStepMessage.value}
-          </Button.CTA>
+          </Button.CallToAction>
         )}
       </Modal>
     );

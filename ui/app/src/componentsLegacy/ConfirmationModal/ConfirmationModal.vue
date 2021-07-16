@@ -12,7 +12,7 @@
         :confirmButtonText="confirmButtonText"
       >
         <template v-slot:body>
-          <slot name="selecting"></slot>
+          <slot name="ConfirmStateEnum.Selecting"></slot>
         </template>
       </ConfirmationModalAsk>
 
@@ -52,7 +52,7 @@ import { computed } from "@vue/reactivity";
 import ModalView from "@/componentsLegacy/ModalView/ModalView.vue";
 import ConfirmationModalAsk from "@/componentsLegacy/ConfirmationModalAsk/ConfirmationModalAsk.vue";
 import ConfirmationModalSigning from "@/componentsLegacy/ConfirmationModalSigning/ConfirmationModalSigning.vue";
-import { ConfirmState } from "../../types";
+import { ConfirmState, ConfirmStateEnum } from "../../types";
 
 export default defineComponent({
   inheritAttrs: false,
@@ -60,9 +60,12 @@ export default defineComponent({
     // Function to request the window is closed this function must reset the confirmation state to selecting
     requestClose: Function,
 
-    // Confirmation state: "selecting" | "confirming" | "signing" | "confirmed" | "rejected" | "failed";
+    // Confirmation state: ConfirmStateEnum.Selecting | ConfirmStateEnum.Confirming | ConfirmStateEnum.Signing | "confirmed" | ConfirmStateEnum.Rejected | "failed";
     // This component acts on this state to determine which panel to show
-    state: { type: String as PropType<ConfirmState>, default: "confirming" },
+    state: {
+      type: String as PropType<ConfirmState>,
+      default: ConfirmStateEnum.Confirming,
+    },
 
     // The text on the 'confirm' button
     confirmButtonText: String,
@@ -78,11 +81,11 @@ export default defineComponent({
   setup(props) {
     const isOpen = computed(() => {
       return [
-        "approving",
-        "confirming",
-        "signing",
+        ConfirmStateEnum.Approving,
+        ConfirmStateEnum.Confirming,
+        ConfirmStateEnum.Signing,
         "failed",
-        "rejected",
+        ConfirmStateEnum.Rejected,
         "confirmed",
         "out_of_gas",
       ].includes(props.state);

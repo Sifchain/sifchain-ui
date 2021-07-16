@@ -18,7 +18,15 @@ import RewardsPage from "@/views/RewardsPage.vue";
 import Pool from "@/views/PoolPage/PoolPage";
 import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
 import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/RemoveLiquidity";
+import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
+import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
+import { ApproveSwap } from "@/views/SwapPage/children/Approve";
+import { SubmittedSwap } from "@/views/SwapPage/children/SubmittedSwap";
 
+type SwapPageMeta = {
+  title: string;
+  swapState: SwapPageState;
+};
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
@@ -45,7 +53,46 @@ const routes: Array<RouteRecordRaw> = [
     component: Swap,
     meta: {
       title: "Swap - Sifchain",
-    },
+      swapState: "idle",
+    } as SwapPageMeta,
+    children: [
+      {
+        path: "confirm",
+        name: "ConfirmSwap",
+        component: ConfirmSwap,
+        props: {
+          title: "Confirm Swap",
+        },
+        meta: {
+          title: "Confirm Swap - Sifchain",
+          swapState: "confirm",
+        } as SwapPageMeta,
+      },
+      {
+        path: "approve",
+        name: "ApproveSwap",
+        component: ApproveSwap,
+        props: {
+          title: "Approve Swap",
+        },
+        meta: {
+          title: "Approve Swap - Sifchain",
+          swapState: "submit",
+        } as SwapPageMeta,
+      },
+      {
+        path: "submitted/:txHash",
+        name: "SubmittedSwap",
+        component: SubmittedSwap,
+        props: {
+          title: "Transaction Submitted",
+        },
+        meta: {
+          title: "Transaction Submitted - Sifchain",
+          swapState: "success",
+        } as SwapPageMeta,
+      },
+    ],
   },
   {
     path: "/pool",

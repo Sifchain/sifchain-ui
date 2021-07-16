@@ -99,7 +99,7 @@ export const TokenSelectDropdown = defineComponent({
       });
     });
     const searchQuery = ref("");
-    const visibleAssets = computed(() => {
+    const filteredAssets = computed(() => {
       const q = searchQuery.value;
       return sortedAssets.value.filter((a) => {
         return (
@@ -111,7 +111,17 @@ export const TokenSelectDropdown = defineComponent({
         );
       });
     });
-
+    const lastVisibleAssetToShow = ref(1);
+    const visibleAssets = computed(() => {
+      return filteredAssets.value.slice(0, lastVisibleAssetToShow.value);
+    });
+    onMounted(async () => {
+      for (const _asset of sortedAssets.value) {
+        await new Promise((r) => setTimeout(r, 200));
+        console.log("hello");
+        lastVisibleAssetToShow.value = lastVisibleAssetToShow.value + 1;
+      }
+    });
     watch([searchQuery], () => {
       console.log(visibleAssets.value);
     });

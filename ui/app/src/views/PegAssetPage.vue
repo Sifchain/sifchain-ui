@@ -23,7 +23,7 @@ import {
 } from "@/componentsLegacy/shared/utils";
 import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
-import { ConfirmState } from "../types";
+import { ConfirmState, ConfirmStateEnum } from "../types";
 import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
 import { format, toBaseUnits } from "@sifchain/sdk";
 import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
@@ -54,7 +54,7 @@ export default defineComponent({
         : "import";
     });
 
-    const transactionState = ref<ConfirmState>("selecting");
+    const transactionState = ref<ConfirmState>(ConfirmStateEnum.Selecting);
     const transactionStateMsg = ref<string>("");
     const transactionHash = ref<string | null>(null);
 
@@ -101,13 +101,13 @@ export default defineComponent({
       for await (const event of usecases.peg.peg(assetAmount)) {
         switch (event.type) {
           case "approve_started":
-            transactionState.value = "approving";
+            transactionState.value = ConfirmStateEnum.Approving;
             break;
           case "approve_error":
-            transactionState.value = "rejected";
+            transactionState.value = ConfirmStateEnum.Rejected;
             break;
           case "signing":
-            transactionState.value = "signing";
+            transactionState.value = ConfirmStateEnum.Signing;
             break;
           case "sent":
           case "tx_error": {
@@ -121,7 +121,7 @@ export default defineComponent({
     }
 
     async function handleUnpegRequested() {
-      transactionState.value = "signing";
+      transactionState.value = ConfirmStateEnum.Signing;
       const asset = Asset.get(symbol.value);
 
       const tx = await usecases.peg.unpeg(
@@ -168,10 +168,10 @@ export default defineComponent({
 
     function requestTransactionModalClose() {
       if (transactionState.value === "confirmed") {
-        transactionState.value = "selecting";
+        transactionState.value = ConfirmStateEnum.Selecting;
         router.push("/balances"); // TODO push back to peg, but load unpeg tab when unpegging -> dynamic routing?
       } else {
-        transactionState.value = "selecting";
+        transactionState.value = ConfirmStateEnum.Selecting;
       }
     }
     const feeAmount = computed(() => {
@@ -211,7 +211,7 @@ export default defineComponent({
         amount.value = newAmount;
       },
       handleActionClicked: () => {
-        transactionState.value = "confirming";
+        transactionState.value = ConfirmStateEnum.Confirming;
       },
       handlePegRequested,
       handleUnpegRequested,

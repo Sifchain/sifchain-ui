@@ -49,7 +49,10 @@ export type InteractiveIconName =
   | "wallet"
   | "copy"
   | "open-external"
-  | "lock";
+  | "lock"
+  | "anim-racetrack-spinner"
+  | "anim-circle-spinner"
+  | "circle-question";
 
 export type NavIconName =
   | "documents"
@@ -82,7 +85,7 @@ export default defineComponent({
       type: Boolean,
     },
     size: {
-      type: Number,
+      type: [Number, String],
       default: () => 20,
     },
     vectorRef: Object as PropType<Ref<ComponentPublicInstance | undefined>>,
@@ -98,7 +101,7 @@ export default defineComponent({
           height={props.size}
           class={[
             "font-normal",
-            "stroke-current",
+            // "stroke-current",
             props.active ? "text-accent-base" : "",
             props.disabled ? "text-gray-500" : "",
             props.class,

@@ -1,4 +1,6 @@
-import { Tippy } from "vue-tippy";
+import { DefaultProps } from "tippy.js";
+import { SetupContext } from "vue";
+import { Tippy, TippyOptions } from "vue-tippy";
 
 // This is not a complete type declaration; add more props
 // if you need to use them.
@@ -10,3 +12,8 @@ export type TooltipInstance = {
 };
 
 export default Tippy;
+
+export const Tooltip = (Tippy as unknown) as (
+  props: TippyOptions,
+  context: SetupContext,
+) => JSX.Element;

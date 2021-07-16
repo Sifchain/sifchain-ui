@@ -1,7 +1,7 @@
 <template>
   <div class="swap-progress">
-    <div class="text"><span v-if="approving">Pending</span></div>
-    <SwapProgressLoader :loading="approving" :success="approved"
+    <div class="text"><span v-if="ConfirmState.Approving">Pending</span></div>
+    <SwapProgressLoader :loading="ConfirmState.Approving" :success="approved"
       >1</SwapProgressLoader
     >
     <div class="line"></div>

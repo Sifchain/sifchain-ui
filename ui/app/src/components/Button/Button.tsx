@@ -1,5 +1,6 @@
-import { ButtonCTA } from "./ButtonCTA";
-
+import { _CallToAction } from "./_CallToAction";
+import { _InlineHelp } from "./_InlineHelp";
 export const Button = {
-  CTA: ButtonCTA,
+  CallToAction: _CallToAction,
+  InlineHelp: _InlineHelp,
 };

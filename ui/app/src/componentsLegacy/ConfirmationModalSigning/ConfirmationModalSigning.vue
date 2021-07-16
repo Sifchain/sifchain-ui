@@ -29,7 +29,7 @@
           <transition name="swipe">
             <div class="text" v-if="state === 'signing'">
               <p>Waiting for Confirmation</p>
-              <slot name="signing"></slot>
+              <slot name="ConfirmState.Signing"></slot>
               <br />
               <p class="sub">Confirm this transaction in your wallet</p>
             </div>
@@ -38,7 +38,7 @@
           <transition name="swipe">
             <div class="text" v-if="state === 'rejected'">
               <p>Transaction Rejected</p>
-              <slot name="rejected"></slot>
+              <slot name="ConfirmState.Rejected"></slot>
               <br />
               <p class="sub">{{ transactionStateMsg }}</p>
             </div>

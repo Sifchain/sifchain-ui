@@ -14,6 +14,7 @@ export function parseTxFailure({
     log.toString().toLowerCase().includes("request rejected") ||
     log.toString().toLowerCase().includes("user denied transaction")
   ) {
+    debugger;
     return {
       code: ErrorCode.USER_REJECTED,
       memo: getErrorMessage(ErrorCode.USER_REJECTED),

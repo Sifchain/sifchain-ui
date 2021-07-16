@@ -16,7 +16,7 @@ import { computed, Ref } from "@vue/reactivity";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { toConfirmState } from "@/views/utils/toConfirmState";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
-import { ConfirmState } from "@/types";
+import { ConfirmState, ConfirmStateEnum } from "@/types";
 import { formatNumber } from "@/componentsLegacy/shared/utils";
 import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
@@ -194,7 +194,7 @@ export function createLiquidityDataProvider() {
       throw new Error("Token A field amount is not defined");
     if (!tokenBFieldAmount.value)
       throw new Error("Token B field amount is not defined");
-    transactionState.value = "signing";
+    transactionState.value = ConfirmStateEnum.Signing;
     const tx = await usecases.clp.addLiquidity(
       tokenBFieldAmount.value,
       tokenAFieldAmount.value,

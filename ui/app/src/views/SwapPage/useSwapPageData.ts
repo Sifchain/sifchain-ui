@@ -11,18 +11,21 @@ import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
-type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
+import { useRouter } from "vue-router";
+export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 export const useSwapPageData = () => {
   const { usecases, poolFinder, store } = useCore();
-
+  const router = useRouter();
   const fromSymbol = ref("rowan");
   const toSymbol = ref("cband");
   const fromAmount = ref("1");
   const toAmount = ref("0");
 
   const slippage = ref<string>("1.0");
-  const pageState = ref<SwapPageState>("idle");
+  const pageState = computed<SwapPageState>(() => {
+    return router.currentRoute.value.meta.pageState as SwapPageState;
+  });
   const txStatus = ref<TransactionStatus | null>(null);
 
   const selectedField = ref<"from" | "to" | null>("from");
@@ -61,7 +64,9 @@ export const useSwapPageData = () => {
   const { connected } = useWalletButton();
 
   function requestTransactionModalClose() {
-    pageState.value = "idle";
+    router.push({
+      name: "Swap",
+    });
   }
 
   const formattedFromTokenBalance = useFormattedTokenBalance(fromSymbol);
@@ -97,8 +102,9 @@ export const useSwapPageData = () => {
     if (!fromFieldAmount.value)
       throw new Error("from field amount is not defined");
     if (!toFieldAmount.value) throw new Error("to field amount is not defined");
-
-    pageState.value = "confirm";
+    router.push({
+      name: "ConfirmSwap",
+    });
   }
 
   async function handleAskConfirmClicked() {
@@ -108,18 +114,27 @@ export const useSwapPageData = () => {
     if (!minimumReceived.value)
       throw new Error("minimumReceived amount is not defined");
 
-    pageState.value = "submit";
-
+    router.push({
+      name: "ApproveSwap",
+    });
+    debugger;
     txStatus.value = await usecases.clp.swap(
       fromFieldAmount.value,
       toFieldAmount.value.asset,
       minimumReceived.value,
     );
 
-    pageState.value =
-      typeof txStatus.value.code === "number" ? "fail" : "success";
-
-    clearAmounts();
+    if (typeof txStatus.value.code === "number") {
+      alert("swap failed");
+      router.push({
+        name: "Swap",
+      });
+    } else {
+      router.push({
+        name: "SubmittedSwap",
+      });
+    }
+    // clearAmounts();
   }
 
   function swapInputs() {
@@ -229,7 +244,7 @@ export const useSwapPageData = () => {
       swapInputs();
     },
     handleConfirmClicked() {
-      pageState.value = "submit";
+      router.push({ name: "" });
     },
     handleAskConfirmClicked,
 
