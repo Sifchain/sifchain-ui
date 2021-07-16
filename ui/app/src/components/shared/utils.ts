@@ -187,6 +187,12 @@ export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
     case "sifchain":
       if (!txHash) return "https://blockexplorer.sifchain.finance/";
       return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;
+    case "sifchain-devnet-042":
+      if (!txHash) return "https://blockexplorer.sifchain.finance/";
+      return `https://blockexplorer-devnet-042.sifchain.finance/transactions/${txHash}`;
+    case "sifchain-testnet-1":
+      if (!txHash) return "https://blockexplorer.sifchain.finance/";
+      return `https://blockexplorer-testnet-042.sifchain.finance/transactions/${txHash}`;
     case "sifchain-testnet":
       if (!txHash) return `https://blockexplorer-testnet.sifchain.finance/`;
       return `https://blockexplorer-testnet.sifchain.finance/transactions/${txHash}`;
