@@ -52,6 +52,11 @@ export class SifClient extends SigningCosmosClient {
         throw new Error("Unexpected response data format");
       }
       responseData.result.type = "cosmos-sdk/Account";
+      // Note (59023g): New Legacy API wraps return values with omitempty so if empty,
+      // does not return a value.  This prevents wallet from connecting in UI
+      if (!responseData.result.value.sequence) {
+        responseData.result.value.sequence = "0";
+      }
       return responseData as AuthAccountsResponse;
     };
   }
