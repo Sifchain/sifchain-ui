@@ -47,6 +47,7 @@ module.exports = {
           // Tacha Gold
           base: "#D4B553",
           accent_gradient_to: "#C1A04F",
+          dark: "#C1A04F",
         },
         info: {
           // Bright Boston Blue
@@ -78,6 +79,8 @@ module.exports = {
 
           800: "#808080",
 
+          850: "#AFAFAF",
+
           900: "#F9F9F9",
           active_outline: "#F9F9F9",
         },
@@ -86,7 +89,8 @@ module.exports = {
         xxs: "10px",
         xs: "12px",
         sm: "14px",
-        base: "16px",
+        base: "14px",
+        md: "16px",
         lg: "18px",
         xl: "20px",
         "2xl": "24px",

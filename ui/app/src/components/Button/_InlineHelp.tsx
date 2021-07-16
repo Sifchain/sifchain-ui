@@ -10,14 +10,24 @@ import {
 import { Tooltip, TooltipInstance } from "../Tooltip";
 
 export const _InlineHelp = defineComponent({
-  setup(props, ctx: SetupContext) {
+  setup(props: ButtonHTMLAttributes, ctx: SetupContext) {
     return () => (
-      <button class={[`inline align-top hover:opacity-80 ml-[2px] mt-[-2px]`]}>
+      <button
+        {...props}
+        class={[`inline align-top hover:opacity-80 ml-[2px]`, props.class]}
+        style={
+          mergeProps(
+            { style: { transform: "translateY(-1px)" } },
+            { style: props.style },
+          ).style as ButtonHTMLAttributes["style"]
+        }
+      >
         <Tooltip
           interactive
           inlinePositioning={true}
           placement="top"
           arrow
+          appendTo={() => document.body}
           content={<div>{ctx.slots?.default?.()}</div>}
         >
           <AssetIcon

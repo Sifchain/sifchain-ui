@@ -1,0 +1,32 @@
+import { defineComponent, HTMLAttributes, InputHTMLAttributes } from "vue";
+
+export function _Base(
+  props: InputHTMLAttributes & {
+    containerClass?: HTMLAttributes["class"];
+    containerProps?: HTMLAttributes;
+    startContent?: JSX.Element | null;
+  },
+) {
+  const { containerProps, containerClass, startContent, ...inputProps } = props;
+  return (
+    <div
+      {...containerProps}
+      class={[
+        "relative flex items-center h-[54px] px-3 rounded bg-gray-input border-solid border-gray-input_outline border border-solid focus-within:border-white",
+        containerProps?.class,
+        containerClass,
+      ]}
+    >
+      {startContent}
+      <input
+        {...inputProps}
+        class={[
+          "box-border outline-none w-full absolute top-0 bottom-0 left-0 right-0 pr-[16px] pl-[68px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium",
+          inputProps.type === "number" && "font-mono",
+          (inputProps.disabled || inputProps.readonly) && "opacity-20",
+          inputProps.class,
+        ]}
+      />
+    </div>
+  );
+}

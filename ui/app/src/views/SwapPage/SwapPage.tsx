@@ -41,11 +41,11 @@ export default defineComponent({
   setup() {
     // const data = useSwapPageModule();
     const data = useSwapPageData();
-    console.log(data.fromSymbol.value, data.toSymbol.value);
     const swapIcon = ref<ComponentPublicInstance>();
-    const isHoveringOverInvertButtonRef = ref(false);
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
+    const isInverted = ref(false);
+
     watch([data.pageState.value], () => {
       switch (data.pageState.value) {
         case "idle": {
@@ -83,43 +83,30 @@ export default defineComponent({
           <button
             // onMouseover={() => {
             //   console.log("m2");
-            //   isHoveringOverInvertButtonRef.value = true;
             // }}
             // onMouseout={() => {
             //   console.log("m1");
             //   isHoveringOverInvertButtonRef.value = false;
             // }}
-            class="origin-center actidve:rotate-180 transition-transform flex items-center relative bg-gray-base border-gray-input_outline py-[4px] px-[9px] box-content border-[1px] rounded-[10px]"
+            class="origin-center actidve:rotate-180 flex items-center relative bg-gray-base border-gray-input_outline py-[4px] px-[9px] box-content border-[1px] rounded-[10px] hover:border-accent-base"
             key="button"
             onClick={async (e: MouseEvent) => {
-              isHoveringOverInvertButtonRef.value = true;
-
               data.handleArrowClicked();
-              const btn = e.currentTarget as HTMLButtonElement;
-              const a = btn.animate(
-                [
-                  {
-                    composite: "add",
-                    transform: "rotate(180deg)",
-                  },
-                ],
-                {
-                  duration: 200,
-                  iterations: 1,
-                },
-              );
-              a.play();
-              await a.finished;
-              isHoveringOverInvertButtonRef.value = false;
-              // data.mutations.invertPair();
+              isInverted.value = !isInverted.value;
             }}
           >
-            <AssetIcon
-              vectorRef={swapIcon}
-              size={22}
-              class=" text-accent-base"
-              icon="navigation/swap"
-            ></AssetIcon>
+            <div
+              style={{
+                transform: `scaleY(${isInverted.value ? -1 : 1})`,
+              }}
+            >
+              <AssetIcon
+                vectorRef={swapIcon}
+                size={22}
+                class=" text-accent-base"
+                icon="navigation/swap"
+              ></AssetIcon>
+            </div>
           </button>
         </div>
 

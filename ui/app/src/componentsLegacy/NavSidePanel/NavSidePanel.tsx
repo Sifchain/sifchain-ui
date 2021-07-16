@@ -47,6 +47,7 @@ export default defineComponent({
                 displayName="Dashboard"
                 icon="navigation/dashboard"
                 routerLink="/dashboard"
+                class="opacity-50 pointer-events-none"
                 action={
                   <div class="py-[2px] px-[6px] text-[10px] text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
                     Soon

@@ -18,6 +18,8 @@ import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
+import { Input } from "@/components/Input/Input";
+import { Button } from "@/components/Button/Button";
 import router from "@/router";
 import { ImportData, getImportLocation } from "./useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
@@ -187,37 +189,29 @@ export default defineComponent({
             )}
           </div>
 
-          <div class="relative flex items-center h-[54px] px-3 rounded bg-gray-input border-solid border-gray-input_outline border">
-            {!!tokenRef.value && (
-              <button
-                class="z-10 box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans"
-                onClick={handleSetMax}
-              >
-                <div class="flex items-center px-[9px] h-[18px] bg-gray-input rounded-full text-accent-base">
-                  <span style="letter-spacing: -1%; line-height: 10px;">
-                    MAX
-                  </span>
-                </div>
-              </button>
-            )}
-            <input
-              type="number"
-              min="0"
-              style={{
-                textAlign: "right",
-              }}
-              onInput={(e) => {
-                const value = (e.target as HTMLInputElement).value;
-                if (isNaN(parseFloat(value))) {
-                  importParams.amount = "";
-                } else {
-                  importParams.amount = value;
-                }
-              }}
-              value={importParams.amount}
-              class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pr-[16px] pl-[68px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium"
-            />
-          </div>
+          <Input.Base
+            type="number"
+            min="0"
+            style={{
+              textAlign: "right",
+            }}
+            startContent={
+              !!tokenRef.value && (
+                <Button.Pill class="z-[1]" onClick={handleSetMax}>
+                  MAX
+                </Button.Pill>
+              )
+            }
+            onInput={(e) => {
+              const value = (e.target as HTMLInputElement).value;
+              if (isNaN(parseFloat(value))) {
+                importParams.amount = "";
+              } else {
+                importParams.amount = value;
+              }
+            }}
+            value={importParams.amount}
+          />
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
@@ -234,14 +228,7 @@ export default defineComponent({
           </div>
         </section>
 
-        <button
-          {...buttonRef.value.props}
-          class={cx(
-            buttonClasses.button,
-            buttonRef.value.props.disabled && buttonClasses.disabled,
-            "w-full mt-[10px]",
-          )}
-        >
+        <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">
           {!!buttonRef.value.icon && (
             <AssetIcon
               icon={buttonRef.value.icon}
@@ -249,7 +236,7 @@ export default defineComponent({
             />
           )}{" "}
           {buttonRef.value.name}
-        </button>
+        </Button.CallToAction>
       </>
     );
   },

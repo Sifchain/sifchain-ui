@@ -112,18 +112,13 @@ export const TokenSelectDropdown = defineComponent({
       });
     });
     const lastVisibleAssetToShow = ref(1);
-    const visibleAssets = computed(() => {
-      return filteredAssets.value.slice(0, lastVisibleAssetToShow.value);
-    });
+
     onMounted(async () => {
       for (const _asset of sortedAssets.value) {
         await new Promise((r) => setTimeout(r, 200));
         console.log("hello");
         lastVisibleAssetToShow.value = lastVisibleAssetToShow.value + 1;
       }
-    });
-    watch([searchQuery], () => {
-      console.log(visibleAssets.value);
     });
     watch([props.active], () => {
       const rect = selfRoot.value?.getBoundingClientRect();
@@ -150,130 +145,79 @@ export const TokenSelectDropdown = defineComponent({
       <div ref={selfRoot} class="w-full h-0">
         {
           <Teleport to="#app">
-            <Transition
-              onEnter={async () => {
-                if (!(dropdownRoot.value && iconScrollContainer.value)) {
-                  return;
-                }
-                const rootFadeIn = dropdownRoot.value?.animate(
-                  [
-                    {
-                      opacity: 0,
-                    },
-                    {
-                      opacity: 1,
-                    },
-                  ],
-                  {
-                    duration: 200,
-                    fill: "forwards",
-                  },
-                );
-                rootFadeIn?.play();
-                await rootFadeIn?.finished;
-              }}
-              onLeave={async () => {
-                if (!(dropdownRoot.value && iconScrollContainer.value)) {
-                  return;
-                }
-                const fadeOut = dropdownRoot.value?.animate(
-                  [
-                    {
-                      opacity: 1,
-                    },
-                    {
-                      opacity: 0,
-                    },
-                  ],
-                  {
-                    duration: 300,
-                    fill: "forwards",
-                  },
-                );
-                fadeOut?.play();
-                await fadeOut?.finished;
-              }}
-            >
-              {props.active?.value && (
-                <div
-                  onClick={(e: MouseEvent) => {
-                    // don't include in body click event listener
-                    e.stopPropagation();
-                  }}
-                  ref={dropdownRoot}
-                  style={{
-                    boxShadow: "0px 20px 20px 0px #00000080",
-                    position: "absolute",
-                    top: (boundingClientRect.value?.y ?? 0) + "px",
-                    left:
-                      (boundingClientRect.value?.x ?? 0) +
-                      // (boundingClientRect.value?.width ?? 0) +
-                      "px",
-                  }}
-                  class=" overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[450px] mt-[7px] z-50 rounded-[4px]"
-                >
-                  <div class="w-full h-full py-[20px] px-[15px]">
-                    <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">
-                      <AssetIcon
-                        size={20}
-                        icon="interactive/search"
-                        class={[`ml-3 w-4 h-4`, false ? "text-[#6E6E6E]" : ""]}
-                      />
-                      <input
-                        id="token-search"
-                        autofocus
-                        type="search"
-                        placeholder="Search Token..."
-                        value={searchQuery.value}
-                        onInput={(e: Event) => {
-                          searchQuery.value = (e.target as HTMLInputElement).value;
-                        }}
-                        class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
-                      />
+            {props.active?.value && (
+              <div
+                onClick={(e: MouseEvent) => {
+                  // don't include in body click event listener
+                  e.stopPropagation();
+                }}
+                ref={dropdownRoot}
+                style={{
+                  boxShadow: "0px 20px 20px 0px #00000080",
+                  position: "absolute",
+                  top: (boundingClientRect.value?.y ?? 0) + "px",
+                  left:
+                    (boundingClientRect.value?.x ?? 0) +
+                    // (boundingClientRect.value?.width ?? 0) +
+                    "px",
+                }}
+                class=" overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[450px] mt-[7px] z-50 rounded-[4px]"
+              >
+                <div class="w-full h-full py-[20px] px-[15px]">
+                  <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">
+                    <AssetIcon
+                      size={20}
+                      icon="interactive/search"
+                      class={[`ml-3 w-4 h-4`, false ? "text-[#6E6E6E]" : ""]}
+                    />
+                    <input
+                      id="token-search"
+                      autofocus
+                      type="search"
+                      placeholder="Search Token..."
+                      value={searchQuery.value}
+                      onInput={(e: Event) => {
+                        searchQuery.value = (e.target as HTMLInputElement).value;
+                      }}
+                      class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
+                    />
+                  </div>
+                  <div
+                    ref={iconScrollContainer}
+                    class="w-full overflow-hidden relative"
+                  >
+                    <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
+                      <div>Token Name</div>
+                      <div>Balance</div>
                     </div>
-                    <div
-                      ref={iconScrollContainer}
-                      class="w-full overflow-hidden relative"
-                    >
-                      <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
-                        <div>Token Name</div>
-                        <div>Balance</div>
-                      </div>
-                      <div class="w-full h-[302px] relative mr-[-15px]">
-                        <div class="absolute inset-0 w-full h-full overflow-y-scroll">
-                          <TransitionGroup name="list-complete">
-                            {visibleAssets.value.map((asset) => {
-                              return (
-                                <div
-                                  onClick={(e: MouseEvent) => {
-                                    props.onSelectAsset(asset);
-                                  }}
-                                  key={asset.symbol}
-                                  class="list-complete-item justify-between flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer"
-                                >
-                                  <div class="flex flex-row items-center justify-between">
-                                    <TokenIcon
-                                      size={20}
-                                      asset={ref(asset)}
-                                    ></TokenIcon>
-                                    <div class="font-medium uppercase ml-[8px]">
-                                      {asset.displaySymbol}
-                                    </div>
-                                  </div>
-                                  <div class="font-medium uppercase text-right ml-[8px]">
-                                    {balanceByAssetSymbol.value[asset.symbol]}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </TransitionGroup>
-                        </div>
+                    <div class="w-full h-[302px] relative mr-[-15px]">
+                      <div class="absolute inset-0 w-full h-full overflow-y-scroll">
+                        {filteredAssets.value.map((asset) => {
+                          return (
+                            <div
+                              onClick={(e: MouseEvent) => {
+                                props.onSelectAsset(asset);
+                              }}
+                              key={asset.symbol}
+                              class="flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
+                            >
+                              <TokenIcon
+                                size={20}
+                                asset={ref(asset)}
+                                class="mr-[8px]"
+                              />
+                              {asset.displaySymbol}
+                              <div class="flex-1 ml-[8px]" />
+                              {balanceByAssetSymbol.value[asset.symbol]}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
                 </div>
-              )}
-            </Transition>
+              </div>
+            )}
           </Teleport>
         }
       </div>

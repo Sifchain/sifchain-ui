@@ -63,53 +63,36 @@ export const ConfirmSwap = defineComponent({
             <Form.Details
               details={[
                 [
-                  <div>
+                  <div class="flex items-center">
                     Price
-                    <AssetIcon
-                      class="text-accent-base"
-                      size={18}
-                      icon="interactive/circle-question"
-                    ></AssetIcon>
+                    <Button.InlineHelp>your help</Button.InlineHelp>
                   </div>,
                   <div>{data.priceMessage.value}</div>,
                 ],
                 [
-                  <div class="h-full flex-row">
-                    <div>
-                      {"Minimum Received"}
-                      <Button.InlineHelp>
-                        <div>
-                          This is the minimum amount of the to token you will
-                          receive, taking into consideration the acceptable
-                          slippage percentage you are willing to take on. This
-                          amount also already takes into consideration liquidity
-                          provider fees as well.
-                        </div>
-                      </Button.InlineHelp>
-                    </div>
+                  <div class="h-full flex-row items-center">
+                    {"Minimum Received"}
+                    <Button.InlineHelp>
+                      <div class="w-[200px]">
+                        This is the minimum amount of the to token you will
+                        receive, taking into consideration the acceptable
+                        slippage percentage you are willing to take on. This
+                        amount also already takes into consideration liquidity
+                        provider fees as well.
+                      </div>
+                    </Button.InlineHelp>
                   </div>,
                   <div>{data.minimumReceived.value}</div>,
                 ],
                 [
-                  <div>
+                  <div class="flex items-center">
                     Price Impact
-                    <AssetIcon
-                      class="text-accent-base"
-                      size={18}
-                      icon="interactive/circle-question"
-                    ></AssetIcon>
+                    <Button.InlineHelp>Your help</Button.InlineHelp>
                   </div>,
-                  <div>
-                    <AssetIcon
-                      class="text-accent-base"
-                      size={18}
-                      icon="interactive/circle-question"
-                    ></AssetIcon>
-                    {data.priceImpact.value}
-                  </div>,
+                  <div class="lfex items-center">{data.priceImpact.value}</div>,
                 ],
                 [
-                  <div>
+                  <div class="flex items-center">
                     Liquidity Provider Fee
                     <Button.InlineHelp>your help</Button.InlineHelp>
                   </div>,
@@ -118,7 +101,7 @@ export const ConfirmSwap = defineComponent({
               ]}
             ></Form.Details>
           </Form.FieldSet>
-          <div class="text-center w-full font-medium">
+          <div class="text-center w-full font-medium mt-[10px]">
             Confirm this transaction in your wallet.
           </div>
           {/* <Button.CallToAction

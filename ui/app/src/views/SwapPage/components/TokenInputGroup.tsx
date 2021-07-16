@@ -21,6 +21,8 @@ import { useCore } from "@/hooks/useCore";
 import { TOKEN_SELECT_MODAL_TARGET } from "@/constants/teleport";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
+import { Input } from "@/components/Input/Input";
+import { Button } from "@/components/Button/Button";
 export const SampleBoundChildComponent = defineComponent<
   { exampleProp: boolean } & InputHTMLAttributes
 >({
@@ -82,11 +84,12 @@ export const TokenInputGroup = defineComponent({
               {props.heading}
             </div>
             <div
-              class={`text-white opacity-50 font-sans font-medium text-[12px] ${
+              onClick={() => props.onSetToMaxAmount?.()}
+              class={`text-white opacity-50 font-sans font-medium text-[12px] hover:text-accent-base cursor-pointer ${
                 props.formattedBalance ? "" : "opacity-0"
               }`}
             >
-              Balance {props.formattedBalance}{" "}
+              Balance: {props.formattedBalance || "0"}{" "}
               {props.asset?.label.replace(/^c/gim, "")}
             </div>
           </div>
@@ -96,76 +99,52 @@ export const TokenInputGroup = defineComponent({
               props.shouldShowNumberInputOnLeft ? "flex-row-reverse" : "",
             ]}
           >
-            <button
-              class={[
-                "transition-all duration-200 relative flex items-center w-[186px] h-[54px] p-[8px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]",
-                selectIsOpen.value ? "border-accent-base" : "",
-                props.selectDisabled ? "bg-transparent" : "",
-              ]}
+            <Button.Select
+              active={selectIsOpen.value}
+              disabled={props.selectDisabled}
+              chevronIcon={
+                props.selectDisabled
+                  ? "interactive/lock"
+                  : "interactive/chevron-down"
+              }
               onClick={(e: MouseEvent) => {
                 e.stopPropagation();
                 if (props.selectDisabled) return;
                 selectIsOpen.value = !selectIsOpen.value;
               }}
             >
-              {/* <img class="h-[38px]" src={props.tokenIconUrl} /> */}
-              <TokenIcon size={38} asset={propRefs.asset}></TokenIcon>
-              <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                {props.asset?.label.replace(/^c/gim, "")}
-              </div>
-
-              {props.selectDisabled ? (
-                <AssetIcon
-                  class={[
-                    "w-[24px] h-[24px] mr-[20px] ml-auto transition-all duration-150",
-                    selectIsOpen.value ? "rotate-180 text-accent-base" : "",
-                  ]}
-                  size={24}
-                  icon="interactive/lock"
-                />
-              ) : (
-                <AssetIcon
-                  size={24}
-                  class={[
-                    "w-[24px] h-[24px] mr-[20px] ml-auto transition-all duration-150",
-                    selectIsOpen.value ? "rotate-180 text-accent-base" : "",
-                  ]}
-                  icon="interactive/chevron-down"
-                />
-              )}
-            </button>
-            <div class="relative flex items-center w-[254px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
-              <input
-                onFocus={props.onFocus}
-                onBlur={props.onBlur}
-                type="number"
-                min="0"
-                style={{
-                  textAlign: "right",
-                }}
-                onInput={(e) => {
-                  props.onInputAmount(
-                    (e.target as HTMLInputElement).value || "",
-                  );
-                }}
-                value={props.amount}
-                class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pr-[16px] pl-[68px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium"
-              />
-              <button
-                onClick={() =>
-                  props.onSetToMaxAmount && props.onSetToMaxAmount()
-                }
-                class={`${
-                  props.onSetToMaxAmount ? "" : "opacity-0 pointer-events-none"
-                } z-[1] ml-[16px] box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans`}
-              >
-                <div class="flex items-center px-[9px] h-[18px] bg-gray-input rounded-full text-accent-base">
-                  <span style="letter-spacing: -1%; line-height: 10px;">
-                    MAX
-                  </span>
+              <div class="flex justify-between items-center">
+                <TokenIcon size={38} asset={propRefs.asset}></TokenIcon>
+                <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
+                  {props.asset?.label.replace(/^c/gim, "")}
                 </div>
-              </button>
-            </div>
+              </div>
+            </Button.Select>
+            <Input.Base
+              class="flex-1"
+              startContent={
+                !!props.onSetToMaxAmount && (
+                  <Button.Pill
+                    onClick={() =>
+                      props.onSetToMaxAmount && props.onSetToMaxAmount()
+                    }
+                  >
+                    MAX
+                  </Button.Pill>
+                )
+              }
+              onFocus={props.onFocus}
+              onBlur={props.onBlur}
+              type="number"
+              min="0"
+              style={{
+                textAlign: "right",
+              }}
+              onInput={(e) => {
+                props.onInputAmount((e.target as HTMLInputElement).value || "");
+              }}
+              value={props.amount}
+            />
           </div>
           <TokenSelectDropdown
             onCloseIntent={() => {

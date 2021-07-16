@@ -20,6 +20,8 @@ import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
+import { Input } from "@/components/Input/Input";
+import { Button } from "@/components/Button/Button";
 import router from "@/router";
 import { ExportData, getExportLocation } from "./useExportData";
 import ExportDetailsDisplay from "./ExportDetailsDisplay";
@@ -140,38 +142,29 @@ export default defineComponent({
             )}
           </label>
 
-          <div class="relative flex items-center h-[54px] px-3 rounded bg-gray-input border-solid border-gray-input_outline border mt-[10px]">
-            {!!exportTokenRef.value && (
-              <button
-                class="z-10 box-content text-[10px] p-[1px] font-semibold bg-accent-gradient rounded-full font-sans"
-                onClick={handleSetMax}
-              >
-                <div class="flex items-center px-[9px] h-[18px] bg-gray-input rounded-full text-accent-base">
-                  <span style="letter-spacing: -1%; line-height: 10px;">
-                    MAX
-                  </span>
-                </div>
-              </button>
-            )}
-            <input
-              id="exportAmount"
-              type="number"
-              min="0"
-              style={{
-                textAlign: "right",
-              }}
-              onInput={(e) => {
-                const value = (e.target as HTMLInputElement).value;
-                if (isNaN(parseFloat(value))) {
-                  exportParams.amount = "";
-                } else {
-                  exportParams.amount = value;
-                }
-              }}
-              value={exportParams.amount}
-              class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pr-[16px] pl-[68px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium"
-            />
-          </div>
+          <Input.Base
+            containerClass="mt-[10px]"
+            startContent={
+              !!exportTokenRef.value && (
+                <Button.Pill onClick={handleSetMax}>MAX</Button.Pill>
+              )
+            }
+            id="exportAmount"
+            type="number"
+            min="0"
+            style={{
+              textAlign: "right",
+            }}
+            onInput={(e) => {
+              const value = (e.target as HTMLInputElement).value;
+              if (isNaN(parseFloat(value))) {
+                exportParams.amount = "";
+              } else {
+                exportParams.amount = value;
+              }
+            }}
+            value={exportParams.amount}
+          />
 
           <label class={`${selectClasses.label} block mt-[10px]`}>
             Network
@@ -200,14 +193,7 @@ export default defineComponent({
           <ExportDetailsDisplay exportData={props.exportData} />
         </section>
 
-        <button
-          {...buttonRef.value.props}
-          class={cx(
-            "w-full mt-[10px]",
-            buttonClasses.button,
-            buttonRef.value.props.disabled && buttonClasses.disabled,
-          )}
-        >
+        <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">
           {!!buttonRef.value.icon && (
             <AssetIcon
               icon={buttonRef.value.icon}
@@ -215,7 +201,7 @@ export default defineComponent({
             />
           )}{" "}
           {buttonRef.value.name}
-        </button>
+        </Button.CallToAction>
       </>
     );
   },

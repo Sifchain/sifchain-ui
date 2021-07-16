@@ -15,9 +15,9 @@ export default defineComponent({
       required: true,
     },
     headerContent: {
-      type: Object as any,
+      type: Object as PropType<JSX.Element>,
     },
-    headerAction: Object as PropType<Component>,
+    headerAction: Object as PropType<Component | JSX.Element>,
     iconName: String as PropType<IconName>,
     class: String as PropType<HTMLAttributes["class"]>,
   },
@@ -48,7 +48,7 @@ export default defineComponent({
             )}
             {props.headerContent}
           </div>
-          <div class="w-full">{context.slots.default?.()}</div>
+          <div class="w-full pb-4">{context.slots.default?.()}</div>
         </div>
       </div>
     );
