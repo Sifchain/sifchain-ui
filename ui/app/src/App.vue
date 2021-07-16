@@ -71,7 +71,6 @@ export default defineComponent({
   // font: normal bold 14px/22px $f_default;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
 }
 
 input::-webkit-outer-spin-button,

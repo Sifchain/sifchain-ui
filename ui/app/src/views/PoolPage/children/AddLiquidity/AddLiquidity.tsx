@@ -23,7 +23,6 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     return () => (
       <Modal
-        teleportTo="#app"
         heading="Add Liquidity"
         icon="interactive/plus"
         showClose

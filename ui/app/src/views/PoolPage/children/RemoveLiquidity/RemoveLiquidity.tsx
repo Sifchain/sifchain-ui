@@ -29,7 +29,6 @@ export default defineComponent({
     watch([data.transactionState], () => {});
     return () => (
       <Modal
-        teleportTo="#app"
         heading="Remove Liquidity"
         icon="interactive/minus"
         showClose
