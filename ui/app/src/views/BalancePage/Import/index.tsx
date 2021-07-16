@@ -25,6 +25,7 @@ export default defineComponent({
     watch(
       () => importData.importParams,
       (value) => {
+        console.log("value", value);
         router.replace(
           getImportLocation(route.params.step as ImportStep, value),
         );
@@ -46,7 +47,6 @@ export default defineComponent({
           modalProps: {
             heading: "Import Token to Sifchain",
             icon: "interactive/arrow-down",
-            onClose: cancel,
           },
         },
         {
@@ -55,10 +55,6 @@ export default defineComponent({
           modalProps: {
             heading: "Import Token to Sifchain",
             icon: "interactive/arrow-down",
-            onClose: () =>
-              router.replace(
-                getImportLocation("select", importData.importParams),
-              ),
           },
         },
         {
@@ -67,7 +63,6 @@ export default defineComponent({
           modalProps: {
             heading: transactionDetails.value?.heading,
             icon: "interactive/arrow-down",
-            onClose: cancel,
           },
         },
       ];

@@ -6,10 +6,16 @@ button {
   transition: all 450ms ease;
   cursor: pointer;
 }
-button:hover {
+button:hover,
+.button:hover {
   filter: brightness(90%);
 }
-button:active {
+button:disabled:hover,
+.button[disabled]:hover {
+  filter: none;
+}
+button:active,
+.button:active {
   filter: brightness(120%);
 }
 

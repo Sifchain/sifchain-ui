@@ -1,12 +1,4 @@
-import {
-  defineComponent,
-  ref,
-  computed,
-  watch,
-  reactive,
-  PropType,
-  Ref,
-} from "vue";
+import { defineComponent, ref, computed, PropType, Ref } from "vue";
 import { useRoute } from "vue-router";
 import cx from "clsx";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
@@ -14,7 +6,6 @@ import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { AssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { TokenIcon } from "@/components/TokenIcon";
-import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
@@ -23,6 +14,7 @@ import { Button } from "@/components/Button/Button";
 import router from "@/router";
 import { ImportData, getImportLocation } from "./useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -34,9 +26,7 @@ export default defineComponent({
   },
   setup(props) {
     const { store } = useCore();
-    const selectClasses = useSelectClasses();
-    const buttonClasses = useButtonClasses();
-    const route = useRoute();
+    const appWalletPicker = useAppWalletPicker();
 
     const selectIsOpen = ref(false);
 
@@ -48,7 +38,7 @@ export default defineComponent({
       importAmountRef,
     } = props.importData;
 
-    const assetRef = ref(tokenRef.value.asset);
+    const networkRef = computed(() => importParams.network as Network);
 
     const handleSetMax = () => {
       const maxAmount = getMaxAmount(
@@ -83,23 +73,22 @@ export default defineComponent({
     const buttonRef = computed(() => {
       const buttons = [
         {
-          condition: false && !store.wallet.sif.isConnected,
+          condition: !store.wallet.sif.isConnected,
           name: "Connect Sifchain Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
             disabled: false,
-            onClick: () => window.alert("Open Wallet Window Sif"),
+            onClick: () => appWalletPicker.show(),
           },
         },
         {
           condition:
-            false &&
             importParams.network === Network.ETHEREUM &&
             !store.wallet.eth.isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () => window.alert("Open Wallet Window Eth"),
+            onClick: () => appWalletPicker.show(),
           },
         },
         {
@@ -120,14 +109,13 @@ export default defineComponent({
     return () => (
       <>
         <section class="bg-gray-base p-4 rounded">
-          <div class="flex">
-            <label class={cx(selectClasses.label, "flex-1")}>
+          <div class="flex w-full">
+            <div class="block flex-1 mr-[5px]">
               Network
-              <div class={selectClasses.container}>
-                <span class="capitalize">{importParams.network}</span>
-                <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
+              <Button.Select class="w-full relative capitalize pl-[16px]">
+                {importParams.network}
                 <select
-                  class={selectClasses.select}
+                  class={"absolute left-0 top-0 w-full h-full opacity-0"}
                   value={importParams.network}
                   onChange={(e) => {
                     const select = e.target as HTMLSelectElement;
@@ -141,41 +129,40 @@ export default defineComponent({
                     </option>
                   ))}
                 </select>
-              </div>
-            </label>
-            <label class={cx(selectClasses.label, "flex-1 ml-[10px]")}>
+              </Button.Select>
+            </div>
+            <div class="block flex-1 ml-[5px]">
               Token
-              <div class={selectClasses.container}>
-                <TokenIcon asset={assetRef} size={38} />
-                <div class="flex items-center">
-                  <div class="mr-2 uppercase">{importParams.symbol}</div>
-                  <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
+              <Button.Select
+                class="w-full"
+                active={selectIsOpen.value}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectIsOpen.value = !selectIsOpen.value;
+                }}
+              >
+                <div class="flex justify-between items-center">
+                  <TokenIcon
+                    size={38}
+                    assetValue={tokenRef.value?.asset}
+                  ></TokenIcon>
+                  <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
+                    {tokenRef.value?.asset?.label.replace(/^c/gim, "")}
+                  </div>
                 </div>
-                <select
-                  class={selectClasses.select}
-                  value={importParams.symbol}
-                  onChange={(e) =>
-                    (importParams.symbol = (e.target as HTMLSelectElement)?.value)
-                  }
-                >
-                  {pickableTokensRef.value.map((token) => (
-                    <option value={token.asset.symbol}>
-                      {token.asset.symbol.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </label>
-            <TokenSelectDropdown
-              onCloseIntent={() => {
-                selectIsOpen.value = false;
-              }}
-              onSelectAsset={(asset) => {
-                selectIsOpen.value = false;
-                importParams.symbol = asset.symbol;
-              }}
-              active={selectIsOpen}
-            />
+              </Button.Select>
+              <TokenSelectDropdown
+                network={networkRef as Ref}
+                onCloseIntent={() => {
+                  selectIsOpen.value = false;
+                }}
+                onSelectAsset={(asset) => {
+                  selectIsOpen.value = false;
+                  importParams.symbol = asset.symbol;
+                }}
+                active={selectIsOpen}
+              />
+            </div>
           </div>
 
           <div class="h-[40px] flex items-end justify-end">
@@ -216,7 +203,7 @@ export default defineComponent({
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
           <div class="text-white">Sifchain Recipient Address</div>
-          <div class="relative border h-[54px] border-solid border-white bg-gray-input">
+          <div class="relative border mt-[10px] h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input">
             <input
               readonly
               value={store.wallet.sif.address}

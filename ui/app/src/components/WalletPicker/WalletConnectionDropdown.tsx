@@ -1,5 +1,5 @@
 import { useCore } from "@/hooks/useCore";
-import { defineComponent, PropType, computed, ref } from "vue";
+import { defineComponent, PropType, computed, ref, onUnmounted } from "vue";
 
 import { WalletConnection } from "./constants";
 import copy from "copy-to-clipboard";
@@ -41,6 +41,10 @@ export default defineComponent({
         copiedRef.value = false;
       }, 2500);
     };
+
+    onUnmounted(() => {
+      clearTimeout(timeoutId);
+    });
 
     const actionsRef = computed(() => [
       {

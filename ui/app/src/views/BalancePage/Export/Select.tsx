@@ -8,16 +8,11 @@ import {
   Ref,
 } from "vue";
 import { useRoute } from "vue-router";
-import cx from "clsx";
 import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
-import Tooltip from "@/components/Tooltip";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { AssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import { useSelectClasses } from "@/hooks/elements/useSelectClasses";
-import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
-import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { Input } from "@/components/Input/Input";
@@ -36,10 +31,6 @@ export default defineComponent({
   },
   setup(props) {
     const { store } = useCore();
-    const selectClasses = useSelectClasses();
-    const buttonClasses = useButtonClasses();
-    const listClasses = useDetailListClasses();
-    const route = useRoute();
 
     const {
       exportParams,
@@ -166,13 +157,12 @@ export default defineComponent({
             value={exportParams.amount}
           />
 
-          <label class={`${selectClasses.label} block mt-[10px]`}>
+          <div class="block mt-[10px]">
             Network
-            <div class={selectClasses.container}>
-              <span class="capitalize">{exportParams.network}</span>
-              <AssetIcon icon="interactive/chevron-down" class="w-5 h-5" />
+            <Button.Select class="capitalize relative w-full mt-[10px] pl-[16px]">
+              {exportParams.network}
               <select
-                class={[selectClasses.select, "text-right"]}
+                class={"absolute left-0 top-0 w-full h-full opacity-0"}
                 value={exportParams.network}
                 onChange={(e) => {
                   const select = e.target as HTMLSelectElement;
@@ -185,8 +175,8 @@ export default defineComponent({
                   </option>
                 ))}
               </select>
-            </div>
-          </label>
+            </Button.Select>
+          </div>
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">

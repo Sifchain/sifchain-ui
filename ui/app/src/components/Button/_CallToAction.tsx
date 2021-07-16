@@ -8,7 +8,7 @@ export const _CallToAction = (
     <button
       {...props}
       class={[
-        `w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white disabled:bg-gray-disabled disabled:text-gray-800`,
+        `w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white disabled:bg-gray-disabled disabled:text-gray-800 disabled:bg-none`,
         props.class,
       ]}
       style={

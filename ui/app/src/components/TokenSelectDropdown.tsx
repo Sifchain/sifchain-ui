@@ -33,6 +33,11 @@ export const TokenSelectDropdown = defineComponent({
       type: Function as PropType<(asset: IAsset) => any>,
       required: true,
     },
+    network: {
+      type: Object as PropType<Ref<Network>>,
+      required: false,
+      default: () => Network.SIFCHAIN,
+    },
   },
   setup(props) {
     const core = useCore();
@@ -103,7 +108,7 @@ export const TokenSelectDropdown = defineComponent({
       const q = searchQuery.value;
       return sortedAssets.value.filter((a) => {
         return (
-          a.network == Network.SIFCHAIN &&
+          a.network === props.network.value &&
           [a.address, a.displaySymbol, a.name, a.symbol]
             .join(",")
             .toLowerCase()
@@ -111,15 +116,7 @@ export const TokenSelectDropdown = defineComponent({
         );
       });
     });
-    const lastVisibleAssetToShow = ref(1);
 
-    onMounted(async () => {
-      for (const _asset of sortedAssets.value) {
-        await new Promise((r) => setTimeout(r, 200));
-        console.log("hello");
-        lastVisibleAssetToShow.value = lastVisibleAssetToShow.value + 1;
-      }
-    });
     watch([props.active], () => {
       const rect = selfRoot.value?.getBoundingClientRect();
       if (
@@ -129,6 +126,14 @@ export const TokenSelectDropdown = defineComponent({
         return;
       }
       boundingClientRect.value = rect;
+
+      let frameId: number;
+      if (props.active) {
+        frameId = window.requestAnimationFrame(() => {
+          dropdownRoot.value?.querySelector("input")?.focus();
+        });
+      }
+      return () => window.cancelAnimationFrame(frameId);
     });
     onMounted(() => {
       resizeListener.value();
@@ -206,7 +211,7 @@ export const TokenSelectDropdown = defineComponent({
                                 asset={ref(asset)}
                                 class="mr-[8px]"
                               />
-                              {asset.displaySymbol}
+                              {asset.displaySymbol || asset.symbol}
                               <div class="flex-1 ml-[8px]" />
                               {balanceByAssetSymbol.value[asset.symbol]}
                             </div>

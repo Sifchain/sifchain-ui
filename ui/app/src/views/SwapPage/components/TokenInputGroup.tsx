@@ -100,6 +100,7 @@ export const TokenInputGroup = defineComponent({
             ]}
           >
             <Button.Select
+              class="w-[186px]"
               active={selectIsOpen.value}
               disabled={props.selectDisabled}
               chevronIcon={

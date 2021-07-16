@@ -21,7 +21,8 @@ export function _Base(
       <input
         {...inputProps}
         class={[
-          "box-border outline-none w-full absolute top-0 bottom-0 left-0 right-0 pr-[16px] pl-[68px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium",
+          "box-border outline-none w-full absolute top-0 bottom-0 left-0 right-0 px-[16px] h-full bg-transparent outline-none text-[20px] text-white font-sans font-medium",
+          !!props.startContent && "pl-[68px]",
           inputProps.type === "number" && "font-mono",
           (inputProps.disabled || inputProps.readonly) && "opacity-20",
           inputProps.class,

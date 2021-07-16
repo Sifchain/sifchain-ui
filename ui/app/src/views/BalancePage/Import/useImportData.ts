@@ -111,21 +111,21 @@ export const useImportData = () => {
     }
   }
 
-  effect(() => {
-    if (
-      tokenRef.value &&
-      tokenRef.value.asset.network !== importParams.network
-    ) {
-      importParams.symbol = "";
-    }
-  });
-  effect(() => {
-    if (!tokenListRef.value.length) return;
-    if (!importParams.symbol)
-      importParams.symbol = tokenListRef.value[0].asset.symbol;
-    if (!importParams.network)
-      importParams.network = tokenListRef.value[0].asset.network;
-  });
+  // effect(() => {
+  //   if (
+  //     tokenRef.value &&
+  //     tokenRef.value.asset.network !== importParams.network
+  //   ) {
+  //     importParams.symbol = "";
+  //   }
+  // });
+  // effect(() => {
+  //   if (!tokenListRef.value.length) return;
+  //   if (!importParams.symbol)
+  //     importParams.symbol = tokenListRef.value[0].asset.symbol;
+  //   if (!importParams.network)
+  //     importParams.network = tokenListRef.value[0].asset.network;
+  // });
 
   return {
     importParams,

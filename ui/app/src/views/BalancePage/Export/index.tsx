@@ -48,7 +48,6 @@ export default defineComponent({
           modalProps: {
             heading,
             icon: "interactive/arrow-up",
-            onClose: cancel,
           },
         },
         {
@@ -57,10 +56,6 @@ export default defineComponent({
           modalProps: {
             heading,
             icon: "interactive/arrow-up",
-            onClose: () =>
-              router.replace(
-                getExportLocation("select", exportData.exportParams),
-              ),
           },
         },
         {
@@ -70,7 +65,6 @@ export default defineComponent({
             heading:
               transactionDetails.value?.heading || "Waiting for Confirmation",
             icon: "interactive/arrow-up",
-            onClose: cancel,
           },
         },
       ];

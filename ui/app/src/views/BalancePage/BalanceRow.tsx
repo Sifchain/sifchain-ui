@@ -25,6 +25,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
 import { Network } from "@sifchain/sdk";
+import { Button } from "@/components/Button/Button";
 
 export const SYMBOL_COLUMN_WIDTH = 130;
 
@@ -189,28 +190,17 @@ export default defineComponent({
             )}
           </div>
         </td>
-        <td class="text-right align-middle">
+        <td class="text-right align-middle w-[360px]">
           <div class="inline-flex items-center">
             {buttonsRef.value.map((definition) => {
-              const Cmp: any = definition.tag;
               return (
-                <Cmp
-                  class={cx(
-                    "mr-1 rounded inline-flex items-center py-[6px] px-1 text-accent-base text-xs font-semibold bg-gray-base",
-                    definition.props.disabled &&
-                      "text-gray-disabled cursor-not-allowed",
-                    definition.class,
-                  )}
+                <Button.Inline
+                  class={[definition.class, "mr-1"]}
+                  icon={definition.icon as IconName}
                   {...definition.props}
                 >
-                  <AssetIcon
-                    active={!definition.props.disabled}
-                    disabled={definition.props.disabled}
-                    icon={definition.icon as IconName}
-                    class="w-4 h-4 mr-[2px] text-accent-base"
-                  />
                   {definition.name}
-                </Cmp>
+                </Button.Inline>
               );
             })}
             <button
@@ -225,17 +215,19 @@ export default defineComponent({
                 );
               }}
             >
-              <AssetIcon
-                active
-                icon={
-                  expandedRef.value
-                    ? "interactive/chevron-down"
-                    : "interactive/ellipsis"
-                }
-                style={{
-                  transform: !expandedRef.value ? "" : "rotate(270deg)",
-                }}
-              />
+              {expandedRef.value ? (
+                <AssetIcon
+                  active
+                  icon="interactive/chevron-down"
+                  class="rotate-270 w-[26px] h-[26px]"
+                />
+              ) : (
+                <AssetIcon
+                  active
+                  icon="interactive/ellipsis"
+                  class="w-[26px] h-[26px] fill-current text-accent-base"
+                />
+              )}
             </button>
           </div>
         </td>

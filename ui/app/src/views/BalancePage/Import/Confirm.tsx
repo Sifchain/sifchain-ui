@@ -3,7 +3,7 @@ import { ref } from "vue";
 import router from "@/router";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
-import Modal from "@/components/Modal";
+import { Button } from "@/components/Button/Button";
 import { ImportData, getImportLocation } from "./useImportData";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 
@@ -59,15 +59,15 @@ export default defineComponent({
           Your funds will be available for use on Sifchain only after 50
           Ethereum block confirmations. This can take upwards of 20 minutes.
         </p>
-        <button
-          class={`${buttonClasses.button} w-full mt-[10px]`}
+        <Button.CallToAction
+          class="mt-[10px]"
           onClick={() => {
             runImport();
             router.replace(getImportLocation("processing", importParams));
           }}
         >
           Confirm
-        </button>
+        </Button.CallToAction>
       </>
     );
   },

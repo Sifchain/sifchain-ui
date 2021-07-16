@@ -10,7 +10,7 @@ export default defineComponent({
   props: {},
   setup() {
     return () => (
-      <div class="w-[300px]">
+      <div class="w-[304px]">
         {walletConnections.map((connection) => (
           <WalletConnection connection={connection} key={connection.name} />
         ))}

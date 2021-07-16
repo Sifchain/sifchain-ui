@@ -14,6 +14,7 @@ import {
   usePegEventDetails,
 } from "@/hooks/useTransactionDetails";
 import { effect } from "@vue/reactivity";
+import { Button } from "@/components/Button/Button";
 
 export default defineComponent({
   name: "ImportProcessingModal",
@@ -96,14 +97,14 @@ export default defineComponent({
           {transactionDetails.value?.description}
         </p>
         {!!transactionDetails.value?.tx && (
-          <button
-            class={`${buttonClasses.button} w-full mt-[10px]`}
+          <Button.CallToAction
+            class="mt-[10px]"
             onClick={() => {
               router.replace({ name: "Balances" });
             }}
           >
             Close
-          </button>
+          </Button.CallToAction>
         )}
       </>
     );
