@@ -1,22 +1,33 @@
-import { defineComponent } from "vue";
-import { useTVL } from "@/componentsLegacy/TVL/useTVL";
-import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { defineComponent, ref } from "vue";
 import { useCore } from "../../hooks/useCore";
 import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
 import Logo from "@/assets/logo-large.svg";
 import AssetIcon from "../utilities/AssetIcon";
+import { prettyNumber } from "@/utils/prettyNumber";
 import WalletPicker from "@/components/WalletPicker";
+import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 
 export default defineComponent({
   props: {},
   setup(props) {
-    const { store } = useCore();
-    const tvl = useTVL();
-    const rowanPrice = useRowanPrice();
+    const { store, config } = useCore();
     const appWalletPicker = useAppWalletPicker();
+
+    const poolStats = usePoolStats();
+    const tvl = computed(() => {
+      return poolStats.data.value?.poolData?.pools.reduce(
+        (tvl: number, pool: PoolStat) => {
+          return tvl + (parseFloat(pool.poolDepth) || 0) * 2;
+        },
+        0,
+      );
+    });
+    const rowanPrice = computed(() => {
+      return poolStats.data.value?.rowanUsd;
+    });
 
     const connectedWalletCount = computed(
       () =>
@@ -28,10 +39,10 @@ export default defineComponent({
       <div class="portrait:hidden overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
         <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
           <div class="top">
-            <div class="w-[119px] ml-[46px] mr-[45px] mt-[38px] flex justify-center">
-              <Logo />
+            <div class="mt-[38px] flex justify-center">
+              <Logo class="w-[119px]" />
             </div>
-            <div class="mt-[96px]">
+            <div class="mt-[9.3vh]">
               <NavSidePanelItem
                 displayName="Dashboard"
                 icon="navigation/dashboard"
@@ -80,22 +91,20 @@ export default defineComponent({
             </div>
           </div>
           <div class="bottom">
-            <div class="transition-all pl-[30px] w-full mt-24 flex justify-start items-start flex-col">
-              <div class="line-height-[22px] align-middle font-medium text-[10px] text-info-base px-[10px] py-[1px] border-[1px] border-solid border-info-base rounded-full justify-start">
-                TVL: {tvl.data || "..."}
-              </div>
-              <div class="transition-all flex flex-row mt-[8px] align-middle font-medium text-[10px] pr-[9px] text-accent-base border-[1px] border-solid border-accent-base rounded-full justify-start">
+            <div class="transition-all pl-[30px] w-full text-left">
+              <span class="inline-flex items-center justify-center h-[26px] font-medium text-[10px] text-info-base px-[10px] border border-solid border-info-base rounded-full">
+                TVL: {tvl.value ? `$${prettyNumber(tvl.value)}` : "..."}
+              </span>
+              <div />
+              <span class="inline-flex items-center justify-center h-[26px] mt-[10px] font-medium text-[10px] text-accent-base pr-[10px] pl-[5px] border border-solid border-accent-base rounded-full">
                 <img
-                  class="ml-[4px] my-[2px] w-[20px] h-[20px]"
+                  class="w-[20px] h-[20px] mr-[4px]"
+                  alt="ROWAN price"
                   src="/images/tokens/ROWAN.svg"
                 />
-                <span
-                  style="line-height: 20px;"
-                  class="inline-block ml-[4px] my-[1px]"
-                >
-                  ROWAN: ${rowanPrice.data || "..."}
-                </span>
-              </div>
+                ROWAN:{" "}
+                {rowanPrice.value ? `$${rowanPrice.value.toFixed(5)}` : "..."}
+              </span>
             </div>
             <Tooltip
               placement="top-start"

@@ -31,6 +31,7 @@ async function loadTVL() {
   });
 
   const tlv = "$" + formatNumberString(total.toFixed(1));
+  console.log("JSON!", json);
 
   return tlv.substring(0, tlv.length - 2);
 }

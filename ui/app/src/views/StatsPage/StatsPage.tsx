@@ -4,13 +4,7 @@ import PageCard from "@/components/PageCard";
 import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
-
-function prettyNumber(n: number, precision: number = 2) {
-  return n
-    .toFixed(precision)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+import { prettyNumber } from "@/utils/prettyNumber";
 
 export default defineComponent({
   name: "StatsPage",

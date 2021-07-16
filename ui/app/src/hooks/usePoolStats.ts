@@ -1,4 +1,4 @@
-import { useAsyncData } from "./useAsyncData";
+import { useAsyncDataCached } from "./useAsyncDataCached";
 import { useCore } from "./useCore";
 
 export interface PoolStatsResponseData {
@@ -26,7 +26,7 @@ export interface Headers {
 }
 
 export const usePoolStats = () => {
-  const data = useAsyncData(async () => {
+  const data = useAsyncDataCached("poolStats", async () => {
     const { services } = useCore();
     const data = await fetch(
       "https://vtdbgplqd6.execute-api.us-west-2.amazonaws.com/default/tokenstatstest",
@@ -43,8 +43,8 @@ export const usePoolStats = () => {
     return {
       poolData,
       liqAPY,
+      rowanUsd: poolData.rowanUSD,
     };
   });
-  console.log(data);
   return data;
 };
