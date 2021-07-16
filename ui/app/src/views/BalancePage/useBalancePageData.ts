@@ -27,8 +27,10 @@ export const useBalancePageData = (initialState: BalancePageState) => {
       return (
         (token.asset.displaySymbol || token.asset.symbol)
           .toLowerCase()
-          .indexOf(state.searchQuery) !== -1 ||
-        token.asset.label.toLowerCase().indexOf(state.searchQuery) !== -1
+          .indexOf(state.searchQuery.toLowerCase()) !== -1 ||
+        token.asset.label
+          .toLowerCase()
+          .indexOf(state.searchQuery.toLowerCase()) !== -1
       );
     });
 

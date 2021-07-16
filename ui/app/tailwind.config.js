@@ -77,6 +77,9 @@ module.exports = {
           600: "#636363",
 
           800: "#808080",
+
+          900: "#F9F9F9",
+          active_outline: "#F9F9F9",
         },
       },
       fontSize: {

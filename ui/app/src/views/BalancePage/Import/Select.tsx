@@ -20,6 +20,7 @@ import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import router from "@/router";
 import { ImportData, getImportLocation } from "./useImportData";
+import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -34,6 +35,8 @@ export default defineComponent({
     const selectClasses = useSelectClasses();
     const buttonClasses = useButtonClasses();
     const route = useRoute();
+
+    const selectIsOpen = ref(false);
 
     const {
       importParams,
@@ -161,6 +164,16 @@ export default defineComponent({
                 </select>
               </div>
             </label>
+            <TokenSelectDropdown
+              onCloseIntent={() => {
+                selectIsOpen.value = false;
+              }}
+              onSelectAsset={(asset) => {
+                selectIsOpen.value = false;
+                importParams.symbol = asset.symbol;
+              }}
+              active={selectIsOpen}
+            />
           </div>
 
           <div class="h-[40px] flex items-end justify-end">

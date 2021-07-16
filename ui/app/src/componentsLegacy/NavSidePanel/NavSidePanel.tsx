@@ -13,9 +13,17 @@ import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 export default defineComponent({
   props: {},
   setup(props) {
+    const { store } = useCore();
     const tvl = useTVL();
     const rowanPrice = useRowanPrice();
     const appWalletPicker = useAppWalletPicker();
+
+    const connectedWalletCount = computed(
+      () =>
+        [store.wallet.eth.isConnected, store.wallet.sif.isConnected].filter(
+          Boolean,
+        ).length,
+    );
     return () => (
       <div class="portrait:hidden overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
         <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
@@ -26,43 +34,47 @@ export default defineComponent({
             <div class="mt-[96px]">
               <NavSidePanelItem
                 displayName="Dashboard"
-                icon="dashboard"
+                icon="navigation/dashboard"
                 routerLink="/dashboard"
-                isComingSoon
+                action={
+                  <div class="py-[2px] px-[6px] text-[10px] text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
+                    Soon
+                  </div>
+                }
               />
               <NavSidePanelItem
                 displayName="Swap"
-                icon="swap"
+                icon="navigation/swap"
                 routerLink="/swap"
               />
               <NavSidePanelItem
                 displayName="Balances"
-                icon="balances"
+                icon="navigation/balances"
                 routerLink="/balances"
               />
               <NavSidePanelItem
                 displayName="Pool"
-                icon="pool"
+                icon="navigation/pool"
                 routerLink="/pool"
               />
               <NavSidePanelItem
                 displayName="Pool Stats"
-                icon="pool-stats"
+                icon="navigation/pool-stats"
                 routerLink="/stats"
               />
               <NavSidePanelItem
                 displayName="Stake"
-                icon="stake"
+                icon="navigation/stake"
                 routerLink="/stake-delegate"
               />
               <NavSidePanelItem
                 displayName="Documents"
-                icon="documents"
+                icon="navigation/documents"
                 routerLink="/documents"
               />
               <NavSidePanelItem
                 displayName="More"
-                icon="more"
+                icon="navigation/more"
                 routerLink="/more"
               />
             </div>
@@ -91,7 +103,13 @@ export default defineComponent({
               arrow={false}
               trigger="click"
               interactive
-              offset={[20, 20]}
+              offset={[20]}
+              onShow={() => {
+                appWalletPicker.isOpen.value = true;
+              }}
+              onHide={() => {
+                appWalletPicker.isOpen.value = false;
+              }}
               onMount={(instance: TooltipInstance) => {
                 instance.popper
                   .querySelector(".tippy-box")
@@ -101,13 +119,30 @@ export default defineComponent({
               content={<WalletPicker />}
               ref={appWalletPicker.ref}
             >
-              <button class="mt-[22px] text-xs text-bold flex items-center w-full px-1">
-                <AssetIcon
-                  icon="interactive/wallet"
-                  class="w-[20px] h-[20px] mr-[10px]"
-                />
-                Connect Wallet
-              </button>
+              <NavSidePanelItem
+                icon="interactive/wallet"
+                displayName={
+                  connectedWalletCount.value === 0
+                    ? "Connect Wallets"
+                    : "Connected Wallets"
+                }
+                class={appWalletPicker.isOpen.value && "bg-gray-200"}
+                action={
+                  connectedWalletCount.value === 0 ? (
+                    <AssetIcon
+                      icon="interactive/chevron-down"
+                      style={{
+                        transform: "rotate(-90deg)",
+                      }}
+                      class="w-[20px] h-[20px] justify-self-end"
+                    />
+                  ) : (
+                    <div class="w-[20px] h-[20px] rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0 justify-self-end">
+                      {connectedWalletCount.value}
+                    </div>
+                  )
+                }
+              />
             </Tooltip>
             <div class="opacity-20 font-mono mt-[22px] text-[10px] pb-[10px]">
               V.2.0.X © {new Date().getFullYear()} Sifchain
