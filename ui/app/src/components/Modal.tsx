@@ -25,6 +25,7 @@ export default defineComponent({
   props: {
     teleportTo: {
       type: String as PropType<ModalProps["teleportTo"]>,
+      default: () => "#app",
     },
     onClose: {
       type: Function as PropType<ModalProps["onClose"]>,
@@ -67,10 +68,10 @@ export default defineComponent({
       document.body.removeEventListener("keydown", onKeypress);
     });
     return () => (
-      <Teleport to={props.teleportTo || "#app"}>
-        <div class="z-100 overflow-hidden absolute bg-white bg-opacity-30 z-[1] inset-0 left-sidebar animate-fade-in duration-300" />
+      <Teleport to={props.teleportTo}>
+        <div class="overflow-hidden fixed bg-white bg-opacity-30 z-20 inset-0 left-sidebar animate-fade-in duration-300" />
         <div
-          class="absolute inset-0 left-sidebar flex items-center justify-center z-10 animate-fade-in-up duration-500 "
+          class="absolute inset-0 left-sidebar flex items-center justify-center z-20 animate-fade-in-up duration-500 "
           onClick={() => props.onClose?.()}
         >
           <div
