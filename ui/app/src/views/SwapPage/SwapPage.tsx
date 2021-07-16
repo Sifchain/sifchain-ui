@@ -150,12 +150,14 @@ export default defineComponent({
               }
               data.handleNextStepClicked();
             }}
+            disabled={!data.nextStepAllowed.value}
             class="mt-[10px]"
           >
             {data.nextStepMessage.value}
           </Button.CallToAction>
         }
         <RouterView></RouterView>
+        <div class="pb-4" />
       </PageCard>
     );
   },

@@ -91,8 +91,8 @@ export default defineComponent({
               />
             </div>
           </div>
-          <div class="bottom">
-            <div class="transition-all pl-[30px] w-full text-left">
+          <div class="bottom mt-[10px]">
+            <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
               <span class="inline-flex items-center justify-center h-[26px] font-medium text-[10px] text-info-base px-[10px] border border-solid border-info-base rounded-full">
                 TVL: {tvl.value ? `$${prettyNumber(tvl.value)}` : "..."}
               </span>
@@ -136,7 +136,7 @@ export default defineComponent({
                     ? "Connect Wallets"
                     : "Connected Wallets"
                 }
-                class={appWalletPicker.isOpen.value && "bg-gray-200"}
+                class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-200"]}
                 action={
                   connectedWalletCount.value === 0 ? (
                     <AssetIcon
@@ -154,7 +154,7 @@ export default defineComponent({
                 }
               />
             </Tooltip>
-            <div class="opacity-20 font-mono mt-[22px] text-[10px] pb-[10px]">
+            <div class="opacity-20 font-mono mt-[24px] text-[10px] pb-[10px]">
               V.2.0.X © {new Date().getFullYear()} Sifchain
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { defineComponent, PropType, computed } from "vue";
+import { defineComponent, PropType, computed, BaseTransition } from "vue";
 import cx from "clsx";
 import { ref, toRefs } from "@vue/reactivity";
 import { RouterLink } from "vue-router";
@@ -66,9 +66,9 @@ export default defineComponent({
         tag: RouterLink,
         icon: "interactive/arrow-down",
         name: "Import",
+        visible: true,
         props: {
           replace: true,
-          class: !expandedRef.value && "order-10", // Put import button last if not expanded
           to: getImportLocation("select", {
             symbol: getUnpeggedSymbol(
               props.tokenItem.asset.symbol,
@@ -81,14 +81,15 @@ export default defineComponent({
             tag: "button",
             icon: "interactive/arrow-up",
             name: "Export",
+            visible: expandedRef.value,
             props: { disabled: true, class: !expandedRef.value && "invisible" },
           }
         : {
             tag: RouterLink,
             icon: "interactive/arrow-up",
             name: "Export",
+            visible: expandedRef.value,
             props: {
-              class: !expandedRef.value && "invisible",
               replace: true,
               to: getExportLocation("select", {
                 symbol: props.tokenItem.asset.symbol,
@@ -100,7 +101,7 @@ export default defineComponent({
         icon: "navigation/pool",
         name: "Pool",
         id: "pool",
-        class: !expandedRef.value && "invisible",
+        visible: expandedRef.value,
         tag: RouterLink,
         props: {
           to: {
@@ -113,11 +114,11 @@ export default defineComponent({
         name: "Swap",
         id: "swap",
         tag: RouterLink,
+        visible: expandedRef.value,
         props: {
-          class: !expandedRef.value && "invisible",
           to: {
-            path: "swap",
-            query: { to: props.tokenItem.asset.symbol },
+            name: "Swap",
+            query: { fromSymbol: props.tokenItem.asset.symbol },
           },
         },
       },
@@ -190,22 +191,26 @@ export default defineComponent({
             )}
           </div>
         </td>
-        <td class="text-right align-middle w-[360px]">
+        <td class="text-right align-middle w-[380px]">
           <div class="inline-flex items-center">
-            {buttonsRef.value.map((definition) => {
-              return (
-                <Button.Inline
-                  class={[definition.class, "mr-1"]}
-                  icon={definition.icon as IconName}
-                  {...definition.props}
-                >
-                  {definition.name}
-                </Button.Inline>
-              );
-            })}
+            {buttonsRef.value
+              .filter((definition) => definition.visible)
+              .map((definition) => {
+                return (
+                  <Button.Inline
+                    key={definition.name}
+                    class="mr-1 animation-fade-in"
+                    icon={definition.icon as IconName}
+                    {...definition.props}
+                  >
+                    {definition.name}
+                  </Button.Inline>
+                );
+              })}
             <button
+              key={"expanded-" + expandedRef.value}
               class={cx(
-                "order-last w-5 h-5 items-center justify-center cursor-pointer rounded-full",
+                "order-last w-5 h-5 items-center justify-center cursor-pointer rounded-full transition-all",
                 !expandedRef.value && "bg-transparent",
                 expandedRef.value && "bg-gray-base",
               )}
@@ -219,13 +224,14 @@ export default defineComponent({
                 <AssetIcon
                   active
                   icon="interactive/chevron-down"
-                  class="rotate-270 w-[26px] h-[26px]"
+                  style={{ transform: "rotate(-90deg)" }}
+                  class="w-[26px] h-[26px] animation-fade-in"
                 />
               ) : (
                 <AssetIcon
                   active
                   icon="interactive/ellipsis"
-                  class="w-[26px] h-[26px] fill-current text-accent-base"
+                  class="w-[26px] h-[26px] fill-current text-accent-base animation-fade-in"
                 />
               )}
             </button>

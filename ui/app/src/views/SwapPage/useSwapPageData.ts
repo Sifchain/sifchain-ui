@@ -2,24 +2,51 @@ import { computed, effect, reactive, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import {
   IAsset,
+  Network,
   SwapState,
   TransactionStatus,
   useSwapCalculator,
+  ServiceContext,
 } from "@sifchain/sdk";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
+const getRouteSymbol = (
+  config: ServiceContext,
+  queryValue: string,
+  defaultValue: string,
+) => {
+  const asset = config.assets.find((asset) => {
+    return (
+      asset.symbol.toLowerCase() === queryValue.toLowerCase() &&
+      asset.network === Network.SIFCHAIN
+    );
+  });
+  return asset?.symbol || defaultValue;
+};
+
 export const useSwapPageData = () => {
-  const { usecases, poolFinder, store } = useCore();
+  const { usecases, poolFinder, store, config } = useCore();
   const router = useRouter();
-  const fromSymbol = ref("rowan");
-  const toSymbol = ref("cband");
-  const fromAmount = ref("1");
+  const route = useRoute();
+
+  const fromSymbol = ref(
+    getRouteSymbol(config, String(route.query.fromSymbol || ""), "cband"),
+  );
+  const toSymbol = ref(
+    getRouteSymbol(config, String(route.query.toSymbol || ""), "rowan"),
+  );
+
+  if (fromSymbol.value === toSymbol.value) {
+    toSymbol.value = fromSymbol.value === "rowan" ? "cband" : "rowan";
+  }
+
+  const fromAmount = ref("0");
   const toAmount = ref("0");
 
   const slippage = ref<string>("1.0");

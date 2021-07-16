@@ -56,9 +56,10 @@ export default defineComponent({
           heading="Balances"
           iconName="navigation/balances"
           class="w-[800px]"
+          withOverflowSpace
           headerContent={
             <div class="w-full">
-              <div class="bg-gray-input_outline h-8 relative flex items-center rounded-lg overflow-hidden">
+              <div class="bg-gray-input h-8 relative flex items-center rounded-lg overflow-hidden focus-within:border-white rounded border border-solid border-gray-input_outline">
                 <AssetIcon
                   size={20}
                   icon="interactive/search"
@@ -75,7 +76,7 @@ export default defineComponent({
                 />
               </div>
               <div class="h-4 w-full" />
-              <div class="pb-[5px] mb-[-5px] opacity-50 w-full flex flex-row justify-start">
+              <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
                 <div class="w-full flex flex-row justify-start font-medium text-xs align-text-bottom">
                   {columns.map((column, index) => (
                     <div
@@ -118,7 +119,7 @@ export default defineComponent({
         >
           <table class="w-full">
             <thead>
-              <tr class="font-medium text-xs align-text-bottom">
+              <tr>
                 {columns.map((column, index) => (
                   <td
                     ref={column.ref}

@@ -63,19 +63,18 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
   }
 
   if (event.type === "WalletConnectedEvent") {
-    const message = {
-      sif: "Sif Account Connected",
-      eth: "Connected to Metamask",
-    }[event.payload.walletType];
-
-    return {
-      type: "success",
-      message,
-      detail: {
-        type: "info",
-        message: event.payload.address,
-      },
-    };
+    // const message = {
+    //   sif: "Sif Account Connected",
+    //   eth: "Connected to Metamask",
+    // }[event.payload.walletType];
+    // return {
+    //   type: "success",
+    //   message,
+    //   detail: {
+    //     type: "info",
+    //     message: event.payload.address,
+    //   },
+    // };
   }
 
   if (

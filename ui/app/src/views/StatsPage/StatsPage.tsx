@@ -1,4 +1,4 @@
-import { defineComponent, computed, Ref } from "vue";
+import { defineComponent, computed, Ref, ref } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
 import PageCard from "@/components/PageCard";
 import { TokenIcon } from "@/components/TokenIcon";
@@ -14,6 +14,57 @@ export default defineComponent({
       sortBy: "asset",
       sortDirection: "asc",
     } as StatsPageState);
+
+    const columns: Array<{
+      name: string;
+      sortBy: StatsPageState["sortBy"];
+      class?: string;
+      ref: Ref<HTMLElement | undefined>;
+    }> = [
+      {
+        name: "Token",
+        sortBy: "asset",
+        class: "min-w-[120px] text-left",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Price of Token",
+        sortBy: "price",
+        class: "min-w-[90px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Arbitrage Opportunity",
+        sortBy: "arbitrage",
+        class: "min-w-[120px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Pool Depth (USD)",
+        sortBy: "depth",
+        class: "min-w-[120px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Total Volume (24hr)",
+        sortBy: "volume",
+        class: "min-w-[110px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Pool APY",
+        sortBy: "poolApy",
+        class: "min-w-[80px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+    ];
+    const colStyles = computed(() => {
+      return columns.map((col) => {
+        return {
+          width: `${col.ref.value?.getBoundingClientRect().width}px`,
+        };
+      });
+    });
 
     return () => {
       if (res.isLoading.value) {
@@ -31,81 +82,60 @@ export default defineComponent({
         );
       }
 
-      const columns: Array<{
-        name: string;
-        sortBy: StatsPageState["sortBy"];
-        class?: string;
-      }> = [
-        {
-          name: "Token",
-          sortBy: "asset",
-          class: "min-w-[120px] text-left",
-        },
-        {
-          name: "Price of Token",
-          sortBy: "price",
-          class: "min-w-[90px] text-right",
-        },
-        {
-          name: "Arbitrage Opportunity",
-          sortBy: "arbitrage",
-          class: "min-w-[120px] text-right",
-        },
-        {
-          name: "Pool Depth (USD)",
-          sortBy: "depth",
-          class: "min-w-[120px] text-right",
-        },
-        {
-          name: "Total Volume (24hr)",
-          sortBy: "volume",
-          class: "min-w-[110px] text-right",
-        },
-        {
-          name: "Pool APY",
-          sortBy: "poolApy",
-          class: "min-w-[80px] text-right",
-        },
-      ];
-
       return (
         <PageCard
           heading="Pool Stats"
           iconName="navigation/pool-stats"
           class="!w-[940px] !min-w-[940px] !max-w-[940px]"
+          withOverflowSpace
+          headerContent={
+            <div class="height-[40px] flex items-center text-xxs font-semibold">
+              {columns.map((column, index) => (
+                <div
+                  style={colStyles.value[index]}
+                  key={column.name}
+                  class={[column.class]}
+                >
+                  <div
+                    class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                    onClick={() => {
+                      if (state.sortBy === column.sortBy) {
+                        state.sortDirection =
+                          state.sortDirection === "asc" ? "desc" : "asc";
+                      } else {
+                        state.sortDirection = "asc";
+                      }
+                      state.sortBy = column.sortBy;
+                    }}
+                  >
+                    {column.name}
+                    {state.sortBy === column.sortBy && (
+                      <AssetIcon
+                        icon="interactive/arrow-down"
+                        class="transition-all w-[12px] h-[12px]"
+                        style={{
+                          transform:
+                            state.sortDirection === "asc"
+                              ? "rotate(0deg)"
+                              : "rotate(180deg)",
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          }
         >
           <table class="w-full">
             <thead>
-              <tr class="height-[40px] align-text-bottom text-xxs font-semibold">
-                {columns.map((column) => (
-                  <td class={[column.class]}>
-                    <div
-                      class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
-                      onClick={() => {
-                        if (state.sortBy === column.sortBy) {
-                          state.sortDirection =
-                            state.sortDirection === "asc" ? "desc" : "asc";
-                        } else {
-                          state.sortDirection = "asc";
-                        }
-                        state.sortBy = column.sortBy;
-                      }}
-                    >
-                      {column.name}
-                      {state.sortBy === column.sortBy && (
-                        <AssetIcon
-                          icon="interactive/arrow-down"
-                          class="transition-all w-[12px] h-[12px]"
-                          style={{
-                            transform:
-                              state.sortDirection === "asc"
-                                ? "rotate(0deg)"
-                                : "rotate(180deg)",
-                          }}
-                        />
-                      )}
-                    </div>
-                  </td>
+              <tr>
+                {columns.map((column, index) => (
+                  <td
+                    ref={column.ref}
+                    class={[column.class]}
+                    key={column.name}
+                  />
                 ))}
               </tr>
             </thead>

@@ -32,7 +32,7 @@ export default defineComponent({
             </RouterLink>
           }
         >
-          <div class="overflow-y-scroll w-full">
+          <div class="overflow-y-scroll w-full pb-4">
             <div class="w-full flex justify-start gap-[10px] capitalize text-right opacity-50 font-medium">
               <div class={`min-w-[196px] text-left`}>Token Pair</div>
               <div class={`min-w-[118px]`}>pool APY</div>

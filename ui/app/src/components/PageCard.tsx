@@ -20,11 +20,14 @@ export default defineComponent({
     headerAction: Object as PropType<Component | JSX.Element>,
     iconName: String as PropType<IconName>,
     class: String as PropType<HTMLAttributes["class"]>,
+    withOverflowSpace: {
+      type: Boolean,
+    },
   },
   setup: function PageCard(props, context: SetupContext) {
     // debugger;
     return () => (
-      <div class="block pt-[90px] md:pt-[90px] lg:pt-[90px] xl:pt-[90px] 2xl:pt-[130px] pb-[530px] ">
+      <div class="block pt-[90px] 2xl:pt-[130px] pb-[530px] ">
         <div
           key="view-layer"
           class={[
@@ -48,8 +51,9 @@ export default defineComponent({
             )}
             {props.headerContent}
           </div>
-          <div class="w-full pb-4">{context.slots.default?.()}</div>
+          <div class="w-full">{context.slots.default?.()}</div>
         </div>
+        {props.withOverflowSpace && <div class="h-[90px] 2xl:h-[130px]" />}
       </div>
     );
   },

@@ -36,7 +36,6 @@ export const TokenSelectDropdown = defineComponent({
     network: {
       type: Object as PropType<Ref<Network>>,
       required: false,
-      default: () => Network.SIFCHAIN,
     },
   },
   setup(props) {
@@ -108,7 +107,7 @@ export const TokenSelectDropdown = defineComponent({
       const q = searchQuery.value;
       return sortedAssets.value.filter((a) => {
         return (
-          a.network === props.network.value &&
+          a.network === (props.network?.value || Network.SIFCHAIN) &&
           [a.address, a.displaySymbol, a.name, a.symbol]
             .join(",")
             .toLowerCase()

@@ -160,9 +160,13 @@ export default defineComponent({
           <div class="block mt-[10px]">
             Network
             <Button.Select class="capitalize relative w-full mt-[10px] pl-[16px]">
-              {exportParams.network}
+              <div class="flex flex-1 justify-end text-right">
+                {exportParams.network}
+              </div>
               <select
-                class={"absolute left-0 top-0 w-full h-full opacity-0"}
+                class={
+                  "absolute left-0 top-0 w-full h-full opacity-0 text-right"
+                }
                 value={exportParams.network}
                 onChange={(e) => {
                   const select = e.target as HTMLSelectElement;
