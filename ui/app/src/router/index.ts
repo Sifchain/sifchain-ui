@@ -219,4 +219,12 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
+router.afterEach((to, from) => {
+  // Reset scroll on route change
+  if (to.name !== from.name) {
+    const layout = document.querySelector(".layout");
+    if (layout) layout.scrollTop = 0;
+  }
+});
+
 export default router;
