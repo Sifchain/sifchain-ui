@@ -7,6 +7,7 @@ import Logo from "@/assets/logo-large.svg";
 import AssetIcon from "../../components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import WalletPicker from "@/components/WalletPicker";
+import MoreMenu from "./NavMoreMenu";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 
@@ -15,6 +16,8 @@ export default defineComponent({
   setup(props) {
     const { store, config } = useCore();
     const appWalletPicker = useAppWalletPicker();
+
+    const moreMenuRef = ref();
 
     const poolStats = usePoolStats();
     const tvl = computed(() => {
@@ -90,11 +93,30 @@ export default defineComponent({
                 icon="navigation/documents"
                 routerLink="/documents"
               />
-              <NavSidePanelItem
-                displayName="More"
-                icon="navigation/more"
-                routerLink="/more"
-              />
+              <Tooltip
+                trigger="click"
+                placement="bottom"
+                arrow={false}
+                interactive
+                animation={null}
+                ref={moreMenuRef}
+                offset={[0, 0]}
+                onShow={(instance: TooltipInstance) => {
+                  const content = instance.popper.querySelector(
+                    ".tippy-content",
+                  );
+
+                  if (content) {
+                    content.className +=
+                      " w-[170px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none";
+                  }
+                }}
+                content={
+                  <MoreMenu onAction={() => moreMenuRef.value.tippy?.hide()} />
+                }
+              >
+                <NavSidePanelItem displayName="More" icon="navigation/more" />
+              </Tooltip>
             </div>
           </div>
           <div class="bottom mt-[10px]">

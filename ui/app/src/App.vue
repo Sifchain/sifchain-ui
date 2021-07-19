@@ -84,10 +84,6 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-a {
-  font-weight: bold;
-}
-
 .main {
   min-height: 100vh;
 }
