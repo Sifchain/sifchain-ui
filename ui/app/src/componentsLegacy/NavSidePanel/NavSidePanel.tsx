@@ -105,7 +105,6 @@ export default defineComponent({
                   const content = instance.popper.querySelector(
                     ".tippy-content",
                   );
-
                   if (content) {
                     content.className +=
                       " w-[170px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none";

@@ -59,11 +59,13 @@ export default defineComponent({
             )}
           </div>
           <p class="mt-[10px] text-sm text-center flex items-center justify-center">
-            <AssetIcon
-              icon="interactive/anim-racetrack-spinner"
-              class="mr-[2px]"
-              size={20}
-            />
+            {isLoading && (
+              <AssetIcon
+                icon="interactive/anim-racetrack-spinner"
+                class="mr-[2px]"
+                size={20}
+              />
+            )}
             {props.transactionDetails.value?.description}
           </p>
           {!isLoading && (
