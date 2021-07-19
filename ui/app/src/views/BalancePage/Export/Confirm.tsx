@@ -1,15 +1,9 @@
 import { defineComponent, PropType, computed, Ref } from "vue";
-import { ref } from "vue";
 import router from "@/router";
-import Tooltip from "@/components/Tooltip";
-import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
-import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
 import Modal from "@/components/Modal";
 import { ExportData, getExportLocation } from "./useExportData";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import { useCore } from "@/hooks/useCore";
-import AssetIcon from "@/components/AssetIcon";
-import ExportDetailsDisplay from "./ExportDetailsDisplay";
+import { Form } from "@/components/Form";
+import { Button } from "@/components/Button/Button";
 
 export default defineComponent({
   name: "ExportConfirmModal",
@@ -20,31 +14,28 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { store } = useCore();
-    const { exportParams, runExport, feeAmountRef } = props.exportData;
-    const listClasses = useDetailListClasses();
-    const buttonClasses = useButtonClasses();
-
-    const symbolRef = computed(() => exportParams.symbol);
-    const iconUrlRef = useTokenIconUrl({
-      symbol: symbolRef as Ref,
-    });
-
     return () => (
-      <>
+      <Modal
+        heading={props.exportData.headingRef.value}
+        icon="interactive/arrow-up"
+        onClose={props.exportData.exitExport}
+        showClose
+      >
         <div class="p-4 bg-gray-base rounded-lg">
-          <ExportDetailsDisplay withDestination exportData={props.exportData} />
+          <Form.Details details={props.exportData.detailsRef.value} />
         </div>
-        <button
-          class={`${buttonClasses.button} w-full mt-[10px]`}
+        <Button.CallToAction
+          class="w-full mt-[10px]"
           onClick={() => {
-            runExport();
-            router.replace(getExportLocation("processing", exportParams));
+            props.exportData.runExport();
+            router.replace(
+              getExportLocation("processing", props.exportData.exportParams),
+            );
           }}
         >
           Confirm
-        </button>
-      </>
+        </Button.CallToAction>
+      </Modal>
     );
   },
 });

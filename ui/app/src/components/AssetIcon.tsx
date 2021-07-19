@@ -36,6 +36,7 @@ export type InteractiveIconName =
   | "anim-circle-spinner"
   | "anim-racetrack-spinner"
   | "arrow-down"
+  | "arrow-up"
   | "arrows-in"
   | "chevron-down"
   | "chevron-up"

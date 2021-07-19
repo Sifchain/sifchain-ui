@@ -1,5 +1,5 @@
 import { defineComponent, PropType, computed, Ref } from "vue";
-import { ref } from "vue";
+import Modal from "@/components/Modal";
 import router from "@/router";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { useDetailListClasses } from "@/hooks/elements/useDetailListClasses";
@@ -26,7 +26,12 @@ export default defineComponent({
     });
 
     return () => (
-      <>
+      <Modal
+        heading="Import Token to Sifchain"
+        icon="interactive/arrow-down"
+        onClose={props.importData.exitImport}
+        showClose
+      >
         <div class="p-4 bg-gray-base rounded-lg">
           <div class={listClasses.list}>
             <div class={listClasses.item}>
@@ -68,7 +73,7 @@ export default defineComponent({
         >
           Confirm
         </Button.CallToAction>
-      </>
+      </Modal>
     );
   },
 });

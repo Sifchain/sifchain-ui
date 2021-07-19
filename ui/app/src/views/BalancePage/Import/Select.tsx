@@ -1,6 +1,5 @@
 import { defineComponent, ref, computed, PropType, Ref } from "vue";
-import { useRoute } from "vue-router";
-import cx from "clsx";
+import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { AssetAmount, Network } from "@sifchain/sdk";
@@ -107,7 +106,12 @@ export default defineComponent({
     });
 
     return () => (
-      <>
+      <Modal
+        heading="Import Token to Sifchain"
+        icon="interactive/arrow-down"
+        onClose={props.importData.exitImport}
+        showClose
+      >
         <section class="bg-gray-base p-4 rounded">
           <div class="flex w-full">
             <div class="block flex-1 mr-[5px]">
@@ -224,7 +228,7 @@ export default defineComponent({
           )}{" "}
           {buttonRef.value.name}
         </Button.CallToAction>
-      </>
+      </Modal>
     );
   },
 });

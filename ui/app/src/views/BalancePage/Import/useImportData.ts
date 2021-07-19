@@ -26,8 +26,9 @@ export type ImportData = {
   tokenRef: Ref<TokenListItem>;
   pickableTokensRef: Ref<TokenListItem[]>;
   importAmountRef: Ref<IAssetAmount | null>;
-  runImport: () => void;
   pegEventRef: Ref<PegEvent>;
+  runImport: () => void;
+  exitImport: () => void;
 };
 
 export function getImportLocation(
@@ -53,6 +54,18 @@ export const useImportData = () => {
     network: String(route.query.network || ""),
     amount: String(route.query.amount || ""),
   });
+
+  watch(
+    () => importParams,
+    (value) => {
+      router.replace(getImportLocation(route.params.step as ImportStep, value));
+    },
+    { deep: true },
+  );
+
+  const exitImport = () => {
+    router.replace({ name: "Balances" });
+  };
 
   const networksRef = ref(
     Object.values(Network).filter((network) => network !== Network.SIFCHAIN),
@@ -135,5 +148,6 @@ export const useImportData = () => {
     importAmountRef,
     runImport,
     pegEventRef,
+    exitImport: exitImport,
   } as ImportData;
 };

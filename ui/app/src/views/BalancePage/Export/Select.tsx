@@ -1,16 +1,8 @@
-import {
-  defineComponent,
-  ref,
-  computed,
-  watch,
-  reactive,
-  PropType,
-  Ref,
-} from "vue";
-import { useRoute } from "vue-router";
+import { defineComponent, ref, computed, PropType, Ref } from "vue";
+import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { AssetAmount, Network } from "@sifchain/sdk";
+import { Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { format } from "@sifchain/sdk/src/utils/format";
@@ -19,7 +11,7 @@ import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import router from "@/router";
 import { ExportData, getExportLocation } from "./useExportData";
-import ExportDetailsDisplay from "./ExportDetailsDisplay";
+import { Form } from "@/components/Form";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -116,7 +108,12 @@ export default defineComponent({
     });
 
     return () => (
-      <>
+      <Modal
+        heading={props.exportData.headingRef.value}
+        icon="interactive/arrow-up"
+        onClose={props.exportData.exitExport}
+        showClose
+      >
         <section class="bg-gray-base p-4 rounded">
           <label
             for="exportAmount"
@@ -184,7 +181,7 @@ export default defineComponent({
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
-          <ExportDetailsDisplay exportData={props.exportData} />
+          <Form.Details details={props.exportData.detailsRef.value} />
         </section>
 
         <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">
@@ -196,7 +193,7 @@ export default defineComponent({
           )}{" "}
           {buttonRef.value.name}
         </Button.CallToAction>
-      </>
+      </Modal>
     );
   },
 });

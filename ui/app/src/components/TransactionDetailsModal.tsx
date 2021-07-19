@@ -31,7 +31,9 @@ export default defineComponent({
     const { config } = useCore();
 
     return () => {
-      const isLoading = !props.transactionDetails.value?.tx?.hash;
+      const isLoading =
+        !props.transactionDetails.value?.tx?.hash &&
+        !props.transactionDetails.value?.isError;
       return (
         <Modal
           heading={props.transactionDetails.value?.heading}
