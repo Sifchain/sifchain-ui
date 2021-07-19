@@ -215,6 +215,7 @@ export default defineComponent({
           </Button.CallToAction>
         )) || (
           <Button.CallToAction
+            disabled={!data.nextStepAllowed.value}
             onClick={() => appWalletPicker.show()}
             class="mt-[10px]"
           >

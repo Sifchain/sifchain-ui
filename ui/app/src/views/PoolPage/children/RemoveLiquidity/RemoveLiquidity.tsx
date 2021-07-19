@@ -175,6 +175,7 @@ export default defineComponent({
           <Button.CallToAction
             onClick={() => appWalletPicker.show()}
             class="mt-[10px]"
+            disabled={!data.nextStepAllowed.value}
           >
             {/* <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" />{" "} */}
             {data.nextStepMessage.value}

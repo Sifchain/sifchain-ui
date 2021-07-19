@@ -63,10 +63,7 @@ export const ConfirmSwap = defineComponent({
             <Form.Details
               details={[
                 [
-                  <div class="flex items-center">
-                    Price
-                    <Button.InlineHelp>your help</Button.InlineHelp>
-                  </div>,
+                  <div class="flex items-center">Price</div>,
                   <div>{data.priceMessage.value}</div>,
                 ],
                 [
@@ -87,14 +84,21 @@ export const ConfirmSwap = defineComponent({
                 [
                   <div class="flex items-center">
                     Price Impact
-                    <Button.InlineHelp>Your help</Button.InlineHelp>
+                    <Button.InlineHelp>
+                      This is the percentage impact to the amount of the 'to'
+                      token in the liquidity pool based upon how much you are
+                      swapping for.
+                    </Button.InlineHelp>
                   </div>,
                   <div class="lfex items-center">{data.priceImpact.value}</div>,
                 ],
                 [
                   <div class="flex items-center">
                     Liquidity Provider Fee
-                    <Button.InlineHelp>your help</Button.InlineHelp>
+                    <Button.InlineHelp>
+                      This is the fee paid to the liquidity providers of this
+                      pool.
+                    </Button.InlineHelp>
                   </div>,
                   <div>{data.providerFee.value}</div>,
                 ],
