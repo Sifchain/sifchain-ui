@@ -9,7 +9,7 @@ import {
   getPeggedSymbol,
 } from "@/componentsLegacy/shared/utils";
 import ProgressRing from "@/components/ProgressRing";
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import Tooltip from "@/components/Tooltip";
 import {
   getBlockExplorerUrl,

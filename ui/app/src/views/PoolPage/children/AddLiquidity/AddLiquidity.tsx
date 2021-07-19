@@ -2,7 +2,7 @@ import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
@@ -130,6 +130,7 @@ export default defineComponent({
           Pool Token Prices
         </div>
         <Form.Details
+          class="mt-[10px]"
           details={[
             [
               <span>
@@ -167,6 +168,7 @@ export default defineComponent({
           Est. prices after pooling & pool share
         </div>
         <Form.Details
+          class="mt-[10px]"
           details={[
             [
               <span>

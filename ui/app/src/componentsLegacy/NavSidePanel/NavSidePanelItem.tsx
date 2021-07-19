@@ -1,6 +1,6 @@
 import { defineComponent, PropType, HTMLAttributes, computed } from "vue";
 import { useLink, useRouter, RouterLink } from "vue-router";
-import AssetIcon, { IconName } from "../utilities/AssetIcon";
+import AssetIcon, { IconName } from "../../components/AssetIcon";
 
 export default defineComponent({
   components: {},

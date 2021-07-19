@@ -21,7 +21,7 @@ import { IAsset } from "../../../../core/src";
 import { SlippageTolerance } from "./components/SlippageTolerance";
 import { SwapDetails } from "./components/SwapDetails";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import Modal from "@/components/Modal";

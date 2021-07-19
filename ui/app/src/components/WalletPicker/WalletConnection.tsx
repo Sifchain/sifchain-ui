@@ -1,5 +1,5 @@
 import { shortenHash } from "@/componentsLegacy/shared/utils";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { defineComponent, PropType, ref } from "vue";
 import { WalletConnection } from "./constants";
 import WalletConnectionDropdown from "./WalletConnectionDropdown";

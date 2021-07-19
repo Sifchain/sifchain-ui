@@ -7,7 +7,7 @@ import {
   onMounted,
   onUnmounted,
 } from "vue";
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { ProgressPlugin } from "webpack";
 
 export type ModalProps = {

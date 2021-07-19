@@ -1,7 +1,7 @@
 import { defineComponent, ref, computed, PropType, Ref } from "vue";
 import { useRoute } from "vue-router";
 import cx from "clsx";
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { AssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";

@@ -3,7 +3,7 @@ import { defineComponent, PropType, computed, ref, onUnmounted } from "vue";
 
 import { WalletConnection } from "./constants";
 import copy from "copy-to-clipboard";
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { RouterLink } from "vue-router";
 import { TooltipInstance } from "../Tooltip";
 

@@ -33,37 +33,39 @@ const navIcons = ((ctx) => {
 >;
 
 export type InteractiveIconName =
-  | "chevron-down"
-  | "search"
+  | "anim-circle-spinner"
+  | "anim-racetrack-spinner"
   | "arrow-down"
   | "arrows-in"
-  | "ellipsis"
-  | "tick"
-  | "close"
-  | "swap"
-  | "plus"
+  | "chevron-down"
   | "chevron-up"
-  | "minus"
+  | "circle-question"
+  | "circle-info"
+  | "close"
+  | "copy"
+  | "ellipsis"
   | "help"
   | "link"
-  | "wallet"
-  | "copy"
-  | "open-external"
   | "lock"
-  | "anim-racetrack-spinner"
-  | "anim-circle-spinner"
-  | "circle-question";
+  | "minus"
+  | "open-external"
+  | "plus"
+  | "search"
+  | "swap"
+  | "tick"
+  | "wallet";
 
 export type NavIconName =
-  | "documents"
-  | "pool"
-  | "swap"
   | "balances"
-  | "more"
-  | "rowan"
   | "dashboard"
+  | "documents"
+  | "more"
+  | "pool"
   | "pool-stats"
-  | "stake";
+  | "rewards"
+  | "rowan"
+  | "stake"
+  | "swap";
 
 export type IconName =
   | `navigation/${NavIconName}`

@@ -19,6 +19,11 @@ button:active,
   filter: brightness(120%);
 }
 
+a {
+  @apply text-accent-base font-normal;
+  text-decoration: underline;
+}
+
 input::-webkit-search-cancel-button{
   -webkit-appearance: none;
   width: 20px;

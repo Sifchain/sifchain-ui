@@ -15,6 +15,7 @@ export const SubmittedSwap = defineComponent({
           onClose={data.requestTransactionModalClose}
         >
           <Form.Details
+            class="mt-[10px]"
             details={[
               ["Swapped", null],
               [

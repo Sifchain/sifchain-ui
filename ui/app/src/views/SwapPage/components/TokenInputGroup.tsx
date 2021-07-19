@@ -1,25 +1,12 @@
 import {
   defineComponent,
-  EmitsOptions,
-  Events,
-  FunctionalComponent,
   HTMLAttributes,
   InputHTMLAttributes,
-  onDeactivated,
-  onMounted,
-  onUnmounted,
   PropType,
-  SetupContext,
-  Teleport,
-  watch,
 } from "vue";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
-import { computed, effect, reactive, ref, toRefs } from "@vue/reactivity";
-import { format, IAsset, IAssetAmount, Network } from "@sifchain/sdk";
+import { ref, toRefs } from "@vue/reactivity";
+import { IAsset } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
-import { useCore } from "@/hooks/useCore";
-import { TOKEN_SELECT_MODAL_TARGET } from "@/constants/teleport";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";

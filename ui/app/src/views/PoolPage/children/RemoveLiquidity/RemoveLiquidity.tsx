@@ -3,7 +3,7 @@ import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { Slider } from "@/components/Slider/Slider";
 import { TokenIcon } from "@/components/TokenIcon";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
@@ -143,6 +143,7 @@ export default defineComponent({
         </Form.FieldSet>
         <Form.Label class="mt-[1em]">You should receive:</Form.Label>
         <Form.Details
+          class="mt-[10px]"
           details={[
             [
               <div class="uppercase">

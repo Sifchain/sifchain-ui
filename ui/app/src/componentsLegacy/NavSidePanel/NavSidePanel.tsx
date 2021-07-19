@@ -4,7 +4,7 @@ import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
 import Logo from "@/assets/logo-large.svg";
-import AssetIcon from "../utilities/AssetIcon";
+import AssetIcon from "../../components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import WalletPicker from "@/components/WalletPicker";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
@@ -35,6 +35,7 @@ export default defineComponent({
           Boolean,
         ).length,
     );
+
     return () => (
       <div class="portrait:hidden overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
         <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
@@ -78,6 +79,11 @@ export default defineComponent({
                 displayName="Stake"
                 icon="navigation/stake"
                 routerLink="/stake-delegate"
+              />
+              <NavSidePanelItem
+                displayName="Rewards"
+                icon="navigation/rewards"
+                routerLink="/rewards"
               />
               <NavSidePanelItem
                 displayName="Documents"
@@ -144,10 +150,10 @@ export default defineComponent({
                       style={{
                         transform: "rotate(-90deg)",
                       }}
-                      class="w-[20px] h-[20px] justify-self-end"
+                      class="w-[20px] h-[20px]"
                     />
                   ) : (
-                    <div class="w-[20px] h-[20px] rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0 justify-self-end">
+                    <div class="w-[20px] h-[20px] rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
                       {connectedWalletCount.value}
                     </div>
                   )

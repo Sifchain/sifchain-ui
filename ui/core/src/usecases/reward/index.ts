@@ -21,8 +21,9 @@ export default function rewardActions({
     if (!userData) return false;
 
     return (
-      new Date() > userData.maturityDate &&
-      userData.totalClaimableCommissionsAndClaimableRewards > 0
+      userData?.user?.maturityDate != null &&
+      new Date() > userData?.user?.maturityDate &&
+      userData?.user?.totalClaimableCommissionsAndClaimableRewards > 0
     );
   }
 

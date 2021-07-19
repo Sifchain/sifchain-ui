@@ -3,7 +3,7 @@ import { Asset, IAsset } from "@sifchain/sdk";
 import PageCard from "@/components/PageCard";
 import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 
 export default defineComponent({

@@ -3,7 +3,7 @@ import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { defineComponent } from "vue";
 import { format } from "../../../../../core/src";
 import { useSwapPageData } from "../useSwapPageData";
@@ -61,6 +61,7 @@ export const ConfirmSwap = defineComponent({
           <Form.FieldSet class="mt-[10px]">
             <Form.Label>Output is estimated</Form.Label>
             <Form.Details
+              class="mt-[10px]"
               details={[
                 [
                   <div class="flex items-center">

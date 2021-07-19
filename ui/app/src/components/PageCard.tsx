@@ -1,4 +1,4 @@
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import {
   VNode,
   Component,

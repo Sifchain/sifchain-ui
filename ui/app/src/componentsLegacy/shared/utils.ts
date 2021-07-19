@@ -163,6 +163,7 @@ async function getClaimsData(
   address: string,
   type: "LiquidityMining" | "ValidatorSubsidy",
 ) {
+  console.log("HWAT? CLAIMS DATA");
   const data = await (
     await fetch(`${apiUrl}/dispensation/getClaims?type=${type}`)
   ).json();

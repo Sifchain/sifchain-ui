@@ -1,6 +1,6 @@
 import { defineComponent, TransitionGroup, ref, computed } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
 import BalanceRow from "./BalanceRow";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";

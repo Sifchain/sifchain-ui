@@ -1,5 +1,5 @@
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { useCore } from "@/hooks/useCore";
 import {
   computed,

@@ -15,6 +15,7 @@ export const ApproveSwap = defineComponent({
           onClose={data.requestTransactionModalClose}
         >
           <Form.Details
+            class="mt-[10px]"
             details={[
               ["Swapping", null],
               [

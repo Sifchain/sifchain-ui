@@ -8,7 +8,7 @@ import Modal from "@/components/Modal";
 import { ExportData, getExportLocation } from "./useExportData";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useCore } from "@/hooks/useCore";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import ExportDetailsDisplay from "./ExportDetailsDisplay";
 
 export default defineComponent({

@@ -9,12 +9,12 @@ import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
 import BalanceImport from "@/views/BalancePage/Import";
 import BalanceExport from "@/views/BalancePage/Export";
+import RewardsPage from "@/views/RewardsPage/RewardsPage";
 import StatsPage from "@/views/StatsPage/StatsPage";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import RemoveLiquidity from "@/views/RemoveLiquidityPage.vue";
 import SinglePool from "@/views/SinglePool.vue";
 import PegAssetPage from "@/views/PegAssetPage.vue";
-import RewardsPage from "@/views/RewardsPage.vue";
 import Pool from "@/views/PoolPage/PoolPage";
 import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
 import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/RemoveLiquidity";
@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/rewards",
-    name: "RewardsPage",
+    name: "Rewards",
     component: RewardsPage,
   },
   {

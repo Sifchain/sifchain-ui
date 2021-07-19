@@ -1,5 +1,5 @@
 import PageCard from "@/components/PageCard";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { usePoolStatItem } from "@/hooks/usePoolStatItem";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
