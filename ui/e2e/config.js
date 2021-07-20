@@ -18,6 +18,8 @@ export const KEPLR_CONFIG = {
     name: "juniper",
     mnemonic:
       "clump genre baby drum canvas uncover firm liberty verb moment access draft erupt fog alter gadget elder elephant divide biology choice sentence oppose avoid",
+    publickey: "AniBCyImSLLldpjRDyunZz+aerZhkWYWVmYbD96BDo5g",
+    signature: process.env.KEPLR_SIGNATURE,
   },
 };
 

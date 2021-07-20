@@ -14,6 +14,7 @@ const { poolPage } = require("./pages/PoolPage.js");
 const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
 const { prepareRowText, sleep } = require("./utils.js");
 const { addLiquidity } = require("./api/addLiquidity.js");
+const { txsAddLiquidity } = require("./api/txsAddLiquidity.js");
 
 useStack("every-test");
 
@@ -149,6 +150,14 @@ describe.only("Manage liquidity pools", () => {
       externalAmount: "5000000000000000000",
       nativeAmount: "6024096390000000000000",
     });
+
+    await txsAddLiquidity({
+      externalAsset: "ceth",
+      externalAmount: "5000000000000000000",
+      nativeAmount: "6024096390000000000000",
+    });
+
+    await page.waitForTimeout(20000);
 
     // Confirm transaction popup
     await page.waitForTimeout(2000);
