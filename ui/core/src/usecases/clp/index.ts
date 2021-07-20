@@ -1,5 +1,5 @@
 import { UsecaseContext } from "..";
-import { effect } from "@vue/reactivity";
+import { effect, ReactiveEffect, stop } from "@vue/reactivity";
 import { Swap } from "./swap";
 import { AddLiquidity } from "./addLiquidity";
 import { RemoveLiquidity } from "./removeLiquidity";
@@ -15,30 +15,43 @@ export default ({
   const syncPools = SyncPools(services, store);
 
   return {
-    init() {
+    initClp() {
+      const effects: ReactiveEffect<any>[] = [];
+
       // Sync on load
       syncPools().then(() => {
-        effect(() => {
-          if (Object.keys(store.pools).length === 0) {
-            services.bus.dispatch({
-              type: "NoLiquidityPoolsFoundEvent",
-              payload: {},
-            });
-          }
-        });
+        effects.push(
+          effect(() => {
+            if (Object.keys(store.pools).length === 0) {
+              services.bus.dispatch({
+                type: "NoLiquidityPoolsFoundEvent",
+                payload: {},
+              });
+            }
+          }),
+        );
       });
 
       // Then every transaction
 
-      services.sif.onNewBlock(async () => {
+      const unsubscribe = services.sif.onNewBlock(async () => {
         await syncPools();
       });
 
-      effect(() => {
-        // When sif address changes syncPools
-        store.wallet.sif.address;
-        syncPools();
-      });
+      effects.push(
+        effect(() => {
+          // When sif address changes syncPools
+          store.wallet.sif.address;
+          syncPools();
+        }),
+      );
+
+      return () => {
+        for (let ef of effects) {
+          stop(ef);
+        }
+        unsubscribe();
+      };
     },
     swap: Swap(services),
     addLiquidity: AddLiquidity(services, store),

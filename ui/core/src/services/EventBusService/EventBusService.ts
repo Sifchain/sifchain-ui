@@ -7,6 +7,7 @@ export type AppEventType = AppEvent["type"];
 export type AppEventTypes = AppEventType[];
 
 export type EventBusServiceContext = {};
+export type EventBusService = ReturnType<typeof createEventBusService>;
 
 export default function createEventBusService({}: EventBusServiceContext) {
   const emitter = new EventEmitter2();

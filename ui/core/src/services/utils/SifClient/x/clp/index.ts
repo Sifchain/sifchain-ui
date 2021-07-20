@@ -65,7 +65,7 @@ type LiquidityDetailsResponse = {
   result: {
     external_asset_balance: string;
     native_asset_balance: string;
-    LiquidityProvider: {
+    liquidity_provider: {
       liquidity_provider_units: string;
       liquidity_provider_address: string;
       asset: {
@@ -108,7 +108,7 @@ export function setupClpExtension(base: LcdClient): ClpExtension {
   return {
     clp: {
       getPools: async () => {
-        return (await base.get(`/clp/getPools`)).result?.Pools;
+        return (await base.get(`/clp/getPools`)).result?.pools;
       },
 
       getAssets: async (address) => {

@@ -38,7 +38,7 @@
 import { defineComponent, PropType, useCssModule } from "vue";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import { computed } from "@vue/reactivity";
-import { IAssetAmount } from "ui-core";
+import { IAssetAmount } from "@sifchain/sdk";
 import AskConfirmationInfo from "@/components/AskConfirmationInfo/Index.vue";
 
 export default defineComponent({

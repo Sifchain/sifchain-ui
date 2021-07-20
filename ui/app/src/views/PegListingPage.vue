@@ -14,7 +14,12 @@ import { useCore } from "@/hooks/useCore";
 import { defineComponent, ref } from "vue";
 import { computed } from "@vue/reactivity";
 import { getUnpeggedSymbol } from "../components/shared/utils";
-import { AssetAmount, IAsset, IAssetAmount, TransactionStatus } from "ui-core";
+import {
+  AssetAmount,
+  IAsset,
+  IAssetAmount,
+  TransactionStatus,
+} from "@sifchain/sdk";
 type TokenListItem = {
   amount: IAssetAmount;
   asset: IAsset;

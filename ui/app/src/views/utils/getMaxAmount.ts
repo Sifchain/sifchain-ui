@@ -1,6 +1,6 @@
-import { TransactionStatus } from "ui-core";
+import { TransactionStatus } from "@sifchain/sdk";
 import { effect, Ref, ref, ComputedRef } from "@vue/reactivity";
-import { IAssetAmount, IAmount, Amount } from "ui-core";
+import { IAssetAmount, IAmount, Amount } from "@sifchain/sdk";
 
 // We set this static fee to minus from some ROWAN transactions such
 // that users don't have to manually minus it from KEPLR

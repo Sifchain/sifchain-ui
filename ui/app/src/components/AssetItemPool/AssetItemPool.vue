@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed } from "@vue/reactivity";
-import { LiquidityProvider, Pool } from "ui-core";
+import { LiquidityProvider, Pool } from "@sifchain/sdk";
 import { getAssetLabel, useAssetItem } from "@/components/shared/utils";
 import { defineComponent, PropType } from "vue";
 

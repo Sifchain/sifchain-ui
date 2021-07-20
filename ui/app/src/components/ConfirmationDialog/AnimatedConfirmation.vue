@@ -4,7 +4,12 @@ import Loader from "@/components/Loader/Loader.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
 import { useCore } from "@/hooks/useCore";
 import { getBlockExplorerUrl } from "../shared/utils";
-import { ErrorCode, format, IAssetAmount, TransactionStatus } from "ui-core";
+import {
+  ErrorCode,
+  format,
+  IAssetAmount,
+  TransactionStatus,
+} from "@sifchain/sdk";
 import SwipeTransition from "./SwipeTransition.vue";
 
 // TODO: Move this to a consolodated number format module perhaps?

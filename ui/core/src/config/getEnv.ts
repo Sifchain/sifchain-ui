@@ -7,7 +7,7 @@ export enum SifEnv {
   LOCALNET,
 }
 
-const profileLookup = {
+export const profileLookup = {
   [SifEnv.DEVNET]: {
     tag: "devnet",
     ethAssetTag: "ethereum.devnet",

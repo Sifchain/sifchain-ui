@@ -13,7 +13,9 @@
     "declaration": true,
     "outDir": "./lib",
     "types": ["node", "jest"],
-    "baseUrl": "."
+    "baseUrl": "./src",
+    "jsx": "react",
+    "removeComments": false
   },
   "include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/**/*.vue"],
   "exclude": ["node_modules"]

@@ -2,7 +2,7 @@
 import { computed, defineComponent, PropType, useCssModule } from "vue";
 import Icon from "@/components/Icon/Icon.vue";
 import Tooltip from "@/components/Tooltip/Tooltip.vue";
-import { getMantissaLength, format, IAssetAmount } from "ui-core";
+import { getMantissaLength, format, IAssetAmount } from "@sifchain/sdk";
 import { useAssetItem } from "../shared/utils";
 
 export default defineComponent({

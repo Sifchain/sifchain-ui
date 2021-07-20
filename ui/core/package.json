@@ -1,6 +1,6 @@
 {
   "license": "SIF",
-  "name": "ui-core",
+  "name": "@sifchain/sdk",
   "version": "1.0.0",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -16,6 +16,10 @@
   "files": [
     "lib/**/*"
   ],
+  "exports": {
+    ".": "./lib/index.js",
+    "./react": "./lib/sdk-react/index.js"
+  },
   "dependencies": {
     "@cosmjs/launchpad": "^0.23.0",
     "@metamask/detect-provider": "^1.1.0",
@@ -30,6 +34,7 @@
     "lodash": "^4.17.20",
     "numbro": "^2.3.2",
     "query-string": "^7.0.0",
+    "react": "^17.0.2",
     "reconnecting-websocket": "^4.4.0",
     "tiny-invariant": "^1.1.0",
     "toformat": "^2.0.0",

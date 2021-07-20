@@ -1,6 +1,20 @@
 import JSBI from "jsbi";
-import { Amount } from "./Amount";
-
+import { Amount, isAmount } from "./Amount";
+import { Asset } from "./Asset";
+import { AssetAmount } from "./AssetAmount";
+import { Network } from "./Network";
+beforeEach(() => {
+  // TODO: Add this to the test utils
+  Asset({
+    address: "1234568",
+    decimals: 18,
+    label: "ETH",
+    name: "Ethereum",
+    network: Network.ETHEREUM,
+    symbol: "eth",
+    imageUrl: "http://fooo",
+  });
+});
 describe("Amount", () => {
   test("construction from decimal", () => {
     expect(Amount("1.5").toString()).toBe("1.500000000000000000");
@@ -151,5 +165,11 @@ describe("Amount", () => {
         .subtract(Amount("2345678"))
         .equalTo(Amount("10000000")),
     ).toBe(true);
+  });
+
+  test("isAmount", () => {
+    expect(isAmount("5")).toBe(false);
+    expect(isAmount(Amount("5"))).toBe(true);
+    expect(isAmount(AssetAmount("eth", "5"))).toBe(true);
   });
 });
