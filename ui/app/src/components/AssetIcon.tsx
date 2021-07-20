@@ -6,6 +6,7 @@ import {
   PropType,
   Ref,
   SVGAttributes,
+  computed,
   VNode,
 } from "vue";
 const navIcons = ((ctx) => {
@@ -54,7 +55,8 @@ export type InteractiveIconName =
   | "search"
   | "swap"
   | "tick"
-  | "wallet";
+  | "wallet"
+  | "warning";
 
 export type NavIconName =
   | "balances"
@@ -94,10 +96,10 @@ export default defineComponent({
     vectorRef: Object as PropType<Ref<ComponentPublicInstance | undefined>>,
   },
   setup(props) {
-    const InlineSvg = navIcons[props.icon]?.default;
+    const InlineSvg = computed(() => navIcons[props.icon]?.default);
     return () => {
       return (
-        <InlineSvg
+        <InlineSvg.value
           ref={props.vectorRef}
           preserveAspectRatio="none"
           width={props.size}

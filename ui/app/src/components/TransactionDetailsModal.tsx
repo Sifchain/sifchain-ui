@@ -48,7 +48,7 @@ export default defineComponent({
             />
             {props.transactionDetails.value?.tx?.hash && (
               <a
-                class="text-white block text-center cursor-pointer mt-[10px] text-sm"
+                class="text-white block text-center cursor-pointer mt-[10px] text-sm underline"
                 target="_blank"
                 rel="noopener noreferrer"
                 href={getBlockExplorerUrl(

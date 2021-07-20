@@ -25,7 +25,7 @@ export default defineComponent({
   props: {
     teleportTo: {
       type: String as PropType<ModalProps["teleportTo"]>,
-      default: () => "#app",
+      default: () => "#portal-target",
     },
     onClose: {
       type: Function as PropType<ModalProps["onClose"]>,

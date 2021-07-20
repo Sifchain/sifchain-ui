@@ -76,44 +76,46 @@ export default defineComponent({
                 />
               </div>
               <div class="h-4 w-full" />
-              <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
-                <div class="w-full flex flex-row justify-start font-medium text-xs align-text-bottom">
-                  {columns.map((column, index) => (
-                    <div
-                      style={colStyles.value[index]}
-                      class={[column.class]}
-                      key={column.name}
-                    >
+              {displayedTokenList.value.length > 0 && (
+                <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+                  <div class="w-full flex flex-row justify-start font-medium text-xs align-text-bottom">
+                    {columns.map((column, index) => (
                       <div
-                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
-                        onClick={() => {
-                          if (state.sortBy === column.sortBy) {
-                            state.sortDirection =
-                              state.sortDirection === "asc" ? "desc" : "asc";
-                          } else {
-                            state.sortDirection = column.defaultSortBy as BalancePageState["sortDirection"];
-                          }
-                          state.sortBy = column.sortBy;
-                        }}
+                        style={colStyles.value[index]}
+                        class={[column.class]}
+                        key={column.name}
                       >
-                        {column.name}
-                        {state.sortBy === column.sortBy && (
-                          <AssetIcon
-                            icon="interactive/arrow-down"
-                            class="transition-all w-[12px] h-[12px]"
-                            style={{
-                              transform:
-                                state.sortDirection === "asc"
-                                  ? "rotate(0deg)"
-                                  : "rotate(180deg)",
-                            }}
-                          />
-                        )}
+                        <div
+                          class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                          onClick={() => {
+                            if (state.sortBy === column.sortBy) {
+                              state.sortDirection =
+                                state.sortDirection === "asc" ? "desc" : "asc";
+                            } else {
+                              state.sortDirection = column.defaultSortBy as BalancePageState["sortDirection"];
+                            }
+                            state.sortBy = column.sortBy;
+                          }}
+                        >
+                          {column.name}
+                          {state.sortBy === column.sortBy && (
+                            <AssetIcon
+                              icon="interactive/arrow-down"
+                              class="transition-all w-[12px] h-[12px]"
+                              style={{
+                                transform:
+                                  state.sortDirection === "asc"
+                                    ? "rotate(0deg)"
+                                    : "rotate(180deg)",
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           }
         >

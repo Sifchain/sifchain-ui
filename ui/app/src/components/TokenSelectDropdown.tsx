@@ -148,7 +148,7 @@ export const TokenSelectDropdown = defineComponent({
     return () => (
       <div ref={selfRoot} class="w-full h-0">
         {
-          <Teleport to="#app">
+          <Teleport to="#portal-target">
             {props.active?.value && (
               <div
                 onClick={(e: MouseEvent) => {

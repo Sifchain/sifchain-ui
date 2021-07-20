@@ -1,3 +1,5 @@
+const SIDEBAR_WIDTH = "210px";
+
 module.exports = {
   mode: "jit",
   // purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
@@ -35,12 +37,13 @@ module.exports = {
         6: "28px",
         7: "32px",
         8: "48px",
+        sidebar: SIDEBAR_WIDTH,
       },
       width: {
-        sidebar: "210px",
+        sidebar: SIDEBAR_WIDTH,
       },
       inset: {
-        sidebar: "210px",
+        sidebar: SIDEBAR_WIDTH,
       },
       colors: {
         accent: {
