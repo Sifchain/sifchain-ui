@@ -128,7 +128,7 @@ body {
 .tippy-arrow {
   width: 16px;
   height: 16px;
-  color: #333;
+  @apply text-gray-ring;
 }
 .tippy-arrow:before {
   content: "";
