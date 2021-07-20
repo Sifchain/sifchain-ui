@@ -67,12 +67,12 @@ export const TokenInputGroup = defineComponent({
           ]}
         >
           <div class="w-full flex justify-between items-baseline">
-            <div class=" text-[16px] text-white font-sans font-medium capitalize">
+            <div class=" text-md text-white font-sans font-medium capitalize">
               {props.heading}
             </div>
             <div
               onClick={() => props.onSetToMaxAmount?.()}
-              class={`text-white opacity-50 font-sans font-medium text-[12px] hover:text-accent-base cursor-pointer ${
+              class={`text-white opacity-50 font-sans font-medium text-sm hover:text-accent-base cursor-pointer ${
                 props.formattedBalance ? "" : "opacity-0"
               }`}
             >

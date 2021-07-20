@@ -26,7 +26,7 @@ export const ConfirmSwap = defineComponent({
                   {data.toAsset.value && (
                     <TokenIcon asset={data.fromAsset} size={22}></TokenIcon>
                   )}
-                  <span class="ml-[10px] font-medium text-[16px]">
+                  <span class="ml-[10px] font-medium text-md">
                     {data.fromAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>
@@ -47,7 +47,7 @@ export const ConfirmSwap = defineComponent({
                   {data.toAsset.value && (
                     <TokenIcon asset={data.toAsset} size={22}></TokenIcon>
                   )}
-                  <span class="ml-[10px] font-medium text-[16px]">
+                  <span class="ml-[10px] font-medium text-md">
                     {data.toAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>

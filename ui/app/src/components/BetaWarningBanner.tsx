@@ -16,7 +16,7 @@ export default defineComponent({
           })`,
         }}
       >
-        <div class="p-[20px] bg-accent-gradient text-xs w-[90vw] max-w-[990px] rounded-br">
+        <div class="p-[20px] bg-accent-gradient text-sm w-[90vw] max-w-[990px] rounded-br">
           Welcome to our BetaNet! Please be aware that while this has passed
           several public security audits, it is still in Beta. We encourage you
           to first understand how it works before transacting on it and exercise

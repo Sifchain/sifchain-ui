@@ -59,7 +59,7 @@ export default defineComponent({
             </div>
           </div>
         </div>
-        <p class="mt-[10px] text-sm">
+        <p class="mt-[10px] text-base">
           <div class="font-bold">Please Note *</div>
           Your funds will be available for use on Sifchain only after 50
           Ethereum block confirmations. This can take upwards of 20 minutes.

@@ -89,7 +89,7 @@ export default defineComponent({
           class="!w-[940px] !min-w-[940px] !max-w-[940px]"
           withOverflowSpace
           headerContent={
-            <div class="height-[40px] flex items-center text-xxs font-semibold">
+            <div class="height-[40px] flex items-center text-sm font-semibold">
               {columns.map((column, index) => (
                 <div
                   style={colStyles.value[index]}
@@ -139,7 +139,7 @@ export default defineComponent({
                 ))}
               </tr>
             </thead>
-            <tbody class="w-full text-sm font-medium">
+            <tbody class="w-full text-base font-medium">
               {statsRef.value.map((item) => {
                 return (
                   <tr

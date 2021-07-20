@@ -30,12 +30,12 @@ export const _Details = defineComponent({
               props.isError && `border-danger-base`,
             ]}
           >
-            <div class="pl-[20px] text-left text-[16px] text-white font-sans font-medium">
+            <div class="pl-[20px] text-left text-md text-white font-sans font-medium">
               {key}
             </div>
             <div
               class={[
-                `flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right text-[16px] text-white font-mono font-medium`,
+                `flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right text-md text-white font-mono font-medium`,
               ]}
             >
               {value}

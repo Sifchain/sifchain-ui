@@ -122,7 +122,7 @@ export default defineComponent({
             <span>Amount</span>
             {!!exportTokenRef.value && (
               <span
-                class="text-sm opacity-50 hover:text-accent-base cursor-pointer self-end"
+                class="text-base opacity-50 hover:text-accent-base cursor-pointer self-end"
                 onClick={handleSetMax}
               >
                 Balance: {formatAssetAmount(exportTokenRef.value?.amount)}

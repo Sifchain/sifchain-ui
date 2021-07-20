@@ -37,7 +37,7 @@ export default defineComponent({
         {items.map((item) => (
           <a
             key={item.name}
-            class="text-xs text-gray-800 no-underline hover:text-white active:text-accent-base cursor-pointer flex items-center h-[23px]"
+            class="text-sm text-gray-800 no-underline hover:text-white active:text-accent-base cursor-pointer flex items-center h-[23px]"
             href={item.href}
             rel="noreferrer noopener"
             target="_blank"

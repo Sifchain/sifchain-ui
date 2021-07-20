@@ -88,7 +88,7 @@ export default defineComponent({
               key={item.name}
               {...item.props}
               class={[
-                "height-[20px] cursor-pointer px-[4px] w-full flex justify-between items-center text-gray-800 hover:text-white active:text-accent-base font-normal text-[10px] mt-[4px] first:mt-0",
+                "height-[20px] cursor-pointer px-[4px] w-full flex justify-between items-center text-gray-800 hover:text-white active:text-accent-base font-normal text-sm mt-[4px] first:mt-0",
                 item.props.class,
               ]}
             >

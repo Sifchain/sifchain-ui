@@ -96,7 +96,7 @@ export function RewardSection(props: {
           />
         </div>
       </div>
-      <div class="mt-[10px] flex justify-between text-xs bg-gray-base py-2 px-3">
+      <div class="mt-[10px] flex justify-between text-sm bg-gray-base py-2 px-3">
         <div class="flex flex-col justify-between">
           <div class="opacity-50 mb-[20px]">{displayData.description}</div>
 

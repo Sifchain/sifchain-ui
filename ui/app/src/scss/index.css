@@ -137,7 +137,7 @@ body {
   border-style: solid;
 }
 .tippy-content {
-  @apply rounded-[10px] text-xs p-[10px] bg-gray-ring;
+  @apply rounded-[10px] text-sm p-[10px] bg-gray-ring;
   position: relative;
   z-index: 1;
 }

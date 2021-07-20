@@ -53,7 +53,7 @@ export default defineComponent({
                 routerLink="/dashboard"
                 class="opacity-50 pointer-events-none"
                 action={
-                  <div class="py-[2px] px-[6px] text-[10px] text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
+                  <div class="py-[2px] px-[6px] text-sm text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
                     Soon
                   </div>
                 }
@@ -120,11 +120,11 @@ export default defineComponent({
           </div>
           <div class="bottom mt-[10px]">
             <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
-              <span class="inline-flex items-center justify-center h-[26px] font-medium text-[10px] text-info-base px-[10px] border border-solid border-info-base rounded-full">
+              <span class="inline-flex items-center justify-center h-[26px] font-medium text-sm text-info-base px-[10px] border border-solid border-info-base rounded-full">
                 TVL: {tvl.value ? `$${prettyNumber(tvl.value)}` : "..."}
               </span>
               <div />
-              <span class="inline-flex items-center justify-center h-[26px] mt-[10px] font-medium text-[10px] text-accent-base pr-[10px] pl-[5px] border border-solid border-accent-base rounded-full">
+              <span class="inline-flex items-center justify-center h-[26px] mt-[10px] font-medium text-sm text-accent-base pr-[10px] pl-[5px] border border-solid border-accent-base rounded-full">
                 <img
                   class="w-[20px] h-[20px] mr-[4px]"
                   alt="ROWAN price"
@@ -181,7 +181,7 @@ export default defineComponent({
                 }
               />
             </Tooltip>
-            <div class="opacity-20 font-mono mt-[24px] text-[10px] pb-[10px]">
+            <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px]">
               V.2.0.X © {new Date().getFullYear()} Sifchain
             </div>
           </div>

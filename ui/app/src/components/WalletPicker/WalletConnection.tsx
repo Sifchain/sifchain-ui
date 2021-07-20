@@ -69,7 +69,7 @@ export default defineComponent({
                 alt={props.connection.name}
               />
               <div class="ml-[13px]">
-                <div class="text-xs font-bold leading-none">
+                <div class="text-sm font-bold leading-none">
                   {props.connection.name}
                 </div>
                 <div class="text-[8px] opacity-50 capitalize">

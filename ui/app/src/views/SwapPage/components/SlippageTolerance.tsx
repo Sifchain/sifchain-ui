@@ -20,7 +20,7 @@ export const SlippageTolerance = (props: {
               onClick={(e) => {
                 props.onUpdate(opt);
               }}
-              class={`transition-all box-border text-white text-[16px] mr-[7px] font-mono font-medium w-[57px] h-[33px] border-solid border-[1px] border-transparent rounded-[4px] ${
+              class={`transition-all box-border text-white text-md mr-[7px] font-mono font-medium w-[57px] h-[33px] border-solid border-[1px] border-transparent rounded-[4px] ${
                 +opt === +props.slippage
                   ? "bg-accent-gradient"
                   : "bg-gray-input border-gray-input_outline bg-gradient-to-b from-transparent to-transparent"

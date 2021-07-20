@@ -78,7 +78,7 @@ export default defineComponent({
               <div class="h-4 w-full" />
               {displayedTokenList.value.length > 0 && (
                 <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
-                  <div class="w-full flex flex-row justify-start font-medium text-xs align-text-bottom">
+                  <div class="w-full flex flex-row justify-start font-medium text-sm align-text-bottom">
                     {columns.map((column, index) => (
                       <div
                         style={colStyles.value[index]}

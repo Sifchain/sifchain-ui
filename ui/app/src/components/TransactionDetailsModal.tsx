@@ -48,7 +48,7 @@ export default defineComponent({
             />
             {props.transactionDetails.value?.tx?.hash && (
               <a
-                class="text-white block text-center cursor-pointer mt-[10px] text-sm underline"
+                class="text-white block text-center cursor-pointer mt-[10px] text-base underline"
                 target="_blank"
                 rel="noopener noreferrer"
                 href={getBlockExplorerUrl(
@@ -60,7 +60,7 @@ export default defineComponent({
               </a>
             )}
           </div>
-          <p class="mt-[10px] text-sm text-center flex items-center justify-center">
+          <p class="mt-[10px] text-base text-center flex items-center justify-center">
             {isLoading && (
               <AssetIcon
                 icon="interactive/anim-racetrack-spinner"
