@@ -142,7 +142,7 @@ export default defineComponent({
                   {data.toAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.aPerBRatioMessage.value}</div>
                 <TokenIcon asset={data.fromAsset}></TokenIcon>
               </div>,
@@ -157,7 +157,7 @@ export default defineComponent({
                   {data.fromAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.bPerARatioMessage.value}</div>
                 <TokenIcon asset={data.toAsset}></TokenIcon>
               </div>,
@@ -180,7 +180,7 @@ export default defineComponent({
                   {data.toAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.aPerBRatioProjectedMessage.value}</div>
                 <TokenIcon asset={data.fromAsset}></TokenIcon>
               </div>,
@@ -195,14 +195,14 @@ export default defineComponent({
                   {data.fromAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.bPerARatioProjectedMessage.value}</div>
                 <TokenIcon asset={data.toAsset}></TokenIcon>
               </div>,
             ],
             [
               <span>Share of Pool</span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.shareOfPoolPercent.value}</div>
               </div>,
             ],

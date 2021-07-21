@@ -11,9 +11,11 @@ export type TooltipInstance = {
   hide: () => void;
 };
 
+export type TooltipProps = TippyOptions;
+
 export default Tippy;
 
 export const Tooltip = (Tippy as unknown) as (
-  props: TippyOptions,
+  props: TooltipProps,
   context: SetupContext,
 ) => JSX.Element;

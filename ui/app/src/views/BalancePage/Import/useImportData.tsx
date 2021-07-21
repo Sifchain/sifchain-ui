@@ -1,16 +1,17 @@
-import { PegEvent } from "./../../../../../core/src/usecases/peg/peg";
 import { RouteLocationRaw, useRoute } from "vue-router";
 import { reactive, ref, computed, Ref, watch } from "vue";
 import router from "@/router";
 import { effect } from "@vue/reactivity";
+import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
 import {
+  formatAssetAmount,
   getPeggedSymbol,
-  getUnpeggedSymbol,
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
-import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
-import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
+import { Network, IAssetAmount, AssetAmount, Amount } from "@sifchain/sdk";
+import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
+import { Button } from "@/components/Button/Button";
 
 export type ImportParams = {
   amount?: string;
@@ -29,6 +30,7 @@ export type ImportData = {
   pegEventRef: Ref<PegEvent>;
   runImport: () => void;
   exitImport: () => void;
+  detailsRef: Ref<[any, any][]>;
 };
 
 export function getImportLocation(
@@ -101,11 +103,17 @@ export const useImportData = () => {
 
   const importAmountRef = computed(() => {
     if (!tokenRef.value) return null;
-    console.log(tokenRef.value, importParams.amount);
     return AssetAmount(
       tokenRef.value?.asset,
       importParams.amount?.trim() || "0.0",
     );
+  });
+
+  const sifchainTokenRef = useToken({
+    network: ref(Network.SIFCHAIN),
+    symbol: computed(() =>
+      getPeggedSymbol(importParams.symbol || "").toLowerCase(),
+    ),
   });
 
   const pickableTokensRef = computed(() => {
@@ -123,6 +131,87 @@ export const useImportData = () => {
       pegEventRef.value = event;
     }
   }
+
+  const detailsRef = computed<[any, any][]>(() => [
+    [
+      "Current Sifchain Balance",
+      <span class="flex items-center font-mono">
+        {sifchainTokenRef.value ? (
+          <>
+            {formatAssetAmount(sifchainTokenRef.value.amount)}{" "}
+            {(
+              sifchainTokenRef.value.asset.displaySymbol ||
+              sifchainTokenRef.value.asset.symbol
+            ).toUpperCase()}
+            <TokenIcon
+              size={18}
+              assetValue={sifchainTokenRef.value.asset}
+              class="ml-[4px]"
+            />
+          </>
+        ) : (
+          "0"
+        )}
+      </span>,
+    ],
+    [
+      "Direction",
+      <span class="capitalize">
+        {importParams.network}
+        <span
+          class="mx-[6px] inline-block"
+          style={{ transform: "translateY(-1px)" }}
+        >
+          ⟶
+        </span>
+        Sifchain
+      </span>,
+    ],
+    [
+      "Import Amount",
+      <span class="flex items-center font-mono">
+        {importParams.amount} {importParams.symbol?.toUpperCase()}
+        <TokenIcon
+          size={18}
+          assetValue={tokenRef.value?.asset}
+          class="ml-[4px]"
+        />
+      </span>,
+    ],
+    [
+      <>
+        New Sifchain Balance
+        <Button.InlineHelp>
+          This is an estimated amount only, the final settled amount may differ
+          slightly.
+        </Button.InlineHelp>
+      </>,
+      <span class="flex items-center font-mono">
+        {sifchainTokenRef.value ? (
+          <>
+            {(
+              parseFloat(formatAssetAmount(sifchainTokenRef.value.amount)) +
+              parseFloat(importParams.amount || "0")
+            ).toFixed(
+              formatAssetAmount(sifchainTokenRef.value.amount).split(".")[1]
+                ?.length || 0,
+            )}{" "}
+            {(
+              sifchainTokenRef.value.asset.displaySymbol ||
+              sifchainTokenRef.value.asset.symbol
+            ).toUpperCase()}{" "}
+            <TokenIcon
+              size={18}
+              assetValue={sifchainTokenRef.value.asset}
+              class="ml-[4px]"
+            />
+          </>
+        ) : (
+          "0"
+        )}
+      </span>,
+    ],
+  ]);
 
   effect(() => {
     if (
@@ -149,5 +238,6 @@ export const useImportData = () => {
     runImport,
     pegEventRef,
     exitImport: exitImport,
+    detailsRef,
   } as ImportData;
 };

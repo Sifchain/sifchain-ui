@@ -35,7 +35,7 @@ export const _Details = defineComponent({
             </div>
             <div
               class={[
-                `flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right text-md text-white font-mono font-medium`,
+                `flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right text-md text-white font-medium`,
               ]}
             >
               {value}

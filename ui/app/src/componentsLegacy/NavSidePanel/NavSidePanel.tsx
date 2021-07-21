@@ -50,7 +50,7 @@ export default defineComponent({
               <NavSidePanelItem
                 displayName="Dashboard"
                 icon="navigation/dashboard"
-                routerLink="/dashboard"
+                href="/dashboard"
                 class="opacity-50 pointer-events-none"
                 action={
                   <div class="py-[2px] px-[6px] text-sm text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
@@ -61,37 +61,37 @@ export default defineComponent({
               <NavSidePanelItem
                 displayName="Swap"
                 icon="navigation/swap"
-                routerLink="/swap"
+                href="/swap"
               />
               <NavSidePanelItem
                 displayName="Balances"
                 icon="navigation/balances"
-                routerLink="/balances"
+                href="/balances"
               />
               <NavSidePanelItem
                 displayName="Pool"
                 icon="navigation/pool"
-                routerLink="/pool"
+                href="/pool"
               />
               <NavSidePanelItem
                 displayName="Pool Stats"
                 icon="navigation/pool-stats"
-                routerLink="/stats"
+                href="/stats"
               />
               <NavSidePanelItem
                 displayName="Stake"
                 icon="navigation/stake"
-                routerLink="/stake-delegate"
+                href="https://wallet.keplr.app/#/sifchain/stake"
               />
               <NavSidePanelItem
                 displayName="Rewards"
                 icon="navigation/rewards"
-                routerLink="/rewards"
+                href="/rewards"
               />
               <NavSidePanelItem
                 displayName="Documents"
                 icon="navigation/documents"
-                routerLink="/documents"
+                href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
               />
               <Tooltip
                 trigger="click"
@@ -100,14 +100,14 @@ export default defineComponent({
                 interactive
                 animation={null}
                 ref={moreMenuRef}
-                offset={[0, 0]}
+                offset={[0, -2]}
                 onShow={(instance: TooltipInstance) => {
                   const content = instance.popper.querySelector(
                     ".tippy-content",
                   );
                   if (content) {
                     content.className +=
-                      " w-[170px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none";
+                      " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
                   }
                 }}
                 content={

@@ -61,7 +61,7 @@ export default defineComponent({
     const detailsRef = computed<[any, any][]>(() => [
       [
         "Claimable Rewards",
-        <>
+        <span class="flex items-center font-mono">
           {formatRowanNumber(
             props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
           )}
@@ -72,11 +72,11 @@ export default defineComponent({
               class="ml-[4px]"
             />
           }
-        </>,
+        </span>,
       ],
       [
         "Projected Full Amount",
-        <>
+        <span class="flex items-center font-mono">
           {formatRowanNumber(
             props.data?.user?.totalCommissionsAndRewardsAtMaturity,
           )}
@@ -87,7 +87,7 @@ export default defineComponent({
               class="ml-[4px]"
             />
           }
-        </>,
+        </span>,
       ],
       [
         "Maturity Date",

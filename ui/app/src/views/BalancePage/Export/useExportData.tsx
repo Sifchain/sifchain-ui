@@ -122,7 +122,7 @@ export const useExportData = () => {
     [
       "Export Amount",
       !exportParams.amount ? null : (
-        <span class="flex items-center">
+        <span class="flex items-center font-mono">
           {exportParams.amount} {exportParams.symbol.toUpperCase()}
           <TokenIcon
             class="ml-[4px]"
@@ -143,14 +143,19 @@ export const useExportData = () => {
           </div>
         </Button.InlineHelp>
       </>,
-      <>
+      <span class="flex items-center font-mono">
         {!feeAmountRef.value ? null : formatAssetAmount(feeAmountRef.value)}{" "}
         {(
           feeAmountRef.value?.asset.displaySymbol ||
           feeAmountRef.value?.asset.symbol ||
           ""
         ).toUpperCase()}
-      </>,
+        <TokenIcon
+          size={16}
+          class="ml-[4px]"
+          assetValue={feeAmountRef.value?.asset}
+        />
+      </span>,
     ],
   ]);
 

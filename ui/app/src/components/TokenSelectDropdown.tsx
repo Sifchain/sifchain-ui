@@ -18,6 +18,8 @@ import {
 } from "vue";
 import { IAsset, Network } from "../../../core/src";
 import { TokenIcon } from "./TokenIcon";
+import { sortAndFilterTokens } from "@/utils/sortAndFilterTokens";
+import { useTokenList } from "@/hooks/useToken";
 
 export const TokenSelectDropdown = defineComponent({
   props: {
@@ -43,17 +45,23 @@ export const TokenSelectDropdown = defineComponent({
     const selfRoot = ref<HTMLDivElement | null>(null);
     const dropdownRoot = ref<HTMLDivElement | null>(null);
     const iconScrollContainer = ref<HTMLDivElement | null>(null);
-    const balanceByAssetSymbol = computed(() => {
-      return Object.fromEntries(
-        core.config.assets.map((asset) => {
-          const balance = core.services.sif
-            .getState()
-            .balances.find((b) => b.asset.label == asset.label);
-          return [asset.symbol, balance ? formatAssetAmount(balance) : ""];
-        }),
-      );
+
+    const searchQuery = ref("");
+    const networksRef = computed(() =>
+      !props.network ? [Network.SIFCHAIN] : [props.network.value],
+    );
+
+    const tokensRef = useTokenList({
+      networks: networksRef,
     });
-    const hasAnimated = ref(false);
+    const sortedAndFilteredTokens = computed(() => {
+      return sortAndFilterTokens({
+        tokens: tokensRef.value,
+        searchQuery: searchQuery.value,
+        sortBy: "balance",
+      });
+    });
+
     const boundingClientRect = ref<DOMRect | undefined>();
     const resizeListener = ref(() => {
       boundingClientRect.value = selfRoot.value?.getBoundingClientRect();
@@ -90,30 +98,6 @@ export const TokenSelectDropdown = defineComponent({
         "click",
         externalClickListener.value,
       );
-    });
-
-    const sortedAssets = computed(() => {
-      const bals = balanceByAssetSymbol.value;
-      return core.config.assets.sort((a, b) => {
-        return bals[a.symbol] > bals[b.symbol]
-          ? -1
-          : bals[b.symbol] > bals[a.symbol]
-          ? 1
-          : 0;
-      });
-    });
-    const searchQuery = ref("");
-    const filteredAssets = computed(() => {
-      const q = searchQuery.value;
-      return sortedAssets.value.filter((a) => {
-        return (
-          a.network === (props.network?.value || Network.SIFCHAIN) &&
-          [a.address, a.displaySymbol, a.name, a.symbol]
-            .join(",")
-            .toLowerCase()
-            .includes(q.toLowerCase())
-        );
-      });
     });
 
     watch([props.active], () => {
@@ -196,23 +180,23 @@ export const TokenSelectDropdown = defineComponent({
                     </div>
                     <div class="w-full h-[302px] relative mr-[-15px]">
                       <div class="absolute inset-0 w-full h-full overflow-y-scroll">
-                        {filteredAssets.value.map((asset) => {
+                        {sortedAndFilteredTokens.value.map((token) => {
                           return (
                             <div
                               onClick={(e: MouseEvent) => {
-                                props.onSelectAsset(asset);
+                                props.onSelectAsset(token.asset);
                               }}
-                              key={asset.symbol}
+                              key={token.asset.symbol}
                               class="flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
                             >
                               <TokenIcon
                                 size={20}
-                                asset={ref(asset)}
+                                assetValue={token.asset}
                                 class="mr-[8px]"
                               />
-                              {asset.displaySymbol || asset.symbol}
+                              {token.asset.displaySymbol || token.asset.symbol}
                               <div class="flex-1 ml-[8px]" />
-                              {balanceByAssetSymbol.value[asset.symbol]}
+                              {formatAssetAmount(token.amount)}
                             </div>
                           );
                         })}

@@ -149,7 +149,7 @@ export default defineComponent({
               <div class="uppercase">
                 {data.nativeAsset?.value?.displaySymbol}
               </div>,
-              <div class="flex gap-[4px] flex-row">
+              <div class="flex gap-[4px] flex-row font-mono">
                 <div>{data.withdrawNativeAssetAmount.value}</div>
                 <TokenIcon asset={data.nativeAsset}></TokenIcon>
               </div>,
@@ -158,7 +158,7 @@ export default defineComponent({
               <div class="uppercase">
                 {data.externalAsset?.value?.displaySymbol}
               </div>,
-              <div class="flex gap-[4px] flex-row">
+              <div class="flex gap-[4px] flex-row font-mono">
                 <div>{data.withdrawExternalAssetAmount.value}</div>
                 <TokenIcon asset={data.externalAsset}></TokenIcon>
               </div>,

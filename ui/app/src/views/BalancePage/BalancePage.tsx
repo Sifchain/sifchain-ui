@@ -15,8 +15,8 @@ export default defineComponent({
     const { state, displayedTokenList } = useBalancePageData({
       searchQuery: "",
       expandedSymbol: "",
-      sortBy: "name",
-      sortDirection: "asc",
+      sortBy: "symbol",
+      reverse: false,
     });
 
     effect(() => {
@@ -28,16 +28,14 @@ export default defineComponent({
     const columns = [
       {
         name: "Token",
-        sortBy: "name" as BalancePageState["sortBy"],
+        sortBy: "symbol" as BalancePageState["sortBy"],
         class: "text-left",
-        defaultSortBy: "asc",
         ref: ref<HTMLElement>(),
       },
       {
         name: "Sifchain Balance",
         sortBy: "balance" as BalancePageState["sortBy"],
         class: "text-right",
-        defaultSortBy: "desc",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -72,7 +70,7 @@ export default defineComponent({
                   onInput={(e: Event) => {
                     state.searchQuery = (e.target as HTMLInputElement).value;
                   }}
-                  class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
+                  class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium text-md"
                 />
               </div>
               <div class="h-4 w-full" />
@@ -89,10 +87,9 @@ export default defineComponent({
                           class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
                           onClick={() => {
                             if (state.sortBy === column.sortBy) {
-                              state.sortDirection =
-                                state.sortDirection === "asc" ? "desc" : "asc";
+                              state.reverse = !state.reverse;
                             } else {
-                              state.sortDirection = column.defaultSortBy as BalancePageState["sortDirection"];
+                              state.reverse = false;
                             }
                             state.sortBy = column.sortBy;
                           }}
@@ -103,10 +100,9 @@ export default defineComponent({
                               icon="interactive/arrow-down"
                               class="transition-all w-[12px] h-[12px]"
                               style={{
-                                transform:
-                                  state.sortDirection === "asc"
-                                    ? "rotate(0deg)"
-                                    : "rotate(180deg)",
+                                transform: state.reverse
+                                  ? "rotate(0deg)"
+                                  : "rotate(180deg)",
                               }}
                             />
                           )}

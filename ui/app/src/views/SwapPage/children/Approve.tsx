@@ -27,7 +27,7 @@ export const ApproveSwap = defineComponent({
                     {data.fromSymbol.value.toUpperCase()}
                   </span>
                 </div>,
-                data.fromAmount.value,
+                <span class="font-mono">data.fromAmount.value</span>,
               ],
               [
                 <div class="flex items-center">
@@ -38,7 +38,7 @@ export const ApproveSwap = defineComponent({
                     {data.toAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>,
-                data.toAmount.value,
+                <span class="font-mono">data.toAmount.value</span>,
               ],
             ]}
           ></Form.Details>

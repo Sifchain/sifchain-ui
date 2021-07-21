@@ -35,7 +35,7 @@ export const SlippageTolerance = (props: {
         <input
           type="number"
           step="0.1"
-          class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none font-mono text-right"
+          class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none font-mono text-right text-md font-semibold"
           value={props.slippage}
           onInput={(e) => {
             props.onUpdate((e.target as HTMLInputElement).value);
