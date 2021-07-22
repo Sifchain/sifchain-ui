@@ -21,7 +21,6 @@ import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/Remo
 import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
 import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
 import { ApproveSwap } from "@/views/SwapPage/children/Approve";
-import { SubmittedSwap } from "@/views/SwapPage/children/SubmittedSwap";
 
 type SwapPageMeta = {
   title: string;
@@ -78,18 +77,6 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: "Approve Swap - Sifchain",
           swapState: "submit",
-        } as SwapPageMeta,
-      },
-      {
-        path: "submitted/:txHash",
-        name: "SubmittedSwap",
-        component: SubmittedSwap,
-        props: {
-          title: "Transaction Submitted",
-        },
-        meta: {
-          title: "Transaction Submitted - Sifchain",
-          swapState: "success",
         } as SwapPageMeta,
       },
     ],

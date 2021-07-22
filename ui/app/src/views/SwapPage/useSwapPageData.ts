@@ -1,3 +1,4 @@
+import { watch, watchEffect } from "vue";
 import { computed, effect, reactive, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import {
@@ -15,6 +16,16 @@ import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { useRoute, useRouter } from "vue-router";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
+
+// NOTE(ajoslin): this is not optimal but I don't want to implement
+// vuex.
+const currentSwapInput = {
+  fromSymbol: "cband",
+  toSymbol: "ceth",
+  fromAmount: "0",
+  toAmount: "0",
+  slippage: "1.0",
+};
 
 const getRouteSymbol = (
   config: ServiceContext,
@@ -36,20 +47,38 @@ export const useSwapPageData = () => {
   const route = useRoute();
 
   const fromSymbol = ref(
-    getRouteSymbol(config, String(route.query.fromSymbol || ""), "cband"),
+    getRouteSymbol(
+      config,
+      String(route.query.fromSymbol || ""),
+      currentSwapInput.fromSymbol,
+    ),
   );
   const toSymbol = ref(
-    getRouteSymbol(config, String(route.query.toSymbol || ""), "rowan"),
+    getRouteSymbol(
+      config,
+      String(route.query.toSymbol || ""),
+      currentSwapInput.toSymbol,
+    ),
   );
 
   if (fromSymbol.value === toSymbol.value) {
     toSymbol.value = fromSymbol.value === "rowan" ? "cband" : "rowan";
   }
 
-  const fromAmount = ref("0");
-  const toAmount = ref("0");
+  const fromAmount = ref(currentSwapInput.fromAmount || "0");
+  const toAmount = ref(currentSwapInput.toAmount || "0");
+  const slippage = ref<string>(currentSwapInput.slippage || "1.0");
 
-  const slippage = ref<string>("1.0");
+  watchEffect(() => {
+    Object.assign(currentSwapInput, {
+      fromSymbol: fromSymbol.value,
+      toSymbol: toSymbol.value,
+      fromAmount: fromAmount.value,
+      toAmount: toAmount.value,
+      slippage: slippage.value,
+    });
+  });
+
   const pageState = computed<SwapPageState>(() => {
     return router.currentRoute.value.meta.pageState as SwapPageState;
   });
@@ -91,7 +120,7 @@ export const useSwapPageData = () => {
   const { connected } = useWalletButton();
 
   function requestTransactionModalClose() {
-    router.push({
+    router.replace({
       name: "Swap",
     });
   }
@@ -129,39 +158,41 @@ export const useSwapPageData = () => {
     if (!fromFieldAmount.value)
       throw new Error("from field amount is not defined");
     if (!toFieldAmount.value) throw new Error("to field amount is not defined");
-    router.push({
+    router.replace({
       name: "ConfirmSwap",
     });
   }
 
-  async function handleAskConfirmClicked() {
+  function checkSwapInputs() {
     if (!fromFieldAmount.value)
       throw new Error("from field amount is not defined");
     if (!toFieldAmount.value) throw new Error("to field amount is not defined");
     if (!minimumReceived.value)
       throw new Error("minimumReceived amount is not defined");
-
-    router.push({
+  }
+  async function handleAskConfirmClicked() {
+    checkSwapInputs();
+    router.replace({
       name: "ApproveSwap",
     });
-    debugger;
-    txStatus.value = await usecases.clp.swap(
-      fromFieldAmount.value,
-      toFieldAmount.value.asset,
-      minimumReceived.value,
-    );
+  }
 
-    if (typeof txStatus.value.code === "number") {
-      alert("swap failed");
-      router.push({
-        name: "Swap",
-      });
-    } else {
-      router.push({
-        name: "SubmittedSwap",
-      });
+  async function handleBeginSwap() {
+    checkSwapInputs();
+
+    // This condition is just to make typescript happy:
+    if (fromFieldAmount.value && toFieldAmount.value && minimumReceived.value) {
+      txStatus.value = {
+        state: "requested",
+        hash: "",
+      };
+
+      txStatus.value = await usecases.clp.swap(
+        fromFieldAmount.value,
+        toFieldAmount.value.asset,
+        minimumReceived.value,
+      );
     }
-    // clearAmounts();
   }
 
   function swapInputs() {
@@ -274,6 +305,7 @@ export const useSwapPageData = () => {
       router.push({ name: "" });
     },
     handleAskConfirmClicked,
+    handleBeginSwap,
 
     isFromMaxActive,
     selectedField,

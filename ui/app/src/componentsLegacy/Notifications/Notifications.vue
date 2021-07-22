@@ -107,7 +107,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="notifications-container">
+  <div class="notifications-container z-50">
     <transition-group name="list">
       <NotificationElement
         v-for="(item, index) in notifications"

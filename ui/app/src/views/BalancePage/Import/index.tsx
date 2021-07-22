@@ -1,6 +1,6 @@
 import { defineComponent, computed } from "vue";
 import { useRoute } from "vue-router";
-import { ImportStep, useImportData, getImportLocation } from "./useImportData";
+import { ImportStep, useImportData } from "./useImportData";
 
 import ImportSelect from "./Select";
 import ImportConfirm from "./Confirm";

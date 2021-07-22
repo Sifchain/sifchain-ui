@@ -136,7 +136,7 @@ export default defineComponent({
           showMaskRef.value && "opacity-40",
         )}
       >
-        <td class="text-left align-middle w-[120px] group-hover:opacity-70">
+        <td class="text-left align-middle w-[120px] group-hover:text-opacity-70">
           <div class="flex items-center">
             <TokenIcon asset={assetRef}></TokenIcon>
             {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
