@@ -57,6 +57,9 @@ export class SifClient extends SigningCosmosClient {
       if (!responseData.result.value.sequence) {
         responseData.result.value.sequence = "0";
       }
+      if (!responseData.result.value.account_number) {
+        responseData.result.value.account_number = "0";
+      }
       return responseData as AuthAccountsResponse;
     };
   }
