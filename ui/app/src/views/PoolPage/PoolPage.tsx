@@ -90,18 +90,16 @@ export default defineComponent({
             </div>
           }
         >
-          {poolDataWithUserData.value
-            ?.slice(0, 5)
-            .map(({ pool, accountPool }) => {
-              return (
-                <UserPoolItem
-                  key={pool.symbol}
-                  poolStat={pool}
-                  accountPool={accountPool}
-                  allPools={data.stats.data?.value?.poolData.pools}
-                />
-              );
-            })}
+          {poolDataWithUserData.value?.map(({ pool, accountPool }) => {
+            return (
+              <UserPoolItem
+                key={pool.symbol}
+                poolStat={pool}
+                accountPool={accountPool}
+                allPools={data.stats.data?.value?.poolData.pools}
+              />
+            );
+          })}
           <RouterView></RouterView>
         </PageCard>
       );
