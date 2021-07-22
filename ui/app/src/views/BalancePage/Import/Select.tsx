@@ -157,6 +157,7 @@ export default defineComponent({
             </div>
 
             <TokenSelectDropdown
+              sortBy="symbol"
               network={networkRef as Ref}
               onCloseIntent={() => {
                 selectIsOpen.value = false;

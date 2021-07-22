@@ -18,7 +18,7 @@ import {
 } from "vue";
 import { IAsset, Network } from "../../../core/src";
 import { TokenIcon } from "./TokenIcon";
-import { sortAndFilterTokens } from "@/utils/sortAndFilterTokens";
+import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { useTokenList } from "@/hooks/useToken";
 
 export const TokenSelectDropdown = defineComponent({
@@ -39,6 +39,11 @@ export const TokenSelectDropdown = defineComponent({
       type: Object as PropType<Ref<Network>>,
       required: false,
     },
+    sortBy: {
+      type: String as PropType<TokenSortBy>,
+      required: false,
+      default: () => "balance",
+    },
   },
   setup(props) {
     const core = useCore();
@@ -58,7 +63,7 @@ export const TokenSelectDropdown = defineComponent({
       return sortAndFilterTokens({
         tokens: tokensRef.value,
         searchQuery: searchQuery.value,
-        sortBy: "balance",
+        sortBy: props.sortBy,
       });
     });
 
@@ -111,7 +116,7 @@ export const TokenSelectDropdown = defineComponent({
       boundingClientRect.value = rect;
 
       let frameId: number;
-      if (props.active) {
+      if (props.active?.value) {
         frameId = window.requestAnimationFrame(() => {
           dropdownRoot.value?.querySelector("input")?.focus();
         });
@@ -120,9 +125,6 @@ export const TokenSelectDropdown = defineComponent({
     });
     onMounted(() => {
       resizeListener.value();
-      nextTick(() => {
-        document.getElementById("token-search")?.focus();
-      });
       window.addEventListener("resize", resizeListener.value);
     });
     onUnmounted(() => {
