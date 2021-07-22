@@ -7,6 +7,7 @@ import {
   IAssetAmount,
   Pool,
   PoolState,
+  TransactionStatus,
   usePoolCalculator,
 } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
@@ -43,9 +44,10 @@ export function createLiquidityDataProvider() {
   const tokenBFieldAmount: Ref<IAssetAmount | null> = ref(null);
   const preExistingPool: Ref<Pool | null> = ref(null);
   const poolAmounts: Ref<IAssetAmount[] | null> = ref(null);
-  const transactionState = ref<ConfirmState | string>("selecting");
-  const transactionStateMsg = ref<string>("");
-  const transactionHash = ref<string | null>(null);
+
+  const modalStatus = ref<"select" | "confirm" | "processing">("select");
+  const transactionStatus = ref<TransactionStatus | null>(null);
+
   const asyncPooling = ref<boolean>(true);
   const router = useRouter();
   const route = useRoute();
@@ -186,7 +188,8 @@ export function createLiquidityDataProvider() {
       throw new Error("from field amount is not defined");
     if (!tokenBFieldAmount.value)
       throw new Error("to field amount is not defined");
-    transactionState.value = "confirming";
+
+    modalStatus.value = "confirm";
   }
 
   async function handleAskConfirmClicked() {
@@ -194,23 +197,21 @@ export function createLiquidityDataProvider() {
       throw new Error("Token A field amount is not defined");
     if (!tokenBFieldAmount.value)
       throw new Error("Token B field amount is not defined");
-    transactionState.value = ConfirmStateEnum.Signing;
-    const tx = await usecases.clp.addLiquidity(
+
+    modalStatus.value = "processing";
+    transactionStatus.value = {
+      state: "requested",
+      hash: "",
+    };
+    transactionStatus.value = await usecases.clp.addLiquidity(
       tokenBFieldAmount.value,
       tokenAFieldAmount.value,
     );
-    transactionHash.value = tx.hash;
-    transactionState.value = toConfirmState(tx.state); // TODO: align states
-    transactionStateMsg.value = tx.memo ?? "";
   }
 
   function requestTransactionModalClose() {
-    if (transactionState.value === "confirmed") {
-      router.push("/pool");
-      clearAmounts();
-    } else {
-      transactionState.value = "selecting";
-    }
+    router.push("/pool");
+    clearAmounts();
   }
 
   function toggleAsyncPooling() {
@@ -291,13 +292,12 @@ export function createLiquidityDataProvider() {
 
     handleAskConfirmClicked,
 
-    transactionHash,
+    transactionStatus,
+    modalStatus,
 
     requestTransactionModalClose,
     tokenAFieldAmount,
     tokenBFieldAmount,
-    transactionState,
-    transactionStateMsg,
     toggleAsyncPooling,
     asyncPooling,
     handleBlur() {

@@ -8,6 +8,34 @@ export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
+type PoolPageColumnId = "token" | "apy" | "gainLoss" | "share";
+export const COLUMNS: {
+  id: PoolPageColumnId;
+  name: string;
+  class: string;
+}[] = [
+  {
+    id: "token",
+    name: "Token Pair",
+    class: "w-[233px] text-left justify-start",
+  },
+  {
+    id: "apy",
+    name: "Pool APY",
+    class: "w-[128px] text-right justify-end",
+  },
+  {
+    id: "gainLoss",
+    name: "Gain/Loss",
+    class: "w-[140px] text-right justify-end",
+  },
+  {
+    id: "share",
+    name: "Your Pool Share",
+    class: "w-[152px] text-right justify-end",
+  },
+];
+
 export const usePoolPageData = () => {
   const { store } = useCore();
 
@@ -22,10 +50,8 @@ export const usePoolPageData = () => {
       !store.wallet.sif.address ||
       !store.accountpools[store.wallet.sif.address]
     ) {
-      console.log("leaving pools");
       return [];
     }
-    console.log("rtning pools");
     return Object.entries(
       store.accountpools[store.wallet.sif.address] ?? {},
     ).map(([poolName, accountPool]) => {

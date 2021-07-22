@@ -1,23 +1,72 @@
 import PageCard from "@/components/PageCard";
 import AssetIcon from "@/components/AssetIcon";
 import { usePoolStatItem } from "@/hooks/usePoolStatItem";
-import { PoolStat } from "@/hooks/usePoolStats";
+import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import router from "@/router";
-import { computed, ref, Ref } from "@vue/reactivity";
+import { computed, effect, ref, Ref } from "@vue/reactivity";
 import { Component, defineComponent, PropType, SetupContext } from "vue";
 import { RouterLink, RouterView } from "vue-router";
-import { PoolPageAccountPool, usePoolPageData } from "./usePoolPageData";
+import {
+  PoolPageAccountPool,
+  usePoolPageData,
+  COLUMNS,
+} from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
+import { Asset, Network, Pool } from "../../../../core/src";
+import { TokenIcon } from "@/components/TokenIcon";
+import { useToken } from "@/hooks/useToken";
+import { prettyNumber } from "@/utils/prettyNumber";
+import { Button } from "@/components/Button/Button";
+import { useCore } from "@/hooks/useCore";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 
 export default defineComponent({
   name: "PoolPage",
   props: {},
   setup() {
     const data = usePoolPageData();
+    const { config } = useCore();
+
+    const poolDataWithUserData = computed(() => {
+      const accountPoolMap = new Map<string, PoolPageAccountPool>();
+      data.accountPools.value.forEach((pool) => {
+        accountPoolMap.set(pool.lp.asset.symbol.toLowerCase(), pool);
+      });
+
+      return (
+        data.stats.data?.value?.poolData.pools
+          .map((pool) => {
+            return {
+              pool,
+              accountPool: accountPoolMap.get(pool.symbol.toLowerCase()),
+            };
+          })
+          // First sort by name
+          .sort((a, b) => {
+            if (a.pool.symbol === config.nativeAsset.symbol) return -1;
+            if (b.pool.symbol === config.nativeAsset.symbol) return 1;
+            return a.pool.symbol.localeCompare(b.pool.symbol);
+          })
+          // Then sort by balance
+          .sort((a, b) => {
+            if (a.accountPool && b.accountPool) {
+              return (
+                +b.accountPool.lp.units.toString() -
+                +a.accountPool.lp.units.toString()
+              );
+            }
+            if (a.accountPool && !b.accountPool) return -1;
+            if (b.accountPool && !a.accountPool) return 1;
+            return 0;
+          })
+      );
+    });
+
     return () => {
       return (
         <PageCard
+          class="w-[790px]"
           heading="Pool"
           iconName="navigation/pool"
           headerAction={
@@ -31,27 +80,29 @@ export default defineComponent({
               <div class="ml-[4px] font-semibold">Add Liquidity</div>
             </RouterLink>
           }
+          headerContent={
+            <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+              {COLUMNS.map((column, index) => (
+                <div key={column.name} class={[column.class, "opacity-50"]}>
+                  {column.name}
+                </div>
+              ))}
+            </div>
+          }
         >
-          <div class="overflow-y-scroll w-full pb-4">
-            <div class="w-full flex justify-start gap-[10px] capitalize text-right opacity-50 font-medium">
-              <div class={`min-w-[196px] text-left`}>Token Pair</div>
-              <div class={`min-w-[118px]`}>pool APY</div>
-              <div class={`min-w-[130px]`}>Gain/Loss</div>
-              <div class={`min-w-[142px]`}>Your Pool Share</div>
-              <div class={`min-w-[24px]`}></div>
-            </div>
-            <div>
-              {data.accountPools.value.map((pool) => {
-                return (
-                  <UserPoolItem
-                    key={pool.pool.symbol()}
-                    pool={pool}
-                    allPools={data.stats.data?.value?.poolData.pools}
-                  ></UserPoolItem>
-                );
-              })}
-            </div>
-          </div>
+          {poolDataWithUserData.value
+            ?.slice(0, 5)
+            .map(({ pool, accountPool }) => {
+              return (
+                <UserPoolItem
+                  key={pool.symbol}
+                  poolStat={pool}
+                  accountPool={accountPool}
+                  allPools={data.stats.data?.value?.poolData.pools}
+                />
+              );
+            })}
+          <RouterView></RouterView>
         </PageCard>
       );
     };
@@ -60,8 +111,12 @@ export default defineComponent({
 
 const UserPoolItem = defineComponent({
   props: {
-    pool: {
+    poolStat: {
       required: true,
+      type: Object as PropType<PoolStat>,
+    },
+    accountPool: {
+      required: false,
       type: Object as PropType<PoolPageAccountPool>,
     },
     allPools: {
@@ -71,163 +126,233 @@ const UserPoolItem = defineComponent({
   },
   name: "UserPoolItem",
   setup(props) {
+    const { store } = useCore();
     const isExpandedRef = ref(false);
-    const currentPoolStat = computed(() => {
-      return props.allPools?.find((p) =>
-        props.pool?.pool
-          ?.symbol()
-          .toLowerCase()
-          .includes(p.symbol.toLowerCase()),
-      );
-    });
+    const currentPoolStat = computed(() => props.poolStat);
+
     const currentItemData = usePoolStatItem({ pool: currentPoolStat });
-    const userPoolData = useUserPoolData({
-      externalAsset: computed(() => props.pool.lp.asset.symbol ?? ""),
+    const externalSymbolRef = computed(() => currentPoolStat.value.symbol);
+    const accountPoolData = useUserPoolData({
+      externalAsset: externalSymbolRef,
     });
-    const rowanIconUrl = useTokenIconUrl({
-      symbol: computed(() => "rowan"),
+
+    const rowanToken = useToken({
+      network: ref(Network.SIFCHAIN),
+      symbol: ref("rowan"),
     });
-    const fromAssetIconUrl = useTokenIconUrl({
-      symbol: computed(() => "clink"),
+    const externalToken = useToken({
+      network: ref(Network.SIFCHAIN),
+      symbol: externalSymbolRef,
     });
-    const PoolDetailRow = (props: {
-      title?: string;
-      info?: string;
-      infoClass?: string;
-    }) => {
-      return (
-        <div class="bg-black px-[6px] py-[2px] flex rounded-[2px]">
-          {props.title}
-          <div class={["ml-auto font-mono", props.infoClass]}>{props.info}</div>
-        </div>
-      );
-    };
+
+    const nativeAmount = computed(
+      () => store.pools[`${externalSymbolRef.value}_rowan`]?.amounts[0],
+    );
+    const externalAmount = computed(
+      () => store.pools[`${externalSymbolRef.value}_rowan`]?.amounts[1],
+    );
+
+    const detailsRef = computed<[any, any][]>(() => [
+      [
+        `Total Pooled ${externalToken.value?.asset.symbol.toUpperCase()}`,
+        <span class="font-mono">
+          {prettyNumber(+formatAssetAmount(externalAmount.value), 5)}
+        </span>,
+      ],
+      [
+        `Total Pooled ROWAN`,
+        <span class="font-mono">
+          {prettyNumber(+formatAssetAmount(nativeAmount.value), 5)}
+        </span>,
+      ],
+      [
+        `Price of Token USD`,
+        <span class="font-mono">
+          {!!currentItemData.value.priceToken
+            ? `$${currentItemData.value.priceToken}`
+            : "..."}
+        </span>,
+      ],
+      [
+        "Arbitrage Opportunity",
+        <span
+          class={[
+            "font-mono",
+            +(currentItemData.value.arb || 0) < 0
+              ? "text-danger-base"
+              : "text-connected-base",
+          ]}
+        >
+          {!!currentItemData.value.arb
+            ? `${(+currentItemData.value.arb).toFixed(3)}%`
+            : "..."}
+        </span>,
+      ],
+      [
+        "Pool Depth USD",
+        <span class="font-mono">
+          {!!currentItemData.value.poolDepth
+            ? currentItemData.value.poolDepth
+            : "..."}
+        </span>,
+      ],
+      [
+        "Trade Volume 24hr",
+        <span class="font-mono">
+          {!!currentItemData.value.volume
+            ? currentItemData.value.volume
+            : "..."}
+        </span>,
+      ],
+    ]);
+
     return () => {
       return (
-        <>
-          <div class="w-full">
-            <div
-              onClick={() => {
-                isExpandedRef.value = !isExpandedRef.value;
-              }}
-              class="cursor-pointer z-10 overflow-hidden relative font-mono w-full py-[10px] flex justify-start items-center gap-[10px] pb-[18px] capitalize text-right font-medium"
-            >
-              <div
-                class={`min-w-[196px] text-left font-sans font-medium flex flex-row`}
-              >
-                <div class="flex flex-row w-[48px]">
-                  <img
-                    class="max-h-[22px] max-w-[22px]"
-                    src={rowanIconUrl.value}
-                    alt=""
-                  />
-                  <img
-                    class="max-h-[22px] max-w-[22px] ml-[4px]"
-                    src={fromAssetIconUrl.value}
-                    alt=""
-                  />
-                </div>
-                <div class="ml-[10px]">ROWAN / {props.pool.lp.asset.label}</div>
-              </div>
-              <div class={`min-w-[118px]`}>
-                {+currentItemData.value.poolAPY || "..."}%
-              </div>
-              <div class={`min-w-[130px] text-danger-base`}>
-                {" "}
-                ${userPoolData?.earnedRewardsNegative.value ? "-" : ""}
-                {userPoolData?.earnedRewards.value}
-              </div>
-              <div class={`min-w-[142px]`}>
-                {userPoolData.myPoolShare.value}%
-              </div>
-              <div class={`min-w-[0px] ml-auto`}>
-                <button>
-                  <AssetIcon
-                    size={24}
-                    class={[
-                      "text-accent-base transition-all",
-                      isExpandedRef.value ? "rotate-180" : "rotate-0",
-                    ]}
-                    icon="interactive/chevron-down"
-                  ></AssetIcon>
-                </button>
-              </div>
-            </div>
-            <div
-              class={[
-                "flex z-0 transition-all origin-top overflow-y-scroll flex-row items-center bg-[#191919] pa-[20px] w-full rounded-[6px] py-[8px] pl-[7px]",
-                isExpandedRef.value
-                  ? ""
-                  : "h-0 scale-y-0 p-0 pointer-events-none",
-              ]}
-            >
-              <div class="flex flex-col w-full gap-[4px] text-left text-sm">
-                <PoolDetailRow
-                  title={`Total Pooled ${userPoolData.fromSymbol.value?.toUpperCase()}`}
-                  info={userPoolData.fromTotalValue.value}
-                />
-                <PoolDetailRow
-                  title={`Total Pooled ${userPoolData.toSymbol.value?.toUpperCase()}`}
-                  info={userPoolData.toTotalValue.value}
-                />
-                <PoolDetailRow
-                  title={`Price of Token USD`}
-                  info={"$" + currentItemData.value.priceToken}
-                />
-                <PoolDetailRow
-                  title={`Arbitrage Opportunity`}
-                  info={(currentItemData.value.arb ?? "...") + "%"}
-                  infoClass={
-                    !currentItemData.value.arb
-                      ? ""
-                      : +currentItemData.value.arb < 0
-                      ? "text-danger-base"
-                      : "text-connected-base"
+        <div class="w-full py-[10px] border-dashed border-b border-white border-opacity-40 last:border-none">
+          <div
+            onClick={() => {
+              isExpandedRef.value = !isExpandedRef.value;
+            }}
+            class="cursor-pointer font-mono w-full flex justify-start items-center font-medium h-[32px] font-sans"
+          >
+            {COLUMNS.map((column) => {
+              const content = (() => {
+                switch (column.id) {
+                  case "token": {
+                    return (
+                      <>
+                        <TokenIcon
+                          assetValue={rowanToken.value?.asset}
+                          size={22}
+                        />
+                        <TokenIcon
+                          assetValue={externalToken.value?.asset}
+                          size={22}
+                          class="ml-[4px]"
+                        />
+                        <div class="ml-[10px] uppercase font-sans">
+                          ROWAN / {currentPoolStat.value.symbol.toUpperCase()}
+                        </div>
+                      </>
+                    );
                   }
-                />
-                <PoolDetailRow
-                  title={`Pool Depth USD`}
-                  info={"$" + (currentItemData.value.poolDepth || "...")}
-                />
-                <PoolDetailRow
-                  title={`Trade Volume 24hr`}
-                  info={"$" + (currentItemData.value.volume || "...")}
-                />
-              </div>
-              <div class="bg-black p-[6px] min-w-[200px] gap-[6px] mx-[8px] rounded-[6px] flex items-center">
-                <button
-                  onClick={() => {
-                    router.push({
-                      name: "AddLiquidity",
-                      params: {
-                        externalAsset: props.pool.lp.asset.symbol.toLowerCase(),
-                      },
-                    });
-                  }}
-                  class="w-1/2 flex gap-[4px]  items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-sm font-semibold bg-[#191919]"
+                  case "apy": {
+                    return (
+                      <div class="font-mono">
+                        {+currentItemData.value.poolAPY || "..."}%
+                      </div>
+                    );
+                  }
+                  case "gainLoss": {
+                    return (
+                      <div
+                        class={[
+                          "font-mono",
+                          !accountPoolData?.earnedRewards.value
+                            ? ""
+                            : accountPoolData?.earnedRewardsNegative.value
+                            ? "text-danger-base"
+                            : "text-connected-base",
+                        ]}
+                      >
+                        {!accountPoolData.earnedRewards.value ? (
+                          ""
+                        ) : (
+                          <>
+                            {accountPoolData?.earnedRewardsNegative.value
+                              ? "-"
+                              : ""}
+                            ${accountPoolData?.earnedRewards.value}
+                          </>
+                        )}
+                      </div>
+                    );
+                  }
+                  case "share": {
+                    return (
+                      <div class="font-mono">
+                        {!!accountPoolData.myPoolShare.value
+                          ? `${accountPoolData.myPoolShare.value}%`
+                          : ""}
+                      </div>
+                    );
+                  }
+                }
+              })();
+              return (
+                <div
+                  key={column.name}
+                  class={[column.class, "flex items-center"]}
                 >
-                  <AssetIcon size={20} icon="interactive/plus"></AssetIcon>
-                  <div>Add</div>
-                </button>
-                <button
-                  onClick={() => {
-                    router.push({
-                      name: "RemoveLiquidity",
-                      params: {
-                        externalAsset: props.pool.lp.asset.symbol.toLowerCase(),
-                      },
-                    });
-                  }}
-                  class="w-1/2 flex gap-[4px] items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-sm font-semibold bg-[#191919]"
-                >
-                  <AssetIcon size={20} icon="interactive/minus"></AssetIcon>
-                  <div>Remove</div>
-                </button>{" "}
-              </div>
+                  {content}
+                </div>
+              );
+            })}
+            <div class="flex flex-1 justify-end text-right">
+              <button>
+                <AssetIcon
+                  size={24}
+                  class={[
+                    "text-accent-base transition-all",
+                    isExpandedRef.value ? "rotate-180" : "rotate-0",
+                  ]}
+                  icon="interactive/chevron-down"
+                ></AssetIcon>
+              </button>
             </div>
           </div>
-          <RouterView></RouterView>
-        </>
+          {isExpandedRef.value && (
+            <section
+              class={[
+                "flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden opacity-0 pointer-events-none p-0 h-0 mt-0 transition-all",
+                isExpandedRef.value &&
+                  "h-[193px] opacity-100 pointer-events-auto !mt-[10px] p-[12px]",
+              ]}
+            >
+              <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">
+                {detailsRef.value.map(([key, value], index) => (
+                  <div
+                    key={index}
+                    class="h-[28px] px-[6px] flex items-center justify-between text-sm font-medium border-b border-solid border-gray-input_outline last:border-none"
+                  >
+                    <span>{key}</span>
+                    <span>{value}</span>
+                  </div>
+                ))}
+              </div>
+              <div class="p-[4px]">
+                <Button.Inline
+                  to={{
+                    name: "AddLiquidity",
+                    params: {
+                      externalAsset: currentPoolStat.value.symbol.toLowerCase(),
+                    },
+                  }}
+                  replace
+                  class="w-[140px] !bg-black !text-accent-base"
+                  icon="interactive/plus"
+                >
+                  Add Liquidity
+                </Button.Inline>
+                {!!accountPoolData.myPoolShare?.value && (
+                  <Button.Inline
+                    to={{
+                      name: "RemoveLiquidity",
+                      params: {
+                        externalAsset: currentPoolStat.value.symbol.toLowerCase(),
+                      },
+                    }}
+                    replace
+                    class="w-[140px] !bg-black !text-accent-base mt-[6px]"
+                    icon="interactive/minus"
+                  >
+                    Remove Liquidity
+                  </Button.Inline>
+                )}
+              </div>
+            </section>
+          )}
+        </div>
       );
     };
   },

@@ -7,6 +7,7 @@ export function _Inline(
     AnchorHTMLAttributes & {
       active?: boolean;
       to?: RouteLocationRaw;
+      replace?: boolean;
       icon?: IconName;
     },
   ctx: SetupContext,
@@ -17,8 +18,8 @@ export function _Inline(
       {...props}
       class={[
         "button flex items-center rounded text-sm font-semibold h-[32px] px-[8px] text-accent-base bg-gray-action_button disabled:text-gray-disabled active:bg-accent-gradient active:text-white !disabled:bg-transparent",
-        props.active && !props.disabled && "bg-accent-gradient text-white",
         props.class,
+        props.active && !props.disabled && "bg-accent-gradient text-white",
       ]}
     >
       {!!props.icon && (

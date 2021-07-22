@@ -7,6 +7,7 @@ export function useInitialize() {
 
   // Initialize usecases / watches
   usecases.clp.initClp();
+  console.log("initClp");
   usecases.wallet.sif.initSifWallet();
   usecases.wallet.eth.initEthWallet();
 
