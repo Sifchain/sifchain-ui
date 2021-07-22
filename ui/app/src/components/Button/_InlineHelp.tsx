@@ -3,14 +3,17 @@ import {
   ButtonHTMLAttributes,
   defineComponent,
   mergeProps,
-  PropType,
-  ref,
   SetupContext,
 } from "vue";
 import { Tooltip, TooltipInstance } from "../Tooltip";
 
 export const _InlineHelp = defineComponent({
-  setup(props: ButtonHTMLAttributes, ctx: SetupContext) {
+  setup(
+    props: ButtonHTMLAttributes & {
+      size?: number;
+    },
+    ctx: SetupContext,
+  ) {
     return () => (
       <button
         {...props}
@@ -32,7 +35,7 @@ export const _InlineHelp = defineComponent({
         >
           <AssetIcon
             class="text-accent-base inline"
-            size={"1.285em"}
+            size={props.size || 16}
             icon="interactive/circle-question"
           ></AssetIcon>
         </Tooltip>

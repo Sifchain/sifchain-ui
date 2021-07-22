@@ -54,6 +54,7 @@ export default defineComponent({
               href="https://docs.sifchain.finance/resources/rewards-programs"
               rel="noopener noreferrer"
               target="_blank"
+              class="underline"
             >
               current rewards program
             </a>{" "}
