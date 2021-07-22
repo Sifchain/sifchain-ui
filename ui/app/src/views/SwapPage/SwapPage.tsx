@@ -126,7 +126,7 @@ export default defineComponent({
           }}
           amount={data.toAmount.value}
           asset={data.toAsset.value}
-          formattedBalance={undefined}
+          formattedBalance={data.formattedToTokenBalance.value || undefined}
         />
         {/* </TransitionGroup> */}
         <SlippageTolerance

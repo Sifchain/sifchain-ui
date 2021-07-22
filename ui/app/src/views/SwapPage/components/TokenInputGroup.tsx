@@ -72,9 +72,13 @@ export const TokenInputGroup = defineComponent({
             </div>
             <div
               onClick={() => props.onSetToMaxAmount?.()}
-              class={`text-white opacity-50 font-sans font-medium text-sm hover:text-accent-base cursor-pointer ${
-                props.formattedBalance ? "" : "opacity-0"
-              }`}
+              class={[
+                `text-white opacity-50 font-sans font-medium text-sm ${
+                  props.formattedBalance ? "" : "opacity-0"
+                }`,
+                !!props.onSetToMaxAmount &&
+                  "hover:text-accent-base cursor-pointer",
+              ]}
             >
               Balance: {props.formattedBalance || "0"}{" "}
               {props.asset?.label.replace(/^c/gim, "")}

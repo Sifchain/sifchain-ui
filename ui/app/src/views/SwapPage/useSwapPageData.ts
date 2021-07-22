@@ -130,6 +130,8 @@ export const useSwapPageData = () => {
     return fromAmount.value === formattedFromTokenBalance.value;
   });
 
+  const formattedToTokenBalance = useFormattedTokenBalance(toSymbol);
+
   const {
     state,
     fromFieldAmount,
@@ -270,6 +272,7 @@ export const useSwapPageData = () => {
     fromTokenIconUrl,
     toTokenIconUrl,
     formattedFromTokenBalance,
+    formattedToTokenBalance,
     fromFieldAmount,
     toFieldAmount,
     minimumReceived: computed(() => {
