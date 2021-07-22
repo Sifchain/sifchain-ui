@@ -2,7 +2,7 @@ import { defineComponent, ref, computed, PropType, Ref } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network } from "@sifchain/sdk";
+import { Amount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { format } from "@sifchain/sdk/src/utils/format";
@@ -28,9 +28,7 @@ export default defineComponent({
       exportParams,
       networksRef,
       exportTokenRef,
-      targetTokenRef,
       exportAmountRef,
-      feeAmountRef,
     } = props.exportData;
 
     const handleSetMax = () => {
@@ -44,29 +42,18 @@ export default defineComponent({
       });
     };
 
-    const symbolIconRef = computed(
-      () =>
-        useTokenIconUrl({
-          symbol: ref(exportParams.symbol || ""),
-        })?.value,
-    );
-
     const validationErrorRef = computed(() => {
       if (!exportTokenRef.value) {
-        return "Please provide a valid token to import.";
+        return "Select Token";
       }
       if (!exportAmountRef.value) {
-        return "Please select an amount.";
+        return "Enter Amount";
       }
       if (exportAmountRef.value?.lessThanOrEqual("0.0")) {
-        return "Please enter an amount greater than 0 to import.";
+        return "Enter Amount";
       }
-      if (exportTokenRef.value.amount.lessThan(exportParams.amount || "0")) {
-        return (
-          "You do not have that much " +
-          exportTokenRef.value.asset.symbol.toUpperCase() +
-          " available."
-        );
+      if (exportAmountRef.value?.greaterThan(exportTokenRef.value.amount)) {
+        return "Amount Too Large";
       }
     });
 
@@ -94,7 +81,7 @@ export default defineComponent({
         },
         {
           condition: true,
-          name: "Export",
+          name: validationErrorRef.value || "Export",
           icon: null,
           props: {
             disabled: !!validationErrorRef.value,

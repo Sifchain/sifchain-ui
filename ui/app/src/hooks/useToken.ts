@@ -117,9 +117,6 @@ export const useToken = (props: {
   const tokenListRef = useTokenList();
 
   return computed(() => {
-    console.log(
-      tokenListRef.value?.filter((s) => s.asset.symbol.match(/rowan/i)),
-    );
     return tokenListRef.value?.find((token) => {
       return (
         token.asset.network === props.network.value &&

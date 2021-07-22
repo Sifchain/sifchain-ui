@@ -4,6 +4,7 @@ import { reactive, ref, computed, Ref, watch } from "vue";
 import router from "@/router";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useToken } from "@/hooks/useToken";
+import { toBaseUnits } from "@sifchain/sdk/src/utils";
 import {
   formatAssetAmount,
   getUnpeggedSymbol,
@@ -66,17 +67,20 @@ export const useExportData = () => {
     },
     { deep: true },
   );
-
-  const headingRef = computed(
-    () => `Export ${exportParams.symbol.toUpperCase()} from Sifchain`,
-  );
-
   const exitExport = () => router.replace({ name: "Balances" });
 
   const exportTokenRef = useToken({
     network: ref(Network.SIFCHAIN),
     symbol: computed(() => exportParams.symbol),
   });
+
+  const headingRef = computed(
+    () =>
+      `Export ${(
+        exportTokenRef.value?.asset?.displaySymbol ||
+        exportTokenRef.value?.asset?.symbol
+      )?.toUpperCase()} from Sifchain`,
+  );
 
   const feeAmountRef = computed(() => {
     return exportTokenRef.value
@@ -101,7 +105,10 @@ export const useExportData = () => {
     if (!exportTokenRef.value) return null;
     return AssetAmount(
       exportTokenRef.value?.asset,
-      exportParams.amount?.trim() || "0.0",
+      toBaseUnits(
+        exportParams.amount?.trim() || "0.0",
+        exportTokenRef.value?.asset,
+      ),
     );
   });
 

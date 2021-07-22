@@ -136,7 +136,7 @@ export default defineComponent({
           showMaskRef.value && "opacity-40",
         )}
       >
-        <td class="text-left align-middle w-[120px] group-hover:text-opacity-70">
+        <td class="text-left align-middle w-[120px] group-hover:opacity-80">
           <div class="flex items-center">
             <TokenIcon asset={assetRef}></TokenIcon>
             {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
@@ -145,16 +145,21 @@ export default defineComponent({
             </span>
           </div>
         </td>
-        <td class="text-right align-middle min-w-[200px] group-hover:opacity-80">
+        <td class="text-right align-middle min-w-[200px]">
           <div class="inline-flex items-center relative">
-            {emptyRef.value ? null : formatAssetAmount(props.tokenItem.amount)}
+            <span class="group-hover:opacity-80">
+              {emptyRef.value
+                ? null
+                : formatAssetAmount(props.tokenItem.amount)}
+            </span>
 
             {props.tokenItem.pegTxs.length > 0 && (
               <Tooltip
                 arrow
                 interactive
                 placement="top"
-                offset={[60, 20]}
+                appendTo={() => document.querySelector("#portal-target")}
+                offset={[112, 20]}
                 content={
                   <div class="text-left w-[200px]">
                     <p class="mb-1">

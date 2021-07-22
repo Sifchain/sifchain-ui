@@ -4,9 +4,11 @@ import router from "@/router";
 import { effect } from "@vue/reactivity";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
+import { toBaseUnits } from "@sifchain/sdk/src/utils";
 import {
   formatAssetAmount,
   getPeggedSymbol,
+  isOpposingSymbol,
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { Network, IAssetAmount, AssetAmount, Amount } from "@sifchain/sdk";
@@ -85,16 +87,10 @@ export const useImportData = () => {
       return tokenListRef.value[0];
     }
 
-    const mappedSymbol = getPeggedSymbol(
-      importParams.symbol || "",
-    ).toLowerCase();
     const token =
-      tokenListRef.value.find(
-        (token) =>
-          // Token in url could be a sifchain token or another token...
-          token.asset.symbol === mappedSymbol ||
-          token.asset.symbol === importParams.symbol,
-      ) || tokenListRef.value[0];
+      tokenListRef.value.find((token) => {
+        return isOpposingSymbol(token.asset.symbol, importParams.symbol || "");
+      }) || tokenListRef.value[0];
 
     importParams.symbol = token.asset.symbol;
     importParams.network = token.asset.network;
@@ -105,7 +101,7 @@ export const useImportData = () => {
     if (!tokenRef.value) return null;
     return AssetAmount(
       tokenRef.value?.asset,
-      importParams.amount?.trim() || "0.0",
+      toBaseUnits(importParams.amount?.trim() || "0.0", tokenRef.value?.asset),
     );
   });
 

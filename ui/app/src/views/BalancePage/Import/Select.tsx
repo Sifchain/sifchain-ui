@@ -52,20 +52,16 @@ export default defineComponent({
 
     const validationErrorRef = computed(() => {
       if (!tokenRef.value) {
-        return "Please provide a valid token to import.";
+        return "Select Token";
       }
       if (!importAmountRef.value) {
-        return "Please select an amount.";
+        return "Enter Amount";
       }
       if (importAmountRef.value?.lessThanOrEqual("0.0")) {
-        return "Please enter an amount greater than 0 to import.";
+        return "Enter Amount";
       }
-      if (tokenRef.value.amount.lessThan(importParams.amount || "0")) {
-        return (
-          "You do not have that much " +
-          tokenRef.value.asset.symbol.toUpperCase() +
-          " available."
-        );
+      if (tokenRef.value.amount.lessThan(importAmountRef.value)) {
+        return "Amount Too Large";
       }
     });
 
@@ -92,7 +88,7 @@ export default defineComponent({
         },
         {
           condition: true,
-          name: "Import",
+          name: validationErrorRef.value || "Import",
           icon: null,
           props: {
             disabled: !!validationErrorRef.value,
@@ -152,7 +148,8 @@ export default defineComponent({
                       assetValue={tokenRef.value?.asset}
                     ></TokenIcon>
                     <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                      {tokenRef.value?.asset?.label.replace(/^c/gim, "")}
+                      {tokenRef.value?.asset?.displaySymbol ||
+                        tokenRef.value?.asset?.symbol}
                     </div>
                   </div>
                 </Button.Select>
