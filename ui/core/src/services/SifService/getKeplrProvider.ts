@@ -1,48 +1,9 @@
 import { OfflineSigner } from "@cosmjs/launchpad";
 import { sleep } from "../../test/utils/sleep";
-
-type WindowWithPossibleKeplr = typeof window & {
-  keplr?: any;
-  getOfflineSigner?: any;
-};
+import { Window as KeplrWindow, Keplr } from "@keplr-wallet/types";
+type WindowWithPossibleKeplr = typeof window & KeplrWindow;
 
 // Mock out Keplr roughly. TODO import types
-type Keplr = {
-  experimentalSuggestChain?(chainInfo: any): Promise<any>;
-
-  enable(chainId: string): Promise<void>;
-
-  getKey(chainId: string): Promise<any>;
-
-  getTxConfig(chainId: string, config: any): Promise<any>;
-
-  sign(chainId: string, signer: string, message: Uint8Array): Promise<any>;
-
-  sendTx(chainId: string, stdTx: any, mode: any): Promise<any>;
-
-  suggestToken(chainId: string, contractAddress: string): Promise<void>;
-
-  requestTx(
-    chainId: string,
-    txBytes: Uint8Array,
-    mode: "sync" | "async" | "commit",
-    isRestAPI: boolean,
-  ): Promise<void>;
-
-  requestTxWithResult(
-    chainId: string,
-    txBytes: Uint8Array,
-    mode: "sync" | "async" | "commit",
-    isRestAPI: boolean,
-  ): Promise<any>;
-
-  getSecret20ViewingKey(
-    chainId: string,
-    contractAddress: string,
-  ): Promise<string>;
-
-  getOfflineSigner: (chainId?: string) => OfflineSigner;
-};
 
 type provider = Keplr;
 let numChecks = 0;
@@ -65,5 +26,5 @@ export default async function getKeplrProvider(): Promise<provider | null> {
   }
 
   console.log("Keplr wallet bootstraped");
-  return win.keplr as Keplr;
+  return win.keplr;
 }

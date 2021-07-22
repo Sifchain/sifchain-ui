@@ -38,6 +38,11 @@ import Pill from "./components/Pill/Pill.vue";
 import Notifications from "./components/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/components/shared/EnvAlert.vue";
+import { IBCService } from "../../core/src/services/IBCService";
+
+IBCService.sendIBCtransaction(`cosmoshub-testnet`, `sifchain-devnet-042`);
+console.log("sendingIBC transaction");
+
 export default defineComponent({
   name: "App",
   components: {
