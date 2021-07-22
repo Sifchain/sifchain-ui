@@ -1,5 +1,5 @@
 import PageCard from "@/components/PageCard";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { usePoolStatItem } from "@/hooks/usePoolStatItem";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
@@ -24,7 +24,7 @@ export default defineComponent({
             <RouterLink
               to={{ name: "AddLiquidity", params: {} }}
               class={[
-                "flex flex-row items-center rounded-[4px] px-[17px] py-[8px] bg-accent-gradient mr-[5px] text-[16px]",
+                "flex flex-row items-center rounded-[4px] px-[17px] py-[8px] bg-accent-gradient mr-[5px] text-md",
               ]}
             >
               <AssetIcon icon="interactive/plus" size={20}></AssetIcon>
@@ -161,7 +161,7 @@ const UserPoolItem = defineComponent({
                   : "h-0 scale-y-0 p-0 pointer-events-none",
               ]}
             >
-              <div class="flex flex-col w-full gap-[4px] text-left text-[12px]">
+              <div class="flex flex-col w-full gap-[4px] text-left text-sm">
                 <PoolDetailRow
                   title={`Total Pooled ${userPoolData.fromSymbol.value?.toUpperCase()}`}
                   info={userPoolData.fromTotalValue.value}
@@ -204,7 +204,7 @@ const UserPoolItem = defineComponent({
                       },
                     });
                   }}
-                  class="w-1/2 flex gap-[4px]  items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-[12px] font-semibold bg-[#191919]"
+                  class="w-1/2 flex gap-[4px]  items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-sm font-semibold bg-[#191919]"
                 >
                   <AssetIcon size={20} icon="interactive/plus"></AssetIcon>
                   <div>Add</div>
@@ -218,7 +218,7 @@ const UserPoolItem = defineComponent({
                       },
                     });
                   }}
-                  class="w-1/2 flex gap-[4px] items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-[12px] font-semibold bg-[#191919]"
+                  class="w-1/2 flex gap-[4px] items-center px-[8px] py-[6px] rounded-[6px] text-accent-base text-sm font-semibold bg-[#191919]"
                 >
                   <AssetIcon size={20} icon="interactive/minus"></AssetIcon>
                   <div>Remove</div>

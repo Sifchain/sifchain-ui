@@ -12,7 +12,7 @@ export function usePegEventDetails(props: {
 }
 
 export function useTransactionDetails(props: {
-  tx: Ref<TransactionStatus>;
+  tx: Ref<TransactionStatus | null>;
 }): ComputedRef<TransactionDetails> {
   return computed(() => {
     return getTransactionDetails(props.tx.value);
@@ -63,7 +63,7 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
 
 // For any old transaction
 export function getTransactionDetails(
-  tx: TransactionStatus,
+  tx: TransactionStatus | null,
 ): TransactionDetails {
   const payload = {
     tx,
@@ -97,14 +97,14 @@ export function getTransactionDetails(
           return {
             isError: true,
             heading: "Transaction Rejected",
-            description: tx.memo || "",
+            description: tx?.memo || "",
           };
         }
         case "failed": {
           return {
             isError: true,
             heading: "Transaction Failed",
-            description: tx.memo || "",
+            description: tx?.memo || "",
           };
         }
         default:

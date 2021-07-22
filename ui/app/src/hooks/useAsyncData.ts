@@ -38,6 +38,7 @@ export const useAsyncData = <F extends () => Promise<any>>(
         publicState.isLoading.value = false;
       })
       .catch((e) => {
+        console.error("useAsyncData error", e);
         publicState.isError.value = true;
         publicState.isLoading.value = false;
         publicState.error = e;

@@ -1,6 +1,6 @@
 import { defineComponent, TransitionGroup, ref, computed } from "vue";
 import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
 import BalanceRow from "./BalanceRow";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";
@@ -15,8 +15,8 @@ export default defineComponent({
     const { state, displayedTokenList } = useBalancePageData({
       searchQuery: "",
       expandedSymbol: "",
-      sortBy: "name",
-      sortDirection: "asc",
+      sortBy: "symbol",
+      reverse: false,
     });
 
     effect(() => {
@@ -28,16 +28,14 @@ export default defineComponent({
     const columns = [
       {
         name: "Token",
-        sortBy: "name" as BalancePageState["sortBy"],
+        sortBy: "symbol" as BalancePageState["sortBy"],
         class: "text-left",
-        defaultSortBy: "asc",
         ref: ref<HTMLElement>(),
       },
       {
         name: "Sifchain Balance",
         sortBy: "balance" as BalancePageState["sortBy"],
         class: "text-right",
-        defaultSortBy: "desc",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -72,48 +70,48 @@ export default defineComponent({
                   onInput={(e: Event) => {
                     state.searchQuery = (e.target as HTMLInputElement).value;
                   }}
-                  class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
+                  class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium text-md"
                 />
               </div>
               <div class="h-4 w-full" />
-              <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
-                <div class="w-full flex flex-row justify-start font-medium text-xs align-text-bottom">
-                  {columns.map((column, index) => (
-                    <div
-                      style={colStyles.value[index]}
-                      class={[column.class]}
-                      key={column.name}
-                    >
+              {displayedTokenList.value.length > 0 && (
+                <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+                  <div class="w-full flex flex-row justify-start font-medium text-sm align-text-bottom">
+                    {columns.map((column, index) => (
                       <div
-                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
-                        onClick={() => {
-                          if (state.sortBy === column.sortBy) {
-                            state.sortDirection =
-                              state.sortDirection === "asc" ? "desc" : "asc";
-                          } else {
-                            state.sortDirection = column.defaultSortBy as BalancePageState["sortDirection"];
-                          }
-                          state.sortBy = column.sortBy;
-                        }}
+                        style={colStyles.value[index]}
+                        class={[column.class]}
+                        key={column.name}
                       >
-                        {column.name}
-                        {state.sortBy === column.sortBy && (
-                          <AssetIcon
-                            icon="interactive/arrow-down"
-                            class="transition-all w-[12px] h-[12px]"
-                            style={{
-                              transform:
-                                state.sortDirection === "asc"
+                        <div
+                          class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                          onClick={() => {
+                            if (state.sortBy === column.sortBy) {
+                              state.reverse = !state.reverse;
+                            } else {
+                              state.reverse = false;
+                            }
+                            state.sortBy = column.sortBy;
+                          }}
+                        >
+                          {column.name}
+                          {state.sortBy === column.sortBy && (
+                            <AssetIcon
+                              icon="interactive/arrow-down"
+                              class="transition-all w-[12px] h-[12px]"
+                              style={{
+                                transform: state.reverse
                                   ? "rotate(0deg)"
                                   : "rotate(180deg)",
-                            }}
-                          />
-                        )}
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           }
         >

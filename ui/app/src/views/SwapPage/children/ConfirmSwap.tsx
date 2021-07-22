@@ -3,9 +3,11 @@ import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
-import { defineComponent } from "vue";
-import { format } from "../../../../../core/src";
+import AssetIcon from "@/components/AssetIcon";
+import { defineComponent, computed } from "vue";
+import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { useTransactionDetails } from "@/hooks/useTransactionDetails";
+import { format } from "@sifchain/sdk";
 import { useSwapPageData } from "../useSwapPageData";
 
 export const ConfirmSwap = defineComponent({
@@ -26,7 +28,7 @@ export const ConfirmSwap = defineComponent({
                   {data.toAsset.value && (
                     <TokenIcon asset={data.fromAsset} size={22}></TokenIcon>
                   )}
-                  <span class="ml-[10px] font-medium text-[16px]">
+                  <span class="ml-[10px] font-medium text-md">
                     {data.fromAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>
@@ -47,7 +49,7 @@ export const ConfirmSwap = defineComponent({
                   {data.toAsset.value && (
                     <TokenIcon asset={data.toAsset} size={22}></TokenIcon>
                   )}
-                  <span class="ml-[10px] font-medium text-[16px]">
+                  <span class="ml-[10px] font-medium text-md">
                     {data.toAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>
@@ -61,6 +63,7 @@ export const ConfirmSwap = defineComponent({
           <Form.FieldSet class="mt-[10px]">
             <Form.Label>Output is estimated</Form.Label>
             <Form.Details
+              class="mt-[10px]"
               details={[
                 [
                   <div class="flex items-center">Price</div>,
@@ -105,15 +108,15 @@ export const ConfirmSwap = defineComponent({
               ]}
             ></Form.Details>
           </Form.FieldSet>
-          <div class="text-center w-full font-medium mt-[10px]">
+          {/* <div class="text-center w-full font-medium mt-[10px]">
             Confirm this transaction in your wallet.
-          </div>
-          {/* <Button.CallToAction
-              class="mt-[10px]"
-              onClick={() => data.handleAskConfirmClicked()}
-            >
-              Confirm
-            </Button.CallToAction> */}
+          </div> */}
+          <Button.CallToAction
+            class="mt-[10px]"
+            onClick={() => data.handleAskConfirmClicked()}
+          >
+            Confirm
+          </Button.CallToAction>
         </Modal>
       );
     };

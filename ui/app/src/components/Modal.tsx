@@ -7,7 +7,7 @@ import {
   onMounted,
   onUnmounted,
 } from "vue";
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { ProgressPlugin } from "webpack";
 
 export type ModalProps = {
@@ -25,7 +25,7 @@ export default defineComponent({
   props: {
     teleportTo: {
       type: String as PropType<ModalProps["teleportTo"]>,
-      default: () => "#app",
+      default: () => "#portal-target",
     },
     onClose: {
       type: Function as PropType<ModalProps["onClose"]>,

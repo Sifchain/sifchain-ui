@@ -1,25 +1,12 @@
 import {
   defineComponent,
-  EmitsOptions,
-  Events,
-  FunctionalComponent,
   HTMLAttributes,
   InputHTMLAttributes,
-  onDeactivated,
-  onMounted,
-  onUnmounted,
   PropType,
-  SetupContext,
-  Teleport,
-  watch,
 } from "vue";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
-import { computed, effect, reactive, ref, toRefs } from "@vue/reactivity";
-import { format, IAsset, IAssetAmount, Network } from "@sifchain/sdk";
+import { ref, toRefs } from "@vue/reactivity";
+import { IAsset } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
-import { useCore } from "@/hooks/useCore";
-import { TOKEN_SELECT_MODAL_TARGET } from "@/constants/teleport";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
@@ -80,14 +67,18 @@ export const TokenInputGroup = defineComponent({
           ]}
         >
           <div class="w-full flex justify-between items-baseline">
-            <div class=" text-[16px] text-white font-sans font-medium capitalize">
+            <div class=" text-md text-white font-sans font-medium capitalize">
               {props.heading}
             </div>
             <div
               onClick={() => props.onSetToMaxAmount?.()}
-              class={`text-white opacity-50 font-sans font-medium text-[12px] hover:text-accent-base cursor-pointer ${
-                props.formattedBalance ? "" : "opacity-0"
-              }`}
+              class={[
+                `text-white opacity-50 font-sans font-medium text-sm ${
+                  props.formattedBalance ? "" : "opacity-0"
+                }`,
+                !!props.onSetToMaxAmount &&
+                  "hover:text-accent-base cursor-pointer",
+              ]}
             >
               Balance: {props.formattedBalance || "0"}{" "}
               {props.asset?.label.replace(/^c/gim, "")}

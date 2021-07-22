@@ -3,7 +3,7 @@ import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { Slider } from "@/components/Slider/Slider";
 import { TokenIcon } from "@/components/TokenIcon";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
@@ -143,12 +143,13 @@ export default defineComponent({
         </Form.FieldSet>
         <Form.Label class="mt-[1em]">You should receive:</Form.Label>
         <Form.Details
+          class="mt-[10px]"
           details={[
             [
               <div class="uppercase">
                 {data.nativeAsset?.value?.displaySymbol}
               </div>,
-              <div class="flex gap-[4px] flex-row">
+              <div class="flex gap-[4px] flex-row font-mono">
                 <div>{data.withdrawNativeAssetAmount.value}</div>
                 <TokenIcon asset={data.nativeAsset}></TokenIcon>
               </div>,
@@ -157,7 +158,7 @@ export default defineComponent({
               <div class="uppercase">
                 {data.externalAsset?.value?.displaySymbol}
               </div>,
-              <div class="flex gap-[4px] flex-row">
+              <div class="flex gap-[4px] flex-row font-mono">
                 <div>{data.withdrawExternalAssetAmount.value}</div>
                 <TokenIcon asset={data.externalAsset}></TokenIcon>
               </div>,

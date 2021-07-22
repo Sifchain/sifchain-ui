@@ -1,6 +1,6 @@
 import { defineComponent, PropType, HTMLAttributes, computed } from "vue";
 import { useLink, useRouter, RouterLink } from "vue-router";
-import AssetIcon, { IconName } from "../utilities/AssetIcon";
+import AssetIcon, { IconName } from "../../components/AssetIcon";
 
 export default defineComponent({
   components: {},
@@ -13,7 +13,7 @@ export default defineComponent({
       required: true,
       type: String as PropType<IconName>,
     },
-    routerLink: {
+    href: {
       type: String,
     },
     isComingSoon: {
@@ -29,24 +29,33 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const link = props.routerLink
-      ? useLink({
-          to: props.routerLink,
-        })
-      : null;
-    let isActive = computed(() => {
-      return link?.isActive?.value;
+    const isExternal = computed(() => props.href?.startsWith("http"));
+    const Cmp = computed(() => {
+      return !props.href ? "button" : isExternal.value ? "a" : RouterLink;
+    });
+    const linkRef =
+      props.href && !isExternal.value
+        ? useLink({
+            to: props.href,
+          })
+        : null;
+    const isActive = computed(() => {
+      return !isExternal.value && linkRef?.isActive?.value;
     });
 
     return () => {
-      const Cmp = props.routerLink ? RouterLink : "button";
       return (
-        <Cmp
-          {...(props.routerLink && {
-            to: props.routerLink,
+        <Cmp.value
+          {...(isExternal.value && {
+            href: props.href,
+            rel: "noopener noreferrer",
+            target: "_blank",
+          })}
+          {...(Cmp.value === RouterLink && {
+            to: props.href,
           })}
           class={[
-            `flex items-center text-xs h-[32px] mt-[10px] px-[8px] hover:bg-gray-200  transition-colors duration-75 hover:bg-gray-200 cursor-pointer rounded w-full text-left font-semibold whitespace-nowrap`,
+            `flex items-center text-sm h-[32px] mt-[10px] px-[8px] hover:bg-gray-200  transition-colors duration-75 hover:bg-gray-200 cursor-pointer rounded w-full text-left font-semibold whitespace-nowrap`,
             isActive.value && "bg-gray-200 text-accent-base",
             props.class,
           ]}
@@ -61,7 +70,7 @@ export default defineComponent({
             {props.displayName}
           </span>
           {!!props.action && props.action}
-        </Cmp>
+        </Cmp.value>
       );
     };
   },

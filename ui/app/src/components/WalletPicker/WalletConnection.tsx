@@ -1,5 +1,5 @@
 import { shortenHash } from "@/componentsLegacy/shared/utils";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { defineComponent, PropType, ref } from "vue";
 import { WalletConnection } from "./constants";
 import WalletConnectionDropdown from "./WalletConnectionDropdown";
@@ -56,7 +56,7 @@ export default defineComponent({
             role="button"
             onClick={handleClick}
             class={[
-              "h-[37px] flex items-center px-[10px] w-full border border-solid rounded cursor-pointer focus:bg-black hover:bg-black transition-all",
+              "h-[42px] flex items-center px-[10px] w-full border border-solid rounded cursor-pointer focus:bg-black hover:bg-black transition-all",
               stateRef.value.isConnected
                 ? `border-connected-base`
                 : `border-transparent`,
@@ -65,14 +65,14 @@ export default defineComponent({
             <div class="flex-1 items-center flex">
               <img
                 src={props.connection.iconSrc}
-                class="w-[18px]"
+                class="w-[22px] rounded"
                 alt={props.connection.name}
               />
               <div class="ml-[13px]">
-                <div class="text-xs font-bold leading-none">
+                <div class="text-sm font-bold leading-none">
                   {props.connection.name}
                 </div>
-                <div class="text-[8px] opacity-50 capitalize">
+                <div class="text-sm opacity-50 capitalize text-left">
                   {props.connection.network}
                 </div>
               </div>
@@ -85,7 +85,7 @@ export default defineComponent({
               ]}
             />
             <div class="flex-1">
-              <div class="cursor-pointer text-[11px] flex justify-end items-center w-full">
+              <div class="cursor-pointer text-sm flex justify-end items-center w-full">
                 {stateRef.value.isConnected
                   ? shortenHash(stateRef.value.address, 6, 4)
                   : "Connect"}

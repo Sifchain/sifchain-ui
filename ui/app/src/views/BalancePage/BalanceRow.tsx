@@ -9,7 +9,7 @@ import {
   getPeggedSymbol,
 } from "@/componentsLegacy/shared/utils";
 import ProgressRing from "@/components/ProgressRing";
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import Tooltip from "@/components/Tooltip";
 import {
   getBlockExplorerUrl,
@@ -132,11 +132,11 @@ export default defineComponent({
           }
         }}
         class={cx(
-          "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden last:border-transparent",
+          "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden last:border-transparent group",
           showMaskRef.value && "opacity-40",
         )}
       >
-        <td class="text-left align-middle w-[140px]">
+        <td class="text-left align-middle w-[120px] group-hover:opacity-80">
           <div class="flex items-center">
             <TokenIcon asset={assetRef}></TokenIcon>
             {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
@@ -146,15 +146,22 @@ export default defineComponent({
           </div>
         </td>
         <td class="text-right align-middle min-w-[200px]">
-          <div class="inline-flex items-center">
-            {emptyRef.value ? null : formatAssetAmount(props.tokenItem.amount)}
+          <div class="inline-flex items-center relative">
+            <span class="group-hover:opacity-80">
+              {emptyRef.value
+                ? null
+                : formatAssetAmount(props.tokenItem.amount)}
+            </span>
 
             {props.tokenItem.pegTxs.length > 0 && (
               <Tooltip
                 arrow
                 interactive
+                placement="top"
+                appendTo={() => document.querySelector("#portal-target")}
+                offset={[112, 20]}
                 content={
-                  <div class="text-left">
+                  <div class="text-left w-[200px]">
                     <p class="mb-1">
                       You have the following pending transactions:
                     </p>
@@ -179,13 +186,8 @@ export default defineComponent({
                   </div>
                 }
               >
-                <div>
-                  <ProgressRing
-                    class="ml-1"
-                    size={28}
-                    ringWidth={4}
-                    progress={50}
-                  />
+                <div class="absolute top-50% left-[100%] translate-y-[-50%]">
+                  <ProgressRing size={28} ringWidth={4} progress={50} />
                 </div>
               </Tooltip>
             )}
@@ -221,12 +223,13 @@ export default defineComponent({
               }}
             >
               {expandedRef.value ? (
-                <AssetIcon
-                  active
-                  icon="interactive/chevron-down"
-                  style={{ transform: "rotate(-90deg)" }}
-                  class="w-[26px] h-[26px] animation-fade-in"
-                />
+                <div style={{ transform: "rotate(-90deg)" }}>
+                  <AssetIcon
+                    active
+                    icon="interactive/chevron-down"
+                    class="w-[22px] h-[22px] animation-fade-in"
+                  />
+                </div>
               ) : (
                 <AssetIcon
                   active

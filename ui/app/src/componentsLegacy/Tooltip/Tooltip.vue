@@ -101,7 +101,7 @@ export default defineComponent({
 }
 .tooltip-container {
   transform: translateY(-100%);
-  @apply bg-gray-base text-white rounded-sm text-sm;
+  @apply bg-gray-base text-white rounded-sm text-base;
   text-align: left;
   z-index: 10000;
   width: 210px;

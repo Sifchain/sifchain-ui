@@ -2,7 +2,7 @@ import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
@@ -130,6 +130,7 @@ export default defineComponent({
           Pool Token Prices
         </div>
         <Form.Details
+          class="mt-[10px]"
           details={[
             [
               <span>
@@ -141,7 +142,7 @@ export default defineComponent({
                   {data.toAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.aPerBRatioMessage.value}</div>
                 <TokenIcon asset={data.fromAsset}></TokenIcon>
               </div>,
@@ -156,7 +157,7 @@ export default defineComponent({
                   {data.fromAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.bPerARatioMessage.value}</div>
                 <TokenIcon asset={data.toAsset}></TokenIcon>
               </div>,
@@ -167,6 +168,7 @@ export default defineComponent({
           Est. prices after pooling & pool share
         </div>
         <Form.Details
+          class="mt-[10px]"
           details={[
             [
               <span>
@@ -178,7 +180,7 @@ export default defineComponent({
                   {data.toAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.aPerBRatioProjectedMessage.value}</div>
                 <TokenIcon asset={data.fromAsset}></TokenIcon>
               </div>,
@@ -193,14 +195,14 @@ export default defineComponent({
                   {data.fromAsset.value?.displaySymbol}
                 </span>
               </span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.bPerARatioProjectedMessage.value}</div>
                 <TokenIcon asset={data.toAsset}></TokenIcon>
               </div>,
             ],
             [
               <span>Share of Pool</span>,
-              <div class="flex items-center gap-[4px]">
+              <div class="flex items-center gap-[4px] font-mono">
                 <div>{data.shareOfPoolPercent.value}</div>
               </div>,
             ],

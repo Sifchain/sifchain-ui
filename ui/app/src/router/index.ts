@@ -9,19 +9,18 @@ import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
 import BalanceImport from "@/views/BalancePage/Import";
 import BalanceExport from "@/views/BalancePage/Export";
+import RewardsPage from "@/views/RewardsPage/RewardsPage";
 import StatsPage from "@/views/StatsPage/StatsPage";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import RemoveLiquidity from "@/views/RemoveLiquidityPage.vue";
 import SinglePool from "@/views/SinglePool.vue";
 import PegAssetPage from "@/views/PegAssetPage.vue";
-import RewardsPage from "@/views/RewardsPage.vue";
 import Pool from "@/views/PoolPage/PoolPage";
 import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
 import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/RemoveLiquidity";
 import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
 import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
 import { ApproveSwap } from "@/views/SwapPage/children/Approve";
-import { SubmittedSwap } from "@/views/SwapPage/children/SubmittedSwap";
 
 type SwapPageMeta = {
   title: string;
@@ -39,7 +38,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/rewards",
-    name: "RewardsPage",
+    name: "Rewards",
     component: RewardsPage,
   },
   {
@@ -78,18 +77,6 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: "Approve Swap - Sifchain",
           swapState: "submit",
-        } as SwapPageMeta,
-      },
-      {
-        path: "submitted/:txHash",
-        name: "SubmittedSwap",
-        component: SubmittedSwap,
-        props: {
-          title: "Transaction Submitted",
-        },
-        meta: {
-          title: "Transaction Submitted - Sifchain",
-          swapState: "success",
         } as SwapPageMeta,
       },
     ],

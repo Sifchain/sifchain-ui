@@ -1,16 +1,8 @@
-import {
-  defineComponent,
-  ref,
-  computed,
-  watch,
-  reactive,
-  PropType,
-  Ref,
-} from "vue";
-import { useRoute } from "vue-router";
-import AssetIcon, { IconName } from "@/componentsLegacy/utilities/AssetIcon";
+import { defineComponent, ref, computed, PropType, Ref } from "vue";
+import Modal from "@/components/Modal";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { AssetAmount, Network } from "@sifchain/sdk";
+import { Amount, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { format } from "@sifchain/sdk/src/utils/format";
@@ -19,7 +11,7 @@ import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import router from "@/router";
 import { ExportData, getExportLocation } from "./useExportData";
-import ExportDetailsDisplay from "./ExportDetailsDisplay";
+import { Form } from "@/components/Form";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -36,9 +28,7 @@ export default defineComponent({
       exportParams,
       networksRef,
       exportTokenRef,
-      targetTokenRef,
       exportAmountRef,
-      feeAmountRef,
     } = props.exportData;
 
     const handleSetMax = () => {
@@ -52,29 +42,18 @@ export default defineComponent({
       });
     };
 
-    const symbolIconRef = computed(
-      () =>
-        useTokenIconUrl({
-          symbol: ref(exportParams.symbol || ""),
-        })?.value,
-    );
-
     const validationErrorRef = computed(() => {
       if (!exportTokenRef.value) {
-        return "Please provide a valid token to import.";
+        return "Select Token";
       }
       if (!exportAmountRef.value) {
-        return "Please select an amount.";
+        return "Enter Amount";
       }
       if (exportAmountRef.value?.lessThanOrEqual("0.0")) {
-        return "Please enter an amount greater than 0 to import.";
+        return "Enter Amount";
       }
-      if (exportTokenRef.value.amount.lessThan(exportParams.amount || "0")) {
-        return (
-          "You do not have that much " +
-          exportTokenRef.value.asset.symbol.toUpperCase() +
-          " available."
-        );
+      if (exportAmountRef.value?.greaterThan(exportTokenRef.value.amount)) {
+        return "Amount Too Large";
       }
     });
 
@@ -102,7 +81,7 @@ export default defineComponent({
         },
         {
           condition: true,
-          name: "Export",
+          name: validationErrorRef.value || "Export",
           icon: null,
           props: {
             disabled: !!validationErrorRef.value,
@@ -116,7 +95,12 @@ export default defineComponent({
     });
 
     return () => (
-      <>
+      <Modal
+        heading={props.exportData.headingRef.value}
+        icon="interactive/arrow-up"
+        onClose={props.exportData.exitExport}
+        showClose
+      >
         <section class="bg-gray-base p-4 rounded">
           <label
             for="exportAmount"
@@ -125,7 +109,7 @@ export default defineComponent({
             <span>Amount</span>
             {!!exportTokenRef.value && (
               <span
-                class="text-sm opacity-50 hover:text-accent-base cursor-pointer self-end"
+                class="text-base opacity-50 hover:text-accent-base cursor-pointer self-end"
                 onClick={handleSetMax}
               >
                 Balance: {formatAssetAmount(exportTokenRef.value?.amount)}
@@ -184,7 +168,7 @@ export default defineComponent({
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
-          <ExportDetailsDisplay exportData={props.exportData} />
+          <Form.Details details={props.exportData.detailsRef.value} />
         </section>
 
         <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">
@@ -196,7 +180,7 @@ export default defineComponent({
           )}{" "}
           {buttonRef.value.name}
         </Button.CallToAction>
-      </>
+      </Modal>
     );
   },
 });

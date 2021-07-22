@@ -3,7 +3,7 @@ import { Asset, IAsset } from "@sifchain/sdk";
 import PageCard from "@/components/PageCard";
 import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
-import AssetIcon from "@/componentsLegacy/utilities/AssetIcon";
+import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 
 export default defineComponent({
@@ -89,7 +89,7 @@ export default defineComponent({
           class="!w-[940px] !min-w-[940px] !max-w-[940px]"
           withOverflowSpace
           headerContent={
-            <div class="height-[40px] flex items-center text-xxs font-semibold">
+            <div class="height-[40px] flex items-center text-sm font-semibold">
               {columns.map((column, index) => (
                 <div
                   style={colStyles.value[index]}
@@ -139,12 +139,12 @@ export default defineComponent({
                 ))}
               </tr>
             </thead>
-            <tbody class="w-full text-sm font-medium">
+            <tbody class="w-full text-base font-medium">
               {statsRef.value.map((item) => {
                 return (
                   <tr
                     key={item.asset.symbol}
-                    class="align-middle h-8 border-dashed border-b border-white border-opacity-40 last:border-transparent"
+                    class="align-middle h-8 border-dashed border-b border-white border-opacity-40 last:border-transparent hover:opacity-80"
                   >
                     <td class="align-middle">
                       <div class="flex items-center">

@@ -3,7 +3,7 @@ import { computed, defineComponent, onMounted, ref, watch } from "vue";
 export default function AdvancedProgressRing(props: {
   size: number;
   progress: number;
-  class: string;
+  class?: string;
   ringWidth?: number;
 }) {
   const ringWidth = props.ringWidth || Math.ceil(props.size / 7);

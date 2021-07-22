@@ -39,7 +39,7 @@ export const usePoolStats = () => {
       key: "userData",
       timestamp: "now",
     });
-    const liqAPY = lmJson ? lmJson.user.currentAPYOnTickets * 100 : 0;
+    const liqAPY = lmJson?.user ? lmJson?.user?.currentAPYOnTickets * 100 : 0;
     return {
       poolData,
       liqAPY,

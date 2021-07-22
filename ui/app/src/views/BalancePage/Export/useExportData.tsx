@@ -1,13 +1,17 @@
 import { RouteLocationRaw, useRoute } from "vue-router";
+import { Button } from "@/components/Button/Button";
 import { reactive, ref, computed, Ref, watch } from "vue";
 import router from "@/router";
-import { effect } from "@vue/reactivity";
-import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
-import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
+import { TokenIcon } from "@/components/TokenIcon";
+import { TokenListItem, useToken } from "@/hooks/useToken";
+import { toBaseUnits } from "@sifchain/sdk/src/utils";
+import {
+  formatAssetAmount,
+  getUnpeggedSymbol,
+} from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
 import { TransactionStatus } from "@sifchain/sdk";
-import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
 
 export type ExportParams = {
   amount?: string;
@@ -24,7 +28,10 @@ export type ExportData = {
   exportAmountRef: Ref<IAssetAmount>;
   feeAmountRef: Ref<IAssetAmount>;
   targetTokenRef: Ref<TokenListItem>;
+  detailsRef: Ref<[any, any][]>;
+  headingRef: Ref<string>;
   runExport: () => void;
+  exitExport: () => void;
 
   transactionStatusRef: Ref<TransactionStatus>;
 };
@@ -53,10 +60,27 @@ export const useExportData = () => {
     amount: String(route.query.amount || ""),
   });
 
+  watch(
+    () => exportParams,
+    (value) => {
+      router.replace(getExportLocation(route.params.step as ExportStep, value));
+    },
+    { deep: true },
+  );
+  const exitExport = () => router.replace({ name: "Balances" });
+
   const exportTokenRef = useToken({
     network: ref(Network.SIFCHAIN),
     symbol: computed(() => exportParams.symbol),
   });
+
+  const headingRef = computed(
+    () =>
+      `Export ${(
+        exportTokenRef.value?.asset?.displaySymbol ||
+        exportTokenRef.value?.asset?.symbol
+      )?.toUpperCase()} from Sifchain`,
+  );
 
   const feeAmountRef = computed(() => {
     return exportTokenRef.value
@@ -81,18 +105,66 @@ export const useExportData = () => {
     if (!exportTokenRef.value) return null;
     return AssetAmount(
       exportTokenRef.value?.asset,
-      exportParams.amount?.trim() || "0.0",
+      toBaseUnits(
+        exportParams.amount?.trim() || "0.0",
+        exportTokenRef.value?.asset,
+      ),
     );
   });
 
   const transactionStatusRef = ref<TransactionStatus>();
   async function runExport() {
     if (!exportAmountRef.value) throw new Error("Please provide an amount");
-    transactionStatusRef.value = undefined;
+    transactionStatusRef.value = {
+      state: "requested",
+      hash: "",
+    };
     transactionStatusRef.value = await usecases.peg.unpeg(
       exportAmountRef.value,
     );
   }
+
+  const detailsRef = computed<[any, any][]>(() => [
+    ["Destination", <span class="capitalize">{exportParams.network}</span>],
+    [
+      "Export Amount",
+      !exportParams.amount ? null : (
+        <span class="flex items-center font-mono">
+          {exportParams.amount} {exportParams.symbol.toUpperCase()}
+          <TokenIcon
+            class="ml-[4px]"
+            assetValue={exportTokenRef.value?.asset}
+            size={16}
+          />
+        </span>
+      ),
+    ],
+    [
+      <>
+        Transaction Fee
+        <Button.InlineHelp>
+          <div class="w-[200px]">
+            This is a fixed fee amount. This is a temporary solution as we are
+            working towards improving this amount in upcoming versions of the
+            network.
+          </div>
+        </Button.InlineHelp>
+      </>,
+      <span class="flex items-center font-mono">
+        {!feeAmountRef.value ? null : formatAssetAmount(feeAmountRef.value)}{" "}
+        {(
+          feeAmountRef.value?.asset.displaySymbol ||
+          feeAmountRef.value?.asset.symbol ||
+          ""
+        ).toUpperCase()}
+        <TokenIcon
+          size={16}
+          class="ml-[4px]"
+          assetValue={feeAmountRef.value?.asset}
+        />
+      </span>,
+    ],
+  ]);
 
   return {
     exportParams: exportParams,
@@ -103,5 +175,8 @@ export const useExportData = () => {
     exportAmountRef,
     transactionStatusRef,
     feeAmountRef,
+    headingRef,
+    detailsRef,
+    exitExport,
   } as ExportData;
 };

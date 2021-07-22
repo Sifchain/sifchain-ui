@@ -3,18 +3,8 @@ import { computed, defineComponent } from "vue";
 import { reactive, ref, Ref } from "@vue/reactivity"; /* eslint-disable-line */
 import { useCore } from "@/hooks/useCore";
 import { AppEvent } from "@sifchain/sdk/src/services/EventBusService";
-
-// Message?
-type Notification = {
-  id?: string; // id would be used to remove timeout, may only need to be local type
-  type: "error" | "success" | "info";
-  message: string;
-  detail?: {
-    type: "etherscan" | "websocket" | "info";
-    message: string;
-  };
-  loader?: boolean;
-};
+import { Notification } from "./types";
+import { NotificationElement } from "./NotificationElement";
 
 // Visual Notifications are a view level system here we work out which ones are displayed to the user
 function parseEventToNotifications(event: AppEvent): Notification | null {
@@ -22,10 +12,6 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
     return {
       type: "error",
       message: "No Liquidity Pools Found",
-      detail: {
-        type: "info",
-        message: "Create liquidity pool to swap.",
-      },
     };
   }
 
@@ -40,10 +26,6 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
     return {
       type: "info",
       message: "Import Transaction Pending",
-      detail: {
-        type: "etherscan",
-        message: event.payload.hash,
-      },
       loader: true,
     };
   }
@@ -70,10 +52,6 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
     // return {
     //   type: "success",
     //   message,
-    //   detail: {
-    //     type: "info",
-    //     message: event.payload.address,
-    //   },
     // };
   }
 
@@ -90,7 +68,6 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
           ? "info"
           : "error",
       message: event.payload.message,
-      detail: event.payload.detail,
     };
   }
 
@@ -98,10 +75,6 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
     return {
       type: "error",
       message: event.payload.message,
-      detail: {
-        type: "info",
-        message: "Check if extension enabled for this URL.",
-      },
     };
   }
 
@@ -111,7 +84,9 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
 
 export default defineComponent({
   name: "Notifications",
-  components: {},
+  components: {
+    NotificationElement,
+  },
   setup() {
     const { services } = useCore();
     const notifications = reactive<Notification[]>([]);
@@ -132,37 +107,15 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="notifications-container">
+  <div class="notifications-container z-50">
     <transition-group name="list">
-      <div
+      <NotificationElement
         v-for="(item, index) in notifications"
         v-bind:key="item.message"
-        class="notification"
-        v-bind:class="item.type"
-        v-on:click="removeItem(index)"
-      >
-        <!-- <div class="x">x</div> -->
-        <div class="inner">
-          <div class="message">
-            <div class="circle" v-if="item.type !== 'info'"></div>
-            <div>{{ item.message }}</div>
-          </div>
-          <div class="detail" v-show="item.detail">
-            <div v-if="item.detail?.type === 'etherscan'">
-              Check on
-              <a
-                target="_blank"
-                :href="`https://etherscan.io/tx/${item.detail?.message}`"
-                @click.stop
-                >Block Explorer</a
-              >
-            </div>
-            <div v-else-if="item.detail?.type === 'info'">
-              {{ item.detail.message }}
-            </div>
-          </div>
-        </div>
-      </div>
+        :index="index"
+        :onRemove="removeItem"
+        :notification="item"
+      />
     </transition-group>
   </div>
 </template>
@@ -170,8 +123,8 @@ export default defineComponent({
 <style lang="scss" scoped>
 .notifications-container {
   position: fixed;
-  bottom: 50px;
-  right: 16px;
+  bottom: 20px;
+  right: 40px;
   height: auto;
   .list-enter-active,
   .list-leave-active {
@@ -181,70 +134,6 @@ export default defineComponent({
   .list-leave-to {
     opacity: 0;
     transform: translateX(200px);
-  }
-  .notification {
-    background: white;
-    padding: 3px;
-    margin-bottom: 16px;
-    text-align: left;
-    border-radius: 8px;
-    position: relative;
-    width: 250px;
-    cursor: pointer;
-    .x {
-      display: none;
-    }
-    &:hover .x {
-      display: block;
-      position: absolute;
-    }
-    .inner {
-      border-radius: 6px;
-      padding: 4px 8px;
-      display: flex;
-      flex-direction: column;
-      .message {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-      }
-      .circle {
-        width: 8px;
-        height: 8px;
-        border-radius: 8px;
-        margin-right: 8px;
-        flex: none;
-      }
-      .detail {
-        font-size: 12px;
-        color: #9f9f9f;
-        line-height: 1.1;
-      }
-    }
-    &.error {
-      .inner {
-        border: 1px solid #b51a1a;
-        color: #b51a1a;
-        .circle {
-          background: #b51a1a;
-        }
-      }
-    }
-    &.success {
-      .inner {
-        border: 1px solid #699829;
-        color: #699829;
-        .circle {
-          background: #699829;
-        }
-      }
-    }
-    &.info {
-      .inner {
-        border: 1px solid #9f9f9f;
-        color: #9f9f9f;
-      }
-    }
   }
 }
 </style>

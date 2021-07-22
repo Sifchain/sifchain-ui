@@ -1,56 +1,59 @@
 import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
-import { defineComponent } from "vue";
+import { defineComponent, computed, watchEffect, onMounted } from "vue";
 import { useSwapPageData } from "../useSwapPageData";
+import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { useTransactionDetails } from "@/hooks/useTransactionDetails";
+import { propsToAttrMap } from "@vue/shared";
 
 export const ApproveSwap = defineComponent({
   setup() {
     const data = useSwapPageData();
+
+    onMounted(() => {
+      data.handleBeginSwap();
+    });
+
+    const detailsRef = computed<[any, any][]>(() => [
+      ["Swapping", null],
+      [
+        <div class="flex items-center">
+          {data.fromAsset.value && (
+            <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
+          )}
+          <span class="ml-[4px]">{data.fromSymbol.value.toUpperCase()}</span>
+        </div>,
+        <span class="font-mono">{data.fromAmount.value}</span>,
+      ],
+      [
+        <div class="flex items-center">
+          {data.toAsset.value && (
+            <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
+          )}
+          <span class="ml-[4px]">
+            {data.toAsset?.value?.displaySymbol?.toUpperCase()}
+          </span>
+        </div>,
+        <span class="font-mono">{data.toAmount.value}</span>,
+      ],
+    ]);
+
+    const transactionDetails = useTransactionDetails({
+      tx: data.txStatus,
+    });
+    watchEffect(() => {
+      console.log(transactionDetails.value, data.txStatus.value);
+    });
+
     return () => {
       return (
-        <Modal
-          heading="Waiting For Approval"
+        <TransactionDetailsModal
           icon="navigation/swap"
           onClose={data.requestTransactionModalClose}
-        >
-          <Form.Details
-            details={[
-              ["Swapping", null],
-              [
-                <div class="flex items-center">
-                  {data.fromAsset.value && (
-                    <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
-                  )}
-                  <span class="ml-[4px]">
-                    {data.fromSymbol.value.toUpperCase()}
-                  </span>
-                </div>,
-                data.fromAmount.value,
-              ],
-              [
-                <div class="flex items-center">
-                  {data.toAsset.value && (
-                    <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
-                  )}
-                  <span class="ml-[4px]">
-                    {data.toAsset?.value?.displaySymbol?.toUpperCase()}
-                  </span>
-                </div>,
-                data.toAmount.value,
-              ],
-            ]}
-          ></Form.Details>
-          <div class="text-center w-full font-medium">
-            Confirm this transaction in your wallet.
-          </div>
-          {/* <Button.CallToAction
-              class="mt-[10px]"
-              onClick={() => data.handleAskConfirmClicked()}
-            >
-              Confirm
-            </Button.CallToAction> */}
-        </Modal>
+          details={detailsRef}
+          transactionDetails={transactionDetails}
+        />
       );
     };
   },
