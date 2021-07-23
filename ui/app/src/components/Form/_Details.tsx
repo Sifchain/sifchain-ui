@@ -1,6 +1,6 @@
 import { defineComponent, PropType, Ref, ref, watchEffect } from "vue";
 
-export type FormDetailsType =
+export type _FormDetailsType =
   | [any, any][]
   | {
       label?: any;
@@ -11,7 +11,7 @@ export type FormDetailsType =
 export const _Details = defineComponent({
   props: {
     details: {
-      type: Object as PropType<FormDetailsType>,
+      type: Object as PropType<_FormDetailsType>,
       required: true,
     },
     label: {},

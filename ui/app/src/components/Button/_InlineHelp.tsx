@@ -17,7 +17,7 @@ export const _InlineHelp = defineComponent({
     return () => (
       <button
         {...props}
-        class={[`inline align-top hover:opacity-80 ml-[2px]`, props.class]}
+        class={[`inline align-top hover:opacity-80 ml-[.25em]`, props.class]}
         style={
           mergeProps(
             { style: { transform: "translateY(-1px)" } },

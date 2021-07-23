@@ -1,32 +1,12 @@
-import {
-  ComponentInternalInstance,
-  ComponentPublicInstance,
-  ConcreteComponent,
-  defineComponent,
-  onDeactivated,
-  ref,
-  TransitionGroup,
-  VNode,
-  watch,
-} from "vue";
-import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
+import { ComponentPublicInstance, defineComponent, ref, watch } from "vue";
 import PageCard from "@/components/PageCard";
-import {
-  TokenInputGroup,
-  SampleBoundChildComponent,
-} from "./components/TokenInputGroup";
+import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
-import { useCore } from "@/hooks/useCore";
-import { IAsset } from "../../../../core/src";
 import { SlippageTolerance } from "./components/SlippageTolerance";
 import { SwapDetails } from "./components/SwapDetails";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import Modal from "@/components/Modal";
-import { TokenIcon } from "@/components/TokenIcon";
-import { Form } from "@/components/Form";
 import { RouterView, useRouter } from "vue-router";
 
 // This is a little generic but these UI Flows

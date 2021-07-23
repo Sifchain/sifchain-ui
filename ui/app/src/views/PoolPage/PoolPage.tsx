@@ -214,12 +214,12 @@ const UserPoolItem = defineComponent({
 
     return () => {
       return (
-        <div class="w-full py-[10px] border-dashed border-b border-white border-opacity-40 last:border-none">
+        <div class="w-full py-[10px] border-dashed border-b border-white border-opacity-40 last:border-none group">
           <div
             onClick={() => {
               isExpandedRef.value = !isExpandedRef.value;
             }}
-            class="cursor-pointer font-mono w-full flex justify-start items-center font-medium h-[32px] font-sans"
+            class="cursor-pointer font-mono w-full flex justify-start items-center font-medium h-[32px] font-sans group-hover:opacity-80"
           >
             {COLUMNS.map((column) => {
               const content = (() => {

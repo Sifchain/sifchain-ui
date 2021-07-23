@@ -1,3 +1,4 @@
+import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
 import { defineComponent, PropType, Ref, ref } from "vue";
 import { IAsset } from "../../../../../core/src";
@@ -52,6 +53,15 @@ export const SwapDetails = defineComponent({
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
             Price Impact
+            <Button.InlineHelp size={20}>
+              This is the percentage impact to the amount of{" "}
+              {(
+                props.asset?.value.displaySymbol ||
+                props.asset?.value.symbol ||
+                ""
+              ).toUpperCase()}{" "}
+              in the liquidity pool based upon how much you are swapping for.
+            </Button.InlineHelp>
           </div>
           <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium capitalize">
             <span class="mr-[4px]">{props.priceImpact}</span>
@@ -66,6 +76,9 @@ export const SwapDetails = defineComponent({
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
             Liquidity Provider Fee
+            <Button.InlineHelp>
+              This is the fee paid to the liquidity providers of this pool.
+            </Button.InlineHelp>
           </div>
           <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium">
             <span class="mr-[4px]">{props.liquidityProviderFee}</span>

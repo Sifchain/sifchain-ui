@@ -105,9 +105,12 @@ export default defineComponent({
         tag: RouterLink,
         props: {
           to: {
-            name: "RemoveLiquidity",
+            name: "AddLiquidity",
             params: {
-              externalAsset: props.tokenItem.asset.symbol,
+              externalAsset:
+                props.tokenItem.asset.symbol === "rowan"
+                  ? ""
+                  : props.tokenItem.asset.symbol,
             },
           },
         },
