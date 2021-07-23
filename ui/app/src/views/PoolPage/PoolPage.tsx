@@ -88,15 +88,15 @@ export default defineComponent({
               heading="Pool"
               iconName="navigation/pool"
               headerAction={
-                <RouterLink
+                <Button.Inline
                   to={{ name: "AddLiquidity", params: {} }}
-                  class={[
-                    "flex flex-row items-center rounded-[4px] px-[17px] py-[8px] bg-accent-gradient mr-[5px] text-md",
-                  ]}
+                  active
+                  replace
+                  class={["!h-[40px] px-[17px] text-md"]}
+                  icon="interactive/plus"
                 >
-                  <AssetIcon icon="interactive/plus" size={20}></AssetIcon>
-                  <div class="ml-[4px] font-semibold">Add Liquidity</div>
-                </RouterLink>
+                  <div class="font-semibold">Add Liquidity</div>
+                </Button.Inline>
               }
               headerContent={
                 <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">

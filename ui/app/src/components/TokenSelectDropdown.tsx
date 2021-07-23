@@ -112,20 +112,18 @@ export const TokenSelectDropdown = defineComponent({
     );
 
     watch([props.active], () => {
-      const rect = selfRoot.value?.getBoundingClientRect();
-      if (
-        rect?.x === boundingClientRect.value?.x &&
-        rect?.y === boundingClientRect.value?.y
-      ) {
-        return;
-      }
-      boundingClientRect.value = rect;
-
       let frameId: number;
       if (props.active?.value) {
         frameId = window.requestAnimationFrame(() => {
           dropdownRoot.value?.querySelector("input")?.focus();
         });
+      }
+      const rect = selfRoot.value?.getBoundingClientRect();
+      if (
+        rect?.x !== boundingClientRect.value?.x ||
+        rect?.y !== boundingClientRect.value?.y
+      ) {
+        boundingClientRect.value = rect;
       }
       return () => window.cancelAnimationFrame(frameId);
     });
