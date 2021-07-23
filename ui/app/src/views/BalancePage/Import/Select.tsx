@@ -2,7 +2,11 @@ import { defineComponent, ref, computed, PropType, Ref } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { AssetAmount, Network } from "@sifchain/sdk";
+import { Network } from "@sifchain/sdk";
+import {
+  SelectDropdown,
+  SelectDropdownOption,
+} from "@/components/SelectDropdown";
 import { useCore } from "@/hooks/useCore";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
@@ -101,6 +105,14 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
+    const optionsRef = computed<SelectDropdownOption[]>(() =>
+      networksRef.value.map((network) => ({
+        content: <div class="capitalize">{network}</div>,
+        value: network,
+      })),
+    );
+    const networkOpenRef = ref(false);
+
     return () => (
       <Modal
         heading="Import Token to Sifchain"
@@ -113,24 +125,29 @@ export default defineComponent({
             <div class="flex w-full">
               <div class="block flex-1 mr-[5px]">
                 Network
-                <Button.Select class="w-full relative capitalize pl-[16px] mt-[10px]">
-                  {importParams.network}
-                  <select
-                    class={"absolute left-0 top-0 w-full h-full opacity-0"}
-                    value={importParams.network}
-                    onChange={(e) => {
-                      const select = e.target as HTMLSelectElement;
-                      importParams.network = select.value as Network;
-                    }}
+                <SelectDropdown
+                  class="w-[200px]"
+                  options={optionsRef}
+                  value={networkRef}
+                  onChangeValue={(value) => {
+                    importParams.network = value as Network;
+                  }}
+                  tooltipProps={{
+                    onShow: () => {
+                      networkOpenRef.value = true;
+                    },
+                    onHide: () => {
+                      networkOpenRef.value = false;
+                    },
+                  }}
+                >
+                  <Button.Select
+                    class="w-full relative capitalize pl-[16px] mt-[10px]"
+                    active={networkOpenRef.value}
                   >
-                    {networksRef.value.map((network: string) => (
-                      <option value={network}>
-                        {network[0].toUpperCase() +
-                          network.slice(1).toLowerCase()}
-                      </option>
-                    ))}
-                  </select>
-                </Button.Select>
+                    {importParams.network}
+                  </Button.Select>
+                </SelectDropdown>
               </div>
               <div class="block flex-1 ml-[5px]">
                 Token
