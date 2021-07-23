@@ -79,19 +79,39 @@ export default defineComponent({
                 href="/stats"
               />
               <NavSidePanelItem
-                displayName="Stake"
-                icon="navigation/stake"
-                href="https://wallet.keplr.app/#/sifchain/stake"
-              />
-              <NavSidePanelItem
                 displayName="Rewards"
                 icon="navigation/rewards"
                 href="/rewards"
               />
               <NavSidePanelItem
+                displayName="Stake"
+                icon="navigation/stake"
+                href="https://wallet.keplr.app/#/sifchain/stake"
+                class="group"
+                action={
+                  <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                    <AssetIcon
+                      icon="interactive/open-external"
+                      size={16}
+                      class="opacity-50"
+                    />
+                  </div>
+                }
+              />
+              <NavSidePanelItem
                 displayName="Documents"
                 icon="navigation/documents"
                 href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
+                class="group"
+                action={
+                  <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                    <AssetIcon
+                      icon="interactive/open-external"
+                      size={16}
+                      class="opacity-50"
+                    />
+                  </div>
+                }
               />
               <Tooltip
                 trigger="click"

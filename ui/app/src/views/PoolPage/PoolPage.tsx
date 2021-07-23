@@ -73,42 +73,53 @@ export default defineComponent({
                 : undefined
             }
           />
-          <PageCard
-            class="w-[790px]"
-            heading="Pool"
-            iconName="navigation/pool"
-            headerAction={
-              <RouterLink
-                to={{ name: "AddLiquidity", params: {} }}
-                class={[
-                  "flex flex-row items-center rounded-[4px] px-[17px] py-[8px] bg-accent-gradient mr-[5px] text-md",
-                ]}
-              >
-                <AssetIcon icon="interactive/plus" size={20}></AssetIcon>
-                <div class="ml-[4px] font-semibold">Add Liquidity</div>
-              </RouterLink>
-            }
-            headerContent={
-              <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
-                {COLUMNS.map((column, index) => (
-                  <div key={column.name} class={[column.class, "opacity-50"]}>
-                    {column.name}
-                  </div>
-                ))}
-              </div>
-            }
-          >
-            {poolDataWithUserData.value?.map(({ pool, accountPool }) => {
-              return (
-                <UserPoolItem
-                  key={pool.symbol}
-                  poolStat={pool}
-                  accountPool={accountPool}
-                  allPools={data.stats.data?.value?.poolData.pools}
+          {!poolDataWithUserData.value?.length ? (
+            <div class="absolute left-0 top-[180px] w-full flex justify-center">
+              <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+                <AssetIcon
+                  icon="interactive/anim-racetrack-spinner"
+                  size={64}
                 />
-              );
-            })}
-          </PageCard>
+              </div>
+            </div>
+          ) : (
+            <PageCard
+              class="w-[790px]"
+              heading="Pool"
+              iconName="navigation/pool"
+              headerAction={
+                <RouterLink
+                  to={{ name: "AddLiquidity", params: {} }}
+                  class={[
+                    "flex flex-row items-center rounded-[4px] px-[17px] py-[8px] bg-accent-gradient mr-[5px] text-md",
+                  ]}
+                >
+                  <AssetIcon icon="interactive/plus" size={20}></AssetIcon>
+                  <div class="ml-[4px] font-semibold">Add Liquidity</div>
+                </RouterLink>
+              }
+              headerContent={
+                <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+                  {COLUMNS.map((column, index) => (
+                    <div key={column.name} class={[column.class, "opacity-50"]}>
+                      {column.name}
+                    </div>
+                  ))}
+                </div>
+              }
+            >
+              {poolDataWithUserData.value?.map(({ pool, accountPool }) => {
+                return (
+                  <UserPoolItem
+                    key={pool.symbol}
+                    poolStat={pool}
+                    accountPool={accountPool}
+                    allPools={data.stats.data?.value?.poolData.pools}
+                  />
+                );
+              })}
+            </PageCard>
+          )}
         </>
       );
     };
