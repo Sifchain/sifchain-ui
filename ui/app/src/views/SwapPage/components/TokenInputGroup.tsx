@@ -85,7 +85,7 @@ export const TokenInputGroup = defineComponent({
         <div
           ref={selfRef}
           class={[
-            "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-[10px]",
+            "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
             props.class,
           ]}
         >

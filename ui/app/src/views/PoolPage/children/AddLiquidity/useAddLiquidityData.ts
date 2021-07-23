@@ -321,22 +321,17 @@ export const useAddLiquidityData = () => {
     shareOfPoolPercent,
     formatNumber,
     poolUnits: totalLiquidityProviderUnits,
-    riskFactorStatus: computed(() => {
-      if (!riskFactor.value) return "";
-
-      let status = "danger";
-
-      if (asyncPooling.value) {
+    riskFactorStatus: computed<"" | "bad" | "danger" | "warning">(() => {
+      if (!riskFactor.value || asyncPooling.value) return "";
+      if (riskFactor.value.lessThanOrEqual("0.01")) {
         return "";
-      }
-      if (riskFactor.value.lessThanOrEqual("0.2")) {
-        status = "warning";
       } else if (riskFactor.value.lessThanOrEqual("0.1")) {
-        status = "bad";
-      } else if (riskFactor.value.lessThanOrEqual("0.01")) {
-        status = "";
+        return "warning";
+      } else if (riskFactor.value.lessThanOrEqual("0.2")) {
+        return "bad";
+      } else {
+        return "danger";
       }
-      return status;
     }),
   };
 };

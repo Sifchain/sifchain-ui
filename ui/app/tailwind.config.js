@@ -62,6 +62,8 @@ module.exports = {
         },
         danger: {
           base: "#FF4F4F",
+          warning: "orange",
+          bad: "#cccc0e",
         },
         gray: {
           // Ash Black

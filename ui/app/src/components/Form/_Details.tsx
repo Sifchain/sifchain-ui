@@ -1,12 +1,21 @@
 import { defineComponent, PropType, Ref, ref, watchEffect } from "vue";
 
+export type ErrorType = "danger" | "warning" | "bad";
+
 export type _FormDetailsType =
   | [any, any][]
   | {
       label?: any;
       details: [any, any][];
+      errorType?: ErrorType;
       isError?: boolean;
     };
+
+export const errorTypeClass = {
+  danger: "border-danger-base",
+  warning: "border-danger-warning",
+  bad: "border-danger-bad",
+};
 
 export const _Details = defineComponent({
   props: {
@@ -28,7 +37,8 @@ export const _Details = defineComponent({
   setup: (props, context) => {
     let details: Ref<[any, any][]> = ref([]);
     let label = ref(props.label);
-    let isError = ref(props.isError);
+    let isError = ref<ErrorType>(props.isError);
+    let errorType = ref();
 
     watchEffect(() => {
       if (Array.isArray(props.details)) {
@@ -37,6 +47,7 @@ export const _Details = defineComponent({
         details.value = props.details.details;
         label.value = props.details.label;
         isError.value = props.details.isError || false;
+        errorType.value = props.details.errorType;
       }
     });
 
@@ -53,7 +64,8 @@ export const _Details = defineComponent({
               box-border bg-gray-base border-gray-input_outline border-l-[1px] border-b-[1px] border-r-[1px] border-solid`,
               index == 0 && `rounded-t border-t-[1px]`,
               index == arr.length - 1 && `rounded-b border-b-[1px]`,
-              isError.value && `border-danger-base`,
+              isError.value &&
+                errorTypeClass[(errorType.value || "danger") as ErrorType],
             ]}
           >
             <div class="pl-[20px] text-left text-md text-white font-sans font-medium">

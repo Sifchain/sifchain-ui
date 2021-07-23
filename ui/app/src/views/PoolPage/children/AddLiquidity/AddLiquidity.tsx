@@ -14,11 +14,13 @@ import {
   TransitionGroup,
 } from "vue";
 import { useRouter } from "vue-router";
+import { errorTypeClass } from "@/components/Form/_Details";
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { Tooltip } from "@/components/Tooltip";
 import { effect } from "@vue/reactivity";
+import { useExportData } from "@/views/BalancePage/Export/useExportData";
 
 export default defineComponent({
   setup() {
@@ -65,7 +67,8 @@ export default defineComponent({
     });
 
     const detailsRef = computed<FormDetailsType>(() => ({
-      isError: !!riskContent.value,
+      isError: !!data.riskFactorStatus.value,
+      errorType: data.riskFactorStatus.value || undefined,
       label: (
         <div class="flex justify-between items-center">
           <span>Est. prices after pooling & pool share</span>
@@ -81,7 +84,14 @@ export default defineComponent({
               <div class="cursor-pointer">
                 <AssetIcon
                   icon="interactive/warning"
-                  class="text-danger-base mr-[4px]"
+                  class={[
+                    "mr-[4px]",
+                    {
+                      danger: "text-danger-base",
+                      warning: "text-danger-warning",
+                      bad: "text-danger-bad",
+                    }[data.riskFactorStatus.value || "danger"],
+                  ]}
                   size={22}
                 />
               </div>
