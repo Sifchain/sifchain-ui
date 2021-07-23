@@ -68,7 +68,7 @@ export const TokenInputGroup = defineComponent({
     watch(
       [inputRef, propRefs.amount],
       () => {
-        console.log(inputRef.value, propRefs.amount.value);
+        // Don't overwrite user's input value while the input is focused
         if (
           inputRef.value &&
           propRefs.amount.value &&
