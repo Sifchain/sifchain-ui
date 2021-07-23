@@ -50,16 +50,13 @@ export const SelectDropdown = defineComponent({
     const { onShow, onHide, ...tooltipPropsRest } = props.tooltipProps || {};
 
     const updateWidth = () => {
-      const reference = tooltipInstance.value?.reference;
+      const reference = tooltipInstance.value?.reference?.children[0];
       const content = tooltipInstance.value?.popper.querySelector(
         ".tippy-content",
       );
 
-      (window as any).content = content;
-      (window as any).reference = reference;
-
       if (content && reference) {
-        content.style.width = getComputedStyle(reference.children[0]).width;
+        content.style.width = getComputedStyle(reference).width;
       }
     };
 
