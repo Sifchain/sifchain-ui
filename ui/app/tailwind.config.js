@@ -15,6 +15,7 @@ module.exports = {
       },
       screens: {
         portrait: { raw: "(orientation: portrait)" },
+        shorter: { raw: "(max-height: 800px)" },
         // => @media (orientation: portrait) { ... }
       },
       fontFamily: {

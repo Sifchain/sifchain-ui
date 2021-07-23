@@ -27,7 +27,7 @@ export default defineComponent({
   setup: function PageCard(props, context: SetupContext) {
     // debugger;
     return () => (
-      <div class="block pt-[90px] 2xl:pt-[130px] pb-[530px] ">
+      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px] ">
         <div
           key="view-layer"
           class={[

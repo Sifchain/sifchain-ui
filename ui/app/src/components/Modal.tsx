@@ -71,11 +71,13 @@ export default defineComponent({
       <Teleport to={props.teleportTo}>
         <div class="overflow-hidden fixed bg-white bg-opacity-30 z-20 inset-0 left-sidebar animate-fade-in duration-300" />
         <div
-          class="absolute inset-0 left-sidebar flex items-center justify-center z-20 animate-fade-in duration-500"
+          class={[
+            "absolute inset-0 left-sidebar flex items-center shorter:items-start shorter:pt-[40px] justify-center z-20 animate-fade-in duration-500",
+          ]}
           onClick={() => props.onClose?.()}
         >
           <div
-            class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
+            class={`justify-start overflow-y-scroll flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
               props.class || ""
             }`}
             onClick={(e) => e.stopPropagation()}
