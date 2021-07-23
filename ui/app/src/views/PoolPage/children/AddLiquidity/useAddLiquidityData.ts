@@ -1,4 +1,4 @@
-import { ref, watch, watchEffect } from "vue";
+import { ref, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
@@ -15,9 +15,7 @@ import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
 import { useWallet } from "@/hooks/useWallet";
 import { computed, Ref } from "@vue/reactivity";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
-import { toConfirmState } from "@/views/utils/toConfirmState";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
-import { ConfirmState, ConfirmStateEnum } from "@/types";
 import { formatNumber } from "@/componentsLegacy/shared/utils";
 import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";

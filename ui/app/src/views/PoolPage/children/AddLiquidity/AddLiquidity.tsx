@@ -114,8 +114,8 @@ export default defineComponent({
                 class={[
                   `cursor-pointer flex transition-all items-center h-[16px] w-[28px] border-solid active:bg-opacity-20  border-[1px] rounded-full`,
                   data.asyncPooling.value
-                    ? `border-[#5AF37C] active:bg-[#5AF37C] `
-                    : `border-danger-base active:bg-danger-base`,
+                    ? `border-connected-base active:bg-connected-base`
+                    : `border-gray-800 active:bg-gray-800`,
                 ]}
               >
                 <TransitionGroup name="flip-list--fast">
@@ -125,8 +125,8 @@ export default defineComponent({
                       class={[
                         `transition-all ml-auto  w-[12px] h-[12px] m-[1px] rounded-full`,
                         data.asyncPooling.value
-                          ? `bg-[#5AF37C]`
-                          : `bg-danger-base`,
+                          ? `bg-connected-base`
+                          : `bg-gray-800`,
                       ]}
                     ></div>
                   )}
@@ -136,8 +136,8 @@ export default defineComponent({
                       class={[
                         `transition-all w-[12px] h-[12px] m-[1px] rounded-full`,
                         data.asyncPooling.value
-                          ? `bg-[#5AF37C]`
-                          : `bg-danger-base`,
+                          ? `bg-[connected-base]`
+                          : `bg-gray-800`,
                       ]}
                     ></div>
                   )}
@@ -150,6 +150,7 @@ export default defineComponent({
         >
           <TokenInputGroup
             shouldShowNumberInputOnLeft
+            excludeSymbols={["rowan"]}
             heading="Input"
             asset={data.fromAsset.value}
             amount={data.fromAmount.value}
@@ -158,27 +159,18 @@ export default defineComponent({
             onBlur={data.handleBlur}
             onFocus={data.handleTokenAFocused}
             onInputAmount={(v) => {
+              if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+                v = "0";
+              }
               data.fromAmount.value = v;
             }}
-            class="mb-[-12px]"
+            class=""
             onSelectAsset={(asset) => {
               data.fromSymbol.value = asset.symbol;
             }}
           ></TokenInputGroup>
-          <div
-            key="button"
-            class="flex relative items-center justify-center w-full z-20 overflow-hidden"
-          >
-            <button
-              class="origin-center actidve:rotate-180 transition-transform flex items-center relative bg-gray-base border-gray-input_outline py-[6px] px-[8px] box-content border-[1px] rounded-[10px]"
-              key="button"
-            >
-              <AssetIcon
-                size={22}
-                class=" text-white"
-                icon="interactive/plus"
-              ></AssetIcon>
-            </button>
+          <div class="flex justify-center my-[4px]">
+            <AssetIcon size={20} class=" text-white" icon="interactive/plus" />
           </div>
           <TokenInputGroup
             selectDisabled
@@ -191,9 +183,13 @@ export default defineComponent({
             onBlur={data.handleBlur}
             onFocus={data.handleTokenBFocused}
             onInputAmount={(v) => {
+              if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+                v = "0";
+              }
               data.toAmount.value = v;
             }}
-            class="mt-[-12px]"
+            excludeSymbols={["rowan"]}
+            class=""
             onSelectAsset={(asset) => {
               data.toSymbol.value = asset.symbol;
             }}

@@ -93,9 +93,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "create-pool",
         name: "CreatePool",
         component: Pool_AddLiquidity,
-        props: {
-          title: "Create Pair",
-        },
         meta: {
           title: "Create Pool - Sifchain",
         },
@@ -104,9 +101,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "add-liquidity/setup/:externalAsset?",
         name: "AddLiquidity",
         component: Pool_AddLiquidity,
-        props: {
-          title: "Add Liquidity",
-        },
         meta: {
           title: "Add Liquidity - Sifchain",
         },

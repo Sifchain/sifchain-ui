@@ -51,6 +51,7 @@ export const TokenInputGroup = defineComponent({
     class: required([Object, String, Array] as PropType<
       HTMLAttributes["class"]
     >),
+    excludeSymbols: optional(Array as PropType<string[]>),
     tokenIconUrl: optional(String),
     shouldShowNumberInputOnLeft: optional(Boolean),
     selectDisabled: optional(Boolean),
@@ -139,6 +140,7 @@ export const TokenInputGroup = defineComponent({
             />
           </div>
           <TokenSelectDropdown
+            excludeSymbols={props.excludeSymbols}
             onCloseIntent={() => {
               selectIsOpen.value = false;
             }}

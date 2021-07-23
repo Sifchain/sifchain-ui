@@ -4,16 +4,12 @@ import { useCore } from "@/hooks/useCore";
 import {
   computed,
   defineComponent,
-  nextTick,
   onMounted,
   onUnmounted,
-  onUpdated,
   PropType,
   Ref,
   ref,
   Teleport,
-  Transition,
-  TransitionGroup,
   watch,
 } from "vue";
 import { IAsset, Network } from "../../../core/src";
@@ -39,6 +35,11 @@ export const TokenSelectDropdown = defineComponent({
       type: Object as PropType<Ref<Network>>,
       required: false,
     },
+    excludeSymbols: {
+      type: Array as PropType<Array<string>>,
+      required: false,
+      default: () => [],
+    },
     sortBy: {
       type: String as PropType<TokenSortBy>,
       required: false,
@@ -60,10 +61,15 @@ export const TokenSelectDropdown = defineComponent({
       networks: networksRef,
     });
     const sortedAndFilteredTokens = computed(() => {
+      const excludeSymbolsSet = new Set(
+        props.excludeSymbols.map((s) => s.toLowerCase()),
+      );
       return sortAndFilterTokens({
         tokens: tokensRef.value,
         searchQuery: searchQuery.value,
         sortBy: props.sortBy,
+      }).filter((token) => {
+        return !excludeSymbolsSet.has(token.asset.symbol.toLowerCase());
       });
     });
 
