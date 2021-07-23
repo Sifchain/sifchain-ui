@@ -77,39 +77,39 @@ export const TokenSelectDropdown = defineComponent({
     const resizeListener = ref(() => {
       boundingClientRect.value = selfRoot.value?.getBoundingClientRect();
     });
-    const externalClickListener = ref(() => {
-      props.onCloseIntent?.();
+    const externalClickListener = ref((e: Event) => {
+      // Timeout: if the click to close happens same time as a click to open,
+      // make this happen after so it really closes it.
+      // This is for example, for a click on the toggle open button.
+      setTimeout(() => {
+        if (!dropdownRoot.value?.contains(e.target as HTMLElement)) {
+          props.onCloseIntent?.();
+        }
+      }, 1);
     });
 
     watch(
       [props.active],
       () => {
         if (props.active?.value) {
-          document.body.addEventListener("click", externalClickListener.value);
+          // If a click is still in progress, we don't want to attach this listener yet.
+          window.requestAnimationFrame(() => {
+            document.body.addEventListener(
+              "click",
+              externalClickListener.value,
+              true,
+            );
+          });
         } else {
           document.body.removeEventListener(
             "click",
             externalClickListener.value,
+            true,
           );
         }
       },
       { immediate: true },
     );
-    onMounted(() => {
-      if (props.active) {
-        document.documentElement.addEventListener(
-          "click",
-          externalClickListener.value,
-        );
-      }
-    });
-
-    onUnmounted(() => {
-      document.documentElement.removeEventListener(
-        "click",
-        externalClickListener.value,
-      );
-    });
 
     watch([props.active], () => {
       const rect = selfRoot.value?.getBoundingClientRect();
@@ -143,10 +143,6 @@ export const TokenSelectDropdown = defineComponent({
           <Teleport to="#portal-target">
             {props.active?.value && (
               <div
-                onClick={(e: MouseEvent) => {
-                  // don't include in body click event listener
-                  e.stopPropagation();
-                }}
                 ref={dropdownRoot}
                 style={{
                   boxShadow: "0px 20px 20px 0px #00000080",
@@ -157,7 +153,7 @@ export const TokenSelectDropdown = defineComponent({
                     // (boundingClientRect.value?.width ?? 0) +
                     "px",
                 }}
-                class=" overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[450px] mt-[7px] z-50 rounded-[4px]"
+                class=" overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[440px] mt-[7px] z-50 rounded-[4px]"
               >
                 <div class="w-full h-full py-[20px] px-[15px]">
                   <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">

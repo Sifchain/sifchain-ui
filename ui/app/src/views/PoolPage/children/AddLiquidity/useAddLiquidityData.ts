@@ -20,13 +20,7 @@ import { formatNumber } from "@/componentsLegacy/shared/utils";
 import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 
-let provider: ReturnType<typeof createLiquidityDataProvider>;
-
 export const useAddLiquidityData = () => {
-  provider = provider || createLiquidityDataProvider();
-  return provider;
-};
-export function createLiquidityDataProvider() {
   const { usecases, poolFinder, store, config } = useCore();
   const selectedField = ref<"from" | "to" | null>(null);
   const lastFocusedTokenField = ref<"A" | "B" | null>(null);
@@ -217,6 +211,7 @@ export function createLiquidityDataProvider() {
   }
 
   return {
+    state,
     toAsset,
     fromAsset,
     fromAmount,
@@ -344,4 +339,4 @@ export function createLiquidityDataProvider() {
       return status;
     }),
   };
-}
+};

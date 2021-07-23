@@ -6,12 +6,19 @@ import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
-import { computed, defineComponent, ref, TransitionGroup } from "vue";
+import {
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  onUnmounted,
+  TransitionGroup,
+} from "vue";
 import { useRouter } from "vue-router";
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { Tooltip } from "@/components/Tooltip";
+import { effect } from "@vue/reactivity";
 
 export default defineComponent({
   setup() {
@@ -25,6 +32,10 @@ export default defineComponent({
 
     const transactionDetails = useTransactionDetails({
       tx: data.transactionStatus,
+    });
+
+    effect(() => {
+      console.log("state", data.state.value);
     });
 
     const close = () => {
@@ -206,9 +217,6 @@ export default defineComponent({
             onBlur={data.handleBlur}
             onFocus={data.handleTokenAFocused}
             onInputAmount={(v) => {
-              if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
-                v = "0";
-              }
               data.fromAmount.value = v;
             }}
             class=""
@@ -230,9 +238,6 @@ export default defineComponent({
             onBlur={data.handleBlur}
             onFocus={data.handleTokenBFocused}
             onInputAmount={(v) => {
-              if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
-                v = "0";
-              }
               data.toAmount.value = v;
             }}
             excludeSymbols={["rowan"]}

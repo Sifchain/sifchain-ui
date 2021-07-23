@@ -79,6 +79,7 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
 
   const calculateRewards = async (address: string, fromSymbol: string) => {
     // TODO - needs a better pattern to handle this
+    if (!address || !fromSymbol) return;
     const earnedRewardsObject = await getEarnedRewards(
       address,
       fromSymbol?.toLowerCase(),

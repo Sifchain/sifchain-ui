@@ -1,8 +1,10 @@
 import {
+  computed,
   defineComponent,
   HTMLAttributes,
   InputHTMLAttributes,
   PropType,
+  watch,
 } from "vue";
 import { ref, toRefs } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
@@ -59,9 +61,29 @@ export const TokenInputGroup = defineComponent({
   setup(props) {
     const propRefs = toRefs(props);
     const selectIsOpen = ref(false);
+    const selfRef = ref();
+
+    const inputRef = computed(() => selfRef.value?.querySelector("input"));
+
+    watch(
+      [inputRef, propRefs.amount],
+      () => {
+        console.log(inputRef.value, propRefs.amount.value);
+        if (
+          inputRef.value &&
+          propRefs.amount.value &&
+          document.activeElement !== inputRef.value
+        ) {
+          inputRef.value.value = propRefs.amount.value;
+        }
+      },
+      { immediate: true },
+    );
+
     return () => {
       return (
         <div
+          ref={selfRef}
           class={[
             "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-[10px]",
             props.class,
@@ -114,7 +136,7 @@ export const TokenInputGroup = defineComponent({
               </div>
             </Button.Select>
             <Input.Base
-              class="flex-1"
+              class="token-input flex-1"
               startContent={
                 !!props.onSetToMaxAmount && (
                   <Button.Pill
@@ -134,9 +156,12 @@ export const TokenInputGroup = defineComponent({
                 textAlign: "right",
               }}
               onInput={(e) => {
-                props.onInputAmount((e.target as HTMLInputElement).value || "");
+                let v = (e.target as HTMLInputElement).value;
+                if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+                  v = "0";
+                }
+                props.onInputAmount(v || "");
               }}
-              value={props.amount}
             />
           </div>
           <TokenSelectDropdown
