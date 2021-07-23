@@ -3,7 +3,7 @@ import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { PoolState } from "@sifchain/sdk";
 import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
@@ -17,6 +17,8 @@ export default defineComponent({
     const router = useRouter();
     const appWalletPicker = useAppWalletPicker();
     const { store } = useCore();
+
+    const amountRangeRef = ref();
 
     const transactionDetails = useTransactionDetails({
       tx: data.transactionStatus,
@@ -95,9 +97,10 @@ export default defineComponent({
             <Form.Label class="w-full">Withdraw Amount</Form.Label>
             <div class="w-full flex flex-row">
               <div class="w-full mt-[18px]">
-                <div class="w-full">
+                <div class="w-full relative">
                   <input
                     type="range"
+                    ref={amountRangeRef}
                     disabled={
                       !data.connected.value ||
                       data.state.value === PoolState.NO_LIQUIDITY
@@ -107,6 +110,17 @@ export default defineComponent({
                     value={data.wBasisPoints.value}
                     onInput={(e) => {
                       data.wBasisPoints.value = (e.target as HTMLInputElement).value;
+                    }}
+                  />
+                  <div
+                    class="absolute left-0 top-1/2 bg-accent-base rounded-lg rounded-r-none"
+                    style={{
+                      height: amountRangeRef.value?.offsetHeight + "px",
+                      transform: "translateY(-50%)",
+                      width: `calc(${Math.min(
+                        +data.wBasisPoints.value / 100,
+                        99,
+                      )}%`,
                     }}
                   />
                 </div>
