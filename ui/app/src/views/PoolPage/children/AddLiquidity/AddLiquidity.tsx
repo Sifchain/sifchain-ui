@@ -1,18 +1,17 @@
 import { Button } from "@/components/Button/Button";
-import { Form } from "@/components/Form";
+import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
-import { SwapDetails } from "@/views/SwapPage/components/SwapDetails";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 import { computed, defineComponent, ref, TransitionGroup } from "vue";
 import { useRouter } from "vue-router";
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
+import { Tooltip } from "@/components/Tooltip";
 
 export default defineComponent({
   setup() {
@@ -34,34 +33,82 @@ export default defineComponent({
       });
     };
 
-    const detailsRef = computed<[any, any][]>(() => [
-      [
-        <span>
-          <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>{" "}
-          per <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>
-        </span>,
-        <div class="flex items-center gap-[4px] font-mono">
-          <div>{data.aPerBRatioProjectedMessage.value}</div>
-          <TokenIcon asset={data.fromAsset}></TokenIcon>
-        </div>,
+    const riskContent = computed(() => {
+      if (data.riskFactorStatus.value && !data.asyncPooling.value) {
+        return (
+          <>
+            This is an asymmetric liquidity add that has an estimated large
+            impact on this pool, and therefore a significant slip adjustment.
+            Please be aware of how this works by reading our documentation{" "}
+            <a
+              href="https://docs.sifchain.finance/core-concepts/liquidity-pool#asymmetric-liquidity-pool"
+              target="_blank"
+              class="underline"
+            >
+              here
+            </a>
+            .
+          </>
+        );
+      }
+    });
+
+    const detailsRef = computed<FormDetailsType>(() => ({
+      isError: !!riskContent.value,
+      label: (
+        <div class="flex justify-between items-center">
+          <span>Est. prices after pooling & pool share</span>
+          {!!riskContent.value && (
+            <Tooltip
+              content={riskContent.value}
+              placement="top"
+              interactive
+              appendTo={() =>
+                document.querySelector("#portal-target") || document.body
+              }
+            >
+              <div class="cursor-pointer">
+                <AssetIcon
+                  icon="interactive/warning"
+                  class="text-danger-base mr-[4px]"
+                  size={22}
+                />
+              </div>
+            </Tooltip>
+          )}
+        </div>
+      ),
+      details: [
+        [
+          <span>
+            <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>{" "}
+            per{" "}
+            <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>
+          </span>,
+          <div class="flex items-center gap-[4px] font-mono">
+            <div>{data.aPerBRatioProjectedMessage.value}</div>
+            <TokenIcon asset={data.fromAsset}></TokenIcon>
+          </div>,
+        ],
+        [
+          <span>
+            <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>{" "}
+            per{" "}
+            <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>
+          </span>,
+          <div class="flex items-center gap-[4px] font-mono">
+            <div>{data.bPerARatioProjectedMessage.value}</div>
+            <TokenIcon asset={data.toAsset}></TokenIcon>
+          </div>,
+        ],
+        [
+          <span>Your Share of Pool</span>,
+          <div class="flex items-center gap-[4px] font-mono">
+            <div>{data.shareOfPoolPercent.value}</div>
+          </div>,
+        ],
       ],
-      [
-        <span>
-          <span class="uppercase">{data.toAsset.value?.displaySymbol}</span> per{" "}
-          <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>
-        </span>,
-        <div class="flex items-center gap-[4px] font-mono">
-          <div>{data.bPerARatioProjectedMessage.value}</div>
-          <TokenIcon asset={data.toAsset}></TokenIcon>
-        </div>,
-      ],
-      [
-        <span>Your Share of Pool</span>,
-        <div class="flex items-center gap-[4px] font-mono">
-          <div>{data.shareOfPoolPercent.value}</div>
-        </div>,
-      ],
-    ]);
+    }));
 
     return () => {
       if (data.modalStatus.value === "processing") {
@@ -194,51 +241,49 @@ export default defineComponent({
               data.toSymbol.value = asset.symbol;
             }}
           ></TokenInputGroup>
-          <div class="font-medium mt-[10px] pt-[1em] text-left">
-            Pool Token Prices
-          </div>
           <Form.Details
             class="mt-[10px]"
-            details={[
-              [
-                <span>
-                  <span class="uppercase">
-                    {data.fromAsset.value?.displaySymbol}
-                  </span>{" "}
-                  per{" "}
-                  <span class="uppercase">
-                    {data.toAsset.value?.displaySymbol}
-                  </span>
-                </span>,
-                <div class="flex items-center gap-[4px] font-mono">
-                  <div>{data.aPerBRatioMessage.value}</div>
-                  <TokenIcon asset={data.fromAsset}></TokenIcon>
-                </div>,
+            details={{
+              label: "Pool Token Price",
+              details: [
+                [
+                  <span>
+                    <span class="uppercase">
+                      {data.fromAsset.value?.displaySymbol}
+                    </span>{" "}
+                    per{" "}
+                    <span class="uppercase">
+                      {data.toAsset.value?.displaySymbol}
+                    </span>
+                  </span>,
+                  <div class="flex items-center gap-[4px] font-mono">
+                    <div>{data.aPerBRatioMessage.value}</div>
+                    <TokenIcon asset={data.fromAsset}></TokenIcon>
+                  </div>,
+                ],
+                [
+                  <span>
+                    <span class="uppercase">
+                      {data.toAsset.value?.displaySymbol}
+                    </span>{" "}
+                    per{" "}
+                    <span class="uppercase">
+                      {data.fromAsset.value?.displaySymbol}
+                    </span>
+                  </span>,
+                  <div class="flex items-center gap-[4px] font-mono">
+                    <div>{data.bPerARatioMessage.value}</div>
+                    <TokenIcon asset={data.toAsset}></TokenIcon>
+                  </div>,
+                ],
               ],
-              [
-                <span>
-                  <span class="uppercase">
-                    {data.toAsset.value?.displaySymbol}
-                  </span>{" "}
-                  per{" "}
-                  <span class="uppercase">
-                    {data.fromAsset.value?.displaySymbol}
-                  </span>
-                </span>,
-                <div class="flex items-center gap-[4px] font-mono">
-                  <div>{data.bPerARatioMessage.value}</div>
-                  <TokenIcon asset={data.toAsset}></TokenIcon>
-                </div>,
-              ],
-            ]}
+            }}
           ></Form.Details>
-          <div class="font-medium mt-[10px] pt-[1em] text-left">
-            Est. prices after pooling & pool share
-          </div>
           <Form.Details
             class="mt-[10px]"
+            isError={!!data.riskFactorStatus.value}
             details={detailsRef.value}
-          ></Form.Details>
+          />
           {(data.nextStepAllowed.value && (
             <Button.CallToAction
               onClick={() => data.handleNextStepClicked()}

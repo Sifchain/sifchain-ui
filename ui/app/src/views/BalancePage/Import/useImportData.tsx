@@ -14,6 +14,7 @@ import { useCore } from "@/hooks/useCore";
 import { Network, IAssetAmount, AssetAmount, Amount } from "@sifchain/sdk";
 import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
 import { Button } from "@/components/Button/Button";
+import { FormDetailsType } from "@/components/Form";
 
 export type ImportParams = {
   amount?: string;
@@ -32,7 +33,7 @@ export type ImportData = {
   pegEventRef: Ref<PegEvent>;
   runImport: () => void;
   exitImport: () => void;
-  detailsRef: Ref<[any, any][]>;
+  detailsRef: Ref<FormDetailsType>;
 };
 
 export function getImportLocation(

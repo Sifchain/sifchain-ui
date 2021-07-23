@@ -1,11 +1,20 @@
-import { Component, defineComponent, PropType, Ref, ref } from "vue";
+import { defineComponent, PropType, Ref, ref, watchEffect } from "vue";
+
+export type FormDetailsType =
+  | [any, any][]
+  | {
+      label?: any;
+      details: [any, any][];
+      isError?: boolean;
+    };
 
 export const _Details = defineComponent({
   props: {
     details: {
-      type: Array as PropType<[any, any][]>,
+      type: Object as PropType<FormDetailsType>,
       required: true,
     },
+    label: {},
     isError: {
       type: Boolean,
     },
@@ -16,10 +25,27 @@ export const _Details = defineComponent({
       type: Object as PropType<JSX.Element>,
     },
   },
-  setup: (props) => {
+  setup: (props, context) => {
+    let details: Ref<[any, any][]> = ref([]);
+    let label = ref(props.label);
+    let isError = ref(props.isError);
+
+    watchEffect(() => {
+      if (Array.isArray(props.details)) {
+        details.value = props.details;
+      } else {
+        details.value = props.details.details;
+        label.value = props.details.label;
+        isError.value = props.details.isError || false;
+      }
+    });
+
     return () => (
-      <div class={["w-full", props.class]}>
-        {props.details.map(([key, value], index, arr) => (
+      <div class={["w-full relative", props.class]}>
+        {!!label.value && (
+          <div class="mb-[10px] pt-[1em] font-medium">{label.value}</div>
+        )}
+        {details.value.map(([key, value], index, arr) => (
           <div
             class={[
               `
@@ -27,7 +53,7 @@ export const _Details = defineComponent({
               box-border bg-gray-base border-gray-input_outline border-l-[1px] border-b-[1px] border-r-[1px] border-solid`,
               index == 0 && `rounded-t border-t-[1px]`,
               index == arr.length - 1 && `rounded-b border-b-[1px]`,
-              props.isError && `border-danger-base`,
+              isError.value && `border-danger-base`,
             ]}
           >
             <div class="pl-[20px] text-left text-md text-white font-sans font-medium">
@@ -44,6 +70,7 @@ export const _Details = defineComponent({
             </div>
           </div>
         ))}
+        {context.slots.default?.()}
       </div>
     );
   },

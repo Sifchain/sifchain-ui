@@ -12,6 +12,7 @@ import {
 import { useCore } from "@/hooks/useCore";
 import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
 import { TransactionStatus } from "@sifchain/sdk";
+import { FormDetailsType } from "@/components/Form";
 
 export type ExportParams = {
   amount?: string;
@@ -28,7 +29,7 @@ export type ExportData = {
   exportAmountRef: Ref<IAssetAmount>;
   feeAmountRef: Ref<IAssetAmount>;
   targetTokenRef: Ref<TokenListItem>;
-  detailsRef: Ref<[any, any][]>;
+  detailsRef: Ref<FormDetailsType>;
   headingRef: Ref<string>;
   runExport: () => void;
   exitExport: () => void;

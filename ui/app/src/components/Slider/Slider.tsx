@@ -79,7 +79,7 @@ export const Slider = defineComponent({
               onBlur={(e) => {
                 shouldDisplayFocusedState.value = false;
               }}
-              class="absolute block inset-0 w-full opacity-0"
+              class="absolute block inset-0 opacity-0"
               min={props.min}
               max={props.max}
               type="range"

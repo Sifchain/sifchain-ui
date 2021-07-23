@@ -1,11 +1,9 @@
 import PageCard from "@/components/PageCard";
 import AssetIcon from "@/components/AssetIcon";
 import { usePoolStatItem } from "@/hooks/usePoolStatItem";
-import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import router from "@/router";
-import { computed, effect, ref, Ref } from "@vue/reactivity";
-import { Component, defineComponent, PropType, SetupContext } from "vue";
+import { PoolStat } from "@/hooks/usePoolStats";
+import { computed, ref } from "@vue/reactivity";
+import { defineComponent, PropType } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 import {
   PoolPageAccountPool,
@@ -20,6 +18,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { FormDetailsType } from "@/components/Form";
 
 export default defineComponent({
   name: "PoolPage",
@@ -65,43 +64,52 @@ export default defineComponent({
 
     return () => {
       return (
-        <PageCard
-          class="w-[790px]"
-          heading="Pool"
-          iconName="navigation/pool"
-          headerAction={
-            <RouterLink
-              to={{ name: "AddLiquidity", params: {} }}
-              class={[
-                "flex flex-row items-center rounded-[4px] px-[17px] py-[8px] bg-accent-gradient mr-[5px] text-md",
-              ]}
-            >
-              <AssetIcon icon="interactive/plus" size={20}></AssetIcon>
-              <div class="ml-[4px] font-semibold">Add Liquidity</div>
-            </RouterLink>
-          }
-          headerContent={
-            <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
-              {COLUMNS.map((column, index) => (
-                <div key={column.name} class={[column.class, "opacity-50"]}>
-                  {column.name}
-                </div>
-              ))}
-            </div>
-          }
-        >
-          {poolDataWithUserData.value?.map(({ pool, accountPool }) => {
-            return (
-              <UserPoolItem
-                key={pool.symbol}
-                poolStat={pool}
-                accountPool={accountPool}
-                allPools={data.stats.data?.value?.poolData.pools}
-              />
-            );
-          })}
-          <RouterView></RouterView>
-        </PageCard>
+        <>
+          {/* Disable child routes (add/remove liq modals) while data isnt loaded  */}
+          <RouterView
+            name={
+              !poolDataWithUserData.value?.length
+                ? "DISABLED_WHILE_LOADING"
+                : undefined
+            }
+          />
+          <PageCard
+            class="w-[790px]"
+            heading="Pool"
+            iconName="navigation/pool"
+            headerAction={
+              <RouterLink
+                to={{ name: "AddLiquidity", params: {} }}
+                class={[
+                  "flex flex-row items-center rounded-[4px] px-[17px] py-[8px] bg-accent-gradient mr-[5px] text-md",
+                ]}
+              >
+                <AssetIcon icon="interactive/plus" size={20}></AssetIcon>
+                <div class="ml-[4px] font-semibold">Add Liquidity</div>
+              </RouterLink>
+            }
+            headerContent={
+              <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+                {COLUMNS.map((column, index) => (
+                  <div key={column.name} class={[column.class, "opacity-50"]}>
+                    {column.name}
+                  </div>
+                ))}
+              </div>
+            }
+          >
+            {poolDataWithUserData.value?.map(({ pool, accountPool }) => {
+              return (
+                <UserPoolItem
+                  key={pool.symbol}
+                  poolStat={pool}
+                  accountPool={accountPool}
+                  allPools={data.stats.data?.value?.poolData.pools}
+                />
+              );
+            })}
+          </PageCard>
+        </>
       );
     };
   },
@@ -152,13 +160,13 @@ const UserPoolItem = defineComponent({
 
     const detailsRef = computed<[any, any][]>(() => [
       [
-        `Total Pooled ${externalToken.value?.asset.symbol.toUpperCase()}`,
+        `Network Pooled ${externalToken.value?.asset.symbol.toUpperCase()}`,
         <span class="font-mono">
           {prettyNumber(+formatAssetAmount(externalAmount.value), 5)}
         </span>,
       ],
       [
-        `Total Pooled ROWAN`,
+        `Network Pooled ROWAN`,
         <span class="font-mono">
           {prettyNumber(+formatAssetAmount(nativeAmount.value), 5)}
         </span>,

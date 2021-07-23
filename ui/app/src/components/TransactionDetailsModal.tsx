@@ -6,6 +6,7 @@ import Modal from "./Modal";
 import { useCore } from "@/hooks/useCore";
 import { Button } from "./Button/Button";
 import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
+import { FormDetailsType } from "./Form";
 
 export default defineComponent({
   name: "TransactionDetailsModal",
@@ -15,7 +16,7 @@ export default defineComponent({
       required: true,
     },
     details: {
-      type: Object as PropType<Ref<[any, any][]>>,
+      type: Object as PropType<Ref<FormDetailsType>>,
       required: true,
     },
     icon: {

@@ -1,30 +1,16 @@
 import { Button } from "@/components/Button/Button";
-import { Form } from "@/components/Form";
+import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
-import { Slider } from "@/components/Slider/Slider";
 import { TokenIcon } from "@/components/TokenIcon";
-import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
-import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
-import { SwapDetails } from "@/views/SwapPage/components/SwapDetails";
-import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
-import {
-  computed,
-  defineComponent,
-  ref,
-  TransitionGroup,
-  watch,
-  Ref,
-} from "vue";
+import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
-import { PoolState, TransactionStatus } from "@sifchain/sdk";
-import { useAddLiquidityData } from "../AddLiquidity/useAddLiquidityData";
+import { PoolState } from "@sifchain/sdk";
 import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
-import { ConfirmState, ConfirmStateEnum } from "@/types";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useCore } from "@/hooks/useCore";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+
 export default defineComponent({
   setup(props) {
     const data = useRemoveLiquidityData();
@@ -36,23 +22,27 @@ export default defineComponent({
       tx: data.transactionStatus,
     });
 
-    const detailsRef = computed<[any, any][]>(() => [
-      ["You will receive:", null],
-      [
-        <div class="uppercase">{data.nativeAsset?.value?.displaySymbol}</div>,
-        <div class="flex gap-[4px] flex-row font-mono">
-          <div>{data.withdrawNativeAssetAmount.value}</div>
-          <TokenIcon asset={data.nativeAsset}></TokenIcon>
-        </div>,
+    const detailsRef = computed<FormDetailsType>(() => ({
+      label: "You will receive:",
+      details: [
+        [
+          <div class="uppercase">{data.nativeAsset?.value?.displaySymbol}</div>,
+          <div class="flex gap-[4px] flex-row font-mono">
+            <div>{data.withdrawNativeAssetAmount.value}</div>
+            <TokenIcon asset={data.nativeAsset}></TokenIcon>
+          </div>,
+        ],
+        [
+          <div class="uppercase">
+            {data.externalAsset?.value?.displaySymbol}
+          </div>,
+          <div class="flex gap-[4px] flex-row font-mono">
+            <div>{data.withdrawExternalAssetAmount.value}</div>
+            <TokenIcon asset={data.externalAsset}></TokenIcon>
+          </div>,
+        ],
       ],
-      [
-        <div class="uppercase">{data.externalAsset?.value?.displaySymbol}</div>,
-        <div class="flex gap-[4px] flex-row font-mono">
-          <div>{data.withdrawExternalAssetAmount.value}</div>
-          <TokenIcon asset={data.externalAsset}></TokenIcon>
-        </div>,
-      ],
-    ]);
+    }));
     const close = () => {
       router.push({
         name: "Pool",
@@ -105,31 +95,35 @@ export default defineComponent({
             <Form.Label class="w-full">Withdraw Amount</Form.Label>
             <div class="w-full flex flex-row">
               <div class="w-full mt-[18px]">
-                <Slider
-                  message={""}
-                  min="0"
-                  max="10000"
-                  value={data.wBasisPoints.value}
-                  disabled={
-                    !data.connected.value ||
-                    data.state.value === PoolState.NO_LIQUIDITY
-                  }
-                  onUpdate={(value) => {
-                    data.wBasisPoints.value = value;
-                  }}
-                  onLeftClicked={() => {
-                    data.wBasisPoints.value = "0";
-                  }}
-                  onMiddleClicked={() => {
-                    data.wBasisPoints.value = "5000";
-                  }}
-                  onRightClicked={() => {
-                    data.wBasisPoints.value = "10000";
-                  }}
-                  leftLabel="0%"
-                  middleLabel=""
-                  rightLabel="100%"
-                ></Slider>
+                <div class="w-full">
+                  <input
+                    type="range"
+                    disabled={
+                      !data.connected.value ||
+                      data.state.value === PoolState.NO_LIQUIDITY
+                    }
+                    min="0"
+                    max="10000"
+                    value={data.wBasisPoints.value}
+                    onInput={(e) => {
+                      data.wBasisPoints.value = (e.target as HTMLInputElement).value;
+                    }}
+                  />
+                </div>
+                <div class="flex justify-between">
+                  <div
+                    class="text-white text-left text-opacity-50 cursor-pointer hover:text-opacity-70"
+                    onClick={() => (data.wBasisPoints.value = "0")}
+                  >
+                    0%
+                  </div>
+                  <div
+                    class="text-white text-left text-opacity-50 cursor-pointer hover:text-opacity-70"
+                    onClick={() => (data.wBasisPoints.value = "10000")}
+                  >
+                    100%
+                  </div>
+                </div>
               </div>
               <div class="relative text-[20px] flex items-center w-[100px] ml-[20px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
                 <input
@@ -154,33 +148,46 @@ export default defineComponent({
             <Form.Label class="w-full">Withdraw Ratio</Form.Label>
             <div class="w-full flex flex-row">
               <div class="w-full mt-[18px]">
-                <Slider
-                  hideIndicatorBarAccent
-                  message={""}
-                  min="-10000"
-                  step="1"
-                  max="10000"
-                  value={data.asymmetry.value}
-                  disabled={
-                    !data.connected.value ||
-                    data.state.value === PoolState.NO_LIQUIDITY
-                  }
-                  onUpdate={(value) => {
-                    data.asymmetry.value = value;
-                  }}
-                  onLeftClicked={() => {
-                    data.asymmetry.value = "-10000";
-                  }}
-                  onMiddleClicked={() => {
-                    data.asymmetry.value = "0";
-                  }}
-                  onRightClicked={() => {
-                    data.asymmetry.value = "10000";
-                  }}
-                  leftLabel="All ROWAN"
-                  middleLabel="Equal"
-                  rightLabel={`All ${data.externalAsset.value?.displaySymbol?.toUpperCase()}`}
-                ></Slider>
+                <div class="w-full">
+                  <input
+                    type="range"
+                    disabled={
+                      !data.connected.value ||
+                      data.state.value === PoolState.NO_LIQUIDITY
+                    }
+                    min="-10000"
+                    max="10000"
+                    value={data.asymmetry.value}
+                    onInput={(e) => {
+                      data.asymmetry.value = (e.target as HTMLInputElement).value;
+                    }}
+                  />
+                </div>
+                <div class="flex">
+                  <div
+                    class="text-white text-opacity-50 cursor-pointer hover:text-opacity-70 flex-1 text-left"
+                    onClick={() => (data.asymmetry.value = "-10000")}
+                  >
+                    All ROWAN
+                  </div>
+                  <div
+                    class="text-white text-opacity-50 cursor-pointer hover:text-opacity-70 flex-1 text-center"
+                    onClick={() => (data.asymmetry.value = "0")}
+                  >
+                    Equal
+                  </div>
+                  <div
+                    class="text-white text-opacity-50 cursor-pointer hover:text-opacity-70 flex-1 text-right"
+                    onClick={() => (data.asymmetry.value = "10000")}
+                  >
+                    All{" "}
+                    {(
+                      data.externalAsset.value?.displaySymbol ||
+                      data.externalAsset.value?.symbol ||
+                      ""
+                    ).toUpperCase()}
+                  </div>
+                </div>
               </div>
               {/* <div class="relative text-[20px] flex items-center w-[100px] ml-[20px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
               <input

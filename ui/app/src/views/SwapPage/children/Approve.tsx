@@ -1,4 +1,4 @@
-import { Form } from "@/components/Form";
+import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import { defineComponent, computed, watchEffect, onMounted } from "vue";
@@ -15,29 +15,31 @@ export const ApproveSwap = defineComponent({
       data.handleBeginSwap();
     });
 
-    const detailsRef = computed<[any, any][]>(() => [
-      ["Swapping", null],
-      [
-        <div class="flex items-center">
-          {data.fromAsset.value && (
-            <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
-          )}
-          <span class="ml-[4px]">{data.fromSymbol.value.toUpperCase()}</span>
-        </div>,
-        <span class="font-mono">{data.fromAmount.value}</span>,
+    const detailsRef = computed<FormDetailsType>(() => ({
+      label: "Swapping",
+      details: [
+        [
+          <div class="flex items-center">
+            {data.fromAsset.value && (
+              <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
+            )}
+            <span class="ml-[4px]">{data.fromSymbol.value.toUpperCase()}</span>
+          </div>,
+          <span class="font-mono">{data.fromAmount.value}</span>,
+        ],
+        [
+          <div class="flex items-center">
+            {data.toAsset.value && (
+              <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
+            )}
+            <span class="ml-[4px]">
+              {data.toAsset?.value?.displaySymbol?.toUpperCase()}
+            </span>
+          </div>,
+          <span class="font-mono">{data.toAmount.value}</span>,
+        ],
       ],
-      [
-        <div class="flex items-center">
-          {data.toAsset.value && (
-            <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
-          )}
-          <span class="ml-[4px]">
-            {data.toAsset?.value?.displaySymbol?.toUpperCase()}
-          </span>
-        </div>,
-        <span class="font-mono">{data.toAmount.value}</span>,
-      ],
-    ]);
+    }));
 
     const transactionDetails = useTransactionDetails({
       tx: data.txStatus,

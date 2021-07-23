@@ -55,7 +55,7 @@ export default defineComponent({
     const showMaskRef = computed(
       () => props.expandedSymbol && !expandedRef.value,
     );
-    const emptyRef = computed(
+    const isNoBalanceRef = computed(
       () => props.tokenItem.amount.amount.toString(false) === "0",
     );
     const assetRef = computed(() => props.tokenItem.asset);
@@ -76,7 +76,7 @@ export default defineComponent({
           }),
         },
       },
-      emptyRef.value
+      isNoBalanceRef.value
         ? {
             tag: "button",
             icon: "interactive/arrow-up",
@@ -105,7 +105,10 @@ export default defineComponent({
         tag: RouterLink,
         props: {
           to: {
-            path: "pool",
+            name: "RemoveLiquidity",
+            params: {
+              externalAsset: props.tokenItem.asset.symbol,
+            },
           },
         },
       },
@@ -148,7 +151,7 @@ export default defineComponent({
         <td class="text-right align-middle min-w-[200px]">
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80">
-              {emptyRef.value
+              {isNoBalanceRef.value
                 ? null
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
