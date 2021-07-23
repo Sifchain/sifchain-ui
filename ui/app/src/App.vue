@@ -40,7 +40,10 @@ import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/components/shared/EnvAlert.vue";
 import { IBCService } from "../../core/src/services/IBCService";
 
-IBCService.sendIBCtransaction(`cosmoshub-testnet`, `sifchain-devnet-042`);
+IBCService.sendIBCtransaction({
+  sendingChainId: `cosmoshub-testnet`,
+  receivingChainId: `sifchain-devnet-042`,
+});
 console.log("sendingIBC transaction");
 
 export default defineComponent({
