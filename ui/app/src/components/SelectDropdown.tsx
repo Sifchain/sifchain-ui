@@ -1,9 +1,18 @@
-import { defineComponent, PropType, Ref, ref } from "vue";
+import { effect } from "@vue/reactivity";
+import {
+  watch,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  PropType,
+  Ref,
+  ref,
+} from "vue";
 import { Tooltip, TooltipProps } from "./Tooltip";
 
 export type SelectDropdownOption = {
   content: string | JSX.Element;
-  value: string | number;
+  value: string;
 };
 
 export const SelectDropdown = defineComponent({
@@ -25,6 +34,12 @@ export const SelectDropdown = defineComponent({
       >,
       required: true,
     },
+    onShow: {
+      type: Function as PropType<() => void>,
+    },
+    onHide: {
+      type: Function as PropType<() => void>,
+    },
     tooltipProps: {
       type: Object as PropType<TooltipProps>,
     },
@@ -32,7 +47,30 @@ export const SelectDropdown = defineComponent({
   setup(props, ctx) {
     const tooltipInstance = ref();
 
-    const { onShow, onHidden, ...tooltipPropsRest } = props.tooltipProps || {};
+    const { onShow, onHide, ...tooltipPropsRest } = props.tooltipProps || {};
+
+    const updateWidth = () => {
+      const reference = tooltipInstance.value?.reference;
+      const content = tooltipInstance.value?.popper.querySelector(
+        ".tippy-content",
+      );
+
+      (window as any).content = content;
+      (window as any).reference = reference;
+
+      if (content && reference) {
+        content.style.width = getComputedStyle(reference.children[0]).width;
+      }
+    };
+
+    effect(updateWidth);
+    onMounted(() => {
+      window.addEventListener("resize", updateWidth);
+    });
+    onUnmounted(() => {
+      window.removeEventListener("resize", updateWidth);
+    });
+
     return () => (
       <Tooltip
         interactive
@@ -50,16 +88,18 @@ export const SelectDropdown = defineComponent({
             .querySelector(".tippy-content")
             ?.classList.add("tippy-content-reset");
           if (onShow) onShow(instance);
+          props.onShow?.();
         }}
-        onHidden={(instance) => {
+        onHide={(instance) => {
           tooltipInstance.value = null;
-          if (onHidden) onHidden(instance);
+          if (onHide) onHide(instance);
+          props.onHide?.();
         }}
         content={
           <div
             onClick={() => tooltipInstance.value?.hide()}
             class={[
-              "min-w-[150px] bg-gray-input border-gray-input_outline border-solid border rounded-sm",
+              "bg-gray-input border-gray-input_outline border-solid border rounded-sm",
               props.class,
             ]}
           >

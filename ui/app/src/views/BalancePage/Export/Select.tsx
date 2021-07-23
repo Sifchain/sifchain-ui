@@ -2,11 +2,14 @@ import { defineComponent, ref, computed, PropType, Ref } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Amount, Network } from "@sifchain/sdk";
+import { Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
+import {
+  SelectDropdown,
+  SelectDropdownOption,
+} from "@/components/SelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import router from "@/router";
@@ -30,6 +33,8 @@ export default defineComponent({
       exportTokenRef,
       exportAmountRef,
     } = props.exportData;
+
+    const networkRef = computed(() => exportParams.network);
 
     const handleSetMax = () => {
       const maxAmount = getMaxAmount(
@@ -94,6 +99,14 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
+    const optionsRef = computed<SelectDropdownOption[]>(() =>
+      networksRef.value.map((network) => ({
+        content: <div class="capitalize">{network}</div>,
+        value: network,
+      })),
+    );
+    const networkOpenRef = ref(false);
+
     return () => (
       <Modal
         heading={props.exportData.headingRef.value}
@@ -143,27 +156,28 @@ export default defineComponent({
 
           <div class="block mt-[10px]">
             Network
-            <Button.Select class="capitalize relative w-full mt-[10px] pl-[16px]">
-              <div class="flex flex-1 justify-end text-right">
-                {exportParams.network}
-              </div>
-              <select
-                class={
-                  "absolute left-0 top-0 w-full h-full opacity-0 text-right"
-                }
-                value={exportParams.network}
-                onChange={(e) => {
-                  const select = e.target as HTMLSelectElement;
-                  exportParams.network = select.value as Network;
-                }}
+            <SelectDropdown
+              options={optionsRef}
+              value={networkRef}
+              onChangeValue={(value) => {
+                exportParams.network = value as Network;
+              }}
+              tooltipProps={{
+                onShow: () => {
+                  networkOpenRef.value = true;
+                },
+                onHide: () => {
+                  networkOpenRef.value = false;
+                },
+              }}
+            >
+              <Button.Select
+                class="w-full relative capitalize pl-[16px] mt-[10px]"
+                active={networkOpenRef.value}
               >
-                {networksRef.value.map((network: string) => (
-                  <option value={network}>
-                    {network[0].toUpperCase() + network.slice(1).toLowerCase()}
-                  </option>
-                ))}
-              </select>
-            </Button.Select>
+                {exportParams.network}
+              </Button.Select>
+            </SelectDropdown>
           </div>
         </section>
 

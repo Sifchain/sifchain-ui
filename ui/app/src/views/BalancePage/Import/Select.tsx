@@ -36,7 +36,6 @@ export default defineComponent({
     const {
       importParams,
       networksRef,
-      pickableTokensRef,
       tokenRef,
       importAmountRef,
     } = props.importData;
@@ -126,7 +125,6 @@ export default defineComponent({
               <div class="block flex-1 mr-[5px]">
                 Network
                 <SelectDropdown
-                  class="w-[200px]"
                   options={optionsRef}
                   value={networkRef}
                   onChangeValue={(value) => {
