@@ -1,6 +1,10 @@
+# Style and Principles
+
+Here are some notes about programming style.
+
 # Principles of programming in practice
 
-SOLID is a slightly antiquated acronym where the letters there dont make much sense. Honestly it boils down to some key points:
+People talk about the [SOLID](https://en.wikipedia.org/wiki/SOLID) principles - generally it boils down to some key points:
 
 1. Stuff that **changes** together should live together
 1. **Encapsulate** things with a well thought out interface
@@ -20,57 +24,6 @@ function runWorkflow(afterWorkflow?: () => void) {
   }
 }
 ```
-
-# Avoiding `this`
-
-Often in Javascript when we use `this` in a function it is not clear on how to use it or using it leads to a dependency overhead. Eg.
-
-```ts
-export class Cow {
-  sound: string;
-  constructor(sound: string) {
-    this.sound = sound;
-  }
-  say() {
-    return this.sound;
-  }
-}
-```
-
-```ts
-const c: Cow = new Cow("moo");
-
-const { say } = c;
-
-// We are 'dependent' on the this from the Cow class
-console.log(say()); // this is undefined
-```
-
-We can get more utility by forgoing inheritence and using the module pattern. Caveat being we need to export a shadow type for our function and we get class like type effects but without the `this` problem.
-
-```ts
-// ./Cow.ts
-export function Cow(sound: string) {
-  return {
-    say() {
-      return sound;
-    },
-  };
-}
-export type Cow = ReturnType<typeof Cow>;
-```
-
-```ts
-import { Cow } from "./Cow";
-
-const c: Cow = Cow("moo");
-
-const { say } = c;
-
-console.log(say()); // moo
-```
-
-Inheritence is always a bad idea so there is no drawback to using this pattern.
 
 # Dependency injection
 
@@ -135,6 +88,66 @@ it("should set the env as a cookie", () => {
 });
 ```
 
+Notice that by using `Pick` and injecting all our dependencies we are complying with the principles:
+
+- Encapsulate stuff using a well thought out interface
+- Interfaces should only require what they actually need.
+- Enable dynamic substitution (say for testing)
+- Utilize inversion of control
+
+The only thing we have not seen here directly is the single responsability principle.
+
+# Avoiding `this`
+
+Often in Javascript when we use `this` in a function it is not clear on how to use it or using it leads to a dependency overhead. Eg.
+
+```ts
+export class Cow {
+  sound: string;
+  constructor(sound: string) {
+    this.sound = sound;
+  }
+  say() {
+    return this.sound;
+  }
+}
+```
+
+```ts
+const c: Cow = new Cow("moo");
+
+const { say } = c;
+
+// We are 'dependent' on the this from the Cow class
+console.log(say()); // this is undefined
+```
+
+We can get more utility by forgoing inheritence and using the module pattern. Caveat being we need to export a shadow type for our function and we get class like type effects but without the `this` problem.
+
+```ts
+// ./Cow.ts
+export function Cow(sound: string) {
+  return {
+    say() {
+      return sound;
+    },
+  };
+}
+export type Cow = ReturnType<typeof Cow>;
+```
+
+```ts
+import { Cow } from "./Cow";
+
+const c: Cow = Cow("moo");
+
+const { say } = c;
+
+console.log(say()); // moo
+```
+
+Inheritence is always a bad idea so there is no drawback to using this pattern.
+
 # Test Driven Development
 
 By writing your tests first you will begin to apply good code design without even realising it. If something is hard to test you probably have poor code design and should try to modularize it. So if you save your code design until after you have written a set of unit tests your code will be more composable with a better and more modular API and better separation of concerns by default. I normally start a feature in a test file in core and then move it out to it's own file before checking in progress. It is slower to refactor without tests so writing tests as you write your code will actually mean you get your feature out quicker with better design and with fewer bugs.
@@ -147,18 +160,7 @@ If we follow the principles above and extend it to our architecture we will end 
 
 Here we focus on `Usecases` as the place where we store all the business logic in our system. We store all the logic here as it is the key place for testing that logic. We then inject all the services that those Usecases need to manage the state of the system.
 
-See core docs. for how we use the clean architecture.
-
-# TypeScript
-
-TypeScript makes refactoring much faster but can sometimes cause confusion if you are new to it.
-
-- Use `unknown` over `any`
-- Generics
-- Ensure your editor is displaying TypeScript errors.
-- ...
-
-[Complete me]
+See [architecture](architecture.md) docs for how we use the clean architecture.
 
 # Continuous Integration and feature flags
 

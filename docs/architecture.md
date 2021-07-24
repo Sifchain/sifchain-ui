@@ -2,15 +2,11 @@
 
 ### We deal with money
 
-ACCURACY 🢂 #1 PRIORITY
-
-∴
-
-**TESTABILITY** 🢂 #1 PRIORITY
-
----
+Testing and accuracy needs to be our priority when designing this codebase. The architectural decisions here have been made with the main goal of enabling testing at as many levels as possible. We have highly testable usecases, highly testable integration services, and a highly testable end to end stack.
 
 ### We are in an incredibly volitile fast moving market
+
+So whilst testing is important in this space change is also to be expected so our code must be as flexible as possible. We cannot assume our code structure will remain fixed we will likley need to refactor our backing services change the way we access our technology, change our frontend. Provide API sdks and libraries based on our code. Also our important business processes things like the fees we charge invariants and business rules need to be well tested or at least when they are simple easy to add tests as we go.
 
 - **CHANGE** is expected
 - Complex business rules are likely (margin trading, limit orders, exceptions, security features)
@@ -19,28 +15,22 @@ ACCURACY 🢂 #1 PRIORITY
 - Contract calls signatures and methods may change
 - Business logic may change (or not)
 
----
-
 ### We are growing fast
 
-Quick onboarding
-needs
-**CLARITY** & **CONSISTENCY**
-
----
+We are growing fast as an industry and some level of team churn should be expected we should strive to avoid knowledge silos and optimize for quick onboarding where possible. So clarity and consistency should be somethign we value in our codebase.
 
 ### Our architecture goals
 
-We want to optimize for:
+It makes sense that our architecture should be alogned with these goals that we should optimize for:
 
 1. TESTABILITY
 1. FLEXIBILITY
 1. CLARITY
 1. CONSISTENCY
 
----
-
 ### Questions for our code
+
+Looking at our code and architecture we should be able to glean certain information reasonably easily.
 
 - What does this application **do**?
 - What external **services** does my app rely on?
@@ -52,15 +42,11 @@ We want to optimize for:
   - create a mobile app?
   - create a cli?
 
----
-
 ✅ Our architectural approach answers these questions
-
----
 
 ### CLEAN ARCHITECTURE
 
-We support a simplified version of clean architecture to help us achieve our goals.
+Hexagonal or clean architecture solves many of these concerns. We support a simplified version of clean architecture to help us achieve our goals.
 
 - View - Present the UI
 - Usecase - Encapsulated Application Specific Logic
@@ -68,6 +54,8 @@ We support a simplified version of clean architecture to help us achieve our goa
 - Entity - Shared data structure and logic
 
 ![Clean Flow.png](cleanflow.png)
+
+Here is a [great short video](https://www.youtube.com/watch?v=CnailTcJV_U) on the most important concepts I highly recommend you watch if you are not familiar with Clean Architecture. Watching this should give you a good gist of how it works.
 
 ---
 
@@ -126,27 +114,3 @@ We support a simplified version of clean architecture to help us achieve our goa
   - Can change the underlying service library without affecting the UI or the business logic
 - With minor maintenance grows fairly naturally
 - Universal methodology for designing systems
-
----
-
-### What we still need to do (as of 6/21)
-
-- Formulate a better and more consistent way to handle async data. Using a Generator might make it simpler to listen for async events from a specific usecase for example.
-  ```js
-  for await (const event of usecase.peg(data)) {
-    txStatus.value = event;
-  }
-  ```
-- We use shared reactive objects in our calculators this means calculators actively mutate external data. Instead they could run callbacks and let the caller manage state updates. Because of the nature of vue reactivity it might be easiest to convert the calculators to pure functions.
-
-- We built this thing in a hurry and made some mistakes:
-  - We have resorted to using a special global reactive vue object called `store` to share state between usecases and the view. This was likely a bad idea. A query cache would have been better as it would have avoided the global dependency. Vue reactivity has a complex confusing mutation based API which is difficult to keep track of. We might want to consider removing it in favour of utilizing events whether through event dispatchers or generators.
-  - Eventually it might make sense to have each usecase in it's own file.
-
----
-
-### Some minor issues
-
-- Our services are where much of the complexity lies within our app
-- Danger when usecase logic ends up in the view or in the service
-- Basic understanding of the architecture is important to avoid code rot

@@ -5,11 +5,11 @@
       "decimals": 18,
       "name": "Rowan",
       "imageUrl": "./images/siflogo.png",
-      "address": "0xaa0532e884ac34c1B9937fb433045A2b796D9347",
+      "address": "0x12524FEBcF27e99233DFbdfC4E4e4eC7Dd052B36",
       "network": "ethereum"
     },
     {
-      "address": "0x43EB5eC458Ab344DF8351d5c57319ecbb5fe2FfC",
+      "address": "0xF078b459bfff1357A5a13757778e438B87214922",
       "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707",
       "name": "Tether USDT",
@@ -28,7 +28,7 @@
       "transferLimit": "4381237787299667968"
     },
     {
-      "address": "0xF8D6e4D8A128bE2651e4e9a11D0d78869ffd3Dcb",
+      "address": "0x9E7611df9FC58c80495BB02D3BC728e47EB0307F",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/677/thumb/basic-attention-token.png?1547034427",
       "name": "Basic Attention Token",
@@ -38,7 +38,7 @@
       "transferLimit": "16147836674320740909056"
     },
     {
-      "address": "0xE91C0AFD4C23610D2D106E874C0f71be689d2995",
+      "address": "0xE10bDFCBf54a0c89884b2851603A724aC06C020D",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/681/thumb/JelZ58cv_400x400.png?1601449653",
       "name": "Aragon",
@@ -48,7 +48,7 @@
       "transferLimit": "1305483028720626696192"
     },
     {
-      "address": "0x4c85D302D5dF39629FA70ac2AfE2A55b73c24853",
+      "address": "0x407aECbBBE2A5D7B79A14c66f62517B6F386A9A1",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/736/thumb/bancor.png?1547034477",
       "name": "Bancor Network Token",
@@ -58,7 +58,7 @@
       "transferLimit": "2577319587628866076672"
     },
     {
-      "address": "0x4a86CA57a8a1a5D72360E9792c0d563779eeB5E6",
+      "address": "0x4f7b6CeE2eeEeE8B9BCf54C95362E6F5B3f6aCAd",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/863/thumb/0x.png?1547034672",
       "name": "0x",
@@ -68,7 +68,7 @@
       "transferLimit": "8175411631975670218752"
     },
     {
-      "address": "0xf837953D6dB2C04E45dF309CD6fdc2Dcf79e10aA",
+      "address": "0x722169e2E62427Ac6B4aF1e22c48533f474058ee",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/877/thumb/chainlink-new-logo.png?1547034700",
       "name": "Chainlink",
@@ -78,7 +78,7 @@
       "transferLimit": "214408233276157788160"
     },
     {
-      "address": "0x15F7aC2E15f5bb26aa24B525CA3e3EBEC5230Ed9",
+      "address": "0x7002772CD82510aE0939425046a85A65B54cc46b",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/878/thumb/decentraland-mana.png?1550108745",
       "name": "Decentraland",
@@ -88,7 +88,7 @@
       "transferLimit": "31495864592978940002304"
     },
     {
-      "address": "0x8556B8Be2D0223Ef40f6d8dceE6f867E65e9EDb3",
+      "address": "0x397257507Bd62C967D1adD3cAF3A403789e9f089",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/913/thumb/LRC.png?1572852344",
       "name": "Loopring",
@@ -98,7 +98,7 @@
       "transferLimit": "10751115965837254590464"
     },
     {
-      "address": "0x1C65d5D1C7d863ffB89A21f9Ef7aA29037A1920B",
+      "address": "0xfb6D2FB9cee5C3FbF25a6F7652931F635b5da9ae",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/1102/thumb/enjin-coin-logo.png?1547035078",
       "name": "Enjin Coin",
@@ -108,7 +108,7 @@
       "transferLimit": "13591240717182590517248"
     },
     {
-      "address": "0xf4364bfdcd883cc62c1A9202068b7AC100718847",
+      "address": "0xe931827E6a36939eBc58683123E951b73b2005CE",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/3406/thumb/SNX.png?1598631139",
       "name": "Synthetix Network Token",
@@ -118,7 +118,7 @@
       "transferLimit": "288850375505488150528"
     },
     {
-      "address": "0xEbBb824c16Fe3CD628a57A7ADF9F0576479Ae0AA",
+      "address": "0xC6F6BA871Be84678BaF615362fF6f8bBF9C13859",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/3449/thumb/TUSD.png?1559172762",
       "name": "TrueUSD",
@@ -128,7 +128,7 @@
       "transferLimit": "5000845142829138182144"
     },
     {
-      "address": "0x9C83747E0DB1b66C829A887BB10C8973E0BbCB6D",
+      "address": "0xA4A22aA2731CD31e3d105eD8e5d4cc94cCb84e52",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/3687/thumb/ocean-protocol-logo.jpg?1547038686",
       "name": "Ocean Protocol",
@@ -138,7 +138,7 @@
       "transferLimit": "8793017640551988592640"
     },
     {
-      "address": "0xA846bd9010D37A7458E2746eF7bC8D1E1719DC08",
+      "address": "0xEB2AEF30e82DE1D298E637900038DF61B19B9598",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/4001/thumb/Fantom.png?1558015016",
       "name": "Fantom",
@@ -148,7 +148,7 @@
       "transferLimit": "34341602791285476818944"
     },
     {
-      "address": "0x064aA67db83b8fc4D1a1fDD294d4E6a11BD6efe2",
+      "address": "0x9B40b2a82cA505a30D6eFd8eF25B30D8152D6d58",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/5013/thumb/sUSD.png?1562212426",
       "name": "sUSD",
@@ -158,7 +158,7 @@
       "transferLimit": "4950495049504951107584"
     },
     {
-      "address": "0xD3951d710314b721866a1F4df5414d8f906207DD",
+      "address": "0x7F395c4d3178BEd65e175843eA477d4760B53Bb2",
       "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389",
       "name": "USD Coin",
@@ -168,7 +168,7 @@
       "transferLimit": "5000000000"
     },
     {
-      "address": "0xef1C4af73261eDD79BFEd11973E86173b1981021",
+      "address": "0x8D0DBEA90df19127865F1BC961bC25C5829d4239",
       "decimals": 8,
       "imageUrl": "https://assets.coingecko.com/coins/images/7310/thumb/cypto.png?1547043960",
       "name": "Crypto com Coin",
@@ -178,7 +178,7 @@
       "transferLimit": "7111262818051"
     },
     {
-      "address": "0xcdF2504B6313A47306b9B85Ed628b9C7065aEA76",
+      "address": "0x3055b942d0F678F8e9Fb62bF5bb6D48B49BD51d3",
       "decimals": 8,
       "imageUrl": "https://assets.coingecko.com/coins/images/7598/thumb/wrapped_bitcoin_wbtc.png?1548822744",
       "name": "Wrapped Bitcoin",
@@ -188,7 +188,7 @@
       "transferLimit": "14713671"
     },
     {
-      "address": "0x03d81381B672a765E3F3925eFE00AD1B119Fd911",
+      "address": "0x0855235b269545B6A42C25189253981Eba843768",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/9368/thumb/swipe.png?1566792311",
       "name": "Swipe",
@@ -198,7 +198,7 @@
       "transferLimit": "4132231404958677729280"
     },
     {
-      "address": "0x516cfAb6FC73BEb041a02CC4EE76F3bde1025cc0",
+      "address": "0x669F0462D4774cECd32A0C94bAfB197aFE1FAbB0",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/9545/thumb/band-protocol.png?1568730326",
       "name": "Band Protocol",
@@ -208,7 +208,7 @@
       "transferLimit": "555555555555555540992"
     },
     {
-      "address": "0x51c41F59Cd9edAF3dA4E17Ea40DaB8F4A555808E",
+      "address": "0xd0aEf5A0bf13FD83728322120870561D9960D292",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/9956/thumb/dai-multi-collateral-mcd.png?1574218774",
       "name": "Dai Stablecoin",
@@ -218,7 +218,7 @@
       "transferLimit": "5012003748978804916224"
     },
     {
-      "address": "0x202E0e9AeBFba38024e3c655a556c7a9533C4a19",
+      "address": "0x01126799235f950bD38F34472bdb6e68515917ae",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1592625425",
       "name": "Compound",
@@ -228,7 +228,7 @@
       "transferLimit": "19435590453237972992"
     },
     {
-      "address": "0x2Df8522737EA39165409144165F5Aa11c617efc1",
+      "address": "0x7A88F9e1c3b5a693E896676f601b9Bc91Cb8FAD7",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/10951/thumb/UMA.png?1586307916",
       "name": "UMA",
@@ -238,7 +238,7 @@
       "transferLimit": "460405156537753272320"
     },
     {
-      "address": "0xCb92407A0DAff145601675Aac063059839d29ef4",
+      "address": "0xE17723b13485A3bc398Ddb5C16f24f7364dcD540",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/11683/thumb/Balancer.png?1592792958",
       "name": "Balancer",
@@ -248,7 +248,7 @@
       "transferLimit": "210437710437710430208"
     },
     {
-      "address": "0x1a9b5011e5a5e1AF47AaC123E62E47230920718C",
+      "address": "0xF58e5218C9748be023d2026C109f8692a91Ac884",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/11849/thumb/yfi-192x192.png?1598325330",
       "name": "yearn finance",
@@ -258,7 +258,7 @@
       "transferLimit": "165766004707754528"
     },
     {
-      "address": "0x35282f5F4e20BBAE0FCfDceF9e008b39F195C32A",
+      "address": "0x77590547608CFe8a50C3d518CBB4bed029bfEf14",
       "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/11970/thumb/serum-logo.png?1597121577",
       "name": "Serum",
@@ -268,7 +268,7 @@
       "transferLimit": "2604166666"
     },
     {
-      "address": "0xB2C7c02DD15eCA10e00588BCe18A5316DC0A7684",
+      "address": "0x65d48fA90A3601775F84030147A0b0d14d0062a7",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/11976/thumb/Cream.png?1596593418",
       "name": "Cream",
@@ -278,7 +278,7 @@
       "transferLimit": "32823475349570011136"
     },
     {
-      "address": "0x07aeD342a842A351129227C55e89b57bE46e2830",
+      "address": "0x16EA75C97cbBFFf285A91201be280a43a390B807",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12129/thumb/sandbox_logo.jpg?1597397942",
       "name": "SAND",
@@ -288,7 +288,7 @@
       "transferLimit": "55533342218668080103424"
     },
     {
-      "address": "0xb8554a27D8d6aA8D14d049aE4DBCAC6ac2582280",
+      "address": "0xB8552867Beb387AdFc30a642e3A857a7F76Ac01d",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
       "name": "Sushi",
@@ -298,7 +298,7 @@
       "transferLimit": "595947556615017725952"
     },
     {
-      "address": "0x60DE6E0dA25C0EBAfE30f824FA96bfA9C3eaaf69",
+      "address": "0x889Fed6f3d2C5Dea553e8B74b2ED136dC12f11D4",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12440/thumb/esd_logo_circle.png?1603676421",
       "name": "Empty Set Dollar",
@@ -308,7 +308,7 @@
       "transferLimit": "23367980258730274979840"
     },
     {
-      "address": "0x4303D04691b793bD6C20e9F627640b042Ef6a5fB",
+      "address": "0xCC5F592bF2BBBBA6019591D0314aeF0571E29f27",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-uni.png?1600306604",
       "name": "Uniswap",
@@ -318,7 +318,7 @@
       "transferLimit": "325097529258777640960"
     },
     {
-      "address": "0xc01deAf141869DBCc760A78b0cFfA0AF4705057a",
+      "address": "0x9fC9E3c05cCd5bc9cd329376b656413E75E5096b",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12645/thumb/AAVE.png?1601374110",
       "name": "Aave",
@@ -328,7 +328,7 @@
       "transferLimit": "16593103906016661504"
     },
     {
-      "address": "0x9673ccf6A8366d832Ef75A28AddE144423F4d148",
+      "address": "0xBE103e20Acf47f32144d0bBd734e0cB927636ad4",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12811/thumb/barnbridge.jpg?1602728853",
       "name": "BarnBridge",
@@ -338,7 +338,7 @@
       "transferLimit": "100341159943808942080"
     },
     {
-      "address": "0x149cb62320Ab43F530063E86b3ceEAccC573003a",
+      "address": "0x1B00daA68405Fcf0127eAA5C4A9b8975c2259525",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/13238/thumb/WFIL-Icon.png?1606630561",
       "name": "Wrapped Filecoin",
@@ -348,7 +348,7 @@
       "transferLimit": "178316690442225385472"
     },
     {
-      "address": "0x58625f8EBF7f41956C3a6913796e43B0a5984ae3",
+      "address": "0xd32882d2FA342A095B030aC3367A49CE67223BcA",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/13397/thumb/Graph_Token.png?1608145566",
       "name": "The Graph",
@@ -358,7 +358,7 @@
       "transferLimit": "8004341554859355406336"
     },
     {
-      "address": "0x4c39B31FBC836f32f53A97fd360e7AbF792e72a0",
+      "address": "0x6062F3F72AB5Cbce81C2A57Dc99db16679C35fdF",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/13454/thumb/lon_logo.png?1608701720",
       "name": "Tokenlon",
@@ -368,7 +368,7 @@
       "transferLimit": "748502994011976105984"
     },
     {
-      "address": "0xDD0ED24e3c0479F423891258c391e7Dd7a6E4EF7",
+      "address": "0xeAE81872A40783Ec2D632655D520cAA2a12D3506",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
       "name": "1inch",
@@ -378,7 +378,7 @@
       "transferLimit": "1582278481012658274304"
     },
     {
-      "address": "0xbfBf12646B30af76f5728c8DFcC680843cf0820b",
+      "address": "0xA34c528Dd7b843D28a8a547b03fCaaA9Fa1198Bc",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/13677/thumb/BrMhBTr8_400x400.jpg?1610723303",
       "name": "THORChain ERC20",
@@ -388,7 +388,7 @@
       "transferLimit": "1547987616099071164416"
     },
     {
-      "address": "0x1310BCB18474c75B39358c1A5F9F47f9ac847aB1",
+      "address": "0xbAaD361205FCFa68a2229b732f80597BCcABF66E",
       "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/13767/thumb/Secret_S_Black_Coingecko.png?1611667298",
       "name": "Secret ERC20 ",
@@ -398,7 +398,7 @@
       "transferLimit": "4464285714"
     },
     {
-      "address": "0x250e711E217AdcD7CA40381251D8BBf27c136564",
+      "address": "0x346CD72CBec532fBD65ACD4bCd819F1E50bB8893",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/3334/small/iotex-logo.png?1547037941",
       "name": "IoTeX",
@@ -408,7 +408,7 @@
       "transferLimit": "458715596330000000000000"
     },
     {
-      "address": "0x3F063B4c302C15CcF05D474301b75F86944544Aa",
+      "address": "0x11e1c4C3413E666E6bdF6FA41d77a18Aa003705B",
       "name": "Reef Finance",
       "symbol": "REEF",
       "decimals": 18,
@@ -418,7 +418,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/13504/small/Group_10572.png?1610534130"
     },
     {
-      "address": "0xbD51c9391f38CBF97C2F9597AAb5A94d2114efA2",
+      "address": "0x81dAd3192b559E9C408bc2C3323377a4b69ee7A0",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/4932/thumb_2x/_QPpjoUi_400x400.jpg?1566430520",
       "name": "COCOS BCX",
@@ -428,7 +428,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0xFcF61Ae012c708dD17f46B62D155637ddfd7D0D1",
+      "address": "0x3DC2aBCE9e0dB4d8F75f6B7d241Fcd959A5206dF",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/3373/small/IuNzUb5b_400x400.jpg?1589526336",
       "name": "Keep Network",
@@ -438,7 +438,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0xF66Be71DE1e9061877edE53F6eD066a08F61F3BC",
+      "address": "0xEC11c6d654A5f26703610d6c1d42A423a1E08B4f",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/3296/small/op.jpg?1547037878",
       "name": "Origin Protocol",
@@ -448,7 +448,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x967b9994c634924c8ddb6864b1F510DF91908c71",
+      "address": "0x495F33785cC3CCEB6BB3f5705E44Bb04dD17b9c2",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12782/small/logocircle.png?1611944557",
       "name": "DAOfi",
@@ -458,7 +458,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x8c8ec2F53E1f4729889697e1b274f143407aC8d6",
+      "address": "0x93d60A2eb9Fa8aFb99AfDb41aC15e0C5C7532639",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12509/small/linear.jpg?1606884470",
       "name": "Linear",
@@ -468,7 +468,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x3963d088036763359740C0E0855152D82a551730",
+      "address": "0x84df3359d5c7a4c9461FDD7664aFbC47e1A246DD",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/9351/small/12ships.png?1566485390",
       "name": "12Ships",
@@ -478,7 +478,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0xE8947F381f786A998eD6dA7ab938a11c7BD018B8",
+      "address": "0x2CC82AAF8bC59762D7Da972cc79790E6F72A1974",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/13803/small/b20.png?1611996305",
       "name": "B.20",
@@ -488,7 +488,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x370DE8ca4dcD270aB6b04b01e419c2ef545541a7",
+      "address": "0xCB06C3756f4c9B1ad4D4D5D70D8804680001cF4B",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/3328/small/Akropolis.png?1547037929",
       "name": "Akropolis",
@@ -498,7 +498,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0xd176f177B0e6aBb1e104D2ed9CAF8DB32844c6EF",
+      "address": "0x4656eD772b6B5DD817f752AA0dbBfc50E62a75Ed",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12623/small/RFUEL_SQR.png?1602481093",
       "name": "Rio Fuel Token",
@@ -508,7 +508,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x380934E9D47B466616D427380f99cb7283D1e7A1",
+      "address": "0x3e365aC63ACA1D8AEE07776427CCa614768dd4eC",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12843/small/image.png?1611212077",
       "name": "Rally",
@@ -518,7 +518,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x2050D33F6d14DEe23De3C6a20173295474D7c0F6",
+      "address": "0xad5C098EAD246255d0FF6376251B2E89aB98B6e3",
       "decimals": 18,
       "imageUrl": "https://etherscan.io/token/images/convergence_32.png",
       "name": "Convergence",
@@ -528,7 +528,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x0F7C5C3b81AA776aDd281A5D7DcA4F5d62056601",
+      "address": "0x9bC4347ca74F51eeB3a151f5273D8d90204758F6",
       "decimals": 18,
       "imageUrl": "https://etherscan.io/token/images/render_32.png",
       "name": "Render Token",
@@ -538,7 +538,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0xb317fa8D773dF4254B2107A02Edf1711FdCb0443",
+      "address": "0xaD3db10898A76816Fa014EE30EE904BE9e79539d",
       "decimals": 18,
       "imageUrl": "https://etherscan.io/token/images/paidnetwork_32.png",
       "name": "PAID Network",
@@ -548,7 +548,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x1821DA6Fc5609e547889d6b650985876c2392E73",
+      "address": "0x82C64959139c9Ee36298dcfDBca8acE1157E417F",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/14460/small/Tidal-mono.png?1616233894",
       "name": "Tidal",
@@ -558,7 +558,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
+      "address": "0xca5d69AFf64b807Fa2d4Bd9D856e51AFb6Eb5316",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/11939/small/SHIBLOGO.png?1600752116",
       "name": "SHIBA INU",
@@ -568,7 +568,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
+      "address": "0x9a70D6fcc0a69a0C9FF9AEC7344f93cb0ECC4950",
       "decimals": 18,
       "imageUrl": "https://etherscan.io/token/images/dogekiller_32.png",
       "name": "DOGE KILLER",

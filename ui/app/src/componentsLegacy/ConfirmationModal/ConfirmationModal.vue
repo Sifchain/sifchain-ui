@@ -24,22 +24,22 @@
         :transactionStateMsg="transactionStateMsg"
       >
         <template v-slot:signing>
-          <slot :name="!!this.$slots.signing ? 'signing' : 'common'"></slot>
+          <slot :name="state ? 'signing' : 'common'"></slot>
         </template>
 
         <template v-slot:confirmed>
-          <slot :name="!!this.$slots.signing ? 'confirmed' : 'common'"></slot>
+          <slot :name="state ? 'confirmed' : 'common'"></slot>
         </template>
 
         <template v-slot:rejected>
-          <slot :name="!!this.$slots.signing ? 'rejected' : 'common'"></slot>
+          <slot :name="state ? 'rejected' : 'common'"></slot>
         </template>
 
         <template v-slot:failed>
-          <slot :name="!!this.$slots.signing ? 'failed' : 'common'"></slot>
+          <slot :name="state ? 'failed' : 'common'"></slot>
         </template>
         <template v-slot:out_of_gas>
-          <slot :name="!!this.$slots.signing ? 'out_of_gas' : 'common'"></slot>
+          <slot :name="state ? 'out_of_gas' : 'common'"></slot>
         </template>
       </ConfirmationModalSigning>
     </div>
