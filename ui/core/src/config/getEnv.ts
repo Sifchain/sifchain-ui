@@ -28,7 +28,7 @@ export const profileLookup = {
     ethAssetTag: "ethereum.localnet",
     sifAssetTag: "sifchain.localnet",
   },
-};
+} as const;
 
 // Here we list hostnames that have default env settings
 const hostDefaultEnvs = [

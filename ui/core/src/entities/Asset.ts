@@ -8,6 +8,7 @@ export type IAsset = {
   network: Network;
   symbol: string;
   label: string;
+  ibcChainId?: string;
 };
 type ReadonlyAsset = Readonly<IAsset>;
 const assetMap = new Map<string, ReadonlyAsset>();

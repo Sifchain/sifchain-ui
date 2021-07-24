@@ -18,11 +18,13 @@ import {
   ChainConfig,
   AssetConfig,
 } from "../utils/parseConfig";
-import { Asset } from "../entities";
+import { Asset, Network } from "../entities";
 import { ServiceContext } from "../services";
+import { ApplicationNetworkEnvironment } from "setupSifchainApi";
 
 type ConfigMap = { [s: string]: ServiceContext };
-type AssetMap = { [s: string]: Asset[] };
+type ChainNetwork = `${Network}.${ApplicationNetworkEnvironment}`;
+type AssetMap = Record<ChainNetwork, Asset[]>;
 
 // Save assets for sync lookup throughout the app via Asset.get('symbol')
 function cacheAsset(asset: Asset) {
@@ -32,11 +34,11 @@ function cacheAsset(asset: Asset) {
 export type AppConfig = ServiceContext; // Will include other injectables
 
 export function getConfig(
-  config = "localnet",
-  sifchainAssetTag = "sifchain.localnet",
-  ethereumAssetTag = "ethereum.localnet",
+  config: ApplicationNetworkEnvironment = "localnet",
+  sifchainAssetTag: ChainNetwork = "sifchain.localnet",
+  ethereumAssetTag: ChainNetwork = "ethereum.localnet",
 ): AppConfig {
-  const assetMap: AssetMap = {
+  const assetMap: Partial<AssetMap> = {
     "sifchain.localnet": parseAssets(
       assetsSifchainLocalnet.assets as AssetConfig[],
     ),
@@ -57,8 +59,8 @@ export function getConfig(
     ),
   };
 
-  const sifchainAssets = assetMap[sifchainAssetTag];
-  const ethereumAssets = assetMap[ethereumAssetTag];
+  const sifchainAssets = assetMap[sifchainAssetTag] || [];
+  const ethereumAssets = assetMap[ethereumAssetTag] || [];
   const allAssets = [...sifchainAssets, ...ethereumAssets].map(cacheAsset);
 
   const configMap: ConfigMap = {

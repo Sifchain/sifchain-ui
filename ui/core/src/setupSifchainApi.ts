@@ -5,9 +5,15 @@ import { profileLookup, SifEnv } from "./config/getEnv";
 import { createServices } from "./services";
 import { createStore } from "./store";
 
-type SifchainEnv = "localnet" | "devnet" | "testnet" | "mainnet";
+export type ApplicationNetworkEnvironment =
+  | "localnet"
+  | "devnet"
+  | "testnet"
+  | "mainnet";
 
-export function setupSifchainApi(environment: SifchainEnv = "localnet") {
+export function setupSifchainApi(
+  environment: ApplicationNetworkEnvironment = "localnet",
+) {
   // Following should happen with an underlying shared API
   const { tag, ethAssetTag, sifAssetTag } = profileLookup[
     {
