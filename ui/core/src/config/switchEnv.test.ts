@@ -24,7 +24,7 @@ it("switches the env when provided with an _env string", () => {
 it("switches the env when provided with a second _env string", () => {
   const location = {
     href: "/#/foo",
-    search: "?_env=0",
+    search: "?_env=mainnet",
   };
 
   switchEnv({ location, cookies });

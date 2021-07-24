@@ -23,20 +23,20 @@ Running a command with the `--help` flag will display a help message explaining 
 
 Attaching a query string var `_env` will set cookies to point your build to any environment you want:
 
-| url                            | env                    |
-| ------------------------------ | ---------------------- |
-| http://localhost:8080?\_env=0  | MAINNET                |
-| http://localhost:8080?\_env=1  | TESTNET                |
-| http://localhost:8080?\_env=2  | DEVNET                 |
-| http://localhost:8080?\_env=3  | LOCALNET               |
-| http://localhost:8080?\_env=\_ | DEFAULT (Based on url) |
+| url                                  | env                    |
+| ------------------------------------ | ---------------------- |
+| http://localhost:8080?\_env=mainnet  | MAINNET                |
+| http://localhost:8080?\_env=testnet  | TESTNET                |
+| http://localhost:8080?\_env=devnet   | DEVNET                 |
+| http://localhost:8080?\_env=localnet | LOCALNET               |
+| http://localhost:8080?\_env=\_       | DEFAULT (Based on url) |
 
 We recommend using bookmarklets:
 
-| name     | location                                                        |
-| -------- | --------------------------------------------------------------- |
-| CLEAR    | `javascript:(() => {l=location;l.href=l.pathname+'?_env=_'})()` |
-| MAINNET  | `javascript:(() => {l=location;l.href=l.pathname+'?_env=0'})()` |
-| TESTNET  | `javascript:(() => {l=location;l.href=l.pathname+'?_env=1'})()` |
-| DEVNET   | `javascript:(() => {l=location;l.href=l.pathname+'?_env=2'})()` |
-| LOCALNET | `javascript:(() => {l=location;l.href=l.pathname+'?_env=3'})()` |
+| name     | location                                                               |
+| -------- | ---------------------------------------------------------------------- |
+| CLEAR    | `javascript:(() => {l=location;l.href=l.pathname+'?_env=_'})()`        |
+| MAINNET  | `javascript:(() => {l=location;l.href=l.pathname+'?_env=mainnet'})()`  |
+| TESTNET  | `javascript:(() => {l=location;l.href=l.pathname+'?_env=testnet'})()`  |
+| DEVNET   | `javascript:(() => {l=location;l.href=l.pathname+'?_env=devnet'})()`   |
+| LOCALNET | `javascript:(() => {l=location;l.href=l.pathname+'?_env=localnet'})()` |

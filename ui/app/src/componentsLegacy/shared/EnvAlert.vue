@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { defineComponent, useCssModule } from "vue";
-import { AppCookies, SifEnv } from "@sifchain/sdk";
+import { AppCookies, SifEnv, sifEnvsByIndex } from "@sifchain/sdk";
 
 // This is for internal testing & development only.
 // Once we release the ability to switch environments
@@ -8,7 +8,7 @@ import { AppCookies, SifEnv } from "@sifchain/sdk";
 export default defineComponent({
   setup() {
     const styles = useCssModule();
-    const env = AppCookies().getEnv();
+    let env = AppCookies().getEnv();
 
     const NoCookie = () => null;
 
@@ -16,10 +16,15 @@ export default defineComponent({
       return () => null;
     }
 
-    const Component = () =>
+    let sifEnv: SifEnv = env as SifEnv;
+    if (env && sifEnvsByIndex[+env]) {
+      sifEnv = sifEnvsByIndex[+env];
+    }
+
+    const Cmp = () =>
       ({
         [SifEnv.MAINNET]: (
-          <div class={[styles.panel, styles.mainnet]}>YOU ARE ON MAINNET!</div>
+          <div class={[styles.panel, styles.mainnet]}>MAINNET</div>
         ),
         [SifEnv.TESTNET]: (
           <div class={[styles.panel, styles.testnet]}>TESTNET</div>
@@ -30,9 +35,12 @@ export default defineComponent({
         [SifEnv.DEVNET]: (
           <div class={[styles.panel, styles.devnet]}>DEVNET</div>
         ),
-      }[env] || <NoCookie />);
+        [SifEnv.DEVNET_042]: (
+          <div class={[styles.panel, styles.devnet]}>DEVNET_042</div>
+        ),
+      }[sifEnv] || <NoCookie />);
 
-    return () => <Component />;
+    return () => <Cmp />;
   },
 });
 </script>
@@ -45,19 +53,18 @@ export default defineComponent({
   background: white;
   font-family: "Inter", sans-serif;
   padding: 3px 6px;
-  min-width: 100px;
-  border-radius: 5px;
+  border-bottom-right-radius: 6px;
 }
 .mainnet {
-  background: rgb(255, 38, 0);
+  background: rgba(255, 38, 0, 0.5);
 }
 .testnet {
-  background: rgb(255, 96, 228);
+  background: rgba(255, 96, 228, 0.5);
 }
 .localnet {
-  background: rgb(16, 227, 255);
+  background: rgba(16, 227, 255, 0.5);
 }
 .devnet {
-  background: rgb(255, 216, 41);
+  background: rgba(255, 216, 41, 0.5);
 }
 </style>
