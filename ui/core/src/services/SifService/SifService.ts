@@ -114,6 +114,7 @@ export default function createSifService({
         state.accounts = await client.getAccounts();
         state.balances = await instance.getBalance(client.senderAddress);
       } catch (e) {
+        console.error("Keplr wallet connect error", e);
         if (!e.toString().toLowerCase().includes("no address found on chain")) {
           state.connected = false;
           state.address = "";
@@ -164,7 +165,7 @@ export default function createSifService({
       );
       const accounts = await offlineSigner.getAccounts();
       console.log("account", accounts);
-      const address = accounts.length > 0 ? accounts[0].address : "";
+      const address = accounts?.[0]?.address || "";
       if (!address) {
         throw "No address on sif account";
       }
