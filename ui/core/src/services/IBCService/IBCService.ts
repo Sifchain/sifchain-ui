@@ -3,22 +3,26 @@ import getKeplrProvider from "../SifService/getKeplrProvider";
 
 import { IBCChainConfig } from "ibc-chains/IBCChainConfig";
 import { IAssetAmount } from "entities";
+import { loadConnectionByChainIds } from "./loadConnectionByChainIds";
 
 // const GAIA_ENDPOINT = `http://a941f6afd0d994a57979ffbaf284d2c0-95f50faefa055d52.elb.us-west-2.amazonaws.com:26657`;
 // const SIFCHAIN_ENDPOINT = `https://rpc-devnet-042.sifchain.finance/`;
 
 export class IBCService {
-  static async sendIBCtransaction(params: {
-    sendingChain: IBCChainConfig;
-    receivingChain: IBCChainConfig;
+  static async transferIBCTokens(params: {
+    sourceChain: IBCChainConfig;
+    destinationChain: IBCChainConfig;
     assetAmountToTransfer: IAssetAmount;
   }) {
     const keplr = await getKeplrProvider();
-    await keplr?.experimentalSuggestChain(params.sendingChain.keplrChainInfo);
-    await keplr?.experimentalSuggestChain(params.receivingChain.keplrChainInfo);
-    await keplr?.enable(params.sendingChain.chainId);
+
+    await keplr?.experimentalSuggestChain(params.sourceChain.keplrChainInfo);
+    await keplr?.experimentalSuggestChain(
+      params.destinationChain.keplrChainInfo,
+    );
+    await keplr?.enable(params.sourceChain.chainId);
     const sendingSigner = await keplr?.getOfflineSigner(
-      params.sendingChain.chainId,
+      params.sourceChain.chainId,
     );
     if (!sendingSigner) throw new Error("No sending signer");
     const [fromAccount] = (await sendingSigner?.getAccounts()) || [];
@@ -26,51 +30,36 @@ export class IBCService {
       throw new Error("No account found for sending signer");
     }
     const recievingSigner = await keplr?.getOfflineSigner(
-      params.receivingChain.chainId,
+      params.destinationChain.chainId,
     );
     if (!recievingSigner) throw new Error("No recieving signer");
     const [toAccount] = (await recievingSigner?.getAccounts()) || [];
     if (!toAccount) throw new Error("No account found for recieving signer");
 
     const sendingStargateClient = await SigningStargateClient?.connectWithSigner(
-      params.sendingChain.rpcUrl,
+      params.sourceChain.rpcUrl,
       sendingSigner,
     );
 
-    const receivingStargateClient = await SigningStargateClient?.connectWithSigner(
-      params.receivingChain.rpcUrl,
-      recievingSigner,
-    );
-    await keplr?.enable(params.receivingChain.chainId);
-    const brdcstTxRes__fromSifchain = await receivingStargateClient
-      ?.sendIbcTokens(
-        toAccount.address,
-        fromAccount.address,
-        {
-          denom: "rowan",
-          amount: "1040000000000000000",
-        },
-        "transfer",
-        "channel-0",
-        undefined,
-        Math.floor(Date.now() / 1000 + 1000),
-      )
-      .catch((e) => e);
+    const { channelId } = await loadConnectionByChainIds({
+      sourceChainId: params.sourceChain.chainId,
+      counterpartyChainId: params.destinationChain.chainId,
+    });
 
-    const brdcstTxRes__fromCosmos = await sendingStargateClient
-      ?.sendIbcTokens(
-        fromAccount.address,
-        toAccount.address,
-        {
-          denom: "uphoton",
-          amount: "1",
-        },
-        "transfer",
-        "channel-53",
-        undefined,
-        Math.floor(Date.now() / 1000 + 1000),
-      )
-      .catch((e) => e);
-    console.log({ brdcstTxRes__fromSifchain, brdcstTxRes__fromCosmos });
+    await keplr?.enable(params.destinationChain.chainId);
+
+    const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
+      fromAccount.address,
+      toAccount.address,
+      {
+        denom: params.assetAmountToTransfer.asset.symbol,
+        amount: params.assetAmountToTransfer.toBigInt().toString(),
+      },
+      "transfer",
+      channelId,
+      undefined,
+      Math.floor(Date.now() / 1000 + 1000),
+    );
+    brdcstTxRes.transactionHash;
   }
 }
