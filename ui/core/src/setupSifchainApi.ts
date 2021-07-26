@@ -5,13 +5,14 @@ import { profileLookup, SifEnv } from "./config/getEnv";
 import { createServices } from "./services";
 import { createStore } from "./store";
 
-type SifchainEnv = "localnet" | "devnet" | "testnet" | "mainnet";
+export type SifchainEnv = `${SifEnv}`;
 
 export function setupSifchainApi(environment: SifchainEnv = "localnet") {
   // Following should happen with an underlying shared API
   const { tag, ethAssetTag, sifAssetTag } = profileLookup[
     {
       devnet: SifEnv.DEVNET,
+      devnet_042: SifEnv.DEVNET_042,
       localnet: SifEnv.LOCALNET,
       testnet: SifEnv.TESTNET,
       mainnet: SifEnv.MAINNET,
