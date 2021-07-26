@@ -84,7 +84,7 @@ test("weird cookie values should bork", () => {
   expect(() => {
     getEnv({
       location: { hostname: "dex.sifchain.finance" },
-      cookies: { getEnv: () => 56 },
+      cookies: { getEnv: () => "foo" },
     });
   }).toThrow();
 });
