@@ -1,6 +1,5 @@
 <template>
   <svg
-    style="margin-top: 16px"
     xmlns="http://www.w3.org/2000/svg"
     width="33.394"
     height="37"
