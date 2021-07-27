@@ -11,7 +11,7 @@ export default defineComponent({
     const items = [
       {
         name: "Newsletter",
-        href: "mailchimpsignup",
+        href: "https://sifchain.finance/#newsletter",
       },
       {
         name: "Legal Disclaimer",

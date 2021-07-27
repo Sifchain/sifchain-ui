@@ -15,6 +15,7 @@ import { Button } from "@/components/Button/Button";
 import router from "@/router";
 import { ExportData, getExportLocation } from "./useExportData";
 import { Form } from "@/components/Form";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -26,6 +27,8 @@ export default defineComponent({
   },
   setup(props) {
     const { store } = useCore();
+
+    const walletPicker = useAppWalletPicker();
 
     const {
       exportParams,
@@ -65,23 +68,22 @@ export default defineComponent({
     const buttonRef = computed(() => {
       const buttons = [
         {
-          condition: false && !store.wallet.sif.isConnected,
+          condition: !store.wallet.sif.isConnected,
           name: "Connect Sifchain Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
             disabled: false,
-            onClick: () => window.alert("Open Wallet Window Sif"),
+            onClick: () => walletPicker.show(),
           },
         },
         {
           condition:
-            false &&
             exportParams.network === Network.ETHEREUM &&
             !store.wallet.eth.isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () => window.alert("Open Wallet Window Eth"),
+            onClick: () => walletPicker.show(),
           },
         },
         {
@@ -183,6 +185,20 @@ export default defineComponent({
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
           <Form.Details details={props.exportData.detailsRef.value} />
+        </section>
+
+        <section class="bg-gray-base p-4 rounded mt-[10px]">
+          <div class="text-white">Ethereum Recipient Address</div>
+          <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
+            <input
+              readonly
+              value={store.wallet.eth.address}
+              class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
+              onClick={(e) => {
+                (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
+              }}
+            />
+          </div>
         </section>
 
         <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">

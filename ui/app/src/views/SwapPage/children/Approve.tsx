@@ -23,7 +23,13 @@ export const ApproveSwap = defineComponent({
             {data.fromAsset.value && (
               <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
             )}
-            <span class="ml-[4px]">{data.fromSymbol.value.toUpperCase()}</span>
+            <span class="ml-[4px]">
+              {(
+                data.fromAsset.value.displaySymbol ||
+                data.fromAsset.value.symbol ||
+                ""
+              ).toUpperCase()}
+            </span>
           </div>,
           <span class="font-mono">{data.fromAmount.value}</span>,
         ],
@@ -33,7 +39,11 @@ export const ApproveSwap = defineComponent({
               <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
             )}
             <span class="ml-[4px]">
-              {data.toAsset?.value?.displaySymbol?.toUpperCase()}
+              {(
+                data.toAsset?.value?.displaySymbol ||
+                data.toAsset.value?.symbol ||
+                ""
+              ).toUpperCase()}
             </span>
           </div>,
           <span class="font-mono">{data.toAmount.value}</span>,

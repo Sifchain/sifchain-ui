@@ -102,9 +102,21 @@ export default defineComponent({
       details: [
         [
           <span>
-            <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>{" "}
+            <span class="uppercase">
+              {(
+                data.fromAsset.value?.displaySymbol ||
+                data.fromAsset.value?.symbol ||
+                ""
+              ).toUpperCase()}
+            </span>{" "}
             per{" "}
-            <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>
+            <span class="uppercase">
+              {(
+                data.toAsset.value?.displaySymbol ||
+                data.toAsset.value?.symbol ||
+                ""
+              ).toUpperCase()}
+            </span>
           </span>,
           <div class="flex items-center gap-[4px] font-mono">
             <div>{data.aPerBRatioProjectedMessage.value}</div>

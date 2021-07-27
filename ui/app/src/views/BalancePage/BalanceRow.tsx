@@ -155,7 +155,9 @@ export default defineComponent({
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80">
               {isNoBalanceRef.value
-                ? null
+                ? props.tokenItem.pegTxs.length
+                  ? "..."
+                  : null
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
 
