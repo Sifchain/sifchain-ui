@@ -71,7 +71,13 @@ export default defineComponent({
         [
           <div class="flex items-center">
             <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
-            <span class="ml-[4px]">{data.fromSymbol.value.toUpperCase()}</span>
+            <span class="ml-[4px]">
+              {(
+                data.fromAsset.value?.displaySymbol ||
+                data.fromAsset.value?.symbol ||
+                ""
+              ).toUpperCase()}
+            </span>
           </div>,
           <span class="font-mono">{data.fromAmount.value}</span>,
         ],

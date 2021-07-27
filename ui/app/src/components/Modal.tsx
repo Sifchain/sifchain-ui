@@ -8,7 +8,6 @@ import {
   onUnmounted,
 } from "vue";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { ProgressPlugin } from "webpack";
 
 export type ModalProps = {
   teleportTo?: string;
@@ -72,12 +71,12 @@ export default defineComponent({
         <div class="overflow-hidden fixed bg-white bg-opacity-30 z-20 inset-0 left-sidebar animate-fade-in duration-300" />
         <div
           class={[
-            "absolute inset-0 left-sidebar flex items-center shorter:items-start shorter:pt-[4vh] justify-center z-20 animate-fade-in duration-500",
+            "overflow-y-scroll absolute inset-0 left-sidebar flex items-center shorter:items-start shorter:py-[4vh] justify-center z-20 animate-fade-in duration-500",
           ]}
           onClick={() => props.onClose?.()}
         >
           <div
-            class={`max-h-[94vh] justify-start overflow-y-scroll flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
+            class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
               props.class || ""
             }`}
             onClick={(e) => e.stopPropagation()}
