@@ -179,8 +179,6 @@ export default defineComponent({
       />
     </div>
 
-    <ActionsPanel connectType="connectToSif" />
-
     <div v-if="transactionState !== 'selecting'">
       <ConfirmationModal
         :requestClose="requestClose"
