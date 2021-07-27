@@ -8,6 +8,7 @@ import { defineComponent, computed } from "vue";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { format } from "@sifchain/sdk";
+import { SwapDetails } from "../components/SwapDetails";
 import { useSwapPageData } from "../useSwapPageData";
 
 export const ConfirmSwap = defineComponent({
@@ -62,51 +63,13 @@ export const ConfirmSwap = defineComponent({
           </Form.FieldSet>
           <Form.FieldSet class="mt-[10px]">
             <Form.Label>Output is estimated</Form.Label>
-            <Form.Details
-              class="mt-[10px]"
-              details={[
-                [
-                  <div class="flex items-center">Price</div>,
-                  <div>{data.priceMessage.value}</div>,
-                ],
-                [
-                  <div class="h-full flex-row items-center">
-                    {"Minimum Received"}
-                    <Button.InlineHelp>
-                      <div class="w-[200px]">
-                        This is the minimum amount of the to token you will
-                        receive, taking into consideration the acceptable
-                        slippage percentage you are willing to take on. This
-                        amount also already takes into consideration liquidity
-                        provider fees as well.
-                      </div>
-                    </Button.InlineHelp>
-                  </div>,
-                  <div>{data.minimumReceived.value}</div>,
-                ],
-                [
-                  <div class="flex items-center">
-                    Price Impact
-                    <Button.InlineHelp>
-                      This is the percentage impact to the amount of the 'to'
-                      token in the liquidity pool based upon how much you are
-                      swapping for.
-                    </Button.InlineHelp>
-                  </div>,
-                  <div class="lfex items-center">{data.priceImpact.value}</div>,
-                ],
-                [
-                  <div class="flex items-center">
-                    Liquidity Provider Fee
-                    <Button.InlineHelp>
-                      This is the fee paid to the liquidity providers of this
-                      pool.
-                    </Button.InlineHelp>
-                  </div>,
-                  <div>{data.providerFee.value}</div>,
-                ],
-              ]}
-            ></Form.Details>
+            <SwapDetails
+              asset={data.toAsset}
+              price={data.priceMessage.value?.replace("per", "/")}
+              priceImpact={(data.priceImpact.value ?? "") + "%"}
+              liquidityProviderFee={data.providerFee.value ?? ""}
+              minimumReceived={data.minimumReceived.value}
+            ></SwapDetails>
           </Form.FieldSet>
           {/* <div class="text-center w-full font-medium mt-[10px]">
             Confirm this transaction in your wallet.

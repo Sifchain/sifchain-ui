@@ -45,6 +45,7 @@ export default defineComponent({
         ],
       ],
     }));
+
     const close = () => {
       router.push({
         name: "Pool",

@@ -100,7 +100,9 @@ export function useSwapCalculator(input: {
 
     return `${format(swapResult.divide(amountAsInput), swapResult.asset, {
       mantissa: 6,
-    })} ${swapResult.label} per ${amount.label}`;
+    })} ${
+      swapResult.asset.displaySymbol?.toUpperCase() || swapResult.label
+    } per ${amount.asset.displaySymbol?.toUpperCase() || amount.label}`;
   });
 
   // Selected field changes when the user changes the field selection

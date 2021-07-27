@@ -4,21 +4,20 @@ import { usePoolStatItem } from "@/hooks/usePoolStatItem";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { computed, ref } from "@vue/reactivity";
 import { defineComponent, PropType } from "vue";
-import { RouterLink, RouterView } from "vue-router";
+import { RouterView } from "vue-router";
 import {
   PoolPageAccountPool,
   usePoolPageData,
   COLUMNS,
 } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
-import { Asset, Network, Pool } from "../../../../core/src";
+import { Network } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useToken } from "@/hooks/useToken";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { FormDetailsType } from "@/components/Form";
 
 export default defineComponent({
   name: "PoolPage",
@@ -87,6 +86,7 @@ export default defineComponent({
               class="w-[790px]"
               heading="Pool"
               iconName="navigation/pool"
+              withOverflowSpace
               headerAction={
                 <Button.Inline
                   to={{ name: "AddLiquidity", params: {} }}
@@ -185,7 +185,7 @@ const UserPoolItem = defineComponent({
       [
         `Price of Token USD`,
         <span class="font-mono">
-          {!!currentItemData.value.priceToken
+          {currentItemData.value.priceToken != null
             ? `$${currentItemData.value.priceToken}`
             : "..."}
         </span>,
@@ -200,7 +200,7 @@ const UserPoolItem = defineComponent({
               : "text-connected-base",
           ]}
         >
-          {!!currentItemData.value.arb
+          {currentItemData.value.arb != null
             ? `${(+currentItemData.value.arb).toFixed(3)}%`
             : "..."}
         </span>,
@@ -208,7 +208,7 @@ const UserPoolItem = defineComponent({
       [
         "Pool Depth USD",
         <span class="font-mono">
-          {!!currentItemData.value.poolDepth
+          {currentItemData.value.poolDepth != null
             ? currentItemData.value.poolDepth
             : "..."}
         </span>,
@@ -216,7 +216,7 @@ const UserPoolItem = defineComponent({
       [
         "Trade Volume 24hr",
         <span class="font-mono">
-          {!!currentItemData.value.volume
+          {currentItemData.value.volume != null
             ? currentItemData.value.volume
             : "..."}
         </span>,
@@ -248,7 +248,12 @@ const UserPoolItem = defineComponent({
                           class="ml-[4px]"
                         />
                         <div class="ml-[10px] uppercase font-sans">
-                          ROWAN / {currentPoolStat.value.symbol.toUpperCase()}
+                          ROWAN /{" "}
+                          {(
+                            externalToken.value?.asset.displaySymbol ||
+                            externalToken.value?.asset.symbol ||
+                            ""
+                          ).toUpperCase()}
                         </div>
                       </>
                     );
@@ -256,7 +261,10 @@ const UserPoolItem = defineComponent({
                   case "apy": {
                     return (
                       <div class="font-mono">
-                        {+currentItemData.value.poolAPY || "..."}%
+                        {currentItemData.value.poolAPY != null
+                          ? (+currentItemData.value.poolAPY || 0).toFixed(2)
+                          : "..."}
+                        %
                       </div>
                     );
                   }
