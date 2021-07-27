@@ -184,17 +184,14 @@ export async function getExistingClaimsData(
 
 export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
   switch (chainId) {
-    case "sifchain":
+    case "sifchain-1":
       if (!txHash) return "https://blockexplorer.sifchain.finance/";
       return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;
-    case "sifchain-devnet-042":
-      if (!txHash) return "https://blockexplorer.sifchain.finance/";
-      return `https://blockexplorer-devnet-042.sifchain.finance/transactions/${txHash}`;
+    case "sifchain-devnet-1":
+      if (!txHash) return "https://blockexplorer-devnet.sifchain.finance/";
+      return `https://blockexplorer-devnet.sifchain.finance/transactions/${txHash}`;
     case "sifchain-testnet-1":
-      if (!txHash) return "https://blockexplorer.sifchain.finance/";
-      return `https://blockexplorer-testnet-042.sifchain.finance/transactions/${txHash}`;
-    case "sifchain-testnet":
-      if (!txHash) return `https://blockexplorer-testnet.sifchain.finance/`;
+      if (!txHash) return "https://blockexplorer-testnet.sifchain.finance/";
       return `https://blockexplorer-testnet.sifchain.finance/transactions/${txHash}`;
     default:
       if (!txHash) return "https://blockexplorer-devnet.sifchain.finance/";
