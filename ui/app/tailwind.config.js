@@ -25,7 +25,7 @@ module.exports = {
           "sans-serif",
         ],
         mono: [
-          'Roboto Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New"',
+          '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New"',
           "monospace",
         ],
       },

@@ -24,7 +24,7 @@ import { getImportLocation } from "./Import/useImportData";
 import { TokenIcon } from "@/components/TokenIcon";
 import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
-import { Network } from "@sifchain/sdk";
+import { Asset, Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 
 export const SYMBOL_COLUMN_WIDTH = 130;

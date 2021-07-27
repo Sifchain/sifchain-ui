@@ -143,7 +143,7 @@ export default function createClpService({
       const response = await client.getLiquidityProvider(params);
       let asset: IAsset;
       const {
-        LiquidityProvider: liquidityProvider,
+        liquidity_provider,
         native_asset_balance,
         external_asset_balance,
       } = response.result;
@@ -151,8 +151,7 @@ export default function createClpService({
         asset: { symbol },
         liquidity_provider_units,
         liquidity_provider_address,
-      } = liquidityProvider;
-
+      } = liquidity_provider;
       try {
         asset = Asset(symbol);
       } catch (err) {

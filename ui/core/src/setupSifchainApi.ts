@@ -5,7 +5,12 @@ import { profileLookup, SifEnv } from "./config/getEnv";
 import { createServices } from "./services";
 import { createStore } from "./store";
 
-export type SifchainEnv = `${SifEnv}`;
+export type SifchainEnv =
+  | "mainnet"
+  | "testnet"
+  | "devnet"
+  | "localnet"
+  | "devnet_042";
 
 export function setupSifchainApi(environment: SifchainEnv = "localnet") {
   // Following should happen with an underlying shared API

@@ -38,6 +38,12 @@ export const SwapDetails = defineComponent({
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
             Minimum Received
+            <Button.InlineHelp>
+              This is the minimum amount of the to token you will receive,
+              taking into consideration the acceptable slippage percentage you
+              are willing to take on. This amount also already takes into
+              consideration liquidity provider fees as well.
+            </Button.InlineHelp>
           </div>
           <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium capitalize">
             <span class="mr-[4px]">{props.minimumReceived}</span>

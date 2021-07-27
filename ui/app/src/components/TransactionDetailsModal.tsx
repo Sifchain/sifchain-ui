@@ -42,7 +42,7 @@ export default defineComponent({
           onClose={props.onClose}
           showClose
         >
-          <div class="p-4 bg-gray-base">
+          <div class="p-4 bg-gray-base rounded-lg">
             <Form.Details
               details={props.details.value}
               isError={props.transactionDetails.value?.isError}

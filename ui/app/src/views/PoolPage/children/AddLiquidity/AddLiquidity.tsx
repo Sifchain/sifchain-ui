@@ -67,39 +67,21 @@ export default defineComponent({
     });
 
     const detailsRef = computed<FormDetailsType>(() => ({
-      isError: !!data.riskFactorStatus.value,
-      errorType: data.riskFactorStatus.value || undefined,
-      label: (
-        <div class="flex justify-between items-center">
-          <span>Est. prices after pooling & pool share</span>
-          {!!riskContent.value && (
-            <Tooltip
-              content={riskContent.value}
-              placement="top"
-              interactive
-              appendTo={() =>
-                document.querySelector("#portal-target") || document.body
-              }
-            >
-              <div class="cursor-pointer">
-                <AssetIcon
-                  icon="interactive/warning"
-                  class={[
-                    "mr-[4px]",
-                    {
-                      danger: "text-danger-base",
-                      warning: "text-danger-warning",
-                      bad: "text-danger-bad",
-                    }[data.riskFactorStatus.value || "danger"],
-                  ]}
-                  size={22}
-                />
-              </div>
-            </Tooltip>
-          )}
-        </div>
-      ),
       details: [
+        [
+          <div class="flex items-center">
+            <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
+            <span class="ml-[4px]">{data.fromSymbol.value.toUpperCase()}</span>
+          </div>,
+          <span class="font-mono">{data.fromAmount.value}</span>,
+        ],
+        [
+          <div class="flex items-center">
+            <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
+            <span class="ml-[4px]">{data.toSymbol.value?.toUpperCase()}</span>
+          </div>,
+          <span class="font-mono">{data.toAmount.value}</span>,
+        ],
         [
           <span>
             <span class="uppercase">
@@ -219,7 +201,7 @@ export default defineComponent({
                           ? `bg-[connected-base]`
                           : `bg-gray-800`,
                       ]}
-                    ></div>
+                    />
                   )}
                 </TransitionGroup>
               </button>
@@ -309,7 +291,79 @@ export default defineComponent({
           <Form.Details
             class="mt-[10px]"
             isError={!!data.riskFactorStatus.value}
-            details={detailsRef.value}
+            details={{
+              isError: !!data.riskFactorStatus.value,
+              errorType: data.riskFactorStatus.value || undefined,
+              label: (
+                <div class="flex justify-between items-center">
+                  <span>Est. prices after pooling & pool share</span>
+                  {!!riskContent.value && (
+                    <Tooltip
+                      content={riskContent.value}
+                      placement="top"
+                      interactive
+                      appendTo={() =>
+                        document.querySelector("#portal-target") ||
+                        document.body
+                      }
+                    >
+                      <div class="cursor-pointer">
+                        <AssetIcon
+                          icon="interactive/warning"
+                          class={[
+                            "mr-[4px]",
+                            {
+                              danger: "text-danger-base",
+                              warning: "text-danger-warning",
+                              bad: "text-danger-bad",
+                            }[data.riskFactorStatus.value || "danger"],
+                          ]}
+                          size={22}
+                        />
+                      </div>
+                    </Tooltip>
+                  )}
+                </div>
+              ),
+              details: [
+                [
+                  <span>
+                    <span class="uppercase">
+                      {data.fromAsset.value?.displaySymbol}
+                    </span>{" "}
+                    per{" "}
+                    <span class="uppercase">
+                      {data.toAsset.value?.displaySymbol}
+                    </span>
+                  </span>,
+                  <div class="flex items-center gap-[4px] font-mono">
+                    <div>{data.aPerBRatioProjectedMessage.value}</div>
+                    <TokenIcon asset={data.fromAsset}></TokenIcon>
+                  </div>,
+                ],
+                [
+                  <span>
+                    <span class="uppercase">
+                      {data.toAsset.value?.displaySymbol}
+                    </span>{" "}
+                    per{" "}
+                    <span class="uppercase">
+                      {data.fromAsset.value?.displaySymbol}
+                    </span>
+                  </span>,
+                  <div class="flex items-center gap-[4px] font-mono">
+                    <div>{data.bPerARatioProjectedMessage.value}</div>
+                    <TokenIcon asset={data.toAsset}></TokenIcon>
+                  </div>,
+                ],
+                [
+                  <span>Your Share of Pool</span>,
+                  <div class="flex items-center gap-[4px] font-mono">
+                    <div>{data.shareOfPoolPercent.value}</div>
+                  </div>,
+                ],
+              ],
+            }}
           />
           {(data.nextStepAllowed.value && (
             <Button.CallToAction
