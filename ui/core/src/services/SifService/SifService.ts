@@ -114,6 +114,7 @@ export default function createSifService({
         state.accounts = await client.getAccounts();
         state.balances = await instance.getBalance(client.senderAddress);
       } catch (e) {
+        console.error("Sifchain Wallet Connect Error", e);
         if (!e.toString().toLowerCase().includes("no address found on chain")) {
           state.connected = false;
           state.address = "";

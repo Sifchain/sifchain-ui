@@ -4,6 +4,7 @@
     width="55"
     height="55"
     viewBox="0 0 55 55"
+    style="margin-top: -12px"
   >
     <g id="Group_1497" data-name="Group 1497" transform="translate(-853 -244)">
       <path

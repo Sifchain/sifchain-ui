@@ -64,64 +64,64 @@ jobs:
           name: fe-build-artifact-${{ github.sha }}
           path: ./ui/app/dist
 
-  test:
-    needs: build
+  # test:
+  #   needs: build
 
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ui
 
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Check out code
+  #       uses: actions/checkout@v2
 
-      - name: Download artifact
-        uses: actions/download-artifact@master
-        with:
-          name: fe-build-artifact-${{ github.sha }}
-          # note this path doesnt take working-directory in account
-          path: ./ui/app/dist
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@master
+  #       with:
+  #         name: fe-build-artifact-${{ github.sha }}
+  #         # note this path doesnt take working-directory in account
+  #         path: ./ui/app/dist
 
-      - name: Extract package meta
-        run: |
-          echo "CURRENT_BRANCH=$(cat ./app/dist/.branch)" >> $GITHUB_ENV;
-          echo "IMAGE_NAME=$(cat ./app/dist/.image)" >> $GITHUB_ENV;
+  #     - name: Extract package meta
+  #       run: |
+  #         echo "CURRENT_BRANCH=$(cat ./app/dist/.branch)" >> $GITHUB_ENV;
+  #         echo "IMAGE_NAME=$(cat ./app/dist/.image)" >> $GITHUB_ENV;
 
-      - name: Use Node.js
-        uses: actions/setup-node@v2.1.4
-        with:
-          node-version: "14.x"
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v2.1.4
+  #       with:
+  #         node-version: "14.x"
 
-      - name: Log into registry
-        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #     - name: Log into registry
+  #       run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Pull instant stack image
-        run: docker pull $IMAGE_NAME
+  #     - name: Pull instant stack image
+  #       run: docker pull $IMAGE_NAME
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --silent
+  #     - name: Install dependencies
+  #       run: yarn install --frozen-lockfile --silent
 
-      - uses: microsoft/playwright-github-action@v1
+  #     - uses: microsoft/playwright-github-action@v1
 
-      - name: Build e2e App
-        run: cd e2e && yarn install --frozen-lockfile
+  #     - name: Build e2e App
+  #       run: cd e2e && yarn install --frozen-lockfile
 
-      - name: Run e2e Tests
-        run: yarn build --tag $CURRENT_BRANCH && yarn e2e --tag $CURRENT_BRANCH
-        env:
-          CI: true
+  #     - name: Run e2e Tests
+  #       run: yarn build --tag $CURRENT_BRANCH && yarn e2e --tag $CURRENT_BRANCH
+  #       env:
+  #         CI: true
 
-      - name: Upload coverage report
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./e2e/coverage
-          flags: ui
-          verbose: true
+  #     - name: Upload coverage report
+  #       uses: codecov/codecov-action@v1
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         directory: ./e2e/coverage
+  #         flags: ui
+  #         verbose: true
 
   deploy:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -179,7 +179,7 @@ jobs:
           message: |
             VUE_APP_DEPLOYMENT_TAG: ${{ env.VUE_APP_DEPLOYMENT_TAG }} \
             IPFS Hash: ${{ steps.pinata.outputs.hash }}\
-            URL: <https://gateway.pinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}>
+            URL: <https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}>
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: "github-actions[bot]"
           allow-repeats: false
