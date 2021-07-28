@@ -10,6 +10,7 @@ export function useInitialize() {
   console.log("initClp");
   usecases.wallet.sif.initSifWallet();
   usecases.wallet.eth.initEthWallet();
+  usecases.wallet.cosmoshub.initcosmoshubWallet();
 
   // initialize subscriptions
   useSubscription(

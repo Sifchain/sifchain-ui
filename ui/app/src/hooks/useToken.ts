@@ -37,7 +37,7 @@ export const useTokenList = (
     const txKeys = Object.keys(txs);
 
     const list: TransactionStatus[] = [];
-    for (let key of txKeys) {
+    for (const key of txKeys) {
       const txStatus = txs[key];
 
       // Are only interested in pending txs with a symbol
@@ -81,7 +81,8 @@ export const useTokenList = (
       })
       .map((asset: IAsset) => {
         const balances = getNetworkBalances(store, asset.network);
-        const amount = balances?.find(({ asset: { symbol } }) => {
+
+        const amount = balances?.find(({ asset: { symbol, ibcDenom } }) => {
           return asset.symbol.toLowerCase() === symbol.toLowerCase();
         });
 

@@ -1,7 +1,7 @@
 // Designed to be run in the browser
 import queryString from "query-string";
 import { AppCookies } from "./AppCookies";
-import { isSifEnv } from "./getEnv";
+import { isNetworkEnv } from "./getEnv";
 
 export function switchEnv({
   location = window.location,
@@ -18,7 +18,7 @@ export function switchEnv({
     return;
   }
 
-  if (isSifEnv(env)) {
+  if (isNetworkEnv(env)) {
     cookies.setEnv(env);
     location.href = "/";
   }

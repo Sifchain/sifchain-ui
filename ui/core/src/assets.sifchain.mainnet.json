@@ -9,6 +9,14 @@
       "displaySymbol": "rowan"
     },
     {
+      "symbol": "ibc/287EE075B7AADDEB240AFE74FA2108CDACA50A7CCD013FA4C1FCD142AFA9CA9A",
+      "decimals": 6,
+      "name": "Cosmos",
+      "network": "sifchain",
+      "imageUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/3794.png",
+      "displaySymbol": "photon"
+    },
+    {
       "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707",
       "name": "Tether USDT",

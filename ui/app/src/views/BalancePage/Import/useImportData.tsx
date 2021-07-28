@@ -56,7 +56,6 @@ export const useImportData = () => {
 
   const importParams = reactive<ImportParams>({
     symbol: String(route.params.symbol || ""),
-    network: String(route.query.network || ""),
     amount: String(route.query.amount || ""),
   });
 
@@ -89,8 +88,8 @@ export const useImportData = () => {
     }
 
     const token =
-      tokenListRef.value.find((token) => {
-        return isOpposingSymbol(token.asset.symbol, importParams.symbol || "");
+      tokenListRef.value.find((t) => {
+        return isOpposingSymbol(t.asset.symbol, importParams.symbol || "");
       }) || tokenListRef.value[0];
 
     importParams.symbol = token.asset.symbol;
@@ -123,6 +122,7 @@ export const useImportData = () => {
   async function runImport() {
     if (!importAmountRef.value) throw new Error("Please provide an amount");
     pegEventRef.value = undefined;
+
     for await (const event of usecases.peg.peg(importAmountRef.value)) {
       console.log("GOT EVENT", event);
       pegEventRef.value = event;

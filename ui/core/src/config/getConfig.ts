@@ -12,17 +12,21 @@ import assetsEthereumMainnet from "../assets.ethereum.mainnet.json";
 import assetsSifchainLocalnet from "../assets.sifchain.localnet.json";
 import assetsSifchainMainnet from "../assets.sifchain.mainnet.json";
 
+import assetsCosmoshubTestnet from "../assets.cosmoshub.testnet";
+
 import {
   parseConfig,
   parseAssets,
   ChainConfig,
   AssetConfig,
 } from "../utils/parseConfig";
-import { Asset } from "../entities";
+import { Asset, Network } from "../entities";
 import { ServiceContext } from "../services";
+import { NetworkEnv } from "./getEnv";
 
 type ConfigMap = { [s: string]: ServiceContext };
-type AssetMap = { [s: string]: Asset[] };
+type ChainNetwork = `${Network}.${NetworkEnv}`;
+type AssetMap = Record<ChainNetwork, Asset[]>;
 
 // Save assets for sync lookup throughout the app via Asset.get('symbol')
 function cacheAsset(asset: Asset) {
@@ -32,11 +36,12 @@ function cacheAsset(asset: Asset) {
 export type AppConfig = ServiceContext; // Will include other injectables
 
 export function getConfig(
-  config = "localnet",
-  sifchainAssetTag = "sifchain.localnet",
-  ethereumAssetTag = "ethereum.localnet",
+  applicationNetworkEnv: NetworkEnv = NetworkEnv.LOCALNET,
+  sifchainAssetTag: ChainNetwork = "sifchain.localnet",
+  ethereumAssetTag: ChainNetwork = "ethereum.localnet",
+  cosmoshubAssetTag: ChainNetwork = "cosmoshub.testnet",
 ): AppConfig {
-  const assetMap: AssetMap = {
+  const assetMap: Partial<AssetMap> = {
     "sifchain.localnet": parseAssets(
       assetsSifchainLocalnet.assets as AssetConfig[],
     ),
@@ -55,12 +60,19 @@ export function getConfig(
     "ethereum.mainnet": parseAssets(
       assetsEthereumMainnet.assets as AssetConfig[],
     ),
+    "cosmoshub.testnet": parseAssets(assetsCosmoshubTestnet.assets),
   };
 
-  const sifchainAssets = assetMap[sifchainAssetTag];
-  const ethereumAssets = assetMap[ethereumAssetTag];
-  const allAssets = [...sifchainAssets, ...ethereumAssets].map(cacheAsset);
+  const sifchainAssets = assetMap[sifchainAssetTag] || [];
+  const ethereumAssets = assetMap[ethereumAssetTag] || [];
+  const cosmoshubAssets = assetMap[cosmoshubAssetTag] || [];
+  const allAssets = [
+    ...sifchainAssets,
+    ...ethereumAssets,
+    ...cosmoshubAssets,
+  ].map(cacheAsset);
 
+  console.log({ cosmoshubAssets });
   const configMap: ConfigMap = {
     localnet: parseConfig(localnetconfig as ChainConfig, allAssets),
     devnet: parseConfig(devnetconfig as ChainConfig, allAssets),
@@ -68,5 +80,5 @@ export function getConfig(
     mainnet: parseConfig(mainnnetconfig as ChainConfig, allAssets),
   };
 
-  return configMap[config.toLowerCase()];
+  return configMap[applicationNetworkEnv.toLowerCase()];
 }

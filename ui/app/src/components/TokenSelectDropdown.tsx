@@ -53,9 +53,10 @@ export const TokenSelectDropdown = defineComponent({
     const iconScrollContainer = ref<HTMLDivElement | null>(null);
 
     const searchQuery = ref("");
-    const networksRef = computed(() =>
-      !props.network ? [Network.SIFCHAIN] : [props.network.value],
-    );
+    const networksRef = computed(() => {
+      const net = props.network?.value;
+      return [net || Network.SIFCHAIN];
+    });
 
     const tokensRef = useTokenList({
       networks: networksRef,

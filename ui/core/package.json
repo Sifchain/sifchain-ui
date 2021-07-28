@@ -6,6 +6,7 @@
   "module": "lib/index.js",
   "types": "src/index.ts",
   "scripts": {
+    "generate": "npx @openapitools/openapi-generator-cli generate -g typescript-fetch -o generated -i ./swagger.yaml --enable-post-process-file --additional-properties=typescriptThreePlus=true,supportsES6=true",
     "compile": "tsc --noEmit",
     "build": "tsc --noEmit && tsc -p ./tsconfig.compile.json",
     "watch": "tsc -p ./tsconfig.compile.json -w",
@@ -23,6 +24,9 @@
   "dependencies": {
     "@cosmjs/launchpad": "^0.23.0",
     "@keplr-wallet/types": "^0.8.11",
+    "@cosmjs/stargate": "^0.25.5",
+    "@cosmostation/keystation-es6": "^0.1.1",
+    "@keplr-wallet/stores": "^0.9.0-alpha.9",
     "@metamask/detect-provider": "^1.1.0",
     "@vue/reactivity": "^3.0.0",
     "big.js": "^6.0.1",
@@ -49,6 +53,7 @@
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-typescript": "^7.12.1",
     "@metamask/inpage-provider": "^7.0.0",
+    "@openapitools/openapi-generator-cli": "^2.3.7",
     "@openzeppelin/test-helpers": "^0.5.11",
     "@types/big.js": "^6.0.0",
     "@types/jest": "^26.0.14",

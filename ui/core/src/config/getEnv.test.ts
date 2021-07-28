@@ -1,4 +1,4 @@
-import { getEnv, SifEnv } from "./getEnv";
+import { getEnv, NetworkEnv } from "./getEnv";
 
 const profiles = {
   devnet: {
@@ -40,15 +40,15 @@ cases.forEach(({ hostname, tag }) => {
         output: profiles[tag as keyof typeof profiles],
       },
       {
-        input: { hostname, cookie: SifEnv.MAINNET },
+        input: { hostname, cookie: NetworkEnv.MAINNET },
         output: profiles.mainnet,
       },
       {
-        input: { hostname, cookie: SifEnv.DEVNET },
+        input: { hostname, cookie: NetworkEnv.DEVNET },
         output: profiles.devnet,
       },
       {
-        input: { hostname, cookie: SifEnv.TESTNET },
+        input: { hostname, cookie: NetworkEnv.TESTNET },
         output: profiles.testnet,
       },
     ];
@@ -69,7 +69,7 @@ test("unknown hosts should bork", () => {
   expect(() => {
     getEnv({
       location: { hostname: "evil.com" },
-      cookies: { getEnv: () => SifEnv.MAINNET },
+      cookies: { getEnv: () => NetworkEnv.MAINNET },
     });
   }).toThrow();
   expect(() => {
@@ -93,7 +93,7 @@ test("hosts that contain valid hosts but are not subdomains of valid hosts will 
   expect(() => {
     getEnv({
       location: { hostname: "devnet.sifchain.finance.evil.com" },
-      cookies: { getEnv: () => SifEnv.MAINNET },
+      cookies: { getEnv: () => NetworkEnv.MAINNET },
     });
   }).toThrow();
 });

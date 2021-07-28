@@ -93,7 +93,7 @@ export default defineComponent({
               replace: true,
               to: getExportLocation("select", {
                 symbol: props.tokenItem.asset.symbol,
-                network: Network.ETHEREUM,
+                network: props.tokenItem.asset.network,
               }),
             },
           },

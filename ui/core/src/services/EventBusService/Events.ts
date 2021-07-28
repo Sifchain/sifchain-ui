@@ -1,7 +1,7 @@
 import { TransactionStatus } from "../../entities";
 
 // Add more wallet types here as they come up
-type WalletType = "sif" | "eth";
+type WalletType = "sif" | "eth" | "cosmoshub";
 
 type ErrorEvent = {
   type: "ErrorEvent";

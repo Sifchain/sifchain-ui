@@ -42,6 +42,12 @@ import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
 import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
 import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import BetaWarningBanner from "@/components/BetaWarningBanner";
+import { useCore } from "./hooks/useCore";
+// IBCService.transferIBCTokens({
+//   sendingChainId: `cosmoshub-testnet`,
+//   receivingChainId: `sifchain-devnet-042`,
+// });
+console.log("sendingIBC transaction");
 export default defineComponent({
   name: "App",
   components: {

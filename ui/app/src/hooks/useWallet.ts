@@ -18,6 +18,9 @@ export function getNetworkBalances(store: Store, network?: Network) {
     case Network.ETHEREUM: {
       return store.wallet.eth.balances;
     }
+    case Network.COSMOSHUB: {
+      return store.wallet.cosmoshub.balances;
+    }
   }
 }
 

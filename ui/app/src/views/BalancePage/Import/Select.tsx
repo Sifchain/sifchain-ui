@@ -18,6 +18,7 @@ import router from "@/router";
 import { ImportData, getImportLocation } from "./useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -39,8 +40,25 @@ export default defineComponent({
       tokenRef,
       importAmountRef,
     } = props.importData;
+    const router = useRouter();
 
-    const networkRef = computed(() => importParams.network as Network);
+    const networkRef = computed({
+      get(): Network {
+        const net = router.currentRoute.value.query.network;
+        return (
+          Object.values(Network).find((n) => n === net) || Network.ETHEREUM
+        );
+      },
+      set(v: Network) {
+        router.replace({
+          ...router.currentRoute.value,
+          query: {
+            ...router.currentRoute.value.query,
+            network: v,
+          },
+        });
+      },
+    });
 
     const handleSetMax = () => {
       const maxAmount = getMaxAmount(
@@ -128,7 +146,7 @@ export default defineComponent({
                   options={optionsRef}
                   value={networkRef}
                   onChangeValue={(value) => {
-                    importParams.network = value as Network;
+                    networkRef.value = value as Network;
                   }}
                   tooltipProps={{
                     onShow: () => {
@@ -173,7 +191,7 @@ export default defineComponent({
 
             <TokenSelectDropdown
               sortBy="symbol"
-              network={networkRef as Ref}
+              network={networkRef}
               onCloseIntent={() => {
                 selectIsOpen.value = false;
               }}

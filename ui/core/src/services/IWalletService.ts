@@ -2,14 +2,15 @@ import { TxHash, TxParams, Address, Asset, IAssetAmount } from "../entities";
 
 type Msg = { type: string; value: any }; // make entity
 
+export interface IWalletServiceState {
+  address: Address;
+  accounts: Address[];
+  connected: boolean;
+  balances: IAssetAmount[];
+  log: string;
+}
 export type IWalletService = {
-  getState: () => {
-    address: Address;
-    accounts: Address[];
-    connected: boolean;
-    balances: IAssetAmount[];
-    log: string;
-  };
+  getState: () => IWalletServiceState;
   onProviderNotFound(handler: () => void): () => void;
   onChainIdDetected(handler: (chainId: string) => void): () => void;
   isConnected(): boolean;

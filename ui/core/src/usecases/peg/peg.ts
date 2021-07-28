@@ -12,6 +12,7 @@ type PegServices = {
     "burnToSifchain" | "lockToSifchain" | "approveBridgeBankSpend"
   >;
   bus: Pick<Services["bus"], "dispatch">;
+  ibc: Pick<Services["ibc"], "transferIBCTokens">;
 };
 
 type PegStore = Pick<Store, "wallet" | "tx">;
@@ -39,6 +40,40 @@ export function Peg(
   return async function* peg(
     assetAmount: IAssetAmount,
   ): AsyncGenerator<PegEvent> {
+    if (assetAmount.asset.network === Network.COSMOSHUB) {
+      const tx = await services?.ibc.transferIBCTokens({
+        sourceNetwork: assetAmount.asset.network,
+        destinationNetwork: Network.SIFCHAIN,
+        assetAmountToTransfer: assetAmount,
+      });
+      // @ts-ignore
+      if (tx.code) {
+        console.log(tx);
+        services.bus.dispatch({
+          type: "ErrorEvent",
+          payload: {
+            message: "IBC Transfer Failed",
+          },
+        });
+        return {
+          type: "tx_error",
+          tx: {
+            hash: tx.transactionHash,
+            state: "failed",
+          },
+        };
+      } else {
+        yield {
+          type: "sent",
+          tx: {
+            hash: tx.transactionHash,
+            memo: "Transaction Accepted",
+            state: "accepted",
+          },
+        };
+      }
+      return;
+    }
     if (
       assetAmount.asset.network === Network.ETHEREUM &&
       !isSupportedEVMChain(store.wallet.eth.chainId)
@@ -79,7 +114,7 @@ export function Peg(
       ? services.ethbridge.burnToSifchain
       : services.ethbridge.lockToSifchain;
 
-    const tx = await new Promise<TransactionStatus>((done) => {
+    const tx = await new Promise<TransactionStatus>((resolve) => {
       const pegTx = lockOrBurnFn(
         store.wallet.sif.address,
         assetAmount,
@@ -88,7 +123,7 @@ export function Peg(
       subscribeToTx(pegTx);
 
       pegTx.onTxHash((hash) => {
-        done({
+        resolve({
           hash: hash.txHash,
           memo: "Transaction Accepted",
           state: "accepted",

@@ -1,11 +1,9 @@
 import { OfflineSigner } from "@cosmjs/launchpad";
 import { sleep } from "../../test/utils/sleep";
-import { Keplr } from "@keplr-wallet/types";
+import { Window as KeplrWindow, Keplr } from "@keplr-wallet/types";
+type WindowWithPossibleKeplr = typeof window & KeplrWindow;
 
-type WindowWithPossibleKeplr = typeof window & {
-  keplr?: Keplr;
-  getOfflineSigner?: any;
-};
+// Mock out Keplr roughly. TODO import types
 
 type provider = Keplr;
 let numChecks = 0;
@@ -28,5 +26,5 @@ export default async function getKeplrProvider(): Promise<provider | null> {
   }
 
   console.log("Keplr wallet bootstraped");
-  return win.keplr as Keplr;
+  return win.keplr;
 }

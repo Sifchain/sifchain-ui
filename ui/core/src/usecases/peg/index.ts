@@ -1,5 +1,5 @@
 import { UsecaseContext } from "..";
-import { calculateUnpegFee } from "./utils/calculateUnpegFee";
+import { calculateUnpegFee } from "./utils/calculateExportFee";
 import { SubscribeToUnconfirmedPegTxs } from "./subscribeToUnconfirmedPegTxs";
 import { Unpeg } from "./unpeg";
 import { Peg } from "./peg";

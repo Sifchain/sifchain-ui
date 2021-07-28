@@ -1,22 +1,15 @@
 import { createUsecases } from ".";
 import { createApi } from "./api";
 import { getConfig } from "./config/getConfig";
-import { profileLookup, SifEnv } from "./config/getEnv";
+import { NetworkEnv, profileLookup } from "./config/getEnv";
 import { createServices } from "./services";
 import { createStore } from "./store";
 
-type SifchainEnv = "localnet" | "devnet" | "testnet" | "mainnet";
-
-export function setupSifchainApi(environment: SifchainEnv = "localnet") {
+export function setupSifchainApi(
+  environment: NetworkEnv = NetworkEnv.LOCALNET,
+) {
   // Following should happen with an underlying shared API
-  const { tag, ethAssetTag, sifAssetTag } = profileLookup[
-    {
-      devnet: SifEnv.DEVNET,
-      localnet: SifEnv.LOCALNET,
-      testnet: SifEnv.TESTNET,
-      mainnet: SifEnv.MAINNET,
-    }[environment]
-  ];
+  const { tag, ethAssetTag, sifAssetTag } = profileLookup[environment];
 
   const config = getConfig(tag, sifAssetTag, ethAssetTag);
   const services = createServices(config);

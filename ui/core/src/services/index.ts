@@ -2,6 +2,7 @@ import { ChainConfig } from "./../utils/parseConfig";
 // Everything here represents services that are effectively remote data storage
 export * from "./EthereumService/utils/getMetamaskProvider";
 
+import createIBCService, { IBCServiceContext } from "./IBCService/IBCService";
 import ethereumService, { EthereumServiceContext } from "./EthereumService";
 import ethbridgeService, { EthbridgeServiceContext } from "./EthbridgeService";
 import sifService, { SifServiceContext } from "./SifService";
@@ -31,9 +32,11 @@ export type ServiceContext = {
   EventBusServiceContext &
   IDispensationServiceContext & // add contexts from other APIs
   CryptoeconomicsServiceContext &
-  StorageServiceContext; // add contexts from other APIs
+  StorageServiceContext &
+  IBCServiceContext;
 
 export function createServices(context: ServiceContext) {
+  const IBCService = createIBCService(context);
   const EthereumService = ethereumService(context);
   const EthbridgeService = ethbridgeService(context);
   const SifService = sifService(context);
@@ -44,6 +47,7 @@ export function createServices(context: ServiceContext) {
   const CryptoeconomicsService = cryptoeconomicsService(context);
   const StorageService = storageService(context);
   return {
+    ibc: IBCService,
     clp: ClpService,
     eth: EthereumService,
     sif: SifService,

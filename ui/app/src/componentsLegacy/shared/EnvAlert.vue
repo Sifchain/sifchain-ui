@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { defineComponent, useCssModule } from "vue";
-import { AppCookies, SifEnv } from "@sifchain/sdk";
+import { AppCookies, NetworkEnv } from "@sifchain/sdk";
 
 // This is for internal testing & development only.
 // Once we release the ability to switch environments
@@ -18,16 +18,16 @@ export default defineComponent({
 
     const Component = () =>
       ({
-        [SifEnv.MAINNET]: (
+        [NetworkEnv.MAINNET]: (
           <div class={[styles.panel, styles.mainnet]}>YOU ARE ON MAINNET!</div>
         ),
-        [SifEnv.TESTNET]: (
+        [NetworkEnv.TESTNET]: (
           <div class={[styles.panel, styles.testnet]}>TESTNET</div>
         ),
-        [SifEnv.LOCALNET]: (
+        [NetworkEnv.LOCALNET]: (
           <div class={[styles.panel, styles.localnet]}>LOCALNET</div>
         ),
-        [SifEnv.DEVNET]: (
+        [NetworkEnv.DEVNET]: (
           <div class={[styles.panel, styles.devnet]}>DEVNET</div>
         ),
       }[env] || <NoCookie />);

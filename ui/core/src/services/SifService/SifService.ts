@@ -269,7 +269,7 @@ export default function createSifService({
           .filter((balance) => supportedTokenSymbols.includes(balance.denom))
           .map(({ amount, denom }) => {
             const asset = supportedTokens.find(
-              (token) => token.symbol === denom,
+              (token) => token.symbol === denom || token.ibcDenom == denom,
             )!; // will be found because of filter above
             return AssetAmount(asset, amount);
           })

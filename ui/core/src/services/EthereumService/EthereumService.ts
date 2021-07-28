@@ -23,7 +23,7 @@ import {
 import { Msg } from "@cosmjs/launchpad";
 
 type Address = string;
-type Balances = IAssetAmount[];
+
 type PossibleProvider = provider | EIPProvider;
 
 export type EthereumServiceContext = {
@@ -200,7 +200,7 @@ export class EthereumService implements IWalletService {
     await this.updateData();
   }
 
-  async getBalance(address?: Address, asset?: Asset): Promise<Balances> {
+  async getBalance(address?: Address, asset?: Asset): Promise<IAssetAmount[]> {
     const supportedTokens = this.getSupportedTokens();
     const addr = address || this.state.address;
     if (!this.web3 || !addr) {

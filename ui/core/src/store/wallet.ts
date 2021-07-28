@@ -1,9 +1,8 @@
 import { reactive } from "@vue/reactivity";
 import { CryptoeconomicsUserData } from "../services/CryptoeconomicsService";
-
 import { Address, IAssetAmount } from "../entities";
 
-export type WalletStore = {
+export interface WalletStore {
   eth: {
     chainId?: string;
     balances: IAssetAmount[];
@@ -17,7 +16,13 @@ export type WalletStore = {
     vsUserData: CryptoeconomicsUserData;
     lmUserData: CryptoeconomicsUserData;
   };
-};
+  cosmoshub: {
+    chainId?: string;
+    balances: IAssetAmount[];
+    isConnected: boolean;
+    address: Address;
+  };
+}
 
 export const wallet = reactive<WalletStore>({
   eth: {
@@ -31,5 +36,10 @@ export const wallet = reactive<WalletStore>({
     balances: [],
     vsUserData: null,
     lmUserData: null,
+  },
+  cosmoshub: {
+    isConnected: false,
+    address: "",
+    balances: [],
   },
 }) as WalletStore;
