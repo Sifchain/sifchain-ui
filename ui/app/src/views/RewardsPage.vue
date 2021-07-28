@@ -150,16 +150,11 @@ export default defineComponent({
 <template>
   <Layout :header="true" title="Rewards">
     <Copy>
-      Earn rewards by participating in any of our rewards-earning programs.
-      Please see additional information of our
-      <a
-        target="_blank"
-        class="underline"
-        href="https://docs.sifchain.finance/resources/rewards-programs"
-        >current rewards program</a
-      >
-      and how to become eligible.
+      Our rewards programs are currently paused as we move from .39 to .42. This
+      is a big step for Sifchain and our ecosystem so we thank you for your
+      patience. This will be re-enabled soon after deployment of .42.
     </Copy>
+    <!--
     <div class="rewards-container">
       <RewardContainer
         claimType="lm"
@@ -178,8 +173,7 @@ export default defineComponent({
         @openModal="handleOpenModal"
       />
     </div>
-
-    <ActionsPanel connectType="connectToSif" />
+    -->
 
     <div v-if="transactionState !== 'selecting'">
       <ConfirmationModal
