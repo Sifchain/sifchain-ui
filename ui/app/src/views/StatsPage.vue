@@ -19,7 +19,7 @@ export default defineComponent({
   },
   async mounted() {
     const data = await fetch(
-      "https://vtdbgplqd6.execute-api.us-west-2.amazonaws.com/default/tokenstatstest",
+      "https://data.sifchain.finance/beta/asset/tokenStats",
     );
     const json = await data.json();
     this.poolData = json.body;
