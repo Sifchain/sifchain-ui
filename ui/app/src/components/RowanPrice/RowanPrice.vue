@@ -17,7 +17,7 @@ export default defineComponent({
         return s - 0 == s && ("" + s).trim().length > 0;
       }
       const data = await fetch(
-        "https://vtdbgplqd6.execute-api.us-west-2.amazonaws.com/default/tokenstats",
+        "https://data.sifchain.finance/beta/asset/tokenStats",
       );
       const json = await data.json();
       const rowanPriceInUSDT = json.body ? json.body.rowanUSD : "";
