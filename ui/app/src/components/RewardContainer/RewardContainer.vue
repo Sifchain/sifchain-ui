@@ -12,12 +12,12 @@ const REWARD_INFO = {
   lm: {
     label: ".39 Liquidity Mining",
     description:
-      "Users could earn additional rewards by providing liquidity to any of Sifchain's pools within our .39 environment. Participants are now fully determined at this point in time. To see your exact rewards payout schedule, click <a href='https://github.com/Sifchain/39_rewards/blob/main/final_lmvs_reward.csv' target='_blank'>here</a>",
+      "Users could earn additional rewards by providing liquidity to any of Sifchain's pools within our .39 environment. Participants are now fully determined at this point in time.",
   },
   vs: {
     label: ".39 Validator Subsidy",
     description:
-      "Users could Earn additional rewards by staking a node or delegating to a staked node within our .39 environment. Participants are now fully determined at this point in time. To see your exact rewards payout schedule, click <a href='https://github.com/Sifchain/39_rewards/blob/main/final_lmvs_reward.csv' target='_blank'>here</a>.",
+      "Users could Earn additional rewards by staking a node or delegating to a staked node within our .39 environment. Participants are now fully determined at this point in time.",
   },
 };
 
@@ -90,22 +90,20 @@ export default {
         <p v-html="REWARD_INFO[claimType].description"></p>
       </Copy>
       <div class="details-container">
-        <!-- <Loader v-if="!data" black /> -->
-        <!-- <div class="reward-buttons">
+        <div class="reward-buttons">
           <a
-            class="more-info-button mr-8"
+            class="btn more-info-button mr-8"
             target="_blank"
-            :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${claimType}`"
-            >More Info</a
+            href="https://docs.sifchain.finance/resources/rewards-programs#liquidity-mining-and-validator-subsidy-rewards-on-sifchain"
+            >Learn More</a
           >
-
-          <SifButton
-            @click="$emit('openModal', claimType)"
-            :primary="true"
-            :data-handle="claimType + '-claim-button'"
-            >{{ getClaimButtonText() }}</SifButton
+          <a
+            class="btn sif-button"
+            target="_blank"
+            href="https://docs.google.com/spreadsheets/d/1f-ibZyx5O2f1wsNxvi56Kg8fkdys_DVmwhf7mjKDrDU/edit#gid=686570385"
+            >Payout Schedule</a
           >
-        </div> -->
+        </div>
       </div>
     </div>
   </Box>
@@ -163,16 +161,11 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  .more-info-button {
-    background: #f3f3f3;
-    color: #343434;
+  .btn {
     font-weight: 100;
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  .more-info-button,
-  .btn {
     width: 300px;
     border-radius: 6px;
     display: flex;
@@ -181,6 +174,14 @@ export default {
   }
   .reward-button {
     text-align: center;
+  }
+  .more-info-button {
+    background: #f3f3f3;
+    color: #343434;
+  }
+  .sif-button {
+    background: $c_gold;
+    color: white;
   }
 }
 
