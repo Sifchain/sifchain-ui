@@ -90,7 +90,7 @@ export const RewardSection = defineComponent({
           />
           {displayData.value.heading}
         </div>
-        <div class="flex items-center gap-[10px]">
+        <div class="flex text-sm text-opacity-50 items-center gap-[10px]">
           <div>
             Users could earn additional rewards by{" "}
             {props.rewardType === "vs"

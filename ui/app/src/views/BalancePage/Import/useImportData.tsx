@@ -63,6 +63,7 @@ export const useImportData = (): ImportData => {
   watch(
     () => importParams,
     (value) => {
+      console.log("changes to", value);
       router.replace(
         getImportLocation(route.params.step as ImportStep, {
           ...proxyRefs(importParamsRefs),
@@ -227,15 +228,14 @@ export const useImportData = (): ImportData => {
       tokenRef.value &&
       tokenRef.value.asset.network !== importParams.network
     ) {
-      importParams.displaySymbol = "";
+      const firstAvailable = tokenListRef.value.find(
+        (token) => token.asset.network === importParams.network,
+      );
+      if (firstAvailable) {
+        importParams.displaySymbol =
+          firstAvailable.asset.displaySymbol || firstAvailable.asset.symbol;
+      }
     }
-  });
-  effect(() => {
-    if (!tokenListRef.value.length) return;
-    if (!importParams.displaySymbol)
-      importParams.displaySymbol = tokenListRef.value[0].asset.symbol;
-    if (!importParams.network)
-      importParams.network = tokenListRef.value[0].asset.network;
   });
 
   return {
