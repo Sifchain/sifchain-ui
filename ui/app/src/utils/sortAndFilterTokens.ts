@@ -2,6 +2,7 @@ import { TokenListItem } from "@/hooks/useToken";
 
 export type TokenSortBy = "balance" | "symbol";
 
+const goldList = ["rowan", "photon"];
 export function sortAndFilterTokens(props: {
   tokens: TokenListItem[];
   searchQuery?: string;

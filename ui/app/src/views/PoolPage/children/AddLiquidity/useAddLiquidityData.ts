@@ -1,4 +1,4 @@
-import { ref, watchEffect } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
@@ -52,24 +52,34 @@ export const useAddLiquidityData = () => {
   } = useCurrencyFieldState({
     pooling: ref(true),
   });
+
   const fromSymbol = computed({
     get() {
-      return (
+      const sym =
         router.currentRoute.value?.params?.externalAsset?.toString() ||
         _fromSymbol.value ||
-        ""
+        "";
+      const asset = config.assets.find(
+        (a) => a.symbol.toUpperCase() === sym.toUpperCase(),
       );
+      return asset?.symbol || _fromSymbol.value || "";
     },
     set(v: string) {
       _fromSymbol.value = v.toLowerCase();
+      const asset = config.assets.find(
+        (a) => a.symbol.toUpperCase() === v.toUpperCase(),
+      );
+      const displaySymbol = asset?.displaySymbol;
+      if (!displaySymbol) return;
       router.replace({
         ...router.currentRoute.value,
         params: {
-          externalAsset: v.toLowerCase(),
+          externalAsset: displaySymbol,
         },
       });
     },
   });
+  onMounted(() => {});
   const isFromMaxActive = computed(() => {
     const accountBalance = balances.value.find(
       (balance) => balance.asset.symbol === fromSymbol.value,

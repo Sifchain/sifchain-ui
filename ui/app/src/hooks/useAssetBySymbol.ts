@@ -3,13 +3,17 @@ import { Ref } from "vue";
 import { IAsset } from "../../../core/src";
 import { useCore } from "./useCore";
 
-export const useAssetBySymbol = (tokenSymbol: Ref<string | null>) => {
+export const useAssetBySymbol = (
+  tokenSymbol: Ref<string | null>,
+  { isDisplaySymbol = false } = {},
+) => {
   const core = useCore();
   const asset = computed(() => {
+    const key = isDisplaySymbol ? "displaySymbol" : "symbol";
     return core.config.assets.find(
       (asset) =>
-        asset.symbol.toLowerCase() == tokenSymbol.value?.toLowerCase() ||
-        asset.symbol.toLowerCase() == `c${tokenSymbol.value?.toLowerCase()}`,
+        asset[key].toLowerCase() == tokenSymbol.value?.toLowerCase() ||
+        asset[key].toLowerCase() == `c${tokenSymbol.value?.toLowerCase()}`,
     );
   });
   console.log("asset.value", asset.value);

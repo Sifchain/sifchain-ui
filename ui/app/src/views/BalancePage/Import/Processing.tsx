@@ -2,6 +2,7 @@ import { defineComponent, PropType, computed, Ref } from "vue";
 import { ImportData } from "./useImportData";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 
 export default defineComponent({
   name: "ImportProcessingModal",
@@ -15,7 +16,7 @@ export default defineComponent({
     const { pegEventRef, importParams } = props.importData;
 
     const transactionDetails = usePegEventDetails({
-      pegEvent: pegEventRef,
+      pegEvent: pegEventRef as Ref<PegEvent>,
     });
 
     return () => (

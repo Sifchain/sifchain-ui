@@ -1,7 +1,7 @@
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import { reactive, ref, computed, Ref, watch } from "vue";
 import router from "@/router";
-import { effect } from "@vue/reactivity";
+import { effect, proxyRefs, toRefs, ToRefs } from "@vue/reactivity";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
 import { toBaseUnits } from "@sifchain/sdk/src/utils";
@@ -17,20 +17,20 @@ import { Button } from "@/components/Button/Button";
 import { FormDetailsType } from "@/components/Form";
 
 export type ImportParams = {
-  amount?: string;
-  network?: string;
-  displaySymbol?: string;
+  amount: string;
+  network: Network;
+  displaySymbol: string;
 };
 
 export type ImportStep = "select" | "confirm" | "processing";
 
 export type ImportData = {
-  importParams: ImportParams;
+  importParams: ToRefs<ImportParams>;
   networksRef: Ref<Network[]>;
-  tokenRef: Ref<TokenListItem>;
+  tokenRef: Ref<TokenListItem | undefined>;
   pickableTokensRef: Ref<TokenListItem[]>;
   importAmountRef: Ref<IAssetAmount | null>;
-  pegEventRef: Ref<PegEvent>;
+  pegEventRef: Ref<PegEvent | undefined>;
   runImport: () => void;
   exitImport: () => void;
   detailsRef: Ref<FormDetailsType>;
@@ -38,7 +38,7 @@ export type ImportData = {
 
 export function getImportLocation(
   step: ImportStep,
-  params: ImportParams,
+  params: Partial<ImportParams>,
 ): RouteLocationRaw {
   return {
     name: "Import",
@@ -50,20 +50,24 @@ export function getImportLocation(
   } as RouteLocationRaw;
 }
 
-export const useImportData = () => {
+export const useImportData = (): ImportData => {
   const { store, usecases } = useCore();
   const route = useRoute();
   const router = useRouter();
   const importParams = reactive<ImportParams>({
     displaySymbol: String(route.params.symbol || ""),
     amount: String(route.query.amount || ""),
-    network: undefined,
+    network: Network.ETHEREUM,
   });
-
+  const importParamsRefs = toRefs(importParams);
   watch(
     () => importParams,
     (value) => {
-      router.replace(getImportLocation(route.params.step as ImportStep, value));
+      router.replace(
+        getImportLocation(route.params.step as ImportStep, {
+          ...proxyRefs(importParamsRefs),
+        }),
+      );
     },
     { deep: true },
   );
@@ -102,9 +106,9 @@ export const useImportData = () => {
   });
 
   const importAmountRef = computed(() => {
-    if (!tokenRef.value) return null;
+    if (!tokenRef.value?.asset) return null;
     return AssetAmount(
-      tokenRef.value?.asset,
+      tokenRef.value?.asset || "rowan",
       toBaseUnits(importParams.amount?.trim() || "0.0", tokenRef.value?.asset),
     );
   });
@@ -235,7 +239,7 @@ export const useImportData = () => {
   });
 
   return {
-    importParams,
+    importParams: toRefs(importParams),
     networksRef,
     pickableTokensRef,
     tokenRef,
@@ -244,5 +248,5 @@ export const useImportData = () => {
     pegEventRef,
     exitImport: exitImport,
     detailsRef,
-  } as ImportData;
+  };
 };

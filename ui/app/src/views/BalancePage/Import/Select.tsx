@@ -1,4 +1,13 @@
-import { defineComponent, ref, computed, PropType, Ref } from "vue";
+import {
+  defineComponent,
+  ref,
+  computed,
+  PropType,
+  Ref,
+  watch,
+  proxyRefs,
+  toRefs,
+} from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -41,33 +50,19 @@ export default defineComponent({
     } = props.importData;
     const router = useRouter();
 
-    const networkRef = computed({
-      get(): Network {
-        const net = router.currentRoute.value.query.network;
-        return (
-          Object.values(Network).find((n) => n === net) || Network.ETHEREUM
-        );
-      },
-      set(v: Network) {
-        router.replace({
-          ...router.currentRoute.value,
-          query: {
-            ...router.currentRoute.value.query,
-            network: v,
-          },
-        });
-      },
-    });
-
     const handleSetMax = () => {
-      const maxAmount = getMaxAmount(
-        { value: tokenRef.value.asset.symbol } as Ref,
-        tokenRef.value.amount,
-      );
-      importParams.amount = format(maxAmount, tokenRef.value.asset, {
-        mantissa: tokenRef.value.asset.decimals,
-        trimMantissa: true,
-      });
+      if (tokenRef.value) {
+        const maxAmount = getMaxAmount(
+          { value: tokenRef.value.asset.symbol } as Ref,
+          tokenRef.value.amount,
+        );
+
+        if (importParams.amount)
+          importParams.amount.value = format(maxAmount, tokenRef.value.asset, {
+            mantissa: tokenRef.value.asset.decimals,
+            trimMantissa: true,
+          });
+      }
     };
 
     const validationErrorRef = computed(() => {
@@ -98,7 +93,7 @@ export default defineComponent({
         },
         {
           condition:
-            importParams.network === Network.ETHEREUM &&
+            importParams.network?.value === Network.ETHEREUM &&
             !store.wallet.eth.isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
@@ -113,7 +108,9 @@ export default defineComponent({
           props: {
             disabled: !!validationErrorRef.value,
             onClick: () => {
-              router.replace(getImportLocation("confirm", importParams));
+              router.replace(
+                getImportLocation("confirm", proxyRefs(importParams)),
+              );
             },
           },
         },
@@ -122,7 +119,7 @@ export default defineComponent({
     });
 
     const optionsRef = computed<SelectDropdownOption[]>(() =>
-      networksRef.value.map((network) => ({
+      networksRef.value?.map((network) => ({
         content: <div class="capitalize">{network}</div>,
         value: network,
       })),
@@ -143,9 +140,10 @@ export default defineComponent({
                 Network
                 <SelectDropdown
                   options={optionsRef}
-                  value={networkRef}
+                  value={importParams.network}
                   onChangeValue={(value) => {
-                    networkRef.value = value as Network;
+                    if (importParams.network)
+                      importParams.network.value = value as Network;
                   }}
                   tooltipProps={{
                     onShow: () => {
@@ -160,7 +158,7 @@ export default defineComponent({
                     class="w-full relative capitalize pl-[16px] mt-[10px]"
                     active={networkOpenRef.value}
                   >
-                    {importParams.network}
+                    {importParams.network.value}
                   </Button.Select>
                 </SelectDropdown>
               </div>
@@ -190,13 +188,13 @@ export default defineComponent({
 
             <TokenSelectDropdown
               sortBy="symbol"
-              network={networkRef}
+              network={importParams.network}
               onCloseIntent={() => {
                 selectIsOpen.value = false;
               }}
               onSelectAsset={(asset) => {
                 selectIsOpen.value = false;
-                importParams.displaySymbol = asset.displaySymbol;
+                importParams.displaySymbol.value = asset.displaySymbol;
               }}
               active={selectIsOpen}
             />
@@ -229,12 +227,12 @@ export default defineComponent({
             onInput={(e) => {
               const value = (e.target as HTMLInputElement).value;
               if (isNaN(parseFloat(value))) {
-                importParams.amount = "";
+                importParams.amount.value = "";
               } else {
-                importParams.amount = value;
+                importParams.amount.value = value;
               }
             }}
-            value={importParams.amount}
+            value={importParams.amount.value}
           />
         </section>
 

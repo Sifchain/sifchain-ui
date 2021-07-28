@@ -12,6 +12,7 @@ import assetsEthereumMainnet from "../assets.ethereum.mainnet.json";
 
 import assetsSifchainLocalnet from "../assets.sifchain.localnet.json";
 import assetsSifchainMainnet from "../assets.sifchain.mainnet.json";
+import assetsSifchainDevnet from "../assets.sifchain.devnet";
 
 import assetsCosmoshubTestnet from "../assets.cosmoshub.testnet";
 
@@ -49,6 +50,10 @@ export function getConfig(
     "sifchain.mainnet": parseAssets(
       assetsSifchainMainnet.assets as AssetConfig[],
     ),
+    "sifchain.devnet": parseAssets([
+      ...assetsSifchainDevnet.assets,
+      ...assetsSifchainMainnet.assets,
+    ] as AssetConfig[]),
     "ethereum.localnet": parseAssets(
       assetsEthereumLocalnet.assets as AssetConfig[],
     ),

@@ -1,4 +1,11 @@
-import { defineComponent, PropType, computed, Ref, toRefs } from "vue";
+import {
+  defineComponent,
+  PropType,
+  computed,
+  Ref,
+  toRefs,
+  proxyRefs,
+} from "vue";
 import Modal from "@/components/Modal";
 import router from "@/router";
 import { Button } from "@/components/Button/Button";
@@ -38,7 +45,9 @@ export default defineComponent({
           class="mt-[10px]"
           onClick={() => {
             runImport.value();
-            router.replace(getImportLocation("processing", importParams.value));
+            router.replace(
+              getImportLocation("processing", proxyRefs(importParams.value)),
+            );
           }}
         >
           Confirm

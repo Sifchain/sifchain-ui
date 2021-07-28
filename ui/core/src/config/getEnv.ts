@@ -27,12 +27,12 @@ export const profileLookup = {
   [NetworkEnv.DEVNET_042]: {
     tag: NetworkEnv.DEVNET_042,
     ethAssetTag: "ethereum.devnet",
-    sifAssetTag: "sifchain.mainnet",
+    sifAssetTag: "sifchain.devnet",
   },
   [NetworkEnv.TESTNET]: {
     tag: NetworkEnv.TESTNET,
     ethAssetTag: "ethereum.testnet",
-    sifAssetTag: "sifchain.mainnet",
+    sifAssetTag: "sifchain.devnet",
   },
   get [1]() {
     return this[NetworkEnv.TESTNET];
@@ -40,7 +40,7 @@ export const profileLookup = {
   [NetworkEnv.DEVNET]: {
     tag: NetworkEnv.DEVNET,
     ethAssetTag: "ethereum.devnet",
-    sifAssetTag: "sifchain.mainnet",
+    sifAssetTag: "sifchain.devnet",
   },
   get [2]() {
     return this[NetworkEnv.DEVNET];
