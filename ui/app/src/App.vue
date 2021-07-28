@@ -24,7 +24,8 @@
         </WithWallet>
       </template>
     </Header>
-    <router-view />
+    <UnderMaintenance v-if="underMaintenance" />
+    <router-view v-else />
     <Notifications />
     <EnvAlert />
   </div>
@@ -35,6 +36,7 @@ import { defineComponent } from "vue";
 import WithWallet from "@/components/WithWallet/WithWallet.vue";
 import Header from "./components/Header/Header.vue";
 import Pill from "./components/Pill/Pill.vue";
+import UnderMaintenance from "@/views/UnderMaintenance";
 import Notifications from "./components/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/components/shared/EnvAlert.vue";
@@ -46,10 +48,15 @@ export default defineComponent({
     WithWallet,
     Pill,
     EnvAlert,
+    UnderMaintenance,
   },
   setup() {
     /// Initialize app
     useInitialize();
+
+    return {
+      underMaintenance: true,
+    };
   },
 });
 </script>
