@@ -297,12 +297,14 @@ describe("Pool", () => {
           symbol: "atk",
           label: "ATK",
           name: "AppleToken",
+          displaySymbol: "ATK",
           address: "123",
           network: Network.ETHEREUM,
         }),
         btk: Asset({
           decimals: 18,
           symbol: "btk",
+          displaySymbol: "BTK",
           label: "BTK",
           name: "BananaToken",
           address: "1234",
@@ -311,6 +313,7 @@ describe("Pool", () => {
         rowan: Asset({
           decimals: 18,
           symbol: "rowan",
+          displaySymbol: "ROWAN",
           label: "ROWAN",
           name: "Rowan",
           address: "1234",
@@ -319,6 +322,7 @@ describe("Pool", () => {
         eth: Asset({
           decimals: 18,
           symbol: "eth",
+          displaySymbol: "ETH",
           label: "ETH",
           name: "Ethereum",
           address: "1234",

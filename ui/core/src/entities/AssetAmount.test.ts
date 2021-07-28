@@ -12,6 +12,7 @@ describe("AssetAmount", () => {
       address: "1234568",
       decimals: 18,
       label: "ETH",
+      displaySymbol: "ETH",
       name: "Ethereum",
       network: Network.ETHEREUM,
       symbol: "eth",

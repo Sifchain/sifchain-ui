@@ -19,7 +19,13 @@ function createPeg() {
   let subscribeToTx = jest.fn();
   let SubscribeToTx = () => subscribeToTx;
   let peg = Peg(
-    { ethbridge, bus },
+    {
+      ethbridge,
+      bus,
+      ibc: {
+        transferIBCTokens: jest.fn(),
+      },
+    },
     { wallet, tx },
     { ethConfirmations: 50 },
     SubscribeToTx,

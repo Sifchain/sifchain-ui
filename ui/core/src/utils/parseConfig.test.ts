@@ -134,9 +134,11 @@ test("parseConfig", () => {
         network: Network.SIFCHAIN,
         symbol: "rowan",
         label: "ROWAN",
+        displaySymbol: "ROWAN",
       },
       {
         address: "0x2C2B9C9a4a25e24B174f26114e8926a9f2128FE4",
+        displaySymbol: "EROWAN",
         decimals: 12,
         name: "123",
         network: Network.ETHEREUM,
@@ -151,6 +153,7 @@ test("parseConfig", () => {
       {
         address: "0x2C2B9C9a4a25e24B174f26114e8926a9f2128FE4",
         decimals: 12,
+        displaySymbol: "ROWAN",
         name: "123",
         network: Network.ETHEREUM,
         symbol: "thingfoo",
@@ -166,6 +169,7 @@ test("parseConfig", () => {
         name: "123",
         network: Network.ETHEREUM,
         symbol: "erowan",
+        displaySymbol: "ROWAN",
         label: "eROWAN",
       },
     ]);

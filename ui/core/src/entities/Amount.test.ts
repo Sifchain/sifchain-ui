@@ -10,6 +10,7 @@ beforeEach(() => {
     decimals: 18,
     label: "ETH",
     name: "Ethereum",
+    displaySymbol: "ETH",
     network: Network.ETHEREUM,
     symbol: "eth",
     imageUrl: "http://fooo",

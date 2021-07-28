@@ -11,7 +11,8 @@ import { isAmount, isAssetAmount } from "../entities";
 import { AccountPool } from "../store/pools";
 import { Api } from "../api";
 import { Services } from "../services";
-import { setupSifchainApi, SifchainEnv } from "../setupSifchainApi";
+import { setupSifchainApi } from "../setupSifchainApi";
+import { NetworkEnv } from "config/getEnv";
 
 type ExtractorFn<T, A extends any[] = []> = (store: Store, ...args: A) => T;
 
@@ -44,7 +45,7 @@ const SifchainContext = createContext<SifchainContext | undefined>(undefined);
 
 export function SifchainProvider(props: {
   children: React.ReactNode;
-  environment: SifchainEnv;
+  environment: NetworkEnv;
 }) {
   const [ctx, setCtx] = useState<SifchainContext>();
 

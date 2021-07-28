@@ -27,7 +27,8 @@ import { ServiceContext } from "../services";
 import { NetworkEnv } from "./getEnv";
 
 type ConfigMap = { [s: string]: ServiceContext };
-type ChainNetwork = `${Network}.${NetworkEnv}`;
+// type ChainNetwork = `${Network}.${NetworkEnv}`;
+type ChainNetwork = string;
 type AssetMap = Record<ChainNetwork, Asset[]>;
 
 // Save assets for sync lookup throughout the app via Asset.get('symbol')

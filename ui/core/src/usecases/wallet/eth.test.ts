@@ -54,6 +54,11 @@ beforeEach(() => {
           vsUserData: null,
           lmUserData: null,
         },
+        cosmoshub: {
+          balances: [],
+          address: "",
+          isConnected: true,
+        },
       },
     },
   });
@@ -68,6 +73,7 @@ test("Calls transfer correctly", async () => {
       label: "ETH",
       network: Network.SIFCHAIN,
       address: "abcdefg",
+      displaySymbol: "ETH",
       decimals: 18,
       symbol: "ceth",
     }),
