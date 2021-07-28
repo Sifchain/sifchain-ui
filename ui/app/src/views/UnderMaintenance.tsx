@@ -2,7 +2,7 @@ import Layout from "@/components/Layout/Layout.vue";
 
 export default function UnderMainentance() {
   return (
-    <Layout>
+    <Layout header={false}>
       <div>
         <h1>Site is temporarily unavailable.</h1>
         <p>
