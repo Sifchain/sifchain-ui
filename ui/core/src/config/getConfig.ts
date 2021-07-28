@@ -1,6 +1,7 @@
 // TODO - Conditional load or build-time tree shake
 import localnetconfig from "../config.localnet.json";
 import devnetconfig from "../config.devnet.json";
+import devnet042config from "../config.devnet-042.json";
 import testnetconfig from "../config.testnet.json";
 import mainnnetconfig from "../config.mainnet.json";
 
@@ -76,6 +77,7 @@ export function getConfig(
   const configMap: ConfigMap = {
     localnet: parseConfig(localnetconfig as ChainConfig, allAssets),
     devnet: parseConfig(devnetconfig as ChainConfig, allAssets),
+    devnet_042: parseConfig(devnet042config as ChainConfig, allAssets),
     testnet: parseConfig(testnetconfig as ChainConfig, allAssets),
     mainnet: parseConfig(mainnnetconfig as ChainConfig, allAssets),
   };

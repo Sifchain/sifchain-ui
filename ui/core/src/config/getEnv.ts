@@ -5,7 +5,18 @@ export enum NetworkEnv {
   TESTNET = "testnet",
   DEVNET = "devnet",
   LOCALNET = "localnet",
+  DEVNET_042 = "devnet_042",
 }
+
+// NOTE(ajoslin): support legacy `?_env=n` urls, from
+// 0-4
+export const networkEnvsByIndex = [
+  NetworkEnv.MAINNET,
+  NetworkEnv.TESTNET,
+  NetworkEnv.DEVNET,
+  NetworkEnv.LOCALNET,
+  NetworkEnv.DEVNET_042,
+];
 
 export const profileLookup = {
   [NetworkEnv.MAINNET]: {
@@ -13,8 +24,10 @@ export const profileLookup = {
     ethAssetTag: "ethereum.mainnet",
     sifAssetTag: "sifchain.mainnet",
   },
-  get [0]() {
-    return this[NetworkEnv.MAINNET];
+  [NetworkEnv.DEVNET_042]: {
+    tag: NetworkEnv.DEVNET_042,
+    ethAssetTag: "ethereum.devnet",
+    sifAssetTag: "sifchain.mainnet",
   },
   [NetworkEnv.TESTNET]: {
     tag: NetworkEnv.TESTNET,
@@ -47,6 +60,7 @@ const hostDefaultEnvs = [
   { test: /dex\.sifchain\.finance$/, net: NetworkEnv.MAINNET },
   { test: /testnet\.sifchain\.finance$/, net: NetworkEnv.TESTNET },
   { test: /devnet\.sifchain\.finance$/, net: NetworkEnv.DEVNET },
+  { test: /dex-v2.*?\.sifchain\.finance$/, net: NetworkEnv.DEVNET },
   { test: /sifchain\.vercel\.app$/, net: NetworkEnv.DEVNET },
   { test: /gateway\.pinata\.cloud$/, net: NetworkEnv.DEVNET },
   { test: /localhost$/, net: NetworkEnv.LOCALNET },
@@ -61,10 +75,10 @@ export function getNetworkEnv(hostname: string) {
   return null;
 }
 
-export function isNetworkEnv(a: string): a is NetworkEnv {
-  console.log(NetworkEnv);
-  const envKeys = Object.values(NetworkEnv);
-  return envKeys.includes(a as NetworkEnv);
+export function isNetworkEnvSymbol(a: any): a is NetworkEnv {
+  return (
+    Object.values(NetworkEnv).includes(a) || !!networkEnvsByIndex[a as number]
+  );
 }
 
 type GetEnvArgs = {
@@ -76,16 +90,24 @@ export function getEnv({
   location: { hostname },
   cookies = AppCookies(),
 }: GetEnvArgs) {
-  const cookieTag = cookies.getEnv();
+  const cookieEnv = cookies.getEnv();
+  const defaultNetworkEnv = getNetworkEnv(hostname);
 
-  const env = getNetworkEnv(hostname);
-  if (env !== null) {
-    if (typeof cookieTag === "undefined") {
-      return profileLookup[env];
-    }
-    if (profileLookup[cookieTag]) {
-      return profileLookup[cookieTag];
-    }
+  let sifEnv: NetworkEnv | null;
+
+  if (cookieEnv != null && networkEnvsByIndex[+cookieEnv]) {
+    sifEnv = networkEnvsByIndex[+cookieEnv];
+  } else if (isNetworkEnvSymbol(cookieEnv)) {
+    sifEnv = cookieEnv as NetworkEnv;
+  } else {
+    sifEnv = defaultNetworkEnv;
   }
-  throw new Error(`Cannot render environment ${env} ${cookieTag}`);
+
+  console.log("sifEnv", profileLookup[sifEnv as NetworkEnv]);
+
+  if (sifEnv != null && profileLookup[sifEnv]) {
+    return profileLookup[sifEnv];
+  }
+  console.error(new Error(`Cannot render environment ${sifEnv} ${cookieEnv}`));
+  return profileLookup[NetworkEnv.MAINNET];
 }

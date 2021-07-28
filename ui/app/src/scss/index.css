@@ -302,3 +302,19 @@ input[type="range"]::-moz-range-track {
   @apply bg-gray-300 rounded-lg;
   cursor: pointer;
 }
+.tippy-box[data-animation="scale"][data-placement^="top"] {
+  transform-origin: bottom;
+}
+.tippy-box[data-animation="scale"][data-placement^="bottom"] {
+  transform-origin: top;
+}
+.tippy-box[data-animation="scale"][data-placement^="left"] {
+  transform-origin: right;
+}
+.tippy-box[data-animation="scale"][data-placement^="right"] {
+  transform-origin: left;
+}
+.tippy-box[data-animation="scale"][data-state="hidden"] {
+  transform: scale(0.5);
+  opacity: 0;
+}

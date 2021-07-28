@@ -57,6 +57,7 @@ export const useImportData = () => {
   const importParams = reactive<ImportParams>({
     symbol: String(route.params.symbol || ""),
     amount: String(route.query.amount || ""),
+    network: undefined,
   });
 
   watch(

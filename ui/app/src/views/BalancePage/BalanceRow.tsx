@@ -24,7 +24,7 @@ import { getImportLocation } from "./Import/useImportData";
 import { TokenIcon } from "@/components/TokenIcon";
 import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
-import { Network } from "@sifchain/sdk";
+import { Asset, Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 
 export const SYMBOL_COLUMN_WIDTH = 130;
@@ -154,8 +154,10 @@ export default defineComponent({
         <td class="text-right align-middle min-w-[200px]">
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80">
-              {isNoBalanceRef.value
+              {isNoBalanceRef.value && !props.tokenItem.pegTxs.length
                 ? null
+                : props.tokenItem.pegTxs.length > 0
+                ? "..."
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
 

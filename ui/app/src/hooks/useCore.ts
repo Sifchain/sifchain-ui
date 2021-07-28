@@ -13,6 +13,7 @@ switchEnv({ location: window.location });
 const { tag, sifAssetTag, ethAssetTag } = getEnv({
   location: window.location,
 });
+console.log("getEnv", tag, sifAssetTag, ethAssetTag);
 const config = getConfig(tag, sifAssetTag, ethAssetTag);
 const services = createServices(config);
 const store = createStore();

@@ -73,6 +73,8 @@ export class SifClient extends SigningCosmosClient {
         "Received ill-formatted txhash. Must be non-empty upper-case hex",
       );
     }
+    result.logs = result.logs || [];
+    result.logs[0] = result.logs[0] || {};
     result.logs[0].msg_index = 0;
     result.logs[0].log = "";
 
