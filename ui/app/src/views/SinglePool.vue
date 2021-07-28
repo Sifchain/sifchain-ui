@@ -259,8 +259,8 @@ export default defineComponent({
             </span>
           </div>
           <div class="row" data-handle="total-pool-share">
-            <span
-              >Your Net Gain/Loss:
+            <span class="df fdr aic">
+              <span class="mr-2">Your Net Gain/Loss:</span>
               <Tooltip
                 message="This is your total net gain/loss based on earnings from swap fees and any gains or losses associated with changes in the tokens' prices from the moment you ever added liquidity to this pool. This is in USDT."
               >
