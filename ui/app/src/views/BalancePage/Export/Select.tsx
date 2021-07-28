@@ -188,11 +188,17 @@ export default defineComponent({
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
-          <div class="text-white">Ethereum Recipient Address</div>
+          <div class="text-white capitalize">
+            {props.exportData.exportParams.network} Recipient Address
+          </div>
           <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
             <input
               readonly
-              value={store.wallet.eth.address}
+              value={
+                props.exportData.exportParams.network === Network.ETHEREUM
+                  ? store.wallet.eth.address
+                  : store.wallet.cosmoshub.address
+              }
               class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
               onClick={(e) => {
                 (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
