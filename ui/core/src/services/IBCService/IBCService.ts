@@ -45,8 +45,10 @@ export class IBCService {
     const keplr = await getKeplrProvider();
     const sourceChain = this.loadChainConfigByNetwork(network);
     await keplr?.experimentalSuggestChain(sourceChain.keplrChainInfo);
+    await keplr?.enable(sourceChain.chainId);
     const sendingSigner = await keplr?.getOfflineSigner(sourceChain.chainId);
-    if (!sendingSigner) throw new Error("No sending signer");
+    if (!sendingSigner)
+      throw new Error("No sending signer for " + sourceChain.chainId);
     const sendingStargateClient = await SigningStargateClient?.connectWithSigner(
       sourceChain.rpcUrl,
       sendingSigner,
@@ -119,7 +121,7 @@ export class IBCService {
       undefined,
       Math.floor(Date.now() / 1000 + 1000),
     );
-
+    console.log({ brdcstTxRes });
     return brdcstTxRes;
   }
 }

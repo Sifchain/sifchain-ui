@@ -9,7 +9,7 @@ export function useInitialize() {
   usecases.clp.initClp();
   usecases.wallet.sif.initSifWallet();
   usecases.wallet.eth.initEthWallet();
-  usecases.wallet.cosmoshub.initcosmoshubWallet();
+  usecases.wallet.cosmoshub.initCosmoshubWallet();
 
   // initialize subscriptions
   useSubscription(

@@ -121,7 +121,9 @@ export const useToken = (props: {
     return tokenListRef.value?.find((token) => {
       return (
         token.asset.network === props.network.value &&
-        token.asset.symbol.toLowerCase() === props.symbol.value.toLowerCase()
+        (token.asset.symbol.toLowerCase() ===
+          props.symbol.value.toLowerCase() ||
+          token.asset.displaySymbol === props.symbol.value)
       );
     });
   });

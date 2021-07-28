@@ -196,7 +196,7 @@ export default defineComponent({
               }}
               onSelectAsset={(asset) => {
                 selectIsOpen.value = false;
-                importParams.symbol = asset.symbol;
+                importParams.displaySymbol = asset.displaySymbol;
               }}
               active={selectIsOpen}
             />

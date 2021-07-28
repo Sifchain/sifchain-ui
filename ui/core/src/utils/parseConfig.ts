@@ -4,6 +4,7 @@ import { getMetamaskProvider } from "../services/EthereumService/utils/getMetama
 
 type TokenConfig = {
   symbol: string;
+  displaySymbol: string;
   label?: string;
   decimals: number;
   imageUrl?: string;
@@ -15,6 +16,7 @@ type TokenConfig = {
 type CoinConfig = {
   label?: string;
   symbol: string;
+  displaySymbol: string;
   decimals: number;
   imageUrl?: string;
   name: string;
@@ -38,7 +40,11 @@ function parseLabel(a: AssetConfig) {
 }
 
 function parseAsset(a: AssetConfig): Asset {
-  return Asset({ ...a, label: parseLabel(a) });
+  return Asset({
+    ...a,
+    displaySymbol: a.displaySymbol || a.symbol,
+    label: parseLabel(a),
+  });
 }
 
 export type KeplrChainConfig = {

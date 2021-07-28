@@ -38,8 +38,9 @@ export const TokenIcon = defineComponent({
     const url = ref<string | void>();
 
     watch(
-      () => props.asset?.value || props.assetValue,
-      async (asset) => {
+      () => [props.asset?.value, props.assetValue],
+      async ([asset, asset2]) => {
+        asset = asset || asset2;
         if (!asset) return;
         const img = new Image();
         img.src = `/images/tokens/${(

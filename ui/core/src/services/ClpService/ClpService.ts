@@ -158,6 +158,7 @@ export default function createClpService({
         asset = Asset({
           name: symbol,
           label: symbol,
+          displaySymbol: symbol,
           symbol,
           network: Network.SIFCHAIN,
           decimals: 18,

@@ -70,9 +70,7 @@ export default defineComponent({
         props: {
           replace: true,
           to: getImportLocation("select", {
-            symbol: getUnpeggedSymbol(
-              props.tokenItem.asset.symbol,
-            ).toLowerCase(),
+            displaySymbol: props.tokenItem.asset.displaySymbol,
           }),
         },
       },

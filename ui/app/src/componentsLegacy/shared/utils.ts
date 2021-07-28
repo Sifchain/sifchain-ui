@@ -80,11 +80,14 @@ export function getAssetLabel(t: Asset) {
     return formatSymbol(t.displaySymbol || t.symbol);
   }
 
-  if (t.network === Network.ETHEREUM && t.symbol.toLowerCase() === "erowan") {
+  if (
+    t.network === Network.ETHEREUM &&
+    t.displaySymbol.toLowerCase() === "erowan"
+  ) {
     return "eROWAN";
   }
 
-  return t.symbol.toUpperCase();
+  return t.displaySymbol.toUpperCase();
 }
 
 export function useAssetItem(symbol: Ref<string | undefined>) {

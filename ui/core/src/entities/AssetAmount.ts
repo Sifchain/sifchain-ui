@@ -74,6 +74,9 @@ export function AssetAmount(
   // Proxy all methods because it is clearer and
   // more explicit than prototypal inheritence
   const instance: _IAssetAmount = {
+    get displaySymbol() {
+      return _asset.displaySymbol;
+    },
     get asset() {
       return _asset;
     },

@@ -8,7 +8,7 @@ export default ({
   store,
 }: UsecaseContext<"clp" | "bus" | "ibc", "wallet">) => {
   const actions = {
-    initcosmoshubWallet() {
+    initCosmoshubWallet() {
       const effects: ReactiveEffect[] = [];
       const state = reactive<IWalletServiceState>({
         connected: false,
@@ -21,11 +21,17 @@ export default ({
       services.ibc.createWalletByNetwork(Network.SIFCHAIN).then((w) => {
         console.log("sifchain", w, w.addresses, w.balances);
       });
-      services.ibc.createWalletByNetwork(Network.COSMOSHUB).then((w) => {
-        console.log("cosmoshub", w, w.addresses, w.balances);
-        state.connected = true;
-        state.accounts = w.addresses;
-        state.balances = w?.balances;
+      const loadCosmosAssets = () =>
+        services.ibc.createWalletByNetwork(Network.COSMOSHUB).then((w) => {
+          console.log("cosmoshub", w, w.addresses, w.balances);
+          state.connected = true;
+          state.accounts = w.addresses;
+          state.balances = w?.balances;
+        });
+
+      loadCosmosAssets();
+      services.bus.on("PegTransactionCompletedEvent", () => {
+        loadCosmosAssets();
       });
 
       effects.push(

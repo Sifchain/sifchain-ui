@@ -104,7 +104,7 @@ export const TokenInputGroup = defineComponent({
               ]}
             >
               Balance: {props.formattedBalance || "0"}{" "}
-              {props.asset?.label.replace(/^c/gim, "")}
+              {props.asset?.displaySymbol.toUpperCase()}
             </div>
           </div>
           <div
@@ -131,7 +131,7 @@ export const TokenInputGroup = defineComponent({
               <div class="flex justify-between items-center">
                 <TokenIcon size={38} asset={propRefs.asset}></TokenIcon>
                 <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                  {props.asset?.label.replace(/^c/gim, "")}
+                  {props.asset?.displaySymbol.replace(/^c/gim, "")}
                 </div>
               </div>
             </Button.Select>

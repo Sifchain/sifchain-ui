@@ -9,7 +9,7 @@ const cosmoshubTestnetAssets: { assets: IAsset[] } = {
       decimals: 6,
       label: "PHOTON",
       imageUrl:
-        "https://assets.coingecko.com/coins/images/279/small/cosmos.png?1595348880",
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       name: "Cosmos",
       network: Network.COSMOSHUB,
     },

@@ -63,6 +63,12 @@ export function Peg(
           },
         };
       } else {
+        services.bus.dispatch({
+          type: "PegTransactionCompletedEvent",
+          payload: {
+            hash: tx.transactionHash,
+          },
+        });
         yield {
           type: "sent",
           tx: {

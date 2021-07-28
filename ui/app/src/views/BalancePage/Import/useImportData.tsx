@@ -1,4 +1,4 @@
-import { RouteLocationRaw, useRoute } from "vue-router";
+import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import { reactive, ref, computed, Ref, watch } from "vue";
 import router from "@/router";
 import { effect } from "@vue/reactivity";
@@ -19,7 +19,7 @@ import { FormDetailsType } from "@/components/Form";
 export type ImportParams = {
   amount?: string;
   network?: string;
-  symbol?: string;
+  displaySymbol?: string;
 };
 
 export type ImportStep = "select" | "confirm" | "processing";
@@ -42,7 +42,7 @@ export function getImportLocation(
 ): RouteLocationRaw {
   return {
     name: "Import",
-    params: { step, symbol: params.symbol },
+    params: { step, symbol: params.displaySymbol },
     query: {
       network: params.network,
       amount: params.amount,
@@ -53,9 +53,9 @@ export function getImportLocation(
 export const useImportData = () => {
   const { store, usecases } = useCore();
   const route = useRoute();
-
+  const router = useRouter();
   const importParams = reactive<ImportParams>({
-    symbol: String(route.params.symbol || ""),
+    displaySymbol: String(route.params.symbol || ""),
     amount: String(route.query.amount || ""),
     network: undefined,
   });
@@ -84,16 +84,19 @@ export const useImportData = () => {
     if (tokenRef.value) return undefined; // If tokenRef is already defined, we are good.
     if (!tokenListRef.value?.length) return undefined; // Wait for token list to load
 
-    if (!importParams.symbol) {
+    if (!importParams.displaySymbol) {
       return tokenListRef.value[0];
     }
 
     const token =
       tokenListRef.value.find((t) => {
-        return isOpposingSymbol(t.asset.symbol, importParams.symbol || "");
+        return isOpposingSymbol(
+          t.asset.displaySymbol,
+          importParams.displaySymbol || "",
+        );
       }) || tokenListRef.value[0];
 
-    importParams.symbol = token.asset.symbol;
+    importParams.displaySymbol = token.asset.displaySymbol;
     importParams.network = token.asset.network;
     return token;
   });
@@ -109,7 +112,11 @@ export const useImportData = () => {
   const sifchainTokenRef = useToken({
     network: ref(Network.SIFCHAIN),
     symbol: computed(() =>
-      getPeggedSymbol(importParams.symbol || "").toLowerCase(),
+      importParams.network === Network.ETHEREUM
+        ? getPeggedSymbol(
+            importParams.displaySymbol?.toLowerCase() || "",
+          ).toLowerCase()
+        : importParams.displaySymbol?.toLowerCase() || "",
     ),
   });
 
@@ -168,7 +175,7 @@ export const useImportData = () => {
     [
       "Import Amount",
       <span class="flex items-center font-mono">
-        {importParams.amount} {importParams.symbol?.toUpperCase()}
+        {importParams.amount} {importParams.displaySymbol?.toUpperCase()}
         <TokenIcon
           size={18}
           assetValue={tokenRef.value?.asset}
@@ -216,13 +223,13 @@ export const useImportData = () => {
       tokenRef.value &&
       tokenRef.value.asset.network !== importParams.network
     ) {
-      importParams.symbol = "";
+      importParams.displaySymbol = "";
     }
   });
   effect(() => {
     if (!tokenListRef.value.length) return;
-    if (!importParams.symbol)
-      importParams.symbol = tokenListRef.value[0].asset.symbol;
+    if (!importParams.displaySymbol)
+      importParams.displaySymbol = tokenListRef.value[0].asset.symbol;
     if (!importParams.network)
       importParams.network = tokenListRef.value[0].asset.network;
   });
