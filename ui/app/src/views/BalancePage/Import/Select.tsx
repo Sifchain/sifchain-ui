@@ -142,6 +142,7 @@ export default defineComponent({
                   options={optionsRef}
                   value={importParams.network}
                   onChangeValue={(value) => {
+                    console.log("onChangeValue", value);
                     if (importParams.network)
                       importParams.network.value = value as Network;
                   }}
@@ -194,7 +195,8 @@ export default defineComponent({
               }}
               onSelectAsset={(asset) => {
                 selectIsOpen.value = false;
-                importParams.displaySymbol.value = asset.displaySymbol;
+                importParams.displaySymbol.value =
+                  asset.displaySymbol || asset.symbol;
               }}
               active={selectIsOpen}
             />

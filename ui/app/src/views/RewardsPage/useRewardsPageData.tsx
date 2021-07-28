@@ -1,11 +1,7 @@
-import { computed, Ref, ComputedRef } from "vue";
+import { computed, ComputedRef } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { getExistingClaimsData } from "@/componentsLegacy/shared/utils";
-import {
-  CryptoeconomicsRewardType,
-  CryptoeconomicsUserData,
-} from "../../../../core/src/services/CryptoeconomicsService";
 
 // TODO REACTIVE
 

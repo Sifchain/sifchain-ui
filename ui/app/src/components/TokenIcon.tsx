@@ -42,23 +42,20 @@ export const TokenIcon = defineComponent({
       async ([asset, asset2]) => {
         asset = asset || asset2;
         if (!asset) return;
-        const img = new Image();
-        img.src = `/images/tokens/${(
+
+        const svgSrc = `/images/tokens/${(
           asset?.displaySymbol ?? asset?.symbol
         )?.toUpperCase()}.svg`;
-        new Promise((r, rj) => {
-          img.onerror = rj;
-          img.onload = r;
-        })
-          .then(() => {
-            url.value = img.src;
-          })
-          .catch((e) => {
-            const coinGeckoUrl = core.config.assets
-              .find((a) => a.symbol == asset?.symbol)
-              ?.imageUrl?.replace("thumb", "large");
-            url.value = coinGeckoUrl;
-          });
+        const res = await fetch(svgSrc);
+
+        if (!res.headers.get("content-type")?.includes("svg/xml")) {
+          const coinGeckoUrl = core.config.assets
+            .find((a) => a.symbol == asset?.symbol)
+            ?.imageUrl?.replace("thumb", "large");
+          url.value = coinGeckoUrl;
+        } else {
+          url.value = svgSrc;
+        }
       },
       {
         immediate: true,

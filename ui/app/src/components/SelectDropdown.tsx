@@ -26,12 +26,11 @@ export const SelectDropdown = defineComponent({
       required: true,
     },
     value: {
-      type: Object as PropType<Ref<SelectDropdownOption["value"]>>,
+      type: Object as PropType<Ref<string>>,
+      required: true,
     },
     onChangeValue: {
-      type: Function as PropType<
-        (value: SelectDropdownOption["value"]) => void
-      >,
+      type: Function as PropType<(value: string) => void>,
       required: true,
     },
     onShow: {
@@ -78,6 +77,7 @@ export const SelectDropdown = defineComponent({
         animation="none"
         arrow={false}
         offset={[0, 0]}
+        key={props.value.value}
         {...tooltipPropsRest}
         onShow={(instance) => {
           tooltipInstance.value = instance;
@@ -113,7 +113,7 @@ export const SelectDropdown = defineComponent({
                 <div
                   class={[
                     "mr-[8px]",
-                    option.value !== props.value?.value && "invisible",
+                    option.value !== props.value.value && "invisible",
                   ]}
                 >
                   ✓
