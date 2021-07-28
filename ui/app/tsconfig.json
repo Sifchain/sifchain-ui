@@ -15,7 +15,7 @@
     "types": ["webpack-env", "jest"],
     "paths": {
       "@/*": ["src/*"],
-      "@sifchain/sdk": ["../core"]
+      "@sifchain/sdk": ["../core/src"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
