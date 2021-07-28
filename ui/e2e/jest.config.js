@@ -7,4 +7,6 @@ module.exports = {
   coveragePathIgnorePatterns: ["e2e/utils.js"],
   bail: true,
   setupFilesAfterEnv: ["expect-playwright", "./setup.js"],
+  testEnvironment: "./CustomEnvironment.js",
+  testRunner: "jest-circus/runner",
 };

@@ -7,8 +7,8 @@ import {
   toBaseUnits,
   TxHash,
   Amount,
-} from "ui-core";
-import { format } from "ui-core/src/utils/format";
+} from "@sifchain/sdk";
+import { format } from "@sifchain/sdk/src/utils/format";
 import { useCore } from "@/hooks/useCore";
 
 export function formatSymbol(symbol: string) {
@@ -184,11 +184,14 @@ export async function getExistingClaimsData(
 
 export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
   switch (chainId) {
-    case "sifchain":
+    case "sifchain-1":
       if (!txHash) return "https://blockexplorer.sifchain.finance/";
       return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;
-    case "sifchain-testnet":
-      if (!txHash) return `https://blockexplorer-testnet.sifchain.finance/`;
+    case "sifchain-devnet-1":
+      if (!txHash) return "https://blockexplorer-devnet.sifchain.finance/";
+      return `https://blockexplorer-devnet.sifchain.finance/transactions/${txHash}`;
+    case "sifchain-testnet-1":
+      if (!txHash) return "https://blockexplorer-testnet.sifchain.finance/";
       return `https://blockexplorer-testnet.sifchain.finance/transactions/${txHash}`;
     default:
       if (!txHash) return "https://blockexplorer-devnet.sifchain.finance/";

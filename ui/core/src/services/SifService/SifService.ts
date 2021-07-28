@@ -48,8 +48,6 @@ export default function createSifService({
   keplrChainConfig,
   assets,
 }: SifServiceContext) {
-  const {} = sifAddrPrefix;
-
   const state: {
     connected: boolean;
     address: Address;
@@ -116,6 +114,7 @@ export default function createSifService({
         state.accounts = await client.getAccounts();
         state.balances = await instance.getBalance(client.senderAddress);
       } catch (e) {
+        console.error("Sifchain Wallet Connect Error", e);
         if (!e.toString().toLowerCase().includes("no address found on chain")) {
           state.connected = false;
           state.address = "";
@@ -219,15 +218,15 @@ export default function createSifService({
     },
 
     onSocketError(handler: HandlerFn<any>) {
-      unSignedClient.onSocketError(handler);
+      return unSignedClient.onSocketError(handler);
     },
 
     onTx(handler: HandlerFn<any>) {
-      unSignedClient.onTx(handler);
+      return unSignedClient.onTx(handler);
     },
 
     onNewBlock(handler: HandlerFn<any>) {
-      unSignedClient.onNewBlock(handler);
+      return unSignedClient.onNewBlock(handler);
     },
 
     // Required solely for testing purposes

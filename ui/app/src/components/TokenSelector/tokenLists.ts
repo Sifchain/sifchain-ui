@@ -1,5 +1,5 @@
 import { Ref, computed, ComputedRef, ref, effect } from "@vue/reactivity";
-import { Asset, Store } from "ui-core";
+import { Asset, Store } from "@sifchain/sdk";
 
 export function generateTokenSearchLists({
   walletLimit = 10,

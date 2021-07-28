@@ -1,5 +1,5 @@
 import { computed, ComputedRef } from "@vue/reactivity";
-import { IAssetAmount, Store } from "ui-core";
+import { IAssetAmount, Store } from "@sifchain/sdk";
 
 export function useWallet(
   store: Store,

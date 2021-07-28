@@ -6,18 +6,18 @@ import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";
 import AssetItem from "@/components/AssetItem/AssetItem.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";
-import { format } from "ui-core/src/utils/format";
+import { format } from "@sifchain/sdk/src/utils/format";
 
 const REWARD_INFO = {
   lm: {
-    label: "Liquidity Mining",
+    label: ".39 Liquidity Mining",
     description:
-      "Earn additional rewards by providing liquidity to any of Sifchain's pools.",
+      "Users could earn additional rewards by providing liquidity to any of Sifchain's pools within our .39 environment. Participants are now fully determined at this point in time.",
   },
   vs: {
-    label: "Validator Subsidy",
+    label: ".39 Validator Subsidy",
     description:
-      "Earn additional rewards by staking a node or delegating to a staked node.",
+      "Users could Earn additional rewards by staking a node or delegating to a staked node within our .39 environment. Participants are now fully determined at this point in time.",
   },
 };
 
@@ -87,189 +87,22 @@ export default {
     <div class="reward-container">
       <SubHeading>{{ REWARD_INFO[claimType].label }}</SubHeading>
       <Copy>
-        {{ REWARD_INFO[claimType].description }}
+        <p v-html="REWARD_INFO[claimType].description"></p>
       </Copy>
       <div class="details-container">
-        <Loader v-if="!data" black />
-
-        <div v-else class="amount-container">
-          <div class="reward-rows">
-            <div class="reward-row">
-              <div class="row-label">Claimable Amount</div>
-              <div
-                class="row-amount"
-                :data-handle="claimType + '-claimable-amount'"
-              >
-                {{
-                  format(data.totalClaimableCommissionsAndClaimableRewards, {
-                    mantissa: 4,
-                    zeroFormat: "0",
-                  }) || "0"
-                }}
-              </div>
-              <AssetItem symbol="Rowan" :label="false" />
-            </div>
-            <div v-if="claimType === 'vs'" class="reward-row">
-              <div class="row-label">
-                Reserved Commission Rewards
-                <Tooltip>
-                  <template #message>
-                    <div class="tooltip">
-                      These are rewards you have earned from your delegators,
-                      but are not yet claimable due to either: a) your
-                      delegators not claiming their portion of these rewards yet
-                      or b) those rewards for your delegators not reaching full
-                      maturity yet. Once one of these actions happen, these
-                      rewards will be considered claimable for you.
-                    </div>
-                  </template>
-                  <Icon icon="info-box-black" />
-                </Tooltip>
-              </div>
-              <div
-                class="row-amount"
-                :data-handle="claimType + '-reserved-commission-rewards'"
-              >
-                {{
-                  format(
-                    data.currentTotalCommissionsOnClaimableDelegatorRewards,
-                    {
-                      mantissa: 4,
-                      zeroFormat: "0",
-                    },
-                  ) || "0"
-                }}
-              </div>
-              <AssetItem symbol="Rowan" :label="false" />
-            </div>
-
-            <div class="reward-row">
-              <div class="row-label">
-                Pending Dispensation
-                <Tooltip>
-                  <template #message>
-                    <div class="tooltip">
-                      This is the amount that will be dispensed on Friday. Any
-                      new claimable amounts will need to be claimed after the
-                      next dispensation.
-                    </div>
-                  </template>
-                  <Icon icon="info-box-black" />
-                </Tooltip>
-              </div>
-              <div
-                class="row-amount"
-                :data-handle="claimType + '-pending-rewards'"
-              >
-                {{
-                  format(
-                    data.claimedCommissionsAndRewardsAwaitingDispensation,
-                    { mantissa: 4, zeroFormat: "0" },
-                  ) || "0"
-                }}
-              </div>
-              <AssetItem symbol="Rowan" :label="false" />
-            </div>
-
-            <div class="reward-row">
-              <div class="row-label">
-                Dispensed Rewards
-                <Tooltip>
-                  <template #message>
-                    <div class="tooltip">
-                      Rewards that have already been dispensed.
-                    </div>
-                  </template>
-                  <Icon icon="info-box-black" />
-                </Tooltip>
-              </div>
-              <div
-                class="row-amount"
-                :data-handle="claimType + '-dispensed-rewards'"
-              >
-                {{
-                  format(data.dispensed, { mantissa: 4, zeroFormat: "0" }) ||
-                  "0"
-                }}
-              </div>
-              <AssetItem symbol="Rowan" :label="false" />
-            </div>
-
-            <div class="reward-row secondary">
-              <div class="row-label">
-                Projected Full Amount
-                <Tooltip>
-                  <template #message>
-                    <div class="tooltip">
-                      <div v-if="data.maturityDate">
-                        Projected Full Maturity Date: <br />
-                        <span class="tooltip-date">{{
-                          data.maturityDate
-                        }}</span>
-                        <span v-if="data.nextRewardProjectedAPYOnTickets">
-                          Projected Fully Maturated APY: <br />
-                          <span class="tooltip-date">
-                            {{
-                              format(
-                                data.nextRewardProjectedAPYOnTickets * 100,
-                                {
-                                  mantissa: 2,
-                                  zeroFormat: "0",
-                                },
-                              )
-                            }}%</span
-                          >
-                        </span>
-                        <br /><br />
-                      </div>
-                      This is your estimated projected full reward amount that
-                      you can earn if you were to leave your current
-                      {{ claimType === "lm" ? "liquidity" : "stake" }}
-                      positions in place to the above mentioned date. This
-                      includes your projected future rewards, and excludes your
-                      already disbursed amounts. This number can fluctuate due
-                      to other market conditions and this number is a
-                      representation of the current market as it is in this very
-                      moment.
-                    </div>
-                  </template>
-                  <Icon icon="info-box-black" />
-                </Tooltip>
-              </div>
-              <div
-                class="row-amount"
-                :data-handle="claimType + '-projected-full-amount'"
-              >
-                {{
-                  format(data.totalCommissionsAndRewardsAtMaturity, {
-                    mantissa: 4,
-                    zeroFormat: "0",
-                  }) || "0"
-                }}
-              </div>
-              <AssetItem symbol="Rowan" :label="false" />
-            </div>
-          </div>
-
-          <div class="reward-buttons">
-            <a
-              class="more-info-button mr-8"
-              target="_blank"
-              :href="`https://cryptoeconomics.sifchain.finance/#${address}&type=${claimType}`"
-              >More Info</a
-            >
-
-            <SifButton
-              @click="$emit('openModal', claimType)"
-              :primary="true"
-              :disabled="
-                alreadyClaimed ||
-                !data.totalClaimableCommissionsAndClaimableRewards
-              "
-              :data-handle="claimType + '-claim-button'"
-              >{{ getClaimButtonText() }}</SifButton
-            >
-          </div>
+        <div class="reward-buttons">
+          <a
+            class="btn more-info-button mr-8"
+            target="_blank"
+            href="https://docs.sifchain.finance/resources/rewards-programs#liquidity-mining-and-validator-subsidy-rewards-on-sifchain"
+            >Learn More</a
+          >
+          <a
+            class="btn sif-button"
+            target="_blank"
+            href="https://docs.google.com/spreadsheets/d/1f-ibZyx5O2f1wsNxvi56Kg8fkdys_DVmwhf7mjKDrDU/edit#gid=686570385"
+            >Payout Schedule</a
+          >
         </div>
       </div>
     </div>
@@ -328,16 +161,11 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  .more-info-button {
-    background: #f3f3f3;
-    color: #343434;
+  .btn {
     font-weight: 100;
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  .more-info-button,
-  .btn {
     width: 300px;
     border-radius: 6px;
     display: flex;
@@ -346,6 +174,14 @@ export default {
   }
   .reward-button {
     text-align: center;
+  }
+  .more-info-button {
+    background: #f3f3f3;
+    color: #343434;
+  }
+  .sif-button {
+    background: $c_gold;
+    color: white;
   }
 }
 

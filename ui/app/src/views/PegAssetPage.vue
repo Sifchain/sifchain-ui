@@ -3,7 +3,7 @@ import { defineComponent } from "vue";
 import Layout from "@/components/Layout/Layout.vue";
 import { computed, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { Asset, AssetAmount } from "ui-core";
+import { Asset, AssetAmount } from "@sifchain/sdk";
 import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
 import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
 
@@ -13,7 +13,7 @@ import SifInput from "@/components/SifInput/SifInput.vue";
 import DetailsTable from "@/components/DetailsTable/DetailsTable.vue";
 import Label from "@/components/Label/Label.vue";
 import RaisedPanelColumn from "@/components/RaisedPanelColumn/RaisedPanelColumn.vue";
-import { trimZeros } from "ui-core";
+import { trimZeros } from "@sifchain/sdk";
 import BigNumber from "bignumber.js";
 import {
   formatSymbol,
@@ -25,7 +25,8 @@ import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
 import { ConfirmState } from "../types";
 import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
-import { format, toBaseUnits } from "ui-core";
+import { format, toBaseUnits } from "@sifchain/sdk";
+import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
 
 function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -48,7 +49,7 @@ export default defineComponent({
     const { store, usecases } = useCore();
     const router = useRouter();
     const mode = computed(() => {
-      return router.currentRoute.value.path.indexOf("/import/reverse") > -1
+      return router.currentRoute.value.path.indexOf("/balances/export") > -1
         ? "export"
         : "import";
     });
@@ -97,23 +98,26 @@ export default defineComponent({
       const asset = Asset.get(symbol.value);
       const assetAmount = AssetAmount(asset, toBaseUnits(amount.value, asset));
 
-      if (asset.symbol !== "eth") {
-        // if not eth you need to approve spend before peg
-        transactionState.value = "approving";
-        try {
-          await usecases.peg.approve(store.wallet.eth.address, assetAmount);
-        } catch (err) {
-          return (transactionState.value = "rejected");
+      for await (const event of usecases.peg.peg(assetAmount)) {
+        switch (event.type) {
+          case "approve_started":
+            transactionState.value = "approving";
+            break;
+          case "approve_error":
+            transactionState.value = "rejected";
+            break;
+          case "signing":
+            transactionState.value = "signing";
+            break;
+          case "sent":
+          case "tx_error": {
+            const tx = (event as PegSentEvent | PegTxError).tx;
+            transactionHash.value = tx.hash;
+            transactionState.value = toConfirmState(tx.state); // TODO: align states
+            transactionStateMsg.value = tx.memo ?? "";
+          }
         }
       }
-
-      transactionState.value = "signing";
-
-      const tx = await usecases.peg.peg(assetAmount);
-
-      transactionHash.value = tx.hash;
-      transactionState.value = toConfirmState(tx.state); // TODO: align states
-      transactionStateMsg.value = tx.memo ?? "";
     }
 
     async function handleUnpegRequested() {
@@ -165,7 +169,7 @@ export default defineComponent({
     function requestTransactionModalClose() {
       if (transactionState.value === "confirmed") {
         transactionState.value = "selecting";
-        router.push("/import"); // TODO push back to peg, but load unpeg tab when unpegging -> dynamic routing?
+        router.push("/balances"); // TODO push back to peg, but load unpeg tab when unpegging -> dynamic routing?
       } else {
         transactionState.value = "selecting";
       }
@@ -231,7 +235,7 @@ export default defineComponent({
 <template>
   <Layout
     :title="mode === 'import' ? 'Import Asset' : 'Export Asset'"
-    backLink="/import"
+    backLink="/balances"
   >
     <div class="vspace">
       <CurrencyField

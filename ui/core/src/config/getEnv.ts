@@ -7,7 +7,7 @@ export enum SifEnv {
   LOCALNET,
 }
 
-const profileLookup = {
+export const profileLookup = {
   [SifEnv.DEVNET]: {
     tag: "devnet",
     ethAssetTag: "ethereum.devnet",
@@ -36,7 +36,7 @@ const hostDefaultEnvs = [
   { test: /testnet\.sifchain\.finance$/, net: SifEnv.TESTNET },
   { test: /devnet\.sifchain\.finance$/, net: SifEnv.DEVNET },
   { test: /sifchain\.vercel\.app$/, net: SifEnv.DEVNET },
-  { test: /gateway\.pinata\.cloud$/, net: SifEnv.DEVNET },
+  { test: /sifchain\.mypinata\.cloud$/, net: SifEnv.DEVNET },
   { test: /localhost$/, net: SifEnv.LOCALNET },
 ];
 

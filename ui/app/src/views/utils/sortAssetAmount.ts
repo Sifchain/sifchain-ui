@@ -1,5 +1,5 @@
-import { IAssetAmount, Asset } from "ui-core";
-import { format } from "ui-core/src/utils/format";
+import { IAssetAmount, Asset } from "@sifchain/sdk";
+import { format } from "@sifchain/sdk/src/utils/format";
 
 export function sortAssetAmount<
   T extends {

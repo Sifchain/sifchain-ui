@@ -1,6 +1,6 @@
 // setup.js
 const { chromium } = require("playwright");
-const { extractExtensionPackage } = require("./utils");
+const { extractExtensionPackage, preparePath } = require("./utils");
 const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
 const path = require("path");
 const fs = require("fs");
@@ -22,11 +22,20 @@ beforeAll(async () => {
     // devtools: true,
     headless: false,
     locale: "en-US",
+    timezoneId: "UTC",
     args: [
       `--disable-extensions-except=${pathToKeplrExtension},${pathToMmExtension}`,
       `--load-extension=${pathToKeplrExtension},${pathToMmExtension}`,
     ],
+    recordHar: {
+      path: `${await preparePath("./logs")}/har.json`,
+    },
   });
   // exposing "page" object globally
   [page] = await context.pages();
+  global.context = context; // this is needed to generate screenshots inside custom environment. 'context' is not visible there
+});
+
+afterAll(async () => {
+  await context.close();
 });

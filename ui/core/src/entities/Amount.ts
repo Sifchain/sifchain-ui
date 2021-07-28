@@ -132,6 +132,17 @@ export function Amount(
   return instance;
 }
 
+// Helper to identify an amount at runtime
+export function isAmount(a: any): a is IAmount {
+  if (!a) return false;
+  return (
+    a &&
+    typeof a._fromInternal === "function" &&
+    typeof a._toInternal === "function" &&
+    typeof a.toBigInt === "function"
+  );
+}
+
 // quotient needs to use bankers rounding so we follow this example for bankers rounding in BigInt and apply to JSBI
 //https://stackoverflow.com/questions/53752370/ecmascript-bigint-round-to-even
 function getQuotientWithBankersRounding(fraction: IFraction): JSBI {

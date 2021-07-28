@@ -4,7 +4,7 @@ export const DEX_TARGET = process.env.PORT
 
 export const KEPLR_CONFIG = {
   id: "dmkamcknogkgcdfhhbddcghachkejeap",
-  ver: "0.8.1_0",
+  ver: "0.8.9_0",
   get path() {
     return `./extensions/${this.id}/${this.ver}`;
   },
@@ -18,7 +18,7 @@ export const KEPLR_CONFIG = {
 
 export const MM_CONFIG = {
   id: "nkbihfbeogaeaoehlefnkodbefgpgknn",
-  ver: "9.1.1_0",
+  ver: "9.6.1_0",
   get path() {
     return `./extensions/${this.id}/${this.ver}`;
   },

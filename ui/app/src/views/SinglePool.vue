@@ -11,8 +11,8 @@ import {
 } from "@/components/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { useRoute } from "vue-router";
-import { format } from "ui-core/src/utils/format";
-import { Amount } from "ui-core";
+import { format } from "@sifchain/sdk/src/utils/format";
+import { Amount } from "@sifchain/sdk";
 import Tooltip from "@/components/Tooltip/Tooltip.vue";
 import Icon from "@/components/Icon/Icon.vue";
 import Loader from "@/components/Loader/Loader.vue";
@@ -262,7 +262,7 @@ export default defineComponent({
             <span
               >Your Net Gain/Loss:
               <Tooltip
-                message="This is your net gain/loss based on earnings from swap fees and any gains or losses associated with changes in the tokens' prices. This is in USDT"
+                message="This is your total net gain/loss based on earnings from swap fees and any gains or losses associated with changes in the tokens' prices from the moment you ever added liquidity to this pool. This is in USDT."
               >
                 <Icon icon="info-box-black" /> </Tooltip
             ></span>

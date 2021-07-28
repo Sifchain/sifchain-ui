@@ -39,6 +39,32 @@ export async function extractExtensionPackage(extensionId) {
   return;
 }
 
+// not used right now. It's not necessary to use it when id is static
+export async function getMetamaskExtensionId() {
+  const pages = await context.pages();
+
+  const asyncFilter = async (arr, predicate) => {
+    const results = await Promise.all(arr.map(predicate));
+
+    return arr.filter((_v, index) => results[index]);
+  };
+
+  const mmPages = await asyncFilter(pages, async (page) => {
+    return (await page.title()) === "MetaMask";
+  });
+
+  if (mmPages.length === 0) return undefined;
+  else {
+    const mmPage = mmPages[0];
+    const regex = /:\/\/(.*?)\//;
+    const match = regex.exec(mmPage.url());
+    if (match.length <= 1) return undefined;
+    else {
+      return match[1];
+    }
+  }
+}
+
 export async function getExtensionPage(extensionId, suffixUrl = undefined) {
   let matchingUrl;
   if (!suffixUrl) {
@@ -83,28 +109,9 @@ export async function assertWaitedValue(
     .until((value) => expect(value).toBe(expectedValue));
 }
 
-export async function takeScreenshot(name) {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getUTCMonth() + 1;
-  const dateOfMonth = date.getUTCDate();
-  const hour = date.getUTCHours();
-  const minute = date.getUTCMinutes();
-  const sec = date.getUTCSeconds();
-  const dateString = `${year}-${month}-${dateOfMonth}-${hour}-${minute}-${sec}`;
-
-  const screenshotPath = `screenshots/${browserName}-${dateString}-${name.replace(
-    / /g,
-    "_",
-  )}`;
-
-  await mkdirp("screenshots");
-
-  const pages = await context.pages();
-  await pages.forEach(async (page) => {
-    const title = await page.title();
-    await page.screenshot({
-      path: `${screenshotPath}_${title}.png`,
-    });
-  });
+export async function preparePath(path) {
+  if (!fs.existsSync(path)) {
+    await mkdirp(path);
+  }
+  return path;
 }

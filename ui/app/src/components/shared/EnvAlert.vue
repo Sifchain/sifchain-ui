@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { defineComponent, useCssModule } from "vue";
-import { AppCookies, SifEnv } from "ui-core";
+import { AppCookies, SifEnv } from "@sifchain/sdk";
 
 // This is for internal testing & development only.
 // Once we release the ability to switch environments
