@@ -117,7 +117,7 @@ export default defineComponent({
                 placement="bottom"
                 arrow={false}
                 interactive
-                animation={null}
+                animation={undefined}
                 ref={moreMenuRef}
                 offset={[0, -2]}
                 onShow={(instance: TooltipInstance) => {
@@ -159,7 +159,7 @@ export default defineComponent({
               arrow={false}
               trigger="click"
               interactive
-              offset={[20]}
+              offset={[20, 0]}
               onShow={() => {
                 appWalletPicker.isOpen.value = true;
               }}

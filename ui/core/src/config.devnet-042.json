@@ -7,7 +7,7 @@
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
   "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
-  "cryptoeconomicsUrl": "https://api-cryptoeconomics-devnet.sifchain.finance/api",
+  "cryptoeconomicsUrl": "https://api-cryptoeconomics.sifchain.finance/api",
   "bridgebankContractAddress": "0x471e0ffB16C4eEde754cEfD7F522257df37a1410",
   "keplrChainConfig": {
     "chainName": "SifchainDevnet-042",

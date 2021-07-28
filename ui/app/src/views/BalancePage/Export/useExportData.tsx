@@ -1,6 +1,6 @@
 import { RouteLocationRaw, useRoute } from "vue-router";
 import { Button } from "@/components/Button/Button";
-import { reactive, ref, computed, Ref, watch } from "vue";
+import { reactive, ref, computed, Ref, watch, ComputedRef } from "vue";
 import router from "@/router";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useToken } from "@/hooks/useToken";
@@ -125,52 +125,56 @@ export const useExportData = () => {
     );
   }
 
-  const detailsRef = computed<[any, any][]>(() => [
-    ["Destination", <span class="capitalize">{exportParams.network}</span>],
-    [
-      "Export Amount",
-      !exportParams.amount ? null : (
-        <span class="flex items-center font-mono">
-          {exportParams.amount}{" "}
-          {(
-            exportTokenRef.value?.asset.displaySymbol ||
-            exportTokenRef.value?.asset.symbol ||
-            ""
-          ).toUpperCase()}
-          <TokenIcon
-            class="ml-[4px]"
-            assetValue={exportTokenRef.value?.asset}
-            size={16}
-          />
-        </span>
-      ),
-    ],
-    [
-      <>
-        Transaction Fee
-        <Button.InlineHelp>
-          <div class="w-[200px]">
-            This is a fixed fee amount. This is a temporary solution as we are
-            working towards improving this amount in upcoming versions of the
-            network.
-          </div>
-        </Button.InlineHelp>
-      </>,
-      <span class="flex items-center font-mono">
-        {!feeAmountRef.value ? null : formatAssetAmount(feeAmountRef.value)}{" "}
-        {(
-          feeAmountRef.value?.asset.displaySymbol ||
-          feeAmountRef.value?.asset.symbol ||
-          ""
-        ).toUpperCase()}
-        <TokenIcon
-          size={16}
-          class="ml-[4px]"
-          assetValue={feeAmountRef.value?.asset}
-        />
-      </span>,
-    ],
-  ]);
+  // underscored to signify that it is not to be used across the app.
+  const detailsRef = computed(
+    () =>
+      [
+        ["Destination", <span class="capitalize">{exportParams.network}</span>],
+        [
+          "Export Amount",
+          !exportParams.amount ? null : (
+            <span class="flex items-center font-mono">
+              {exportParams.amount}{" "}
+              {(
+                exportTokenRef.value?.asset.displaySymbol ||
+                exportTokenRef.value?.asset.symbol ||
+                ""
+              ).toUpperCase()}
+              <TokenIcon
+                class="ml-[4px]"
+                assetValue={exportTokenRef.value?.asset}
+                size={16}
+              />
+            </span>
+          ),
+        ],
+        [
+          <>
+            Transaction Fee
+            <Button.InlineHelp>
+              <div class="w-[200px]">
+                This is a fixed fee amount. This is a temporary solution as we
+                are working towards improving this amount in upcoming versions
+                of the network.
+              </div>
+            </Button.InlineHelp>
+          </>,
+          <span class="flex items-center font-mono">
+            {!feeAmountRef.value ? null : formatAssetAmount(feeAmountRef.value)}{" "}
+            {(
+              feeAmountRef.value?.asset.displaySymbol ||
+              feeAmountRef.value?.asset.symbol ||
+              ""
+            ).toUpperCase()}
+            <TokenIcon
+              size={16}
+              class="ml-[4px]"
+              assetValue={feeAmountRef.value?.asset}
+            />
+          </span>,
+        ],
+      ] as [any, any][],
+  );
 
   return {
     exportParams: exportParams,

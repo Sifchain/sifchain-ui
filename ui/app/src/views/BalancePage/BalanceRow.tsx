@@ -164,7 +164,9 @@ export default defineComponent({
                 arrow
                 interactive
                 placement="top"
-                appendTo={() => document.querySelector("#portal-target")}
+                appendTo={() =>
+                  document.querySelector("#portal-target") as Element
+                }
                 offset={[112, 20]}
                 content={
                   <div class="text-left w-[200px]">

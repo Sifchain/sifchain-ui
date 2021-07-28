@@ -4,8 +4,10 @@ info:
   description: "A REST interface for state queries, legacy transactions"
   version: 1.0.0
 servers:
-  - url: https://api-devnet-042-ibc.sifchain.finance/
+  - url: https://api-devnet-042.sifchain.finance/
     description: 42 Devnet Server (uses live data)
+  - url: https://api-devnet-042-ibc.sifchain.finance/
+    description: 42 Devnet IBC Server (uses live data)
   - url: https://api.sifchain.finance/
     description: Production Server (uses live data)
 paths:
