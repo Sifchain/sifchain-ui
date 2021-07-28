@@ -90,8 +90,8 @@ export const RewardSection = defineComponent({
           />
           {displayData.value.heading}
         </div>
-        <div class="flex text-sm text-opacity-50 items-center gap-[10px]">
-          <div>
+        <div class="flex text-sm items-center gap-[10px]">
+          <div class="opacity-50">
             Users could earn additional rewards by{" "}
             {props.rewardType === "vs"
               ? "staking a node or delegating to a staked node"
