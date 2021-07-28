@@ -1,5 +1,4 @@
 import { defineComponent, TransitionGroup, ref, computed } from "vue";
-import NavIconVue from "@/componentsLegacy/NavSidePanel/NavIcon.vue";
 import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
 import BalanceRow from "./BalanceRow";

@@ -71,7 +71,13 @@ export default defineComponent({
         [
           <div class="flex items-center">
             <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
-            <span class="ml-[4px]">{data.fromSymbol.value.toUpperCase()}</span>
+            <span class="ml-[4px]">
+              {(
+                data.fromAsset.value?.displaySymbol ||
+                data.fromAsset.value?.symbol ||
+                ""
+              ).toUpperCase()}
+            </span>
           </div>,
           <span class="font-mono">{data.fromAmount.value}</span>,
         ],
@@ -84,9 +90,21 @@ export default defineComponent({
         ],
         [
           <span>
-            <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>{" "}
+            <span class="uppercase">
+              {(
+                data.fromAsset.value?.displaySymbol ||
+                data.fromAsset.value?.symbol ||
+                ""
+              ).toUpperCase()}
+            </span>{" "}
             per{" "}
-            <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>
+            <span class="uppercase">
+              {(
+                data.toAsset.value?.displaySymbol ||
+                data.toAsset.value?.symbol ||
+                ""
+              ).toUpperCase()}
+            </span>
           </span>,
           <div class="flex items-center gap-[4px] font-mono">
             <div>{data.aPerBRatioProjectedMessage.value}</div>

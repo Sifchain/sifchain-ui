@@ -131,7 +131,12 @@ export const useExportData = () => {
       "Export Amount",
       !exportParams.amount ? null : (
         <span class="flex items-center font-mono">
-          {exportParams.amount} {exportParams.symbol.toUpperCase()}
+          {exportParams.amount}{" "}
+          {(
+            exportTokenRef.value?.asset.displaySymbol ||
+            exportTokenRef.value?.asset.symbol ||
+            ""
+          ).toUpperCase()}
           <TokenIcon
             class="ml-[4px]"
             assetValue={exportTokenRef.value?.asset}

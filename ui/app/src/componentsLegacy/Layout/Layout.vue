@@ -2,29 +2,6 @@
   <div
     class="layout flex absolute justify-center portrait:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background"
   >
-    <!-- <Panel dark>
-      <template v-slot:header v-if="header">
-        <PanelNav />
-      </template>
-      <div class="header" v-if="backLink || title">
-        <div v-if="backLink">
-          <router-link class="back-link" :to="backLink"
-            ><Icon icon="back"
-          /></router-link>
-        </div>
-        <div v-if="emitBack">
-          <span @click="$emit('back')" class="back-link"
-            ><Icon icon="back"
-          /></span>
-        </div>
-        <div class="title">
-          <SubHeading>{{ title }}</SubHeading>
-        </div>
-      </div>
-    </Panel> -->
-    <!-- <Panel v-if="!!$slots.after" class="after">
-      <slot name="after"></slot>
-    </Panel> -->
     <slot></slot>
   </div>
   <!-- <Footer /> -->
@@ -57,17 +34,9 @@ export default defineComponent({
 .layout {
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.4);
-  // padding-top: $header_height;
-  // padding-left: 131px;
-  // width: 100vw;
-  // min-height: 100vmin; /* TODO: header height */
   overflow-y: scroll;
-  // display: flex;
-  // flex-direction: column;
-  // justify-content: center;
-  // align-items: center;
-  // padding-bottom: 200px;
 }
+
 .layout-bg {
   background: url("../../assets/World_Background_opt.jpg");
   background-size: cover;

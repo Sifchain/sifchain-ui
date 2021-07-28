@@ -154,10 +154,10 @@ export default defineComponent({
         <td class="text-right align-middle min-w-[200px]">
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80">
-              {isNoBalanceRef.value && !props.tokenItem.pegTxs.length
-                ? null
-                : props.tokenItem.pegTxs.length > 0
-                ? "..."
+              {isNoBalanceRef.value
+                ? props.tokenItem.pegTxs.length
+                  ? "..."
+                  : null
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
 

@@ -9,7 +9,6 @@ import {
 } from "@/components/SelectDropdown";
 import { useCore } from "@/hooks/useCore";
 import { TokenIcon } from "@/components/TokenIcon";
-import { useButtonClasses } from "@/hooks/elements/useButtonClasses";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { Input } from "@/components/Input/Input";
