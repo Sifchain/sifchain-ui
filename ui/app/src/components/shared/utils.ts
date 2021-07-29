@@ -185,8 +185,8 @@ export async function getExistingClaimsData(
 export function getBlockExplorerUrl(chainId: string, txHash?: TxHash): string {
   switch (chainId) {
     case "sifchain-1":
-      if (!txHash) return "https://blockexplorer.sifchain.finance/";
-      return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;
+      if (!txHash) return "https://www.mintscan.io/sifchain/";
+      return `https://www.mintscan.io/sifchain/txs/${txHash}`;
     case "sifchain-devnet-1":
       if (!txHash) return "https://blockexplorer-devnet.sifchain.finance/";
       return `https://blockexplorer-devnet.sifchain.finance/transactions/${txHash}`;
