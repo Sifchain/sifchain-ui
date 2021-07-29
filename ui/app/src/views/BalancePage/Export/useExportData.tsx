@@ -57,7 +57,7 @@ export const useExportData = () => {
 
   const exportParams = reactive<ExportParams>({
     symbol: String(route.params.symbol || ""),
-    network: String(route.query.network || "") as Network,
+    network: String(route.query.network || Network.ETHEREUM) as Network,
     amount: String(route.query.amount || ""),
   });
 

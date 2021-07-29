@@ -1,6 +1,5 @@
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import { reactive, ref, computed, Ref, watch } from "vue";
-import router from "@/router";
 import { effect, proxyRefs, toRefs, ToRefs } from "@vue/reactivity";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
@@ -191,10 +190,7 @@ export const useImportData = (): ImportData => {
     [
       <>
         New Sifchain Balance
-        <Button.InlineHelp>
-          This is an estimated amount only, the final settled amount may differ
-          slightly.
-        </Button.InlineHelp>
+        <Button.InlineHelp>Estimated amount</Button.InlineHelp>
       </>,
       <span class="flex items-center font-mono">
         {sifchainTokenRef.value ? (
@@ -203,8 +199,12 @@ export const useImportData = (): ImportData => {
               parseFloat(formatAssetAmount(sifchainTokenRef.value.amount)) +
               parseFloat(importParams.amount || "0")
             ).toFixed(
-              formatAssetAmount(sifchainTokenRef.value.amount).split(".")[1]
-                ?.length || 0,
+              Math.max(
+                formatAssetAmount(sifchainTokenRef.value.amount).split(".")[1]
+                  ?.length ||
+                  importParams.amount.split(".")[1]?.length ||
+                  0,
+              ),
             )}{" "}
             {(
               sifchainTokenRef.value.asset.displaySymbol ||
@@ -231,6 +231,7 @@ export const useImportData = (): ImportData => {
       const firstAvailable = tokenListRef.value.find(
         (token) => token.asset.network === importParams.network,
       );
+
       if (firstAvailable) {
         importParams.displaySymbol =
           firstAvailable.asset.displaySymbol || firstAvailable.asset.symbol;

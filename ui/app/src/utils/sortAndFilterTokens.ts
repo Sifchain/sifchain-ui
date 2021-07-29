@@ -36,7 +36,9 @@ export function sortAndFilterTokens(props: {
         // Name: ascending, rowan first.
         if (rowanRegex.test(a.asset.symbol)) return -1;
         if (rowanRegex.test(b.asset.symbol)) return 1;
-        return a.asset.symbol.localeCompare(b.asset.symbol);
+        return (a.asset.displaySymbol || a.asset.symbol).localeCompare(
+          b.asset.displaySymbol || b.asset.symbol,
+        );
       }
     });
 
