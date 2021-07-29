@@ -83,6 +83,23 @@ export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export async function waitUntil(callbackFn, timeoutMs, intervalMs = 1000) {
+  return new Promise((resolve, reject) => {
+    let timeWas = new Date();
+    let wait = setInterval(function () {
+      callbackFn().then((result) => {
+        if (result === true) {
+          clearInterval(wait);
+          resolve();
+        } else if (new Date() - timeWas > timeoutMs) {
+          clearInterval(wait);
+          reject();
+        }
+      });
+    }, intervalMs);
+  });
+}
+
 export async function getInputValue(selector) {
   return await page.$eval(selector, (el) => el.value);
 }
