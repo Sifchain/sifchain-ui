@@ -150,11 +150,10 @@ export default defineComponent({
 <template>
   <Layout :header="true" title="Rewards">
     <Copy>
-      Our rewards programs are currently paused as we move from .39 to .42. This
-      is a big step for Sifchain and our ecosystem so we thank you for your
-      patience. This will be re-enabled soon after deployment of .42.
+      The below rewards programs have been adjusted as we have moved from .39 to
+      42.
     </Copy>
-    <!--
+
     <div class="rewards-container">
       <RewardContainer
         claimType="lm"
@@ -173,7 +172,6 @@ export default defineComponent({
         @openModal="handleOpenModal"
       />
     </div>
-    -->
 
     <div v-if="transactionState !== 'selecting'">
       <ConfirmationModal
