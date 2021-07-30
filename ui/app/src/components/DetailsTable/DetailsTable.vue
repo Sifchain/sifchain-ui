@@ -9,7 +9,7 @@
     <div v-if="rows.length > 0" class="details-body">
       <span v-for="row in rows" :key="row.label">
         <div v-if="row.show" class="details-row">
-          <div class="details-row-label">
+          <div class="details-row-label aic">
             <span>{{ row.label }}</span>
             <Tooltip v-if="row.tooltipMessage" :message="row.tooltipMessage">
               <Icon icon="info-box-black" />

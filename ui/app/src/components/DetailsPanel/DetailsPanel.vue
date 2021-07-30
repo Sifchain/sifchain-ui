@@ -53,8 +53,8 @@ export default defineComponent({
       class="details-body"
     >
       <div v-if="minimumReceived && toToken" class="details-row">
-        <span>
-          Minimum Received
+        <span class="df fdr aic">
+          <span class="mr-2">Minimum Received</span>
           <Tooltip
             message="This is the minimum amount of the to token you will receive, taking into consideration the acceptable slippage percentage you are willing to take on. This amount also already takes into consideration liquidity provider fees as well. "
           >
@@ -72,8 +72,8 @@ export default defineComponent({
         </span>
       </div>
       <div v-if="priceImpact" class="details-row">
-        <span>
-          Price Impact
+        <span class="df fdr aic">
+          <span class="mr-2">Price Impact</span>
           <Tooltip
             message="This is the percentage impact to the amount of the 'to' token in the liquidity pool based upon how much you are swapping for."
           >
@@ -85,8 +85,8 @@ export default defineComponent({
         }}</span>
       </div>
       <div v-if="providerFee && toToken" class="details-row">
-        <span>
-          Liquidity Provider Fee
+        <span class="df fdr aic">
+          <span class="mr-2">Liquidity Provider Fee</span>
           <Tooltip
             message="This is the fee paid to the liquidity providers of this pool."
           >
