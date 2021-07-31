@@ -1,4 +1,4 @@
-import { Network } from "../../../entities";
+import { Network } from "../../../../entities";
 import { IBCChainConfig } from "../IBCChainConfig";
 
 export const SIFCHAIN_DEVNET_042: IBCChainConfig = {

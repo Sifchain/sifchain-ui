@@ -21,7 +21,8 @@ export const networkEnvsByIndex = [
   NetworkEnv.TESTNET_042_IBC,
 ];
 
-type AssetTag = `${Network}.${NetworkEnv}`;
+// type AssetTag = `${Network}.${NetworkEnv}`;
+type AssetTag = string;
 type ProfileLookup = Record<
   NetworkEnv | number,
   {
