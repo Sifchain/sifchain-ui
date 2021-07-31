@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "lib": ["ESNext"],
     "target": "es2015",
     "module": "commonjs",
     "moduleResolution": "node",
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -15,7 +16,10 @@
     "types": ["node", "jest"],
     "baseUrl": "./src",
     "jsx": "react",
-    "removeComments": false
+    "removeComments": false,
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/**/*.vue"],
   "exclude": ["node_modules"]

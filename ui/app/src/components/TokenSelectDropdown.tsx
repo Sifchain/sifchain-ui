@@ -10,6 +10,7 @@ import {
   Ref,
   ref,
   Teleport,
+  TransitionGroup,
   watch,
 } from "vue";
 import { IAsset, Network } from "../../../core/src";
@@ -190,7 +191,7 @@ export const TokenSelectDropdown = defineComponent({
                                 props.onSelectAsset(token.asset);
                               }}
                               key={token.asset.symbol}
-                              class="flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
+                              class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
                             >
                               <TokenIcon
                                 size={20}

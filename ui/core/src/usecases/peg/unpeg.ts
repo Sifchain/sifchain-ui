@@ -1,3 +1,4 @@
+import { isBroadcastTxFailure } from "@cosmjs/stargate";
 import { IAssetAmount, Network, TransactionStatus } from "../../entities";
 import { Services } from "../../services";
 import { Store } from "../../store";
@@ -16,7 +17,7 @@ type UnpegStore = Pick<Store, "wallet">;
 export function Unpeg(services: UnpegServices, store: UnpegStore) {
   return async function unpeg(
     assetAmount: IAssetAmount,
-    destinationNetwork: Network = Network.ETHEREUM,
+    destinationNetwork: Network,
   ): Promise<TransactionStatus> {
     if (destinationNetwork === Network.COSMOSHUB) {
       const tx = await services.ibc.transferIBCTokens({
@@ -24,7 +25,7 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
         destinationNetwork: Network.COSMOSHUB,
         assetAmountToTransfer: assetAmount,
       });
-      if (tx.hasOwnProperty("code")) {
+      if (isBroadcastTxFailure(tx)) {
         services.bus.dispatch({
           type: "ErrorEvent",
           payload: {

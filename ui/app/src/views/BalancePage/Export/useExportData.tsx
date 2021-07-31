@@ -122,6 +122,7 @@ export const useExportData = () => {
     };
     transactionStatusRef.value = await usecases.peg.unpeg(
       exportAmountRef.value,
+      exportParams.network,
     );
   }
 

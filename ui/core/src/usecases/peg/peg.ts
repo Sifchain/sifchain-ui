@@ -1,3 +1,4 @@
+import { parseLog, parseRawLog } from "@cosmjs/stargate/build/logs";
 import { PegConfig } from ".";
 import { IAssetAmount, Network, TransactionStatus } from "../../entities";
 import { Services } from "../../services";
@@ -63,6 +64,8 @@ export function Peg(
           },
         };
       } else {
+        const rawLog = parseRawLog(tx.rawLog);
+        debugger;
         services.bus.dispatch({
           type: "PegTransactionCompletedEvent",
           payload: {

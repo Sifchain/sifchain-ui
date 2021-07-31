@@ -18,17 +18,25 @@ export default ({
         log: "",
       });
 
-      services.ibc.createWalletByNetwork(Network.SIFCHAIN).then((w) => {
-        console.log("sifchain", w, w.addresses, w.balances);
-      });
+      services.ibc.createWalletByNetwork(Network.SIFCHAIN).then((w) => {});
+      // alert("loading cosmos assets");
       const loadCosmosAssets = () =>
         services.ibc.createWalletByNetwork(Network.COSMOSHUB).then((w) => {
-          console.log("cosmoshub", w, w.addresses, w.balances);
           state.connected = true;
           state.accounts = w.addresses;
           state.balances = w?.balances;
+          // console.table(w.balances);
         });
-
+      services.ibc.loadDestinationChainTxBySourceChainTxHash(
+        "",
+        Network.COSMOSHUB,
+        Network.COSMOSHUB,
+      );
+      services.ibc.loadDestinationChainTxBySourceChainTxHash(
+        "",
+        Network.SIFCHAIN,
+        Network.SIFCHAIN,
+      );
       loadCosmosAssets();
       services.bus.on("PegTransactionCompletedEvent", () => {
         loadCosmosAssets();
@@ -86,6 +94,7 @@ export default ({
         // await services.cosmoshub.connect();
         store.wallet.cosmoshub.isConnected = true;
       } catch (error) {
+        console.error(error);
         services.bus.dispatch({
           type: "WalletConnectionErrorEvent",
           payload: {

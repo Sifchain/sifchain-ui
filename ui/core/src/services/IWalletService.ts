@@ -2,13 +2,14 @@ import { TxHash, TxParams, Address, Asset, IAssetAmount } from "../entities";
 
 type Msg = { type: string; value: any }; // make entity
 
-export interface IWalletServiceState {
+export type IWalletServiceState = {
   address: Address;
   accounts: Address[];
   connected: boolean;
   balances: IAssetAmount[];
   log: string;
-}
+};
+
 export type IWalletService = {
   getState: () => IWalletServiceState;
   onProviderNotFound(handler: () => void): () => void;

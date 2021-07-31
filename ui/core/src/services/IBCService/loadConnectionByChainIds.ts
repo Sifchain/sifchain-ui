@@ -24,9 +24,17 @@ const connectionsByChainIds: {
       channelId: "channel-0",
     },
   },
+  "sifchain-testnet-042-ibc": {
+    "cosmoshub-testnet": {
+      channelId: "channel-0",
+    },
+  },
   "cosmoshub-testnet": {
     "sifchain-devnet-042": {
       channelId: "channel-53",
+    },
+    "sifchain-testnet-042-ibc": {
+      channelId: "channel-75",
     },
   },
 };

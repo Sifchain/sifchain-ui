@@ -2,6 +2,7 @@
 import localnetconfig from "../config.localnet.json";
 import devnetconfig from "../config.devnet.json";
 import devnet042config from "../config.devnet-042.json";
+import testnet042ibcconfig from "../config.testnet-042-ibc.json";
 import testnetconfig from "../config.testnet.json";
 import mainnnetconfig from "../config.mainnet.json";
 
@@ -13,7 +14,6 @@ import assetsEthereumMainnet from "../assets.ethereum.mainnet.json";
 import assetsSifchainLocalnet from "../assets.sifchain.localnet.json";
 import assetsSifchainMainnet from "../assets.sifchain.mainnet.json";
 import assetsSifchainDevnet from "../assets.sifchain.devnet";
-
 import assetsCosmoshubTestnet from "../assets.cosmoshub.testnet";
 
 import {
@@ -26,7 +26,7 @@ import { Asset, Network } from "../entities";
 import { ServiceContext } from "../services";
 import { NetworkEnv } from "./getEnv";
 
-type ConfigMap = { [s: string]: ServiceContext };
+type ConfigMap = Record<NetworkEnv, ServiceContext>;
 // type ChainNetwork = `${Network}.${NetworkEnv}`;
 type ChainNetwork = string;
 type AssetMap = Record<ChainNetwork, Asset[]>;
@@ -79,14 +79,14 @@ export function getConfig(
     ...cosmoshubAssets,
   ].map(cacheAsset);
 
-  console.log({ cosmoshubAssets });
   const configMap: ConfigMap = {
     localnet: parseConfig(localnetconfig as ChainConfig, allAssets),
     devnet: parseConfig(devnetconfig as ChainConfig, allAssets),
     devnet_042: parseConfig(devnet042config as ChainConfig, allAssets),
     testnet: parseConfig(testnetconfig as ChainConfig, allAssets),
     mainnet: parseConfig(mainnnetconfig as ChainConfig, allAssets),
+    testnet_042_ibc: parseConfig(testnet042ibcconfig, allAssets),
   };
 
-  return configMap[applicationNetworkEnv.toLowerCase()];
+  return configMap[applicationNetworkEnv];
 }

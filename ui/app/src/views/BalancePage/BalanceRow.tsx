@@ -136,7 +136,7 @@ export default defineComponent({
           }
         }}
         class={cx(
-          "align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden last:border-transparent group",
+          "list-complete-item align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden last:border-transparent group",
           showMaskRef.value && "opacity-40",
         )}
       >

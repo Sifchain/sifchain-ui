@@ -14,11 +14,15 @@ export default async function getKeplrProvider(): Promise<provider | null> {
 
   const win = window as WindowWithPossibleKeplr;
 
-  if (!win) return null;
+  if (!win) {
+    console.log("window not found", win);
+    return null;
+  }
 
   if (!win.keplr || !win.getOfflineSigner) {
     numChecks++;
-    if (numChecks > 20) {
+    if (numChecks > 1000) {
+      console.warn(`keplr not found`);
       return null;
     }
     await sleep(100);
@@ -26,5 +30,6 @@ export default async function getKeplrProvider(): Promise<provider | null> {
   }
 
   console.log("Keplr wallet bootstraped");
+  numChecks = 0;
   return win.keplr;
 }

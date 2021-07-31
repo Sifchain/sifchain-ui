@@ -1,3 +1,4 @@
+import { Network } from "../entities";
 import { AppCookies } from "./AppCookies";
 
 export enum NetworkEnv {
@@ -6,6 +7,7 @@ export enum NetworkEnv {
   DEVNET = "devnet",
   LOCALNET = "localnet",
   DEVNET_042 = "devnet_042",
+  TESTNET_042_IBC = "testnet_042_ibc",
 }
 
 // NOTE(ajoslin): support legacy `?_env=n` urls, from
@@ -16,23 +18,44 @@ export const networkEnvsByIndex = [
   NetworkEnv.DEVNET,
   NetworkEnv.LOCALNET,
   NetworkEnv.DEVNET_042,
+  NetworkEnv.TESTNET_042_IBC,
 ];
 
-export const profileLookup = {
+type AssetTag = `${Network}.${NetworkEnv}`;
+type ProfileLookup = Record<
+  NetworkEnv | number,
+  {
+    tag: NetworkEnv;
+    ethAssetTag: AssetTag;
+    sifAssetTag: AssetTag;
+    cosmoshubAssetTag: AssetTag;
+  }
+>;
+
+export const profileLookup: ProfileLookup = {
   [NetworkEnv.MAINNET]: {
     tag: NetworkEnv.MAINNET,
     ethAssetTag: "ethereum.mainnet",
     sifAssetTag: "sifchain.mainnet",
+    cosmoshubAssetTag: "cosmoshub.mainnet",
   },
   [NetworkEnv.DEVNET_042]: {
     tag: NetworkEnv.DEVNET_042,
     ethAssetTag: "ethereum.devnet",
     sifAssetTag: "sifchain.devnet",
+    cosmoshubAssetTag: "cosmoshub.testnet",
+  },
+  [NetworkEnv.TESTNET_042_IBC]: {
+    tag: NetworkEnv.TESTNET_042_IBC,
+    ethAssetTag: "ethereum.devnet",
+    sifAssetTag: "sifchain.devnet",
+    cosmoshubAssetTag: "cosmoshub.testnet",
   },
   [NetworkEnv.TESTNET]: {
     tag: NetworkEnv.TESTNET,
     ethAssetTag: "ethereum.testnet",
     sifAssetTag: "sifchain.devnet",
+    cosmoshubAssetTag: "cosmoshub.testnet",
   },
   get [1]() {
     return this[NetworkEnv.TESTNET];
@@ -41,6 +64,7 @@ export const profileLookup = {
     tag: NetworkEnv.DEVNET,
     ethAssetTag: "ethereum.devnet",
     sifAssetTag: "sifchain.devnet",
+    cosmoshubAssetTag: "cosmoshub.testnet",
   },
   get [2]() {
     return this[NetworkEnv.DEVNET];
@@ -49,6 +73,7 @@ export const profileLookup = {
     tag: NetworkEnv.LOCALNET,
     ethAssetTag: "ethereum.localnet",
     sifAssetTag: "sifchain.localnet",
+    cosmoshubAssetTag: "cosmoshub.testnet",
   },
   get [3]() {
     return this[NetworkEnv.LOCALNET];

@@ -38,6 +38,9 @@ export default defineComponent({
         [NetworkEnv.DEVNET_042]: (
           <div class={[styles.panel, styles.devnet]}>DEVNET_042</div>
         ),
+        [NetworkEnv.TESTNET_042_IBC]: (
+          <div class={[styles.panel, styles.devnet]}>TESTNET_042_IBC</div>
+        ),
       }[networkEnv] || <NoCookie />);
 
     return () => <Cmp />;

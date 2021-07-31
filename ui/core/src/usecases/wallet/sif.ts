@@ -62,6 +62,7 @@ export default ({
         await services.sif.connect();
         store.wallet.sif.isConnected = true;
       } catch (error) {
+        console.error(error);
         services.bus.dispatch({
           type: "WalletConnectionErrorEvent",
           payload: {

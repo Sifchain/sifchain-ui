@@ -62,7 +62,7 @@ export default defineComponent({
                 : `border-transparent`,
             ]}
           >
-            <div class="flex-1 items-center flex">
+            <div class="flex-1 items-center flex text-left">
               <img
                 src={props.connection.iconSrc}
                 class="w-[22px] rounded"

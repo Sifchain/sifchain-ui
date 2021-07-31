@@ -1,1 +1,1 @@
-export { default, IBCServiceContext } from "./IBCService";
+export { default } from "./IBCService";

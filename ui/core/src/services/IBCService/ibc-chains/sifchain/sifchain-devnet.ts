@@ -3,14 +3,14 @@ import { IBCChainConfig } from "../IBCChainConfig";
 
 export const SIFCHAIN_DEVNET_042: IBCChainConfig = {
   network: Network.SIFCHAIN,
-  chainId: "sifchain-devnet-042",
-  rpcUrl: "https://rpc-devnet-042.sifchain.finance",
-  restUrl: "https://api-devnet-042.sifchain.finance",
+  chainId: "sifchain-devnet",
+  rpcUrl: "https://rpc-devnet.sifchain.finance",
+  restUrl: "https://api-devnet.sifchain.finance",
   keplrChainInfo: {
-    chainName: "SifchainDevnet-042",
-    chainId: "sifchain-devnet-042",
-    rpc: "https://rpc-devnet-042.sifchain.finance",
-    rest: "https://api-devnet-042.sifchain.finance",
+    chainName: "SifDev-042-IBC",
+    chainId: "sifchain-devnet",
+    rpc: "https://rpc-devnet.sifchain.finance",
+    rest: "https://api-devnet.sifchain.finance",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",

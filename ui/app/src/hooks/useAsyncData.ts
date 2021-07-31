@@ -41,7 +41,7 @@ export const useAsyncData = <F extends () => Promise<any>>(
         console.error("useAsyncData error", e);
         publicState.isError.value = true;
         publicState.isLoading.value = false;
-        publicState.error = e;
+        publicState.error.value = e;
       });
   }
   const privateState = {

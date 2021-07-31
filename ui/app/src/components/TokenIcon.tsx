@@ -44,18 +44,19 @@ export const TokenIcon = defineComponent({
         if (!asset) return;
 
         const svgSrc = `/images/tokens/${(
-          asset?.displaySymbol ?? asset?.symbol
+          asset?.displaySymbol || asset?.symbol
         )?.toUpperCase()}.svg`;
-        const res = await fetch(svgSrc);
-
-        if (!res.headers.get("content-type")?.includes("svg/xml")) {
+        const image = new Image();
+        image.src = svgSrc;
+        image.onload = () => {
+          url.value = svgSrc;
+        };
+        image.onerror = () => {
           const coinGeckoUrl = core.config.assets
             .find((a) => a.symbol == asset?.symbol)
             ?.imageUrl?.replace("thumb", "large");
           url.value = coinGeckoUrl;
-        } else {
-          url.value = svgSrc;
-        }
+        };
       },
       {
         immediate: true,

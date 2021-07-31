@@ -27,6 +27,7 @@ import { ImportData, getImportLocation } from "./useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
+import { rootStore } from "../../../store";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -126,6 +127,9 @@ export default defineComponent({
     );
     const networkOpenRef = ref(false);
 
+    const currentAssetBalance = rootStore.accounts.computed(
+      (s) => s.state[importParams.network.value].balances,
+    );
     return () => (
       <Modal
         heading="Import Token to Sifchain"

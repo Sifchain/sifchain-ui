@@ -1,6 +1,7 @@
 import { computed, ComputedRef } from "@vue/reactivity";
 import { AppConfig, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
+import { rootStore } from "../../store";
 
 export type WalletConnection = {
   name: string;
@@ -26,8 +27,13 @@ export const walletConnections: WalletConnection[] = [
       return `https://etherscan.io/address/${address}`;
     },
     useWalletState: () => {
-      const { store } = useCore();
-      return computed(() => store.wallet.eth);
+      return computed(() => {
+        const w = rootStore.accounts.state.ethereum;
+        return {
+          isConnected: w.connected,
+          address: w.address,
+        };
+      });
     },
     useWalletApi: () => {
       const { usecases } = useCore();
@@ -47,6 +53,25 @@ export const walletConnections: WalletConnection[] = [
     useWalletState: () => {
       const { store } = useCore();
       return computed(() => store.wallet.sif);
+    },
+    useWalletApi: () => {
+      const { usecases } = useCore();
+      return computed(() => ({
+        connect: () => usecases.wallet.sif.connectToSifWallet(),
+        disconnect: undefined,
+      }));
+    },
+  },
+  {
+    name: "KEPLR",
+    network: Network.COSMOSHUB,
+    iconSrc: require("@/assets/keplr.jpg"),
+    getAddressExplorerUrl: (config: AppConfig, address: string) => {
+      return `https://www.mintscan.io/cosmos/account/${address}`;
+    },
+    useWalletState: () => {
+      const { store } = useCore();
+      return computed(() => store.wallet.cosmoshub);
     },
     useWalletApi: () => {
       const { usecases } = useCore();

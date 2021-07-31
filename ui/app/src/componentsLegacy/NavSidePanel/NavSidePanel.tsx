@@ -6,7 +6,7 @@ import NavSidePanelItem from "./NavSidePanelItem";
 import Logo from "@/assets/logo-large.svg";
 import AssetIcon from "../../components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
-import WalletPicker from "@/components/WalletPicker";
+import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import MoreMenu from "./NavMoreMenu";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
@@ -150,7 +150,9 @@ export default defineComponent({
                   src="/images/tokens/ROWAN.svg"
                 />
                 ROWAN:{" "}
-                {rowanPrice.value ? `$${rowanPrice.value.toFixed(5)}` : "..."}
+                {rowanPrice.value
+                  ? `$${(+rowanPrice.value).toFixed(5)}`
+                  : "..."}
               </span>
             </div>
             <Tooltip

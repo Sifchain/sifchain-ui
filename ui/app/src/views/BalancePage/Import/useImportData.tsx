@@ -62,7 +62,6 @@ export const useImportData = (): ImportData => {
   watch(
     () => importParams,
     (value) => {
-      console.log("changes to", value);
       router.replace(
         getImportLocation(route.params.step as ImportStep, {
           ...proxyRefs(importParamsRefs),
@@ -136,7 +135,6 @@ export const useImportData = (): ImportData => {
     pegEventRef.value = undefined;
 
     for await (const event of usecases.peg.peg(importAmountRef.value)) {
-      console.log("GOT EVENT", event);
       pegEventRef.value = event;
     }
   }

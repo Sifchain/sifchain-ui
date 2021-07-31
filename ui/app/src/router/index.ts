@@ -14,7 +14,7 @@ import StatsPage from "@/views/StatsPage/StatsPage";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
 import RemoveLiquidity from "@/views/RemoveLiquidityPage.vue";
 import SinglePool from "@/views/SinglePool.vue";
-import PegAssetPage from "@/views/PegAssetPage.vue";
+// import PegAssetPage from "@/views/PegAssetPage.vue";
 import Pool from "@/views/PoolPage/PoolPage";
 import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
 import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/RemoveLiquidity";
@@ -29,7 +29,7 @@ type SwapPageMeta = {
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: { name: "Balances" },
+    redirect: { name: "Swap" },
   },
   {
     path: "/stats",
@@ -143,22 +143,22 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: "/balances/import/:assetFrom/:assetTo",
-    name: "ImportListingPage",
-    component: PegAssetPage,
-    meta: {
-      title: "Import Asset - Sifchain",
-    },
-  },
-  {
-    path: "/balances/export/:assetFrom/:assetTo",
-    name: "UnpegAssetPage",
-    component: PegAssetPage,
-    meta: {
-      title: "Export Asset - Sifchain",
-    },
-  },
+  // {
+  //   path: "/balances/import/:assetFrom/:assetTo",
+  //   name: "ImportListingPage",
+  //   component: PegAssetPage,
+  //   meta: {
+  //     title: "Import Asset - Sifchain",
+  //   },
+  // },
+  // {
+  //   path: "/balances/export/:assetFrom/:assetTo",
+  //   name: "UnpegAssetPage",
+  //   component: PegAssetPage,
+  //   meta: {
+  //     title: "Export Asset - Sifchain",
+  //   },
+  // },
 ];
 
 const router = createRouter({
