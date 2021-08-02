@@ -16,6 +16,7 @@ import router from "@/router";
 import { ExportData, getExportLocation } from "./useExportData";
 import { Form } from "@/components/Form";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import { rootStore } from "@/store";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -197,7 +198,7 @@ export default defineComponent({
               value={
                 props.exportData.exportParams.network === Network.ETHEREUM
                   ? store.wallet.eth.address
-                  : store.wallet.cosmoshub.address
+                  : rootStore.accounts.cosmoshub.address
               }
               class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
               onClick={(e) => {

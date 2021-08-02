@@ -67,12 +67,16 @@ export function getConfig(
     "ethereum.mainnet": parseAssets(
       assetsEthereumMainnet.assets as AssetConfig[],
     ),
-    "cosmoshub.testnet": parseAssets(assetsCosmoshubTestnet.assets),
   };
 
   const sifchainAssets = assetMap[sifchainAssetTag] || [];
   const ethereumAssets = assetMap[ethereumAssetTag] || [];
-  const cosmoshubAssets = assetMap[cosmoshubAssetTag] || [];
+  const cosmoshubAssets = parseAssets(
+    sifchainAssets.map((a) => ({
+      ...a,
+      network: Network.COSMOSHUB,
+    })),
+  );
   const allAssets = [
     ...sifchainAssets,
     ...ethereumAssets,

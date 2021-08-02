@@ -94,12 +94,13 @@ export default function createClpService({
       nativeAssetAmount: IAssetAmount;
       externalAssetAmount: IAssetAmount;
     }) {
+      const symbol = params.externalAssetAmount.asset.symbol;
       return await client.addLiquidity({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
           source_chain: params.externalAssetAmount.asset.network as string,
-          symbol: params.externalAssetAmount.asset.symbol,
-          ticker: params.externalAssetAmount.asset.symbol,
+          symbol: symbol,
+          ticker: symbol,
         },
         external_asset_amount: params.externalAssetAmount.toBigInt().toString(),
         native_asset_amount: params.nativeAssetAmount.toBigInt().toString(),

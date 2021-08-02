@@ -69,12 +69,12 @@ export const useAddLiquidityData = () => {
       const asset = config.assets.find(
         (a) => a.symbol.toUpperCase() === v.toUpperCase(),
       );
-      const displaySymbol = asset?.displaySymbol;
-      if (!displaySymbol) return;
+      const symbol = asset?.symbol;
+      if (!symbol) return;
       router.replace({
         ...router.currentRoute.value,
         params: {
-          externalAsset: displaySymbol,
+          externalAsset: symbol,
         },
       });
     },

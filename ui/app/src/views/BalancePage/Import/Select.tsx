@@ -192,7 +192,7 @@ export default defineComponent({
             </div>
 
             <TokenSelectDropdown
-              sortBy="symbol"
+              sortBy="balance"
               network={importParams.network}
               onCloseIntent={() => {
                 selectIsOpen.value = false;

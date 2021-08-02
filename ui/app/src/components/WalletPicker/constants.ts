@@ -13,8 +13,8 @@ export type WalletConnection = {
     address: string;
   }>;
   useWalletApi: () => ComputedRef<{
-    connect: () => Promise<any>;
-    disconnect?: () => Promise<any>; // Keplr has no disconnect so it's optional...?
+    connect: () => any;
+    disconnect?: () => any; // Keplr has no disconnect so it's optional...?
   }>;
 };
 
@@ -71,12 +71,18 @@ export const walletConnections: WalletConnection[] = [
     },
     useWalletState: () => {
       const { store } = useCore();
-      return computed(() => store.wallet.cosmoshub);
+      return rootStore.accounts.computed((s) => {
+        const w = s.state.cosmoshub;
+        return {
+          isConnected: w.connected,
+          address: w.address,
+        };
+      });
     },
     useWalletApi: () => {
       const { usecases } = useCore();
       return computed(() => ({
-        connect: () => usecases.wallet.sif.connectToSifWallet(),
+        connect: () => rootStore.accounts.connect(Network.COSMOSHUB),
         disconnect: undefined,
       }));
     },

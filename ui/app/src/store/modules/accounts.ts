@@ -1,7 +1,6 @@
 import { rootStore } from "..";
 import { IAssetAmount, Network } from "../../../../core/src";
 import { useCore } from "../../hooks/useCore";
-import { Actions } from "../actions";
 import { Vuextra } from "../Vuextra";
 const core = useCore();
 export interface IWalletServiceState {
@@ -49,8 +48,8 @@ export const accountStore = Vuextra.createStore({
     },
   }),
   mutations: (state) => ({
-    setConnected(payload: { network: Network; isConnected: boolean }) {
-      state[payload.network].connected = payload.isConnected;
+    setConnected(payload: { network: Network; connected: boolean }) {
+      state[payload.network].connected = payload.connected;
     },
     setAddress(payload: { network: Network; address: string }) {
       state[payload.network].address = payload.address;
@@ -73,8 +72,7 @@ export const accountStore = Vuextra.createStore({
       });
     },
     connect(network: Network) {
-      context.state.ethereum.connected = false;
-      accountStore.mutations.setConnected({ network, isConnected: true });
+      accountStore.mutations.setConnected({ network, connected: true });
     },
   }),
   modules: [],
@@ -84,12 +82,12 @@ accountStore.loadAccount({ network: Network.COSMOSHUB });
 accountStore.connect(Network.SIFCHAIN);
 accountStore.mutations.setConnected({
   network: Network.SIFCHAIN,
-  isConnected: true,
+  connected: true,
 });
 
 // setInterval(() => {
 //   walletStore.setConnected({
 //     network: Network.ETHEREUM,
-//     isConnected: !walletStore.state?.ethereum.connected,
+//     connected: !walletStore.state?.ethereum.connected,
 //   });
 // }, 1000);

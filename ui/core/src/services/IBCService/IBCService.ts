@@ -34,7 +34,11 @@ export interface IBCServiceContext {
 }
 
 export class IBCService {
-  denomLookup: Record<string, string> = {};
+  denomLookup: Record<Network, Record<string, string>> = {
+    ethereum: {},
+    cosmoshub: {},
+    sifchain: {},
+  };
   constructor(private context: IBCServiceContext) {}
   static create(context: IBCServiceContext) {
     return new this(context);
@@ -44,7 +48,7 @@ export class IBCService {
     this.context;
 
     // @ts-ignore
-    const env = NetworkEnv.DEVNET_042;
+    const env = NetworkEnv.TESTNET_042_IBC;
     const chainConfig = chainConfigByNetworkEnv[env][network];
     if (!chainConfig) {
       throw new Error(`No chain config for network ${network}`);
@@ -100,7 +104,7 @@ export class IBCService {
         };
       }),
     );
-    // console.table(clients);
+    console.table(clients);
     const allCxns = await Promise.all(
       (await queryClient.ibc.connection.allConnections()).connections.map(
         async (cxn) => {
@@ -145,7 +149,8 @@ export class IBCService {
             balance.denom.split("/")[1],
           );
           symbol = denomTrace.denomTrace?.baseDenom ?? symbol;
-          this.denomLookup[symbol] = balance.denom;
+          this.denomLookup[sourceChain.network as Network][symbol] =
+            balance.denom;
         }
 
         let asset =
@@ -162,12 +167,14 @@ export class IBCService {
         const assetAmount = AssetAmount(asset, balance?.amount);
         assetAmounts.push(assetAmount);
         if (network === Network.COSMOSHUB) {
-          console.log({
-            denom: balance.denom,
-            amount: balance.amount,
-            symbol,
-            trace: denomTrace,
-          });
+          console.table([
+            {
+              denom: balance.denom,
+              amount: balance.amount,
+              symbol,
+              trace: denomTrace,
+            },
+          ]);
         }
       } catch (e) {
         console.error(e);
@@ -202,6 +209,13 @@ export class IBCService {
     await keplr?.enable(sourceChain.chainId);
     const sendingSigner = await keplr?.getOfflineSigner(sourceChain.chainId);
     if (!sendingSigner) throw new Error("No sending signer");
+    console.log(
+      `${params.sourceNetwork}/${await sendingSigner
+        .getAccounts()
+        .then(([a]) => a.address)} -> ${
+        params.destinationNetwork
+      }/${await recievingSigner.getAccounts().then(([a]) => a.address)}`,
+    );
     const [fromAccount] = (await sendingSigner?.getAccounts()) || [];
     if (!fromAccount) {
       throw new Error("No account found for sending signer");
@@ -224,7 +238,9 @@ export class IBCService {
       fromAccount.address,
       toAccount.address,
       {
-        denom: this.denomLookup[symbol] || symbol,
+        denom:
+          this.denomLookup[sourceChain.network as Network][symbol] || symbol,
+        // denom: symbol,
         amount: params.assetAmountToTransfer.toBigInt().toString(),
       },
       "transfer",

@@ -18,12 +18,13 @@ type AddLiquidityServices = {
   bus: PickBus;
   sif: PickSif;
   clp: PickClp;
+  ibc: Services["ibc"];
 };
 
 type AddLiquidityStore = Pick<Store, "pools">;
 
 export function AddLiquidity(
-  { bus, clp, sif }: AddLiquidityServices,
+  { bus, clp, sif, ibc }: AddLiquidityServices,
   store: AddLiquidityStore,
 ) {
   return async (

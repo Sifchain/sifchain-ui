@@ -34,7 +34,7 @@ const connectionsByChainIds: {
       channelId: "channel-53",
     },
     "sifchain-testnet-042-ibc": {
-      channelId: "channel-75",
+      channelId: "channel-86",
     },
   },
 };

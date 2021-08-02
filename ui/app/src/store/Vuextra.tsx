@@ -175,10 +175,6 @@ function createStore<
     >
   >;
 
-  // function vuextraComputed<
-  //   T,
-  //   P extends Path<Pick<typeof storeProxy, "state" | "getters">>
-  // >(arg: P): ComputedRef<T>;
   function vuextraComputed<T>(
     arg: (state: typeof storeProxy) => T,
   ): ComputedRef<T>;
@@ -187,23 +183,15 @@ function createStore<
       if (typeof arg === "function") {
         return arg(storeProxy);
       }
-      if (typeof arg === "string") {
-        let arr = arg.split(".");
-        let val = storeProxy;
-        while (arr.length) {
-          const key = arr.shift();
-          // @ts-ignore
-          val = val[arr.join(".")] || val[key || ""];
-        }
-        return val;
-      }
     });
   }
+
   const storeProxy = new Proxy(vuextraStore, {
     get(target, p, receiver) {
       if (p === "computed") {
         return vuextraComputed;
       }
+
       if (p in store.getters) {
         return store.getters[p];
       }
@@ -217,5 +205,51 @@ function createStore<
     GettersType & { getters: GettersType } & {
       computed: typeof vuextraComputed;
     };
+
   return storeProxy as Readonly<typeof storeProxy> & State;
 }
+
+/* 
+// Backburner 
+
+if (p === "refs") {
+  return createDeepRefProxy(storeProxy);
+}
+
+type DeepComputedProxy<T> = T extends object
+    ? { [K in keyof T]: DeepComputedProxy<T[K]> } & ComputedRef<T>
+    : ComputedRef<T>;
+
+  const computePath = (path: string[], obj: any) => {
+    let val = undefined;
+    while (path.length) {
+      let p = path.shift();
+      if (p != undefined) val = obj[p];
+    }
+    return val;
+  };
+  function createDeepRefProxy(target: any) {
+    let path: any = [];
+    const p = new Proxy(
+      target as DeepComputedProxy<Pick<typeof storeProxy, "state" | "getters">>,
+      {
+        get(target, p, receiver) {
+          const currPath = path;
+          let comp: ComputedRef<any> | undefined;
+          if (p === "value" || p === "effect") {
+            comp = comp || computed(() => computePath(currPath, storeProxy));
+            return comp[p];
+          }
+          path = [...currPath, p];
+          const val = computePath(path, storeProxy);
+          if (typeof val !== "object") {
+            return val;
+          }
+          return p;
+        },
+      },
+    );
+    return p;
+  }
+
+  */

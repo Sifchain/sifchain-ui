@@ -8,6 +8,8 @@
 
 */
 
+const sif = new SifDexClient();
+
 const sifchainClient = new SifchainClient({
   network: "testnet",
   rpc: "http://localhost:8545",
