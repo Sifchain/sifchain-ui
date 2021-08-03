@@ -65,7 +65,7 @@ export function Peg(
         };
       } else {
         const rawLog = parseRawLog(tx.rawLog);
-        debugger;
+        // debugger;
         services.bus.dispatch({
           type: "PegTransactionCompletedEvent",
           payload: {

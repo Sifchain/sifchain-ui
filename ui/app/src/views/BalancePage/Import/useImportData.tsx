@@ -97,7 +97,7 @@ export const useImportData = (): ImportData => {
           t.asset.displaySymbol.toLowerCase()
         );
       }) || tokenListRef.value[0];
-    debugger;
+    // debugger;
     importParams.displaySymbol = token.asset.displaySymbol;
     return token;
   });
