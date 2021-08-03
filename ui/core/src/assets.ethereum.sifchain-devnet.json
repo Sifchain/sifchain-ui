@@ -6,7 +6,8 @@
       "name": "Rowan",
       "imageUrl": "./images/siflogo.png",
       "address": "0xaa0532e884ac34c1B9937fb433045A2b796D9347",
-      "network": "ethereum"
+      "network": "ethereum",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x43EB5eC458Ab344DF8351d5c57319ecbb5fe2FfC",
@@ -16,7 +17,8 @@
       "network": "ethereum",
       "priceUsd": 0.999153,
       "symbol": "USDT",
-      "transferLimit": "5004238590"
+      "transferLimit": "5004238590",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -25,7 +27,8 @@
       "network": "ethereum",
       "priceUsd": 1145,
       "symbol": "eth",
-      "transferLimit": "4381237787299667968"
+      "transferLimit": "4381237787299667968",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xF8D6e4D8A128bE2651e4e9a11D0d78869ffd3Dcb",
@@ -35,7 +38,8 @@
       "network": "ethereum",
       "priceUsd": 0.309639,
       "symbol": "BAT",
-      "transferLimit": "16147836674320740909056"
+      "transferLimit": "16147836674320740909056",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xE91C0AFD4C23610D2D106E874C0f71be689d2995",
@@ -45,7 +49,8 @@
       "network": "ethereum",
       "priceUsd": 3.83,
       "symbol": "ANT",
-      "transferLimit": "1305483028720626696192"
+      "transferLimit": "1305483028720626696192",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x4c85D302D5dF39629FA70ac2AfE2A55b73c24853",
@@ -55,7 +60,8 @@
       "network": "ethereum",
       "priceUsd": 1.94,
       "symbol": "BNT",
-      "transferLimit": "2577319587628866076672"
+      "transferLimit": "2577319587628866076672",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x4a86CA57a8a1a5D72360E9792c0d563779eeB5E6",
@@ -65,7 +71,8 @@
       "network": "ethereum",
       "priceUsd": 0.61159,
       "symbol": "ZRX",
-      "transferLimit": "8175411631975670218752"
+      "transferLimit": "8175411631975670218752",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xf837953D6dB2C04E45dF309CD6fdc2Dcf79e10aA",
@@ -75,7 +82,8 @@
       "network": "ethereum",
       "priceUsd": 23.32,
       "symbol": "LINK",
-      "transferLimit": "214408233276157788160"
+      "transferLimit": "214408233276157788160",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x15F7aC2E15f5bb26aa24B525CA3e3EBEC5230Ed9",
@@ -85,7 +93,8 @@
       "network": "ethereum",
       "priceUsd": 0.158751,
       "symbol": "MANA",
-      "transferLimit": "31495864592978940002304"
+      "transferLimit": "31495864592978940002304",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x8556B8Be2D0223Ef40f6d8dceE6f867E65e9EDb3",
@@ -95,7 +104,8 @@
       "network": "ethereum",
       "priceUsd": 0.465068,
       "symbol": "LRC",
-      "transferLimit": "10751115965837254590464"
+      "transferLimit": "10751115965837254590464",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x1C65d5D1C7d863ffB89A21f9Ef7aA29037A1920B",
@@ -105,7 +115,8 @@
       "network": "ethereum",
       "priceUsd": 0.367884,
       "symbol": "ENJ",
-      "transferLimit": "13591240717182590517248"
+      "transferLimit": "13591240717182590517248",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xf4364bfdcd883cc62c1A9202068b7AC100718847",
@@ -115,7 +126,8 @@
       "network": "ethereum",
       "priceUsd": 17.31,
       "symbol": "SNX",
-      "transferLimit": "288850375505488150528"
+      "transferLimit": "288850375505488150528",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xEbBb824c16Fe3CD628a57A7ADF9F0576479Ae0AA",
@@ -125,7 +137,8 @@
       "network": "ethereum",
       "priceUsd": 0.999831,
       "symbol": "TUSD",
-      "transferLimit": "5000845142829138182144"
+      "transferLimit": "5000845142829138182144",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x9C83747E0DB1b66C829A887BB10C8973E0BbCB6D",
@@ -135,7 +148,8 @@
       "network": "ethereum",
       "priceUsd": 0.568633,
       "symbol": "OCEAN",
-      "transferLimit": "8793017640551988592640"
+      "transferLimit": "8793017640551988592640",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xA846bd9010D37A7458E2746eF7bC8D1E1719DC08",
@@ -145,7 +159,8 @@
       "network": "ethereum",
       "priceUsd": 0.145596,
       "symbol": "FTM",
-      "transferLimit": "34341602791285476818944"
+      "transferLimit": "34341602791285476818944",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x064aA67db83b8fc4D1a1fDD294d4E6a11BD6efe2",
@@ -155,7 +170,8 @@
       "network": "ethereum",
       "priceUsd": 1.01,
       "symbol": "SUSD",
-      "transferLimit": "4950495049504951107584"
+      "transferLimit": "4950495049504951107584",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xD3951d710314b721866a1F4df5414d8f906207DD",
@@ -165,7 +181,8 @@
       "network": "ethereum",
       "priceUsd": 1,
       "symbol": "USDC",
-      "transferLimit": "5000000000"
+      "transferLimit": "5000000000",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xef1C4af73261eDD79BFEd11973E86173b1981021",
@@ -175,7 +192,8 @@
       "network": "ethereum",
       "priceUsd": 0.070311,
       "symbol": "CRO",
-      "transferLimit": "7111262818051"
+      "transferLimit": "7111262818051",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xcdF2504B6313A47306b9B85Ed628b9C7065aEA76",
@@ -185,7 +203,8 @@
       "network": "ethereum",
       "priceUsd": 33982,
       "symbol": "WBTC",
-      "transferLimit": "14713671"
+      "transferLimit": "14713671",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x03d81381B672a765E3F3925eFE00AD1B119Fd911",
@@ -195,7 +214,8 @@
       "network": "ethereum",
       "priceUsd": 1.21,
       "symbol": "SXP",
-      "transferLimit": "4132231404958677729280"
+      "transferLimit": "4132231404958677729280",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x516cfAb6FC73BEb041a02CC4EE76F3bde1025cc0",
@@ -205,7 +225,8 @@
       "network": "ethereum",
       "priceUsd": 9,
       "symbol": "BAND",
-      "transferLimit": "555555555555555540992"
+      "transferLimit": "555555555555555540992",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x51c41F59Cd9edAF3dA4E17Ea40DaB8F4A555808E",
@@ -215,7 +236,8 @@
       "network": "ethereum",
       "priceUsd": 0.997605,
       "symbol": "DAI",
-      "transferLimit": "5012003748978804916224"
+      "transferLimit": "5012003748978804916224",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x202E0e9AeBFba38024e3c655a556c7a9533C4a19",
@@ -225,7 +247,8 @@
       "network": "ethereum",
       "priceUsd": 257.26,
       "symbol": "COMP",
-      "transferLimit": "19435590453237972992"
+      "transferLimit": "19435590453237972992",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x2Df8522737EA39165409144165F5Aa11c617efc1",
@@ -235,7 +258,8 @@
       "network": "ethereum",
       "priceUsd": 10.86,
       "symbol": "UMA",
-      "transferLimit": "460405156537753272320"
+      "transferLimit": "460405156537753272320",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xCb92407A0DAff145601675Aac063059839d29ef4",
@@ -245,7 +269,8 @@
       "network": "ethereum",
       "priceUsd": 23.76,
       "symbol": "BAL",
-      "transferLimit": "210437710437710430208"
+      "transferLimit": "210437710437710430208",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x1a9b5011e5a5e1AF47AaC123E62E47230920718C",
@@ -255,7 +280,8 @@
       "network": "ethereum",
       "priceUsd": 30163,
       "symbol": "YFI",
-      "transferLimit": "165766004707754528"
+      "transferLimit": "165766004707754528",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x35282f5F4e20BBAE0FCfDceF9e008b39F195C32A",
@@ -265,7 +291,8 @@
       "network": "ethereum",
       "priceUsd": 1.92,
       "symbol": "SRM",
-      "transferLimit": "2604166666"
+      "transferLimit": "2604166666",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xB2C7c02DD15eCA10e00588BCe18A5316DC0A7684",
@@ -275,7 +302,8 @@
       "network": "ethereum",
       "priceUsd": 152.33,
       "symbol": "CREAM",
-      "transferLimit": "32823475349570011136"
+      "transferLimit": "32823475349570011136",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x07aeD342a842A351129227C55e89b57bE46e2830",
@@ -285,7 +313,8 @@
       "network": "ethereum",
       "priceUsd": 0.090036,
       "symbol": "SAND",
-      "transferLimit": "55533342218668080103424"
+      "transferLimit": "55533342218668080103424",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xb8554a27D8d6aA8D14d049aE4DBCAC6ac2582280",
@@ -295,7 +324,8 @@
       "network": "ethereum",
       "priceUsd": 8.39,
       "symbol": "SUSHI",
-      "transferLimit": "595947556615017725952"
+      "transferLimit": "595947556615017725952",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x60DE6E0dA25C0EBAfE30f824FA96bfA9C3eaaf69",
@@ -305,7 +335,8 @@
       "network": "ethereum",
       "priceUsd": 0.213968,
       "symbol": "ESD",
-      "transferLimit": "23367980258730274979840"
+      "transferLimit": "23367980258730274979840",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x4303D04691b793bD6C20e9F627640b042Ef6a5fB",
@@ -315,7 +346,8 @@
       "network": "ethereum",
       "priceUsd": 15.38,
       "symbol": "UNI",
-      "transferLimit": "325097529258777640960"
+      "transferLimit": "325097529258777640960",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xc01deAf141869DBCc760A78b0cFfA0AF4705057a",
@@ -325,7 +357,8 @@
       "network": "ethereum",
       "priceUsd": 301.33,
       "symbol": "AAVE",
-      "transferLimit": "16593103906016661504"
+      "transferLimit": "16593103906016661504",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x9673ccf6A8366d832Ef75A28AddE144423F4d148",
@@ -335,7 +368,8 @@
       "network": "ethereum",
       "priceUsd": 49.83,
       "symbol": "BOND",
-      "transferLimit": "100341159943808942080"
+      "transferLimit": "100341159943808942080",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x149cb62320Ab43F530063E86b3ceEAccC573003a",
@@ -345,7 +379,8 @@
       "network": "ethereum",
       "priceUsd": 28.04,
       "symbol": "WFIL",
-      "transferLimit": "178316690442225385472"
+      "transferLimit": "178316690442225385472",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x58625f8EBF7f41956C3a6913796e43B0a5984ae3",
@@ -355,7 +390,8 @@
       "network": "ethereum",
       "priceUsd": 0.624661,
       "symbol": "GRT",
-      "transferLimit": "8004341554859355406336"
+      "transferLimit": "8004341554859355406336",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x4c39B31FBC836f32f53A97fd360e7AbF792e72a0",
@@ -365,7 +401,8 @@
       "network": "ethereum",
       "priceUsd": 6.68,
       "symbol": "LON",
-      "transferLimit": "748502994011976105984"
+      "transferLimit": "748502994011976105984",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xDD0ED24e3c0479F423891258c391e7Dd7a6E4EF7",
@@ -375,7 +412,8 @@
       "network": "ethereum",
       "priceUsd": 3.16,
       "symbol": "1INCH",
-      "transferLimit": "1582278481012658274304"
+      "transferLimit": "1582278481012658274304",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xbfBf12646B30af76f5728c8DFcC680843cf0820b",
@@ -385,7 +423,8 @@
       "network": "ethereum",
       "priceUsd": 3.23,
       "symbol": "RUNE",
-      "transferLimit": "1547987616099071164416"
+      "transferLimit": "1547987616099071164416",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x1310BCB18474c75B39358c1A5F9F47f9ac847aB1",
@@ -395,7 +434,8 @@
       "network": "ethereum",
       "priceUsd": 1.12,
       "symbol": "WSCRT",
-      "transferLimit": "4464285714"
+      "transferLimit": "4464285714",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x250e711E217AdcD7CA40381251D8BBf27c136564",
@@ -405,7 +445,8 @@
       "network": "ethereum",
       "priceUsd": 0.0109,
       "symbol": "IOTX",
-      "transferLimit": "458715596330000000000000"
+      "transferLimit": "458715596330000000000000",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x3F063B4c302C15CcF05D474301b75F86944544Aa",
@@ -415,7 +456,8 @@
       "priceUsd": 0.01802738,
       "transferLimit": "277355888654000000000000",
       "network": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/13504/small/Group_10572.png?1610534130"
+      "imageUrl": "https://assets.coingecko.com/coins/images/13504/small/Group_10572.png?1610534130",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xbD51c9391f38CBF97C2F9597AAb5A94d2114efA2",
@@ -425,7 +467,8 @@
       "network": "ethereum",
       "priceUsd": 0.92712,
       "symbol": "cocos",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xFcF61Ae012c708dD17f46B62D155637ddfd7D0D1",
@@ -435,7 +478,8 @@
       "network": "ethereum",
       "priceUsd": 0.3684,
       "symbol": "keep",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xF66Be71DE1e9061877edE53F6eD066a08F61F3BC",
@@ -445,7 +489,8 @@
       "network": "ethereum",
       "priceUsd": 0.4111,
       "symbol": "ogn",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x967b9994c634924c8ddb6864b1F510DF91908c71",
@@ -455,7 +500,8 @@
       "network": "ethereum",
       "priceUsd": 1.05,
       "symbol": "daofi",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x8c8ec2F53E1f4729889697e1b274f143407aC8d6",
@@ -465,7 +511,8 @@
       "network": "ethereum",
       "priceUsd": 0.1706,
       "symbol": "lina",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x3963d088036763359740C0E0855152D82a551730",
@@ -475,7 +522,8 @@
       "network": "ethereum",
       "priceUsd": 0.0318,
       "symbol": "tshp",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xE8947F381f786A998eD6dA7ab938a11c7BD018B8",
@@ -485,7 +533,8 @@
       "network": "ethereum",
       "priceUsd": 9.0934,
       "symbol": "b20",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x370DE8ca4dcD270aB6b04b01e419c2ef545541a7",
@@ -495,7 +544,8 @@
       "network": "ethereum",
       "priceUsd": 0.067,
       "symbol": "akro",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xd176f177B0e6aBb1e104D2ed9CAF8DB32844c6EF",
@@ -505,7 +555,8 @@
       "network": "ethereum",
       "priceUsd": 0.1596,
       "symbol": "rfuel",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x380934E9D47B466616D427380f99cb7283D1e7A1",
@@ -515,7 +566,8 @@
       "network": "ethereum",
       "priceUsd": 1.11,
       "symbol": "rly",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x2050D33F6d14DEe23De3C6a20173295474D7c0F6",
@@ -525,7 +577,8 @@
       "network": "ethereum",
       "priceUsd": 0.1531,
       "symbol": "conv",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x0F7C5C3b81AA776aDd281A5D7DcA4F5d62056601",
@@ -535,7 +588,8 @@
       "network": "ethereum",
       "priceUsd": 2.21,
       "symbol": "rndr",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0xb317fa8D773dF4254B2107A02Edf1711FdCb0443",
@@ -545,7 +599,8 @@
       "network": "ethereum",
       "priceUsd": 0.1596,
       "symbol": "paid",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "0x1821DA6Fc5609e547889d6b650985876c2392E73",
@@ -555,7 +610,8 @@
       "network": "ethereum",
       "priceUsd": 0,
       "symbol": "tidal",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "",
@@ -565,7 +621,8 @@
       "network": "ethereum",
       "priceUsd": 0,
       "symbol": "SHIB",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "",

@@ -300,6 +300,7 @@ describe("Pool", () => {
           displaySymbol: "ATK",
           address: "123",
           network: Network.ETHEREUM,
+          homeNetwork: Network.ETHEREUM,
         }),
         btk: Asset({
           decimals: 18,
@@ -309,6 +310,7 @@ describe("Pool", () => {
           name: "BananaToken",
           address: "1234",
           network: Network.ETHEREUM,
+          homeNetwork: Network.ETHEREUM,
         }),
         rowan: Asset({
           decimals: 18,
@@ -318,6 +320,7 @@ describe("Pool", () => {
           name: "Rowan",
           address: "1234",
           network: Network.ETHEREUM,
+          homeNetwork: Network.ETHEREUM,
         }),
         eth: Asset({
           decimals: 18,
@@ -327,6 +330,7 @@ describe("Pool", () => {
           name: "Ethereum",
           address: "1234",
           network: Network.ETHEREUM,
+          homeNetwork: Network.ETHEREUM,
         }),
       };
       const pair1 = Pool(

@@ -14,6 +14,7 @@ beforeEach(() => {
     network: Network.ETHEREUM,
     symbol: "eth",
     imageUrl: "http://fooo",
+    homeNetwork: Network.ETHEREUM,
   });
 });
 describe("Amount", () => {

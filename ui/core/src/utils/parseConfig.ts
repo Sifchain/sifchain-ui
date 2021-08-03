@@ -11,6 +11,7 @@ type TokenConfig = {
   name: string;
   address: string;
   network: Network;
+  homeNetwork: Network;
 };
 
 type CoinConfig = {
@@ -21,6 +22,7 @@ type CoinConfig = {
   imageUrl?: string;
   name: string;
   network: Network;
+  homeNetwork: Network;
 };
 
 export type AssetConfig = CoinConfig | TokenConfig;

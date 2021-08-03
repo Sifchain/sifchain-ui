@@ -13,6 +13,7 @@ describe("Pair", () => {
     name: "AppleToken",
     address: "123",
     network: Network.ETHEREUM,
+    homeNetwork: Network.ETHEREUM,
   });
   const BTK = Asset({
     decimals: 18,
@@ -22,6 +23,7 @@ describe("Pair", () => {
     name: "BananaToken",
     address: "1234",
     network: Network.ETHEREUM,
+    homeNetwork: Network.ETHEREUM,
   });
   const ETH = Asset({
     decimals: 18,
@@ -30,6 +32,7 @@ describe("Pair", () => {
     label: "ETH",
     name: "Ethereum",
     network: Network.ETHEREUM,
+    homeNetwork: Network.ETHEREUM,
   });
   const ROWAN = Asset({
     decimals: 18,
@@ -38,6 +41,7 @@ describe("Pair", () => {
     label: "ROWAN",
     name: "Rowan",
     network: Network.SIFCHAIN,
+    homeNetwork: Network.ETHEREUM,
   });
 
   test("contains()", () => {

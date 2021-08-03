@@ -1,5 +1,5 @@
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
-import { reactive, ref, computed, Ref, watch } from "vue";
+import { reactive, ref, computed, Ref, watch, onMounted } from "vue";
 import { effect, proxyRefs, toRefs, ToRefs } from "@vue/reactivity";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
@@ -84,7 +84,6 @@ export const useImportData = (): ImportData => {
   });
 
   const tokenRef = computed<TokenListItem | undefined>(() => {
-    if (tokenRef.value) return undefined; // If tokenRef is already defined, we are good.
     if (!tokenListRef.value?.length) return undefined; // Wait for token list to load
 
     if (!importParams.displaySymbol) {
@@ -93,15 +92,20 @@ export const useImportData = (): ImportData => {
 
     const token =
       tokenListRef.value.find((t) => {
-        return isOpposingSymbol(
-          t.asset.displaySymbol,
-          importParams.displaySymbol || "",
+        return (
+          importParams.displaySymbol.toLowerCase() ===
+          t.asset.displaySymbol.toLowerCase()
         );
       }) || tokenListRef.value[0];
-
+    debugger;
     importParams.displaySymbol = token.asset.displaySymbol;
-    importParams.network = token.asset.network;
     return token;
+  });
+
+  onMounted(() => {
+    importParams.network = route.params.network
+      ? importParams.network
+      : tokenRef.value?.asset.homeNetwork || importParams.network;
   });
 
   const importAmountRef = computed(() => {
@@ -220,22 +224,6 @@ export const useImportData = (): ImportData => {
       </span>,
     ],
   ]);
-
-  effect(() => {
-    if (
-      tokenRef.value &&
-      tokenRef.value.asset.network !== importParams.network
-    ) {
-      const firstAvailable = tokenListRef.value.find(
-        (token) => token.asset.network === importParams.network,
-      );
-
-      if (firstAvailable) {
-        importParams.displaySymbol =
-          firstAvailable.asset.displaySymbol || firstAvailable.asset.symbol;
-      }
-    }
-  });
 
   return {
     importParams: toRefs(importParams),

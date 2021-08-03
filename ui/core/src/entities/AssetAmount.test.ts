@@ -17,6 +17,7 @@ describe("AssetAmount", () => {
       network: Network.ETHEREUM,
       symbol: "eth",
       imageUrl: "http://fooo",
+      homeNetwork: Network.ETHEREUM,
     });
   });
 

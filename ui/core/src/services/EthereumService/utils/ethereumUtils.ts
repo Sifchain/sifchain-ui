@@ -143,6 +143,7 @@ export async function getEtheriumBalance(web3: Web3, address: Address) {
       displaySymbol: "eth",
       name: "Ethereum",
       network: Network.ETHEREUM,
+      homeNetwork: Network.ETHEREUM,
     },
     ethBalance,
   );

@@ -12,6 +12,7 @@ const cosmoshubTestnetAssets: { assets: IAsset[] } = {
         "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       name: "Cosmos",
       network: Network.COSMOSHUB,
+      homeNetwork: Network.COSMOSHUB,
     },
   ],
 };

@@ -10,6 +10,7 @@ export type IAsset = {
   ibcDenom?: string;
   displaySymbol: string;
   label: string;
+  homeNetwork: Network;
 };
 type ReadonlyAsset = Readonly<IAsset>;
 const assetMap = new Map<string, ReadonlyAsset>();

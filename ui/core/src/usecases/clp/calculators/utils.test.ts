@@ -39,6 +39,7 @@ describe("assets with zero decimals", () => {
       displaySymbol: "ATK",
       decimals: 0,
       label: "cATK",
+      homeNetwork: Network.ETHEREUM,
     }),
     btk: Asset({
       symbol: "cbtk",
@@ -47,6 +48,7 @@ describe("assets with zero decimals", () => {
       network: Network.SIFCHAIN,
       decimals: 0,
       label: "cBTK",
+      homeNetwork: Network.ETHEREUM,
     }),
   };
   test("with 1 as an amount", () => {

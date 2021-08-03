@@ -6,7 +6,8 @@
       "name": "Rowan",
       "imageUrl": "./images/siflogo.png",
       "network": "sifchain",
-      "displaySymbol": "rowan"
+      "displaySymbol": "rowan",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 6,
@@ -14,7 +15,8 @@
       "name": "Tether USDT",
       "network": "sifchain",
       "symbol": "cusdt",
-      "displaySymbol": "usdt"
+      "displaySymbol": "usdt",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -22,7 +24,8 @@
       "name": "Ethereum",
       "network": "sifchain",
       "symbol": "ceth",
-      "displaySymbol": "eth"
+      "displaySymbol": "eth",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -30,7 +33,8 @@
       "name": "Basic Attention Token",
       "network": "sifchain",
       "symbol": "cbat",
-      "displaySymbol": "bat"
+      "displaySymbol": "bat",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -38,7 +42,8 @@
       "name": "Aragon",
       "network": "sifchain",
       "symbol": "cant",
-      "displaySymbol": "ant"
+      "displaySymbol": "ant",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -46,7 +51,8 @@
       "name": "Bancor Network Token",
       "network": "sifchain",
       "symbol": "cbnt",
-      "displaySymbol": "bnt"
+      "displaySymbol": "bnt",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -54,7 +60,8 @@
       "name": "0x",
       "network": "sifchain",
       "symbol": "czrx",
-      "displaySymbol": "zrx"
+      "displaySymbol": "zrx",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -62,7 +69,8 @@
       "name": "Chainlink",
       "network": "sifchain",
       "symbol": "clink",
-      "displaySymbol": "link"
+      "displaySymbol": "link",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -70,7 +78,8 @@
       "name": "Decentraland",
       "network": "sifchain",
       "symbol": "cmana",
-      "displaySymbol": "mana"
+      "displaySymbol": "mana",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -78,7 +87,8 @@
       "name": "Loopring",
       "network": "sifchain",
       "symbol": "clrc",
-      "displaySymbol": "lrc"
+      "displaySymbol": "lrc",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -86,7 +96,8 @@
       "name": "Enjin Coin",
       "network": "sifchain",
       "symbol": "cenj",
-      "displaySymbol": "enj"
+      "displaySymbol": "enj",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -94,7 +105,8 @@
       "name": "Synthetix Network Token",
       "network": "sifchain",
       "symbol": "csnx",
-      "displaySymbol": "snx"
+      "displaySymbol": "snx",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -102,7 +114,8 @@
       "name": "TrueUSD",
       "network": "sifchain",
       "symbol": "ctusd",
-      "displaySymbol": "tusd"
+      "displaySymbol": "tusd",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -110,7 +123,8 @@
       "name": "Ocean Protocol",
       "network": "sifchain",
       "symbol": "cocean",
-      "displaySymbol": "ocean"
+      "displaySymbol": "ocean",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -118,7 +132,8 @@
       "name": "Fantom",
       "network": "sifchain",
       "symbol": "cftm",
-      "displaySymbol": "ftm"
+      "displaySymbol": "ftm",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -126,7 +141,8 @@
       "name": "sUSD",
       "network": "sifchain",
       "symbol": "csusd",
-      "displaySymbol": "susd"
+      "displaySymbol": "susd",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 6,
@@ -134,7 +150,8 @@
       "name": "USD Coin",
       "network": "sifchain",
       "symbol": "cusdc",
-      "displaySymbol": "usdc"
+      "displaySymbol": "usdc",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 8,
@@ -142,7 +159,8 @@
       "name": "Crypto com Coin",
       "network": "sifchain",
       "symbol": "ccro",
-      "displaySymbol": "cro"
+      "displaySymbol": "cro",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 8,
@@ -150,7 +168,8 @@
       "name": "Wrapped Bitcoin",
       "network": "sifchain",
       "symbol": "cwbtc",
-      "displaySymbol": "wbtc"
+      "displaySymbol": "wbtc",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -158,7 +177,8 @@
       "name": "Swipe",
       "network": "sifchain",
       "symbol": "csxp",
-      "displaySymbol": "sxp"
+      "displaySymbol": "sxp",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -166,7 +186,8 @@
       "name": "Band Protocol",
       "network": "sifchain",
       "symbol": "cband",
-      "displaySymbol": "band"
+      "displaySymbol": "band",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -174,7 +195,8 @@
       "name": "Dai Stablecoin",
       "network": "sifchain",
       "symbol": "cdai",
-      "displaySymbol": "dai"
+      "displaySymbol": "dai",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -182,7 +204,8 @@
       "name": "Compound",
       "network": "sifchain",
       "symbol": "ccomp",
-      "displaySymbol": "comp"
+      "displaySymbol": "comp",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -190,7 +213,8 @@
       "name": "UMA",
       "network": "sifchain",
       "symbol": "cuma",
-      "displaySymbol": "uma"
+      "displaySymbol": "uma",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -198,7 +222,8 @@
       "name": "Balancer",
       "network": "sifchain",
       "symbol": "cbal",
-      "displaySymbol": "bal"
+      "displaySymbol": "bal",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -206,7 +231,8 @@
       "name": "yearn finance",
       "network": "sifchain",
       "symbol": "cyfi",
-      "displaySymbol": "yfi"
+      "displaySymbol": "yfi",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 6,
@@ -214,7 +240,8 @@
       "name": "Serum",
       "network": "sifchain",
       "symbol": "csrm",
-      "displaySymbol": "srm"
+      "displaySymbol": "srm",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -222,7 +249,8 @@
       "name": "Cream",
       "network": "sifchain",
       "symbol": "ccream",
-      "displaySymbol": "cream"
+      "displaySymbol": "cream",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -230,7 +258,8 @@
       "name": "SAND",
       "network": "sifchain",
       "symbol": "csand",
-      "displaySymbol": "sand"
+      "displaySymbol": "sand",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -238,7 +267,8 @@
       "name": "Sushi",
       "network": "sifchain",
       "symbol": "csushi",
-      "displaySymbol": "sushi"
+      "displaySymbol": "sushi",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -246,7 +276,8 @@
       "name": "Empty Set Dollar",
       "network": "sifchain",
       "symbol": "cesd",
-      "displaySymbol": "esd"
+      "displaySymbol": "esd",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -254,7 +285,8 @@
       "name": "Uniswap",
       "network": "sifchain",
       "symbol": "cuni",
-      "displaySymbol": "uni"
+      "displaySymbol": "uni",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -262,7 +294,8 @@
       "name": "Aave",
       "network": "sifchain",
       "symbol": "caave",
-      "displaySymbol": "aave"
+      "displaySymbol": "aave",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -270,7 +303,8 @@
       "name": "BarnBridge",
       "network": "sifchain",
       "symbol": "cbond",
-      "displaySymbol": "bond"
+      "displaySymbol": "bond",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -278,7 +312,8 @@
       "name": "Wrapped Filecoin",
       "network": "sifchain",
       "symbol": "cwfil",
-      "displaySymbol": "wfil"
+      "displaySymbol": "wfil",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -286,7 +321,8 @@
       "name": "The Graph",
       "network": "sifchain",
       "symbol": "cgrt",
-      "displaySymbol": "grt"
+      "displaySymbol": "grt",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -294,7 +330,8 @@
       "name": "Tokenlon",
       "network": "sifchain",
       "symbol": "clon",
-      "displaySymbol": "lon"
+      "displaySymbol": "lon",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -302,7 +339,8 @@
       "name": "1inch",
       "network": "sifchain",
       "symbol": "c1inch",
-      "displaySymbol": "1inch"
+      "displaySymbol": "1inch",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -310,7 +348,8 @@
       "name": "THORChain ERC20",
       "network": "sifchain",
       "symbol": "crune",
-      "displaySymbol": "rune"
+      "displaySymbol": "rune",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 6,
@@ -318,7 +357,8 @@
       "name": "Secret ERC20",
       "network": "sifchain",
       "symbol": "cwscrt",
-      "displaySymbol": "wscrt"
+      "displaySymbol": "wscrt",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -326,7 +366,8 @@
       "name": "IoTeX",
       "network": "sifchain",
       "symbol": "ciotx",
-      "displaySymbol": "iotx"
+      "displaySymbol": "iotx",
+      "homeNetwork": "ethereum"
     },
     {
       "imageUrl": "https://assets.coingecko.com/coins/images/13504/small/Group_10572.png?1610534130",
@@ -334,7 +375,8 @@
       "symbol": "creef",
       "network": "sifchain",
       "decimals": 18,
-      "displaySymbol": "reef"
+      "displaySymbol": "reef",
+      "homeNetwork": "ethereum"
     },
     {
       "imageUrl": "https://assets.coingecko.com/coins/images/4932/thumb/_QPpjoUi_400x400.jpg?1566430520",
@@ -342,7 +384,8 @@
       "symbol": "ccocos",
       "network": "sifchain",
       "decimals": 18,
-      "displaySymbol": "cocos"
+      "displaySymbol": "cocos",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -350,7 +393,8 @@
       "name": "Keep Network",
       "network": "sifchain",
       "symbol": "ckeep",
-      "displaySymbol": "keep"
+      "displaySymbol": "keep",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -358,7 +402,8 @@
       "name": "Origin Protocol",
       "network": "sifchain",
       "symbol": "cogn",
-      "displaySymbol": "ogn"
+      "displaySymbol": "ogn",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -366,7 +411,8 @@
       "name": "DAOfi",
       "network": "sifchain",
       "symbol": "cdaofi",
-      "displaySymbol": "daofi"
+      "displaySymbol": "daofi",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -374,7 +420,8 @@
       "name": "Linear",
       "network": "sifchain",
       "symbol": "clina",
-      "displaySymbol": "lina"
+      "displaySymbol": "lina",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -382,7 +429,8 @@
       "name": "12Ships",
       "network": "sifchain",
       "symbol": "ctshp",
-      "displaySymbol": "tshp"
+      "displaySymbol": "tshp",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -390,7 +438,8 @@
       "name": "B.20",
       "network": "sifchain",
       "symbol": "cb20",
-      "displaySymbol": "b20"
+      "displaySymbol": "b20",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -398,7 +447,8 @@
       "name": "Akropolis",
       "network": "sifchain",
       "symbol": "cakro",
-      "displaySymbol": "akro"
+      "displaySymbol": "akro",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -406,7 +456,8 @@
       "name": "Rio Fuel Token",
       "network": "sifchain",
       "symbol": "crfuel",
-      "displaySymbol": "rfuel"
+      "displaySymbol": "rfuel",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -414,7 +465,8 @@
       "name": "Rally",
       "network": "sifchain",
       "symbol": "crly",
-      "displaySymbol": "rly"
+      "displaySymbol": "rly",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -422,7 +474,8 @@
       "name": "Convergence",
       "network": "sifchain",
       "symbol": "cconv",
-      "displaySymbol": "conv"
+      "displaySymbol": "conv",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -430,7 +483,8 @@
       "name": "Render Token",
       "network": "sifchain",
       "symbol": "crndr",
-      "displaySymbol": "rndr"
+      "displaySymbol": "rndr",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -438,7 +492,8 @@
       "name": "PAID Network",
       "network": "sifchain",
       "symbol": "cpaid",
-      "displaySymbol": "paid"
+      "displaySymbol": "paid",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -446,7 +501,8 @@
       "name": "Tidal",
       "network": "sifchain",
       "symbol": "ctidal",
-      "displaySymbol": "tidal"
+      "displaySymbol": "tidal",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -454,7 +510,8 @@
       "name": "SHIBA INU",
       "network": "sifchain",
       "symbol": "cshib",
-      "displaySymbol": "shib"
+      "displaySymbol": "shib",
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,
@@ -462,7 +519,8 @@
       "name": "DOGE KILLER",
       "network": "sifchain",
       "symbol": "cleash",
-      "displaySymbol": "leash"
+      "displaySymbol": "leash",
+      "homeNetwork": "ethereum"
     }
   ]
 }

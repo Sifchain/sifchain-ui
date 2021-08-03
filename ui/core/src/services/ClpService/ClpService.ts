@@ -163,6 +163,7 @@ export default function createClpService({
           symbol,
           network: Network.SIFCHAIN,
           decimals: 18,
+          homeNetwork: Network.ETHEREUM,
         });
       }
 

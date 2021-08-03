@@ -19,6 +19,7 @@ function mockAsset(decimals: number) {
     label: "cFOO",
     name: "Foo",
     network: Network.ETHEREUM,
+    homeNetwork: Network.ETHEREUM,
   });
 }
 

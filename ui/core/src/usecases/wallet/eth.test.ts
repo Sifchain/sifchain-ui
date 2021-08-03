@@ -76,6 +76,7 @@ test("Calls transfer correctly", async () => {
       displaySymbol: "ETH",
       decimals: 18,
       symbol: "ceth",
+      homeNetwork: Network.ETHEREUM,
     }),
   );
   expect(mockEthereumService.transfer).toHaveBeenCalled();

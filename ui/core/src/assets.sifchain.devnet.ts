@@ -11,6 +11,7 @@ const sifchainDevnetAssets: { assets: IAsset[] } = {
       imageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/200x200/3794.png",
       displaySymbol: "photon",
+      homeNetwork: Network.COSMOSHUB,
     },
   ],
 };

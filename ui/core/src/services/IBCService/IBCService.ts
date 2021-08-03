@@ -104,7 +104,14 @@ export class IBCService {
         };
       }),
     );
-    console.table(clients);
+    console.table(
+      clients.filter((c) => {
+        if (destinationNetwork === Network.COSMOSHUB) {
+          return c.chainId.includes("sifchain");
+        }
+        return true;
+      }),
+    );
     const allCxns = await Promise.all(
       (await queryClient.ibc.connection.allConnections()).connections.map(
         async (cxn) => {
@@ -233,7 +240,6 @@ export class IBCService {
 
     const symbol = params.assetAmountToTransfer.asset.symbol;
     debugger;
-
     const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
       fromAccount.address,
       toAccount.address,
@@ -246,7 +252,7 @@ export class IBCService {
       "transfer",
       channelId,
       undefined,
-      Math.floor(Date.now() / 1000 + 1000),
+      Math.floor(Date.now() / 1000 + 60 * 60),
     );
     console.log({ brdcstTxRes });
     return brdcstTxRes;
