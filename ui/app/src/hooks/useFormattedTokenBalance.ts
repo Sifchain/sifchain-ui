@@ -16,10 +16,6 @@ export const useFormattedTokenBalance = (tokenSymbol: Ref<string | null>) => {
   };
   const formattedTokenBalance = computed(() => {
     const accountBalance = getAccountBalance();
-    console.log({
-      accountBalance: accountBalance?.toString(),
-      bals: store.wallet.sif.balances.map((b) => b.toString()),
-    });
     if (!accountBalance) return "0";
     return formatAssetAmount(accountBalance);
   });

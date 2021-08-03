@@ -27,11 +27,10 @@ export const walletConnections: WalletConnection[] = [
       return `https://etherscan.io/address/${address}`;
     },
     useWalletState: () => {
-      return computed(() => {
-        const w = rootStore.accounts.state.ethereum;
+      return rootStore.accounts.computed((s) => {
         return {
-          isConnected: w.connected,
-          address: w.address,
+          isConnected: s.state.ethereum.connected,
+          address: s.state.ethereum.address,
         };
       });
     },
@@ -70,7 +69,6 @@ export const walletConnections: WalletConnection[] = [
       return `https://www.mintscan.io/cosmos/account/${address}`;
     },
     useWalletState: () => {
-      const { store } = useCore();
       return rootStore.accounts.computed((s) => {
         const w = s.state.cosmoshub;
         return {
@@ -82,7 +80,7 @@ export const walletConnections: WalletConnection[] = [
     useWalletApi: () => {
       const { usecases } = useCore();
       return computed(() => ({
-        connect: () => rootStore.accounts.connect(Network.COSMOSHUB),
+        connect: () => usecases.wallet.sif.connectToSifWallet(),
         disconnect: undefined,
       }));
     },

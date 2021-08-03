@@ -10,6 +10,7 @@ import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import MoreMenu from "./NavMoreMenu";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import { rootStore } from "@/store";
 
 export default defineComponent({
   props: {},
@@ -32,11 +33,8 @@ export default defineComponent({
       return poolStats.data.value?.rowanUsd;
     });
 
-    const connectedWalletCount = computed(
-      () =>
-        [store.wallet.eth.isConnected, store.wallet.sif.isConnected].filter(
-          Boolean,
-        ).length,
+    const connectedNetworkCount = rootStore.accounts.computed(
+      (s) => s.connectedNetworkCount,
     );
 
     return () => (
@@ -180,13 +178,13 @@ export default defineComponent({
               <NavSidePanelItem
                 icon="interactive/wallet"
                 displayName={
-                  connectedWalletCount.value === 0
+                  connectedNetworkCount.value === 0
                     ? "Connect Wallets"
-                    : "Connected Wallets"
+                    : "Connected Networks"
                 }
                 class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-200"]}
                 action={
-                  connectedWalletCount.value === 0 ? (
+                  connectedNetworkCount.value === 0 ? (
                     <AssetIcon
                       icon="interactive/chevron-down"
                       style={{
@@ -196,7 +194,7 @@ export default defineComponent({
                     />
                   ) : (
                     <div class="w-[20px] h-[20px] rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
-                      {connectedWalletCount.value}
+                      {connectedNetworkCount.value}
                     </div>
                   )
                 }
