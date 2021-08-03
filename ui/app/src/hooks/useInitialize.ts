@@ -80,7 +80,7 @@ export function useInitialize() {
   });
 
   watch(
-    () => store.wallet.sif.address,
+    () => store.wallet.cosmoshub.isConnected,
     () => rootStore.accounts.loadAccount({ network: Network.COSMOSHUB }),
     { immediate: true },
   );

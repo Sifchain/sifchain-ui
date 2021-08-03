@@ -80,7 +80,8 @@ export const walletConnections: WalletConnection[] = [
     useWalletApi: () => {
       const { usecases } = useCore();
       return computed(() => ({
-        connect: () => usecases.wallet.sif.connectToSifWallet(),
+        connect: () =>
+          rootStore.accounts.loadAccount({ network: Network.COSMOSHUB }),
         disconnect: undefined,
       }));
     },

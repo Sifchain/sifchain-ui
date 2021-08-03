@@ -61,6 +61,7 @@ export const accountStore = Vuextra.createStore({
   actions: (context) => ({
     loadAccount(p: { network: Network }) {
       return core.services.ibc.createWalletByNetwork(p.network).then((w) => {
+        accountStore.setConnected({ network: p.network, connected: true });
         accountStore.setAddress({
           network: p.network,
           address: w.addresses[0],
