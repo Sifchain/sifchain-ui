@@ -149,7 +149,7 @@ export const useExportData = () => {
             </span>
           ),
         ],
-        [
+        exportParams.network === Network.ETHEREUM && [
           <>
             Transaction Fee
             <Button.InlineHelp>
@@ -174,7 +174,7 @@ export const useExportData = () => {
             />
           </span>,
         ],
-      ] as [any, any][],
+      ].filter(Boolean) as [any, any][],
   );
 
   return {
