@@ -147,7 +147,7 @@ function createStore<
 
   type ComposerReturnType = ReturnType<typeof getterComposer>;
 
-  const store = createVuexStore({
+  const store = createVuexStore<State>({
     ...options,
     state,
     mutations,

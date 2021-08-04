@@ -56,13 +56,12 @@ export const useImportData = () => {
   const router = useRouter();
   const importStore = rootStore.import;
   const importDraft = importStore.state.draft;
-  const importDraftRefs = toRefs(importDraft);
   watch(
-    () => importDraft,
+    () => importStore.state.draft,
     (value) => {
       router.replace(
         getImportLocation(route.params.step as ImportStep, {
-          ...proxyRefs(importDraftRefs),
+          ...value,
         }),
       );
     },
