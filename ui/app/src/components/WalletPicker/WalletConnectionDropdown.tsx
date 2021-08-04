@@ -49,7 +49,7 @@ export default defineComponent({
     const actionsRef = computed(() => [
       {
         tag: "button",
-        name: copiedRef.value ? "Copied!" : "Copy",
+        name: copiedRef.value ? "Copied!" : "Copy Address",
         icon: "interactive/copy" as IconName,
         props: {
           class: copiedRef.value ? "!text-accent-base" : "",
