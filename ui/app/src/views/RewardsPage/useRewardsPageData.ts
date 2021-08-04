@@ -9,6 +9,7 @@ const useLiquidityMiningData = (address: ComputedRef<string>) => {
   const { services } = useCore();
   return computed(() => {
     return useAsyncData(async () => {
+      if (true) return null;
       if (!address.value) return null;
       return services.cryptoeconomics.fetchLmData({
         address: address.value,
@@ -21,6 +22,7 @@ const useValidatorSubsidyData = (address: ComputedRef<string>) => {
   const { services } = useCore();
   return computed(() => {
     return useAsyncData(async () => {
+      if (true) return null;
       if (!address.value) return null;
       return services.cryptoeconomics.fetchVsData({
         address: address.value,
@@ -35,6 +37,11 @@ const useExistingClaimsData = (
 ) => {
   return computed(() => {
     return useAsyncData(async () => {
+      if (true)
+        return {
+          lm: false,
+          vs: false,
+        };
       if (!address.value) return null;
       return getExistingClaimsData(address, sifApiUrl);
     });

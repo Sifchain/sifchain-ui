@@ -40,44 +40,21 @@ export const RewardSection = defineComponent({
   name: "RewardSection",
   props: {
     rewardType: {
-      type: String as PropType<CryptoeconomicsRewardType>,
+      type: String,
       required: true,
     },
-    data: { type: Object as PropType<CryptoeconomicsUserData>, required: true },
+    data: {
+      type: Object as PropType<CryptoeconomicsUserData>,
+      required: true,
+    },
     alreadyClaimed: { type: Boolean, required: true },
     infoLink: { type: String, required: true },
     onClaimIntent: { type: Function as PropType<() => void>, required: true },
   },
   setup(props) {
-    const { store } = useCore();
     const displayData = computed(
-      () => REWARD_TYPE_DISPLAY_DATA[props.rewardType],
-    );
-
-    const details = computed(() =>
-      [
-        {
-          hide: props.rewardType !== "vs",
-          name: "Reserved Comission Rewards",
-          tooltip:
-            "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
-          amount:
-            props.data?.user
-              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
-        },
-        {
-          name: "Pending Dispensation",
-          tooltip:
-            "This is the amount that will be dispensed on Friday. Any new claimable amounts will need to be claimed after the next dispensation.",
-          amount:
-            props.data?.user?.claimedCommissionsAndRewardsAwaitingDispensation,
-        },
-        {
-          name: "Dispensed Rewards",
-          tooltip: "Rewards that have already been dispensed.",
-          amount: props.data?.user?.dispensed,
-        },
-      ].filter((item) => !item.hide),
+      () =>
+        REWARD_TYPE_DISPLAY_DATA[props.rewardType as CryptoeconomicsRewardType],
     );
 
     return () => (
