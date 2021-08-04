@@ -14,30 +14,31 @@ import { Network, IAssetAmount, AssetAmount, Amount } from "@sifchain/sdk";
 import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
 import { Button } from "@/components/Button/Button";
 import { FormDetailsType } from "@/components/Form";
+import { rootStore } from "@/store";
 
-export type ImportParams = {
+export type ImportDraft = {
   amount: string;
   network: Network;
   displaySymbol: string;
 };
 
-export type ImportStep = "select" | "confirm" | "processing";
+export type ImportStep = "setup" | "confirm" | "processing";
 
-export type ImportData = {
-  importParams: ToRefs<ImportParams>;
-  networksRef: Ref<Network[]>;
-  tokenRef: Ref<TokenListItem | undefined>;
-  pickableTokensRef: Ref<TokenListItem[]>;
-  importAmountRef: Ref<IAssetAmount | null>;
-  pegEventRef: Ref<PegEvent | undefined>;
-  runImport: () => void;
-  exitImport: () => void;
-  detailsRef: Ref<FormDetailsType>;
-};
+// export type ImportData = {
+//   importDraft: ToRefs<ImportDraft>;
+//   networksRef: Ref<Network[]>;
+//   tokenRef: Ref<TokenListItem | undefined>;
+//   pickableTokensRef: Ref<TokenListItem[]>;
+//   computedImportAssetAmount: Ref<IAssetAmount | null>;
+//   pegEventRef: Ref<PegEvent | undefined>;
+//   runImport: () => void;
+//   exitImport: () => void;
+//   detailsRef: Ref<FormDetailsType>;
+// };
 
 export function getImportLocation(
   step: ImportStep,
-  params: Partial<ImportParams>,
+  params: Partial<ImportDraft>,
 ): RouteLocationRaw {
   return {
     name: "Import",
@@ -49,35 +50,30 @@ export function getImportLocation(
   } as RouteLocationRaw;
 }
 
-export const useImportData = (): ImportData => {
+export const useImportData = () => {
   const { store, usecases } = useCore();
   const route = useRoute();
   const router = useRouter();
-  const importParams = reactive<ImportParams>({
-    displaySymbol: String(route.params.symbol || ""),
-    amount: String(route.query.amount || ""),
-    network: Network.ETHEREUM,
-  });
-  const importParamsRefs = toRefs(importParams);
+  const importStore = rootStore.import;
+  const importDraft = importStore.state.draft;
+  const importDraftRefs = toRefs(importDraft);
   watch(
-    () => importParams,
+    () => importDraft,
     (value) => {
       router.replace(
         getImportLocation(route.params.step as ImportStep, {
-          ...proxyRefs(importParamsRefs),
+          ...proxyRefs(importDraftRefs),
         }),
       );
     },
-    { deep: true },
+    { deep: true, immediate: true },
   );
 
   const exitImport = () => {
     router.replace({ name: "Balances" });
   };
 
-  const networksRef = ref(
-    Object.values(Network).filter((network) => network !== Network.SIFCHAIN),
-  );
+  const networksRef = importStore.computed((store) => store.getters.networks);
 
   const tokenListRef = useTokenList({
     networks: networksRef,
@@ -86,59 +82,72 @@ export const useImportData = (): ImportData => {
   const tokenRef = computed<TokenListItem | undefined>(() => {
     if (!tokenListRef.value?.length) return undefined; // Wait for token list to load
 
-    if (!importParams.displaySymbol) {
+    if (!importDraft.displaySymbol) {
       return tokenListRef.value[0];
     }
 
     const token =
       tokenListRef.value.find((t) => {
         return (
-          importParams.displaySymbol.toLowerCase() ===
+          importDraft.displaySymbol.toLowerCase() ===
           t.asset.displaySymbol.toLowerCase()
         );
       }) || tokenListRef.value[0];
-    debugger;
-    importParams.displaySymbol = token.asset.displaySymbol;
     return token;
+  });
+  effect(() => {
+    if (
+      tokenRef.value?.asset.displaySymbol !==
+      importStore.state.draft.displaySymbol
+    ) {
+      importStore.setDraft({
+        displaySymbol: tokenRef.value?.asset.displaySymbol,
+      });
+    }
   });
 
   onMounted(() => {
-    importParams.network = route.params.network
-      ? importParams.network
-      : tokenRef.value?.asset.homeNetwork || importParams.network;
+    importStore.setDraft({
+      network: route.params.network
+        ? importDraft.network
+        : tokenRef.value?.asset.homeNetwork || importDraft.network,
+    });
   });
 
-  const importAmountRef = computed(() => {
+  const computedImportAssetAmount = computed(() => {
     if (!tokenRef.value?.asset) return null;
     return AssetAmount(
       tokenRef.value?.asset || "rowan",
-      toBaseUnits(importParams.amount?.trim() || "0.0", tokenRef.value?.asset),
+      toBaseUnits(importDraft.amount?.trim() || "0.0", tokenRef.value?.asset),
     );
   });
 
   const sifchainTokenRef = useToken({
     network: ref(Network.SIFCHAIN),
     symbol: computed(() =>
-      importParams.network === Network.ETHEREUM
+      importDraft.network === Network.ETHEREUM
         ? getPeggedSymbol(
-            importParams.displaySymbol?.toLowerCase() || "",
+            importDraft.displaySymbol?.toLowerCase() || "",
           ).toLowerCase()
-        : importParams.displaySymbol?.toLowerCase() || "",
+        : importDraft.displaySymbol?.toLowerCase() || "",
     ),
   });
 
   const pickableTokensRef = computed(() => {
     return tokenListRef.value.filter((token) => {
-      return token.asset.network === importParams.network;
+      return token.asset.network === importDraft.network;
     });
   });
 
   const pegEventRef = ref<PegEvent>();
   async function runImport() {
-    if (!importAmountRef.value) throw new Error("Please provide an amount");
+    if (!computedImportAssetAmount.value)
+      throw new Error("Please provide an amount");
     pegEventRef.value = undefined;
 
-    for await (const event of usecases.peg.peg(importAmountRef.value)) {
+    for await (const event of usecases.peg.peg(
+      computedImportAssetAmount.value,
+    )) {
       pegEventRef.value = event;
     }
   }
@@ -168,7 +177,7 @@ export const useImportData = (): ImportData => {
     [
       "Direction",
       <span class="capitalize">
-        {importParams.network}
+        {importDraft.network}
         <span
           class="mx-[6px] inline-block"
           style={{ transform: "translateY(-1px)" }}
@@ -181,7 +190,7 @@ export const useImportData = (): ImportData => {
     [
       "Import Amount",
       <span class="flex items-center font-mono">
-        {importParams.amount} {importParams.displaySymbol?.toUpperCase()}
+        {importDraft.amount} {importDraft.displaySymbol?.toUpperCase()}
         <TokenIcon
           size={18}
           assetValue={tokenRef.value?.asset}
@@ -199,12 +208,12 @@ export const useImportData = (): ImportData => {
           <>
             {(
               parseFloat(formatAssetAmount(sifchainTokenRef.value.amount)) +
-              parseFloat(importParams.amount || "0")
+              parseFloat(importDraft.amount || "0")
             ).toFixed(
               Math.max(
                 formatAssetAmount(sifchainTokenRef.value.amount).split(".")[1]
                   ?.length ||
-                  importParams.amount.split(".")[1]?.length ||
+                  importDraft.amount.split(".")[1]?.length ||
                   0,
               ),
             )}{" "}
@@ -226,11 +235,11 @@ export const useImportData = (): ImportData => {
   ]);
 
   return {
-    importParams: toRefs(importParams),
+    importDraft: toRefs(importDraft),
     networksRef,
     pickableTokensRef,
     tokenRef,
-    importAmountRef,
+    computedImportAssetAmount,
     runImport,
     pegEventRef,
     exitImport: exitImport,

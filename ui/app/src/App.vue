@@ -26,9 +26,7 @@
     </Header> -->
     <SideBar />
     <Layout>
-      <TransitionGroup name="list-complete">
-        <router-view />
-      </TransitionGroup>
+      <router-view />
     </Layout>
     <Notifications />
     <EnvAlert />

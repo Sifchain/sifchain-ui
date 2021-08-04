@@ -9,31 +9,32 @@ import {
 import Modal from "@/components/Modal";
 import router from "@/router";
 import { Button } from "@/components/Button/Button";
-import { ImportData, getImportLocation } from "./useImportData";
+import { getImportLocation, useImportData } from "./useImportData";
 import { Form } from "@/components/Form";
 import { Network } from "../../../../../core/src";
 
 export default defineComponent({
   name: "ImportConfirmModal",
-  props: {
-    importData: {
-      type: Object as PropType<ImportData>,
-      required: true,
-    },
-  },
+  props: {},
   setup(props) {
-    const { importParams: importParams, runImport } = toRefs(props.importData);
+    const importData = useImportData();
+    const { runImport, exitImport } = toRefs(importData);
+    const {
+      importDraft: importDraft,
+      computedImportAssetAmount,
+      detailsRef,
+    } = importData;
     return () => (
       <Modal
         heading="Import Token to Sifchain"
         icon="interactive/arrow-down"
-        onClose={props.importData.exitImport}
+        onClose={exitImport.value}
         showClose
       >
         <div class="p-4 bg-gray-base rounded-lg">
-          <Form.Details details={props.importData.detailsRef.value} />
+          <Form.Details details={detailsRef.value} />
         </div>
-        {props.importData?.importAmountRef.value?.asset.network ===
+        {computedImportAssetAmount.value?.asset.network ===
           Network.ETHEREUM && (
           <p class="mt-[10px] text-base">
             <div class="font-bold">Please Note *</div>
@@ -46,7 +47,7 @@ export default defineComponent({
           onClick={() => {
             runImport.value();
             router.replace(
-              getImportLocation("processing", proxyRefs(importParams.value)),
+              getImportLocation("processing", proxyRefs(importDraft)),
             );
           }}
         >

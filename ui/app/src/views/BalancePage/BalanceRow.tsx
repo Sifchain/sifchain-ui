@@ -69,7 +69,7 @@ export default defineComponent({
         visible: true,
         props: {
           replace: true,
-          to: getImportLocation("select", {
+          to: getImportLocation("setup", {
             displaySymbol: props.tokenItem.asset.displaySymbol,
           }),
         },
@@ -89,7 +89,7 @@ export default defineComponent({
             visible: expandedRef.value,
             props: {
               replace: true,
-              to: getExportLocation("select", {
+              to: getExportLocation("setup", {
                 symbol: props.tokenItem.asset.symbol,
                 network: props.tokenItem.asset.network,
               }),

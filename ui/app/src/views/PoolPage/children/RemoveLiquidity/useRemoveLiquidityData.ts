@@ -21,7 +21,7 @@ export function useRemoveLiquidityData() {
 
   const transactionStatus = ref<TransactionStatus | null>(null);
 
-  const modalStatus = ref<"select" | "confirm" | "processing">("select");
+  const modalStatus = ref<"setup" | "confirm" | "processing">("setup");
 
   const asymmetry = ref("0");
   const wBasisPoints = ref("0");

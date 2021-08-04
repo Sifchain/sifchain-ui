@@ -142,6 +142,7 @@ export default defineComponent({
             </tbody>
           </table>
         </PageCard>
+        <RouterView></RouterView>
       </>
     );
   },

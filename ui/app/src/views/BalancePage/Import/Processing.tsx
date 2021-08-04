@@ -1,19 +1,19 @@
 import { defineComponent, PropType, computed, Ref } from "vue";
-import { ImportData } from "./useImportData";
+import { useImportData } from "./useImportData";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 
 export default defineComponent({
   name: "ImportProcessingModal",
-  props: {
-    importData: {
-      type: Object as PropType<ImportData>,
-      required: true,
-    },
-  },
+  props: {},
   setup(props) {
-    const { pegEventRef, importParams } = props.importData;
+    const {
+      pegEventRef,
+      importDraft,
+      exitImport,
+      detailsRef,
+    } = useImportData();
 
     const transactionDetails = usePegEventDetails({
       pegEvent: pegEventRef as Ref<PegEvent>,
@@ -23,8 +23,8 @@ export default defineComponent({
       <TransactionDetailsModal
         transactionDetails={transactionDetails}
         icon="interactive/arrow-down"
-        onClose={props.importData.exitImport}
-        details={props.importData.detailsRef}
+        onClose={exitImport}
+        details={detailsRef}
       />
     );
   },

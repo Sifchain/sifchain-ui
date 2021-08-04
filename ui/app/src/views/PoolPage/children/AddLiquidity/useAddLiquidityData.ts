@@ -37,7 +37,7 @@ export const useAddLiquidityData = () => {
   const preExistingPool: Ref<Pool | null> = ref(null);
   const poolAmounts: Ref<IAssetAmount[] | null> = ref(null);
 
-  const modalStatus = ref<"select" | "confirm" | "processing">("select");
+  const modalStatus = ref<"setup" | "confirm" | "processing">("setup");
   const transactionStatus = ref<TransactionStatus | null>(null);
 
   const asyncPooling = ref<boolean>(true);

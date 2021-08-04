@@ -174,9 +174,12 @@ function createStore<
       ReturnType<ComposerReturnType[keyof ComposerReturnType]>
     >
   >;
+  type DeepReadonly<T> = T extends object
+    ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>
+    : Readonly<T>;
 
   function vuextraComputed<T>(
-    arg: (state: typeof storeProxy) => T,
+    arg: (state: DeepReadonly<typeof storeProxy>) => T,
   ): ComputedRef<T>;
   function vuextraComputed<T>(arg: any) {
     return computed<T>(() => {
@@ -195,10 +198,10 @@ function createStore<
       if (p in store.getters) {
         return store.getters[p];
       }
-      if (p in store.state) {
-        // @ts-ignore
-        return store.state[p];
-      }
+      // if (p in store.state) {
+      //   // @ts-ignore
+      //   return store.state[p];
+      // }
       return Reflect.get(target, p, receiver);
     },
   }) as typeof vuextraStore &
@@ -206,7 +209,7 @@ function createStore<
       computed: typeof vuextraComputed;
     };
 
-  return storeProxy as Readonly<typeof storeProxy> & State;
+  return storeProxy as DeepReadonly<typeof storeProxy>;
 }
 
 /* 

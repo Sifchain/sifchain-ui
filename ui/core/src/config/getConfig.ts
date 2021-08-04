@@ -1,20 +1,20 @@
 // TODO - Conditional load or build-time tree shake
-import localnetconfig from "../config.localnet.json";
-import devnetconfig from "../config.devnet.json";
-import devnet042config from "../config.devnet-042.json";
-import testnet042ibcconfig from "../config.testnet-042-ibc.json";
-import testnetconfig from "../config.testnet.json";
-import mainnnetconfig from "../config.mainnet.json";
+import localnetconfig from "./networks/sifchain/config.localnet.json";
+import devnetconfig from "./networks/sifchain/config.devnet.json";
+import devnet042config from "./networks/sifchain/config.devnet-042.json";
+import testnet042ibcconfig from "./networks/sifchain/config.testnet-042-ibc.json";
+import testnetconfig from "./networks/sifchain/config.testnet.json";
+import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 
-import assetsEthereumLocalnet from "../assets.ethereum.localnet.json";
-import assetsEthereumDevnet from "../assets.ethereum.sifchain-devnet.json";
-import assetsEthereumTestnet from "../assets.ethereum.sifchain-testnet.json";
-import assetsEthereumMainnet from "../assets.ethereum.mainnet.json";
+import assetsEthereumLocalnet from "./networks/ethereum/assets.ethereum.localnet.json";
+import assetsEthereumDevnet from "./networks/ethereum/assets.ethereum.sifchain-devnet.json";
+import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.sifchain-testnet.json";
+import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.json";
 
-import assetsSifchainLocalnet from "../assets.sifchain.localnet.json";
-import assetsSifchainMainnet from "../assets.sifchain.mainnet.json";
-import assetsSifchainDevnet from "../assets.sifchain.devnet";
-import assetsCosmoshubTestnet from "../assets.cosmoshub.testnet";
+import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet.json";
+import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet.json";
+import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet";
+import assetsCosmoshubTestnet from "./networks/cosmoshub/assets.cosmoshub.testnet";
 
 import {
   parseConfig,

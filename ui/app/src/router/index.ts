@@ -7,8 +7,8 @@ import {
 
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage/BalancePage";
-import BalanceImport from "@/views/BalancePage/Import";
-import BalanceExport from "@/views/BalancePage/Export";
+// import BalanceImport from "@/views/BalancePage/Import";
+// import BalanceExport from "@/views/BalancePage/Export";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
 import StatsPage from "@/views/StatsPage/StatsPage";
 import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
@@ -21,6 +21,8 @@ import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/Remo
 import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
 import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
 import { ApproveSwap } from "@/views/SwapPage/children/Approve";
+import ImportSelect from "@/views/BalancePage/Import/Select";
+import ImportConfirm from "@/views/BalancePage/Import/Confirm";
 
 type SwapPageMeta = {
   title: string;
@@ -133,14 +135,39 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         name: "Import",
-        path: "import/:symbol/:step",
-        component: BalanceImport,
+        path: "import/:symbol/select",
+        component: ImportSelect,
+      },
+      {
+        name: "ConfirmImport",
+        path: "import/:symbol/confirm",
+        component: ImportConfirm,
+      },
+      {
+        name: "ProcessingImport",
+        path: "import/:symbol/processing",
+        component: ImportConfirm,
       },
       {
         name: "Export",
-        path: "export/:symbol/:step",
-        component: BalanceExport,
+        path: "export/:symbol/select",
+        component: ImportSelect,
       },
+      {
+        name: "ConfirmExport",
+        path: "export/:symbol/confirm",
+        component: ImportConfirm,
+      },
+      {
+        name: "ProcessingExport",
+        path: "export/:symbol/processing",
+        component: ImportConfirm,
+      },
+      // {
+      //   name: "Export",
+      //   path: "export/:symbol/:step",
+      //   component: BalanceExport,
+      // },
     ],
   },
   // {

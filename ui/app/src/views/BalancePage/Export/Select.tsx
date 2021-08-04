@@ -198,7 +198,7 @@ export default defineComponent({
               value={
                 props.exportData.exportParams.network === Network.ETHEREUM
                   ? store.wallet.eth.address
-                  : rootStore.accounts.cosmoshub.address
+                  : rootStore.accounts.state.cosmoshub.address
               }
               class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
               onClick={(e) => {

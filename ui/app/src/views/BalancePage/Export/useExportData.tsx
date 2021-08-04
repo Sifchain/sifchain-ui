@@ -20,7 +20,7 @@ export type ExportParams = {
   symbol: string;
 };
 
-export type ExportStep = "select" | "confirm" | "processing";
+export type ExportStep = "setup" | "confirm" | "processing";
 
 export type ExportData = {
   exportParams: ExportParams;
