@@ -42,44 +42,49 @@ export function Peg(
     assetAmount: IAssetAmount,
   ): AsyncGenerator<PegEvent> {
     if (assetAmount.asset.network === Network.COSMOSHUB) {
-      const tx = await services?.ibc.transferIBCTokens({
-        sourceNetwork: assetAmount.asset.network,
-        destinationNetwork: Network.SIFCHAIN,
-        assetAmountToTransfer: assetAmount,
-      });
-      // @ts-ignore
-      if (tx.code) {
-        console.log(tx);
-        services.bus.dispatch({
-          type: "ErrorEvent",
-          payload: {
-            message: "IBC Transfer Failed",
-          },
+      yield { type: "signing" };
+      try {
+        const tx = await services?.ibc.transferIBCTokens({
+          sourceNetwork: assetAmount.asset.network,
+          destinationNetwork: Network.SIFCHAIN,
+          assetAmountToTransfer: assetAmount,
         });
-        return {
-          type: "tx_error",
-          tx: {
-            hash: tx.transactionHash,
-            state: "failed",
-          },
-        };
-      } else {
-        const rawLog = parseRawLog(tx.rawLog);
-        // debugger;
-        services.bus.dispatch({
-          type: "PegTransactionCompletedEvent",
-          payload: {
-            hash: tx.transactionHash,
-          },
-        });
-        yield {
-          type: "sent",
-          tx: {
-            hash: tx.transactionHash,
-            memo: "Transaction Accepted",
-            state: "accepted",
-          },
-        };
+        // @ts-ignore
+        if (tx.code) {
+          services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: {
+              message: "IBC Transfer Failed",
+            },
+          });
+          return {
+            type: "tx_error",
+            tx: {
+              hash: tx.transactionHash,
+              state: "failed",
+            },
+          };
+        } else {
+          const rawLog = parseRawLog(tx.rawLog);
+          // debugger;
+          services.bus.dispatch({
+            type: "PegTransactionCompletedEvent",
+            payload: {
+              hash: tx.transactionHash,
+            },
+          });
+          yield {
+            type: "sent",
+            tx: {
+              hash: tx.transactionHash,
+              memo: "Transaction Accepted",
+              state: "accepted",
+            },
+          };
+        }
+      } catch (err) {
+        // "signing_error"?
+        yield { type: "approve_error" };
       }
       return;
     }
