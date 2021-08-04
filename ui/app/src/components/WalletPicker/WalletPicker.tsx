@@ -13,7 +13,10 @@ export default defineComponent({
     return () => (
       <div class="w-[304px]">
         {walletConnections.map((connection) => (
-          <WalletConnection connection={connection} key={connection.name} />
+          <WalletConnection
+            connection={connection}
+            key={connection.walletName}
+          />
         ))}
       </div>
     );
