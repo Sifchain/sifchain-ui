@@ -41,6 +41,15 @@ export default defineComponent({
             Ethereum block confirmations. This can take upwards of 20 minutes.
           </p>
         )}
+        {props.importData?.importAmountRef.value?.asset.network ===
+          Network.COSMOSHUB && (
+          <p class="mt-[10px] text-base">
+            <div class="font-bold">Please Note *</div>
+            Your funds will be available for use on Sifchain after about 10
+            minutes. However in some rare cases, this action can take up to 60
+            minutes.
+          </p>
+        )}
         <Button.CallToAction
           class="mt-[10px]"
           onClick={() => {

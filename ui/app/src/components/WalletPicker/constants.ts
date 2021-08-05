@@ -4,9 +4,10 @@ import { useCore } from "@/hooks/useCore";
 import { rootStore } from "../../store";
 
 export type WalletConnection = {
-  name: string;
+  walletName: string;
   network: Network;
-  iconSrc: string;
+  networkTokenSymbol: string;
+  walletIconSrc: string;
   getAddressExplorerUrl: (config: AppConfig, address: string) => string;
   useWalletState: () => ComputedRef<{
     isConnected: boolean;
@@ -20,9 +21,10 @@ export type WalletConnection = {
 
 export const walletConnections: WalletConnection[] = [
   {
-    name: "Metamask",
+    walletName: "Metamask",
     network: Network.ETHEREUM,
-    iconSrc: require("@/assets/metamask.png"),
+    networkTokenSymbol: "eth",
+    walletIconSrc: require("@/assets/metamask.png"),
     getAddressExplorerUrl: (config: AppConfig, address: string) => {
       return `https://etherscan.io/address/${address}`;
     },
@@ -43,9 +45,10 @@ export const walletConnections: WalletConnection[] = [
     },
   },
   {
-    name: "KEPLR",
+    walletName: "Keplr",
+    networkTokenSymbol: "rowan",
     network: Network.SIFCHAIN,
-    iconSrc: require("@/assets/keplr.jpg"),
+    walletIconSrc: require("@/assets/keplr.jpg"),
     getAddressExplorerUrl: (config: AppConfig, address: string) => {
       return `${config.blockExplorerUrl}/account/${address}`;
     },
@@ -62,9 +65,10 @@ export const walletConnections: WalletConnection[] = [
     },
   },
   {
-    name: "KEPLR",
+    walletName: "Keplr",
     network: Network.COSMOSHUB,
-    iconSrc: require("@/assets/keplr.jpg"),
+    networkTokenSymbol: "uphoton",
+    walletIconSrc: require("@/assets/keplr.jpg"),
     getAddressExplorerUrl: (config: AppConfig, address: string) => {
       return `https://www.mintscan.io/cosmos/account/${address}`;
     },
