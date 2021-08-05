@@ -1,16 +1,15 @@
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import { reactive, ref, computed, Ref, watch, onMounted } from "vue";
-import { effect, proxyRefs, toRefs, ToRefs } from "@vue/reactivity";
+import { proxyRefs, toRefs, ToRefs } from "@vue/reactivity";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
 import { toBaseUnits } from "@sifchain/sdk/src/utils";
 import {
   formatAssetAmount,
   getPeggedSymbol,
-  isOpposingSymbol,
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
-import { Network, IAssetAmount, AssetAmount, Amount } from "@sifchain/sdk";
+import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
 import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
 import { Button } from "@/components/Button/Button";
 import { FormDetailsType } from "@/components/Form";
@@ -26,7 +25,7 @@ export type ImportStep = "select" | "confirm" | "processing";
 export type ImportData = {
   importParams: ToRefs<ImportParams>;
   networksRef: Ref<Network[]>;
-  tokenRef: Ref<TokenListItem | undefined>;
+  importTokenRef: Ref<TokenListItem | undefined>;
   pickableTokensRef: Ref<TokenListItem[]>;
   importAmountRef: Ref<IAssetAmount | null>;
   pegEventRef: Ref<PegEvent | undefined>;
@@ -50,7 +49,7 @@ export function getImportLocation(
 }
 
 export const useImportData = (): ImportData => {
-  const { store, usecases } = useCore();
+  const { usecases } = useCore();
   const route = useRoute();
   const router = useRouter();
   const importParams = reactive<ImportParams>({
@@ -61,7 +60,7 @@ export const useImportData = (): ImportData => {
   const importParamsRefs = toRefs(importParams);
   watch(
     () => importParams,
-    (value) => {
+    () => {
       router.replace(
         getImportLocation(route.params.step as ImportStep, {
           ...proxyRefs(importParamsRefs),
@@ -83,7 +82,7 @@ export const useImportData = (): ImportData => {
     networks: networksRef,
   });
 
-  const tokenRef = computed<TokenListItem | undefined>(() => {
+  const importTokenRef = computed<TokenListItem | undefined>(() => {
     if (!tokenListRef.value?.length) return undefined; // Wait for token list to load
 
     if (!importParams.displaySymbol) {
@@ -94,10 +93,11 @@ export const useImportData = (): ImportData => {
       tokenListRef.value.find((t) => {
         return (
           importParams.displaySymbol.toLowerCase() ===
-          t.asset.displaySymbol.toLowerCase()
+            t.asset.displaySymbol.toLowerCase() &&
+          importParams.network === t.asset.network
         );
       }) || tokenListRef.value[0];
-    // debugger;
+
     importParams.displaySymbol = token.asset.displaySymbol;
     return token;
   });
@@ -105,14 +105,17 @@ export const useImportData = (): ImportData => {
   onMounted(() => {
     importParams.network = route.params.network
       ? importParams.network
-      : tokenRef.value?.asset.homeNetwork || importParams.network;
+      : importTokenRef.value?.asset.homeNetwork || importParams.network;
   });
 
   const importAmountRef = computed(() => {
-    if (!tokenRef.value?.asset) return null;
+    if (!importTokenRef.value?.asset) return null;
     return AssetAmount(
-      tokenRef.value?.asset || "rowan",
-      toBaseUnits(importParams.amount?.trim() || "0.0", tokenRef.value?.asset),
+      importTokenRef.value?.asset || "rowan",
+      toBaseUnits(
+        importParams.amount?.trim() || "0.0",
+        importTokenRef.value?.asset,
+      ),
     );
   });
 
@@ -184,7 +187,7 @@ export const useImportData = (): ImportData => {
         {importParams.amount} {importParams.displaySymbol?.toUpperCase()}
         <TokenIcon
           size={18}
-          assetValue={tokenRef.value?.asset}
+          assetValue={importTokenRef.value?.asset}
           class="ml-[4px]"
         />
       </span>,
@@ -229,7 +232,7 @@ export const useImportData = (): ImportData => {
     importParams: toRefs(importParams),
     networksRef,
     pickableTokensRef,
-    tokenRef,
+    importTokenRef,
     importAmountRef,
     runImport,
     pegEventRef,
