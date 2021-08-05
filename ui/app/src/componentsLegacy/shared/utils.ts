@@ -211,10 +211,19 @@ export async function getExistingClaimsData(
 export function getBlockExplorerUrl(
   sifChainId: string,
   txHash?: TxHash,
+  network?: string,
 ): string {
-  if (txHash?.startsWith("0x")) {
+  // todo (59023g) refactor dependent on upstream chain/network refactor
+  if (txHash?.startsWith("0x") || network === "ethereum") {
     return `https://etherscan.io/tx/${txHash}`;
   }
+  if (sifChainId === "sifchain-1" && network === "cosmoshub") {
+    return `https://www.mintscan.io/cosmos/txs/${txHash}`;
+  }
+  if (network === "cosmoshub") {
+    return `https://api.testnet.cosmos.network/cosmos/tx/v1beta1/txs/${txHash}`;
+  }
+
   switch (sifChainId) {
     case "sifchain":
       if (!txHash) return "https://blockexplorer.sifchain.finance/";
