@@ -214,8 +214,11 @@ export function getBlockExplorerUrl(
   network?: string,
 ): string {
   // todo (59023g) refactor dependent on upstream chain/network refactor
-  if (txHash?.startsWith("0x") || network === "ethereum") {
+  if (sifChainId === "sifchain-1" && network === "ethereum") {
     return `https://etherscan.io/tx/${txHash}`;
+  }
+  if (network === "ethereum") {
+    return `https://ropsten.etherscan.io/tx/${txHash}`;
   }
   if (sifChainId === "sifchain-1" && network === "cosmoshub") {
     return `https://www.mintscan.io/cosmos/txs/${txHash}`;
