@@ -1,6 +1,5 @@
 import { useAssetItem } from "@/componentsLegacy/shared/utils";
 import { computed, ref, Ref, toRefs } from "@vue/reactivity";
-import { Pool } from "../../../core/src";
 import { PoolStat, PoolStatsResponseData, usePoolStats } from "./usePoolStats";
 
 // NOTE - this will be replaced by format display function

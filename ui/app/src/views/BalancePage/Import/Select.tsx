@@ -1,14 +1,4 @@
-import {
-  defineComponent,
-  ref,
-  computed,
-  PropType,
-  Ref,
-  watch,
-  proxyRefs,
-  toRefs,
-  readonly,
-} from "vue";
+import { defineComponent, ref, computed } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -132,7 +122,10 @@ export default defineComponent({
       if (tokenRef.value && selectedTokenBalance.value?.amount) {
         rootStore.import.setDraft({
           amount: format(
-            selectedTokenBalance.value?.amount,
+            getMaxAmount(
+              ref(selectedTokenBalance.value.asset.symbol),
+              selectedTokenBalance.value,
+            ),
             selectedTokenBalance.value?.asset,
             {
               mantissa: selectedTokenBalance.value?.decimals,

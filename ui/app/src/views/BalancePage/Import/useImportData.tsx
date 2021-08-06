@@ -7,15 +7,9 @@ import { Network, AssetAmount, toBaseUnits } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
-import { importStore } from "@/store/modules/import";
+import { ImportDraft, importStore } from "@/store/modules/import";
 import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
-
-export type ImportDraft = {
-  amount: string;
-  network: Network;
-  displaySymbol: string;
-};
 
 export type ImportStep = "select" | "confirm" | "processing";
 

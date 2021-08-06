@@ -3,7 +3,7 @@ import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 
-type ImportDraft = {
+export type ImportDraft = {
   amount: string;
   network: Network;
   displaySymbol: string;

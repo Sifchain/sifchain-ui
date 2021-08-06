@@ -1,17 +1,25 @@
-import { ErrorCode, getErrorMessage, IAssetAmount } from "../../entities";
+import {
+  ErrorCode,
+  getErrorMessage,
+  IAssetAmount,
+  Asset,
+} from "../../entities";
 import { Services } from "../../services";
 import { Store } from "../../store";
 import { PoolStore } from "../../store/pools";
 import { ReportTransactionError } from "../utils";
+import { createPoolKey } from "../../utils";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
 type PickSif = Pick<Services["sif"], "getState" | "signAndBroadcast">;
 type PickClp = Pick<Services["clp"], "addLiquidity" | "createPool">;
 
-function findPool(pools: PoolStore, a: string, b: string) {
-  const key = [a, b].sort().join("_");
-
-  return pools[key] ?? null;
+function findPool(
+  pools: PoolStore,
+  nativeSymbol: string,
+  externalSymbol: string,
+) {
+  return pools[createPoolKey(nativeSymbol, externalSymbol)] ?? null;
 }
 
 type AddLiquidityServices = {

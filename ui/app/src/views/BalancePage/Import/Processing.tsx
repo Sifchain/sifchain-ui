@@ -11,7 +11,6 @@ export default defineComponent({
   setup(props) {
     const {
       pegEventRef,
-      importDraft,
       exitImport,
       detailsRef,
       pegEventDetails,

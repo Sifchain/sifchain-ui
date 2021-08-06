@@ -1,24 +1,61 @@
 import { Services } from "../../services";
 import { Store } from "../../store";
+import { Asset, Pool, AssetAmount, Amount } from "../../entities";
+import { isIBCDenom } from "../../services/utils/IbcService";
+import { createPoolKey } from "../../utils";
+import { AccountPool } from "../../store/pools";
 
 type PickSif = Pick<Services["sif"], "getState">;
+type PickIbc = Pick<Services["ibc"], "symbolLookup">;
 type PickClp = Pick<
   Services["clp"],
-  "getPoolSymbolsByLiquidityProvider" | "getPools" | "getLiquidityProvider"
+  "getPoolSymbolsByLiquidityProvider" | "getRawPools" | "getLiquidityProvider"
 >;
 type SyncPoolsArgs = {
+  ibc: PickIbc;
   sif: PickSif;
   clp: PickClp;
 };
 
 type SyncPoolsStore = Pick<Store, "accountpools" | "pools">;
 
-export function SyncPools({ sif, clp }: SyncPoolsArgs, store: SyncPoolsStore) {
+function getAssetOrNull(symbol: string): Asset | null {
+  try {
+    return Asset.get(symbol);
+  } catch (err) {
+    return null;
+  }
+}
+
+export function SyncPools(
+  { ibc, sif, clp }: SyncPoolsArgs,
+  store: SyncPoolsStore,
+) {
   return async function syncPools() {
     const state = sif.getState();
 
     // UPdate pools
-    const pools = await clp.getPools();
+    const nativeAsset = Asset.get("rowan");
+    const rawPools = await clp.getRawPools();
+    const pools = rawPools
+      .map((pool) => {
+        let externalSymbol = pool.external_asset.symbol;
+        if (isIBCDenom(externalSymbol)) {
+          externalSymbol = ibc.symbolLookup[externalSymbol];
+        }
+
+        const externalAsset = getAssetOrNull(externalSymbol);
+        if (!externalAsset) return null;
+
+        return Pool(
+          AssetAmount(nativeAsset, pool.native_asset_balance),
+          AssetAmount(externalAsset, pool.external_asset_balance),
+          Amount(pool.pool_units),
+        );
+      })
+      .filter((val) => val != null) as Pool[];
+
+    // const pools = await clp.getPools();
     for (let pool of pools) {
       store.pools[pool.symbol()] = pool;
     }
@@ -32,31 +69,42 @@ export function SyncPools({ sif, clp }: SyncPoolsArgs, store: SyncPoolsStore) {
       // This is a hot method when there are a heap of pools
       // Ideally we would have a better rest endpoint design
 
-      accountPoolSymbols.forEach(async (symbol) => {
-        const lp = await clp.getLiquidityProvider({
-          symbol,
-          lpAddress: state.address,
-        });
-        if (!lp) return;
-        const pool = `${symbol}_rowan`;
-        store.accountpools[state.address] =
-          store.accountpools[state.address] || {};
-
-        store.accountpools[state.address][pool] = { lp, pool };
-      });
-
-      // Delete accountpools
-      const currentPoolIds = accountPoolSymbols.map((id) => `${id}_rowan`);
-      if (store.accountpools[state.address]) {
-        const existingPoolIds = Object.keys(store.accountpools[state.address]);
-        const disjunctiveIds = existingPoolIds.filter(
-          (id) => !currentPoolIds.includes(id),
-        );
-
-        disjunctiveIds.forEach((poolToRemove) => {
-          delete store.accountpools[state.address][poolToRemove];
-        });
+      const currentAccountPools: Record<string, AccountPool> = {};
+      if (!store.accountpools[state.address]) {
+        store.accountpools[state.address] = {};
       }
+
+      await Promise.all(
+        accountPoolSymbols.map(async (symbol) => {
+          const assetSymbol = isIBCDenom(symbol)
+            ? ibc.symbolLookup[symbol]
+            : symbol;
+
+          const lp = await clp.getLiquidityProvider({
+            assetSymbol,
+            symbol,
+            lpAddress: state.address,
+          });
+
+          const asset = getAssetOrNull(assetSymbol);
+
+          if (!lp || !asset) return;
+
+          const pool = createPoolKey(asset, Asset.get("rowan"));
+
+          currentAccountPools[pool] = { lp, pool };
+        }),
+      );
+
+      Object.keys(store.accountpools[state.address]).forEach((poolId) => {
+        // If pool is gone now, delete. Ie user remioved all liquidity
+        if (!currentAccountPools[poolId]) {
+          delete store.accountpools[state.address][poolId];
+        }
+      });
+      Object.keys(currentAccountPools).forEach((poolId) => {
+        store.accountpools[state.address][poolId] = currentAccountPools[poolId];
+      });
     }
   };
 }

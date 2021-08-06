@@ -9,7 +9,7 @@ export default defineComponent({
 
     return () => (
       <div
-        class="fixed top-0 left-[20px] ml-sidebar transition-all z-20 drop-shadow-lg"
+        class="absolute top-0 left-[20px] transition-all z-20 drop-shadow-lg"
         style={{
           transform: `translateY(${
             expandedRef.value ? 0 : "calc(-100% + 40px)"

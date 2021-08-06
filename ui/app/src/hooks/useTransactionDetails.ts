@@ -45,7 +45,6 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
       return {
         heading: "Approved",
         description: "Transaction approved",
-        isComplete: true,
       };
     }
     case "approve_started": {
