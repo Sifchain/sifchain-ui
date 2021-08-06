@@ -1,4 +1,9 @@
-import { ErrorCode, getErrorMessage, IAssetAmount } from "../../entities";
+import {
+  ErrorCode,
+  getErrorMessage,
+  IAssetAmount,
+  Asset,
+} from "../../entities";
 import { Services } from "../../services";
 import { Store } from "../../store";
 import { PoolStore } from "../../store/pools";
@@ -31,6 +36,7 @@ export function AddLiquidity(
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
   ) => {
+    console.log("IBC denom!! ADD LIQUIDITY!");
     const reportTransactionError = ReportTransactionError(bus);
     const state = sif.getState();
     if (!state.address) throw "No from address provided for swap";
@@ -42,6 +48,13 @@ export function AddLiquidity(
 
     const provideLiquidity = hasPool ? clp.addLiquidity : clp.createPool;
 
+    const externalAssetDenom = Asset.get(externalAssetAmount.symbol).ibcDenom;
+
+    console.log({
+      nativeIbcDenom: nativeAssetAmount.asset.ibcDenom,
+      externalIbcDenom: nativeAssetAmount.asset.ibcDenom,
+      externalAssetDenom,
+    });
     const tx = await provideLiquidity({
       fromAddress: state.address,
       nativeAssetAmount,

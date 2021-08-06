@@ -3,8 +3,8 @@ import { IAssetAmount } from "./AssetAmount";
 
 export type Pair = ReturnType<typeof Pair>;
 
-export function Pair(a: IAssetAmount, b: IAssetAmount) {
-  const amounts: [IAssetAmount, IAssetAmount] = [a, b];
+export function Pair(nativeAsset: IAssetAmount, externalAsset: IAssetAmount) {
+  const amounts: [IAssetAmount, IAssetAmount] = [nativeAsset, externalAsset];
 
   return {
     amounts,
@@ -18,9 +18,8 @@ export function Pair(a: IAssetAmount, b: IAssetAmount) {
     },
 
     symbol() {
-      return amounts
-        .map((a) => a.symbol)
-        .sort()
+      return [externalAsset, nativeAsset]
+        .map((asset) => asset.symbol.toLowerCase())
         .join("_");
     },
 

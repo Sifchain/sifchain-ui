@@ -1,5 +1,5 @@
 import { onMounted, ref, watchEffect } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
   Amount,
@@ -42,7 +42,6 @@ export const useAddLiquidityData = () => {
 
   const asyncPooling = ref<boolean>(true);
   const router = useRouter();
-  const route = useRoute();
 
   const {
     fromSymbol: _fromSymbol,
@@ -79,7 +78,7 @@ export const useAddLiquidityData = () => {
       });
     },
   });
-  onMounted(() => {});
+
   const isFromMaxActive = computed(() => {
     const accountBalance = balances.value.find(
       (balance) => balance.asset.symbol === fromSymbol.value,

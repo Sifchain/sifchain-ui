@@ -6,25 +6,19 @@ import AssetIcon from "@/components/AssetIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onUnmounted,
-  TransitionGroup,
-} from "vue";
+
+import { computed, defineComponent, TransitionGroup } from "vue";
 import { useRouter } from "vue-router";
-import { errorTypeClass } from "@/components/Form/_Details";
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { Tooltip } from "@/components/Tooltip";
 import { effect } from "@vue/reactivity";
-import { useExportData } from "@/views/BalancePage/Export/useExportData";
 
 export default defineComponent({
-  setup() {
+  setup(): () => JSX.Element {
     const data = useAddLiquidityData();
+
     const router = useRouter();
     const formattedFromTokenBalance = useFormattedTokenBalance(data.fromSymbol);
     const formattedToTokenBalance = useFormattedTokenBalance(data.toSymbol);

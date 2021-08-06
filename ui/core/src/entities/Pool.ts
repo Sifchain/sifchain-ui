@@ -15,11 +15,11 @@ export type Pool = ReturnType<typeof Pool>;
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
 export function Pool(
-  a: IAssetAmount, // native asset
-  b: IAssetAmount, // external asset
+  nativeAsset: IAssetAmount,
+  externalAsset: IAssetAmount,
   poolUnits?: IAmount,
 ) {
-  const pair = Pair(a, b);
+  const pair = Pair(nativeAsset, externalAsset);
   const amounts: [IAssetAmount, IAssetAmount] = pair.amounts;
 
   return {
@@ -32,8 +32,8 @@ export function Pool(
     poolUnits:
       poolUnits ||
       calculatePoolUnits(
-        Amount(a),
-        Amount(b),
+        Amount(nativeAsset),
+        Amount(externalAsset),
         Amount("0"),
         Amount("0"),
         Amount("0"),

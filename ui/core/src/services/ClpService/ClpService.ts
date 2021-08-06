@@ -10,6 +10,7 @@ import {
 
 import { SifUnSignedClient } from "../utils/SifClient";
 import { toPool } from "../utils/SifClient/toPool";
+import { RawPool } from "../utils/SifClient/x/clp";
 
 export type ClpServiceContext = {
   nativeAsset: IAsset;
@@ -21,6 +22,7 @@ export type ClpServiceContext = {
 };
 
 type IClpService = {
+  getRawPools: () => Promise<RawPool[]>;
   getPools: () => Promise<Pool[]>;
   getPoolSymbolsByLiquidityProvider: (address: string) => Promise<string[]>;
   swap: (params: {
@@ -67,6 +69,9 @@ export default function createClpService({
   const client = sifUnsignedClient;
 
   const instance: IClpService = {
+    async getRawPools() {
+      return client.getPools();
+    },
     async getPools() {
       try {
         const rawPools = await client.getPools();
@@ -112,8 +117,10 @@ export default function createClpService({
       return await client.createPool({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
-          source_chain: params.externalAssetAmount.asset.network as string,
-          symbol: params.externalAssetAmount.asset.symbol,
+          source_chain: params.externalAssetAmount.asset.homeNetwork as string,
+          symbol:
+            params.externalAssetAmount.asset.ibcDenom ||
+            params.externalAssetAmount.asset.symbol,
           ticker: params.externalAssetAmount.asset.symbol,
         },
         external_asset_amount: params.externalAssetAmount.toBigInt().toString(),

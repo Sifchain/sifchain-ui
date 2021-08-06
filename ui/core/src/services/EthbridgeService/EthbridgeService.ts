@@ -59,6 +59,11 @@ export default function createEthbridgeService({
     symbol?: string,
     txHash?: string,
   ): PegTxEventEmitter {
+    console.log("createPegTx", {
+      confirmations,
+      symbol,
+      txHash,
+    });
     const emitter = createPegTxEventEmitter(txHash, symbol);
 
     // decorate pegtx to invert dependency to web3 and confirmations

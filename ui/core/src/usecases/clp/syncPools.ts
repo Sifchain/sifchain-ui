@@ -1,24 +1,57 @@
 import { Services } from "../../services";
 import { Store } from "../../store";
+import { toPool } from "../../services/utils/SifClient/toPool";
+import { isIBCDenom } from "../../services/utils/IbcService";
+import { RawPool } from "../../services/utils/SifClient/x/clp";
+import { Network, Asset, Pool, AssetAmount, Amount } from "../../entities";
 
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<
   Services["clp"],
-  "getPoolSymbolsByLiquidityProvider" | "getPools" | "getLiquidityProvider"
+  "getPoolSymbolsByLiquidityProvider" | "getRawPools" | "getLiquidityProvider"
 >;
+type PickIbc = Pick<Services["ibc"], "symbolLookup">;
 type SyncPoolsArgs = {
   sif: PickSif;
   clp: PickClp;
+  ibc: PickIbc;
 };
 
 type SyncPoolsStore = Pick<Store, "accountpools" | "pools">;
 
-export function SyncPools({ sif, clp }: SyncPoolsArgs, store: SyncPoolsStore) {
+export function SyncPools(
+  { sif, clp, ibc }: SyncPoolsArgs,
+  store: SyncPoolsStore,
+) {
   return async function syncPools() {
     const state = sif.getState();
 
-    // UPdate pools
-    const pools = await clp.getPools();
+    // Update pools
+    const rawPools = await clp.getRawPools();
+
+    const pools = rawPools
+      .map((rawPool) => {
+        let externalSymbol = rawPool.external_asset.symbol;
+        if (isIBCDenom(externalSymbol)) {
+          externalSymbol = ibc.symbolLookup[externalSymbol];
+        }
+
+        let externalAsset;
+        try {
+          externalAsset = Asset.get(externalSymbol);
+        } catch (error) {
+          return null;
+        }
+
+        return Pool(
+          // TODO(ajoslin): figure out how to get access to rowan nativeAsset here...
+          AssetAmount(Asset.get("rowan"), rawPool.native_asset_balance),
+          AssetAmount(externalAsset, rawPool.external_asset_balance),
+          Amount(rawPool.pool_units),
+        );
+      })
+      .filter((pool) => pool != null) as Pool[];
+
     for (let pool of pools) {
       store.pools[pool.symbol()] = pool;
     }
