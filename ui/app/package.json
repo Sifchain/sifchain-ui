@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cd .. && yarn dev",
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --inspect",
     "build": "vue-cli-service build",
     "test": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"

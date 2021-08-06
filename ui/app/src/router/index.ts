@@ -23,12 +23,32 @@ import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
 import { ApproveSwap } from "@/views/SwapPage/children/Approve";
 import ImportSelect from "@/views/BalancePage/Import/Select";
 import ImportConfirm from "@/views/BalancePage/Import/Confirm";
+import ImportProcessing from "@/views/BalancePage/Import/Processing";
+import ExportSelect from "@/views/BalancePage/Export/Select";
+import ExportConfirm from "@/views/BalancePage/Export/Confirm";
+import ExportProcessing from "@/views/BalancePage/Export/Processing";
+import { DeepReadonly } from "vue";
 
 type SwapPageMeta = {
   title: string;
   swapState: SwapPageState;
 };
-const routes: Array<RouteRecordRaw> = [
+
+type RouteName<T> = T extends { name?: string }[]
+  ? RouteName<T[number]>
+  : T extends { name: string }
+  ? T["name"]
+  : "";
+
+// type RouteName<T> = T extends RouteRecordRaw
+//   ? RouteName<T[keyof T]>
+//   : T extends { name: string; children: any[] }
+//   ? T["name"] | RouteName<T["children"][number]>
+//   : T extends { name: string }
+//   ? T["name"]
+//   : "";
+
+const routes = [
   {
     path: "/",
     redirect: { name: "Swap" },
@@ -135,33 +155,33 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         name: "Import",
-        path: "import/:symbol/select",
+        path: "import/:displaySymbol/select",
         component: ImportSelect,
       },
       {
         name: "ConfirmImport",
-        path: "import/:symbol/confirm",
+        path: "import/:displaySymbol/confirm",
         component: ImportConfirm,
       },
       {
         name: "ProcessingImport",
-        path: "import/:symbol/processing",
-        component: ImportConfirm,
+        path: "import/:displaySymbol/processing",
+        component: ImportProcessing,
       },
       {
         name: "Export",
         path: "export/:symbol/select",
-        component: ImportSelect,
+        component: ExportSelect,
       },
       {
         name: "ConfirmExport",
         path: "export/:symbol/confirm",
-        component: ImportConfirm,
+        component: ExportConfirm,
       },
       {
         name: "ProcessingExport",
         path: "export/:symbol/processing",
-        component: ImportConfirm,
+        component: ExportProcessing,
       },
       // {
       //   name: "Export",
@@ -186,7 +206,7 @@ const routes: Array<RouteRecordRaw> = [
   //     title: "Export Asset - Sifchain",
   //   },
   // },
-];
+] as const;
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),

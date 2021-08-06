@@ -1,4 +1,5 @@
 import { isBroadcastTxFailure } from "@cosmjs/stargate";
+import { parseTxFailure } from "../../services/SifService/parseTxFailure";
 import { IAssetAmount, Network, TransactionStatus } from "../../entities";
 import { Services } from "../../services";
 import { Store } from "../../store";
@@ -12,13 +13,27 @@ type UnpegServices = {
   ibc: Pick<Services["ibc"], "transferIBCTokens">;
 };
 
+export type UnpegApproveStartedEvent = { type: "approve_started" };
+export type UnpegApprovedEvent = { type: "approved" };
+export type UnpegSentEvent = { type: "sent"; tx: TransactionStatus };
+export type UnpegTxError = { type: "tx_error"; tx: TransactionStatus };
+export type UnpegApproveError = { type: "approve_error" };
+export type UnpegSigningEvent = { type: "signing" };
+export type UnpegEvent =
+  | UnpegApproveStartedEvent
+  | UnpegApprovedEvent
+  | UnpegSigningEvent
+  | UnpegSentEvent
+  | UnpegTxError
+  | UnpegApproveError;
 type UnpegStore = Pick<Store, "wallet">;
 
 export function Unpeg(services: UnpegServices, store: UnpegStore) {
-  return async function unpeg(
+  return async function* unpeg(
     assetAmount: IAssetAmount,
     destinationNetwork: Network,
-  ): Promise<TransactionStatus> {
+  ): AsyncGenerator<UnpegEvent> {
+    yield { type: "signing" };
     if (destinationNetwork === Network.COSMOSHUB) {
       const tx = await services.ibc.transferIBCTokens({
         sourceNetwork: Network.SIFCHAIN,
@@ -32,17 +47,24 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
             message: "IBC Transfer Failed",
           },
         });
-        return {
-          hash: tx.transactionHash,
-          state: "failed",
+        yield {
+          type: "tx_error",
+          tx: parseTxFailure({
+            transactionHash: tx.transactionHash,
+            rawLog: tx.rawLog || "",
+          }),
         };
       } else {
-        return {
-          state: "completed",
-          hash: tx.transactionHash,
-          memo: "Transaction Completed",
+        yield {
+          type: "sent",
+          tx: {
+            state: "completed",
+            hash: tx.transactionHash,
+            memo: "Transaction Completed",
+          },
         };
       }
+      return;
     }
     const lockOrBurnFn = isOriginallySifchainNativeToken(assetAmount.asset)
       ? services.ethbridge.lockToEthereum
@@ -61,7 +83,7 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
 
     if (txStatus.state !== "accepted") {
       services.bus.dispatch({
-        type: "PegTransactionErrorEvent",
+        type: "TransactionErrorEvent",
         payload: {
           txStatus,
           message: txStatus.memo || "There was an error while unpegging",

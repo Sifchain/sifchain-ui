@@ -66,9 +66,7 @@ export default defineComponent({
             active={isActive.value}
           />
 
-          <span class="py-[8.5px] pl-[10px] pr-[12px]">
-            {props.displayName}
-          </span>
+          <span class="py-[8.5px] px-[10px]">{props.displayName}</span>
           {!!props.action && props.action}
         </Cmp.value>
       );

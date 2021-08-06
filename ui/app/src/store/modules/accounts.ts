@@ -1,7 +1,7 @@
-import { rootStore } from "..";
 import { IAssetAmount, Network } from "../../../../core/src";
 import { useCore } from "../../hooks/useCore";
 import { Vuextra } from "../Vuextra";
+
 const core = useCore();
 export interface IWalletServiceState {
   network: Network;
@@ -13,6 +13,7 @@ export interface IWalletServiceState {
 }
 
 export const accountStore = Vuextra.createStore({
+  name: "accounts",
   options: {
     devtools: true,
   },
@@ -60,7 +61,8 @@ export const accountStore = Vuextra.createStore({
   }),
   actions: (context) => ({
     loadAccount(p: { network: Network }) {
-      core.services.ibc.createWalletByNetwork(Network.COSMOSHUB).then((w) => {
+      return core.services.ibc.createWalletByNetwork(p.network).then((w) => {
+        accountStore.setConnected({ network: p.network, connected: true });
         accountStore.setAddress({
           network: p.network,
           address: w.addresses[0],
@@ -77,17 +79,3 @@ export const accountStore = Vuextra.createStore({
   }),
   modules: [],
 });
-accountStore.loadAccount({ network: Network.COSMOSHUB });
-
-accountStore.connect(Network.SIFCHAIN);
-accountStore.mutations.setConnected({
-  network: Network.SIFCHAIN,
-  connected: true,
-});
-
-// setInterval(() => {
-//   walletStore.setConnected({
-//     network: Network.ETHEREUM,
-//     connected: !walletStore.state?.ethereum.connected,
-//   });
-// }, 1000);

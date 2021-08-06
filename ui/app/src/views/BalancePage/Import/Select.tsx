@@ -29,11 +29,14 @@ import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
 import { rootStore } from "../../../store";
+import { importStore } from "@/store/modules/import";
 
 export default defineComponent({
   name: "ImportSelect",
 
   setup(props) {
+    // return <div></div>;
+
     const { store } = useCore();
     const appWalletPicker = useAppWalletPicker();
 
@@ -48,24 +51,6 @@ export default defineComponent({
     } = useImportData();
     const router = useRouter();
 
-    const handleSetMax = () => {
-      if (tokenRef.value) {
-        const maxAmount = getMaxAmount(
-          { value: tokenRef.value.asset.symbol } as Ref,
-          tokenRef.value.amount,
-        );
-
-        if (importDraft.amount.value) {
-          rootStore.import.setDraft({
-            amount: format(maxAmount, tokenRef.value.asset, {
-              mantissa: tokenRef.value.asset.decimals,
-              trimMantissa: true,
-            }),
-          });
-        }
-      }
-    };
-
     const validationErrorRef = computed(() => {
       if (!tokenRef.value) {
         return "Select Token";
@@ -76,7 +61,10 @@ export default defineComponent({
       if (computedImportAssetAmount.value?.lessThanOrEqual("0.0")) {
         return "Enter Amount";
       }
-      if (tokenRef.value.amount.lessThan(computedImportAssetAmount.value)) {
+      if (
+        selectedTokenBalance.value?.amount &&
+        tokenRef.value.amount.greaterThan(selectedTokenBalance.value)
+      ) {
         return "Amount Too Large";
       }
     });
@@ -94,7 +82,7 @@ export default defineComponent({
         },
         {
           condition:
-            importDraft.network.value === Network.ETHEREUM &&
+            importDraft.value.network === Network.ETHEREUM &&
             !store.wallet.eth.isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
@@ -109,8 +97,9 @@ export default defineComponent({
           props: {
             disabled: !!validationErrorRef.value,
             onClick: () => {
+              console.log("importing");
               router.replace(
-                getImportLocation("confirm", proxyRefs(importDraft)),
+                getImportLocation("confirm", rootStore.import.state.draft),
               );
             },
           },
@@ -119,17 +108,42 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
-    const optionsRef = computed<SelectDropdownOption[]>(() =>
-      networksRef.value?.map((network) => ({
-        content: <div class="capitalize">{network}</div>,
-        value: network,
-      })),
+    const optionsRef = computed<SelectDropdownOption[]>(
+      () =>
+        networksRef.value?.map((network) => ({
+          content: <div class="capitalize">{network}</div>,
+          value: network,
+        })) || [],
     );
     const networkOpenRef = ref(false);
 
     const currentAssetBalance = rootStore.accounts.computed(
-      (s) => s.state[importDraft.network.value].balances,
+      (s) => s.state[importDraft.value.network].balances,
     );
+
+    const networkValue = rootStore.import.refs.draft.network.computed();
+    const draftVal = importStore.refs.draft.computed();
+    const selectedTokenBalance = rootStore.accounts.computed((s) =>
+      s.state[networkValue.value].balances.find(
+        (bal) => bal.asset.displaySymbol === draftVal.value.displaySymbol,
+      ),
+    );
+    const amountValue = rootStore.import.refs.draft.amount.computed();
+
+    const handleSetMax = () => {
+      if (tokenRef.value && selectedTokenBalance.value?.amount) {
+        rootStore.import.setDraft({
+          amount: format(
+            selectedTokenBalance.value?.amount,
+            selectedTokenBalance.value?.asset,
+            {
+              mantissa: selectedTokenBalance.value?.decimals,
+              trimMantissa: true,
+            },
+          ),
+        });
+      }
+    };
     return () => (
       <Modal
         heading="Import Token to Sifchain"
@@ -144,11 +158,13 @@ export default defineComponent({
                 Network
                 <SelectDropdown
                   options={optionsRef}
-                  value={importDraft.network}
+                  value={networkValue}
                   onChangeValue={(value) => {
                     console.log("onChangeValue", value);
-                    if (importDraft.network)
-                      importDraft.network.value = value as Network;
+                    if (importDraft.value.network)
+                      importStore.setDraft({
+                        network: value as Network,
+                      });
                   }}
                   tooltipProps={{
                     onShow: () => {
@@ -163,7 +179,7 @@ export default defineComponent({
                     class="w-full relative capitalize pl-[16px] mt-[10px]"
                     active={networkOpenRef.value}
                   >
-                    {importDraft.network.value}
+                    {networkValue.value}
                   </Button.Select>
                 </SelectDropdown>
               </div>
@@ -193,14 +209,15 @@ export default defineComponent({
 
             <TokenSelectDropdown
               sortBy="balance"
-              network={importDraft.network}
+              network={networkValue}
               onCloseIntent={() => {
                 selectIsOpen.value = false;
               }}
               onSelectAsset={(asset) => {
                 selectIsOpen.value = false;
-                importDraft.displaySymbol.value =
-                  asset.displaySymbol || asset.symbol;
+                importStore.setDraft({
+                  displaySymbol: asset.displaySymbol || asset.symbol,
+                });
               }}
               active={selectIsOpen}
             />
@@ -212,7 +229,10 @@ export default defineComponent({
                 class="text-base opacity-50 hover:text-accent-base cursor-pointer"
                 onClick={handleSetMax}
               >
-                Balance: {formatAssetAmount(tokenRef.value?.amount)}
+                Balance:{" "}
+                {(selectedTokenBalance.value &&
+                  formatAssetAmount(selectedTokenBalance.value)) ??
+                  "0"}
               </span>
             )}
           </div>
@@ -233,12 +253,16 @@ export default defineComponent({
             onInput={(e) => {
               const value = (e.target as HTMLInputElement).value;
               if (isNaN(parseFloat(value))) {
-                importDraft.amount.value = "";
+                importStore.setDraft({
+                  amount: "",
+                });
               } else {
-                importDraft.amount.value = value;
+                importStore.setDraft({
+                  amount: value,
+                });
               }
             }}
-            value={importDraft.amount.value}
+            value={amountValue.value}
           />
         </section>
 

@@ -5,6 +5,7 @@ import {
   ActionContext,
   StoreOptions,
   Getter,
+  Store,
 } from "vuex";
 
 /* 
@@ -50,17 +51,20 @@ interface VuextraOptions<
   Modules extends VuextraOptions<any, any, any, any, any, any>[],
   VuextraContext extends ReturnType<Actions> & ActionContext<State, State>
 > {
+  name: string;
   actions: Actions;
   mutations: Mutations;
   getters: Getters;
   state: State;
   options: Partial<StoreOptions<State>>;
   modules: Modules;
+  init?: () => Promise<void> | void;
 }
 
 type ActionsBase<State, Ctx> = (
   context: ActionContext<State, State>,
 ) => Readonly<Record<string, (arg?: any) => Promise<void> | void>>;
+
 type MutationsBase<State> = (
   state: State,
 ) => Readonly<Record<string, (arg?: any) => void>>;
@@ -81,6 +85,12 @@ function createStore<
     VuextraOptions<State, Actions, Mutations, Getters, Modules, VuextraContext>
   >,
 ) {
+  let store: Store<Record<typeof config.name, State>> | undefined;
+  const getStore = () => {
+    if (!store)
+      throw new Error("Vuextra store accessed before store initialized");
+    return store;
+  };
   const {
     mutations: mutationComposer,
     actions: actionComposer,
@@ -88,7 +98,6 @@ function createStore<
     state,
     options,
   } = config;
-
   const mutations = Object.fromEntries(
     Object.entries(mutationComposer({} as State)).map(([key, fn]) => [
       key,
@@ -103,7 +112,7 @@ function createStore<
       return [
         k,
         (payload: any) => {
-          store.commit(k, payload);
+          getStore().commit(config.name + "/" + k, payload);
         },
       ];
     }),
@@ -115,7 +124,7 @@ function createStore<
         return [
           k,
           (payload: any) => {
-            return store.dispatch(k, payload);
+            return getStore().dispatch(config.name + "/" + k, payload);
           },
         ];
       },
@@ -147,25 +156,47 @@ function createStore<
 
   type ComposerReturnType = ReturnType<typeof getterComposer>;
 
-  const store = createVuexStore<State>({
+  const moduleConfig = {
+    namespaced: true,
     ...options,
     state,
     mutations,
     actions,
     getters,
-  } as const);
+  } as const;
 
   const vuextraStore = {
     ...wrappedActions,
     ...wrappedMutations,
     mutations: wrappedMutations,
     actions: wrappedActions,
-    getters: store.getters as Record<
-      keyof ComposerReturnType,
-      ReturnType<ComposerReturnType[keyof ComposerReturnType]>
-    >,
-    state: store.state,
-    store: store,
+    get getters() {
+      const getters = getStore().getters;
+      return new Proxy(getters, {
+        get(target, p, receiver) {
+          return getters[typeof p === "string" ? config.name + "/" + p : p];
+        },
+      }) as Record<
+        keyof ComposerReturnType,
+        ReturnType<ComposerReturnType[keyof ComposerReturnType]>
+      >;
+    },
+    get state() {
+      return getStore().state[config.name] as State;
+    },
+    get store() {
+      return getStore();
+    },
+    register(rootStore: Store<any>) {
+      store = rootStore;
+      // @ts-ignore
+      store.registerModule(config.name, moduleConfig);
+      try {
+        config.init?.();
+      } catch (e) {
+        console.error(e);
+      }
+    },
   };
 
   type GettersType = Readonly<
@@ -189,70 +220,85 @@ function createStore<
     });
   }
 
-  const storeProxy = new Proxy(vuextraStore, {
-    get(target, p, receiver) {
-      if (p === "computed") {
-        return vuextraComputed;
+  type DeepComputedProxy<T> = T extends object
+    ? { [K in keyof T]: DeepComputedProxy<T[K]> } & {
+        computed: () => ComputedRef<T>;
       }
+    : {
+        computed: () => ComputedRef<T>;
+      };
 
-      if (p in store.getters) {
-        return store.getters[p];
+  const computePath = (path: string[], targets: any[]) => {
+    let vals = [...targets];
+    for (let index = 0; index < vals.length; index++) {
+      let pathCopy = [...path];
+      while (pathCopy.length) {
+        const currVal = vals[index];
+        if (typeof currVal !== "object") break;
+        let p = pathCopy.shift();
+        if (p != undefined) vals[index] = currVal[p];
       }
-      // if (p in store.state) {
-      //   // @ts-ignore
-      //   return store.state[p];
-      // }
-      return Reflect.get(target, p, receiver);
-    },
-  }) as typeof vuextraStore &
-    GettersType & { getters: GettersType } & {
-      computed: typeof vuextraComputed;
-    };
-
-  return storeProxy as DeepReadonly<typeof storeProxy>;
-}
-
-/* 
-// Backburner 
-
-if (p === "refs") {
-  return createDeepRefProxy(storeProxy);
-}
-
-type DeepComputedProxy<T> = T extends object
-    ? { [K in keyof T]: DeepComputedProxy<T[K]> } & ComputedRef<T>
-    : ComputedRef<T>;
-
-  const computePath = (path: string[], obj: any) => {
-    let val = undefined;
-    while (path.length) {
-      let p = path.shift();
-      if (p != undefined) val = obj[p];
     }
-    return val;
+    return vals.find((v) => v !== undefined);
   };
-  function createDeepRefProxy(target: any) {
-    let path: any = [];
+
+  function createDeepRefProxy<T>(
+    targets: T[],
+    path: any[] = [],
+  ): DeepComputedProxy<Pick<typeof storeProxy, "state" | "getters">> {
+    // @ts-ignore
     const p = new Proxy(
-      target as DeepComputedProxy<Pick<typeof storeProxy, "state" | "getters">>,
+      // @ts-ignore
+      {} as DeepComputedProxy<Pick<typeof storeProxy, "state" | "getters">>,
       {
         get(target, p, receiver) {
-          const currPath = path;
-          let comp: ComputedRef<any> | undefined;
-          if (p === "value" || p === "effect") {
-            comp = comp || computed(() => computePath(currPath, storeProxy));
-            return comp[p];
+          if (p === "computed") {
+            return () => computed(() => computePath(path, targets));
           }
-          path = [...currPath, p];
-          const val = computePath(path, storeProxy);
+          const val = computePath([...path, p], targets);
           if (typeof val !== "object") {
-            return val;
+            return {
+              computed() {
+                return computed(() => computePath([...path, p], targets));
+              },
+            };
           }
-          return p;
+          return createDeepRefProxy(targets, [...path, p]);
         },
       },
     );
     return p;
   }
 
-  */
+  const storeProxy = new Proxy(vuextraStore, {
+    get(_target, p, _receiver) {
+      if (p === "register") {
+        return vuextraStore[p];
+      }
+      if (p === "computed") {
+        return vuextraComputed;
+      }
+      if (p === "refs") {
+        return createDeepRefProxy([vuextraStore.state, vuextraStore.getters]);
+      }
+      // if (p in getStore().getters) {
+      //   return getStore().getters[p];
+      // }
+      // if (p in store.state) {
+      //   // @ts-ignore
+      //   return store.state[p];
+      // }
+      return Reflect.get(vuextraStore, p, vuextraStore);
+    },
+  }) as typeof vuextraStore & GettersType & { getters: GettersType };
+
+  type StoreProxyType = typeof storeProxy;
+  return storeProxy as DeepReadonly<
+    typeof storeProxy & {
+      computed: typeof vuextraComputed;
+      refs: DeepComputedProxy<
+        StoreProxyType["state"] & StoreProxyType["getters"]
+      >;
+    }
+  >;
+}

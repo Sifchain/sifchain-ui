@@ -239,7 +239,7 @@ export class IBCService {
     });
 
     const symbol = params.assetAmountToTransfer.asset.symbol;
-    debugger;
+    // debugger;
     const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
       fromAccount.address,
       toAccount.address,

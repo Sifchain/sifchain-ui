@@ -4,6 +4,8 @@ import { defineComponent, PropType, ref } from "vue";
 import { WalletConnection } from "./constants";
 import WalletConnectionDropdown from "./WalletConnectionDropdown";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
+import { TokenIcon } from "../TokenIcon";
+import { Asset } from "@sifchain/sdk";
 
 export default defineComponent({
   name: "WalletConnection",
@@ -63,29 +65,25 @@ export default defineComponent({
             ]}
           >
             <div class="flex-1 items-center flex text-left">
-              <img
-                src={props.connection.iconSrc}
-                class="w-[22px] rounded"
-                alt={props.connection.name}
+              <TokenIcon
+                assetValue={Asset.get(props.connection.networkTokenSymbol)}
+                class="w-[22px]"
               />
               <div class="ml-[13px]">
-                <div class="text-sm font-bold leading-none">
-                  {props.connection.name}
+                <div class="text-sm font-bold leading-none capitalize">
+                  {props.connection.network}
                 </div>
                 <div class="text-sm opacity-50 capitalize text-left">
-                  {props.connection.network}
+                  {props.connection.walletName}
                 </div>
               </div>
             </div>
-            <AssetIcon
-              icon="interactive/link"
-              class={[
-                "w-[20px] max-w-[20px] h-[20px] transition-all",
-                stateRef.value.isConnected && "text-connected-base",
-              ]}
-            />
-            <div class="flex-1">
-              <div class="cursor-pointer text-sm flex justify-end items-center w-full">
+            <div class="flex-1 cursor-pointer text-sm flex justify-between items-center w-full">
+              <img
+                src={props.connection.walletIconSrc}
+                class={"w-[20px] max-w-[20px] h-[20px] rounded"}
+              />
+              <div class="flex items-center">
                 {stateRef.value.isConnected
                   ? shortenHash(stateRef.value.address, 6, 4)
                   : "Connect"}

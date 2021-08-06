@@ -1,8 +1,9 @@
-import { defineComponent, PropType, computed, Ref } from "vue";
+import { defineComponent, PropType, computed, Ref, watchEffect } from "vue";
 import { useImportData } from "./useImportData";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "ImportProcessingModal",
@@ -13,15 +14,19 @@ export default defineComponent({
       importDraft,
       exitImport,
       detailsRef,
+      pegEventDetails,
     } = useImportData();
-
-    const transactionDetails = usePegEventDetails({
-      pegEvent: pegEventRef as Ref<PegEvent>,
+    const router = useRouter();
+    watchEffect(() => {
+      if (!pegEventRef.value) {
+        router.push({
+          name: "Balances",
+        });
+      }
     });
-
     return () => (
       <TransactionDetailsModal
-        transactionDetails={transactionDetails}
+        transactionDetails={pegEventDetails}
         icon="interactive/arrow-down"
         onClose={exitImport}
         details={detailsRef}

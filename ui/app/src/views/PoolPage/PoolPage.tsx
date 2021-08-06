@@ -171,7 +171,7 @@ const UserPoolItem = defineComponent({
 
     const detailsRef = computed<[any, any][]>(() => [
       [
-        `Network Pooled ${externalToken.value?.asset.symbol.toUpperCase()}`,
+        `Network Pooled ${externalToken.value?.asset.displaySymbol.toUpperCase()}`,
         <span class="font-mono">
           {prettyNumber(+formatAssetAmount(externalAmount.value), 5)}
         </span>,

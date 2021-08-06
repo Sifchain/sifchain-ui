@@ -1,15 +1,19 @@
-import { Network } from "@sifchain/sdk";
+import { useCore } from "@/hooks/useCore";
+import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
+import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 
 type ImportDraft = {
   amount: string;
   network: Network;
   displaySymbol: string;
+  pegEvent: PegEvent | undefined;
 };
 type State = {
   draft: ImportDraft;
 };
 export const importStore = Vuextra.createStore({
+  name: "import",
   options: {
     devtools: true,
   },
@@ -18,6 +22,7 @@ export const importStore = Vuextra.createStore({
       amount: "0",
       network: Network.ETHEREUM,
       displaySymbol: "eth",
+      pegEvent: undefined,
     },
   } as State,
   getters: (state) => ({
@@ -27,14 +32,30 @@ export const importStore = Vuextra.createStore({
       );
     },
   }),
-  actions: (ctx) => ({}),
   mutations: (state) => ({
     setDraft(nextDraft: Partial<ImportDraft>) {
-      state.draft = {
-        ...state.draft,
-        ...nextDraft,
-      };
+      console.log("SETTING DRAFT!!!", state, nextDraft);
+      Object.assign(state.draft, nextDraft);
+    },
+    setPegEvent(pegEvent: PegEvent | undefined) {
+      state.draft.pegEvent = pegEvent;
     },
   }),
+  actions: (ctx) => ({
+    async runImport(payload: { assetAmount: IAssetAmount }) {
+      if (!payload.assetAmount) throw new Error("Please provide an amount");
+      self.setPegEvent(undefined);
+      for await (const event of useCore().usecases.peg.peg(
+        payload.assetAmount,
+        ctx.state.draft.network,
+      )) {
+        self.setPegEvent(event);
+        console.log({ event });
+      }
+    },
+  }),
+
   modules: [],
 });
+
+const self = importStore;

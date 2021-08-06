@@ -1,6 +1,7 @@
 import { Vuextra } from "../Vuextra";
 
 export const exampleStore = Vuextra.createStore({
+  name: "",
   options: {
     devtools: true,
   },
@@ -9,4 +10,5 @@ export const exampleStore = Vuextra.createStore({
   actions: (ctx) => ({}),
   mutations: (state) => ({}),
   modules: [],
+  async init() {},
 });

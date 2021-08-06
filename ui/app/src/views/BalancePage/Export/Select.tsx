@@ -13,41 +13,35 @@ import {
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import router from "@/router";
-import { ExportData, getExportLocation } from "./useExportData";
+import { getExportLocation, useExportData } from "./useExportData";
 import { Form } from "@/components/Form";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
+import { exportStore } from "@/store/modules/export";
 
 export default defineComponent({
   name: "ExportSelect",
-  props: {
-    exportData: {
-      type: Object as PropType<ExportData>,
-      required: true,
-    },
-  },
+  props: {},
   setup(props) {
     const { store } = useCore();
-
+    const exportData = useExportData();
     const walletPicker = useAppWalletPicker();
 
-    const {
-      exportParams,
-      networksRef,
-      exportTokenRef,
-      exportAmountRef,
-    } = props.exportData;
-
+    const { networksRef, exportTokenRef, exportAmountRef } = exportData;
+    const exportParams = exportStore.state.draft;
     const networkRef = computed(() => exportParams.network);
 
     const handleSetMax = () => {
+      if (!exportTokenRef.value) return;
       const maxAmount = getMaxAmount(
-        { value: exportTokenRef.value.asset.symbol } as Ref,
-        exportTokenRef.value.amount,
+        { value: exportTokenRef.value?.asset.symbol } as Ref,
+        exportTokenRef.value?.amount,
       );
-      exportParams.amount = format(maxAmount, exportTokenRef.value.asset, {
-        mantissa: exportTokenRef.value.asset.decimals,
-        trimMantissa: true,
+      exportStore.setDraft({
+        amount: format(maxAmount, exportTokenRef.value.asset, {
+          mantissa: exportTokenRef.value.asset.decimals,
+          trimMantissa: true,
+        }),
       });
     };
 
@@ -112,9 +106,9 @@ export default defineComponent({
 
     return () => (
       <Modal
-        heading={props.exportData.headingRef.value}
+        heading={exportData.headingRef.value}
         icon="interactive/arrow-up"
-        onClose={props.exportData.exitExport}
+        onClose={exportData.exitExport}
         showClose
       >
         <section class="bg-gray-base p-4 rounded">
@@ -149,9 +143,13 @@ export default defineComponent({
             onInput={(e) => {
               const value = (e.target as HTMLInputElement).value;
               if (isNaN(parseFloat(value))) {
-                exportParams.amount = "";
+                exportStore.setDraft({
+                  amount: "",
+                });
               } else {
-                exportParams.amount = value;
+                exportStore.setDraft({
+                  amount: value,
+                });
               }
             }}
             value={exportParams.amount}
@@ -163,7 +161,9 @@ export default defineComponent({
               options={optionsRef}
               value={networkRef}
               onChangeValue={(value) => {
-                exportParams.network = value as Network;
+                exportStore.setDraft({
+                  network: value as Network,
+                });
               }}
               tooltipProps={{
                 onShow: () => {
@@ -185,18 +185,18 @@ export default defineComponent({
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
-          <Form.Details details={props.exportData.detailsRef.value} />
+          <Form.Details details={exportData.detailsRef.value} />
         </section>
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
           <div class="text-white capitalize">
-            {props.exportData.exportParams.network} Recipient Address
+            {exportParams.network} Recipient Address
           </div>
           <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
             <input
               readonly
               value={
-                props.exportData.exportParams.network === Network.ETHEREUM
+                exportParams.network === Network.ETHEREUM
                   ? store.wallet.eth.address
                   : rootStore.accounts.state.cosmoshub.address
               }

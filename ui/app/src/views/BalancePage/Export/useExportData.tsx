@@ -1,6 +1,14 @@
 import { RouteLocationRaw, useRoute } from "vue-router";
 import { Button } from "@/components/Button/Button";
-import { reactive, ref, computed, Ref, watch, ComputedRef } from "vue";
+import {
+  reactive,
+  ref,
+  computed,
+  Ref,
+  watch,
+  ComputedRef,
+  onMounted,
+} from "vue";
 import router from "@/router";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useToken } from "@/hooks/useToken";
@@ -13,6 +21,8 @@ import { useCore } from "@/hooks/useCore";
 import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
 import { TransactionStatus } from "@sifchain/sdk";
 import { FormDetailsType } from "@/components/Form";
+import { exportStore, ExportDraft } from "@/store/modules/export";
+import { UnpegEvent } from "../../../../../core/src/usecases/peg/unpeg";
 
 export type ExportParams = {
   amount?: string;
@@ -22,31 +32,21 @@ export type ExportParams = {
 
 export type ExportStep = "setup" | "confirm" | "processing";
 
-export type ExportData = {
-  exportParams: ExportParams;
-  networksRef: Ref<Network[]>;
-  exportTokenRef: Ref<TokenListItem>;
-  exportAmountRef: Ref<IAssetAmount>;
-  feeAmountRef: Ref<IAssetAmount>;
-  targetTokenRef: Ref<TokenListItem>;
-  detailsRef: Ref<FormDetailsType>;
-  headingRef: Ref<string>;
-  runExport: () => void;
-  exitExport: () => void;
-
-  transactionStatusRef: Ref<TransactionStatus>;
-};
-
 export function getExportLocation(
   step: ExportStep,
   params: ExportParams,
 ): RouteLocationRaw {
   return {
-    name: "Export",
-    params: { step, symbol: params.symbol },
+    name:
+      step === "confirm"
+        ? "ConfirmExport"
+        : step === "processing"
+        ? "ProcessingExport"
+        : "Export",
+    params: { symbol: params.symbol },
     query: {
-      network: params.network,
-      amount: params.amount,
+      network: params.network || Network.ETHEREUM,
+      amount: params.amount || "0",
     },
   } as RouteLocationRaw;
 }
@@ -55,24 +55,36 @@ export const useExportData = () => {
   const { store, usecases } = useCore();
   const route = useRoute();
 
-  const exportParams = reactive<ExportParams>({
-    symbol: String(route.params.symbol || ""),
-    network: String(route.query.network || Network.ETHEREUM) as Network,
-    amount: String(route.query.amount || ""),
-  });
+  const exportParams = exportStore.refs.draft.computed();
 
   watch(
-    () => exportParams,
+    exportStore.state.draft,
     (value) => {
-      router.replace(getExportLocation(route.params.step as ExportStep, value));
+      console.log("replacing!!!");
+      if (
+        !["amount", "symbol", "network"].every(
+          (key) =>
+            exportStore.state.draft[key as keyof ExportDraft] ===
+            (route.query[key] || route.params[key]),
+        )
+      )
+        router.push(
+          getExportLocation(
+            router.currentRoute.value.path.split("/").pop() as ExportStep,
+            {
+              ...value,
+            },
+          ),
+        );
     },
-    { deep: true },
+    { deep: true, immediate: false },
   );
-  const exitExport = () => router.replace({ name: "Balances" });
+
+  const exitExport = () => router.push({ name: "Balances" });
 
   const exportTokenRef = useToken({
     network: ref(Network.SIFCHAIN),
-    symbol: computed(() => exportParams.symbol),
+    symbol: computed(() => exportParams.value.symbol),
   });
 
   const headingRef = computed(
@@ -95,10 +107,10 @@ export const useExportData = () => {
   });
 
   const targetSymbolRef = computed(() =>
-    getUnpeggedSymbol(exportParams.symbol),
+    getUnpeggedSymbol(exportParams.value.symbol),
   );
   const targetTokenRef = useToken({
-    network: computed(() => exportParams.network),
+    network: computed(() => exportParams.value.network),
     symbol: targetSymbolRef,
   });
 
@@ -107,35 +119,37 @@ export const useExportData = () => {
     return AssetAmount(
       exportTokenRef.value?.asset,
       toBaseUnits(
-        exportParams.amount?.trim() || "0.0",
+        exportParams.value.amount?.trim() || "0.0",
         exportTokenRef.value?.asset,
       ),
     );
   });
 
-  const transactionStatusRef = ref<TransactionStatus>();
+  const transactionStatusRef = exportStore.refs.draft.unpegEvent.computed();
   async function runExport() {
     if (!exportAmountRef.value) throw new Error("Please provide an amount");
-    transactionStatusRef.value = {
-      state: "requested",
-      hash: "",
-    };
-    transactionStatusRef.value = await usecases.peg.unpeg(
+    for await (let event of usecases.peg.unpeg(
       exportAmountRef.value,
-      exportParams.network,
-    );
+      exportParams.value.network,
+    )) {
+      console.log(event);
+      exportStore.setPegEvent(event);
+    }
   }
 
   // underscored to signify that it is not to be used across the app.
   const detailsRef = computed(
     () =>
       [
-        ["Destination", <span class="capitalize">{exportParams.network}</span>],
+        [
+          "Destination",
+          <span class="capitalize">{exportParams.value.network}</span>,
+        ],
         [
           "Export Amount",
-          !exportParams.amount ? null : (
+          !exportParams.value.amount ? null : (
             <span class="flex items-center font-mono">
-              {exportParams.amount}{" "}
+              {exportParams.value.amount}{" "}
               {(
                 exportTokenRef.value?.asset.displaySymbol ||
                 exportTokenRef.value?.asset.symbol ||
@@ -149,7 +163,7 @@ export const useExportData = () => {
             </span>
           ),
         ],
-        [
+        exportParams.value.network === Network.ETHEREUM && [
           <>
             Transaction Fee
             <Button.InlineHelp>
@@ -174,11 +188,29 @@ export const useExportData = () => {
             />
           </span>,
         ],
-      ] as [any, any][],
+      ].filter(Boolean) as [any, any][],
   );
+  onMounted(() => {
+    const route = router.currentRoute.value;
+    if (
+      !["amount", "symbol", "network"].every(
+        (key) =>
+          exportParams.value[key as keyof ExportDraft] ===
+          (route.query[key] || route.params[key]),
+      )
+    ) {
+      exportStore.setDraft({
+        amount: (route.query.amount as string) || exportParams.value.amount,
+        symbol:
+          (route.params.symbol as string) || exportStore.state.draft.symbol,
+        network:
+          (route.params.network as Network) ||
+          targetTokenRef.value?.asset.homeNetwork,
+      });
+    }
+  });
 
   return {
-    exportParams: exportParams,
     networksRef,
     exportTokenRef,
     targetTokenRef,
@@ -189,5 +221,5 @@ export const useExportData = () => {
     headingRef,
     detailsRef,
     exitExport,
-  } as ExportData;
+  };
 };

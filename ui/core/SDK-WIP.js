@@ -15,6 +15,11 @@ const sifchainClient = new SifchainClient({
   rpc: "http://localhost:8545",
 });
 
+const dex = new Sifchain.DEX({
+  network: "testnet",
+  rpc: "http://localhost:8545",
+});
+
 const sdk = new SifchainSDK({
   network: "testnet",
   rpc: "http://localhost:8545",

@@ -1,28 +1,29 @@
 import { defineComponent, PropType, computed, Ref } from "vue";
-import { ExportData } from "./useExportData";
-import { useTransactionDetails } from "@/hooks/useTransactionDetails";
+import { useExportData } from "./useExportData";
+import {
+  usePegEventDetails,
+  useTransactionDetails,
+  useUnpegEventDetails,
+} from "@/hooks/useTransactionDetails";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { UnpegEvent } from "../../../../../core/src/usecases/peg/unpeg";
 
 export default defineComponent({
   name: "ExportProcessingModal",
-  props: {
-    exportData: {
-      type: Object as PropType<ExportData>,
-      required: true,
-    },
-  },
+  props: {},
   setup(props) {
-    const { transactionStatusRef } = props.exportData;
-    const transactionDetails = useTransactionDetails({
-      tx: transactionStatusRef,
+    const exportData = useExportData();
+    const { transactionStatusRef } = exportData;
+    const transactionDetails = useUnpegEventDetails({
+      unpegEvent: exportData.transactionStatusRef as Ref<UnpegEvent>,
     });
 
     return () => (
       <TransactionDetailsModal
         transactionDetails={transactionDetails}
         icon="interactive/arrow-up"
-        details={props.exportData.detailsRef}
-        onClose={props.exportData.exitExport}
+        details={exportData.detailsRef}
+        onClose={exportData.exitExport}
       />
     );
   },

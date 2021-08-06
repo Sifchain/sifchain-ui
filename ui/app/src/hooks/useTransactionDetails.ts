@@ -2,7 +2,15 @@ import { computed } from "vue";
 import { TransactionStatus } from "@sifchain/sdk";
 import { Ref, ComputedRef } from "vue";
 import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
+import { UnpegEvent } from "../../../core/src/usecases/peg/unpeg";
 
+export function useUnpegEventDetails(props: {
+  unpegEvent: Ref<UnpegEvent>;
+}): ComputedRef<TransactionDetails> {
+  return computed(() => {
+    return getUnpegEventDetails(props.unpegEvent.value);
+  });
+}
 export function usePegEventDetails(props: {
   pegEvent: Ref<PegEvent>;
 }): ComputedRef<TransactionDetails> {
@@ -12,7 +20,7 @@ export function usePegEventDetails(props: {
 }
 
 export function useTransactionDetails(props: {
-  tx: Ref<TransactionStatus | null>;
+  tx: Ref<TransactionStatus | null | undefined>;
 }): ComputedRef<TransactionDetails> {
   return computed(() => {
     return getTransactionDetails(props.tx.value);
@@ -31,6 +39,13 @@ export type TransactionDetails = null | {
 export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
   const type = pegEvent?.type || null;
   switch (pegEvent?.type) {
+    case "sent":
+    case "approved": {
+      return {
+        heading: "Approved",
+        description: "Transaction approved",
+      };
+    }
     case "approve_started": {
       return {
         heading: "Waiting for Approval",
@@ -51,7 +66,47 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
         description: "", // User rejected, say nothing?
       };
     }
+    case "tx_error": {
+      return getTransactionDetails(pegEvent.tx);
+    }
+    default: {
+      return null;
+    }
+  }
+}
+
+// For peg transactions, they will transition into using the
+// full getTransactionDetails below
+export function getUnpegEventDetails(pegEvent: UnpegEvent): TransactionDetails {
+  const type = pegEvent?.type || null;
+  switch (pegEvent?.type) {
     case "sent":
+    case "approved": {
+      return {
+        heading: "Approved",
+        description: "Transaction approved",
+      };
+    }
+    case "approve_started": {
+      return {
+        heading: "Waiting for Approval",
+        description: "Approve this transaction in your wallet",
+      };
+    }
+    // case 'approved': {} What do with this???
+    case "signing": {
+      return {
+        heading: "Waiting for Confirmation",
+        description: "Confirm this transaction in your wallet",
+      };
+    }
+    case "approve_error": {
+      return {
+        heading: "Transaction Rejected",
+        isError: true,
+        description: "", // User rejected, say nothing?
+      };
+    }
     case "tx_error": {
       return getTransactionDetails(pegEvent.tx);
     }
@@ -63,7 +118,7 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
 
 // For any old transaction
 export function getTransactionDetails(
-  tx: TransactionStatus | null,
+  tx: TransactionStatus | null | undefined,
 ): TransactionDetails {
   const payload = {
     tx,
