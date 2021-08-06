@@ -1,4 +1,4 @@
-import { defineComponent, PropType, computed, Ref } from "vue";
+import { defineComponent } from "vue";
 import router from "@/router";
 import Modal from "@/components/Modal";
 import { getExportLocation, useExportData } from "./useExportData";
@@ -8,7 +8,7 @@ import { exportStore } from "@/store/modules/export";
 
 export default defineComponent({
   name: "ExportConfirmModal",
-  setup(props) {
+  setup() {
     const exportData = useExportData();
     return () => (
       <Modal

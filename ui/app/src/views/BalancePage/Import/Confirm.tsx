@@ -60,6 +60,7 @@ export default defineComponent({
               ...importDraft.value,
               // txHash: importData.pegEventDetails.value?.tx?.hash,
             });
+            console.log("pushing", next);
             router.push(next);
           }}
         >

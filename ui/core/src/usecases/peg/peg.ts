@@ -44,6 +44,8 @@ export function Peg(
     assetAmount: IAssetAmount,
     network: Network = Network.ETHEREUM,
   ): AsyncGenerator<PegEvent> {
+    console.log("pegging", assetAmount.asset, network);
+
     if (network === Network.COSMOSHUB) {
       yield { type: "signing" };
       try {

@@ -34,7 +34,8 @@ export default defineComponent({
     return () => {
       const isLoading =
         !props.transactionDetails.value?.tx?.hash &&
-        !props.transactionDetails.value?.isError;
+        !props.transactionDetails.value?.isError &&
+        !props.transactionDetails.value?.isComplete;
       return (
         <Modal
           heading={props.transactionDetails.value?.heading}

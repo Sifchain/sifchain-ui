@@ -34,7 +34,6 @@ export const importStore = Vuextra.createStore({
   }),
   mutations: (state) => ({
     setDraft(nextDraft: Partial<ImportDraft>) {
-      console.log("SETTING DRAFT!!!", state, nextDraft);
       Object.assign(state.draft, nextDraft);
     },
     setPegEvent(pegEvent: PegEvent | undefined) {

@@ -35,22 +35,21 @@ export const exportStore = Vuextra.createStore({
   }),
   mutations: (state) => ({
     setDraft(nextDraft: Partial<ExportDraft>) {
-      console.log("SETTING DRAFT!!!", state, nextDraft);
       Object.assign(state.draft, nextDraft);
     },
-    setPegEvent(unpegEvent: UnpegEvent | undefined) {
+    setUnpegEvent(unpegEvent: UnpegEvent | undefined) {
       state.draft.unpegEvent = unpegEvent;
     },
   }),
   actions: (ctx) => ({
     async runExport(payload: { assetAmount: IAssetAmount }) {
       if (!payload.assetAmount) throw new Error("Please provide an amount");
-      self.setPegEvent(undefined);
-      for await (const event of useCore().usecases.peg.peg(
+      self.setUnpegEvent(undefined);
+      for await (const event of useCore().usecases.peg.unpeg(
         payload.assetAmount,
         ctx.state.draft.network,
       )) {
-        self.setPegEvent(event);
+        self.setUnpegEvent(event);
         console.log({ event });
       }
     },

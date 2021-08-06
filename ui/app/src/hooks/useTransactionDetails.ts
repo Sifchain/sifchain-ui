@@ -32,6 +32,7 @@ export type TransactionDetails = null | {
   heading: string;
   description: string;
   isError?: boolean;
+  isComplete?: boolean;
 };
 
 // For peg transactions, they will transition into using the
@@ -44,6 +45,7 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
       return {
         heading: "Approved",
         description: "Transaction approved",
+        isComplete: true,
       };
     }
     case "approve_started": {

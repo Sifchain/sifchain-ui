@@ -27,7 +27,11 @@ export default defineComponent({
     const exportData = useExportData();
     const walletPicker = useAppWalletPicker();
 
-    const { networksRef, exportTokenRef, exportAmountRef } = exportData;
+    const {
+      networksRef,
+      exportTokenRef,
+      computedExportAssetAmount,
+    } = exportData;
     const exportParams = exportStore.state.draft;
     const networkRef = computed(() => exportParams.network);
 
@@ -49,13 +53,17 @@ export default defineComponent({
       if (!exportTokenRef.value) {
         return "Select Token";
       }
-      if (!exportAmountRef.value) {
+      if (!computedExportAssetAmount.value) {
         return "Enter Amount";
       }
-      if (exportAmountRef.value?.lessThanOrEqual("0.0")) {
+      if (computedExportAssetAmount.value?.lessThanOrEqual("0.0")) {
         return "Enter Amount";
       }
-      if (exportAmountRef.value?.greaterThan(exportTokenRef.value.amount)) {
+      if (
+        computedExportAssetAmount.value?.greaterThan(
+          exportTokenRef.value.amount,
+        )
+      ) {
         return "Amount Too Large";
       }
     });
