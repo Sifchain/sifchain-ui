@@ -7,6 +7,7 @@ import { useCore } from "@/hooks/useCore";
 import { Button } from "./Button/Button";
 import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import { FormDetailsType } from "./Form";
+import { Network } from "@sifchain/sdk";
 
 export default defineComponent({
   name: "TransactionDetailsModal",
@@ -26,6 +27,10 @@ export default defineComponent({
     onClose: {
       type: Function as PropType<() => void>,
       required: true,
+    },
+    network: {
+      type: String as Extract<Network, "ethereum" | "cosmoshub">,
+      required: false,
     },
   },
   setup(props) {
@@ -55,6 +60,7 @@ export default defineComponent({
                 href={getBlockExplorerUrl(
                   config.sifChainId,
                   props.transactionDetails.value.tx.hash,
+                  props.network,
                 )}
               >
                 View Transaction on the Block Explorer
