@@ -143,7 +143,7 @@ const UserPoolItem = defineComponent({
   },
   name: "UserPoolItem",
   setup(props) {
-    const { store } = useCore();
+    const { store, poolFinder } = useCore();
     const isExpandedRef = ref(false);
     const currentPoolStat = computed(() => props.poolStat);
 
@@ -162,24 +162,29 @@ const UserPoolItem = defineComponent({
       symbol: externalSymbolRef,
     });
 
-    const nativeAmount = computed(
-      () => store.pools[`${externalSymbolRef.value}_rowan`]?.amounts[0],
+    const pool = computed(
+      () => poolFinder(externalSymbolRef.value, "rowan")?.value,
     );
-    const externalAmount = computed(
-      () => store.pools[`${externalSymbolRef.value}_rowan`]?.amounts[1],
+    const nativeAmount = computed(() =>
+      pool.value?.amounts.find((a) => a.symbol === "rowan"),
+    );
+    const externalAmount = computed(() =>
+      pool.value?.amounts.find((a) => a.symbol !== "rowan"),
     );
 
-    const detailsRef = computed<[any, any][]>(() => [
+    const detailsRef = computed<[any, any][]>((): [string, JSX.Element][] => [
       [
         `Network Pooled ${externalToken.value?.asset.symbol.toUpperCase()}`,
         <span class="font-mono">
-          {prettyNumber(+formatAssetAmount(externalAmount.value), 5)}
+          {!!externalAmount.value &&
+            prettyNumber(+formatAssetAmount(externalAmount.value), 5)}
         </span>,
       ],
       [
         `Network Pooled ROWAN`,
         <span class="font-mono">
-          {prettyNumber(+formatAssetAmount(nativeAmount.value), 5)}
+          {!!nativeAmount.value &&
+            prettyNumber(+formatAssetAmount(nativeAmount.value), 5)}
         </span>,
       ],
       [

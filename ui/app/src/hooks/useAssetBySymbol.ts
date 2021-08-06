@@ -16,6 +16,5 @@ export const useAssetBySymbol = (
         asset[key].toLowerCase() == `c${tokenSymbol.value?.toLowerCase()}`,
     );
   });
-  console.log("asset.value", asset.value);
   return asset;
 };

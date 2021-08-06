@@ -21,7 +21,7 @@ import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 
 export const useAddLiquidityData = () => {
-  const { usecases, poolFinder, store, config } = useCore();
+  const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
   const selectedField = ref<"from" | "to" | null>(null);
   const lastFocusedTokenField = ref<"A" | "B" | null>(null);
   const aPerBRatioMessage: Ref<string> = ref("");
@@ -111,18 +111,7 @@ export const useAddLiquidityData = () => {
 
   const { balances } = useWallet(store);
   const liquidityProvider = computed(() => {
-    if (
-      !fromSymbol.value ||
-      !store.wallet.sif.address ||
-      !store.accountpools[store.wallet.sif.address] ||
-      !store.accountpools[store.wallet.sif.address][`${fromSymbol.value}_rowan`]
-    )
-      return null;
-
-    return (
-      store.accountpools[store.wallet.sif.address][`${fromSymbol.value}_rowan`]
-        .lp || null
-    );
+    return accountPoolFinder("rowan", fromSymbol.value)?.value?.lp || null;
   });
 
   const riskFactor = computed(() => {

@@ -1,5 +1,4 @@
 import { defineComponent, ref } from "vue";
-import { useCore } from "../../hooks/useCore";
 import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
@@ -14,8 +13,7 @@ import { rootStore } from "@/store";
 
 export default defineComponent({
   props: {},
-  setup(props) {
-    const { store, config } = useCore();
+  setup() {
     const appWalletPicker = useAppWalletPicker();
 
     const moreMenuRef = ref();
@@ -38,7 +36,7 @@ export default defineComponent({
     );
 
     return () => (
-      <div class="portrait:hidden overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0">
+      <div class="overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-10 bg-gray-base text-white fixed left-0 top-0 bottom-0 portrait:hidden">
         <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
           <div class="top">
             <div class="mt-[38px] flex justify-center">

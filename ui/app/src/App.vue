@@ -32,7 +32,6 @@
     </Layout>
     <Notifications />
     <EnvAlert />
-    <BetaWarningBanner />
   </div>
 </template>
 
@@ -43,7 +42,6 @@ import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
 import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
 import Layout from "@/componentsLegacy/Layout/Layout.vue";
-import BetaWarningBanner from "@/components/BetaWarningBanner";
 import { useRoute } from "vue-router";
 
 console.log("sendingIBC transaction");
@@ -54,7 +52,6 @@ export default defineComponent({
     EnvAlert,
     SideBar,
     Layout,
-    BetaWarningBanner,
   },
   computed: {
     key() {

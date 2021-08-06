@@ -1,5 +1,6 @@
 import { Asset } from "./Asset";
 import { IAssetAmount } from "./AssetAmount";
+import { createPoolKey } from "@sifchain/sdk";
 
 export type Pair = ReturnType<typeof Pair>;
 
@@ -18,9 +19,7 @@ export function Pair(nativeAsset: IAssetAmount, externalAsset: IAssetAmount) {
     },
 
     symbol() {
-      return [externalAsset, nativeAsset]
-        .map((asset) => asset.symbol.toLowerCase())
-        .join("_");
+      return createPoolKey(externalAsset, nativeAsset);
     },
 
     contains(...assets: Asset[]) {

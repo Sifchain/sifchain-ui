@@ -36,13 +36,6 @@ export const usePoolStats = () => {
     const json: PoolStatsResponseData = await res.json();
     const poolData = json.body;
 
-    // const lmJson = await services.cryptoeconomics.fetchData({
-    //   rewardType: "lm",
-    //   address: "sif100snz8vss9gqhchg90mcgzkjaju2k76y7h9n6d",
-    //   key: "userData",
-    //   timestamp: "now",
-    // });
-    // const liqAPY = lmJson?.user ? lmJson?.user?.currentAPYOnTickets * 100 : 0;
     return {
       poolData,
       liqAPY: 0,

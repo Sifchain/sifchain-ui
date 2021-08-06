@@ -1,11 +1,7 @@
-import { ref } from "vue";
-import { sortAssetAmount } from "../utils/sortAssetAmount";
-import { useCore } from "@/hooks/useCore";
-import { computed, reactive, effect } from "@vue/reactivity";
+import { computed, reactive, ref } from "vue";
 import { useTokenList, TokenListItem } from "@/hooks/useToken";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
-import { IAsset, Network } from "@sifchain/sdk";
-import { config } from "storybook-addon-designs";
+import { Network } from "@sifchain/sdk";
 
 export type BalancePageState = {
   searchQuery: string;

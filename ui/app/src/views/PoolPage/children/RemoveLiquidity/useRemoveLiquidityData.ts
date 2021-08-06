@@ -38,11 +38,16 @@ export function useRemoveLiquidityData() {
   const address = computed(() => store.wallet.sif.address);
   const state = ref(0);
 
+  const externalAsset = computed(() =>
+    Asset.get(externalAssetSymbol.value as string),
+  );
+
   effect(() => {
     if (!externalAssetSymbol.value) return null;
     services.clp
       .getLiquidityProvider({
-        symbol: externalAssetSymbol.value,
+        assetSymbol: externalAsset.value?.symbol,
+        symbol: externalAsset.value?.ibcDenom || externalAsset.value?.symbol,
         lpAddress: store.wallet.sif.address,
       })
       .then((liquidityProviderResult) => {

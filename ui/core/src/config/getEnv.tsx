@@ -129,7 +129,7 @@ export function getEnv({
     sifEnv = defaultNetworkEnv;
   }
 
-  console.log("sifEnv", profileLookup[sifEnv as NetworkEnv]);
+  // console.log("sifEnv", profileLookup[sifEnv as NetworkEnv]);
 
   if (sifEnv != null && profileLookup[sifEnv]) {
     return profileLookup[sifEnv];

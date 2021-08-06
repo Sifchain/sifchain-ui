@@ -1,13 +1,4 @@
-import {
-  defineComponent,
-  ref,
-  computed,
-  PropType,
-  Ref,
-  watch,
-  proxyRefs,
-  toRefs,
-} from "vue";
+import { defineComponent, ref, computed, PropType, Ref, proxyRefs } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -22,12 +13,10 @@ import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-import router from "@/router";
 import { ImportData, getImportLocation } from "./useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
-import { rootStore } from "../../../store";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -46,28 +35,32 @@ export default defineComponent({
     const {
       importParams,
       networksRef,
-      tokenRef,
+      importTokenRef,
       importAmountRef,
     } = props.importData;
     const router = useRouter();
 
     const handleSetMax = () => {
-      if (tokenRef.value) {
+      if (importTokenRef.value) {
         const maxAmount = getMaxAmount(
-          { value: tokenRef.value.asset.symbol } as Ref,
-          tokenRef.value.amount,
+          { value: importTokenRef.value.asset.symbol } as Ref,
+          importTokenRef.value.amount,
         );
 
         if (importParams.amount)
-          importParams.amount.value = format(maxAmount, tokenRef.value.asset, {
-            mantissa: tokenRef.value.asset.decimals,
-            trimMantissa: true,
-          });
+          importParams.amount.value = format(
+            maxAmount,
+            importTokenRef.value.asset,
+            {
+              mantissa: importTokenRef.value.asset.decimals,
+              trimMantissa: true,
+            },
+          );
       }
     };
 
     const validationErrorRef = computed(() => {
-      if (!tokenRef.value) {
+      if (!importTokenRef.value) {
         return "Select Token";
       }
       if (!importAmountRef.value) {
@@ -76,7 +69,7 @@ export default defineComponent({
       if (importAmountRef.value?.lessThanOrEqual("0.0")) {
         return "Enter Amount";
       }
-      if (tokenRef.value.amount.lessThan(importAmountRef.value)) {
+      if (importTokenRef.value.amount.lessThan(importAmountRef.value)) {
         return "Amount Too Large";
       }
     });
@@ -127,9 +120,6 @@ export default defineComponent({
     );
     const networkOpenRef = ref(false);
 
-    const currentAssetBalance = rootStore.accounts.computed(
-      (s) => s.state[importParams.network.value].balances,
-    );
     return () => (
       <Modal
         heading="Import Token to Sifchain"
@@ -180,11 +170,11 @@ export default defineComponent({
                   <div class="flex justify-between items-center">
                     <TokenIcon
                       size={38}
-                      assetValue={tokenRef.value?.asset}
+                      assetValue={importTokenRef.value?.asset}
                     ></TokenIcon>
                     <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                      {tokenRef.value?.asset?.displaySymbol ||
-                        tokenRef.value?.asset?.symbol}
+                      {importTokenRef.value?.asset?.displaySymbol ||
+                        importTokenRef.value?.asset?.symbol}
                     </div>
                   </div>
                 </Button.Select>
@@ -207,12 +197,12 @@ export default defineComponent({
           </div>
 
           <div class="h-[40px] flex items-end justify-end">
-            {!!tokenRef.value && (
+            {!!importTokenRef.value && (
               <span
                 class="text-base opacity-50 hover:text-accent-base cursor-pointer"
                 onClick={handleSetMax}
               >
-                Balance: {formatAssetAmount(tokenRef.value?.amount)}
+                Balance: {formatAssetAmount(importTokenRef.value?.amount)}
               </span>
             )}
           </div>
@@ -224,7 +214,7 @@ export default defineComponent({
               textAlign: "right",
             }}
             startContent={
-              !!tokenRef.value && (
+              !!importTokenRef.value && (
                 <Button.Pill class="z-[1]" onClick={handleSetMax}>
                   MAX
                 </Button.Pill>
