@@ -13,7 +13,11 @@ function format(item: string) {
 }
 export const usePoolStatItem = (props: { pool: Ref<PoolStat | undefined> }) => {
   function formatNumberString(x: string) {
-    return x.replace(/\B(?=(?=\d*\.)(\d{3})+(?!\d))/g, ",");
+    const parts = x.split(".");
+    return new Intl.NumberFormat("en-us", {
+      maximumFractionDigits: parts.length < 2 ? 0 : parts[1].length,
+    }).format(+x);
+    // return x.replace(/\B(?=(?=\d*\.)(\d{3})+(?!\d))/g, ",");
   }
 
   const info = computed(() => {

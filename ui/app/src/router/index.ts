@@ -48,10 +48,10 @@ type RouteName<T> = T extends { name?: string }[]
 //   ? T["name"]
 //   : "";
 
-const routes = [
+const routes: DeepReadonly<RouteRecordRaw[]> = [
   {
     path: "/",
-    redirect: { name: "Swap" },
+    redirect: "/swap",
   },
   {
     path: "/stats",

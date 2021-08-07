@@ -228,8 +228,11 @@ export function trimMantissa(decimal: string, integer = false) {
 }
 
 function applySeparator(decimal: string) {
-  const [char, mant] = decimal.split(".");
-  return [char.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","), mant].join(".");
+  const parts = decimal.split(".");
+  return new Intl.NumberFormat("en-us", {
+    maximumFractionDigits: parts.length < 2 ? 0 : parts[1].length,
+  }).format(+decimal);
+  // return [char.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","), mant].join(".");
 }
 
 function applyMantissa(decimal: string, mantissa: number) {
