@@ -8,14 +8,35 @@ import {
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
-import { Amount } from "@sifchain/sdk";
+import { Amount, Asset, getErrorMessage } from "@sifchain/sdk";
 
 const DECIMALS = 5;
 
+const invalidRewards: Record<string, boolean> = {};
 async function getEarnedRewards(address: string, symbol: string) {
+  const emptyRes = {
+    negative: false,
+    netChange: "0.00",
+  };
+
+  const asset = Asset.get(symbol);
+  symbol = asset.ibcDenom || symbol;
+
+  if (invalidRewards[symbol]) return emptyRes;
+
   const earnedRewardsUrl = getRewardEarningsUrl();
   const res = await fetch(`${earnedRewardsUrl}/${symbol}/netChange/${address}`);
+
+  // NOTE(ajoslin): ibc not supported yet for this endpoint...
+  // to not spam the logs with invalid calls to this endpoint,
+  // after 1 error stop trying.
+  if (!res.ok) {
+    invalidRewards[symbol] = true;
+    return emptyRes;
+  }
+
   const parsedData = await res.json();
+
   // TD - This should return Amount, method needs work
   // Rudis recent work should refactor this call too into a testable service
   return {
@@ -27,41 +48,31 @@ async function getEarnedRewards(address: string, symbol: string) {
 }
 
 export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
-  const { config, store } = useCore();
+  const { config, store, services, accountPoolFinder, poolFinder } = useCore();
 
   const address = computed(() => store.wallet.sif.address);
   const earnedRewards = ref<string | null>(null);
   const earnedRewardsNegative = ref<boolean>(false);
 
   const accountPool = computed(() => {
-    if (
-      !props.externalAsset.value ||
-      !store.wallet.sif.address ||
-      !store.accountpools ||
-      !store.accountpools[store.wallet.sif.address] ||
-      !store.accountpools[store.wallet.sif.address][
-        `${props.externalAsset.value}_rowan`
-      ]
-    ) {
-      return null;
-    }
+    const storeAccountPool = accountPoolFinder(
+      props.externalAsset.value,
+      "rowan",
+    )?.value;
 
-    const poolTicker = `${props.externalAsset.value}_rowan`;
-    const storeAccountPool =
-      store.accountpools[store.wallet.sif.address][poolTicker];
+    const pool = poolFinder(props.externalAsset.value, "rowan")?.value;
+
+    if (!storeAccountPool) return null;
 
     // enrich pool ticker with pool object
     return {
       ...storeAccountPool,
-      pool: store.pools[poolTicker],
+      pool,
     };
   });
 
-  const fromSymbol = computed(() =>
-    accountPool?.value?.pool.amounts[1].asset
-      ? // ? getAssetLabel(accountPool?.value.pool.amounts[1].asset)
-        accountPool?.value.pool.amounts[1].asset.symbol
-      : "",
+  const fromSymbol = computed(
+    () => accountPool?.value?.pool?.externalAmount?.symbol || "",
   );
 
   // const USDTImage = useAssetItem('USDT').token.value?.imageUrl;
@@ -80,6 +91,7 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   const calculateRewards = async (address: string, fromSymbol: string) => {
     // TODO - needs a better pattern to handle this
     if (!address || !fromSymbol) return;
+
     const earnedRewardsObject = await getEarnedRewards(
       address,
       fromSymbol?.toLowerCase(),
@@ -97,14 +109,14 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   });
 
   const fromTotalValue = computed(() => {
-    const aAmount = accountPool?.value?.pool.amounts[1];
+    const aAmount = accountPool?.value?.pool?.externalAmount;
     if (!aAmount) return "";
     return format(aAmount.amount, aAmount.asset, { mantissa: DECIMALS });
   });
 
   const toSymbol = computed(() =>
-    accountPool?.value?.pool.amounts[0].asset
-      ? getAssetLabel(accountPool.value.pool.amounts[0].asset)
+    accountPool?.value?.pool?.nativeAmount?.asset
+      ? getAssetLabel(accountPool.value.pool?.nativeAmount.asset)
       : "",
   );
   const toAsset = useAssetItem(toSymbol);
@@ -117,7 +129,7 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   });
 
   const toTotalValue = computed(() => {
-    const aAmount = accountPool?.value?.pool.amounts[0];
+    const aAmount = accountPool?.value?.pool?.nativeAmount;
     if (!aAmount) return "";
     return format(aAmount.amount, aAmount.asset, { mantissa: DECIMALS });
   });

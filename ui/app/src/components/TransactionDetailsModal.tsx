@@ -7,6 +7,7 @@ import { useCore } from "@/hooks/useCore";
 import { Button } from "./Button/Button";
 import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import { FormDetailsType } from "./Form";
+import { Network } from "@sifchain/sdk";
 
 export default defineComponent({
   name: "TransactionDetailsModal",
@@ -27,6 +28,10 @@ export default defineComponent({
       type: Function as PropType<() => void>,
       required: true,
     },
+    network: {
+      type: String as Extract<Network, "ethereum" | "cosmoshub">,
+      required: false,
+    },
   },
   setup(props) {
     const { config } = useCore();
@@ -34,7 +39,8 @@ export default defineComponent({
     return () => {
       const isLoading =
         !props.transactionDetails.value?.tx?.hash &&
-        !props.transactionDetails.value?.isError;
+        !props.transactionDetails.value?.isError &&
+        !props.transactionDetails.value?.isComplete;
       return (
         <Modal
           heading={props.transactionDetails.value?.heading}
@@ -55,6 +61,7 @@ export default defineComponent({
                 href={getBlockExplorerUrl(
                   config.sifChainId,
                   props.transactionDetails.value.tx.hash,
+                  props.network,
                 )}
               >
                 View Transaction on the Block Explorer

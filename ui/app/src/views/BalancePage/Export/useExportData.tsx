@@ -1,28 +1,19 @@
-import { RouteLocationRaw, useRoute } from "vue-router";
+import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import { Button } from "@/components/Button/Button";
-import {
-  reactive,
-  ref,
-  computed,
-  Ref,
-  watch,
-  ComputedRef,
-  onMounted,
-} from "vue";
+import { ref, computed, watch, onMounted, Ref } from "vue";
 import router from "@/router";
 import { TokenIcon } from "@/components/TokenIcon";
-import { TokenListItem, useToken } from "@/hooks/useToken";
-import { toBaseUnits } from "@sifchain/sdk/src/utils";
+import { useToken } from "@/hooks/useToken";
 import {
   formatAssetAmount,
   getUnpeggedSymbol,
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
-import { Network, IAssetAmount, AssetAmount } from "@sifchain/sdk";
-import { TransactionStatus } from "@sifchain/sdk";
-import { FormDetailsType } from "@/components/Form";
+import { toBaseUnits, Network, AssetAmount } from "@sifchain/sdk";
 import { exportStore, ExportDraft } from "@/store/modules/export";
 import { UnpegEvent } from "../../../../../core/src/usecases/peg/unpeg";
+import { useUnpegEventDetails } from "@/hooks/useTransactionDetails";
+import { rootStore } from "@/store";
 
 export type ExportParams = {
   amount?: string;
@@ -54,31 +45,51 @@ export function getExportLocation(
 export const useExportData = () => {
   const { store, usecases } = useCore();
   const route = useRoute();
+  const router = useRouter();
+  const exportStore = rootStore.export;
+  const exportDraft = exportStore.refs.draft.computed();
 
   const exportParams = exportStore.refs.draft.computed();
 
   watch(
-    exportStore.state.draft,
-    (value) => {
-      console.log("replacing!!!");
-      if (
-        !["amount", "symbol", "network"].every(
-          (key) =>
-            exportStore.state.draft[key as keyof ExportDraft] ===
-            (route.query[key] || route.params[key]),
-        )
-      )
-        router.push(
-          getExportLocation(
-            router.currentRoute.value.path.split("/").pop() as ExportStep,
-            {
-              ...value,
-            },
-          ),
-        );
+    // Do not watch unpegEvent, that should not trigger a route change.
+    // If it does, it will cause issues...
+    () => [
+      exportDraft.value.symbol,
+      exportDraft.value.network,
+      exportDraft.value.amount,
+    ],
+    ([symbol, network, amount]): void => {
+      router.replace(
+        getExportLocation(
+          router.currentRoute.value.path.split("/").pop() as ExportStep,
+          {
+            symbol,
+            network: network as Network,
+            amount,
+          },
+        ),
+      );
     },
-    { deep: true, immediate: false },
+    { immediate: false },
   );
+
+  // Onload, set state to match the route params.
+  onMounted(() => {
+    if (
+      !["amount", "symbol", "network"].every(
+        (key) =>
+          exportDraft.value[key as keyof ExportDraft] ===
+          (route.query[key] || route.params[key]),
+      )
+    ) {
+      exportStore.setDraft({
+        amount: (route.query.amount as string) || exportDraft.value.amount,
+        symbol: (route.params.symbol as string) || exportDraft.value.symbol,
+        network: (route.params.network as Network) || exportDraft.value.network,
+      });
+    }
+  });
 
   const exitExport = () => router.push({ name: "Balances" });
 
@@ -101,10 +112,7 @@ export const useExportData = () => {
       : null;
   });
 
-  const networksRef = computed(() => {
-    // TODO: find all networks where the given token exists that are not sifchain.
-    return Object.values(Network).filter((n) => n !== Network.SIFCHAIN);
-  });
+  const networksRef = computed(() => rootStore.export.getters.networks);
 
   const targetSymbolRef = computed(() =>
     getUnpeggedSymbol(exportParams.value.symbol),
@@ -114,7 +122,7 @@ export const useExportData = () => {
     symbol: targetSymbolRef,
   });
 
-  const exportAmountRef = computed(() => {
+  const computedExportAssetAmount = computed(() => {
     if (!exportTokenRef.value) return null;
     return AssetAmount(
       exportTokenRef.value?.asset,
@@ -125,17 +133,10 @@ export const useExportData = () => {
     );
   });
 
-  const transactionStatusRef = exportStore.refs.draft.unpegEvent.computed();
-  async function runExport() {
-    if (!exportAmountRef.value) throw new Error("Please provide an amount");
-    for await (let event of usecases.peg.unpeg(
-      exportAmountRef.value,
-      exportParams.value.network,
-    )) {
-      console.log(event);
-      exportStore.setPegEvent(event);
-    }
-  }
+  const unpegEventRef = exportStore.refs.draft.unpegEvent.computed();
+  const unpegEventDetails = useUnpegEventDetails({
+    unpegEvent: unpegEventRef as Ref<UnpegEvent>,
+  });
 
   // underscored to signify that it is not to be used across the app.
   const detailsRef = computed(
@@ -190,33 +191,19 @@ export const useExportData = () => {
         ],
       ].filter(Boolean) as [any, any][],
   );
-  onMounted(() => {
-    const route = router.currentRoute.value;
-    if (
-      !["amount", "symbol", "network"].every(
-        (key) =>
-          exportParams.value[key as keyof ExportDraft] ===
-          (route.query[key] || route.params[key]),
-      )
-    ) {
-      exportStore.setDraft({
-        amount: (route.query.amount as string) || exportParams.value.amount,
-        symbol:
-          (route.params.symbol as string) || exportStore.state.draft.symbol,
-        network:
-          (route.params.network as Network) ||
-          targetTokenRef.value?.asset.homeNetwork,
-      });
-    }
-  });
 
   return {
     networksRef,
     exportTokenRef,
     targetTokenRef,
-    runExport,
-    exportAmountRef,
-    transactionStatusRef,
+    runExport: () =>
+      computedExportAssetAmount.value &&
+      exportStore.runExport({
+        assetAmount: computedExportAssetAmount.value,
+      }),
+    computedExportAssetAmount,
+    unpegEventRef,
+    unpegEventDetails,
     feeAmountRef,
     headingRef,
     detailsRef,

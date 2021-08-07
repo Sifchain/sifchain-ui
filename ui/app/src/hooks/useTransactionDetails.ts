@@ -32,6 +32,7 @@ export type TransactionDetails = null | {
   heading: string;
   description: string;
   isError?: boolean;
+  isComplete?: boolean;
 };
 
 // For peg transactions, they will transition into using the

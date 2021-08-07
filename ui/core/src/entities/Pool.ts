@@ -14,16 +14,18 @@ export type Pool = ReturnType<typeof Pool>;
 
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
-export function Pool(
-  a: IAssetAmount, // native asset
-  b: IAssetAmount, // external asset
-  poolUnits?: IAmount,
-) {
+export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
   const pair = Pair(a, b);
   const amounts: [IAssetAmount, IAssetAmount] = pair.amounts;
 
   return {
     amounts,
+    get externalAmount() {
+      return amounts.find((amount) => amount.symbol !== "rowan");
+    },
+    get nativeAmount() {
+      return amounts.find((amount) => amount.symbol === "rowan");
+    },
     otherAsset: pair.otherAsset,
     symbol: pair.symbol,
     contains: pair.contains,
@@ -149,6 +151,12 @@ export function CompositePool(pair1: IPool, pair2: IPool): IPool {
 
   return {
     amounts: amounts as [IAssetAmount, IAssetAmount],
+    get externalAmount() {
+      return amounts.find((amount) => amount.symbol !== "rowan");
+    },
+    get nativeAmount() {
+      return amounts.find((amount) => amount.symbol === "rowan");
+    },
 
     getAmount: (asset: Asset | string) => {
       if (Asset(asset).symbol === nativeSymbol) {

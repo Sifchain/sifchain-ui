@@ -3,6 +3,8 @@
     class="layout flex absolute justify-center portrait:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background"
   >
     <slot></slot>
+    <div id="modal-target"></div>
+    <BetaWarningBanner />
   </div>
   <!-- <Footer /> -->
   <div class="layout-bg" />
@@ -14,10 +16,12 @@ import Panel from "@/componentsLegacy/Panel/Panel.vue";
 import Footer from "@/componentsLegacy/Footer/Footer.vue";
 import PanelNav from "@/componentsLegacy/PanelNav/PanelNav.vue";
 import Icon from "@/componentsLegacy/Icon/Icon.vue";
+import BetaWarningBanner from "@/components/BetaWarningBanner";
 import { SubHeading } from "@/componentsLegacy/Text";
 
 export default defineComponent({
   // components: { Panel, PanelNav, Icon, SubHeading, Footer },
+  components: { BetaWarningBanner },
   props: {
     backLink: String,
     header: { type: Boolean, default: true },

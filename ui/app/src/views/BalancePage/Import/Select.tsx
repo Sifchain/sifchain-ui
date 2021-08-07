@@ -1,14 +1,4 @@
-import {
-  defineComponent,
-  ref,
-  computed,
-  PropType,
-  Ref,
-  watch,
-  proxyRefs,
-  toRefs,
-  readonly,
-} from "vue";
+import { defineComponent, ref, computed } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -55,6 +45,7 @@ export default defineComponent({
       if (!tokenRef.value) {
         return "Select Token";
       }
+
       if (!computedImportAssetAmount.value) {
         return "Enter Amount";
       }
@@ -62,8 +53,9 @@ export default defineComponent({
         return "Enter Amount";
       }
       if (
-        selectedTokenBalance.value?.amount &&
-        tokenRef.value.amount.greaterThan(selectedTokenBalance.value)
+        computedImportAssetAmount.value?.amount.greaterThan(
+          tokenRef.value?.amount,
+        )
       ) {
         return "Amount Too Large";
       }
@@ -97,7 +89,6 @@ export default defineComponent({
           props: {
             disabled: !!validationErrorRef.value,
             onClick: () => {
-              console.log("importing");
               router.replace(
                 getImportLocation("confirm", rootStore.import.state.draft),
               );
@@ -117,10 +108,6 @@ export default defineComponent({
     );
     const networkOpenRef = ref(false);
 
-    const currentAssetBalance = rootStore.accounts.computed(
-      (s) => s.state[importDraft.value.network].balances,
-    );
-
     const networkValue = rootStore.import.refs.draft.network.computed();
     const draftVal = importStore.refs.draft.computed();
     const selectedTokenBalance = rootStore.accounts.computed((s) =>
@@ -128,13 +115,17 @@ export default defineComponent({
         (bal) => bal.asset.displaySymbol === draftVal.value.displaySymbol,
       ),
     );
+
     const amountValue = rootStore.import.refs.draft.amount.computed();
 
     const handleSetMax = () => {
       if (tokenRef.value && selectedTokenBalance.value?.amount) {
         rootStore.import.setDraft({
           amount: format(
-            selectedTokenBalance.value?.amount,
+            getMaxAmount(
+              ref(selectedTokenBalance.value.asset.symbol),
+              selectedTokenBalance.value,
+            ),
             selectedTokenBalance.value?.asset,
             {
               mantissa: selectedTokenBalance.value?.decimals,
@@ -160,7 +151,6 @@ export default defineComponent({
                   options={optionsRef}
                   value={networkValue}
                   onChangeValue={(value) => {
-                    console.log("onChangeValue", value);
                     if (importDraft.value.network)
                       importStore.setDraft({
                         network: value as Network,

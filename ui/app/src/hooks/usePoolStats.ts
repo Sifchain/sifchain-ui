@@ -1,3 +1,4 @@
+import { computed } from "vue";
 import { useAsyncData } from "./useAsyncData";
 import { useAsyncDataCached } from "./useAsyncDataCached";
 import { useCore } from "./useCore";
@@ -27,25 +28,64 @@ export interface Headers {
 }
 
 export const usePoolStats = () => {
+  const { store } = useCore();
   const data = useAsyncDataCached("poolStats", async () => {
-    const { services } = useCore();
-    const data = await fetch(
+    const res = await fetch(
       "https://data.sifchain.finance/beta/asset/tokenStats",
     );
-    const json: PoolStatsResponseData = await data.json();
+    const json: PoolStatsResponseData = await res.json();
     const poolData = json.body;
-    // const lmJson = await services.cryptoeconomics.fetchData({
-    //   rewardType: "lm",
-    //   address: "sif100snz8vss9gqhchg90mcgzkjaju2k76y7h9n6d",
-    //   key: "userData",
-    //   timestamp: "now",
-    // });
-    // const liqAPY = lmJson?.user ? lmJson?.user?.currentAPYOnTickets * 100 : 0;
+
     return {
       poolData,
       liqAPY: 0,
       rowanUsd: poolData.rowanUSD,
     };
   });
-  return data;
+
+  const isLoading = computed(() => {
+    return data.isLoading.value || !Object.keys(store.pools).length;
+  });
+
+  const pools = computed(() => {
+    if (isLoading.value) return [];
+
+    const poolStatLookup: Record<string, PoolStat> = {};
+
+    data.data.value?.poolData.pools.forEach((poolStat) => {
+      poolStatLookup[poolStat.symbol] = poolStat;
+    });
+
+    const pools = Object.values(store.pools);
+    return pools.map((pool) => {
+      const [, externalAssetAmount] = pool.amounts;
+      return (
+        poolStatLookup[externalAssetAmount.asset.symbol] || {
+          symbol: externalAssetAmount.asset.symbol,
+          priceToken: null,
+          poolDepth: null,
+          volume: null,
+          arb: null,
+        }
+      );
+    });
+  });
+
+  const wrappedData = computed(() => {
+    if (isLoading.value || !data.data.value) return null;
+
+    return {
+      ...data.data.value,
+      poolData: {
+        ...data.data.value.poolData,
+        pools: pools.value,
+      },
+    };
+  });
+
+  return {
+    isLoading,
+    data: wrappedData,
+    isError: data.isError,
+  };
 };

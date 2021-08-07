@@ -1,42 +1,15 @@
-import {
-  onBeforeRouteUpdate,
-  RouteLocationRaw,
-  useRoute,
-  useRouter,
-} from "vue-router";
-import {
-  reactive,
-  ref,
-  computed,
-  Ref,
-  watch,
-  onMounted,
-  watchEffect,
-} from "vue";
-import { effect, proxyRefs, toRefs, ToRefs } from "@vue/reactivity";
+import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
+import { computed, onMounted, Ref, watch } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
-import { TokenListItem, useTokenList, useToken } from "@/hooks/useToken";
-import { toBaseUnits } from "@sifchain/sdk/src/utils";
-import {
-  formatAssetAmount,
-  getPeggedSymbol,
-  isOpposingSymbol,
-} from "@/componentsLegacy/shared/utils";
-import { useCore } from "@/hooks/useCore";
-import { Network, IAssetAmount, AssetAmount, Amount } from "@sifchain/sdk";
-import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
+import { TokenListItem, useTokenList } from "@/hooks/useToken";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { Network, AssetAmount, toBaseUnits } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
-import { FormDetailsType } from "@/components/Form";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
-import { importStore } from "@/store/modules/import";
+import { ImportDraft, importStore } from "@/store/modules/import";
 import { accountStore } from "@/store/modules/accounts";
-
-export type ImportDraft = {
-  amount: string;
-  network: Network;
-  displaySymbol: string;
-};
+import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -68,43 +41,58 @@ export function getImportLocation(
     },
     query: {
       network: params.network || importStore.state.draft.network,
-      amount:
-        step === "select"
-          ? "0"
-          : params.amount || importStore.state.draft.amount,
+      amount: params.amount || importStore.state.draft.amount,
     },
   };
 }
 
 export const useImportData = () => {
-  const { store, usecases } = useCore();
   const route = useRoute();
   const router = useRouter();
   const importStore = rootStore.import;
   const importDraft = importStore.refs.draft.computed();
-  onBeforeRouteUpdate(() => {});
+
   watch(
-    importStore.state.draft,
-    (value) => {
-      console.log("replacing!!!");
-      if (
-        !["amount", "displaySymbol", "network"].every(
-          (key) =>
-            importStore.state.draft[key as keyof ImportDraft] ===
-            (route.query[key] || route.params[key]),
-        )
-      )
-        router.push(
-          getImportLocation(
-            router.currentRoute.value.path.split("/").pop() as ImportStep,
-            {
-              ...value,
-            },
-          ),
-        );
+    // Do not watch pegEvent, that should not trigger a route change.
+    // If it does, it will cause issues...
+    () => [
+      importDraft.value.displaySymbol,
+      importDraft.value.network,
+      importDraft.value.amount,
+    ],
+    ([displaySymbol, network, amount]): void => {
+      router.replace(
+        getImportLocation(
+          router.currentRoute.value.path.split("/").pop() as ImportStep,
+          {
+            displaySymbol,
+            network: network as Network,
+            amount,
+          },
+        ),
+      );
     },
-    { deep: true, immediate: false },
+    { immediate: false },
   );
+
+  // Onload, set state to match the route params.
+  onMounted(() => {
+    if (
+      !["amount", "displaySymbol", "network"].every(
+        (key) =>
+          importDraft.value[key as keyof ImportDraft] ===
+          (route.query[key] || route.params[key]),
+      )
+    ) {
+      importStore.setDraft({
+        amount: (route.query.amount as string) || importDraft.value.amount,
+        displaySymbol:
+          (route.params.displaySymbol as string) ||
+          importDraft.value.displaySymbol,
+        network: (route.params.network as Network) || importDraft.value.network,
+      });
+    }
+  });
 
   const exitImport = () => {
     router.replace({ name: "Balances" });
@@ -131,7 +119,8 @@ export const useImportData = () => {
       list.find((t) => {
         return (
           draft.displaySymbol.toLowerCase() ===
-          t.asset.displaySymbol.toLowerCase()
+            t.asset.displaySymbol.toLowerCase() &&
+          t.asset.network === importDraft.value.network
         );
       }) || tokenListRef.value[0];
     return token;
@@ -166,10 +155,6 @@ export const useImportData = () => {
 
   const pegEventDetails = usePegEventDetails({
     pegEvent: pegEventRef as Ref<PegEvent>,
-  });
-
-  watchEffect(() => {
-    console.log("pegeventdetails", pegEventDetails.value);
   });
 
   const sifchainBalance = rootStore.accounts.computed((s) =>
@@ -260,27 +245,6 @@ export const useImportData = () => {
       </span>,
     ],
   ]);
-
-  watchEffect(() => {
-    const route = router.currentRoute.value;
-    if (
-      !["amount", "displaySymbol", "network"].every(
-        (key) =>
-          importDraft.value[key as keyof ImportDraft] ===
-          (route.query[key] || route.params[key]),
-      )
-    ) {
-      importStore.setDraft({
-        amount: (route.query.amount as string) || importDraft.value.amount,
-        displaySymbol:
-          (route.params.displaySymbol as string) ||
-          importStore.state.draft.displaySymbol,
-        network:
-          (route.params.network as Network) ||
-          tokenRef.value?.asset.homeNetwork,
-      });
-    }
-  });
 
   return {
     importDraft,

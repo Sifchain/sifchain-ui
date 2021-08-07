@@ -6,6 +6,7 @@ import {
   getConfig,
   getEnv,
   switchEnv,
+  createAccountPoolFinder,
 } from "@sifchain/sdk";
 
 switchEnv({ location: window.location });
@@ -19,6 +20,7 @@ const services = createServices(config);
 const store = createStore();
 const usecases = createUsecases({ store, services });
 const poolFinder = createPoolFinder(store);
+const accountPoolFinder = createAccountPoolFinder(store);
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -69,6 +71,7 @@ export function useCore() {
     services,
     usecases,
     poolFinder,
+    accountPoolFinder,
     config,
   };
 }

@@ -6,6 +6,7 @@ import {
   AssetAmount,
   IAssetAmount,
   Network,
+  IAsset,
 } from "../../entities";
 import { loadConnectionByChainIds } from "./loadConnectionByChainIds";
 import getKeplrProvider from "../SifService/getKeplrProvider";
@@ -34,11 +35,13 @@ export interface IBCServiceContext {
 }
 
 export class IBCService {
-  denomLookup: Record<Network, Record<string, string>> = {
+  networkDenomLookup: Record<Network, Record<string, string>> = {
     ethereum: {},
     cosmoshub: {},
     sifchain: {},
   };
+  symbolLookup: Record<string, string> = {};
+
   constructor(private context: IBCServiceContext) {}
   static create(context: IBCServiceContext) {
     return new this(context);
@@ -70,6 +73,12 @@ export class IBCService {
     );
     return queryClient;
   }
+
+  async getIBCDenom(asset: IAsset) {
+    const queryClient = await this.loadQueryClientByNetwork(Network.COSMOSHUB);
+    const allChannels = await queryClient.ibc.channel.allChannels();
+  }
+
   async loadDestinationChainTxBySourceChainTxHash(
     sourceChainTxHash: string,
     sourceNetwork: Network,
@@ -104,14 +113,14 @@ export class IBCService {
         };
       }),
     );
-    console.table(
-      clients.filter((c) => {
-        if (destinationNetwork === Network.COSMOSHUB) {
-          return c.chainId.includes("sifchain");
-        }
-        return true;
-      }),
-    );
+    // console.table(
+    //   clients.filter((c) => {
+    //     if (destinationNetwork === Network.COSMOSHUB) {
+    //       return c.chainId.includes("sifchain");
+    //     }
+    //     return true;
+    //   }),
+    // );
     const allCxns = await Promise.all(
       (await queryClient.ibc.connection.allConnections()).connections.map(
         async (cxn) => {
@@ -121,11 +130,13 @@ export class IBCService {
         },
       ),
     );
-    console.log({ sourceNetwork, allChannels, allCxns, clients });
+    // console.log({ sourceNetwork, allChannels, allCxns, clients });
 
     // const tx = await wallet.client.getTx(sourceChainTxHash);
     // parseRawLog(tx?.rawLog);
   }
+
+  async getWalletByNetwork(network: Network) {}
 
   async createWalletByNetwork(network: Network) {
     const keplr = await getKeplrProvider();
@@ -156,8 +167,9 @@ export class IBCService {
             balance.denom.split("/")[1],
           );
           symbol = denomTrace.denomTrace?.baseDenom ?? symbol;
-          this.denomLookup[sourceChain.network as Network][symbol] =
+          this.networkDenomLookup[sourceChain.network as Network][symbol] =
             balance.denom;
+          this.symbolLookup[balance.denom] = symbol;
         }
 
         let asset =
@@ -174,14 +186,14 @@ export class IBCService {
         const assetAmount = AssetAmount(asset, balance?.amount);
         assetAmounts.push(assetAmount);
         if (network === Network.COSMOSHUB) {
-          console.table([
-            {
-              denom: balance.denom,
-              amount: balance.amount,
-              symbol,
-              trace: denomTrace,
-            },
-          ]);
+          // console.table([
+          //   {
+          //     denom: balance.denom,
+          //     amount: balance.amount,
+          //     symbol,
+          //     trace: denomTrace,
+          //   },
+          // ]);
         }
       } catch (e) {
         console.error(e);
@@ -245,7 +257,8 @@ export class IBCService {
       toAccount.address,
       {
         denom:
-          this.denomLookup[sourceChain.network as Network][symbol] || symbol,
+          this.networkDenomLookup[sourceChain.network as Network][symbol] ||
+          symbol,
         // denom: symbol,
         amount: params.assetAmountToTransfer.toBigInt().toString(),
       },
