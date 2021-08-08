@@ -3,7 +3,7 @@ import { computed, onMounted, Ref, watch } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network, AssetAmount, toBaseUnits } from "@sifchain/sdk";
+import { Network, AssetAmount, toBaseUnits, Asset } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
@@ -128,6 +128,7 @@ export const useImportData = () => {
 
   const computedImportAssetAmount = computed(() => {
     if (!tokenRef.value?.asset) return null;
+
     return AssetAmount(
       tokenRef.value?.asset || "rowan",
       toBaseUnits(
@@ -215,23 +216,18 @@ export const useImportData = () => {
         <Button.InlineHelp>Estimated amount</Button.InlineHelp>
       </>,
       <span class="flex items-center font-mono">
-        {nativeTokenBalance.value ? (
+        {nativeTokenBalance.value && computedImportAssetAmount.value ? (
           <>
-            {(
-              parseFloat(formatAssetAmount(nativeTokenBalance.value)) +
-              parseFloat(importDraft.value.amount || "0")
-            ).toFixed(
-              Math.max(
-                formatAssetAmount(nativeTokenBalance.value).split(".")[1]
-                  ?.length ||
-                  importDraft.value.amount.split(".")[1]?.length ||
-                  0,
+            {formatAssetAmount(
+              AssetAmount(
+                nativeTokenBalance.value.asset,
+                nativeTokenBalance.value.add(
+                  computedImportAssetAmount.value.amount,
+                ),
               ),
             )}{" "}
             {(
-              nativeTokenBalance.value?.asset.displaySymbol ||
-              nativeTokenBalance.value?.asset.symbol ||
-              ""
+              nativeTokenBalance.value?.asset.displaySymbol || ""
             ).toUpperCase()}{" "}
             <TokenIcon
               size={18}
@@ -240,7 +236,8 @@ export const useImportData = () => {
             />
           </>
         ) : (
-          "0"
+          !!computedImportAssetAmount.value &&
+          formatAssetAmount(computedImportAssetAmount.value)
         )}
       </span>,
     ],
