@@ -14,6 +14,7 @@ import { exportStore, ExportDraft } from "@/store/modules/export";
 import { UnpegEvent } from "../../../../../core/src/usecases/peg/unpeg";
 import { useUnpegEventDetails } from "@/hooks/useTransactionDetails";
 import { rootStore } from "@/store";
+import { useBoundRoute } from "@/hooks/useBoundRoute";
 
 export type ExportParams = {
   amount?: string;
@@ -48,49 +49,30 @@ export const useExportData = () => {
   const router = useRouter();
   const exportStore = rootStore.export;
   const exportDraft = exportStore.refs.draft.computed();
-
   const exportParams = exportStore.refs.draft.computed();
 
-  watch(
-    // Do not watch unpegEvent, that should not trigger a route change.
-    // If it does, it will cause issues...
-    () => [
-      exportDraft.value.symbol,
-      exportDraft.value.network,
-      exportDraft.value.amount,
-    ],
-    ([symbol, network, amount]): void => {
-      router.replace(
-        getExportLocation(
-          router.currentRoute.value.path.split("/").pop() as ExportStep,
-          {
-            symbol,
-            network: network as Network,
-            amount,
-          },
-        ),
-      );
+  useBoundRoute({
+    params: {
+      symbol: computed({
+        get: () => exportStore.state.draft.symbol,
+        set: (v) => exportStore.setDraft({ symbol: v }),
+      }),
     },
-    { immediate: false },
-  );
-
-  // Onload, set state to match the route params.
-  onMounted(() => {
-    if (
-      !["amount", "symbol", "network"].every(
-        (key) =>
-          exportDraft.value[key as keyof ExportDraft] ===
-          (route.query[key] || route.params[key]),
-      )
-    ) {
-      exportStore.setDraft({
-        amount: (route.query.amount as string) || exportDraft.value.amount,
-        symbol: (route.params.symbol as string) || exportDraft.value.symbol,
-        network: (route.params.network as Network) || exportDraft.value.network,
-      });
-    }
+    query: {
+      network: computed({
+        get: () => exportStore.state.draft.network,
+        set: (v) => exportStore.setDraft({ network: v }),
+      }),
+      amount: computed({
+        get: () => exportStore.state.draft.amount,
+        set: (v) => exportStore.setDraft({ amount: v }),
+      }),
+    },
   });
 
+  exportStore.setDraft({ network: Network.ETHEREUM });
+
+  // Onload, set state to match the route params.
   const exitExport = () => router.push({ name: "Balances" });
 
   const exportTokenRef = useToken({

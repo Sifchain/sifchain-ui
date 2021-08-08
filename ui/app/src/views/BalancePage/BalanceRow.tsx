@@ -68,9 +68,10 @@ export default defineComponent({
         name: "Import",
         visible: true,
         props: {
-          replace: true,
+          replace: false,
           to: getImportLocation("select", {
             displaySymbol: props.tokenItem.asset.displaySymbol,
+            network: props.tokenItem.asset.homeNetwork,
           }),
         },
       },
@@ -88,10 +89,10 @@ export default defineComponent({
             name: "Export",
             visible: expandedRef.value,
             props: {
-              replace: true,
+              replace: false,
               to: getExportLocation("setup", {
                 symbol: props.tokenItem.asset.symbol,
-                network: Network.ETHEREUM,
+                network: props.tokenItem.asset.homeNetwork,
               }),
             },
           },

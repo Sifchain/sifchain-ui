@@ -47,7 +47,7 @@ export class IBCService {
     return new this(context);
   }
 
-  private loadChainConfigByNetwork(network: Network): IBCChainConfig {
+  public loadChainConfigByNetwork(network: Network): IBCChainConfig {
     this.context;
 
     // @ts-ignore
@@ -57,6 +57,27 @@ export class IBCService {
       throw new Error(`No chain config for network ${network}`);
     }
     return chainConfig;
+  }
+
+  async checkIfPacketReceived(
+    network: Network,
+    receivingChannelId: string,
+    receivingPort: string,
+    sequence: string | number,
+  ) {
+    const res: {
+      received: boolean;
+      proof: null | string;
+      proof_height: {
+        revision_number: string;
+        revision_height: string;
+      };
+    } = await fetch(
+      `${
+        this.loadChainConfigByNetwork(network).restUrl
+      }/ibc/core/channel/v1beta1/channels/${receivingChannelId}/ports/${receivingPort}/packet_receipts/${sequence}`,
+    ).then((r) => r.json());
+    return res.received;
   }
 
   async loadQueryClientByNetwork(network: Network) {
@@ -71,6 +92,7 @@ export class IBCService {
       setupBankExtension,
       setupAuthExtension,
     );
+
     return queryClient;
   }
 
@@ -265,6 +287,7 @@ export class IBCService {
       "transfer",
       channelId,
       undefined,
+      /** timeout timestamp in seconds */
       Math.floor(Date.now() / 1000 + 60 * 60),
     );
     console.log({ brdcstTxRes });

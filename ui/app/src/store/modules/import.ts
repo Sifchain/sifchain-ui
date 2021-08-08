@@ -11,6 +11,7 @@ export type ImportDraft = {
 };
 type State = {
   draft: ImportDraft;
+  pendingPegEvents: PegEvent[];
 };
 export const importStore = Vuextra.createStore({
   name: "import",
@@ -34,6 +35,8 @@ export const importStore = Vuextra.createStore({
   }),
   mutations: (state) => ({
     setDraft(nextDraft: Partial<ImportDraft>) {
+      if ("network" in nextDraft)
+        nextDraft.network = nextDraft.network || Network.ETHEREUM;
       Object.assign(state.draft, nextDraft);
     },
     setPegEvent(pegEvent: PegEvent | undefined) {

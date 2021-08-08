@@ -17,6 +17,7 @@ export default defineComponent({
       sortBy: "symbol",
       reverse: false,
     });
+
     effect(() => {
       if (state.searchQuery) {
         state.expandedSymbol = "";

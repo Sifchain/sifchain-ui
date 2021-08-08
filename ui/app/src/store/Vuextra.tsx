@@ -297,7 +297,7 @@ function createStore<
     typeof storeProxy & {
       computed: typeof vuextraComputed;
       refs: DeepComputedProxy<
-        StoreProxyType["state"] & StoreProxyType["getters"]
+        DeepReadonly<StoreProxyType["state"] & StoreProxyType["getters"]>
       >;
     }
   >;

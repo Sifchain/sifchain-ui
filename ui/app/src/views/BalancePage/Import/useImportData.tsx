@@ -10,6 +10,7 @@ import { usePegEventDetails } from "@/hooks/useTransactionDetails";
 import { ImportDraft, importStore } from "@/store/modules/import";
 import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
+import { useBoundRoute } from "@/hooks/useBoundRoute";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -37,11 +38,11 @@ export function getImportLocation(
         ? "ConfirmImport"
         : "ProcessingImport",
     params: {
-      displaySymbol: params.displaySymbol || importStore.state.draft.network,
+      displaySymbol: params.displaySymbol || "",
     },
     query: {
-      network: params.network || importStore.state.draft.network,
-      amount: params.amount || importStore.state.draft.amount,
+      network: params.network || "",
+      amount: params.amount || "",
     },
   };
 }
@@ -52,46 +53,23 @@ export const useImportData = () => {
   const importStore = rootStore.import;
   const importDraft = importStore.refs.draft.computed();
 
-  watch(
-    // Do not watch pegEvent, that should not trigger a route change.
-    // If it does, it will cause issues...
-    () => [
-      importDraft.value.displaySymbol,
-      importDraft.value.network,
-      importDraft.value.amount,
-    ],
-    ([displaySymbol, network, amount]): void => {
-      router.replace(
-        getImportLocation(
-          router.currentRoute.value.path.split("/").pop() as ImportStep,
-          {
-            displaySymbol,
-            network: network as Network,
-            amount,
-          },
-        ),
-      );
+  useBoundRoute({
+    params: {
+      displaySymbol: computed({
+        get: () => importStore.state.draft.displaySymbol,
+        set: (v) => importStore.setDraft({ displaySymbol: v }),
+      }),
     },
-    { immediate: false },
-  );
-
-  // Onload, set state to match the route params.
-  onMounted(() => {
-    if (
-      !["amount", "displaySymbol", "network"].every(
-        (key) =>
-          importDraft.value[key as keyof ImportDraft] ===
-          (route.query[key] || route.params[key]),
-      )
-    ) {
-      importStore.setDraft({
-        amount: (route.query.amount as string) || importDraft.value.amount,
-        displaySymbol:
-          (route.params.displaySymbol as string) ||
-          importDraft.value.displaySymbol,
-        network: (route.params.network as Network) || importDraft.value.network,
-      });
-    }
+    query: {
+      network: computed({
+        get: () => importStore.state.draft.network,
+        set: (v) => importStore.setDraft({ network: v }),
+      }),
+      amount: computed({
+        get: () => importStore.state.draft.amount,
+        set: (v) => importStore.setDraft({ amount: v }),
+      }),
+    },
   });
 
   const exitImport = () => {

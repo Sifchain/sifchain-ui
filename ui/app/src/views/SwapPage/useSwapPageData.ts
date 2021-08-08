@@ -15,6 +15,7 @@ import { format } from "@sifchain/sdk/src/utils/format";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { useRoute, useRouter } from "vue-router";
+import { useBoundRoute } from "@/hooks/useBoundRoute";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 // NOTE(ajoslin): this is not optimal but I don't want to implement
@@ -68,6 +69,16 @@ export const useSwapPageData = () => {
   const fromAmount = ref(currentSwapInput.fromAmount || "0");
   const toAmount = ref(currentSwapInput.toAmount || "0");
   const slippage = ref<string>(currentSwapInput.slippage || "1.0");
+
+  useBoundRoute({
+    query: {
+      from: fromSymbol,
+      to: toSymbol,
+      amount: fromAmount,
+      slippage: slippage,
+    },
+    params: {},
+  });
 
   watchEffect(() => {
     Object.assign(currentSwapInput, {

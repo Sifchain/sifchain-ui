@@ -148,7 +148,7 @@ export default defineComponent({
             style={{
               textAlign: "right",
             }}
-            onInput={(e) => {
+            onInput={(e: Event) => {
               const value = (e.target as HTMLInputElement).value;
               if (isNaN(parseFloat(value))) {
                 exportStore.setDraft({

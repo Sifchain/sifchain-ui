@@ -14,3 +14,7 @@ export const rootStore = {
   import: importStore,
   export: exportStore,
 };
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+window.rootStore = rootStore;

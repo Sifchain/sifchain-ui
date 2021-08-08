@@ -40,7 +40,13 @@ export type TransactionDetails = null | {
 export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
   const type = pegEvent?.type || null;
   switch (pegEvent?.type) {
-    case "sent":
+    case "sent": {
+      return {
+        heading: "Transaction Completed",
+        description: "Successfully initiated import",
+        isComplete: true,
+      };
+    }
     case "approved": {
       return {
         heading: "Approved",

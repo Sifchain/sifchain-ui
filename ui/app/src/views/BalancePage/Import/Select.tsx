@@ -25,11 +25,8 @@ export default defineComponent({
   name: "ImportSelect",
 
   setup(props) {
-    // return <div></div>;
-
     const { store } = useCore();
     const appWalletPicker = useAppWalletPicker();
-
     const selectIsOpen = ref(false);
 
     const {

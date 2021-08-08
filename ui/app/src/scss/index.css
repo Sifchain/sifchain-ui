@@ -73,7 +73,8 @@ body {
   letter-spacing: -0.03em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .tippy-box[data-animation="fade"][data-state="hidden"] {
@@ -159,9 +160,9 @@ body {
   @apply bg-black;
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 9px;
-}
+} */
 ::-webkit-scrollbar-thumb {
   @apply bg-gray-600 rounded-sm;
 }

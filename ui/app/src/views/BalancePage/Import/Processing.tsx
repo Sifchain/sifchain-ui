@@ -4,6 +4,7 @@ import { usePegEventDetails } from "@/hooks/useTransactionDetails";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useRouter } from "vue-router";
+import { importStore } from "@/store/modules/import";
 
 export default defineComponent({
   name: "ImportProcessingModal",
@@ -16,11 +17,14 @@ export default defineComponent({
       pegEventDetails,
     } = useImportData();
     const router = useRouter();
+    let network = importStore.refs.networks[0].computed();
+
     watchEffect(() => {
       if (!pegEventRef.value) {
         router.push({
           name: "Balances",
         });
+      } else {
       }
     });
     return () => (
