@@ -23,11 +23,8 @@
       <router-link class="link" to="/stats">POOL STATS</router-link>
     </div>
     <div class="item">
-      <a
-        class="link"
-        target="_blank"
-        href="https://wallet.keplr.app/#/sifchain/stake"
-        >STAKE & DELEGATE</a
+      <router-link class="link" to="/stake-delegate"
+        >STAKE & DELEGATE</router-link
       >
     </div>
   </div>

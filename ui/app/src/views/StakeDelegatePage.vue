@@ -16,7 +16,24 @@ export default defineComponent({
     };
   },
   async mounted() {
-    window.location.href = "https://wallet.keplr.app/#/sifchain/stake";
+    const data = await fetch(
+      "https://vtdbgplqd6.execute-api.us-west-2.amazonaws.com/default/liqvalrewards",
+    );
+    const json = await data.json();
+    this.data = json.body;
+
+    const { services } = useCore();
+
+    const vsJson: any = await services.cryptoeconomics.fetchData({
+      rewardType: "vs",
+      address: "sif1003l39amhtmlmh6eupj3w94xg6ljh5zz37dy8j",
+      key: "userData",
+      timestamp: "now",
+    });
+
+    this.validatorSubsidyAPY = vsJson
+      ? vsJson.user.currentAPYOnTickets * 100
+      : 0;
   },
 });
 </script>
