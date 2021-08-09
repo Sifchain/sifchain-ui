@@ -7,6 +7,7 @@ import * as DispensationV1Tx from "../../../../generated/proto/sifnode/dispensat
 import * as EthbridgeV1Query from "../../../../generated/proto/sifnode/ethbridge/v1/query";
 import * as EthbridgeV1Tx from "../../../../generated/proto/sifnode/ethbridge/v1/tx";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { toHex } from "@cosmjs/encoding";
 import {
   DirectSecp256k1HdWallet,
   Registry,
@@ -15,6 +16,7 @@ import {
   OfflineSigner,
 } from "@cosmjs/stargate/node_modules/@cosmjs/proto-signing";
 import {
+  BroadcastTxResponse,
   createProtobufRpcClient,
   defaultRegistryTypes,
   QueryClient,
@@ -22,15 +24,28 @@ import {
   setupBankExtension,
   setupIbcExtension,
   SigningStargateClient,
+  StargateClient,
+  TimeoutError,
 } from "@cosmjs/stargate";
+import { BroadcastTxCommitResponse } from "@cosmjs/tendermint-rpc/build/tendermint34";
+import { SimulationResponse } from "@cosmjs/stargate/build/codec/cosmos/base/abci/v1beta1/abci";
+import { sleep } from "test/utils/sleep";
 
 export class NativeDexClient {
-  query: ReturnType<typeof NativeDexClient.prototype.createQueryClient>;
-  constructor(readonly rpcUrl: string) {
-    this.query = this.createQueryClient();
+  query?: ReturnType<typeof NativeDexClient.prototype.createQueryClient>;
+  protected t34?: Tendermint34Client;
+  constructor(readonly rpcUrl: string) {}
+  async connect(resolver?: (t: Tendermint34Client) => void) {
+    return (
+      this.t34 ??
+      Tendermint34Client.connect(this.rpcUrl).then((t34) => {
+        this.query = this.createQueryClient(t34);
+        return resolver?.(t34);
+      })
+    );
   }
 
-  async createTxClient(signer: OfflineSigner) {
+  async createSigningClient(signer: OfflineSigner) {
     const createCustomTypesForModule = (
       nativeModule: Record<string, GeneratedType | any> & {
         protobufPackage: string;
@@ -52,7 +67,6 @@ export class NativeDexClient {
       ...createCustomTypesForModule(CLPV1Tx),
       ...createCustomTypesForModule(TokenRegistryV1Tx),
     ]);
-    // Inside an async function...
     const client = await SigningStargateClient.connectWithSigner(
       this.rpcUrl,
       signer,
@@ -60,12 +74,13 @@ export class NativeDexClient {
         registry: nativeRegistry,
       },
     );
+
+    return client;
   }
 
-  async createQueryClient() {
-    const tendermintClient = await Tendermint34Client.connect(this.rpcUrl);
+  private createQueryClient(t34: Tendermint34Client) {
     return QueryClient.withExtensions(
-      tendermintClient,
+      t34,
       setupIbcExtension,
       setupBankExtension,
       setupAuthExtension,
@@ -81,3 +96,5 @@ export class NativeDexClient {
     );
   }
 }
+
+new NativeDexClient("http").connect((client) => {}).then((client) => {});

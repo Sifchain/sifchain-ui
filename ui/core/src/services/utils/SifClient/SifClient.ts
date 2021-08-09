@@ -27,7 +27,7 @@ export class SifClient extends SigningCosmosClient {
     rpcUrl: string,
     gasPrice?: GasPrice,
     gasLimits?: Partial<GasLimits<CosmosFeeTable>>,
-    broadcastMode?: BroadcastMode,
+    broadcastMode: BroadcastMode = BroadcastMode.Block,
   ) {
     super(apiUrl, senderAddress, signer, gasPrice, gasLimits, broadcastMode);
     this.wallet = signer;
