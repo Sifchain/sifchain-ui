@@ -20,6 +20,7 @@ import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
 import { rootStore } from "../../../store";
 import { importStore } from "@/store/modules/import";
+import { disableSelected } from "@/componentsLegacy/TokenSelector/tokenLists";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -117,18 +118,17 @@ export default defineComponent({
 
     const handleSetMax = () => {
       if (tokenRef.value && selectedTokenBalance.value?.amount) {
+        const decimals = tokenRef.value.asset.decimals;
+        const afterMaxValue = getMaxAmount(
+          ref(selectedTokenBalance.value.asset.symbol),
+          selectedTokenBalance.value,
+        );
         rootStore.import.setDraft({
-          amount: format(
-            getMaxAmount(
-              ref(selectedTokenBalance.value.asset.symbol),
-              selectedTokenBalance.value,
-            ),
-            selectedTokenBalance.value?.asset,
-            {
-              mantissa: selectedTokenBalance.value?.decimals,
-              trimMantissa: true,
-            },
-          ),
+          amount: afterMaxValue.lessThan("0")
+            ? "0.0"
+            : format(afterMaxValue, selectedTokenBalance.value.asset, {
+                mantissa: decimals,
+              }),
         });
       }
     };

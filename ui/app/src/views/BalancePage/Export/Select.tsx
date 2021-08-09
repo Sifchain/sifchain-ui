@@ -2,7 +2,7 @@ import { defineComponent, ref, computed, PropType, Ref } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network } from "@sifchain/sdk";
+import { Amount, AssetAmount, Network, toBaseUnits } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
@@ -31,16 +31,25 @@ export default defineComponent({
       networksRef,
       exportTokenRef,
       computedExportAssetAmount,
+      feeAmountRef,
     } = exportData;
     const exportParams = exportStore.state.draft;
     const networkRef = computed(() => exportParams.network);
 
     const handleSetMax = () => {
       if (!exportTokenRef.value) return;
-      const maxAmount = getMaxAmount(
+      let maxAmount = getMaxAmount(
         { value: exportTokenRef.value?.asset.symbol } as Ref,
         exportTokenRef.value?.amount,
       );
+      if (
+        feeAmountRef.value?.asset.symbol === exportTokenRef.value.asset.symbol
+      ) {
+        maxAmount = maxAmount.subtract(feeAmountRef.value.amount.toString());
+      }
+      if (maxAmount.lessThan("0")) {
+        maxAmount = Amount("0.0");
+      }
       exportStore.setDraft({
         amount: format(maxAmount, exportTokenRef.value.asset, {
           mantissa: exportTokenRef.value.asset.decimals,
@@ -53,12 +62,21 @@ export default defineComponent({
       if (!exportTokenRef.value) {
         return "Select Token";
       }
+      if (
+        feeAmountRef.value &&
+        feeAmountRef.value?.asset.symbol ===
+          exportTokenRef.value?.asset.symbol &&
+        exportTokenRef.value.amount.lessThanOrEqual(feeAmountRef.value?.amount)
+      ) {
+        return "Not Enough Balance To Pay Fee";
+      }
       if (!computedExportAssetAmount.value) {
         return "Enter Amount";
       }
       if (computedExportAssetAmount.value?.lessThanOrEqual("0.0")) {
         return "Enter Amount";
       }
+
       if (
         computedExportAssetAmount.value?.greaterThan(
           exportTokenRef.value.amount,
