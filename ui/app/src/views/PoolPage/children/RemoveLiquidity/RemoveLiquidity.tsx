@@ -10,13 +10,21 @@ import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useCore } from "@/hooks/useCore";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { throttle } from "@/views/utils/throttle";
 
 export default defineComponent({
-  setup(props) {
+  setup() {
     const data = useRemoveLiquidityData();
     const router = useRouter();
     const appWalletPicker = useAppWalletPicker();
     const { store } = useCore();
+
+    const updateBasisPointsThrottled = throttle((value: string) => {
+      data.wBasisPoints.value = value;
+    }, 20);
+    const updateAsymmetryThrottled = throttle((value: string) => {
+      data.asymmetry.value = value;
+    }, 20);
 
     const amountRangeRef = ref();
 
@@ -110,7 +118,9 @@ export default defineComponent({
                     max="10000"
                     value={data.wBasisPoints.value}
                     onInput={(e) => {
-                      data.wBasisPoints.value = (e.target as HTMLInputElement).value;
+                      updateBasisPointsThrottled(
+                        (e.target as HTMLInputElement).value,
+                      );
                     }}
                   />
                   <div
@@ -174,7 +184,9 @@ export default defineComponent({
                     max="10000"
                     value={data.asymmetry.value}
                     onInput={(e) => {
-                      data.asymmetry.value = (e.target as HTMLInputElement).value;
+                      updateAsymmetryThrottled(
+                        (e.target as HTMLInputElement).value,
+                      );
                     }}
                   />
                 </div>

@@ -196,8 +196,8 @@ input[type="range"]:after {
   cursor: pointer;
   content: "";
   position: absolute;
-  top: -6px;
-  bottom: -6px;
+  top: -12px;
+  bottom: -12px;
   left: 0;
   right: 0;
 }
