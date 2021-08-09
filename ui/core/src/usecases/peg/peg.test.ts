@@ -24,6 +24,7 @@ function createPeg() {
       bus,
       ibc: {
         transferIBCTokens: jest.fn(),
+        checkIfPacketReceived: jest.fn(),
       },
     },
     { wallet, tx },

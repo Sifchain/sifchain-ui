@@ -21,10 +21,10 @@ export default defineComponent({
 
     const updateBasisPointsThrottled = throttle((value: string) => {
       data.wBasisPoints.value = value;
-    }, 20);
+    }, 40);
     const updateAsymmetryThrottled = throttle((value: string) => {
       data.asymmetry.value = value;
-    }, 20);
+    }, 40);
 
     const amountRangeRef = ref();
 

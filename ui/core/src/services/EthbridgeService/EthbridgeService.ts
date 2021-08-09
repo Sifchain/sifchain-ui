@@ -234,7 +234,6 @@ export default function createEthbridgeService({
           assetAmount.asset.address ||
           ETH_ADDRESS; // eth address is ""
 
-        console.log("coinDenom", coinDenom, assetAmount.asset.symbol);
         const amount = assetAmount.toBigInt().toString();
         const fromAddress = accounts[0];
 
@@ -295,8 +294,6 @@ export default function createEthbridgeService({
         token_contract_address: tokenAddress,
         ceth_amount: params.feeAmount.toBigInt().toString(),
       };
-
-      console.log("lockParams", params.assetAmount.asset.symbol, lockParams);
 
       console.log("lockToEthereum: TRY LOCK", tokenAddress);
       const lockReceipt = await sifUnsignedClient.lock(lockParams);
