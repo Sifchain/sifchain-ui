@@ -2,6 +2,7 @@ module.exports = {
   publicPath: "./",
   lintOnSave: false,
   devServer: {
+    host: "0.0.0.0",
     overlay: {
       warnings: true,
       errors: true,
@@ -9,6 +10,10 @@ module.exports = {
   },
   configureWebpack: {
     devtool: "source-map",
+    output: {
+      filename: "[name].[hash].js",
+      chunkFilename: "[name].[hash].js",
+    },
   },
   chainWebpack: (config) => {
     config.plugin("html").tap((args) => {

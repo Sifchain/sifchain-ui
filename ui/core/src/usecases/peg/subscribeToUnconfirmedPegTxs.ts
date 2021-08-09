@@ -6,7 +6,7 @@ export const SubscribeToUnconfirmedPegTxs = ({
   services,
   store,
   config,
-}: UsecaseContext<"ethbridge" | "bus", "tx" | "wallet"> & {
+}: UsecaseContext<"ethbridge" | "bus" | "sif", "tx" | "wallet"> & {
   config: PegConfig;
 }) => () => {
   if (!store.wallet.eth.address) return () => {};

@@ -11,7 +11,7 @@ export type ImportDraft = {
 };
 type State = {
   draft: ImportDraft;
-  pendingPegEvents: PegEvent[];
+  pendingPegEvents: [string, PegEvent][];
 };
 export const importStore = Vuextra.createStore({
   name: "import",

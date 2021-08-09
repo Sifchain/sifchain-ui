@@ -218,6 +218,8 @@ export default function createSifService({
       return state.connected;
     },
 
+    unSignedClient,
+
     onSocketError(handler: HandlerFn<any>) {
       return unSignedClient.onSocketError(handler);
     },

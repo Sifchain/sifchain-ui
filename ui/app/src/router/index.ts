@@ -251,7 +251,11 @@ router.afterEach((to, from) => {
   // Reset scroll on route change
   if (to.name !== from.name) {
     const layout = document.querySelector(".layout");
-    if (layout) layout.scrollTop = 0;
+    if (layout)
+      layout.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
   }
 });
 

@@ -1,4 +1,11 @@
-import { defineComponent, TransitionGroup, ref, computed } from "vue";
+import {
+  defineComponent,
+  TransitionGroup,
+  ref,
+  computed,
+  Transition,
+  KeepAlive,
+} from "vue";
 import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
 import BalanceRow from "./BalanceRow";
@@ -6,6 +13,7 @@ import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { RouterView } from "vue-router";
 
 import { effect } from "@vue/reactivity";
+import router from "@/router";
 
 export default defineComponent({
   name: "BalancePage",
@@ -48,7 +56,6 @@ export default defineComponent({
     let isDisabled = false;
     return () => (
       <>
-        <RouterView />
         <PageCard
           heading="Balances"
           iconName="navigation/balances"

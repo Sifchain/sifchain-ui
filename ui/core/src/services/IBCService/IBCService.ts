@@ -1,4 +1,9 @@
-import { BroadcastTxFailure, SigningStargateClient } from "@cosmjs/stargate";
+import {
+  BroadcastTxFailure,
+  SigningStargateClient,
+  StargateClient,
+  defaultRegistryTypes,
+} from "@cosmjs/stargate";
 import { IBCChainConfig } from "./IBCChainConfig";
 import {
   Amount,
@@ -17,6 +22,7 @@ import {
   setupBankExtension,
   setupIbcExtension,
   setupAuthExtension,
+  createProtobufRpcClient,
 } from "@cosmjs/stargate/build/queries";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { QueryClientImpl } from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/query";
@@ -26,8 +32,7 @@ import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applic
 import { getNetworkEnv, NetworkEnv } from "../../config/getEnv";
 import { chainConfigByNetworkEnv } from "./ibc-chains";
 import { fetch } from "cross-fetch";
-// const GAIA_ENDPOINT = `http://a941f6afd0d994a57979ffbaf284d2c0-95f50faefa055d52.elb.us-west-2.amazonaws.com:26657`;
-// const SIFCHAIN_ENDPOINT = `https://rpc-devnet-042-ibc.sifchain.finance/`;
+import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -85,7 +90,6 @@ export class IBCService {
     const tendermintClient = await Tendermint34Client.connect(
       destChainConfig.rpcUrl,
     );
-
     const queryClient = QueryClient.withExtensions(
       tendermintClient,
       setupIbcExtension,
@@ -250,6 +254,7 @@ export class IBCService {
     await keplr?.enable(sourceChain.chainId);
     const sendingSigner = await keplr?.getOfflineSigner(sourceChain.chainId);
     if (!sendingSigner) throw new Error("No sending signer");
+
     console.log(
       `${params.sourceNetwork}/${await sendingSigner
         .getAccounts()
