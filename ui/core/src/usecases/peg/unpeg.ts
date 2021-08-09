@@ -89,6 +89,18 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
           message: txStatus.memo || "There was an error while unpegging",
         },
       });
+      yield {
+        type: "tx_error",
+        tx: parseTxFailure({
+          transactionHash: txStatus.hash,
+          rawLog: txStatus.memo || "",
+        }),
+      };
+    } else {
+      yield {
+        type: "sent",
+        tx: txStatus,
+      };
     }
 
     console.log(

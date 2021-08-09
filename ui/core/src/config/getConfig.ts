@@ -9,6 +9,7 @@ import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 import assetsEthereumLocalnet from "./networks/ethereum/assets.ethereum.localnet.json";
 import assetsEthereumDevnet from "./networks/ethereum/assets.ethereum.sifchain-devnet.json";
 import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.sifchain-testnet.json";
+import assetsEthereumTestnet042IBC from "./networks/ethereum/assets.ethereum.sifchain-testnet-042.json";
 import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.json";
 
 import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet.json";
@@ -63,6 +64,9 @@ export function getConfig(
     ),
     "ethereum.testnet": parseAssets(
       assetsEthereumTestnet.assets as AssetConfig[],
+    ),
+    "ethereum.testnet_042_ibc": parseAssets(
+      assetsEthereumTestnet042IBC.assets as AssetConfig[],
     ),
     "ethereum.mainnet": parseAssets(
       assetsEthereumMainnet.assets as AssetConfig[],

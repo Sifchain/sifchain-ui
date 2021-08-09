@@ -1,6 +1,9 @@
 import { useCore } from "./useCore";
 import { computed, Ref } from "vue";
-import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
+import {
+  getUnpeggedSymbol,
+  isPseudoMatchingSymbol,
+} from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
   Network,
@@ -111,7 +114,7 @@ export const useTokenList = (
   return tokenList;
 };
 
-export const useToken = (props: {
+export const useToken = (params: {
   network: Ref<Network>;
   symbol: Ref<string>;
 }) => {
@@ -120,10 +123,8 @@ export const useToken = (props: {
   return computed(() => {
     return tokenListRef.value?.find((token) => {
       return (
-        token.asset.network === props.network.value &&
-        (token.asset.symbol.toLowerCase() ===
-          props.symbol.value.toLowerCase() ||
-          token.asset.displaySymbol === props.symbol.value)
+        token.asset.network === params.network.value &&
+        isPseudoMatchingSymbol(token.asset.symbol, params.symbol.value)
       );
     });
   });

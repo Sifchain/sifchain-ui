@@ -8,7 +8,7 @@
   "nativeAsset": "rowan",
   "blockExplorerUrl": "https://blockexplorer-testnet.sifchain.finance",
   "cryptoeconomicsUrl": "https://api-cryptoeconomics.sifchain.finance/api",
-  "bridgebankContractAddress": "0x471e0ffB16C4eEde754cEfD7F522257df37a1410",
+  "bridgebankContractAddress": "0xDC959a7cad365F22DeB2d70Dfbb2f4974BdAcDbf",
   "keplrChainConfig": {
     "chainName": "SifTest-042-ibc",
     "chainId": "",

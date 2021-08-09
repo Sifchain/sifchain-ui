@@ -92,6 +92,7 @@ export function getUnpegEventDetails(pegEvent: UnpegEvent): TransactionDetails {
       return {
         heading: "Approved",
         description: "Transaction approved",
+        isComplete: true,
       };
     }
     case "approve_started": {

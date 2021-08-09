@@ -48,7 +48,7 @@ export const profileLookup: ProfileLookup = {
   },
   [NetworkEnv.TESTNET_042_IBC]: {
     tag: NetworkEnv.TESTNET_042_IBC,
-    ethAssetTag: "ethereum.devnet",
+    ethAssetTag: "ethereum.testnet_042_ibc",
     sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
