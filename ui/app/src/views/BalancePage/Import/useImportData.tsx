@@ -38,7 +38,7 @@ export function getImportLocation(
         ? "ConfirmImport"
         : "ProcessingImport",
     params: {
-      displaySymbol: params.displaySymbol || "",
+      displaySymbol: params.symbol || "",
     },
     query: {
       network: params.network || "",
@@ -55,8 +55,8 @@ export const useImportData = () => {
   useBoundRoute({
     params: {
       displaySymbol: computed({
-        get: () => importStore.state.draft.displaySymbol,
-        set: (v) => importStore.setDraft({ displaySymbol: v }),
+        get: () => importStore.state.draft.symbol,
+        set: (v) => importStore.setDraft({ symbol: v }),
       }),
     },
     query: {
@@ -85,7 +85,7 @@ export const useImportData = () => {
 
   const tokenRef = useToken({
     network: computed(() => importDraft.value.network),
-    symbol: computed(() => importDraft.value.displaySymbol),
+    symbol: computed(() => importDraft.value.symbol),
   });
 
   const computedImportAssetAmount = computed(() => {
@@ -104,7 +104,7 @@ export const useImportData = () => {
 
   const nativeTokenBalance = computed(() =>
     nativeBalances.value.find(
-      (t) => t.displaySymbol === importDraft.value.displaySymbol,
+      (t) => t.displaySymbol === importDraft.value.symbol,
     ),
   );
 
@@ -123,7 +123,7 @@ export const useImportData = () => {
   const sifchainBalance = rootStore.accounts.computed((s) =>
     s.state.sifchain.balances.find(
       (b) =>
-        b.displaySymbol === rootStore.import.state.draft.displaySymbol &&
+        b.displaySymbol === rootStore.import.state.draft.symbol &&
         b.network === Network.SIFCHAIN,
     ),
   );
@@ -165,8 +165,7 @@ export const useImportData = () => {
     [
       "Import Amount",
       <span class="flex items-center font-mono">
-        {importDraft.value.amount}{" "}
-        {importDraft.value.displaySymbol?.toUpperCase()}
+        {importDraft.value.amount} {importDraft.value.symbol?.toUpperCase()}
         <TokenIcon
           size={18}
           assetValue={tokenRef.value?.asset}

@@ -6,7 +6,7 @@ import { Vuextra } from "../Vuextra";
 export type ImportDraft = {
   amount: string;
   network: Network;
-  displaySymbol: string;
+  symbol: string;
   pegEvent: PegEvent | undefined;
 };
 type State = {
@@ -22,7 +22,7 @@ export const importStore = Vuextra.createStore({
     draft: {
       amount: "0",
       network: Network.ETHEREUM,
-      displaySymbol: "eth",
+      symbol: "eth",
       pegEvent: undefined,
     },
   } as State,

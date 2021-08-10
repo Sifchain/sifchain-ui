@@ -13,19 +13,17 @@ import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-import router from "@/router";
 import { getImportLocation, useImportData } from "./useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
 import { rootStore } from "../../../store";
 import { importStore } from "@/store/modules/import";
-import { disableSelected } from "@/componentsLegacy/TokenSelector/tokenLists";
 
 export default defineComponent({
   name: "ImportSelect",
 
-  setup(props) {
+  setup() {
     const { store } = useCore();
     const appWalletPicker = useAppWalletPicker();
     const selectIsOpen = ref(false);
@@ -198,7 +196,7 @@ export default defineComponent({
               onSelectAsset={(asset) => {
                 selectIsOpen.value = false;
                 importStore.setDraft({
-                  displaySymbol: asset.displaySymbol || asset.symbol,
+                  symbol: asset.symbol,
                 });
               }}
               active={selectIsOpen}

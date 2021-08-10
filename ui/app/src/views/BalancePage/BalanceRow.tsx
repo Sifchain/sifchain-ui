@@ -70,7 +70,7 @@ export default defineComponent({
         props: {
           replace: false,
           to: getImportLocation("select", {
-            displaySymbol: props.tokenItem.asset.displaySymbol,
+            symbol: props.tokenItem.asset.symbol,
             network: props.tokenItem.asset.homeNetwork,
           }),
         },
