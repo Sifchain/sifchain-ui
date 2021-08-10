@@ -107,26 +107,19 @@ export default defineComponent({
     const networkOpenRef = ref(false);
 
     const networkValue = rootStore.import.refs.draft.network.computed();
-    const draftVal = importStore.refs.draft.computed();
-    const selectedTokenBalance = rootStore.accounts.computed((s) =>
-      s.state[networkValue.value].balances.find(
-        (bal) => bal.asset.displaySymbol === draftVal.value.displaySymbol,
-      ),
-    );
-
     const amountValue = rootStore.import.refs.draft.amount.computed();
 
     const handleSetMax = () => {
-      if (tokenRef.value && selectedTokenBalance.value?.amount) {
+      if (tokenRef.value && tokenRef.value?.amount) {
         const decimals = tokenRef.value.asset.decimals;
         const afterMaxValue = getMaxAmount(
-          ref(selectedTokenBalance.value.asset.symbol),
-          selectedTokenBalance.value,
+          ref(tokenRef.value.asset.symbol),
+          tokenRef.value.amount,
         );
         rootStore.import.setDraft({
           amount: afterMaxValue.lessThan("0")
             ? "0.0"
-            : format(afterMaxValue, selectedTokenBalance.value.asset, {
+            : format(afterMaxValue, tokenRef.value.asset, {
                 mantissa: decimals,
               }),
         });
@@ -217,8 +210,7 @@ export default defineComponent({
                 onClick={handleSetMax}
               >
                 Balance:{" "}
-                {(selectedTokenBalance.value &&
-                  formatAssetAmount(selectedTokenBalance.value)) ??
+                {(tokenRef.value && formatAssetAmount(tokenRef.value.amount)) ??
                   "0"}
               </span>
             )}

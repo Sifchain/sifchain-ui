@@ -52,7 +52,7 @@ export function formatAssetAmount(value: IAssetAmount) {
     : format(amount, asset, { mantissa: 6 });
 }
 
-export function isOpposingSymbol(symbol1: string, symbol2: string) {
+export function isPseudoMatchingSymbol(symbol1: string, symbol2: string) {
   symbol1 = symbol1.toLowerCase();
   symbol2 = symbol2.toLowerCase();
 

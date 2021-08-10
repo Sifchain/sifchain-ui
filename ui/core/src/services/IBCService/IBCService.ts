@@ -164,8 +164,6 @@ export class IBCService {
     // parseRawLog(tx?.rawLog);
   }
 
-  async getWalletByNetwork(network: Network) {}
-
   async createWalletByNetwork(network: Network) {
     const keplr = await getKeplrProvider();
     const sourceChain = this.loadChainConfigByNetwork(network);
@@ -194,8 +192,27 @@ export class IBCService {
     const addresses = (await sendingSigner.getAccounts()).map(
       (acc) => acc.address,
     );
-    const queryClient = await this.loadQueryClientByNetwork(network);
-    const balances = await stargate.getAllBalances(addresses[0]);
+    const balances = await this.getAllBalances({
+      client: stargate,
+      network,
+      address: addresses[0],
+    });
+
+    return {
+      client: stargate,
+      addresses,
+      balances,
+    };
+  }
+
+  async getAllBalances(params: {
+    network: Network;
+    client: StargateClient;
+    address: string;
+  }) {
+    const sourceChain = this.loadChainConfigByNetwork(params.network);
+    const queryClient = await this.loadQueryClientByNetwork(params.network);
+    const balances = await params.client.getAllBalances(params.address);
     const assetAmounts: IAssetAmount[] = [];
 
     for (let balance of balances) {
@@ -214,37 +231,22 @@ export class IBCService {
 
         let asset =
           this.context.assets.find(
-            (a) => a.symbol === symbol && a.network == network,
+            (a) => a.symbol === symbol && a.network == params.network,
           ) || symbol;
 
         if (typeof asset === "object" && balance.denom.startsWith("ibc/")) {
-          asset = {
-            ...asset,
-            ibcDenom: balance.denom,
-          };
+          asset.ibcDenom = balance.denom;
         }
         const assetAmount = AssetAmount(asset, balance?.amount);
         assetAmounts.push(assetAmount);
-        if (network === Network.COSMOSHUB) {
-          // console.table([
-          //   {
-          //     denom: balance.denom,
-          //     amount: balance.amount,
-          //     symbol,
-          //     trace: denomTrace,
-          //   },
-          // ]);
-        }
       } catch (e) {
         console.error(e);
       }
     }
-    return {
-      client: stargate,
-      addresses,
-      balances: assetAmounts,
-    };
+
+    return assetAmounts;
   }
+
   async transferIBCTokens(params: {
     sourceNetwork: Network;
     destinationNetwork: Network;

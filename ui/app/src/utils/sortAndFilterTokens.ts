@@ -17,7 +17,7 @@ export function sortAndFilterTokens(props: {
     .filter((token) => {
       if (!props.searchQuery) return true;
       return (
-        (token.asset.displaySymbol || token.asset.symbol)
+        token.asset.displaySymbol
           .toLowerCase()
           .indexOf(props.searchQuery.toLowerCase()) !== -1 ||
         token.asset.label
@@ -36,9 +36,7 @@ export function sortAndFilterTokens(props: {
         // Name: ascending, rowan first.
         if (rowanRegex.test(a.asset.symbol)) return -1;
         if (rowanRegex.test(b.asset.symbol)) return 1;
-        return (a.asset.displaySymbol || a.asset.symbol).localeCompare(
-          b.asset.displaySymbol || b.asset.symbol,
-        );
+        return a.asset.displaySymbol.localeCompare(b.asset.displaySymbol);
       }
     });
 

@@ -1,16 +1,17 @@
 {
+  "note": "this is needed for tests!",
   "sifAddrPrefix": "sif",
-  "sifApiUrl": "https://api-testnet-042-ibc.sifchain.finance",
-  "sifWsUrl": "wss://rpc-testnet-042-ibc.sifchain.finance/websocket",
-  "sifRpcUrl": "https://rpc-testnet-042-ibc.sifchain.finance",
-  "sifChainId": "sifchain-testnet-042-ibc",
+  "sifChainId": "sifchain-local",
+  "sifApiUrl": "http://127.0.0.1:1317",
+  "sifWsUrl": "ws://localhost:26657/websocket",
+  "sifRpcUrl": "http://localhost:26657",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
-  "blockExplorerUrl": "https://blockexplorer-testnet.sifchain.finance",
-  "cryptoeconomicsUrl": "https://api-cryptoeconomics.sifchain.finance/api",
-  "bridgebankContractAddress": "0xDC959a7cad365F22DeB2d70Dfbb2f4974BdAcDbf",
+  "cryptoeconomicsUrl": "http://localhost:3000/api",
+  "blockExplorerUrl": "https://blockexplorer.sifchain.finance",
+  "bridgebankContractAddress": "0x30753E4A8aad7F8597332E813735Def5dD395028",
   "keplrChainConfig": {
-    "chainName": "SifTest-042-ibc",
+    "chainName": "SifchainLocal",
     "chainId": "",
     "rpc": "",
     "rest": "",
@@ -40,9 +41,9 @@
     ],
     "coinType": 118,
     "gasPriceStep": {
-      "low": 5000000000000,
-      "average": 6500000000000,
-      "high": 8000000000000
+      "low": 0.5,
+      "average": 0.65,
+      "high": 0.8
     }
   }
 }

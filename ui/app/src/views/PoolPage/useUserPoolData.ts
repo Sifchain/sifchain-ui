@@ -26,6 +26,7 @@ async function getEarnedRewards(address: string, symbol: string) {
 
   const earnedRewardsUrl = getRewardEarningsUrl();
   const res = await fetch(`${earnedRewardsUrl}/${symbol}/netChange/${address}`);
+  const parsedData = await res.json();
 
   // NOTE(ajoslin): ibc not supported yet for this endpoint...
   // to not spam the logs with invalid calls to this endpoint,
@@ -34,8 +35,6 @@ async function getEarnedRewards(address: string, symbol: string) {
     invalidRewards[symbol] = true;
     return emptyRes;
   }
-
-  const parsedData = await res.json();
 
   // TD - This should return Amount, method needs work
   // Rudis recent work should refactor this call too into a testable service

@@ -25,9 +25,7 @@
       </template>
     </Header> -->
     <SideBar />
-    <Layout>
-      <router-view />
-    </Layout>
+    <router-view />
     <Notifications />
     <EnvAlert />
   </div>

@@ -5,6 +5,7 @@ import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
 import ClaimRewardsModal from "./components/ClaimRewardsModal";
 import { CryptoeconomicsRewardType } from "@sifchain/sdk/src/services/CryptoeconomicsService";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 
 export default defineComponent({
   name: "RewardsPage",
@@ -39,35 +40,37 @@ export default defineComponent({
         return <div>Error! {error.value.message}</div>;
       }
       return (
-        <PageCard
-          class="w-[790px]"
-          heading="Rewards"
-          iconName="navigation/rewards"
-        >
-          <RewardSection
-            rewardType="lm"
-            data={lmData.value}
-            alreadyClaimed={!!vsClaim.value}
-            infoLink={lmInfoLink.value}
-            onClaimIntent={() => {
-              claimRewardType.value = "lm";
-              isClaimModalOpened.value = true;
-            }}
-          />
-          <div class="my-[16px] border border-dashed border-white opacity-40" />
-          <RewardSection
-            rewardType="vs"
-            data={vsData.value}
-            alreadyClaimed={!!lmClaim.value}
-            infoLink={vsInfoLink.value}
-            onClaimIntent={() => {
-              claimRewardType.value = "vs";
-              isClaimModalOpened.value = true;
-            }}
-          />
+        <Layout>
+          <PageCard
+            class="w-[790px]"
+            heading="Rewards"
+            iconName="navigation/rewards"
+          >
+            <RewardSection
+              rewardType="lm"
+              data={lmData.value}
+              alreadyClaimed={!!vsClaim.value}
+              infoLink={lmInfoLink.value}
+              onClaimIntent={() => {
+                claimRewardType.value = "lm";
+                isClaimModalOpened.value = true;
+              }}
+            />
+            <div class="my-[16px] border border-dashed border-white opacity-40" />
+            <RewardSection
+              rewardType="vs"
+              data={vsData.value}
+              alreadyClaimed={!!lmClaim.value}
+              infoLink={vsInfoLink.value}
+              onClaimIntent={() => {
+                claimRewardType.value = "vs";
+                isClaimModalOpened.value = true;
+              }}
+            />
 
-          <div class="h-4" />
-        </PageCard>
+            <div class="h-4" />
+          </PageCard>
+        </Layout>
       );
     };
   },

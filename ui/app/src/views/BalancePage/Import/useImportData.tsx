@@ -138,7 +138,9 @@ export const useImportData = () => {
 
   const sifchainBalance = rootStore.accounts.computed((s) =>
     s.state.sifchain.balances.find(
-      (b) => b.displaySymbol === rootStore.import.state.draft.displaySymbol,
+      (b) =>
+        b.displaySymbol === rootStore.import.state.draft.displaySymbol &&
+        b.network === Network.SIFCHAIN,
     ),
   );
   const detailsRef = computed<[any, any][]>(() => [

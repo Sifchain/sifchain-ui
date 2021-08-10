@@ -2,7 +2,7 @@ import { provider } from "web3-core";
 import Web3 from "web3";
 import { getBridgeBankContract } from "./bridgebankContract";
 import { getTokenContract } from "./tokenContract";
-import { IAssetAmount } from "../../entities";
+import { IAssetAmount, IAsset, Asset } from "../../entities";
 import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
@@ -14,6 +14,12 @@ import { Contract } from "web3-eth-contract";
 import JSBI from "jsbi";
 
 // TODO: Do we break this service out to ethbridge and cosmos?
+
+function getUnpeggedSymbol(sifchainSymbol: string) {
+  if (sifchainSymbol.toLowerCase() === "rowan") return "erowan";
+  if (sifchainSymbol.toLowerCase() === "uphoton") return "euphoton";
+  return sifchainSymbol.replace(/^c/, "").toLowerCase();
+}
 
 export type EthbridgeServiceContext = {
   sifApiUrl: string;
@@ -173,7 +179,13 @@ export default function createEthbridgeService({
     }) {
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
-      const tokenAddress = params.assetAmount.asset.address ?? ETH_ADDRESS;
+
+      const ethereumAsset = Asset.get(
+        getUnpeggedSymbol(params.assetAmount.asset.symbol),
+      );
+      const tokenAddress =
+        ethereumAsset.ibcDenom || ethereumAsset.address || ETH_ADDRESS;
+
       console.log("burnToEthereum: start: ", tokenAddress);
 
       const txReceipt = await sifUnsignedClient.burn({
@@ -218,7 +230,11 @@ export default function createEthbridgeService({
           bridgebankContractAddress,
         );
         const accounts = await web3.eth.getAccounts();
-        const coinDenom = assetAmount.asset.address || ETH_ADDRESS; // eth address is ""
+        const coinDenom =
+          assetAmount.asset.ibcDenom ||
+          assetAmount.asset.address ||
+          ETH_ADDRESS; // eth address is ""
+
         const amount = assetAmount.toBigInt().toString();
         const fromAddress = accounts[0];
 
@@ -259,7 +275,13 @@ export default function createEthbridgeService({
     }) {
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
-      const tokenAddress = params.assetAmount.asset.address ?? ETH_ADDRESS;
+
+      const ethereumAsset = Asset.get(
+        getUnpeggedSymbol(params.assetAmount.asset.symbol),
+      );
+      const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
+
+      console.log("IT IS HERE", params.assetAmount.asset);
 
       const lockParams = {
         ethereum_receiver: params.ethereumRecipient,
@@ -268,7 +290,8 @@ export default function createEthbridgeService({
           from: params.fromAddress,
         },
         amount: params.assetAmount.toBigInt().toString(),
-        symbol: params.assetAmount.asset.symbol,
+        symbol:
+          params.assetAmount.asset.ibcDenom || params.assetAmount.asset.symbol,
         cosmos_sender: params.fromAddress,
         ethereum_chain_id: `${ethereumChainId}`,
         token_contract_address: tokenAddress,

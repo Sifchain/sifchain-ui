@@ -4,6 +4,7 @@ import { usePoolStatItem } from "@/hooks/usePoolStatItem";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { computed, ref } from "@vue/reactivity";
 import { defineComponent, PropType } from "vue";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { RouterView } from "vue-router";
 import {
   PoolPageAccountPool,
@@ -11,7 +12,7 @@ import {
   COLUMNS,
 } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
-import { Network } from "@sifchain/sdk";
+import { Asset, Network } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useToken } from "@/hooks/useToken";
 import { prettyNumber } from "@/utils/prettyNumber";
@@ -44,7 +45,9 @@ export default defineComponent({
           .sort((a, b) => {
             if (a.pool.symbol === config.nativeAsset.symbol) return -1;
             if (b.pool.symbol === config.nativeAsset.symbol) return 1;
-            return a.pool.symbol.localeCompare(b.pool.symbol);
+            return Asset.get(a.pool.symbol).displaySymbol.localeCompare(
+              Asset.get(b.pool.symbol).displaySymbol,
+            );
           })
           // Then sort by balance
           .sort((a, b) => {
@@ -63,7 +66,7 @@ export default defineComponent({
 
     return () => {
       return (
-        <>
+        <Layout>
           {/* Disable child routes (add/remove liq modals) while data isnt loaded  */}
           <RouterView
             name={
@@ -120,7 +123,7 @@ export default defineComponent({
               })}
             </PageCard>
           )}
-        </>
+        </Layout>
       );
     };
   },

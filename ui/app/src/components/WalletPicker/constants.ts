@@ -85,7 +85,7 @@ export const walletConnections: WalletConnection[] = [
       const { usecases } = useCore();
       return computed(() => ({
         connect: () =>
-          rootStore.accounts.loadAccount({ network: Network.COSMOSHUB }),
+          rootStore.accounts.loadIBCAccount({ network: Network.COSMOSHUB }),
         disconnect: undefined,
       }));
     },

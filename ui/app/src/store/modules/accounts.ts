@@ -60,7 +60,7 @@ export const accountStore = Vuextra.createStore({
     },
   }),
   actions: (context) => ({
-    loadAccount(p: { network: Network }) {
+    loadIBCAccount(p: { network: Network }) {
       return core.services.ibc.createWalletByNetwork(p.network).then((w) => {
         accountStore.setConnected({ network: p.network, connected: true });
         accountStore.setAddress({
@@ -71,6 +71,25 @@ export const accountStore = Vuextra.createStore({
           network: p.network,
           balances: w.balances,
         });
+
+        const intervalId: NodeJS.Timeout = setInterval(async () => {
+          if (
+            !accountStore.state.cosmoshub.connected ||
+            accountStore.state.cosmoshub.address !== w.addresses[0]
+          ) {
+            return clearInterval(intervalId);
+          }
+          const balances = await core.services.ibc.getAllBalances({
+            network: p.network,
+            client: w.client,
+            address: w.addresses[0],
+          });
+          accountStore.setBalances({
+            network: p.network,
+            balances,
+          });
+          core.store.wallet.cosmoshub.balances = balances;
+        }, 15_000);
       });
     },
     connect(network: Network) {
