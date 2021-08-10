@@ -175,7 +175,11 @@ export default defineComponent({
                   }}
                 >
                   <div class="flex justify-between items-center">
-                    <TokenIcon size={38} asset={boundAsset}></TokenIcon>
+                    <TokenIcon
+                      size={38}
+                      key={boundAsset.value?.symbol || ""}
+                      asset={boundAsset}
+                    ></TokenIcon>
                     <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
                       {tokenRef.value?.asset?.displaySymbol ||
                         tokenRef.value?.asset?.symbol}
