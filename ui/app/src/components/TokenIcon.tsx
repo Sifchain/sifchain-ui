@@ -85,6 +85,7 @@ export const TokenIcon = defineComponent({
     );
     return () => (
       <div
+        key={url.value || ""}
         style={{
           height: props.size + "px",
           width: props.size + "px",
