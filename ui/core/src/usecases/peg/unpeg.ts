@@ -4,7 +4,7 @@ import { IAssetAmount, Network, TransactionStatus } from "../../entities";
 import { Services } from "../../services";
 import { Store } from "../../store";
 import { calculateUnpegFee } from "./utils/calculateExportFee";
-import { isOriginallySifchainNativeToken } from "./utils/isOriginallySifchainNativeToken";
+import { isOriginallyNetworkNativeToken } from "./utils/isOriginallyNetworkNativeToken";
 
 type UnpegServices = {
   ethbridge: Pick<Services["ethbridge"], "lockToEthereum" | "burnToEthereum">;
@@ -66,7 +66,7 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
       }
       return;
     }
-    const lockOrBurnFn = isOriginallySifchainNativeToken(assetAmount.asset)
+    const lockOrBurnFn = isOriginallyNetworkNativeToken(assetAmount.asset)
       ? services.ethbridge.lockToEthereum
       : services.ethbridge.burnToEthereum;
 
