@@ -81,9 +81,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         path: "confirm",
         name: "ConfirmSwap",
         component: ConfirmSwap,
-        props: {
-          title: "Confirm Swap",
-        },
         meta: {
           title: "Confirm Swap - Sifchain",
           swapState: "confirm",
@@ -93,9 +90,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         path: "approve",
         name: "ApproveSwap",
         component: ApproveSwap,
-        props: {
-          title: "Approve Swap",
-        },
         meta: {
           title: "Approve Swap - Sifchain",
           swapState: "submit",

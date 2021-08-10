@@ -29,18 +29,18 @@ import {
 } from "@cosmjs/stargate";
 import { BroadcastTxCommitResponse } from "@cosmjs/tendermint-rpc/build/tendermint34";
 import { SimulationResponse } from "@cosmjs/stargate/build/codec/cosmos/base/abci/v1beta1/abci";
-import { sleep } from "test/utils/sleep";
+import { sleep } from "../../../test/utils/sleep";
 
 export class NativeDexClient {
   query?: ReturnType<typeof NativeDexClient.prototype.createQueryClient>;
   protected t34?: Tendermint34Client;
   constructor(readonly rpcUrl: string) {}
-  async connect(resolver?: (t: Tendermint34Client) => void) {
+  async connect(resolver?: (t: this) => void) {
     return (
       this.t34 ??
       Tendermint34Client.connect(this.rpcUrl).then((t34) => {
         this.query = this.createQueryClient(t34);
-        return resolver?.(t34);
+        return resolver?.(this);
       })
     );
   }

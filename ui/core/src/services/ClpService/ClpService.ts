@@ -136,14 +136,14 @@ export default function createClpService({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         received_asset: {
           source_chain: params.receivedAsset.network as string,
-          symbol: params.receivedAsset.symbol,
-          ticker: params.receivedAsset.symbol,
+          symbol: params.receivedAsset.ibcDenom ?? params.receivedAsset.symbol,
+          ticker: params.receivedAsset.ibcDenom ?? params.receivedAsset.symbol,
         },
         sent_amount: params.sentAmount.toBigInt().toString(),
         sent_asset: {
           source_chain: params.sentAmount.asset.network as string,
-          symbol: params.sentAmount.asset.symbol,
-          ticker: params.sentAmount.asset.symbol,
+          symbol: params.sentAmount.ibcDenom ?? params.sentAmount.symbol,
+          ticker: params.sentAmount.ibcDenom ?? params.sentAmount.symbol,
         },
         min_receiving_amount: params.minimumReceived.toBigInt().toString(),
         signer: params.fromAddress,

@@ -1,8 +1,13 @@
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 import {
+  Amount,
+  Asset,
+  AssetAmount,
   ErrorCode,
   getErrorMessage,
   IAsset,
   IAssetAmount,
+  Network,
 } from "../../entities";
 import { Services } from "../../services";
 import { ReportTransactionError } from "../utils";
@@ -15,8 +20,9 @@ export type SwapArgs = {
   bus: PickBus;
   sif: PickSif;
   clp: PickClp;
+  ibc: Pick<Services["ibc"], "loadChainConfigByNetwork">;
 };
-export function Swap({ bus, sif, clp }: SwapArgs) {
+export function Swap({ bus, sif, clp, ibc }: SwapArgs) {
   return async (
     sentAmount: IAssetAmount,
     receivedAsset: IAsset,
@@ -25,6 +31,47 @@ export function Swap({ bus, sif, clp }: SwapArgs) {
     const reportTransactionError = ReportTransactionError(bus);
     const state = sif.getState();
     if (!state.address) throw new Error("No from address provided for swap");
+    await new NativeDexClient(
+      await ibc.loadChainConfigByNetwork(Network.SIFCHAIN).rpcUrl,
+    ).connect(async (dex) => {
+      const whitelist = await dex.query?.tokenregistry.Entries({});
+      console.log({ whitelist });
+      whitelist?.registry?.entries.forEach((entry) => {
+        if (
+          entry.baseDenom.toLowerCase() ===
+          sentAmount.asset.symbol.toLowerCase()
+        ) {
+          sentAmount = AssetAmount(
+            Asset({
+              ...sentAmount.asset,
+              symbol: entry.denom,
+            }),
+            sentAmount.amount,
+          );
+        }
+        if (
+          entry.baseDenom.toLowerCase() === receivedAsset.symbol.toLowerCase()
+        ) {
+          receivedAsset = Asset({
+            ...receivedAsset,
+            symbol: entry.denom,
+          });
+        }
+        if (
+          entry.baseDenom.toLowerCase() ===
+          minimumReceived.asset.symbol.toLowerCase()
+        ) {
+          minimumReceived = AssetAmount(
+            Asset({
+              ...minimumReceived.asset,
+              symbol: entry.denom,
+            }),
+            minimumReceived.amount,
+          );
+        }
+      });
+      debugger;
+    });
 
     const tx = await clp.swap({
       fromAddress: state.address,
