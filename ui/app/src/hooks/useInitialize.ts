@@ -20,23 +20,23 @@ export function useInitialize() {
     usecases.peg.subscribeToUnconfirmedPegTxs,
   );
 
-  useSubscription(
-    computed(() => store.wallet.sif.address),
-    () => usecases.reward.subscribeToRewardData("vs"),
-  );
-  useSubscription(
-    computed(() => store.wallet.sif.address),
-    () => usecases.reward.subscribeToRewardData("lm"),
-  );
+  // useSubscription(
+  //   computed(() => store.wallet.sif.address),
+  //   () => usecases.reward.subscribeToRewardData("vs"),
+  // );
+  // useSubscription(
+  //   computed(() => store.wallet.sif.address),
+  //   () => usecases.reward.subscribeToRewardData("lm"),
+  // );
 
-  useSubscription(
-    computed(() => store.wallet.sif.lmUserData),
-    usecases.reward.notifyLmMaturity,
-  );
-  useSubscription(
-    computed(() => store.wallet.sif.vsUserData),
-    usecases.reward.notifyVsMaturity,
-  );
+  // useSubscription(
+  //   computed(() => store.wallet.sif.lmUserData),
+  //   usecases.reward.notifyLmMaturity,
+  // );
+  // useSubscription(
+  //   computed(() => store.wallet.sif.vsUserData),
+  //   usecases.reward.notifyVsMaturity,
+  // );
 
   // Bridge from old useCore to new wallet store
   // For now, this wallet store is a facade for core.
