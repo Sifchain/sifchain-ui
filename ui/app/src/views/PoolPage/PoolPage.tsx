@@ -12,7 +12,7 @@ import {
   COLUMNS,
 } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
-import { Network } from "@sifchain/sdk";
+import { Asset, Network } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useToken } from "@/hooks/useToken";
 import { prettyNumber } from "@/utils/prettyNumber";
@@ -45,7 +45,9 @@ export default defineComponent({
           .sort((a, b) => {
             if (a.pool.symbol === config.nativeAsset.symbol) return -1;
             if (b.pool.symbol === config.nativeAsset.symbol) return 1;
-            return a.pool.symbol.localeCompare(b.pool.symbol);
+            return Asset.get(a.pool.symbol).displaySymbol.localeCompare(
+              Asset.get(b.pool.symbol).displaySymbol,
+            );
           })
           // Then sort by balance
           .sort((a, b) => {

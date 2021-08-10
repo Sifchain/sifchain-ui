@@ -13,6 +13,7 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";
 import { getLMData } from "@/componentsLegacy/shared/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
+import { debounce } from "@/views/utils/debounce";
 
 export function useRemoveLiquidityData() {
   const { store, usecases, poolFinder, services, config } = useCore();
@@ -60,20 +61,23 @@ export function useRemoveLiquidityData() {
   });
 
   // if these values change, recalculate state and asset amounts
-  watch([wBasisPoints, asymmetry, liquidityProvider], () => {
-    const calcData = useRemoveLiquidityCalculator({
-      externalAssetSymbol,
-      nativeAssetSymbol,
-      wBasisPoints,
-      asymmetry,
-      liquidityProvider,
-      sifAddress: toRef(store.wallet.sif, "address"),
-      poolFinder,
-    });
-    state.value = calcData.state;
-    withdrawExternalAssetAmount.value = calcData.withdrawExternalAssetAmount;
-    withdrawNativeAssetAmount.value = calcData.withdrawNativeAssetAmount;
-  });
+  watch(
+    [wBasisPoints, asymmetry, liquidityProvider],
+    debounce(() => {
+      const calcData = useRemoveLiquidityCalculator({
+        externalAssetSymbol,
+        nativeAssetSymbol,
+        wBasisPoints,
+        asymmetry,
+        liquidityProvider,
+        sifAddress: toRef(store.wallet.sif, "address"),
+        poolFinder,
+      });
+      state.value = calcData.state;
+      withdrawExternalAssetAmount.value = calcData.withdrawExternalAssetAmount;
+      withdrawNativeAssetAmount.value = calcData.withdrawNativeAssetAmount;
+    }, 200),
+  );
 
   return {
     connected,
