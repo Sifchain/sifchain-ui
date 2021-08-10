@@ -1,19 +1,16 @@
-import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
-import { computed, onMounted, Ref, watch, ref } from "vue";
+import { RouteLocationRaw, useRouter } from "vue-router";
+import { computed, Ref } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
-import { TokenListItem, useToken, useTokenList } from "@/hooks/useToken";
+import { useToken, useTokenList } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network, AssetAmount, toBaseUnits, Asset } from "@sifchain/sdk";
+import { Network, AssetAmount, toBaseUnits } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
-import { ImportDraft, importStore } from "@/store/modules/import";
+import { ImportDraft } from "@/store/modules/import";
 import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
-import { effect } from "@vue/reactivity";
-import { useCore } from "@/hooks/useCore";
-import { isLikeSymbol } from "@/utils/symbol";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -51,7 +48,6 @@ export function getImportLocation(
 }
 
 export const useImportData = () => {
-  const route = useRoute();
   const router = useRouter();
   const importStore = rootStore.import;
   const importDraft = importStore.refs.draft.computed();
@@ -210,16 +206,6 @@ export const useImportData = () => {
       </span>,
     ],
   ]);
-
-  // effect(() => {
-  //   if (importDraft.value.network && !tokenRef.value) {
-  //     return importStore.setDraft({
-  //       displaySymbol: useCore().config.assets.find((asset) => {
-  //         return asset.network === importDraft.value.network;
-  //       })?.symbol,
-  //     });
-  //   }
-  // });
 
   return {
     importDraft,
