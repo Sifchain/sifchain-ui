@@ -1,11 +1,11 @@
-import * as TokenRegistryV1Query from "../../../../generated/proto/sifnode/tokenregistry/v1/query";
-import * as TokenRegistryV1Tx from "../../../../generated/proto/sifnode/tokenregistry/v1/query";
-import * as CLPV1Query from "../../../../generated/proto/sifnode/clp/v1/querier";
-import * as CLPV1Tx from "../../../../generated/proto/sifnode/clp/v1/tx";
-import * as DispensationV1Query from "../../../../generated/proto/sifnode/dispensation/v1/query";
-import * as DispensationV1Tx from "../../../../generated/proto/sifnode/dispensation/v1/tx";
-import * as EthbridgeV1Query from "../../../../generated/proto/sifnode/ethbridge/v1/query";
-import * as EthbridgeV1Tx from "../../../../generated/proto/sifnode/ethbridge/v1/tx";
+import * as TokenRegistryV1Query from "../../../generated/proto/sifnode/tokenregistry/v1/query";
+import * as TokenRegistryV1Tx from "../../../generated/proto/sifnode/tokenregistry/v1/query";
+import * as CLPV1Query from "../../../generated/proto/sifnode/clp/v1/querier";
+import * as CLPV1Tx from "../../../generated/proto/sifnode/clp/v1/tx";
+import * as DispensationV1Query from "../../../generated/proto/sifnode/dispensation/v1/query";
+import * as DispensationV1Tx from "../../../generated/proto/sifnode/dispensation/v1/tx";
+import * as EthbridgeV1Query from "../../../generated/proto/sifnode/ethbridge/v1/query";
+import * as EthbridgeV1Tx from "../../../generated/proto/sifnode/ethbridge/v1/tx";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { toHex } from "@cosmjs/encoding";
 import {

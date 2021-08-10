@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { EthBridgeClaim } from "../../../sifnode/ethbridge/v1/types";
+import { EthBridgeClaim } from "./types";
 
 export const protobufPackage = "sifnode.ethbridge.v1";
 

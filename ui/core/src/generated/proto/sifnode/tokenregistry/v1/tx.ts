@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { RegistryEntry } from "../../../sifnode/tokenregistry/v1/types";
+import { RegistryEntry } from "./types";
 
 export const protobufPackage = "sifnode.tokenregistry.v1";
 
