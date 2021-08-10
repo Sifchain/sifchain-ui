@@ -3,6 +3,7 @@ import {
   SigningStargateClient,
   StargateClient,
   defaultRegistryTypes,
+  defaultGasLimits,
 } from "@cosmjs/stargate";
 import { IBCChainConfig } from "./IBCChainConfig";
 import {
@@ -33,6 +34,7 @@ import { getNetworkEnv, NetworkEnv } from "../../config/getEnv";
 import { chainConfigByNetworkEnv } from "./ibc-chains";
 import { fetch } from "cross-fetch";
 import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
+import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -175,6 +177,18 @@ export class IBCService {
     const stargate = await SigningStargateClient?.connectWithSigner(
       sourceChain.rpcUrl,
       sendingSigner,
+      {
+        gasLimits: {
+          send: 80000,
+          ibcTransfer: 120000,
+          delegate: 250000,
+          undelegate: 250000,
+          redelegate: 250000,
+          // The gas multiplication per rewards.
+          withdrawRewards: 140000,
+          govVote: 250000,
+        },
+      },
     );
 
     const addresses = (await sendingSigner.getAccounts()).map(
@@ -277,6 +291,7 @@ export class IBCService {
       counterpartyChainId: destinationChain.chainId,
     });
 
+    defaultGasLimits;
     const symbol = params.assetAmountToTransfer.asset.symbol;
     // debugger;
     const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
