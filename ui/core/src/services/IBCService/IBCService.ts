@@ -296,6 +296,23 @@ export class IBCService {
     defaultGasLimits;
     const symbol = params.assetAmountToTransfer.asset.symbol;
     // debugger;
+    const stargateArgs = [
+      fromAccount.address,
+      toAccount.address,
+      {
+        denom:
+          this.networkDenomLookup[sourceChain.network as Network][symbol] ||
+          symbol,
+        // denom: symbol,
+        amount: params.assetAmountToTransfer.toBigInt().toString(),
+      },
+      "transfer",
+      channelId,
+      undefined,
+      /** timeout timestamp in seconds */
+      Math.floor(Date.now() / 1000 + 60 * 60),
+    ];
+    console.log("stargate.sendIbcTokens", stargateArgs);
     const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
       fromAccount.address,
       toAccount.address,

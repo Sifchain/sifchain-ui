@@ -1,7 +1,7 @@
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
-import { computed, onMounted, Ref, watch } from "vue";
+import { computed, onMounted, Ref, watch, ref } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
-import { TokenListItem, useTokenList } from "@/hooks/useToken";
+import { TokenListItem, useToken, useTokenList } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { Network, AssetAmount, toBaseUnits, Asset } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
@@ -11,6 +11,9 @@ import { ImportDraft, importStore } from "@/store/modules/import";
 import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { effect } from "@vue/reactivity";
+import { useCore } from "@/hooks/useCore";
+import { isLikeSymbol } from "@/utils/symbol";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -84,24 +87,9 @@ export const useImportData = () => {
     networks: networksRef,
   });
 
-  const tokenRef = computed<TokenListItem | undefined>(() => {
-    const list = tokenListRef.value;
-    const draft = importDraft.value;
-    if (!list?.length) return undefined; // Wait for token list to load
-
-    if (!draft.displaySymbol) {
-      return tokenListRef.value[0];
-    }
-
-    const token =
-      list.find((t) => {
-        return (
-          draft.displaySymbol.toLowerCase() ===
-            t.asset.displaySymbol.toLowerCase() &&
-          t.asset.network === importDraft.value.network
-        );
-      }) || tokenListRef.value[0];
-    return token;
+  const tokenRef = useToken({
+    network: computed(() => importDraft.value.network),
+    symbol: computed(() => importDraft.value.displaySymbol),
   });
 
   const computedImportAssetAmount = computed(() => {
@@ -222,6 +210,16 @@ export const useImportData = () => {
       </span>,
     ],
   ]);
+
+  // effect(() => {
+  //   if (importDraft.value.network && !tokenRef.value) {
+  //     return importStore.setDraft({
+  //       displaySymbol: useCore().config.assets.find((asset) => {
+  //         return asset.network === importDraft.value.network;
+  //       })?.symbol,
+  //     });
+  //   }
+  // });
 
   return {
     importDraft,

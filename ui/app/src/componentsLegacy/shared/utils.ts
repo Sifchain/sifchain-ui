@@ -52,19 +52,6 @@ export function formatAssetAmount(value: IAssetAmount) {
     : format(amount, asset, { mantissa: 6 });
 }
 
-export function isPseudoMatchingSymbol(symbol1: string, symbol2: string) {
-  symbol1 = symbol1.toLowerCase();
-  symbol2 = symbol2.toLowerCase();
-
-  const withoutPrefix = (s: string) => s.replace(/^(c|e)/, "");
-  return (
-    symbol1 === symbol2 ||
-    withoutPrefix(symbol1) === symbol2 ||
-    symbol1 === withoutPrefix(symbol2) ||
-    withoutPrefix(symbol1) === withoutPrefix(symbol2)
-  );
-}
-
 // TODO: These could be replaced with a look up table
 export function getPeggedSymbol(symbol: string) {
   if (symbol.toLowerCase() === "erowan") return "ROWAN";

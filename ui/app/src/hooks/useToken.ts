@@ -1,9 +1,6 @@
 import { useCore } from "./useCore";
 import { computed, Ref } from "vue";
-import {
-  getUnpeggedSymbol,
-  isPseudoMatchingSymbol,
-} from "@/componentsLegacy/shared/utils";
+import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
   Network,
@@ -12,6 +9,7 @@ import {
   TransactionStatus,
 } from "@sifchain/sdk";
 import { getNetworkBalances } from "./useWallet";
+import { isLikeSymbol } from "@/utils/symbol";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -124,7 +122,7 @@ export const useToken = (params: {
     return tokenListRef.value?.find((token) => {
       return (
         token.asset.network === params.network.value &&
-        isPseudoMatchingSymbol(token.asset.symbol, params.symbol.value)
+        isLikeSymbol(token.asset.symbol, params.symbol.value)
       );
     });
   });
