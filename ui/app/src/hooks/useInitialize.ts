@@ -81,8 +81,10 @@ export function useInitialize() {
 
   watch(
     () => store.wallet.cosmoshub.isConnected,
-    (val) => {
-      if (val) rootStore.accounts.loadAccount({ network: Network.COSMOSHUB });
+    async (val) => {
+      if (val) {
+        rootStore.accounts.loadIBCAccount({ network: Network.COSMOSHUB });
+      }
     },
     { immediate: true },
   );
