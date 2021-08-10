@@ -1,6 +1,7 @@
 import { defineComponent, computed, Ref, ref } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
 import PageCard from "@/components/PageCard";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/components/AssetIcon";
@@ -78,109 +79,111 @@ export default defineComponent({
       }
 
       return (
-        <PageCard
-          heading="Pool Stats"
-          iconName="navigation/pool-stats"
-          class="!w-[940px] !min-w-[940px] !max-w-[940px]"
-          withOverflowSpace
-          headerContent={
-            <div class="height-[40px] flex items-center text-sm font-semibold">
-              {columns.map((column, index) => (
-                <div
-                  style={colStyles.value[index]}
-                  key={column.name}
-                  class={[column.class]}
-                >
-                  <div
-                    class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
-                    onClick={() => {
-                      if (state.sortBy === column.sortBy) {
-                        state.sortDirection =
-                          state.sortDirection === "asc" ? "desc" : "asc";
-                      } else {
-                        state.sortDirection = "asc";
-                      }
-                      state.sortBy = column.sortBy;
-                    }}
-                  >
-                    {column.name}
-                    {state.sortBy === column.sortBy && (
-                      <AssetIcon
-                        icon="interactive/arrow-down"
-                        class="transition-all w-[12px] h-[12px]"
-                        style={{
-                          transform:
-                            state.sortDirection === "asc"
-                              ? "rotate(0deg)"
-                              : "rotate(180deg)",
-                        }}
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          }
-        >
-          <table class="w-full">
-            <thead>
-              <tr>
+        <Layout>
+          <PageCard
+            heading="Pool Stats"
+            iconName="navigation/pool-stats"
+            class="!w-[940px] !min-w-[940px] !max-w-[940px]"
+            withOverflowSpace
+            headerContent={
+              <div class="height-[40px] flex items-center text-sm font-semibold">
                 {columns.map((column, index) => (
-                  <td
-                    ref={column.ref}
-                    class={[column.class]}
+                  <div
+                    style={colStyles.value[index]}
                     key={column.name}
-                  />
-                ))}
-              </tr>
-            </thead>
-            <tbody class="w-full text-base font-medium">
-              {statsRef.value.map((item) => {
-                return (
-                  <tr
-                    key={item.asset.symbol}
-                    class="align-middle h-8 border-dashed border-b border-white border-opacity-40 last:border-transparent hover:opacity-80"
+                    class={[column.class]}
                   >
-                    <td class="align-middle">
-                      <div class="flex items-center">
-                        <TokenIcon
-                          assetValue={item.asset}
-                          size={22}
-                          class="mr-[10px]"
-                        />
-                        {(
-                          item.asset.displaySymbol || item.asset.symbol
-                        ).toUpperCase()}
-                      </div>
-                    </td>
-                    <td class="align-middle text-right text-mono">
-                      ${prettyNumber(item.price)}
-                    </td>
-                    <td
-                      class={[
-                        "align-middle text-mono text-right",
-                        item.arbitrage >= 0
-                          ? `text-connected-base`
-                          : `text-danger-base`,
-                      ]}
+                    <div
+                      class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                      onClick={() => {
+                        if (state.sortBy === column.sortBy) {
+                          state.sortDirection =
+                            state.sortDirection === "asc" ? "desc" : "asc";
+                        } else {
+                          state.sortDirection = "asc";
+                        }
+                        state.sortBy = column.sortBy;
+                      }}
                     >
-                      {prettyNumber(item.arbitrage)}%
-                    </td>
-                    <td class="align-middle text-right text-mono">
-                      ${prettyNumber(item.depth)}
-                    </td>
-                    <td class="align-middle text-right text-mono">
-                      ${prettyNumber(item.volume)}
-                    </td>
-                    <td class="align-middle text-right text-mono">
-                      {prettyNumber(item.poolApy)}%
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </PageCard>
+                      {column.name}
+                      {state.sortBy === column.sortBy && (
+                        <AssetIcon
+                          icon="interactive/arrow-down"
+                          class="transition-all w-[12px] h-[12px]"
+                          style={{
+                            transform:
+                              state.sortDirection === "asc"
+                                ? "rotate(0deg)"
+                                : "rotate(180deg)",
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }
+          >
+            <table class="w-full">
+              <thead>
+                <tr>
+                  {columns.map((column, index) => (
+                    <td
+                      ref={column.ref}
+                      class={[column.class]}
+                      key={column.name}
+                    />
+                  ))}
+                </tr>
+              </thead>
+              <tbody class="w-full text-base font-medium">
+                {statsRef.value.map((item) => {
+                  return (
+                    <tr
+                      key={item.asset.symbol}
+                      class="align-middle h-8 border-dashed border-b border-white border-opacity-40 last:border-transparent hover:opacity-80"
+                    >
+                      <td class="align-middle">
+                        <div class="flex items-center">
+                          <TokenIcon
+                            assetValue={item.asset}
+                            size={22}
+                            class="mr-[10px]"
+                          />
+                          {(
+                            item.asset.displaySymbol || item.asset.symbol
+                          ).toUpperCase()}
+                        </div>
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        ${prettyNumber(item.price)}
+                      </td>
+                      <td
+                        class={[
+                          "align-middle text-mono text-right",
+                          item.arbitrage >= 0
+                            ? `text-connected-base`
+                            : `text-danger-base`,
+                        ]}
+                      >
+                        {prettyNumber(item.arbitrage)}%
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        ${prettyNumber(item.depth)}
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        ${prettyNumber(item.volume)}
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        {prettyNumber(item.poolApy)}%
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </PageCard>
+        </Layout>
       );
     };
   },

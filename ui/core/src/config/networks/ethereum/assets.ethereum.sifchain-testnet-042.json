@@ -633,6 +633,17 @@
       "priceUsd": 0,
       "symbol": "LEASH",
       "transferLimit": "99999999999999999999999"
+    },
+    {
+      "address": "0x424DA170444d91053E249fAa5Da7501563f436f8",
+      "decimals": 18,
+      "imageUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/3794.png",
+      "name": "Photon",
+      "network": "ethereum",
+      "homeNetwork": "cosmoshub",
+      "priceUsd": 0,
+      "symbol": "EUPHOTON",
+      "transferLimit": "99999999999999999999999"
     }
   ]
 }

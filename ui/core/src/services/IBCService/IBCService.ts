@@ -204,6 +204,7 @@ export class IBCService {
           ) || symbol;
 
         if (typeof asset === "object" && balance.denom.startsWith("ibc/")) {
+          asset.ibcDenom = balance.denom;
           asset = {
             ...asset,
             ibcDenom: balance.denom,

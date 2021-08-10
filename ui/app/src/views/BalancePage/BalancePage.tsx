@@ -6,6 +6,7 @@ import {
   Transition,
   KeepAlive,
 } from "vue";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
 import BalanceRow from "./BalanceRow";
@@ -55,7 +56,7 @@ export default defineComponent({
     });
     let isDisabled = false;
     return () => (
-      <>
+      <Layout>
         <PageCard
           heading="Balances"
           iconName="navigation/balances"
@@ -150,7 +151,7 @@ export default defineComponent({
           </table>
         </PageCard>
         <RouterView></RouterView>
-      </>
+      </Layout>
     );
   },
 });

@@ -247,20 +247,4 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-router.afterEach((to, from) => {
-  // Reset scroll on route change
-  if (
-    to.name !== from.name &&
-    !to.path.startsWith(from.path) &&
-    !from.path.startsWith(to.path)
-  ) {
-    const layout = document.querySelector(".layout");
-    if (layout)
-      layout.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-  }
-});
-
 export default router;

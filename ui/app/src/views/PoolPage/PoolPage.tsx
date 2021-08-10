@@ -4,6 +4,7 @@ import { usePoolStatItem } from "@/hooks/usePoolStatItem";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { computed, ref } from "@vue/reactivity";
 import { defineComponent, PropType } from "vue";
+import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { RouterView } from "vue-router";
 import {
   PoolPageAccountPool,
@@ -63,7 +64,7 @@ export default defineComponent({
 
     return () => {
       return (
-        <>
+        <Layout>
           {/* Disable child routes (add/remove liq modals) while data isnt loaded  */}
           <RouterView
             name={
@@ -120,7 +121,7 @@ export default defineComponent({
               })}
             </PageCard>
           )}
-        </>
+        </Layout>
       );
     };
   },

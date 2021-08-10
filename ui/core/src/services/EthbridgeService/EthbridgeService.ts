@@ -17,6 +17,7 @@ import JSBI from "jsbi";
 
 function getUnpeggedSymbol(sifchainSymbol: string) {
   if (sifchainSymbol.toLowerCase() === "rowan") return "erowan";
+  if (sifchainSymbol.toLowerCase() === "uphoton") return "euphoton";
   return sifchainSymbol.replace(/^c/, "").toLowerCase();
 }
 
@@ -278,8 +279,9 @@ export default function createEthbridgeService({
       const ethereumAsset = Asset.get(
         getUnpeggedSymbol(params.assetAmount.asset.symbol),
       );
-      const tokenAddress =
-        ethereumAsset.ibcDenom || ethereumAsset.address || ETH_ADDRESS;
+      const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
+
+      console.log("IT IS HERE", params.assetAmount.asset);
 
       const lockParams = {
         ethereum_receiver: params.ethereumRecipient,
@@ -288,7 +290,8 @@ export default function createEthbridgeService({
           from: params.fromAddress,
         },
         amount: params.assetAmount.toBigInt().toString(),
-        symbol: params.assetAmount.asset.symbol,
+        symbol:
+          params.assetAmount.asset.ibcDenom || params.assetAmount.asset.symbol,
         cosmos_sender: params.fromAddress,
         ethereum_chain_id: `${ethereumChainId}`,
         token_contract_address: tokenAddress,
