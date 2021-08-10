@@ -2,7 +2,6 @@ import {
   computed,
   defineComponent,
   HTMLAttributes,
-  InputHTMLAttributes,
   PropType,
   watch,
 } from "vue";
@@ -12,18 +11,6 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-export const SampleBoundChildComponent = defineComponent<
-  { exampleProp: boolean } & InputHTMLAttributes
->({
-  // explicitly don't apply all non-prop attrs to the root element
-  inheritAttrs: false,
-  setup: (props, ctx) => () => (
-    <div>
-      <div class="h-20"></div>
-      <input type="text" {...ctx.attrs} />
-    </div>
-  ),
-});
 
 function required<T>(type: T) {
   return {
@@ -131,7 +118,7 @@ export const TokenInputGroup = defineComponent({
               <div class="flex justify-between items-center">
                 <TokenIcon size={38} asset={propRefs.asset}></TokenIcon>
                 <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                  {props.asset?.displaySymbol.replace(/^c/gim, "")}
+                  {props.asset?.displaySymbol}
                 </div>
               </div>
             </Button.Select>

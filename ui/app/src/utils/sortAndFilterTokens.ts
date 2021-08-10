@@ -1,3 +1,4 @@
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { TokenListItem } from "@/hooks/useToken";
 
 export type TokenSortBy = "balance" | "symbol";
@@ -29,8 +30,8 @@ export function sortAndFilterTokens(props: {
       if (props.sortBy === "balance") {
         // Balance: descending
         return (
-          (parseFloat(b.amount.amount.toString()) || 0) -
-          (parseFloat(a.amount.amount.toString()) || 0)
+          parseFloat(formatAssetAmount(b.amount)) -
+          parseFloat(formatAssetAmount(a.amount))
         );
       } else {
         // Name: ascending, rowan first.
