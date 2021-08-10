@@ -194,6 +194,7 @@ export const TokenSelectDropdown = defineComponent({
                               class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
                             >
                               <TokenIcon
+                                key={token.asset.symbol}
                                 size={20}
                                 assetValue={token.asset}
                                 class="mr-[8px]"

@@ -125,6 +125,7 @@ export default defineComponent({
         });
       }
     };
+    const boundAsset = computed(() => tokenRef.value?.asset);
     return () => (
       <Modal
         heading="Import Token to Sifchain"
@@ -174,10 +175,7 @@ export default defineComponent({
                   }}
                 >
                   <div class="flex justify-between items-center">
-                    <TokenIcon
-                      size={38}
-                      assetValue={tokenRef.value?.asset}
-                    ></TokenIcon>
+                    <TokenIcon size={38} asset={boundAsset}></TokenIcon>
                     <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
                       {tokenRef.value?.asset?.displaySymbol ||
                         tokenRef.value?.asset?.symbol}

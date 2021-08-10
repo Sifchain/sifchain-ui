@@ -70,7 +70,6 @@ export function Swap({ bus, sif, clp, ibc }: SwapArgs) {
           );
         }
       });
-      debugger;
     });
 
     const tx = await clp.swap({
