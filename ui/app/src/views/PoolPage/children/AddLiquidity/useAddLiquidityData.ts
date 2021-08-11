@@ -16,7 +16,10 @@ import { useWallet } from "@/hooks/useWallet";
 import { computed, Ref } from "@vue/reactivity";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
-import { formatNumber } from "@/componentsLegacy/shared/utils";
+import {
+  formatAssetAmount,
+  formatNumber,
+} from "@/componentsLegacy/shared/utils";
 import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 
@@ -302,7 +305,7 @@ export const useAddLiquidityData = () => {
       );
 
       if (!accountBalance) return;
-      fromAmount.value = format(accountBalance.amount, accountBalance.asset);
+      fromAmount.value = formatAssetAmount(accountBalance);
     },
     handleToMaxClicked() {
       selectedField.value = "to";
