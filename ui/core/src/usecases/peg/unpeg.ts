@@ -35,34 +35,36 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
   ): AsyncGenerator<UnpegEvent> {
     yield { type: "signing" };
     if (destinationNetwork === Network.COSMOSHUB) {
-      const tx = await services.ibc.transferIBCTokens({
+      const txSequence = await services.ibc.transferIBCTokens({
         sourceNetwork: Network.SIFCHAIN,
         destinationNetwork: Network.COSMOSHUB,
         assetAmountToTransfer: assetAmount,
       });
-      if (isBroadcastTxFailure(tx)) {
-        services.bus.dispatch({
-          type: "ErrorEvent",
-          payload: {
-            message: "IBC Transfer Failed",
-          },
-        });
-        yield {
-          type: "tx_error",
-          tx: parseTxFailure({
-            transactionHash: tx.transactionHash,
-            rawLog: tx.rawLog || "",
-          }),
-        };
-      } else {
-        yield {
-          type: "sent",
-          tx: {
-            state: "completed",
-            hash: tx.transactionHash,
-            memo: "Transaction Completed",
-          },
-        };
+      for (let tx of txSequence) {
+        if (isBroadcastTxFailure(tx)) {
+          services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: {
+              message: "IBC Transfer Failed",
+            },
+          });
+          yield {
+            type: "tx_error",
+            tx: parseTxFailure({
+              transactionHash: tx.transactionHash,
+              rawLog: tx.rawLog || "",
+            }),
+          };
+        } else {
+          yield {
+            type: "sent",
+            tx: {
+              state: "completed",
+              hash: tx.transactionHash,
+              memo: "Transaction Completed",
+            },
+          };
+        }
       }
       return;
     }

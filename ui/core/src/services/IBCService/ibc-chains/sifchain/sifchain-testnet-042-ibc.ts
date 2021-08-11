@@ -44,8 +44,8 @@ export const SIFCHAIN_TESTNET_042: IBCChainConfig = {
     coinType: 118,
     gasPriceStep: {
       low: 5000000000000,
-      average: 6500000000000,
-      high: 8000000000000,
+      average: 8000000000000,
+      high: 9000000000000,
     },
   },
 };

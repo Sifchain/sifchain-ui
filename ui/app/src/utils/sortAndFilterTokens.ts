@@ -11,7 +11,16 @@ export function sortAndFilterTokens(props: {
   props.sortBy = props.sortBy || "symbol";
   props.searchQuery = props.searchQuery || "";
 
-  const rowanRegex = /^.?rowan/i;
+  const promotedTokensByRank = [
+    "rowan",
+    "erowan",
+    "photon",
+    "uphoton",
+    "euphoton",
+  ].reduce((prev, curr, currIndex) => {
+    prev[curr] = currIndex;
+    return prev;
+  }, {} as { [key: string]: number });
 
   const array = props.tokens
     .filter((token) => {
@@ -33,9 +42,19 @@ export function sortAndFilterTokens(props: {
           (parseFloat(a.amount.amount.toString()) || 0)
         );
       } else {
-        // Name: ascending, rowan first.
-        if (rowanRegex.test(a.asset.symbol)) return -1;
-        if (rowanRegex.test(b.asset.symbol)) return 1;
+        // Sort by: Name, then balance, then rank
+        const [aRank, bRank] = [
+          promotedTokensByRank[a.asset.displaySymbol.toLowerCase()] ?? Infinity,
+          promotedTokensByRank[b.asset.displaySymbol.toLowerCase()] ?? Infinity,
+        ];
+        if (aRank !== Infinity || bRank !== Infinity) {
+          return aRank < bRank ? -1 : bRank < aRank ? 1 : 0;
+        }
+        const aAmountParsed = +a.amount.amount.toString();
+        const bAmountParsed = +b.amount.amount.toString();
+        if (aAmountParsed !== bAmountParsed) {
+          return !!aAmountParsed > !!bAmountParsed ? -1 : 1;
+        }
         return a.asset.displaySymbol.localeCompare(b.asset.displaySymbol);
       }
     });

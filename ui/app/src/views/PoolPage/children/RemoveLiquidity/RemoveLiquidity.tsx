@@ -170,6 +170,7 @@ export default defineComponent({
                       !data.connected.value ||
                       data.state.value === PoolState.NO_LIQUIDITY
                     }
+                    step="50"
                     min="-10000"
                     max="10000"
                     value={data.asymmetry.value}

@@ -79,14 +79,14 @@ export const Slider = defineComponent({
               onBlur={(e) => {
                 shouldDisplayFocusedState.value = false;
               }}
-              class="absolute block inset-0 opacity-0"
+              class="absolute block inset-0 w-full opacity-0"
               min={props.min}
               max={props.max}
               type="range"
               step={props.step}
             />
           </div>
-          <div class="mt-[1px] text-base flex flex-row w-full justify-between">
+          <div class="mt-[1px] text-[14px] flex flex-row w-full justify-between">
             <label
               class="text-white text-left text-opacity-50 cursor-pointer hover:text-opacity-70 w-[33.333%]"
               onClick={() => props.onLeftClicked?.()}

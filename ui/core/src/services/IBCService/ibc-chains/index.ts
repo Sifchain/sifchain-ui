@@ -1,5 +1,5 @@
 import sifchain from "./sifchain";
-import cosmoshub from "./cosmoshub/";
+import cosmoshub from "./cosmoshub";
 import { NetworkEnv } from "../../../config/getEnv";
 import { Network } from "../../../entities";
 

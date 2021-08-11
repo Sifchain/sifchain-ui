@@ -191,6 +191,14 @@ input[type="range"] {
   position: relative;
 }
 
+@keyframes shrink {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.5);
+  }
+}
 /* A few extra pixels of clickable space on top and bottom. */
 input[type="range"]:after {
   cursor: pointer;
@@ -216,6 +224,11 @@ input[type="range"]::-moz-range-thumb {
 }
 input[type="range"]:disabled::-moz-range-thumb {
   @apply bg-gray-disabled;
+}
+input[type="range"]:focus::-webkit-slider-thumb,
+input[type="range"]:active::-moz-range-thumb {
+  animation: shink 0.2s forwards;
+  transform: scale(1.5);
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;

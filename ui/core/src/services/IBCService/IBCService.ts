@@ -4,6 +4,9 @@ import {
   StargateClient,
   defaultRegistryTypes,
   defaultGasLimits,
+  MsgTransferEncodeObject,
+  BroadcastTxResponse,
+  isBroadcastTxFailure,
 } from "@cosmjs/stargate";
 import { IBCChainConfig } from "./IBCChainConfig";
 import {
@@ -25,7 +28,12 @@ import {
   setupAuthExtension,
   createProtobufRpcClient,
 } from "@cosmjs/stargate/build/queries";
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import {
+  BroadcastTxCommitResponse,
+  BroadcastTxParams,
+  BroadcastTxSyncResponse,
+  Tendermint34Client,
+} from "@cosmjs/tendermint-rpc";
 import { QueryClientImpl } from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/query";
 import { ValueOp } from "@cosmjs/stargate/build/codec/tendermint/crypto/proof";
 import { setupMintExtension } from "@cosmjs/launchpad";
@@ -35,7 +43,26 @@ import { chainConfigByNetworkEnv } from "./ibc-chains";
 import { fetch } from "cross-fetch";
 import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
 import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
+import Long from "long";
+import JSBI from "jsbi";
 
+const originalBroadcast = StargateClient.prototype.broadcastTx;
+StargateClient.prototype.broadcastTx = async function (params) {
+  const originalBrdcstSync = Tendermint34Client.prototype.broadcastTxSync;
+  Tendermint34Client.prototype.broadcastTxSync = async function (
+    params: BroadcastTxParams,
+  ) {
+    const commitRes = await this.broadcastTxCommit(params);
+    return {
+      ...(commitRes.deliverTx ?? {}),
+      ...commitRes.checkTx,
+      ...commitRes,
+    };
+  };
+  const rtn = originalBroadcast.bind(this)(params);
+  Tendermint34Client.prototype.broadcastTxSync = originalBrdcstSync;
+  return rtn;
+};
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   assets: Asset[];
@@ -251,7 +278,7 @@ export class IBCService {
     sourceNetwork: Network;
     destinationNetwork: Network;
     assetAmountToTransfer: IAssetAmount;
-  }) {
+  }): Promise<BroadcastTxResponse[]> {
     const sourceChain = this.loadChainConfigByNetwork(params.sourceNetwork);
     const destinationChain = this.loadChainConfigByNetwork(
       params.destinationNetwork,
@@ -286,6 +313,18 @@ export class IBCService {
     const sendingStargateClient = await SigningStargateClient?.connectWithSigner(
       sourceChain.rpcUrl,
       sendingSigner,
+      {
+        gasLimits: {
+          send: 80000,
+          transfer: 250000,
+          delegate: 250000,
+          undelegate: 250000,
+          redelegate: 250000,
+          // The gas multiplication per rewards.
+          withdrawRewards: 140000,
+          govVote: 250000,
+        },
+      },
     );
 
     const { channelId } = await loadConnectionByChainIds({
@@ -296,24 +335,128 @@ export class IBCService {
     defaultGasLimits;
     const symbol = params.assetAmountToTransfer.asset.symbol;
     // debugger;
-    const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
-      fromAccount.address,
-      toAccount.address,
-      {
-        denom:
-          this.networkDenomLookup[sourceChain.network as Network][symbol] ||
-          symbol,
-        // denom: symbol,
-        amount: params.assetAmountToTransfer.toBigInt().toString(),
-      },
-      "transfer",
-      channelId,
-      undefined,
-      /** timeout timestamp in seconds */
-      Math.floor(Date.now() / 1000 + 60 * 60),
-    );
-    console.log({ brdcstTxRes });
-    return brdcstTxRes;
+    // const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
+    //   fromAccount.address,
+    //   toAccount.address,
+    //   {
+    //     denom:
+    //       this.networkDenomLookup[sourceChain.network as Network][symbol] ||
+    //       symbol,
+    //     // denom: symbol,
+    //     amount: params.assetAmountToTransfer.toBigInt().toString(),
+    //   },
+    //   "transfer",
+    //   channelId,
+    //   undefined,
+    //   /** timeout timestamp in seconds */
+    //   Math.floor(Date.now() / 1000 + 60 * 60),
+    // );
+    const timeoutTimestamp = Math.floor(Date.now() / 1000 + 60 * 60);
+    const timeoutTimestampNanoseconds = timeoutTimestamp
+      ? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
+      : undefined;
+    const transferMsg: MsgTransferEncodeObject = {
+      typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+      value: IbcTransferV1Tx.MsgTransfer.fromPartial({
+        sourcePort: "transfer",
+        sourceChannel: channelId,
+        sender: fromAccount.address,
+        receiver: toAccount.address,
+        token: {
+          denom:
+            this.networkDenomLookup[sourceChain.network as Network][symbol] ||
+            symbol,
+          // denom: symbol,
+          amount: params.assetAmountToTransfer.toBigInt().toString(),
+        },
+        timeoutHeight: undefined,
+        timeoutTimestamp: timeoutTimestampNanoseconds,
+      }),
+    };
+    let transferMsgs: MsgTransferEncodeObject[] = [transferMsg];
+    while (
+      JSBI.greaterThanOrEqual(
+        JSBI.BigInt(transferMsgs[0].value.token?.amount || "0"),
+        JSBI.BigInt(`9223372036854775807`),
+      )
+    ) {
+      transferMsgs = [...transferMsgs, ...transferMsgs].map((tfMsg) => {
+        return {
+          ...tfMsg,
+          value: {
+            ...tfMsg.value,
+            token: {
+              denom: tfMsg.value.token?.denom as string,
+              amount: JSBI.divide(
+                JSBI.BigInt(tfMsg.value.token?.amount || "0"),
+                JSBI.BigInt("2"),
+              ).toString(),
+            },
+          },
+        };
+      });
+    }
+    debugger;
+    const batches = [];
+    // const maxMsgsPerBatch = 2048;
+    const maxMsgsPerBatch = 1024;
+    while (transferMsgs.length) {
+      batches.push(transferMsgs.splice(0, maxMsgsPerBatch));
+    }
+    console.log({ batches });
+    const responses: BroadcastTxResponse[] = [];
+    for (let batch of batches) {
+      try {
+        // const gasPerMessage = 39437;
+        // const gasPerMessage = 39437;
+        const gasPerMessage = 30437;
+        console.log({ batch });
+        console.log("transfer msg count", transferMsgs.length);
+        const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
+          fromAccount.address,
+          // [transferMsg, transferMsg, transferMsg, transferMsg],
+          batch,
+          // [transferMsg],
+          {
+            ...sendingStargateClient.fees.transfer,
+            amount: [
+              {
+                denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom,
+                amount:
+                  sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+                  "",
+              },
+            ],
+            gas: (() => {
+              const calculatedGas = JSBI.multiply(
+                JSBI.BigInt(gasPerMessage),
+                JSBI.BigInt(batch.length),
+              );
+              const minimumGas = JSBI.BigInt("160000");
+              const out = JSBI.greaterThan(calculatedGas, minimumGas)
+                ? calculatedGas
+                : JSBI.add(minimumGas, calculatedGas);
+              return out.toString();
+            })(),
+          },
+        );
+        console.log({ brdcstTxRes });
+        responses.push(brdcstTxRes);
+      } catch (e) {
+        responses.push({
+          code:
+            +e.message.split("code ").pop().split(" ")[0] || 100000000000000000,
+          log: e.message,
+          rawLog: e.message,
+          transactionHash: "invalidtx",
+          hash: new Uint8Array(),
+          events: [],
+          height: -1,
+        } as BroadcastTxResponse);
+      }
+    }
+    console.log({ responses });
+    return responses;
   }
 }
 
