@@ -29,7 +29,6 @@ export default async function getKeplrProvider(): Promise<provider | null> {
     return getKeplrProvider();
   }
 
-  console.log("Keplr wallet bootstraped");
   numChecks = 0;
   return win.keplr;
 }

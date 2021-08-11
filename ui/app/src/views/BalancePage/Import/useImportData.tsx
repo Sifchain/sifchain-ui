@@ -14,18 +14,6 @@ import { useBoundRoute } from "@/hooks/useBoundRoute";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
-// export type ImportData = {
-//   importDraft: ToRefs<ImportDraft>;
-//   networksRef: Ref<Network[]>;
-//   tokenRef: Ref<TokenListItem | undefined>;
-//   pickableTokensRef: Ref<TokenListItem[]>;
-//   computedImportAssetAmount: Ref<IAssetAmount | null>;
-//   pegEventRef: Ref<PegEvent | undefined>;
-//   runImport: () => void;
-//   exitImport: () => void;
-//   detailsRef: Ref<FormDetailsType>;
-// };
-
 export function getImportLocation(
   step: ImportStep,
   params: Partial<ImportDraft & { txHash?: string }>,
@@ -165,7 +153,8 @@ export const useImportData = () => {
     [
       "Import Amount",
       <span class="flex items-center font-mono">
-        {importDraft.value.amount} {importDraft.value.symbol?.toUpperCase()}
+        {importDraft.value.amount}{" "}
+        {tokenRef.value?.asset.displaySymbol.toUpperCase()}
         <TokenIcon
           size={18}
           assetValue={tokenRef.value?.asset}
