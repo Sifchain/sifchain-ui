@@ -14,7 +14,10 @@ import { isLikeSymbol } from "@/utils/symbol";
 export type TokenListItem = {
   amount: IAssetAmount;
   asset: IAsset;
-  pegTxs: TransactionStatus[];
+  importTxs: {
+    network: Network;
+    tx: TransactionStatus;
+  }[];
   supported: boolean;
 };
 
@@ -88,7 +91,7 @@ export const useTokenList = (
         });
 
         // Get pegTxs for asset
-        const pegTxs = pegList
+        const ethereumImportTransactions = pegList
           ? pegList.filter(txMatchesUnpegSymbol(asset.symbol))
           : [];
 
@@ -98,7 +101,10 @@ export const useTokenList = (
         return {
           amount: !amount ? AssetAmount(asset, "0") : amount,
           asset,
-          pegTxs,
+          importTxs: ethereumImportTransactions.map((tx) => ({
+            network: Network.ETHEREUM,
+            tx,
+          })),
           supported,
         };
       })
