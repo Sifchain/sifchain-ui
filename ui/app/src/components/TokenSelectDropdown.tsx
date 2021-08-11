@@ -70,6 +70,7 @@ export const TokenSelectDropdown = defineComponent({
         tokens: tokensRef.value,
         searchQuery: searchQuery.value,
         sortBy: props.sortBy,
+        network: networksRef.value[0],
       }).filter((token) => {
         return !excludeSymbolsSet.has(token.asset.symbol.toLowerCase());
       });
