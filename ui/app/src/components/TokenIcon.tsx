@@ -40,6 +40,7 @@ export const TokenIcon = defineComponent({
     });
     const url = ref<string | void>();
     const hasLoaded = ref(false);
+    const currentImage = ref();
     watch(
       () => [props.asset?.value, props.assetValue],
       async ([asset, asset2]) => {
@@ -57,18 +58,20 @@ export const TokenIcon = defineComponent({
           url.value = imagesLoadedCache[asset.displaySymbol];
           return;
         }
-        const image = new Image();
+        const image = (currentImage.value = new Image());
         image.src = svgSrc;
         image.onload = () => {
           // if asset has changed since image started loading, exit
-          if (props.asset?.value?.symbol !== asset?.symbol) return;
+          if (currentImage.value !== image) return;
+
           imagesLoadedCache[svgSrc] = svgSrc;
           url.value = svgSrc;
           hasLoaded.value = true;
         };
         image.onerror = () => {
           // if asset has changed since image started loading, exit
-          if (props.asset?.value?.symbol !== asset?.symbol) return;
+          if (currentImage.value !== image) return;
+
           const coinGeckoUrl = core.config.assets
             .find((a) => a.symbol == asset?.symbol)
             ?.imageUrl?.replace("thumb", "large");
