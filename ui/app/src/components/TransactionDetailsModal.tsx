@@ -28,6 +28,9 @@ export default defineComponent({
       type: Function as PropType<() => void>,
       required: true,
     },
+    completedCta: {
+      type: Object as PropType<Ref<JSX.Element>>,
+    },
     network: {
       type: String as Extract<Network, "ethereum" | "cosmoshub">,
       required: false,
@@ -78,11 +81,14 @@ export default defineComponent({
             )}
             {props.transactionDetails.value?.description}
           </p>
-          {!isLoading && (
-            <Button.CallToAction class="mt-[10px]" onClick={props.onClose}>
-              Close
-            </Button.CallToAction>
-          )}
+          {!isLoading &&
+            (props.completedCta?.value != null ? (
+              props.completedCta.value
+            ) : (
+              <Button.CallToAction class="mt-[10px]" onClick={props.onClose}>
+                Close
+              </Button.CallToAction>
+            ))}
         </Modal>
       );
     };
