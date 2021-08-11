@@ -60,11 +60,15 @@ export const TokenIcon = defineComponent({
         const image = new Image();
         image.src = svgSrc;
         image.onload = () => {
+          // if asset has changed since image started loading, exit
+          if (props.asset?.value?.symbol !== asset?.symbol) return;
           imagesLoadedCache[svgSrc] = svgSrc;
           url.value = svgSrc;
           hasLoaded.value = true;
         };
         image.onerror = () => {
+          // if asset has changed since image started loading, exit
+          if (props.asset?.value?.symbol !== asset?.symbol) return;
           const coinGeckoUrl = core.config.assets
             .find((a) => a.symbol == asset?.symbol)
             ?.imageUrl?.replace("thumb", "large");

@@ -61,11 +61,6 @@ export const useSwapPageData = () => {
       currentSwapInput.toSymbol,
     ),
   );
-
-  if (fromSymbol.value === toSymbol.value) {
-    toSymbol.value = fromSymbol.value === "rowan" ? "cband" : "rowan";
-  }
-
   const fromAmount = ref(currentSwapInput.fromAmount || "0");
   const toAmount = ref(currentSwapInput.toAmount || "0");
   const slippage = ref<string>(currentSwapInput.slippage || "1.0");
@@ -79,6 +74,10 @@ export const useSwapPageData = () => {
     },
     params: {},
   });
+
+  if (fromSymbol.value === toSymbol.value) {
+    toSymbol.value = fromSymbol.value === "rowan" ? "cband" : "rowan";
+  }
 
   watchEffect(() => {
     Object.assign(currentSwapInput, {
