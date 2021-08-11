@@ -39,10 +39,15 @@ async function getEarnedRewards(address: string, symbol: string) {
   // TD - This should return Amount, method needs work
   // Rudis recent work should refactor this call too into a testable service
   return {
-    negative: Amount(parsedData.netChangeUSDT.toString()).lessThan("0"),
-    netChange: format(Amount(Math.abs(parsedData.netChangeUSDT).toString()), {
-      mantissa: 2,
-    }),
+    negative: Amount((parsedData.netChangeUSDT || "0").toString()).lessThan(
+      "0",
+    ),
+    netChange: format(
+      Amount(Math.abs(parsedData.netChangeUSDT || "0").toString()),
+      {
+        mantissa: 2,
+      },
+    ),
   };
 }
 

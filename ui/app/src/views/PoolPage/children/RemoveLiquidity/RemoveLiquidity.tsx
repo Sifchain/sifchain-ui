@@ -114,7 +114,7 @@ export default defineComponent({
                     }}
                   />
                   <div
-                    class="absolute left-0 top-1/2 bg-accent-base rounded-lg rounded-r-none"
+                    class="absolute left-0 top-1/2 bg-accent-base rounded-lg rounded-r-none pointer-events-none"
                     style={{
                       height: amountRangeRef.value?.offsetHeight + "px",
                       transform: "translateY(-50%)",

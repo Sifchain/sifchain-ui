@@ -46,23 +46,6 @@ import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/
 import Long from "long";
 import JSBI from "jsbi";
 
-const originalBroadcast = StargateClient.prototype.broadcastTx;
-StargateClient.prototype.broadcastTx = async function (params) {
-  const originalBrdcstSync = Tendermint34Client.prototype.broadcastTxSync;
-  Tendermint34Client.prototype.broadcastTxSync = async function (
-    params: BroadcastTxParams,
-  ) {
-    const commitRes = await this.broadcastTxCommit(params);
-    return {
-      ...(commitRes.deliverTx ?? {}),
-      ...commitRes.checkTx,
-      ...commitRes,
-    };
-  };
-  const rtn = originalBroadcast.bind(this)(params);
-  Tendermint34Client.prototype.broadcastTxSync = originalBrdcstSync;
-  return rtn;
-};
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   assets: Asset[];
@@ -332,26 +315,13 @@ export class IBCService {
       counterpartyChainId: destinationChain.chainId,
     });
 
-    defaultGasLimits;
     const symbol = params.assetAmountToTransfer.asset.symbol;
-    // debugger;
-    // const brdcstTxRes = await sendingStargateClient?.sendIbcTokens(
-    //   fromAccount.address,
-    //   toAccount.address,
-    //   {
-    //     denom:
-    //       this.networkDenomLookup[sourceChain.network as Network][symbol] ||
-    //       symbol,
-    //     // denom: symbol,
-    //     amount: params.assetAmountToTransfer.toBigInt().toString(),
-    //   },
-    //   "transfer",
-    //   channelId,
-    //   undefined,
-    //   /** timeout timestamp in seconds */
-    //   Math.floor(Date.now() / 1000 + 60 * 60),
-    // );
-    const timeoutTimestamp = Math.floor(Date.now() / 1000 + 60 * 60);
+
+    // initially set low
+    const timeoutInMinutes = 5;
+    const timeoutTimestamp = Math.floor(
+      Date.now() / 1000 + 60 * timeoutInMinutes,
+    );
     const timeoutTimestampNanoseconds = timeoutTimestamp
       ? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
       : undefined;
@@ -377,6 +347,7 @@ export class IBCService {
     while (
       JSBI.greaterThanOrEqual(
         JSBI.BigInt(transferMsgs[0].value.token?.amount || "0"),
+        // Max uint64
         JSBI.BigInt(`9223372036854775807`),
       )
     ) {
@@ -396,7 +367,6 @@ export class IBCService {
         };
       });
     }
-    debugger;
     const batches = [];
     // const maxMsgsPerBatch = 2048;
     const maxMsgsPerBatch = 1024;
@@ -414,9 +384,7 @@ export class IBCService {
         console.log("transfer msg count", transferMsgs.length);
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,
-          // [transferMsg, transferMsg, transferMsg, transferMsg],
           batch,
-          // [transferMsg],
           {
             ...sendingStargateClient.fees.transfer,
             amount: [

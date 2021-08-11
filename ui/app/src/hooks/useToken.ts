@@ -1,9 +1,6 @@
 import { useCore } from "./useCore";
 import { computed, Ref } from "vue";
-import {
-  getUnpeggedSymbol,
-  isPseudoMatchingSymbol,
-} from "@/componentsLegacy/shared/utils";
+import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
   Network,
@@ -12,11 +9,15 @@ import {
   TransactionStatus,
 } from "@sifchain/sdk";
 import { getNetworkBalances } from "./useWallet";
+import { isLikeSymbol } from "@/utils/symbol";
 
 export type TokenListItem = {
   amount: IAssetAmount;
   asset: IAsset;
-  pegTxs: TransactionStatus[];
+  importTxs: {
+    network: Network;
+    tx: TransactionStatus;
+  }[];
   supported: boolean;
 };
 
@@ -90,7 +91,7 @@ export const useTokenList = (
         });
 
         // Get pegTxs for asset
-        const pegTxs = pegList
+        const ethereumImportTransactions = pegList
           ? pegList.filter(txMatchesUnpegSymbol(asset.symbol))
           : [];
 
@@ -100,7 +101,10 @@ export const useTokenList = (
         return {
           amount: !amount ? AssetAmount(asset, "0") : amount,
           asset,
-          pegTxs,
+          importTxs: ethereumImportTransactions.map((tx) => ({
+            network: Network.ETHEREUM,
+            tx,
+          })),
           supported,
         };
       })
@@ -124,7 +128,7 @@ export const useToken = (params: {
     return tokenListRef.value?.find((token) => {
       return (
         token.asset.network === params.network.value &&
-        isPseudoMatchingSymbol(token.asset.symbol, params.symbol.value)
+        isLikeSymbol(token.asset.symbol, params.symbol.value)
       );
     });
   });

@@ -281,8 +281,6 @@ export default function createEthbridgeService({
       );
       const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
 
-      console.log("IT IS HERE", params.assetAmount.asset);
-
       const lockParams = {
         ethereum_receiver: params.ethereumRecipient,
         base_req: {

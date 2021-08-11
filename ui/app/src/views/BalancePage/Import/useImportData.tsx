@@ -1,30 +1,18 @@
-import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
-import { computed, onMounted, Ref, watch } from "vue";
+import { RouteLocationRaw, useRouter } from "vue-router";
+import { computed, Ref } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
-import { TokenListItem, useTokenList } from "@/hooks/useToken";
+import { useToken, useTokenList } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network, AssetAmount, toBaseUnits, Asset } from "@sifchain/sdk";
+import { Network, AssetAmount, toBaseUnits } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
-import { ImportDraft, importStore } from "@/store/modules/import";
+import { ImportDraft } from "@/store/modules/import";
 import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 
 export type ImportStep = "select" | "confirm" | "processing";
-
-// export type ImportData = {
-//   importDraft: ToRefs<ImportDraft>;
-//   networksRef: Ref<Network[]>;
-//   tokenRef: Ref<TokenListItem | undefined>;
-//   pickableTokensRef: Ref<TokenListItem[]>;
-//   computedImportAssetAmount: Ref<IAssetAmount | null>;
-//   pegEventRef: Ref<PegEvent | undefined>;
-//   runImport: () => void;
-//   exitImport: () => void;
-//   detailsRef: Ref<FormDetailsType>;
-// };
 
 export function getImportLocation(
   step: ImportStep,
@@ -38,7 +26,7 @@ export function getImportLocation(
         ? "ConfirmImport"
         : "ProcessingImport",
     params: {
-      displaySymbol: params.displaySymbol || "",
+      displaySymbol: params.symbol || "",
     },
     query: {
       network: params.network || "",
@@ -48,7 +36,6 @@ export function getImportLocation(
 }
 
 export const useImportData = () => {
-  const route = useRoute();
   const router = useRouter();
   const importStore = rootStore.import;
   const importDraft = importStore.refs.draft.computed();
@@ -56,8 +43,8 @@ export const useImportData = () => {
   useBoundRoute({
     params: {
       displaySymbol: computed({
-        get: () => importStore.state.draft.displaySymbol,
-        set: (v) => importStore.setDraft({ displaySymbol: v }),
+        get: () => importStore.state.draft.symbol,
+        set: (v) => importStore.setDraft({ symbol: v }),
       }),
     },
     query: {
@@ -84,24 +71,9 @@ export const useImportData = () => {
     networks: networksRef,
   });
 
-  const tokenRef = computed<TokenListItem | undefined>(() => {
-    const list = tokenListRef.value;
-    const draft = importDraft.value;
-    if (!list?.length) return undefined; // Wait for token list to load
-
-    if (!draft.displaySymbol) {
-      return tokenListRef.value[0];
-    }
-
-    const token =
-      list.find((t) => {
-        return (
-          draft.displaySymbol.toLowerCase() ===
-            t.asset.displaySymbol.toLowerCase() &&
-          t.asset.network === importDraft.value.network
-        );
-      }) || tokenListRef.value[0];
-    return token;
+  const tokenRef = useToken({
+    network: computed(() => importDraft.value.network),
+    symbol: computed(() => importDraft.value.symbol),
   });
 
   const computedImportAssetAmount = computed(() => {
@@ -120,7 +92,7 @@ export const useImportData = () => {
 
   const nativeTokenBalance = computed(() =>
     nativeBalances.value.find(
-      (t) => t.displaySymbol === importDraft.value.displaySymbol,
+      (t) => t.displaySymbol === importDraft.value.symbol,
     ),
   );
 
@@ -139,7 +111,7 @@ export const useImportData = () => {
   const sifchainBalance = rootStore.accounts.computed((s) =>
     s.state.sifchain.balances.find(
       (b) =>
-        b.displaySymbol === rootStore.import.state.draft.displaySymbol &&
+        b.displaySymbol === rootStore.import.state.draft.symbol &&
         b.network === Network.SIFCHAIN,
     ),
   );
@@ -182,7 +154,7 @@ export const useImportData = () => {
       "Import Amount",
       <span class="flex items-center font-mono">
         {importDraft.value.amount}{" "}
-        {importDraft.value.displaySymbol?.toUpperCase()}
+        {tokenRef.value?.asset.displaySymbol.toUpperCase()}
         <TokenIcon
           size={18}
           assetValue={tokenRef.value?.asset}

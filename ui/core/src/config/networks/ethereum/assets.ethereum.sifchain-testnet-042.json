@@ -635,7 +635,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "0x424DA170444d91053E249fAa5Da7501563f436f8",
+      "address": "0x79065740cf6e3b0c3a903a45ec9fc1c3a088de3f",
       "decimals": 18,
       "imageUrl": "https://s2.coinmarketcap.com/static/img/coins/200x200/3794.png",
       "name": "Photon",
@@ -643,6 +643,7 @@
       "homeNetwork": "cosmoshub",
       "priceUsd": 0,
       "symbol": "EUPHOTON",
+      "displaySymbol": "UPHOTON",
       "transferLimit": "99999999999999999999999"
     }
   ]

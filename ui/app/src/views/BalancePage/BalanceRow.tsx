@@ -70,7 +70,7 @@ export default defineComponent({
         props: {
           replace: false,
           to: getImportLocation("select", {
-            displaySymbol: props.tokenItem.asset.displaySymbol,
+            symbol: props.tokenItem.asset.displaySymbol,
             network: props.tokenItem.asset.homeNetwork,
           }),
         },
@@ -154,13 +154,13 @@ export default defineComponent({
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80">
               {isNoBalanceRef.value
-                ? props.tokenItem.pegTxs.length
+                ? props.tokenItem.importTxs.length
                   ? "..."
                   : null
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
 
-            {props.tokenItem.pegTxs.length > 0 && (
+            {props.tokenItem.importTxs.length > 0 && (
               <Tooltip
                 arrow
                 interactive
@@ -170,23 +170,28 @@ export default defineComponent({
                 }
                 offset={[112, 20]}
                 content={
-                  <div class="text-left w-[200px]">
+                  <div class="text-left w-[250px]">
                     <p class="mb-1">
-                      You have the following pending transactions:
+                      You have the following pending import transactions. The
+                      imported tokens will usually be available for use on
+                      Sifchain within 20 minutes, sometimes upwards of 60
+                      minutes.
                     </p>
                     <ul class="list-disc list-inside">
-                      {props.tokenItem.pegTxs.map((tx) => (
+                      {props.tokenItem.importTxs.map(({ tx, network }) => (
                         <li>
                           <a
                             class="font-normal text-accent-base hover:text-underline"
                             href={getBlockExplorerUrl(
                               config.sifChainId,
                               tx.hash,
+                              network,
                             )}
                             title={tx.hash}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
+                            <span class="capitalize">{network}</span> Import{" "}
                             {shortenHash(tx.hash)}
                           </a>
                         </li>
