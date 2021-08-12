@@ -368,8 +368,8 @@ export class IBCService {
       });
     }
     const batches = [];
-    // const maxMsgsPerBatch = 2048;
-    const maxMsgsPerBatch = 1024;
+    const maxMsgsPerBatch = 1000;
+    // const maxMsgsPerBatch = 1024;
     while (transferMsgs.length) {
       batches.push(transferMsgs.splice(0, maxMsgsPerBatch));
     }
@@ -380,7 +380,7 @@ export class IBCService {
         // const gasPerMessage = 39437;
         // const gasPerMessage = 39437;
         const gasPerMessage = 30437;
-        console.log({ batch });
+        console.log(JSON.stringify(batch));
         console.log("transfer msg count", transferMsgs.length);
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,

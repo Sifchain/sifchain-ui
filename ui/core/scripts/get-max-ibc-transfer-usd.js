@@ -17,6 +17,7 @@ fetch(`https://data.sifchain.finance/beta/asset/tokenStats`)
         const maxTransferAmount = maxTransferAmountPerTx * maxMsgsPerTx;
         return {
           symbol: pool.symbol,
+          priceUSD: pool.priceToken,
           maxTransferAmountPerTx: maxTransferAmountPerTx,
           maxUITransferAmount: maxTransferAmount.toPrecision(50),
           maxUITransferUSD:

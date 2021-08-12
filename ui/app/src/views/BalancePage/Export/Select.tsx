@@ -33,8 +33,8 @@ export default defineComponent({
       computedExportAssetAmount,
       feeAmountRef,
     } = exportData;
-    const exportParams = exportStore.state.draft;
-    const networkRef = computed(() => exportParams.network);
+    const exportParams = exportStore.refs.draft.computed();
+    const networkRef = computed(() => exportParams.value.network);
 
     const handleSetMax = () => {
       if (!exportTokenRef.value) return;
@@ -99,7 +99,7 @@ export default defineComponent({
         },
         {
           condition:
-            exportParams.network === Network.ETHEREUM &&
+            exportParams.value.network === Network.ETHEREUM &&
             !store.wallet.eth.isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
@@ -114,7 +114,12 @@ export default defineComponent({
           props: {
             disabled: !!validationErrorRef.value,
             onClick: () => {
-              router.replace(getExportLocation("confirm", exportParams));
+              const exportLocation = getExportLocation(
+                "confirm",
+                exportParams.value,
+              );
+              debugger;
+              router.push(exportLocation);
             },
           },
         },
@@ -178,7 +183,7 @@ export default defineComponent({
                 });
               }
             }}
-            value={exportParams.amount}
+            value={exportParams.value.amount}
           />
 
           <div class="block mt-[10px]">
@@ -204,7 +209,7 @@ export default defineComponent({
                 class="w-full relative capitalize pl-[16px] mt-[10px]"
                 active={networkOpenRef.value}
               >
-                {exportParams.network}
+                {exportParams.value.network}
               </Button.Select>
             </SelectDropdown>
           </div>
@@ -216,13 +221,13 @@ export default defineComponent({
 
         <section class="bg-gray-base p-4 rounded mt-[10px]">
           <div class="text-white capitalize">
-            {exportParams.network} Recipient Address
+            {exportParams.value.network} Recipient Address
           </div>
           <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
             <input
               readonly
               value={
-                exportParams.network === Network.ETHEREUM
+                exportParams.value.network === Network.ETHEREUM
                   ? store.wallet.eth.address
                   : rootStore.accounts.state.cosmoshub.address
               }

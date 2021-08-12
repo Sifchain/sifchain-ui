@@ -28,7 +28,7 @@ export function getExportLocation(
   step: ExportStep,
   params: ExportParams,
 ): RouteLocationRaw {
-  return {
+  const route: RouteLocationRaw = {
     name:
       step === "confirm"
         ? "ConfirmExport"
@@ -37,10 +37,11 @@ export function getExportLocation(
         : "Export",
     params: { symbol: params.symbol },
     query: {
-      network: params.network || Network.ETHEREUM,
-      amount: params.amount || "0",
+      network: params.network ?? Network.ETHEREUM,
+      amount: params.amount ?? "0",
     },
-  } as RouteLocationRaw;
+  };
+  return route;
 }
 
 export const useExportData = () => {
