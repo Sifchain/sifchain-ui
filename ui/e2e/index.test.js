@@ -171,6 +171,7 @@ describe("Liquidity pools", () => {
   it("adds liquidity", async () => {
     const tokenA = "ceth";
     const tokenB = "rowan";
+
     await poolPage.navigate();
 
     await poolPage.clickAddLiquidity();

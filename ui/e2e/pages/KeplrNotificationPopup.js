@@ -5,6 +5,9 @@ import urls from "../data/urls.json";
 export class KeplrNotificationPopup {
   constructor(config = KEPLR_CONFIG) {
     this.config = config;
+    this.el = {
+      approveButton: 'button:has-text("Approve")',
+    };
   }
 
   async navigate(url = urls.keplr.notificationPopup.generic) {
@@ -13,7 +16,23 @@ export class KeplrNotificationPopup {
   }
 
   async clickApprove() {
-    await this.page.click('button:has-text("Approve")');
+    await this.page.click(this.el.approveButton);
+  }
+
+  async isApproveEnabled() {
+    const enabled = await this.page.isEnabled(this.el.approveButton, {
+      timeout: 1000,
+    });
+
+    return enabled;
+  }
+
+  async close() {
+    await this.page.close();
+  }
+
+  async reload() {
+    await this.page.reload();
   }
 }
 

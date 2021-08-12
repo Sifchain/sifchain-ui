@@ -6,6 +6,7 @@ import { metamaskPage } from "./pages/MetaMaskPage";
 import { keplrPage } from "./pages/KeplrPage";
 import { balancesPage } from "./pages/BalancesPage";
 import urls from "./data/urls.json";
+import { waitUntil } from "./utils";
 
 export async function setupExtensions() {
   await metamaskPage.navigate();
@@ -41,6 +42,7 @@ export async function connectKeplrAccount() {
   // it's not necessary to invoke connectPopup.clickConnectKeplr()
   // since connect popup is automatically invoked after the setup has completed
   await keplrNotificationPopup.navigate(urls.keplr.notificationPopup.connect);
+  await waitUntil(() => prepareKeplrApproveNotification(), 30000, 3000); // uncomment me
   await keplrNotificationPopup.clickApprove();
   // new page opens
   await context.waitForEvent("page");
@@ -69,4 +71,18 @@ export async function connectMetaMaskAccount() {
   await metamaskConnectPage.clickNext();
   await metamaskConnectPage.clickConnect();
   await connectPopup.close();
+}
+
+export async function prepareKeplrApproveNotification() {
+  const enabled = await keplrNotificationPopup.isApproveEnabled();
+  if (enabled) return true;
+  else {
+    await keplrNotificationPopup.close();
+    await dexHeader.clickConnected();
+    await connectPopup.clickConnectKeplr();
+    await context.waitForEvent("page");
+    await page.waitForTimeout(1000); // for stability. Previous line is not reliable enough
+    await keplrNotificationPopup.navigate(urls.keplr.notificationPopup.connect);
+    return false;
+  }
 }
