@@ -42,10 +42,12 @@ export default defineComponent({
 }
 
 .layout-bg {
-  background: url("../../assets/World_Background_opt.jpg");
+  transition: background-image;
+  background-image: url("../../assets/background.webp");
   background-size: cover;
   background-position: top center;
   background-attachment: fixed;
+  background-repeat: no-repeat;
   // filter: blur(10px);
 
   z-index: -1;
