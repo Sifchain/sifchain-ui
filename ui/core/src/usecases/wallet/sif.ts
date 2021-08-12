@@ -60,7 +60,6 @@ export default ({
       try {
         // TODO type
         await services.sif.connect();
-        await services.sif.getBalance();
 
         store.wallet.sif.isConnected = true;
       } catch (error) {

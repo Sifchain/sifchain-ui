@@ -199,9 +199,8 @@ export default function createSifService({
       // open extension
       if (keplrProvider.experimentalSuggestChain) {
         try {
-          // await keplrProvider.experimentalSuggestChain(keplrChainConfig);
-          // await keplrProvider.enable(keplrChainConfig.chainId);
-          await this.getBalance();
+          await keplrProvider.experimentalSuggestChain(keplrChainConfig);
+          await keplrProvider.enable(keplrChainConfig.chainId);
           triggerUpdate();
         } catch (error) {
           console.log(error);
