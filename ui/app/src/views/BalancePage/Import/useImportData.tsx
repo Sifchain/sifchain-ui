@@ -1,5 +1,5 @@
 import { RouteLocationRaw, useRouter } from "vue-router";
-import { computed, Ref } from "vue";
+import { computed, ref, Ref } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useToken, useTokenList } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -11,6 +11,7 @@ import { ImportDraft } from "@/store/modules/import";
 import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { isLikeSymbol } from "@sifchain/sdk/src/utils/isLikeSymbol";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -89,13 +90,10 @@ export const useImportData = () => {
     );
   });
 
-  const nativeBalances = accountStore.refs.sifchain.balances.computed();
-
-  const nativeTokenBalance = computed(() =>
-    nativeBalances.value.find(
-      (t) => t.displaySymbol === importDraft.value.symbol,
-    ),
-  );
+  const nativeToken = useToken({
+    network: ref(Network.SIFCHAIN),
+    symbol: computed(() => importDraft.value.symbol),
+  });
 
   const pickableTokensRef = computed(() => {
     return tokenListRef.value.filter((token) => {
@@ -109,13 +107,8 @@ export const useImportData = () => {
     pegEvent: pegEventRef as Ref<PegEvent>,
   });
 
-  const sifchainBalance = rootStore.accounts.computed((s) =>
-    s.state.sifchain.balances.find(
-      (b) =>
-        b.displaySymbol === rootStore.import.state.draft.symbol &&
-        b.network === Network.SIFCHAIN,
-    ),
-  );
+  const sifchainBalance = computed(() => nativeToken.value?.amount);
+
   const detailsRef = computed<[any, any][]>(() => [
     [
       "Current Sifchain Balance",
@@ -123,13 +116,10 @@ export const useImportData = () => {
         {sifchainBalance.value ? (
           <>
             {formatAssetAmount(sifchainBalance.value)}{" "}
-            {(
-              nativeTokenBalance.value?.asset.displaySymbol ||
-              sifchainBalance.value.asset.symbol
-            ).toUpperCase()}
+            {sifchainBalance.value?.asset.displaySymbol.toUpperCase()}
             <TokenIcon
               size={18}
-              assetValue={nativeTokenBalance.value?.asset}
+              assetValue={sifchainBalance.value?.asset}
               class="ml-[4px]"
             />
           </>
@@ -169,22 +159,20 @@ export const useImportData = () => {
         <Button.InlineHelp>Estimated amount</Button.InlineHelp>
       </>,
       <span class="flex items-center font-mono">
-        {nativeTokenBalance.value && computedImportAssetAmount.value ? (
+        {sifchainBalance.value && computedImportAssetAmount.value ? (
           <>
             {formatAssetAmount(
               AssetAmount(
-                nativeTokenBalance.value.asset,
-                nativeTokenBalance.value.add(
+                sifchainBalance.value.asset,
+                sifchainBalance.value.add(
                   computedImportAssetAmount.value.amount,
                 ),
               ),
             )}{" "}
-            {(
-              nativeTokenBalance.value?.asset.displaySymbol || ""
-            ).toUpperCase()}{" "}
+            {(sifchainBalance.value?.asset.displaySymbol || "").toUpperCase()}{" "}
             <TokenIcon
               size={18}
-              assetValue={nativeTokenBalance.value.asset}
+              assetValue={sifchainBalance.value.asset}
               class="ml-[4px]"
             />
           </>

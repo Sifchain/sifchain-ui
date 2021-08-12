@@ -149,8 +149,14 @@ export default defineComponent({
                   class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none  text-right"
                   value={((+data.wBasisPoints.value / 10000) * 100).toFixed(0)}
                   onInput={(e) => {
+                    const input = e.target as HTMLInputElement;
+                    let value = +input.value;
+                    if (value > 100) {
+                      value = 100;
+                      input.value = "100";
+                    }
                     data.wBasisPoints.value = (
-                      (+(e.target as HTMLInputElement).value / 100) *
+                      (value / 100) *
                       10000
                     ).toString();
                   }}

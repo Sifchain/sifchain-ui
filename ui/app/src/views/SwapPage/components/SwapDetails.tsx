@@ -59,14 +59,10 @@ export const SwapDetails = defineComponent({
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
             Price Impact
-            <Button.InlineHelp size={20}>
+            <Button.InlineHelp size={20} key={props.asset?.value.displaySymbol}>
               This is the percentage impact to the amount of{" "}
-              {(
-                props.asset?.value.displaySymbol ||
-                props.asset?.value.symbol ||
-                ""
-              ).toUpperCase()}{" "}
-              in the liquidity pool based upon how much you are swapping for.
+              {props.asset?.value.displaySymbol.toUpperCase()} in the liquidity
+              pool based upon how much you are swapping for.
             </Button.InlineHelp>
           </div>
           <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium capitalize">

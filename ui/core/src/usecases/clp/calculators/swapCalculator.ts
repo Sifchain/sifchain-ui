@@ -98,9 +98,19 @@ export function useSwapCalculator(input: {
     // to get ratio needs to be divided by amount as input by user
     const amountAsInput = format(amount.amount, amount.asset);
 
-    return `${format(swapResult.divide(amountAsInput), swapResult.asset, {
-      mantissa: 6,
-    })} ${
+    let formatted;
+    try {
+      formatted = format(swapResult.divide(amountAsInput), swapResult.asset, {
+        mantissa: 6,
+      });
+    } catch (error) {
+      if (/division by zero/i.test(error.message)) {
+        formatted = "0.0";
+      }
+      throw error;
+    }
+
+    return `${formatted} ${
       swapResult.asset.displaySymbol?.toUpperCase() || swapResult.label
     } per ${amount.asset.displaySymbol?.toUpperCase() || amount.label}`;
   });

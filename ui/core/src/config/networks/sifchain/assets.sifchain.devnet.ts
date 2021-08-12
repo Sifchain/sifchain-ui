@@ -9,7 +9,7 @@ const sifchainDevnetAssets: { assets: IAsset[] } = {
       network: Network.SIFCHAIN,
       label: "Photon",
       imageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/200x200/3794.png",
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       displaySymbol: "photon",
       homeNetwork: Network.COSMOSHUB,
     },
