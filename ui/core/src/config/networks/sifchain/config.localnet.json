@@ -44,5 +44,25 @@
       "average": 0.65,
       "high": 0.8
     }
-  }
+  },
+  "chains": [
+    {
+      "id": "sifchain",
+      "displayName": "Sifchain",
+      "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
+      "nativeAssetSymbol": "rowan"
+    },
+    {
+      "id": "ethereum",
+      "displayName": "Ethereum",
+      "blockExplorerUrl": "https://ropsten.etherscan.io",
+      "nativeAssetSymbol": "eth"
+    },
+    {
+      "id": "cosmoshub",
+      "displayName": "Cosmoshub",
+      "blockExplorerUrl": "https://mintscan.io/cosmos",
+      "nativeAssetSymbol": "uphoton"
+    }
+  ]
 }

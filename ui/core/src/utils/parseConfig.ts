@@ -1,6 +1,7 @@
 import { ServiceContext } from "../services";
 import { Asset, Network } from "../entities";
 import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
+import { JsonChainConfig } from "../entities/Chain";
 
 type TokenConfig = {
   symbol: string;
@@ -87,7 +88,7 @@ export type KeplrChainConfig = {
     high: number;
   };
 };
-export type ChainConfig = {
+export type CoreConfig = {
   sifAddrPrefix: string;
   sifApiUrl: string;
   sifWsUrl: string;
@@ -100,6 +101,7 @@ export type ChainConfig = {
   nativeAsset: string; // symbol
   bridgebankContractAddress: string;
   keplrChainConfig: KeplrChainConfig;
+  chains: JsonChainConfig[];
 };
 
 export function parseAssets(configAssets: AssetConfig[]): Asset[] {
@@ -107,7 +109,7 @@ export function parseAssets(configAssets: AssetConfig[]): Asset[] {
 }
 
 export function parseConfig(
-  config: ChainConfig,
+  config: CoreConfig,
   assets: Asset[],
 ): ServiceContext {
   const nativeAsset = assets.find((a) => a.symbol === config.nativeAsset);
@@ -154,5 +156,6 @@ export function parseConfig(
       chainId: config.sifChainId,
       currencies: sifAssets,
     },
+    chains: config.chains,
   };
 }

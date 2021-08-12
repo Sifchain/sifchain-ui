@@ -32,6 +32,7 @@ export default defineComponent({
       tokenRef,
       computedImportAssetAmount,
       networksRef,
+      chainsRef,
       importDraft,
       exitImport,
     } = useImportData();

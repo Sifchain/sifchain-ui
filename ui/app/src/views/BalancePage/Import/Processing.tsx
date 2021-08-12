@@ -17,7 +17,6 @@ export default defineComponent({
       pegEventDetails,
     } = useImportData();
     const router = useRouter();
-    let network = importStore.refs.networks[0].computed();
 
     watchEffect(() => {
       if (!pegEventRef.value) {

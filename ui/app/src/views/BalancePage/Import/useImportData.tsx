@@ -63,9 +63,10 @@ export const useImportData = () => {
     router.replace({ name: "Balances" });
   };
 
-  const networksRef = importStore.refs.networks.computed();
-  // const networksRef1 = importStore.computed((store) => store.getters.networks);
-  // const networksRef2 = importStore.refs.networks.computed()
+  const chainsRef = importStore.refs.chains.computed();
+  const networksRef = computed(() => chainsRef.value.map((c) => c.network));
+  // const chainsRef1 = importStore.computed((store) => store.getters.networks);
+  // const chainsRef2 = importStore.refs.networks.computed()
 
   const tokenListRef = useTokenList({
     networks: networksRef,
@@ -197,6 +198,7 @@ export const useImportData = () => {
 
   return {
     importDraft,
+    chainsRef,
     networksRef,
     pickableTokensRef,
     tokenRef,
