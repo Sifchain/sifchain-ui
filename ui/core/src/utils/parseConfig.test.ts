@@ -47,6 +47,7 @@ const config: CoreConfig = {
       high: 0.8,
     },
   },
+  chains: [],
 };
 
 const expected = {

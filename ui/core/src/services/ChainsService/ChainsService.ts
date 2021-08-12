@@ -18,7 +18,7 @@ export type ChainsServiceContext = {
   chains: JsonChainConfig[];
 };
 
-class ChainsService {
+export class ChainsService {
   private _list: Chain[] = [];
   private _map: Map<ChainId, AnyChain> = new Map();
 
