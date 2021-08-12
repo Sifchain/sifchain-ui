@@ -201,6 +201,7 @@ export default function createSifService({
         try {
           await keplrProvider.experimentalSuggestChain(keplrChainConfig);
           await keplrProvider.enable(keplrChainConfig.chainId);
+          await this.getBalance();
           triggerUpdate();
         } catch (error) {
           console.log(error);
