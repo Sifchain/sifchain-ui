@@ -7,7 +7,7 @@
       "imageUrl": "./images/siflogo.png",
       "network": "sifchain",
       "displaySymbol": "rowan",
-      "homeNetwork": "ethereum"
+      "homeNetwork": "sifchain"
     },
     {
       "decimals": 6,

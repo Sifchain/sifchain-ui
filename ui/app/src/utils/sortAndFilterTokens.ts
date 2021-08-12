@@ -1,5 +1,6 @@
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { TokenListItem } from "@/hooks/useToken";
+import { Network } from "@sifchain/sdk";
 
 export type TokenSortBy = "balance" | "symbol";
 
@@ -8,17 +9,18 @@ export function sortAndFilterTokens(props: {
   searchQuery?: string;
   sortBy?: TokenSortBy;
   reverse?: boolean;
+  network?: Network;
 }) {
+  props.network = props.network || Network.SIFCHAIN;
   props.sortBy = props.sortBy || "symbol";
   props.searchQuery = props.searchQuery || "";
 
   const promotedTokensByRank = [
-    "rowan",
-    "erowan",
-    "photon",
-    "uphoton",
-    "euphoton",
+    props.network === Network.SIFCHAIN && "rowan",
+    props.network === Network.ETHEREUM && "eth",
+    props.network === Network.COSMOSHUB && "uphoton",
   ].reduce((prev, curr, currIndex) => {
+    if (!curr) return prev;
     prev[curr] = currIndex;
     return prev;
   }, {} as { [key: string]: number });

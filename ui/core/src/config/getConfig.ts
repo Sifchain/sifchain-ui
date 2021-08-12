@@ -15,12 +15,11 @@ import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.j
 import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet.json";
 import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet.json";
 import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet";
-import assetsCosmoshubTestnet from "./networks/cosmoshub/assets.cosmoshub.testnet";
 
 import {
   parseConfig,
   parseAssets,
-  ChainConfig,
+  CoreConfig,
   AssetConfig,
 } from "../utils/parseConfig";
 import { Asset, Network } from "../entities";
@@ -88,12 +87,12 @@ export function getConfig(
   ].map(cacheAsset);
 
   const configMap: ConfigMap = {
-    localnet: parseConfig(localnetconfig as ChainConfig, allAssets),
-    devnet: parseConfig(devnetconfig as ChainConfig, allAssets),
-    devnet_042: parseConfig(devnet042config as ChainConfig, allAssets),
-    testnet: parseConfig(testnetconfig as ChainConfig, allAssets),
-    mainnet: parseConfig(mainnnetconfig as ChainConfig, allAssets),
-    testnet_042_ibc: parseConfig(testnet042ibcconfig, allAssets),
+    localnet: parseConfig(localnetconfig as CoreConfig, allAssets),
+    devnet: parseConfig(devnetconfig as CoreConfig, allAssets),
+    devnet_042: parseConfig(devnet042config as CoreConfig, allAssets),
+    testnet: parseConfig(testnetconfig as CoreConfig, allAssets),
+    mainnet: parseConfig(mainnnetconfig as CoreConfig, allAssets),
+    testnet_042_ibc: parseConfig(testnet042ibcconfig as CoreConfig, allAssets),
   };
 
   return configMap[applicationNetworkEnv];

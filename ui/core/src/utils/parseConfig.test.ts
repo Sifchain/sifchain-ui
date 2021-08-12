@@ -1,6 +1,6 @@
 import { Network } from "../entities";
-import { ChainConfig, parseConfig } from "./parseConfig";
-const config: ChainConfig = {
+import { CoreConfig, parseConfig } from "./parseConfig";
+const config: CoreConfig = {
   sifAddrPrefix: "sif",
   sifChainId: "sifchain",
   sifApiUrl: "http://127.0.0.1:1317",
@@ -47,6 +47,7 @@ const config: ChainConfig = {
       high: 0.8,
     },
   },
+  chains: [],
 };
 
 const expected = {

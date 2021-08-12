@@ -71,7 +71,10 @@ export default defineComponent({
           replace: false,
           to: getImportLocation("select", {
             symbol: props.tokenItem.asset.symbol,
-            network: props.tokenItem.asset.homeNetwork,
+            network:
+              props.tokenItem.asset.homeNetwork === Network.SIFCHAIN
+                ? Network.ETHEREUM
+                : props.tokenItem.asset.homeNetwork,
           }),
         },
       },

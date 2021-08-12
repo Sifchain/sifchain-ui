@@ -50,5 +50,25 @@
       "average": 6500000000000,
       "high": 8000000000000
     }
-  }
+  },
+  "chains": [
+    {
+      "id": "sifchain",
+      "displayName": "Sifchain",
+      "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
+      "nativeAssetSymbol": "rowan"
+    },
+    {
+      "id": "ethereum",
+      "displayName": "Ethereum",
+      "blockExplorerUrl": "https://ropsten.etherscan.io",
+      "nativeAssetSymbol": "eth"
+    },
+    {
+      "id": "cosmoshub",
+      "displayName": "Cosmoshub",
+      "blockExplorerUrl": "https://mintscan.io/cosmos",
+      "nativeAssetSymbol": "uphoton"
+    }
+  ]
 }

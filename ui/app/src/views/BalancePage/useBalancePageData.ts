@@ -34,6 +34,7 @@ export const useBalancePageData = (initialState: BalancePageState) => {
       searchQuery: state.searchQuery,
       sortBy: state.sortBy,
       reverse: state.reverse,
+      network: Network.SIFCHAIN,
     });
   });
 

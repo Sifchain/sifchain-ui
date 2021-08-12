@@ -1,3 +1,4 @@
+import { useChainsList, useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
@@ -27,10 +28,8 @@ export const importStore = Vuextra.createStore({
     },
   } as State,
   getters: (state) => ({
-    networks() {
-      return Object.values(Network).filter(
-        (network) => network !== Network.SIFCHAIN,
-      );
+    chains() {
+      return useChainsList().filter((c) => c !== useChains().sifchain);
     },
   }),
   mutations: (state) => ({
@@ -47,6 +46,19 @@ export const importStore = Vuextra.createStore({
     async runImport(payload: { assetAmount: IAssetAmount }) {
       if (!payload.assetAmount) throw new Error("Please provide an amount");
       self.setPegEvent(undefined);
+
+      if (payload.assetAmount.asset.network === Network.ETHEREUM) {
+        const draft = await useCore()
+          .usecases.interchain(useChains().ethereum, useChains().sifchain)
+          .prepareTransfer(payload.assetAmount);
+
+        for await (const event of draft.execute()) {
+          self.setPegEvent(event as PegEvent);
+          console.log({ event });
+        }
+        return;
+      }
+
       for await (const event of useCore().usecases.peg.peg(
         payload.assetAmount,
         ctx.state.draft.network,

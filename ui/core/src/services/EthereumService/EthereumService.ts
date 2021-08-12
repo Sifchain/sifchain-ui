@@ -2,6 +2,7 @@ import { reactive } from "@vue/reactivity";
 import Web3 from "web3";
 import { provider, WebsocketProvider } from "web3-core";
 import { IWalletService } from "../IWalletService";
+import detectEthereumProvider from "@metamask/detect-provider";
 import { debounce } from "lodash";
 import {
   TxHash,
@@ -10,6 +11,7 @@ import {
   AssetAmount,
   Network,
   IAssetAmount,
+  IAsset,
 } from "../../entities";
 import {
   EIPProvider,

@@ -8,9 +8,16 @@ import {
   WebsocketProvider,
 } from "web3-core";
 
-import { Address, Asset, AssetAmount, Network } from "../../../entities";
+import {
+  Address,
+  Asset,
+  AssetAmount,
+  Network,
+  IAsset,
+} from "../../../entities";
 
 import erc20TokenAbi from "./erc20TokenAbi";
+import detectEthereumProvider from "@metamask/detect-provider";
 
 export function getTokenContract(web3: Web3, asset: Asset) {
   return new web3.eth.Contract(erc20TokenAbi, asset.address);
@@ -147,4 +154,25 @@ export async function getEtheriumBalance(web3: Web3, address: Address) {
     },
     ethBalance,
   );
+}
+
+export async function suggestEthereumAsset(asset: IAsset) {
+  const ethereum = await detectEthereumProvider();
+  if (!ethereum) return false;
+  const wasAdded = await ethereum.request({
+    method: "wallet_watchAsset",
+    params: {
+      // @ts-ignore
+      type: "ERC20",
+      options: {
+        address: asset.address,
+        // NOTE(ajoslin): 🤕 This case has to be in here because we call eth uphoton euphoton
+        // for now, as long as our Asset system doesn't support same-symbol different-assets.
+        symbol: asset.symbol === "euphoton" ? "uphoton" : asset.symbol,
+        decimals: asset.decimals,
+        image: asset.imageUrl,
+      },
+    },
+  });
+  return !!wasAdded;
 }
