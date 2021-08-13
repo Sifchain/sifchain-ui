@@ -59,7 +59,7 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
         description: "Approve this transaction in your wallet",
       };
     }
-    case "approved":
+    // case 'approved': {} What do with this???
     case "signing": {
       return {
         heading: "Waiting for Confirmation",

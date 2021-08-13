@@ -61,17 +61,6 @@ export class ChainsService {
     return this._list;
   }
 
-  getByNetwork(network: Network) {
-    switch (network) {
-      case Network.COSMOSHUB:
-        return this.cosmoshub;
-      case Network.SIFCHAIN:
-        return this.sifchain;
-      case Network.ETHEREUM:
-        return this.ethereum;
-    }
-  }
-
   get sifchain() {
     return this._map.get(ChainId.sifchain) as SifchainChain;
   }
