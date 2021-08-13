@@ -53,40 +53,31 @@ export const importStore = Vuextra.createStore({
       if (!payload.assetAmount) throw new Error("Please provide an amount");
       self.setPegEvent(undefined);
 
-      if (payload.assetAmount.asset.network === Network.ETHEREUM) {
-        const interchain = useCore().usecases.interchain(
-          useChains().ethereum,
-          useChains().sifchain,
-        );
-        const executableTx = await interchain.prepareTransfer(
-          payload.assetAmount,
-          accountStore.state.ethereum.address,
-          accountStore.state.sifchain.address,
-        );
+      const interchain = useCore().usecases.interchain(
+        useChains().getByNetwork(payload.assetAmount.network),
+        useChains().sifchain,
+      );
+      const executableTx = await interchain.prepareTransfer(
+        payload.assetAmount,
+        accountStore.state.ethereum.address,
+        accountStore.state.sifchain.address,
+      );
 
-        const promise = executableTx.execute();
-        for await (const ev of executableTx.generator()) {
-          self.setPegEvent({ type: ev } as PegEvent);
-        }
+      const promise = executableTx.execute();
+      for await (const ev of executableTx.generator()) {
+        console.log("setPegEvent", ev);
+        self.setPegEvent(ev);
+      }
 
-        const chainTransferTx = await promise;
+      const chainTransferTx = await promise;
+      if (chainTransferTx) {
         self.setPegEvent({
-          type: chainTransferTx.success ? "sent" : "tx_error",
+          type: "sent",
           tx: {
             state: "requested",
             hash: chainTransferTx.hash,
-            memo: chainTransferTx.memo,
           },
         });
-
-        return;
-      }
-
-      for await (const event of useCore().usecases.peg.peg(
-        payload.assetAmount,
-        ctx.state.draft.network,
-      )) {
-        self.setPegEvent(event);
       }
     },
   }),

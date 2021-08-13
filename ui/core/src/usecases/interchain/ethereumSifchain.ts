@@ -4,7 +4,6 @@ import {
   InterchainApi,
   ExecutableTransaction,
   ChainTransferTransaction,
-  InflightTransaction,
 } from "./_InterchainApi";
 import { SubscribeToTx } from "../peg/utils/subscribeToTx";
 import { SifchainChain, EthereumChain } from "../../services/ChainsService";
@@ -39,95 +38,114 @@ class EthereumSifchainInterchainApi
     fromAddress: string,
     toAddress: string,
   ) {
-    const execute = async (executableTx: ExecutableTransaction) => {
-      console.log("execute", executableTx);
-      // Get approval
-      if (assetAmount.asset.symbol !== "eth") {
-        executableTx.emit("approve_started");
-        try {
-          await this.context.services.ethbridge.approveBridgeBankSpend(
-            fromAddress,
-            assetAmount,
-          );
-        } catch (error) {
-          executableTx.emit("approve_error");
+    return new ExecutableTransaction(
+      async (executableTx: ExecutableTransaction) => {
+        if (!isSupportedEVMChain(this.context.store.wallet.eth.chainId)) {
+          this.context.services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: {
+              message: "EVM Network not supported!",
+            },
+          });
+          executableTx.emit("tx_error", {
+            state: "failed",
+            hash: "",
+            memo: "EVM network not supported",
+          });
           return;
         }
-        executableTx.emit("approved");
-      }
+        // Get approval
+        if (assetAmount.asset.symbol !== "eth") {
+          executableTx.emit("approve_started");
+          try {
+            await this.context.services.ethbridge.approveBridgeBankSpend(
+              fromAddress,
+              assetAmount,
+            );
+          } catch (error) {
+            executableTx.emit("approve_error");
+            return;
+          }
+          executableTx.emit("approved");
+        }
 
-      executableTx.emit("signing");
+        executableTx.emit("signing");
 
-      const isNativeAsset = this.context.services.chains
-        .getAll()
-        .some((chain: Chain) => {
-          return (
-            chain.findAssetWithLikeSymbol(assetAmount.asset.symbol)?.symbol ===
-            chain.nativeAsset.symbol
-          );
+        const isNativeAsset = this.context.services.chains
+          .getAll()
+          .some((chain: Chain) => {
+            return (
+              chain.findAssetWithLikeSymbol(assetAmount.asset.symbol)
+                ?.symbol === chain.nativeAsset.symbol
+            );
+          });
+
+        const lockOrBurnFn = isNativeAsset
+          ? this.context.services.ethbridge.burnToSifchain
+          : this.context.services.ethbridge.lockToSifchain;
+
+        const pegTx = lockOrBurnFn(toAddress, assetAmount, ETH_CONFIRMATIONS);
+        this.subscribeToTx(pegTx);
+
+        const hash = await new Promise<string>((resolve) => {
+          pegTx.onTxHash((hash) => {
+            resolve(hash.txHash);
+          });
         });
+        executableTx.emit("sent", { state: "completed", hash });
 
-      const lockOrBurnFn = isNativeAsset
-        ? this.context.services.ethbridge.burnToSifchain
-        : this.context.services.ethbridge.lockToSifchain;
-
-      const pegTx = lockOrBurnFn(toAddress, assetAmount, ETH_CONFIRMATIONS);
-      this.subscribeToTx(pegTx);
-
-      const hash = await new Promise<string>((resolve) => {
-        pegTx.onTxHash((hash) => {
-          resolve(hash.txHash);
-        });
-      });
-      executableTx.emit("sent", { hash });
-    };
-    return new ExecutableTransaction(
-      execute,
-      this.fromChain.id,
-      this.toChain.id,
-      fromAddress,
-      toAddress,
-      assetAmount,
+        return new ChainTransferTransaction(
+          this.fromChain.id,
+          this.toChain.id,
+          fromAddress,
+          toAddress,
+          hash,
+          assetAmount,
+        );
+      },
     );
   }
 
-  async subscribeToTransfer(transferTx: ChainTransferTransaction) {
-    const status: TransactionStatus = {
-      state: "accepted",
-      hash: transferTx.hash,
-    };
-    if (
-      transferTx.fromChainId !== this.fromChain.id ||
-      transferTx.toChainId !== this.toChain.id
-    ) {
-      throw new Error("Cannot subscribe!");
-    }
+  async subscribeToTransfer(
+    transferTx: ChainTransferTransaction,
+  ): Promise<TransactionStatus> {
+    throw "not implemented";
+    // const status: TransactionStatus = {
+    //   state: "accepted",
+    //   hash: transferTx.hash,
+    // };
+    // if (
+    //   transferTx.fromChainId !== this.fromChain.id ||
+    //   transferTx.toChainId !== this.toChain.id
+    // ) {
+    //   throw new Error("Cannot subscribe!");
+    // }
 
-    const inflightTx = new InflightTransaction(status);
+    // const inflightTx = new InflightTransaction(status);
 
-    const run = async () => {
-      const pegTx = this.context.services.ethbridge.createPegTx(
-        ETH_CONFIRMATIONS,
-        transferTx.fromSymbol,
-        transferTx.hash,
-      );
-      const unsubscribe = this.subscribeToTx(pegTx);
+    // const run = async () => {
+    //   const pegTx = this.context.services.ethbridge.createPegTx(
+    //     ETH_CONFIRMATIONS,
+    //     transferTx.fromSymbol,
+    //     transferTx.hash,
+    //   );
+    //   const unsubscribe = this.subscribeToTx(pegTx);
 
-      try {
-        await new Promise((resolve, reject) => {
-          pegTx.onComplete(resolve);
-          pegTx.onError(reject);
-        });
-      } catch (error) {
-        inflightTx.update("failed", { memo: error.message });
-        return;
-      } finally {
-        unsubscribe();
-      }
-      inflightTx.update("completed");
-    };
+    //   try {
+    //     await new Promise((resolve, reject) => {
+    //       pegTx.onComplete(resolve);
+    //       pegTx.onError(reject);
+    //     });
+    //   } catch (error) {
+    //     inflightTx.update("failed", { memo: error.message });
+    //     return;
+    //   } finally {
+    //     unsubscribe();
+    //   }
+    //   inflightTx.update("completed");
+    // };
 
-    run();
-    return inflightTx;
+    // run();
+    // return inflightTx;
   }
 }
