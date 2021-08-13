@@ -1,8 +1,14 @@
 import { useChainsList, useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
+import {
+  IAsset,
+  IAssetAmount,
+  Network,
+  TransactionStatus,
+} from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
+import { accountStore } from "./accounts";
 
 export type ImportDraft = {
   amount: string;
@@ -48,14 +54,31 @@ export const importStore = Vuextra.createStore({
       self.setPegEvent(undefined);
 
       if (payload.assetAmount.asset.network === Network.ETHEREUM) {
-        const draft = await useCore()
-          .usecases.interchain(useChains().ethereum, useChains().sifchain)
-          .prepareTransfer(payload.assetAmount);
+        const interchain = useCore().usecases.interchain(
+          useChains().ethereum,
+          useChains().sifchain,
+        );
+        const executableTx = await interchain.prepareTransfer(
+          payload.assetAmount,
+          accountStore.state.ethereum.address,
+          accountStore.state.sifchain.address,
+        );
 
-        for await (const event of draft.execute()) {
-          self.setPegEvent(event as PegEvent);
-          console.log({ event });
+        const promise = executableTx.execute();
+        for await (const ev of executableTx.generator()) {
+          self.setPegEvent({ type: ev } as PegEvent);
         }
+
+        const chainTransferTx = await promise;
+        self.setPegEvent({
+          type: chainTransferTx.success ? "sent" : "tx_error",
+          tx: {
+            state: "requested",
+            hash: chainTransferTx.hash,
+            memo: chainTransferTx.memo,
+          },
+        });
+
         return;
       }
 
@@ -64,7 +87,6 @@ export const importStore = Vuextra.createStore({
         ctx.state.draft.network,
       )) {
         self.setPegEvent(event);
-        console.log({ event });
       }
     },
   }),

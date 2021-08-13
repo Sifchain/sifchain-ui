@@ -1,4 +1,4 @@
-import { IAsset } from "../";
+import { IAsset, TransactionStatus } from "../";
 import { Network } from "./Network";
 
 export type JsonChainConfig = {
