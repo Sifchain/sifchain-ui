@@ -10,8 +10,22 @@ export default defineComponent({
   name: "ImportProcessingModal",
   props: {},
   setup(props) {
-    const { exitImport, detailsRef, pegEventDetails } = useImportData();
+    const {
+      pegEventRef,
+      exitImport,
+      detailsRef,
+      pegEventDetails,
+    } = useImportData();
+    const router = useRouter();
 
+    watchEffect(() => {
+      if (!pegEventRef.value) {
+        router.push({
+          name: "Balances",
+        });
+      } else {
+      }
+    });
     return () => (
       <TransactionDetailsModal
         transactionDetails={pegEventDetails}

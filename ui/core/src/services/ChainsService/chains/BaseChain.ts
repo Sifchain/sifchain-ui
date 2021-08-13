@@ -14,15 +14,15 @@ export class BaseChain implements Chain {
       throw new Error(`Missing chainConfig for chain id ${this.id}`);
     }
 
-    this.blockExplorerUrl = params.chainConfig.blockExplorerUrl;
     this.assets = params.assets.filter(
       (a) => a.network === params.chainConfig.id,
     );
-    this.nativeAsset = this.assets.find(
+    (this.nativeAsset = params.assets.find(
       (a) =>
-        a.symbol.toLowerCase() ===
-        params.chainConfig.nativeAssetSymbol.toLowerCase(),
-    ) as IAsset;
+        a.network === ((this.id as unknown) as Network) &&
+        a.symbol === params.chainConfig.nativeAssetSymbol,
+    ) as IAsset),
+      (this.blockExplorerUrl = params.chainConfig.blockExplorerUrl);
   }
 
   findAssetWithLikeSymbol(symbol: string) {

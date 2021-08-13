@@ -134,8 +134,6 @@ export default function createEthbridgeService({
   }
 
   return {
-    createPegTx,
-
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();

@@ -1,26 +1,20 @@
 import { UsecaseContext } from "..";
 import { IAssetAmount, Chain, Network } from "../../entities";
 
-import createEthereumSifchain from "./ethereumSifchain";
+import EthereumSifchain from "./ethereumSifchain";
 import {
   EthereumChain,
   SifchainChain,
 } from "../../services/ChainsService/chains";
-import { InterchainApi } from "./_InterchainApi";
 // import ethereumToSifchain from "./ethereumToSifchain";
 // import sifchainToethereum from "./sifchainToethereum";
 // import sifchainToEthereum from "./sifchainToEthereum";
 
 export default function InterchainUsecase(context: UsecaseContext) {
-  const chains = context.services.chains;
-  const ethereumSifchain = createEthereumSifchain(
-    context,
-    chains.ethereum,
-    chains.sifchain,
-  );
-  return (from: Chain, to: Chain): InterchainApi => {
+  const ethereumInterchain = EthereumSifchain(context);
+  return (from: Chain, to: Chain) => {
     if (from instanceof EthereumChain && to instanceof SifchainChain) {
-      return ethereumSifchain;
+      return ethereumInterchain(from, to);
     } else {
       throw new Error(
         `Token transfer from chain ${from.id} to chain ${to.id} not supported!`,

@@ -8,8 +8,10 @@ import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
 import { ImportDraft } from "@/store/modules/import";
+import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { isLikeSymbol } from "@sifchain/sdk/src/utils/isLikeSymbol";
 
 export type ImportStep = "select" | "confirm" | "processing";
 

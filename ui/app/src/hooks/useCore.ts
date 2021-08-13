@@ -25,10 +25,6 @@ const accountPoolFinder = createAccountPoolFinder(store);
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 window["config"] = config;
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-window["services"] = services;
-
 // expose store on window so it is easy to inspect
 Object.defineProperty(window, "store", {
   get: function () {
