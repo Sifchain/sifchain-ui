@@ -106,8 +106,9 @@ export function useSwapCalculator(input: {
     } catch (error) {
       if (/division by zero/i.test(error.message)) {
         formatted = "0.0";
+      } else {
+        throw error;
       }
-      throw error;
     }
 
     return `${formatted} ${
