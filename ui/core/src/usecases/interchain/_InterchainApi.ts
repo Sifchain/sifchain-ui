@@ -11,7 +11,6 @@ import { EventEmitter } from "events";
 import TypedEmitter, { Arguments } from "typed-emitter";
 import { UnpegEvent } from "../peg/unpeg";
 import { PegEvent } from "../peg/peg";
-import { IterableEmitter } from "../../utils/IterableEmitter";
 
 export class ChainTransferTransaction {
   constructor(
@@ -53,32 +52,82 @@ export class InterchainApi {
   }
 }
 
-export class ExecutableTransaction extends IterableEmitter<
-  PegEvent["type"],
-  TransactionStatus | undefined
-> {
+export interface ExecutableTransactionEvents {
+  approve_started: () => void;
+  approve_error: () => void;
+  approved: () => void;
+  signing: () => void;
+  sent: (payload: TransactionStatus) => void;
+  tx_error: (payload: TransactionStatus) => void;
+}
+const executableTransactionEvents: Array<keyof ExecutableTransactionEvents> = [
+  "approve_started",
+  "approve_error",
+  "approved",
+  "signing",
+  "sent",
+  "tx_error",
+];
+
+export class ExecutableTransaction extends (EventEmitter as new () => TypedEmitter<ExecutableTransactionEvents>) {
+  isComplete = false;
+  private promise: Promise<null>;
+  private resolve: (v?: any) => void = () => {};
   constructor(
     private fn: (
       executableTx: ExecutableTransaction,
     ) => Promise<ChainTransferTransaction | undefined>,
   ) {
     super();
+    this.promise = new Promise((r) => (this.resolve = r));
+  }
+
+  emit<E extends keyof ExecutableTransactionEvents>(
+    event: E,
+    ...args: Arguments<ExecutableTransactionEvents[E]>
+  ) {
+    console.log("emit", event, ...args);
+    return super.emit(event, ...args);
   }
 
   async execute(): Promise<ChainTransferTransaction | undefined> {
-    this.isComplete = false;
+    await new Promise((resolve) => setTimeout(resolve, 1));
     const tx = await this.fn(this);
     this.isComplete = true;
-    this.emitter.removeAllListeners();
+    this.resolve();
+    this.removeAllListeners();
     return tx;
   }
 
-  async *generator(): AsyncGenerator<PegEvent> {
-    for await (const ev of this._generator()) {
-      yield {
-        type: ev.type,
-        tx: ev.payload,
-      } as PegEvent;
+  async waitUntilExecuted() {
+    return this.promise;
+  }
+
+  async *generator(): AsyncGenerator<PegEvent | UnpegEvent> {
+    let events: Array<PegEvent> = [];
+    let resolve: (v?: any) => void;
+    let promise: Promise<any> | undefined = new Promise((r) => (resolve = r));
+
+    executableTransactionEvents.forEach((name) =>
+      this.on(name, (tx: any) => {
+        events.push({ type: name, tx });
+        resolve();
+        promise = undefined;
+      }),
+    );
+
+    while (true) {
+      if (events.length) {
+        const event = events.shift();
+        if (event) yield event;
+      } else {
+        if (this.isComplete) {
+          break;
+        } else {
+          if (!promise) promise = new Promise((r) => (resolve = r));
+          await promise;
+        }
+      }
     }
   }
 }

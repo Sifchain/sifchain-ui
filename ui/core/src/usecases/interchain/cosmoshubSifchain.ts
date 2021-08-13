@@ -1,22 +1,37 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, TransactionStatus, Network } from "../../entities";
+import {
+  IAssetAmount,
+  Chain,
+  TransactionStatus,
+  Network,
+} from "../../entities";
 import {
   InterchainApi,
   ExecutableTransaction,
   ChainTransferTransaction,
 } from "./_InterchainApi";
+import { SubscribeToTx } from "../peg/utils/subscribeToTx";
 import { SifchainChain, CosmoshubChain } from "../../services/ChainsService";
+import { isSupportedEVMChain } from "../utils";
 import { isBroadcastTxFailure } from "@cosmjs/stargate";
-import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
+import { parseTxFailure } from "../../services/SifService/parseTxFailure";
+import {
+  findAttribute,
+  Log,
+  parseLog,
+  parseRawLog,
+} from "@cosmjs/stargate/build/logs";
+
+const ETH_CONFIRMATIONS = 50;
 
 export default function createCosmoshubSifchainApi(
   context: UsecaseContext,
-  cosmoshubChain: CosmoshubChain,
+  CosmoshubChain: CosmoshubChain,
   sifchainChain: SifchainChain,
 ) {
   return new CosmoshubSifchainInterchainApi(
     context,
-    cosmoshubChain,
+    CosmoshubChain,
     sifchainChain,
   );
 }
