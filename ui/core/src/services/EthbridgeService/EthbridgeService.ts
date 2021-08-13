@@ -134,6 +134,7 @@ export default function createEthbridgeService({
   }
 
   return {
+    createPegTx,
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
@@ -338,6 +339,15 @@ export default function createEthbridgeService({
       confirmations: number,
       account?: string,
     ) {
+      console.log(
+        "burnToSifchain",
+        sifRecipient,
+        assetAmount.asset.symbol,
+        assetAmount.amount.toBigInt().toString(),
+        confirmations,
+        account,
+      );
+
       const pegTx = createPegTx(confirmations, assetAmount.asset.symbol);
 
       function handleError(err: any) {

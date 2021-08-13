@@ -11,7 +11,7 @@ import { IAssetAmount, Network, TransactionStatus } from "../../entities";
 import { Services } from "../../services";
 import { Store } from "../../store";
 import { isSupportedEVMChain } from "../utils";
-import { isOriginallyNetworkNativeToken } from "./utils/isOriginallyNetworkNativeToken";
+import { isOriginallySifchainNativeToken } from "./utils/isOriginallySifchainNativeToken";
 import { SubscribeToTx as SubscribeToTxDep } from "./utils/subscribeToTx";
 
 type PegServices = {
@@ -297,7 +297,7 @@ export function Peg(
 
     const subscribeToTx = SubscribeToTx({ services, store });
 
-    const lockOrBurnFn = isOriginallyNetworkNativeToken(assetAmount.asset)
+    const lockOrBurnFn = isOriginallySifchainNativeToken(assetAmount.asset)
       ? services.ethbridge.burnToSifchain
       : services.ethbridge.lockToSifchain;
 
