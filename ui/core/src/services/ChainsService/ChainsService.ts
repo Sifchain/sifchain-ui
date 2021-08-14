@@ -1,4 +1,10 @@
-import { IAsset, JsonChainConfig, Chain, Network } from "../../entities";
+import {
+  IAsset,
+  JsonChainConfig,
+  Chain,
+  Network,
+  setChainsService,
+} from "../../entities";
 import { SifchainChain, EthereumChain, CosmoshubChain } from "./chains";
 
 export * from "./chains";
@@ -25,6 +31,31 @@ export class ChainsService {
   addChain(chainId: ChainId, chain: AnyChain) {
     this._list.push(chain);
     this._map.set(chainId, chain);
+  }
+
+  findChainAssetMatch(match: Partial<IAsset>) {
+    const matchKeys = Object.keys(match) as Array<keyof IAsset>;
+    let chain, asset: IAsset;
+    for (chain of this.getAll()) {
+      for (asset of chain.assets) {
+        const isMatch = matchKeys.every((key) => asset[key] === match[key]);
+        if (isMatch) return { asset, chain };
+      }
+    }
+  }
+  findChainAssetMatchOrThrow(
+    match: Partial<IAsset>,
+  ): {
+    chain: Chain;
+    asset: IAsset;
+  } {
+    const result = this.findChainAssetMatch(match);
+    if (!result) {
+      throw new Error(
+        `No matching chain + asset found for ${JSON.stringify(match)}`,
+      );
+    }
+    return result;
   }
 
   constructor(p: { assets: IAsset[]; chains: JsonChainConfig[] }) {
@@ -55,6 +86,8 @@ export class ChainsService {
         ) as JsonChainConfig,
       }),
     );
+
+    setChainsService(this);
   }
 
   getAll() {

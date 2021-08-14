@@ -79,7 +79,7 @@ export const accountStore = Vuextra.createStore({
       await load();
       setInterval(async () => {
         load();
-      }, 15_000);
+      }, 7500);
     },
     connect(network: Network) {
       accountStore.mutations.setConnected({ network, connected: true });

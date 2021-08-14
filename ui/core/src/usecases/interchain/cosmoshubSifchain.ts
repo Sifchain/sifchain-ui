@@ -62,6 +62,8 @@ export class CosmoshubSifchainInterchainApi
               return;
             } else {
               const logs = parseRawLog(tx.rawLog);
+              emit("sent", { state: "completed", hash: tx.transactionHash });
+
               return {
                 ...params,
                 fromChainId: this.fromChain.id,

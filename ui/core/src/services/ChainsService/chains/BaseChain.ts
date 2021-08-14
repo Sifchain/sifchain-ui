@@ -26,6 +26,14 @@ export class BaseChain implements Chain {
   findAssetWithLikeSymbol(symbol: string) {
     return this.assets.find((asset) => isLikeSymbol(asset.symbol, symbol));
   }
+  findAssetWithLikeSymbolOrThrow(symbol: string) {
+    const asset = this.assets.find((asset) =>
+      isLikeSymbol(asset.symbol, symbol),
+    );
+    if (!asset)
+      throw new Error(`Asset ${symbol} not found in chain ${this.id}`);
+    return asset;
+  }
 
   getBlockExplorerUrlForTxHash(hash: string) {
     return `${this.blockExplorerUrl}/tx/${hash}`;

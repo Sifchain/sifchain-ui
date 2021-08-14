@@ -42,9 +42,8 @@ type IClpService = {
     externalAssetAmount: IAssetAmount;
   }) => any;
   getLiquidityProvider: (params: {
-    symbol: string;
+    asset: IAsset;
     lpAddress: string;
-    assetSymbol?: string;
   }) => Promise<LiquidityProvider | null>;
   removeLiquidity: (params: {
     wBasisPoints: string;
@@ -151,36 +150,23 @@ export default function createClpService({
     },
     async getLiquidityProvider(params) {
       const response = await client.getLiquidityProvider({
-        symbol: params.symbol,
+        symbol: params.asset.ibcDenom || params.asset.symbol,
         lpAddress: params.lpAddress,
       });
-      let asset: IAsset;
+
       const {
         liquidity_provider,
         native_asset_balance,
         external_asset_balance,
       } = response.result;
+
       const {
-        asset: { symbol },
         liquidity_provider_units,
         liquidity_provider_address,
       } = liquidity_provider;
-      try {
-        asset = Asset(params.assetSymbol || symbol);
-      } catch (err) {
-        asset = Asset({
-          name: symbol,
-          label: symbol,
-          displaySymbol: symbol,
-          symbol,
-          network: Network.SIFCHAIN,
-          decimals: 18,
-          homeNetwork: Network.ETHEREUM,
-        });
-      }
 
       return LiquidityProvider(
-        asset,
+        params.asset,
         Amount(liquidity_provider_units),
         liquidity_provider_address,
         Amount(native_asset_balance),

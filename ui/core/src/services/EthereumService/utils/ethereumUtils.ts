@@ -166,9 +166,7 @@ export async function suggestEthereumAsset(asset: IAsset) {
       type: "ERC20",
       options: {
         address: asset.address,
-        // NOTE(ajoslin): 🤕 This case has to be in here because we call eth uphoton euphoton
-        // for now, as long as our Asset system doesn't support same-symbol different-assets.
-        symbol: asset.symbol === "euphoton" ? "uphoton" : asset.symbol,
+        symbol: asset.symbol,
         decimals: asset.decimals,
         image: asset.imageUrl,
       },

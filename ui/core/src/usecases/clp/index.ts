@@ -9,7 +9,7 @@ export default ({
   services,
   store,
 }: UsecaseContext<
-  "sif" | "clp" | "bus" | "ibc",
+  "sif" | "clp" | "bus" | "ibc" | "chains",
   "pools" | "wallet" | "accountpools"
 >) => {
   const syncPools = SyncPools(services, store);
