@@ -68,8 +68,10 @@ export const TokenInputGroup = defineComponent({
     );
 
     return () => {
+      /* Hide browser-native validation error tooltips via form novalidate */
       return (
-        <div
+        <form
+          novalidate
           ref={selfRef}
           class={[
             "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
@@ -162,7 +164,7 @@ export const TokenInputGroup = defineComponent({
             }}
             active={selectIsOpen}
           />
-        </div>
+        </form>
       );
     };
   },

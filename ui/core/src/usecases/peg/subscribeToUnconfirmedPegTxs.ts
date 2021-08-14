@@ -19,7 +19,7 @@ export const SubscribeToUnconfirmedPegTxs = ({
       store.wallet.eth.address,
       config.ethConfirmations,
     );
-    return pendingTxs.map(subscribeToTx);
+    return pendingTxs.map((tx) => subscribeToTx(tx));
   }
 
   // Need to keep subscriptions syncronous so using promise

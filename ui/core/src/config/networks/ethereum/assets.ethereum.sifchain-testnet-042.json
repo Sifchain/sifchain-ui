@@ -642,8 +642,7 @@
       "network": "ethereum",
       "homeNetwork": "cosmoshub",
       "priceUsd": 0,
-      "symbol": "EUPHOTON",
-      "displaySymbol": "UPHOTON",
+      "symbol": "uphoton",
       "transferLimit": "99999999999999999999999"
     }
   ]

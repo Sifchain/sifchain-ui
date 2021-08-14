@@ -2,7 +2,6 @@ import { defineComponent, ref, watch, onMounted } from "vue";
 import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
-  Asset,
   LiquidityProvider,
   PoolState,
   TransactionStatus,
@@ -40,15 +39,16 @@ export function useRemoveLiquidityData() {
   const state = ref(0);
 
   const externalAsset = computed(() =>
-    Asset.get(externalAssetSymbol.value as string),
+    services.chains.sifchain.findAssetWithLikeSymbol(
+      externalAssetSymbol.value || "",
+    ),
   );
 
   effect(() => {
-    if (!externalAssetSymbol.value) return null;
+    if (!externalAsset.value) return null;
     services.clp
       .getLiquidityProvider({
-        assetSymbol: externalAsset.value?.symbol,
-        symbol: externalAsset.value?.ibcDenom || externalAsset.value?.symbol,
+        asset: externalAsset.value,
         lpAddress: store.wallet.sif.address,
       })
       .then((liquidityProviderResult) => {
@@ -115,7 +115,7 @@ export function useRemoveLiquidityData() {
       modalStatus.value = "confirm";
     },
     async handleAskConfirmClicked() {
-      if (!externalAssetSymbol.value || !wBasisPoints.value || !asymmetry.value)
+      if (!externalAsset.value || !wBasisPoints.value || !asymmetry.value)
         return;
 
       modalStatus.value = "processing";
@@ -125,7 +125,7 @@ export function useRemoveLiquidityData() {
         hash: "",
       };
       transactionStatus.value = await usecases.clp.removeLiquidity(
-        Asset.get(externalAssetSymbol.value),
+        externalAsset.value,
         wBasisPoints.value,
         asymmetry.value,
       );

@@ -3,6 +3,7 @@ import { useCore } from "@/hooks/useCore";
 import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
+import { accountStore } from "./accounts";
 
 export type ImportDraft = {
   amount: string;
@@ -47,13 +48,22 @@ export const importStore = Vuextra.createStore({
       if (!payload.assetAmount) throw new Error("Please provide an amount");
       self.setPegEvent(undefined);
 
-      for await (const event of useCore().usecases.peg.peg(
-        payload.assetAmount,
-        ctx.state.draft.network,
-      )) {
-        self.setPegEvent(event);
-        console.log({ event });
+      const interchain = useCore().usecases.interchain(
+        useChains().getByNetwork(ctx.state.draft.network),
+        useChains().sifchain,
+      );
+      const executable = interchain.transfer({
+        assetAmount: payload.assetAmount,
+        fromAddress: accountStore.state[ctx.state.draft.network].address,
+        toAddress: accountStore.state.sifchain.address,
+      });
+
+      for await (const ev of executable.generator()) {
+        console.log("setPegEvent", ev);
+        self.setPegEvent(ev);
       }
+
+      const chainTx = await executable.awaitResult();
     },
   }),
 

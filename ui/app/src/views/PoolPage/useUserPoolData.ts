@@ -4,23 +4,22 @@ import {
   getAssetLabel,
   getBlockExplorerUrl,
   getRewardEarningsUrl,
-  useAssetItem,
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
-import { Amount, Asset, getErrorMessage } from "@sifchain/sdk";
+import { Amount, getErrorMessage, IAsset } from "@sifchain/sdk";
 
 const DECIMALS = 5;
 
 const invalidRewards: Record<string, boolean> = {};
-async function getEarnedRewards(address: string, symbol: string) {
+async function getEarnedRewards(address: string, asset?: IAsset) {
   const emptyRes = {
     negative: false,
     netChange: "0.00",
   };
+  if (!asset) return emptyRes;
 
-  const asset = Asset.get(symbol);
-  symbol = asset.ibcDenom || symbol;
+  const symbol = asset.ibcDenom || asset.symbol;
 
   if (invalidRewards[symbol]) return emptyRes;
 
@@ -52,7 +51,7 @@ async function getEarnedRewards(address: string, symbol: string) {
 }
 
 export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
-  const { config, store, services, accountPoolFinder, poolFinder } = useCore();
+  const { config, store, accountPoolFinder, poolFinder } = useCore();
 
   const address = computed(() => store.wallet.sif.address);
   const earnedRewards = ref<string | null>(null);
@@ -83,13 +82,15 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   const USDTImage =
     "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707";
 
-  const fromAsset = useAssetItem(fromSymbol);
-  const fromToken = fromAsset.token;
-  const fromBackgroundStyle = fromAsset.background;
-  const fromTokenImage = computed(() => {
-    if (!fromToken.value) return "";
-    const t = fromToken.value;
-    return t.imageUrl;
+  const fromAsset = computed(() => {
+    return useCore().services.chains.sifchain.findAssetWithLikeSymbol(
+      fromSymbol.value,
+    );
+  });
+  const toAsset = computed(() => {
+    return useCore().services.chains.sifchain.findAssetWithLikeSymbol(
+      toSymbol.value,
+    );
   });
 
   const calculateRewards = async (address: string, fromSymbol: string) => {
@@ -98,7 +99,7 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
 
     const earnedRewardsObject = await getEarnedRewards(
       address,
-      fromSymbol?.toLowerCase(),
+      fromAsset.value,
     );
     earnedRewardsNegative.value = earnedRewardsObject.negative;
     earnedRewards.value = earnedRewardsObject.netChange;
@@ -123,14 +124,6 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
       ? getAssetLabel(accountPool.value.pool?.nativeAmount.asset)
       : "",
   );
-  const toAsset = useAssetItem(toSymbol);
-  const toToken = toAsset.token;
-  const toBackgroundStyle = toAsset.background;
-  const toTokenImage = computed(() => {
-    if (!toToken.value) return "";
-    const t = toToken.value;
-    return t.imageUrl;
-  });
 
   const toTotalValue = computed(() => {
     const aAmount = accountPool?.value?.pool?.nativeAmount;
@@ -159,15 +152,12 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   });
   return {
     accountPool,
-    fromToken,
+    fromAsset,
     fromSymbol,
-    fromBackgroundStyle,
-    fromTokenImage,
     fromTotalValue,
     toSymbol,
-    toBackgroundStyle,
-    toTokenImage,
     toTotalValue,
+    toAsset,
     myPoolUnits,
     myPoolShare,
     chainId: config.sifChainId,

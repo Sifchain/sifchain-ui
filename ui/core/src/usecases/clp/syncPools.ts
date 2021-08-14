@@ -1,6 +1,6 @@
 import { Services } from "../../services";
 import { Store } from "../../store";
-import { Asset, Pool, AssetAmount, Amount } from "../../entities";
+import { Pool, AssetAmount, Amount, Network } from "../../entities";
 import { isIBCDenom } from "../../services/utils/IbcService";
 import { createPoolKey } from "../../utils";
 import { AccountPool } from "../../store/pools";
@@ -11,45 +11,43 @@ type PickClp = Pick<
   Services["clp"],
   "getPoolSymbolsByLiquidityProvider" | "getRawPools" | "getLiquidityProvider"
 >;
+type PickChains = Pick<
+  Services["chains"],
+  "getByNetwork" | "findChainAssetMatch" | "findChainAssetMatch"
+>;
 type SyncPoolsArgs = {
   ibc: PickIbc;
   sif: PickSif;
   clp: PickClp;
+  chains: PickChains;
 };
 
 type SyncPoolsStore = Pick<Store, "accountpools" | "pools">;
 
-function getAssetOrNull(symbol: string): Asset | null {
-  try {
-    return Asset.get(symbol);
-  } catch (err) {
-    return null;
-  }
-}
-
 export function SyncPools(
-  { ibc, sif, clp }: SyncPoolsArgs,
+  { ibc, sif, clp, chains }: SyncPoolsArgs,
   store: SyncPoolsStore,
 ) {
   return async function syncPools() {
     const state = sif.getState();
 
     // UPdate pools
-    const nativeAsset = Asset.get("rowan");
+    const nativeAsset = chains.getByNetwork(Network.SIFCHAIN).nativeAsset;
     const rawPools = await clp.getRawPools();
     const pools = rawPools
       .map((pool) => {
-        let externalSymbol = pool.external_asset.symbol;
-        if (isIBCDenom(externalSymbol)) {
-          externalSymbol = ibc.symbolLookup[externalSymbol];
-        }
+        const externalSymbol = pool.external_asset.symbol;
+        const chainAsset = chains.findChainAssetMatch(
+          isIBCDenom(externalSymbol)
+            ? { ibcDenom: externalSymbol }
+            : { symbol: externalSymbol },
+        );
 
-        const externalAsset = getAssetOrNull(externalSymbol);
-        if (!externalAsset) return null;
+        if (!chainAsset) return null;
 
         return Pool(
           AssetAmount(nativeAsset, pool.native_asset_balance),
-          AssetAmount(externalAsset, pool.external_asset_balance),
+          AssetAmount(chainAsset.asset, pool.external_asset_balance),
           Amount(pool.pool_units),
         );
       })
@@ -76,21 +74,23 @@ export function SyncPools(
 
       await Promise.all(
         accountPoolSymbols.map(async (symbol) => {
-          const assetSymbol = isIBCDenom(symbol)
-            ? ibc.symbolLookup[symbol]
-            : symbol;
+          const chainAsset = chains.findChainAssetMatch(
+            isIBCDenom(symbol) ? { ibcDenom: symbol } : { symbol: symbol },
+          );
+          if (!chainAsset) return;
+          const asset = chainAsset.asset;
 
           const lp = await clp.getLiquidityProvider({
-            assetSymbol,
-            symbol,
+            asset,
             lpAddress: state.address,
           });
 
-          const asset = getAssetOrNull(assetSymbol);
-
           if (!lp || !asset) return;
 
-          const pool = createPoolKey(asset, Asset.get("rowan"));
+          const pool = createPoolKey(
+            asset,
+            chains.getByNetwork(Network.SIFCHAIN).nativeAsset,
+          );
 
           currentAccountPools[pool] = { lp, pool };
         }),

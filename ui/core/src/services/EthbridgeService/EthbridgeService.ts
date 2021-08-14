@@ -2,7 +2,7 @@ import { provider } from "web3-core";
 import Web3 from "web3";
 import { getBridgeBankContract } from "./bridgebankContract";
 import { getTokenContract } from "./tokenContract";
-import { IAssetAmount, IAsset, Asset } from "../../entities";
+import { IAssetAmount, getChainsService } from "../../entities";
 import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
@@ -14,12 +14,6 @@ import { Contract } from "web3-eth-contract";
 import JSBI from "jsbi";
 
 // TODO: Do we break this service out to ethbridge and cosmos?
-
-function getUnpeggedSymbol(sifchainSymbol: string) {
-  if (sifchainSymbol.toLowerCase() === "rowan") return "erowan";
-  if (sifchainSymbol.toLowerCase() === "uphoton") return "euphoton";
-  return sifchainSymbol.replace(/^c/, "").toLowerCase();
-}
 
 export type EthbridgeServiceContext = {
   sifApiUrl: string;
@@ -134,6 +128,7 @@ export default function createEthbridgeService({
   }
 
   return {
+    createPegTx,
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
@@ -180,9 +175,10 @@ export default function createEthbridgeService({
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
 
-      const ethereumAsset = Asset.get(
-        getUnpeggedSymbol(params.assetAmount.asset.symbol),
+      const ethereumAsset = getChainsService()?.sifchain.findAssetWithLikeSymbolOrThrow(
+        params.assetAmount.asset.symbol,
       );
+
       const tokenAddress =
         ethereumAsset.ibcDenom || ethereumAsset.address || ETH_ADDRESS;
 
@@ -276,8 +272,8 @@ export default function createEthbridgeService({
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
 
-      const ethereumAsset = Asset.get(
-        getUnpeggedSymbol(params.assetAmount.asset.symbol),
+      const ethereumAsset = getChainsService()?.sifchain.findAssetWithLikeSymbolOrThrow(
+        params.assetAmount.asset.symbol,
       );
       const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
 
@@ -338,6 +334,15 @@ export default function createEthbridgeService({
       confirmations: number,
       account?: string,
     ) {
+      console.log(
+        "burnToSifchain",
+        sifRecipient,
+        assetAmount.asset.symbol,
+        assetAmount.amount.toBigInt().toString(),
+        confirmations,
+        account,
+      );
+
       const pegTx = createPegTx(confirmations, assetAmount.asset.symbol);
 
       function handleError(err: any) {

@@ -16,6 +16,7 @@ import {
   IAssetAmount,
   Network,
   IAsset,
+  getChainsService,
 } from "../../entities";
 import { loadConnectionByChainIds } from "./loadConnectionByChainIds";
 import getKeplrProvider from "../SifService/getKeplrProvider";
@@ -239,15 +240,14 @@ export class IBCService {
           this.symbolLookup[balance.denom] = symbol;
         }
 
-        let asset =
-          this.context.assets.find(
-            (a) => a.symbol === symbol && a.network == params.network,
-          ) || symbol;
+        let asset = getChainsService()
+          ?.getByNetwork(params.network)
+          .assets.find((a) => a.symbol === symbol);
 
-        if (typeof asset === "object" && balance.denom.startsWith("ibc/")) {
+        if (asset && balance.denom.startsWith("ibc/")) {
           asset.ibcDenom = balance.denom;
         }
-        const assetAmount = AssetAmount(asset, balance?.amount);
+        const assetAmount = AssetAmount(asset || symbol, balance?.amount);
         assetAmounts.push(assetAmount);
       } catch (e) {
         console.error(e);

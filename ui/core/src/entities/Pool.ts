@@ -1,4 +1,4 @@
-import { Asset } from "./Asset";
+import { Asset, IAsset } from "./Asset";
 import { AssetAmount, IAssetAmount } from "./AssetAmount";
 import { Pair } from "./Pair";
 import {
@@ -40,7 +40,7 @@ export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
         Amount("0"),
         Amount("0"),
       ),
-    priceAsset(asset: Asset) {
+    priceAsset(asset: IAsset) {
       return this.calcSwapResult(AssetAmount(asset, "1"));
     },
 
