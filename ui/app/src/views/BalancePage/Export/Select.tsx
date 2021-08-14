@@ -118,7 +118,6 @@ export default defineComponent({
                 "confirm",
                 exportParams.value,
               );
-              debugger;
               router.push(exportLocation);
             },
           },

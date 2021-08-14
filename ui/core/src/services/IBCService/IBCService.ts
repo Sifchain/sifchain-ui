@@ -293,6 +293,23 @@ export class IBCService {
       throw new Error("No account found for sending signer");
     }
 
+    const receivingStargateCient = await SigningStargateClient?.connectWithSigner(
+      destinationChain.rpcUrl,
+      recievingSigner,
+      {
+        gasLimits: {
+          send: 80000,
+          transfer: 250000,
+          delegate: 250000,
+          undelegate: 250000,
+          redelegate: 250000,
+          // The gas multiplication per rewards.
+          withdrawRewards: 140000,
+          govVote: 250000,
+        },
+      },
+    );
+
     const sendingStargateClient = await SigningStargateClient?.connectWithSigner(
       sourceChain.rpcUrl,
       sendingSigner,
@@ -318,13 +335,17 @@ export class IBCService {
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
     // initially set low
-    const timeoutInMinutes = 5;
-    const timeoutTimestamp = Math.floor(
-      Date.now() / 1000 + 60 * timeoutInMinutes,
-    );
-    const timeoutTimestampNanoseconds = timeoutTimestamp
-      ? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
-      : undefined;
+    // const timeoutInMinutes = 5;
+    // const timeoutTimestamp = Math.floor(
+    //   Date.now() / 1000 + 60 * timeoutInMinutes,
+    // );
+    // const timeoutTimestampNanoseconds = timeoutTimestamp
+    //   ? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
+    //   : undefined;
+    const currentHeight = await receivingStargateCient.getHeight();
+    const timeoutHeight = Long.fromNumber(currentHeight).add(
+      Long.fromNumber(600),
+    ); // about one hour worth of blocks
     const transferMsg: MsgTransferEncodeObject = {
       typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
       value: IbcTransferV1Tx.MsgTransfer.fromPartial({
@@ -339,8 +360,10 @@ export class IBCService {
           // denom: symbol,
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
-        timeoutHeight: undefined,
-        timeoutTimestamp: timeoutTimestampNanoseconds,
+        timeoutHeight: {
+          revisionHeight: timeoutHeight,
+        },
+        timeoutTimestamp: undefined, // timeoutTimestampNanoseconds,
       }),
     };
     let transferMsgs: MsgTransferEncodeObject[] = [transferMsg];
@@ -367,6 +390,7 @@ export class IBCService {
         };
       });
     }
+
     const batches = [];
     const maxMsgsPerBatch = 1000;
     // const maxMsgsPerBatch = 1024;
