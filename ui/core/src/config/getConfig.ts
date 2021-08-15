@@ -27,6 +27,7 @@ import { ServiceContext } from "../services";
 import { NetworkEnv } from "./getEnv";
 
 type ConfigMap = Record<NetworkEnv, ServiceContext>;
+
 // type ChainNetwork = `${Network}.${NetworkEnv}`;
 type ChainNetwork = string;
 type AssetMap = Record<ChainNetwork, Asset[]>;

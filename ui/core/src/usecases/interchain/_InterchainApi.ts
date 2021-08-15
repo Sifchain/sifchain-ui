@@ -28,17 +28,19 @@ export type CosmosInterchainTransaction = InterchainTransaction & {
   };
 };
 
-export interface InterchainApi<TxType> {
-  fromChain: Chain;
-  toChain: Chain;
+export abstract class InterchainApi<TxType> {
+  abstract fromChain: Chain;
+  abstract toChain: Chain;
 
-  estimateFees(
+  abstract estimateFees(
     params: InterchainParams,
   ): Promise<IAssetAmount | undefined | void>;
 
-  transfer(params: InterchainParams): ExecutableTransaction<TxType>;
+  abstract transfer(params: InterchainParams): ExecutableTransaction<TxType>;
 
-  subscribeToTransfer(transferTx: TxType): AsyncGenerator<TransactionStatus>;
+  abstract subscribeToTransfer(
+    transferTx: TxType,
+  ): AsyncGenerator<TransactionStatus>;
 }
 
 export class ExecutableTransaction<TxType> extends IterableEmitter<

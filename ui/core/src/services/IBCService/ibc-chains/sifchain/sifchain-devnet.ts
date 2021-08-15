@@ -3,12 +3,12 @@ import { IBCChainConfig } from "../IBCChainConfig";
 
 export const SIFCHAIN_DEVNET_042: IBCChainConfig = {
   network: Network.SIFCHAIN,
-  chainId: "sifchain-devnet",
+  chainId: "sifchain-devnet-1",
   rpcUrl: "https://rpc-devnet.sifchain.finance",
   restUrl: "https://api-devnet.sifchain.finance",
   keplrChainInfo: {
-    chainName: "SifDev-042-IBC",
-    chainId: "sifchain-devnet",
+    chainName: "Devnet (Sifchain)",
+    chainId: "sifchain-devnet-1",
     rpc: "https://rpc-devnet.sifchain.finance",
     rest: "https://api-devnet.sifchain.finance",
     stakeCurrency: {
