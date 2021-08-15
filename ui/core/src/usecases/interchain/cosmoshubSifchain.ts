@@ -37,7 +37,7 @@ export class CosmoshubSifchainInterchainApi
   transfer(params: InterchainParams) {
     return new ExecutableTransaction<CosmosInterchainTransaction>(
       async (emit) => {
-        emit("signing");
+        emit({ type: "signing" });
         try {
           const txSequence = await this.context.services.ibc.transferIBCTokens({
             sourceNetwork: params.assetAmount.asset.network,
@@ -52,17 +52,23 @@ export class CosmoshubSifchainInterchainApi
                   message: "IBC Transfer Failed",
                 },
               });
-              emit("tx_error", {
-                state: tx.rawLog?.includes("out of gas")
-                  ? "out_of_gas"
-                  : "failed",
-                memo: tx.rawLog || "",
-                hash: tx.transactionHash,
+              emit({
+                type: "tx_error",
+                tx: {
+                  state: tx.rawLog?.includes("out of gas")
+                    ? "out_of_gas"
+                    : "failed",
+                  memo: tx.rawLog || "",
+                  hash: tx.transactionHash,
+                },
               });
               return;
             } else {
               const logs = parseRawLog(tx.rawLog);
-              emit("sent", { state: "completed", hash: tx.transactionHash });
+              emit({
+                type: "sent",
+                tx: { state: "completed", hash: tx.transactionHash },
+              });
 
               return {
                 ...params,
@@ -76,7 +82,7 @@ export class CosmoshubSifchainInterchainApi
         } catch (err) {
           // "signing_error"?
           console.error(err);
-          emit("approve_error");
+          emit({ type: "approve_error" });
           return;
         }
       },

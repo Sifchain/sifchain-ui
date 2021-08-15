@@ -41,16 +41,16 @@ export interface InterchainApi<TxType> {
   subscribeToTransfer(transferTx: TxType): AsyncGenerator<TransactionStatus>;
 }
 
-export class ExecutableTransaction<TxType> extends IterableEmitter<
-  PegEvent["type"],
-  TransactionStatus | undefined
-> {
-  private deferred = defer<TxType | undefined>();
+export class IterableTxEmitter<
+  EventType,
+  ResultTxType
+> extends IterableEmitter<EventType> {
+  private deferred = defer<ResultTxType | undefined>();
 
   constructor(
     private fn: (
-      emit: ExecutableTransaction<TxType>["emit"],
-    ) => Promise<TxType | undefined>,
+      emit: IterableTxEmitter<EventType, ResultTxType>["emit"],
+    ) => Promise<ResultTxType | undefined>,
   ) {
     super();
     this.execute();
@@ -60,30 +60,37 @@ export class ExecutableTransaction<TxType> extends IterableEmitter<
     return this.deferred.promise;
   }
 
-  private execute() {
-    this.fn(this.emit)
+  handleError(message?: string) {
+    // not implemented
+  }
+
+  execute() {
+    this.fn(this.emit.bind(this))
       .then((tx) => {
-        this.completeExecution();
+        this.end();
         this.deferred.resolve(tx);
       })
       .catch((error) => {
         console.error(error);
-        this.emit("tx_error", {
-          state: "failed",
-          hash: "",
-          memo: error.message,
-        });
-        this.completeExecution();
+        this.handleError(error?.message || "");
+        this.end();
         this.deferred.resolve();
       });
   }
+}
 
-  async *generator(): AsyncGenerator<PegEvent> {
-    for await (const ev of this.subject.iterator) {
-      yield {
-        type: ev.type,
-        tx: ev.payload,
-      } as PegEvent;
-    }
+export class ExecutableTransaction<ResultTxType> extends IterableTxEmitter<
+  PegEvent,
+  ResultTxType
+> {
+  handleError(message?: string) {
+    this.emit({
+      type: "tx_error",
+      tx: {
+        state: "failed",
+        hash: "",
+        memo: message,
+      },
+    });
   }
 }

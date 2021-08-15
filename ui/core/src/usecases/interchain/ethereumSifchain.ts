@@ -49,29 +49,32 @@ export class EthereumSifchainInterchainApi
             message: "EVM Network not supported!",
           },
         });
-        emit("tx_error", {
-          state: "failed",
-          hash: "",
-          memo: "EVM network not supported",
+        emit({
+          type: "tx_error",
+          tx: {
+            state: "failed",
+            hash: "",
+            memo: "EVM network not supported",
+          },
         });
         return;
       }
 
       if (params.assetAmount.asset.symbol !== "eth") {
-        emit("approve_started");
+        emit({ type: "approve_started" });
         try {
           await this.context.services.ethbridge.approveBridgeBankSpend(
             params.fromAddress,
             params.assetAmount,
           );
         } catch (error) {
-          emit("approve_error");
+          emit({ type: "approve_error" });
           return;
         }
-        emit("approved");
+        emit({ type: "approved" });
       }
 
-      emit("signing");
+      emit({ type: "signing" });
 
       const lockOrBurnFn = isOriginallySifchainNativeToken(
         params.assetAmount.asset,
@@ -96,7 +99,7 @@ export class EthereumSifchainInterchainApi
           });
         });
 
-        emit("sent", { state: "completed", hash });
+        emit({ type: "sent", tx: { state: "completed", hash } });
 
         return {
           ...params,
@@ -105,7 +108,7 @@ export class EthereumSifchainInterchainApi
           hash: hash,
         } as InterchainTransaction;
       } catch (transactionStatus) {
-        emit("tx_error", transactionStatus);
+        emit({ type: "tx_error", tx: transactionStatus });
       }
     });
   }
