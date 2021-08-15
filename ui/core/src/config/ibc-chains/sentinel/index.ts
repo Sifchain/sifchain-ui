@@ -1,5 +1,5 @@
-import { NetworkEnv } from "../../../../config/getEnv";
-import { COSMOSHUB_TESTNET } from "./cosmoshub-testnet";
+import { NetworkEnv } from "../../getEnv";
+import { COSMOSHUB_TESTNET } from "./sentinel-testnet";
 import { NetEnvChainConfigLookup } from "../NetEnvChainConfigLookup";
 
 export default <NetEnvChainConfigLookup>{

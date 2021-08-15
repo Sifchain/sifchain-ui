@@ -40,7 +40,7 @@ import { ValueOp } from "@cosmjs/stargate/build/codec/tendermint/crypto/proof";
 import { setupMintExtension } from "@cosmjs/launchpad";
 import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 import { getNetworkEnv, NetworkEnv } from "../../config/getEnv";
-import { chainConfigByNetworkEnv } from "./ibc-chains";
+import { chainConfigByNetworkEnv } from "../../config/ibc-chains";
 import { fetch } from "cross-fetch";
 import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
 import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
@@ -50,6 +50,7 @@ import JSBI from "jsbi";
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   assets: Asset[];
+  ibcChainConfigsByNetwork: Record<Network, IBCChainConfig | null>;
 }
 
 export class IBCService {
@@ -66,11 +67,8 @@ export class IBCService {
   }
 
   public loadChainConfigByNetwork(network: Network): IBCChainConfig {
-    this.context;
-
     // @ts-ignore
-    const env = NetworkEnv.TESTNET_042_IBC;
-    const chainConfig = chainConfigByNetworkEnv[env][network];
+    const chainConfig = this.context.ibcChainConfigsByNetwork[network];
     if (!chainConfig) {
       throw new Error(`No chain config for network ${network}`);
     }
@@ -123,7 +121,7 @@ export class IBCService {
     sourceNetwork: Network,
     destinationNetwork: Network,
   ) {
-    // const wallet = await this.createWalletByNetwork(sourceNetwork);
+    const wallet = await this.createWalletByNetwork(sourceNetwork);
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
     queryClient;
     const allChannels = await queryClient.ibc.channel.allChannels();
@@ -152,14 +150,15 @@ export class IBCService {
         };
       }),
     );
-    // console.table(
-    //   clients.filter((c) => {
-    //     if (destinationNetwork === Network.COSMOSHUB) {
-    //       return c.chainId.includes("sifchain");
-    //     }
-    //     return true;
-    //   }),
-    // );
+    console.log(sourceNetwork.toUpperCase());
+    console.table(
+      clients.filter((c) => {
+        if (destinationNetwork === Network.COSMOSHUB) {
+          return c.chainId.includes("sifchain");
+        }
+        return true;
+      }),
+    );
     const allCxns = await Promise.all(
       (await queryClient.ibc.connection.allConnections()).connections.map(
         async (cxn) => {
@@ -169,10 +168,10 @@ export class IBCService {
         },
       ),
     );
-    // console.log({ sourceNetwork, allChannels, allCxns, clients });
+    console.log({ sourceNetwork, allChannels, allCxns, clients });
 
-    // const tx = await wallet.client.getTx(sourceChainTxHash);
-    // parseRawLog(tx?.rawLog);
+    const tx = await wallet.client.getTx(sourceChainTxHash);
+    parseRawLog(tx?.rawLog);
   }
 
   async createWalletByNetwork(network: Network) {
@@ -335,17 +334,15 @@ export class IBCService {
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
     // initially set low
-    // const timeoutInMinutes = 5;
-    // const timeoutTimestamp = Math.floor(
-    //   Date.now() / 1000 + 60 * timeoutInMinutes,
-    // );
-    // const timeoutTimestampNanoseconds = timeoutTimestamp
-    //   ? Long.fromNumber(timeoutTimestamp).multiply(1_000_000_000)
-    //   : undefined;
-    const currentHeight = await receivingStargateCient.getHeight();
-    const timeoutHeight = Long.fromNumber(currentHeight).add(
-      Long.fromNumber(600),
-    ); // about one hour worth of blocks
+    const timeoutInMinutes = 5;
+    const timeoutTimestampInSeconds = Math.floor(
+      Date.now() / 1000 + 60 * timeoutInMinutes,
+    );
+    const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
+      ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
+      : undefined;
+    // const currentHeight = await receivingStargateCient.getHeight();
+    // const timeoutHeight = Long.fromNumber(currentHeight + 600);
     const transferMsg: MsgTransferEncodeObject = {
       typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
       value: IbcTransferV1Tx.MsgTransfer.fromPartial({
@@ -361,9 +358,9 @@ export class IBCService {
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
         timeoutHeight: {
-          revisionHeight: timeoutHeight,
+          // revisionHeight: timeoutHeight,
         },
-        timeoutTimestamp: undefined, // timeoutTimestampNanoseconds,
+        timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
       }),
     };
     let transferMsgs: MsgTransferEncodeObject[] = [transferMsg];

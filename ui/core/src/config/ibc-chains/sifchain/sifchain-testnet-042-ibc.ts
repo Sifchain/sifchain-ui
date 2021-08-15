@@ -1,16 +1,16 @@
-import { Network } from "../../../../entities";
+import { Network } from "../../../entities";
 import { IBCChainConfig } from "../IBCChainConfig";
 
-export const SIFCHAIN_DEVNET_042: IBCChainConfig = {
+export const SIFCHAIN_TESTNET_042: IBCChainConfig = {
   network: Network.SIFCHAIN,
-  chainId: "sifchain-devnet-042",
-  rpcUrl: "https://rpc-devnet-042.sifchain.finance",
-  restUrl: "https://api-devnet-042.sifchain.finance",
+  chainId: "sifchain-testnet-042-ibc",
+  rpcUrl: "https://rpc-testnet-042-ibc.sifchain.finance",
+  restUrl: "https://api-testnet-042-ibc.sifchain.finance",
   keplrChainInfo: {
-    chainName: "SifchainDevnet-042",
-    chainId: "sifchain-devnet-042",
-    rpc: "https://rpc-devnet-042.sifchain.finance",
-    rest: "https://api-devnet-042.sifchain.finance",
+    chainName: "SifDev-042-IBC",
+    chainId: "sifchain-testnet-042-ibc",
+    rpc: "https://rpc-testnet-042-ibc.sifchain.finance",
+    rest: "https://api-testnet-042-ibc.sifchain.finance",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",
@@ -44,8 +44,8 @@ export const SIFCHAIN_DEVNET_042: IBCChainConfig = {
     coinType: 118,
     gasPriceStep: {
       low: 5000000000000,
-      average: 6500000000000,
-      high: 8000000000000,
+      average: 8000000000000,
+      high: 9000000000000,
     },
   },
 };

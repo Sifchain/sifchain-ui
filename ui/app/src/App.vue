@@ -40,7 +40,6 @@ import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
 import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { useRoute } from "vue-router";
 
-console.log("sendingIBC transaction");
 export default defineComponent({
   name: "App",
   components: {

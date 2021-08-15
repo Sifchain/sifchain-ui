@@ -10,7 +10,7 @@
   "cryptoeconomicsUrl": "https://api-cryptoeconomics.sifchain.finance/api",
   "bridgebankContractAddress": "0x96DC6f02C66Bbf2dfbA934b8DafE7B2c08715A73",
   "keplrChainConfig": {
-    "chainName": "SifchainDevnet (Latest)",
+    "chainName": "Sifchain Devnet",
     "chainId": "sifchain-devnet-1",
     "rpc": "https://rpc-devnet.sifchain.finance",
     "rest": "https://api-devnet.sifchain.finance",

@@ -2,6 +2,7 @@ import { ServiceContext } from "../services";
 import { Asset, Network } from "../entities";
 import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
 import { JsonChainConfig } from "../entities/Chain";
+import { IBCChainConfig } from "../config/ibc-chains/IBCChainConfig";
 
 type TokenConfig = {
   symbol: string;
@@ -111,6 +112,7 @@ export function parseAssets(configAssets: AssetConfig[]): Asset[] {
 export function parseConfig(
   config: CoreConfig,
   assets: Asset[],
+  ibcChainConfigsByNetwork: Record<Network, IBCChainConfig | null>,
 ): ServiceContext {
   const nativeAsset = assets.find((a) => a.symbol === config.nativeAsset);
 
@@ -134,6 +136,7 @@ export function parseConfig(
     });
 
   return {
+    ibcChainConfigsByNetwork: ibcChainConfigsByNetwork,
     sifAddrPrefix: config.sifAddrPrefix,
     sifApiUrl: config.sifApiUrl,
     sifWsUrl: config.sifWsUrl,

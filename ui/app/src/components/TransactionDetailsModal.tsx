@@ -89,6 +89,7 @@ export default defineComponent({
                 Close
               </Button.CallToAction>
             ))}
+          <Button.CallToActionSecondary>Open</Button.CallToActionSecondary>
         </Modal>
       );
     };

@@ -256,6 +256,7 @@ export function Peg(
           }
         }
       } catch (err) {
+        console.log({ err });
         // "signing_error"?
         yield { type: "approve_error" };
       }

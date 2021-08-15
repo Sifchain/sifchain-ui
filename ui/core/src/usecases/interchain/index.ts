@@ -4,7 +4,7 @@ import { IAssetAmount, Chain, Network } from "../../entities";
 import EthereumSifchain from "./ethereumSifchain";
 import CosmoshubSifchain from "./cosmoshubSifchain";
 import SifchainEthereum from "./sifchainEthereum";
-import SifchainCosmoshub from "./sifchainEthereum";
+import SifchainCosmoshub from "./sifchainCosmoshub";
 
 import {
   EthereumChain,

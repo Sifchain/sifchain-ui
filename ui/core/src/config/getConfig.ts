@@ -25,6 +25,7 @@ import {
 import { Asset, Network } from "../entities";
 import { ServiceContext } from "../services";
 import { NetworkEnv } from "./getEnv";
+import { chainConfigByNetworkEnv } from "./ibc-chains";
 
 type ConfigMap = Record<NetworkEnv, ServiceContext>;
 
@@ -88,13 +89,39 @@ export function getConfig(
   ].map(cacheAsset);
 
   const configMap: ConfigMap = {
-    localnet: parseConfig(localnetconfig as CoreConfig, allAssets),
-    devnet: parseConfig(devnetconfig as CoreConfig, allAssets),
-    devnet_042: parseConfig(devnet042config as CoreConfig, allAssets),
-    testnet: parseConfig(testnetconfig as CoreConfig, allAssets),
-    mainnet: parseConfig(mainnnetconfig as CoreConfig, allAssets),
-    testnet_042_ibc: parseConfig(testnet042ibcconfig as CoreConfig, allAssets),
+    localnet: parseConfig(
+      localnetconfig as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.LOCALNET],
+    ),
+    devnet: parseConfig(
+      devnetconfig as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.DEVNET],
+    ),
+    devnet_042: parseConfig(
+      devnet042config as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.DEVNET_042],
+    ),
+    testnet: parseConfig(
+      testnetconfig as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.TESTNET],
+    ),
+    mainnet: parseConfig(
+      mainnnetconfig as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.MAINNET],
+    ),
+    testnet_042_ibc: parseConfig(
+      testnet042ibcconfig as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.TESTNET_042_IBC],
+    ),
   };
 
-  return configMap[applicationNetworkEnv];
+  const currConfig = configMap[applicationNetworkEnv];
+  console.log({ currConfig });
+  return currConfig;
 }

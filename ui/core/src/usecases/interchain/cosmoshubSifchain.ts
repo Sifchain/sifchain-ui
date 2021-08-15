@@ -40,7 +40,7 @@ export class CosmoshubSifchainInterchainApi
         emit({ type: "signing" });
         try {
           const txSequence = await this.context.services.ibc.transferIBCTokens({
-            sourceNetwork: params.assetAmount.asset.network,
+            sourceNetwork: Network.COSMOSHUB,
             destinationNetwork: Network.SIFCHAIN,
             assetAmountToTransfer: params.assetAmount,
           });

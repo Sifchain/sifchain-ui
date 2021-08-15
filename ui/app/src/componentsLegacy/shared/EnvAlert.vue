@@ -8,7 +8,8 @@ import { AppCookies, NetworkEnv, networkEnvsByIndex } from "@sifchain/sdk";
 export default defineComponent({
   setup() {
     const styles = useCssModule();
-    let env = AppCookies().getEnv();
+    const appCookies = AppCookies();
+    let env = appCookies.getEnv();
 
     const NoCookie = () => null;
 
@@ -43,7 +44,26 @@ export default defineComponent({
         ),
       }[networkEnv] || <NoCookie />);
 
-    return () => <Cmp />;
+    return () => (
+      <>
+        <Cmp />
+        <select
+          onInput={(e) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            appCookies.setEnv(NetworkEnv[e.target.value]);
+            window.location.reload();
+          }}
+          class={[styles.panel, "w-full opacity-0"]}
+        >
+          {Object.keys(NetworkEnv).map((key) => (
+            <option key={key} value={key}>
+              {key}
+            </option>
+          ))}
+        </select>
+      </>
+    );
   },
 });
 </script>

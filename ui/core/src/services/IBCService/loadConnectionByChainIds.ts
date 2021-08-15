@@ -19,6 +19,11 @@ const connectionsByChainIds: {
     };
   };
 } = {
+  "sifchain-devnet-1": {
+    "cosmoshub-testnet": {
+      channelId: "channel-53",
+    },
+  },
   "sifchain-devnet-042": {
     "cosmoshub-testnet": {
       channelId: "channel-0",
@@ -30,6 +35,9 @@ const connectionsByChainIds: {
     },
   },
   "cosmoshub-testnet": {
+    "sifchain-devnet-1": {
+      channelId: "channel-124",
+    },
     "sifchain-devnet-042": {
       channelId: "channel-53",
     },
