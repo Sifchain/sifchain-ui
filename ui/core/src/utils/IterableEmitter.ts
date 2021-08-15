@@ -1,61 +1,50 @@
 import { EventEmitter } from "events";
 import { createIteratorSubject } from "./iteratorSubject";
 
-interface TypedEmitterInterface<Type, Payload> {
-  addListener(event: Type, listener: (payload: Payload) => void): this;
-  on(event: Type, listener: (Type: Payload) => any): this;
+const VALUE_EVENT = "value";
+const END_EVENT = "end";
 
-  once(event: Type, listener: (Type: Payload) => any): this;
-  prependListener(event: Type, listener: (Type: Payload) => any): this;
-  prependOnceListener(event: Type, listener: (Type: Payload) => any): this;
+export class IterableEmitter<EventType> {
+  private isEnded = false;
 
-  off(event: Type, listener: (Type: Payload) => any): this;
-  removeAllListeners(event?: Type): this;
-  removeListener(event: Type, listener: (Type: Payload) => any): this;
+  private emitter = new EventEmitter();
+  subject = createIteratorSubject<EventType>();
 
-  emit(event: Type, payload?: Payload): boolean;
-  eventNames(): (keyof Type | string | symbol)[];
-  rawListeners(event: Type): Function[];
-  listeners(event: Type): Function[];
-  listenerCount(event: Type): number;
-
-  getMaxListeners(): number;
-  setMaxListeners(maxListeners: number): this;
-}
-
-type IterableEmitterEvent<T, P> = { type: T; payload: P };
-
-export class IterableEmitter<EventTypes, EventPayload> {
-  private isComplete = false;
-
-  subject = createIteratorSubject<
-    IterableEmitterEvent<EventTypes, EventPayload>
-  >();
-
-  emitter = (new EventEmitter() as unknown) as TypedEmitterInterface<
-    EventTypes,
-    EventPayload
-  >;
-  emit: TypedEmitterInterface<EventTypes, EventPayload>["emit"];
-  on: TypedEmitterInterface<EventTypes, EventPayload>["on"];
-
-  constructor() {
-    this.on = this.emitter.on.bind(this.emitter);
-
-    this.emit = (event: EventTypes, payload: EventPayload) => {
-      if (this.isComplete) {
-        throw new Error(
-          `Cannot emit event ${event} after IterableEmitter is complete!`,
-        );
-      }
-      this.subject.feed({ type: event, payload });
-      return this.emitter.emit(event, payload);
+  private listen<T>(eventName: string, callback: (value: T) => void) {
+    if (this.isEnded) throw new Error("Cannot listen after ended!");
+    this.emitter.on(eventName, callback);
+    const unlisten = () => {
+      this.emitter.off(eventName, callback);
     };
+    return unlisten;
   }
 
-  completeExecution() {
-    this.isComplete = true;
+  onValue(callback: (value: EventType) => void) {
+    return this.listen<EventType>(VALUE_EVENT, callback);
+  }
+
+  onEnd(callback: () => void) {
+    return this.listen<void>(END_EVENT, callback);
+  }
+
+  generator() {
+    return this.subject.iterator;
+  }
+
+  emit(event: EventType) {
+    if (this.isEnded) {
+      throw new Error(
+        `Cannot emit event ${event} after IterableEmitter is complete!`,
+      );
+    }
+    this.subject.feed(event);
+    this.emitter.emit(VALUE_EVENT, event);
+  }
+
+  end() {
+    this.isEnded = true;
     this.emitter.removeAllListeners();
+    this.emitter.emit(END_EVENT);
     this.subject.end();
   }
 }

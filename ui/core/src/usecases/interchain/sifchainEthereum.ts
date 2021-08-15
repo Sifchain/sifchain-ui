@@ -44,7 +44,7 @@ export class SifchainEthereumInterchainApi
   transfer(params: InterchainParams) {
     return new ExecutableTransaction<InterchainTransaction>(async (emit) => {
       const feeAmount = await this.estimateFees(params);
-      emit("signing");
+      emit({ type: "signing" });
 
       const lockOrBurnFn = isOriginallySifchainNativeToken(
         params.assetAmount.asset,
@@ -71,15 +71,15 @@ export class SifchainEthereumInterchainApi
             message: txStatus.memo || "There was an error while unpegging",
           },
         });
-        emit(
-          "tx_error",
-          parseTxFailure({
+        emit({
+          type: "tx_error",
+          tx: parseTxFailure({
             transactionHash: txStatus.hash,
             rawLog: txStatus.memo || "",
           }),
-        );
+        });
       } else {
-        emit("sent", txStatus);
+        emit({ type: "sent", tx: txStatus });
       }
 
       console.log(
