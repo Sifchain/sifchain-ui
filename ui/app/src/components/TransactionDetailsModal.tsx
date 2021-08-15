@@ -8,6 +8,7 @@ import { Button } from "./Button/Button";
 import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import { FormDetailsType } from "./Form";
 import { Network } from "@sifchain/sdk";
+import { getImportLocation } from "@/views/BalancePage/Import/useImportData";
 
 export default defineComponent({
   name: "TransactionDetailsModal",
@@ -85,11 +86,15 @@ export default defineComponent({
             (props.completedCta?.value != null ? (
               props.completedCta.value
             ) : (
-              <Button.CallToAction class="mt-[10px]" onClick={props.onClose}>
-                Close
-              </Button.CallToAction>
+              <>
+                <Button.CallToAction class="mt-[10px]" onClick={props.onClose}>
+                  Close
+                </Button.CallToAction>
+                {/* <Button.CallToActionSecondary class="mt-[10px]">
+                  Retry
+                </Button.CallToActionSecondary> */}
+              </>
             ))}
-          <Button.CallToActionSecondary>Open</Button.CallToActionSecondary>
         </Modal>
       );
     };

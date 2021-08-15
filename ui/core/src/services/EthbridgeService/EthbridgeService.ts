@@ -389,5 +389,23 @@ export default function createEthbridgeService({
 
       return pegTx;
     },
+
+    async fetchAllTokens() {
+      const web3 = await ensureWeb3();
+
+      const bridgeBankContract = await getBridgeBankContract(
+        web3,
+        bridgebankContractAddress,
+      );
+
+      const logs = await bridgeBankContract.getPastEvents(
+        "LogNewBridgeToken(address _token, string _symbol)",
+        {
+          fromBlock: 0,
+          toBlock: "latest",
+        },
+      );
+      console.log({ bridgebanklogs: logs });
+    },
   };
 }

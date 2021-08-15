@@ -97,4 +97,6 @@ export class NativeDexClient {
   }
 }
 
-new NativeDexClient("http").connect((client) => {}).then((client) => {});
+new NativeDexClient("http").connect((client) => {
+  client.query?.tokenregistry?.Entries({}).then(console.log);
+});
