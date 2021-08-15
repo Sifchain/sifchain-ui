@@ -32,9 +32,7 @@ const gasSample: {
   },
 ];
 
-export function calculateGasByClosestTransferMsgCount(
-  transferMsgCount: number,
-) {
+export function calculateGasForIBCTransfer(transferMsgCount: number) {
   let linearGasSlope = 0;
   for (let [gasIndex, gasPoint] of gasSample.entries()) {
     if (gasIndex == 0) continue;

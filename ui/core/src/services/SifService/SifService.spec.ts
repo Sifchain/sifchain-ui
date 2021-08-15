@@ -45,6 +45,11 @@ const testConfig: SifServiceContext = {
   sifWsUrl: "ws://127.0.0.1:26657/websocket",
   sifRpcUrl: "http://127.0.0.1:26657",
   assets: [ROWAN, CATK, CBTK, CETH],
+  ibcChainConfigsByNetwork: {
+    sifchain: null,
+    ethereum: null,
+    cosmoshub: null,
+  },
   keplrChainConfig: {
     rest: "",
     rpc: "",

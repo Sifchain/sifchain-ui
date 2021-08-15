@@ -127,17 +127,25 @@ const expected = {
 
 test("parseConfig", () => {
   expect(
-    parseConfig(config, [
+    parseConfig(
+      config,
+      [
+        {
+          address: "0x2C2B9C9a4a25e24B174f26114e8926a9f2128FE4",
+          decimals: 12,
+          name: "123",
+          network: Network.SIFCHAIN,
+          symbol: "rowan",
+          label: "ROWAN",
+          displaySymbol: "ROWAN",
+          homeNetwork: Network.ETHEREUM,
+        },
+      ],
       {
-        address: "0x2C2B9C9a4a25e24B174f26114e8926a9f2128FE4",
-        decimals: 12,
-        name: "123",
-        network: Network.SIFCHAIN,
-        symbol: "rowan",
-        label: "ROWAN",
-        displaySymbol: "ROWAN",
-        homeNetwork: Network.ETHEREUM,
+        sifchain: null,
+        ethereum: null,
+        cosmoshub: null,
       },
-    ]),
+    ),
   ).toThrow();
 });

@@ -46,6 +46,7 @@ import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
 import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
 import Long from "long";
 import JSBI from "jsbi";
+import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -397,12 +398,13 @@ export class IBCService {
     console.log({ batches });
     const responses: BroadcastTxResponse[] = [];
     for (let batch of batches) {
+      console.log("transfer msg count", batch.length);
+
       try {
         // const gasPerMessage = 39437;
         // const gasPerMessage = 39437;
         const gasPerMessage = 30437;
         console.log(JSON.stringify(batch));
-        console.log("transfer msg count", transferMsgs.length);
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,
           batch,
@@ -412,21 +414,11 @@ export class IBCService {
               {
                 denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom,
                 amount:
-                  sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+                  sourceChain.keplrChainInfo.gasPriceStep?.high.toString() ||
                   "",
               },
             ],
-            gas: (() => {
-              const calculatedGas = JSBI.multiply(
-                JSBI.BigInt(gasPerMessage),
-                JSBI.BigInt(batch.length),
-              );
-              const minimumGas = JSBI.BigInt("160000");
-              const out = JSBI.greaterThan(calculatedGas, minimumGas)
-                ? calculatedGas
-                : JSBI.add(minimumGas, calculatedGas);
-              return out.toString();
-            })(),
+            gas: calculateGasForIBCTransfer(batch.length).toString(),
           },
         );
         console.log({ brdcstTxRes });
