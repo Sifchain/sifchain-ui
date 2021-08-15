@@ -1,4 +1,7 @@
-const gasSample: {
+import JSBI from "jsbi";
+import Long from "long";
+
+export const gasSample: {
   transferMsgCount: number;
   gas: number;
 }[] = [
@@ -32,15 +35,33 @@ const gasSample: {
   },
 ];
 
-export function calculateGasForIBCTransfer(transferMsgCount: number) {
-  let linearGasSlope = 0;
+export function calculateGasForIBCTransfer(x: number) {
+  let y = 0;
   for (let [gasIndex, gasPoint] of gasSample.entries()) {
     if (gasIndex == 0) continue;
-    if (transferMsgCount >= gasPoint.transferMsgCount) {
-      linearGasSlope =
-        (gasPoint.gas - gasSample[gasIndex - 1].gas) /
-        (gasPoint.transferMsgCount - gasSample[gasIndex - 1].transferMsgCount);
+    const y1 = gasSample[gasIndex - 1].gas;
+    const y2 = gasPoint.gas;
+    const x1 = gasSample[gasIndex - 1].transferMsgCount;
+    const x2 = gasPoint.transferMsgCount;
+    if (x > x1) {
+      const m = (y2 - y1) / (x2 - x1);
+      const b = y1 - m * x1;
+      y = m * x + b;
     }
   }
-  return linearGasSlope * transferMsgCount;
+  return y.toString();
 }
+// export function calculateGasForIBCTransfer(transferMsgCount: number) {
+//   let outputGas = 0;
+//   for (let [gasIndex, gasPoint] of gasSample.entries()) {
+//     if (gasIndex == 0) continue;
+//     if (transferMsgCount >= gasSample[gasIndex - 1].transferMsgCount) {
+//       const linearGasSlope =
+//         (gasPoint.gas - gasSample[gasIndex - 1].gas) /
+//         (gasPoint.transferMsgCount - gasSample[gasIndex - 1].transferMsgCount);
+//       const linearGasOffset = gasPoint.transferMsgCount;
+//       outputGas = linearGasSlope * transferMsgCount + linearGasOffset;
+//     }
+//   }
+//   return JSBI?.BigInt(outputGas).toString();
+// }

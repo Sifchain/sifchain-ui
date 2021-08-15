@@ -414,11 +414,11 @@ export class IBCService {
               {
                 denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom,
                 amount:
-                  sourceChain.keplrChainInfo.gasPriceStep?.high.toString() ||
+                  sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
                   "",
               },
             ],
-            gas: calculateGasForIBCTransfer(batch.length).toString(),
+            gas: calculateGasForIBCTransfer(batch.length),
           },
         );
         console.log({ brdcstTxRes });
