@@ -51,7 +51,7 @@ export class SifchainEthereumInterchainApi
       )
         ? this.context.services.ethbridge.lockToEthereum
         : this.context.services.ethbridge.burnToEthereum;
-
+      console.log(params.assetAmount);
       const tx = await lockOrBurnFn({
         assetAmount: params.assetAmount,
         ethereumRecipient: params.toAddress,

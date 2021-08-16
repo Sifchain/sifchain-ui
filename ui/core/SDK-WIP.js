@@ -40,6 +40,11 @@ const sifchain = Sifchain.create({
   rpc: "http://localhost:8545",
 });
 
+const sifchain = Sifchain.createClient({
+  network: "testnet",
+  rpc: "http://localhost:8545",
+});
+
 import { Client } from "@sifchain/sdk";
 
 const sifchain = new Client({

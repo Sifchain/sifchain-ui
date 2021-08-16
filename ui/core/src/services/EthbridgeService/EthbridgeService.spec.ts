@@ -38,6 +38,7 @@ describe("EthbridgeService", () => {
       bridgebankContractAddress: config.bridgebankContractAddress,
       bridgetokenContractAddress: EROWAN.address!,
       getWeb3Provider,
+      assets: [],
     });
   });
 

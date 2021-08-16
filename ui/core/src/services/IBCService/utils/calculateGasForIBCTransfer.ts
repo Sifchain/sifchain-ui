@@ -51,17 +51,3 @@ export function calculateGasForIBCTransfer(x: number) {
   }
   return y.toString();
 }
-// export function calculateGasForIBCTransfer(transferMsgCount: number) {
-//   let outputGas = 0;
-//   for (let [gasIndex, gasPoint] of gasSample.entries()) {
-//     if (gasIndex == 0) continue;
-//     if (transferMsgCount >= gasSample[gasIndex - 1].transferMsgCount) {
-//       const linearGasSlope =
-//         (gasPoint.gas - gasSample[gasIndex - 1].gas) /
-//         (gasPoint.transferMsgCount - gasSample[gasIndex - 1].transferMsgCount);
-//       const linearGasOffset = gasPoint.transferMsgCount;
-//       outputGas = linearGasSlope * transferMsgCount + linearGasOffset;
-//     }
-//   }
-//   return JSBI?.BigInt(outputGas).toString();
-// }

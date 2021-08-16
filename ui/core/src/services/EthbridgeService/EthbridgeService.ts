@@ -2,7 +2,12 @@ import { provider } from "web3-core";
 import Web3 from "web3";
 import { getBridgeBankContract } from "./bridgebankContract";
 import { getTokenContract } from "./tokenContract";
-import { IAssetAmount, getChainsService } from "../../entities";
+import {
+  IAssetAmount,
+  getChainsService,
+  IAsset,
+  Network,
+} from "../../entities";
 import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
@@ -24,6 +29,7 @@ export type EthbridgeServiceContext = {
   bridgetokenContractAddress: string;
   getWeb3Provider: () => Promise<provider>;
   sifUnsignedClient?: SifUnSignedClient;
+  assets: IAsset[];
 };
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -36,6 +42,7 @@ export default function createEthbridgeService({
   bridgebankContractAddress,
   getWeb3Provider,
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
+  assets,
 }: EthbridgeServiceContext) {
   // Pull this out to a util?
   // How to handle context/dependency injection?
@@ -390,22 +397,69 @@ export default function createEthbridgeService({
       return pegTx;
     },
 
-    async fetchAllTokens() {
-      const web3 = await ensureWeb3();
-
+    async fetchTokenAddress(
+      // asset to fetch token for
+      asset: IAsset,
+      // optional: pass in HTTP, or other provider (for testing)
+      loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
+    ) {
+      const web3 = await loadWeb3Instance();
       const bridgeBankContract = await getBridgeBankContract(
         web3,
         bridgebankContractAddress,
       );
+      let tokenAddr: string;
+      tokenAddr = await bridgeBankContract.methods
+        .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toLowerCase())
+        .call();
+      if (!+tokenAddr) {
+        tokenAddr = await bridgeBankContract.methods
+          .getBridgeToken("e" + asset.symbol.toLowerCase())
+          .call();
+      }
+      if (!+tokenAddr) {
+        tokenAddr = await bridgeBankContract.methods
+          .getBridgeToken(asset.symbol.toLowerCase())
+          .call();
+      }
+      if (!+tokenAddr) {
+        tokenAddr = await bridgeBankContract.methods
+          .getBridgeToken(asset.symbol.toLowerCase())
+          .call();
+      }
+      if (!+tokenAddr && asset.ibcDenom) {
+        tokenAddr = await bridgeBankContract.methods
+          .getBridgeToken(asset.ibcDenom)
+          .call();
+      }
+      return tokenAddr;
+    },
 
-      const logs = await bridgeBankContract.getPastEvents(
-        "LogNewBridgeToken(address _token, string _symbol)",
-        {
-          fromBlock: 0,
-          toBlock: "latest",
-        },
-      );
-      console.log({ bridgebanklogs: logs });
+    async fetchAllTokenAddresses(
+      // optional: pass in HTTP, or other provider (for testing)
+      loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
+    ) {
+      await new Promise((r) => setTimeout(r, 8000));
+      console.log("loading tokens for ", bridgebankContractAddress);
+
+      try {
+        const tokens: Record<string, string> = {};
+        for (let asset of assets.filter(
+          (a) => a.network === Network.SIFCHAIN,
+        )) {
+          if (tokens[asset.displaySymbol]) continue;
+
+          tokens[asset.symbol] = await this.fetchTokenAddress(
+            asset,
+            loadWeb3Instance,
+          );
+        }
+        console.log("\n\n\n\n\n\n\n");
+        console.log(tokens);
+        return tokens;
+      } catch (e) {
+        console.error(e);
+      }
     },
   };
 }

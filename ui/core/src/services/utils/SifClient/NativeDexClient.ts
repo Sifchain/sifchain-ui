@@ -32,17 +32,16 @@ import { SimulationResponse } from "@cosmjs/stargate/build/codec/cosmos/base/abc
 import { sleep } from "../../../test/utils/sleep";
 
 export class NativeDexClient {
-  query?: ReturnType<typeof NativeDexClient.prototype.createQueryClient>;
-  protected t34?: Tendermint34Client;
-  constructor(readonly rpcUrl: string) {}
-  async connect(resolver?: (t: this) => void) {
-    return (
-      this.t34 ??
-      Tendermint34Client.connect(this.rpcUrl).then((t34) => {
-        this.query = this.createQueryClient(t34);
-        return resolver?.(this);
-      })
-    );
+  protected constructor(
+    readonly rpcUrl: string,
+    protected t34: Tendermint34Client,
+    readonly query: ReturnType<typeof NativeDexClient.createQueryClient>,
+  ) {}
+  static async connect(rpcUrl: string): Promise<NativeDexClient> {
+    const t34 = await Tendermint34Client.connect(rpcUrl);
+    const query = this.createQueryClient(t34);
+    const instance = new this(rpcUrl, t34, query);
+    return instance;
   }
 
   async createSigningClient(signer: OfflineSigner) {
@@ -78,7 +77,7 @@ export class NativeDexClient {
     return client;
   }
 
-  private createQueryClient(t34: Tendermint34Client) {
+  private static createQueryClient(t34: Tendermint34Client) {
     return QueryClient.withExtensions(
       t34,
       setupIbcExtension,
@@ -96,7 +95,3 @@ export class NativeDexClient {
     );
   }
 }
-
-new NativeDexClient("http").connect((client) => {
-  client.query?.tokenregistry?.Entries({}).then(console.log);
-});

@@ -51,7 +51,7 @@ export function createServices(context: ServiceContext) {
   const ClpService = clpService(context);
   const EventBusService = eventBusService(context);
   const DispensationService = createDispensationService(context);
-  EthbridgeService?.fetchAllTokens();
+  EthbridgeService?.fetchAllTokenAddresses();
   const CryptoeconomicsService = cryptoeconomicsService(context);
   const StorageService = storageService(context);
   return {

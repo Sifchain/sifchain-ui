@@ -35,5 +35,5 @@ export function setupSifchainApi(
       unsubscriber();
     }
   }
-  return { api, services, store, cleanup };
+  return { api, services, store, cleanup, config };
 }

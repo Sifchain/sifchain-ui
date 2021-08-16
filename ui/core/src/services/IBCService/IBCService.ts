@@ -151,15 +151,15 @@ export class IBCService {
         };
       }),
     );
-    console.log(sourceNetwork.toUpperCase());
-    console.table(
-      clients.filter((c) => {
-        if (destinationNetwork === Network.COSMOSHUB) {
-          return c.chainId.includes("sifchain");
-        }
-        return true;
-      }),
-    );
+    // console.log(sourceNetwork.toUpperCase());
+    // console.table(
+    //   clients.filter((c) => {
+    //     if (destinationNetwork === Network.COSMOSHUB) {
+    //       // return c.chainId.includes("sifchain");
+    //     }
+    //     return true;
+    //   }),
+    // );
     const allCxns = await Promise.all(
       (await queryClient.ibc.connection.allConnections()).connections.map(
         async (cxn) => {
