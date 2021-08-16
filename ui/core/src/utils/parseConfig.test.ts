@@ -47,7 +47,6 @@ const config: CoreConfig = {
       high: 0.8,
     },
   },
-  chains: [],
 };
 
 const expected = {
@@ -147,6 +146,7 @@ test("parseConfig", () => {
         cosmoshub: null,
         iris: null,
       },
+      require("../config/chains/chains.devnet.ts").default,
     ),
   ).toThrow();
 });
