@@ -49,6 +49,7 @@ const testConfig: SifServiceContext = {
     sifchain: null,
     ethereum: null,
     cosmoshub: null,
+    iris: null,
   },
   keplrChainConfig: {
     rest: "",

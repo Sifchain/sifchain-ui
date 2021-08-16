@@ -145,6 +145,7 @@ test("parseConfig", () => {
         sifchain: null,
         ethereum: null,
         cosmoshub: null,
+        iris: null,
       },
     ),
   ).toThrow();

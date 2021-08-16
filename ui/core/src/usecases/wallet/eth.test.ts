@@ -59,6 +59,11 @@ beforeEach(() => {
           address: "",
           isConnected: true,
         },
+        iris: {
+          balances: [],
+          address: "",
+          isConnected: true,
+        },
       },
     },
   });
