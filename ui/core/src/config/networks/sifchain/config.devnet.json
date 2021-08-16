@@ -70,6 +70,12 @@
       "displayName": "Cosmoshub",
       "blockExplorerUrl": "https://mintscan.io/cosmos",
       "nativeAssetSymbol": "uphoton"
+    },
+    {
+      "id": "iris",
+      "displayName": "Iris",
+      "blockExplorerUrl": "https://nyancat.iobscan.io/",
+      "nativeAssetSymbol": "nyan"
     }
   ]
 }

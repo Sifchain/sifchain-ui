@@ -21,6 +21,9 @@ export function getNetworkBalances(store: Store, network?: Network) {
     case Network.COSMOSHUB: {
       return store.wallet.cosmoshub.balances;
     }
+    case Network.IRIS: {
+      return store.wallet.iris.balances;
+    }
   }
 }
 

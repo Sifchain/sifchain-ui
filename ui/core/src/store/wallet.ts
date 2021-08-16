@@ -22,6 +22,12 @@ export interface WalletStore {
     isConnected: boolean;
     address: Address;
   };
+  iris: {
+    chainId?: string;
+    balances: IAssetAmount[];
+    isConnected: boolean;
+    address: Address;
+  };
 }
 
 export const wallet = reactive<WalletStore>({
@@ -38,6 +44,11 @@ export const wallet = reactive<WalletStore>({
     lmUserData: null,
   },
   cosmoshub: {
+    isConnected: false,
+    address: "",
+    balances: [],
+  },
+  iris: {
     isConnected: false,
     address: "",
     balances: [],

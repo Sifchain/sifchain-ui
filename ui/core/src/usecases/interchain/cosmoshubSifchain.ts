@@ -1,5 +1,10 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, TransactionStatus, Network } from "../../entities";
+import {
+  IAssetAmount,
+  TransactionStatus,
+  Network,
+  Chain,
+} from "../../entities";
 import {
   InterchainApi,
   ExecutableTransaction,
@@ -28,8 +33,8 @@ export class CosmoshubSifchainInterchainApi
   implements InterchainApi<CosmosInterchainTransaction> {
   constructor(
     public context: UsecaseContext,
-    public fromChain: CosmoshubChain,
-    public toChain: SifchainChain,
+    public fromChain: Chain,
+    public toChain: Chain,
   ) {}
 
   async estimateFees(params: InterchainParams) {} // no fees
@@ -40,8 +45,8 @@ export class CosmoshubSifchainInterchainApi
         emit({ type: "signing" });
         try {
           const txSequence = await this.context.services.ibc.transferIBCTokens({
-            sourceNetwork: Network.COSMOSHUB,
-            destinationNetwork: Network.SIFCHAIN,
+            sourceNetwork: this.fromChain.network,
+            destinationNetwork: this.toChain.network,
             assetAmountToTransfer: params.assetAmount,
           });
           for (let tx of txSequence) {

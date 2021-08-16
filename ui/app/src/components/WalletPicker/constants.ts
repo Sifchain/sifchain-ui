@@ -90,4 +90,31 @@ export const walletConnections: WalletConnection[] = [
       }));
     },
   },
+  {
+    walletName: "Keplr",
+    network: Network.IRIS,
+    networkTokenSymbol: "unyan",
+    walletIconSrc: require("@/assets/keplr.jpg"),
+    getAddressExplorerUrl: (config: AppConfig, address: string) => {
+      const iris = config.chains.find((c) => c.id === Network.IRIS);
+      if (!iris) return "";
+      return iris.blockExplorerUrl + "/address/" + address;
+    },
+    useWalletState: () => {
+      return rootStore.accounts.computed((s) => {
+        const w = s.state.iris;
+        return {
+          isConnected: w.connected,
+          address: w.address,
+        };
+      });
+    },
+    useWalletApi: () => {
+      return computed(() => ({
+        connect: () =>
+          rootStore.accounts.loadIBCAccount({ network: Network.IRIS }),
+        disconnect: undefined,
+      }));
+    },
+  },
 ];

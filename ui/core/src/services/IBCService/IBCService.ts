@@ -59,6 +59,7 @@ export class IBCService {
     ethereum: {},
     cosmoshub: {},
     sifchain: {},
+    iris: {},
   };
   symbolLookup: Record<string, string> = {};
 

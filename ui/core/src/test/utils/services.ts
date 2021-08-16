@@ -19,6 +19,7 @@ export async function createTestSifService(account?: TestSifAccount) {
       sifchain: null,
       cosmoshub: null,
       ethereum: null,
+      iris: null,
     },
   });
 
