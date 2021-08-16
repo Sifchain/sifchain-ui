@@ -413,6 +413,10 @@ export default function createEthbridgeService({
         .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toLowerCase())
         .call();
       if (!+tokenAddr) {
+        if (asset.symbol.replace(/^c/, "").toLowerCase() === "eth") {
+          // Ethereum's address is correctly 0x00000...
+          return tokenAddr;
+        }
         tokenAddr = await bridgeBankContract.methods
           .getBridgeToken("e" + asset.symbol.toLowerCase())
           .call();

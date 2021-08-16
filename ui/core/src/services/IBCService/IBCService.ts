@@ -390,7 +390,7 @@ export class IBCService {
     }
 
     const batches = [];
-    const maxMsgsPerBatch = 1000;
+    const maxMsgsPerBatch = 800;
     // const maxMsgsPerBatch = 1024;
     while (transferMsgs.length) {
       batches.push(transferMsgs.splice(0, maxMsgsPerBatch));
