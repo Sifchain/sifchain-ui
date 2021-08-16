@@ -42,6 +42,14 @@ export const accountStore = Vuextra.createStore({
       balances: [],
       log: "",
     },
+    iris: {
+      network: Network.IRIS,
+      accounts: [],
+      address: "",
+      connected: false,
+      balances: [],
+      log: "",
+    },
   } as Record<Network, IWalletServiceState>,
   getters: (state) => ({
     connectedNetworkCount: () => {
@@ -61,7 +69,7 @@ export const accountStore = Vuextra.createStore({
   }),
   actions: (context) => ({
     async loadIBCAccount(p: { network: Network }) {
-      const load = () => {
+      const load = async () => {
         return core.services.ibc.createWalletByNetwork(p.network).then((w) => {
           accountStore.setConnected({ network: p.network, connected: true });
           accountStore.setAddress({

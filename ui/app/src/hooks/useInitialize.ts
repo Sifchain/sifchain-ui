@@ -84,8 +84,19 @@ export function useInitialize() {
     async (val) => {
       if (val) {
         rootStore.accounts.loadIBCAccount({ network: Network.COSMOSHUB });
+        rootStore.accounts.loadIBCAccount({ network: Network.IRIS });
       }
     },
     { immediate: true },
+  );
+
+  watch(
+    () => rootStore.accounts.refs.iris.computed(),
+    (ref) => {
+      store.wallet.iris.isConnected = ref.value.connected;
+      store.wallet.iris.address = ref.value.address;
+      store.wallet.iris.balances = ref.value.balances;
+    },
+    { deep: true },
   );
 }

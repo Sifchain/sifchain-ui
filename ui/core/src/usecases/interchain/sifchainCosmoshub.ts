@@ -1,5 +1,10 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, TransactionStatus, Network } from "../../entities";
+import {
+  IAssetAmount,
+  TransactionStatus,
+  Network,
+  Chain,
+} from "../../entities";
 import {
   InterchainApi,
   ExecutableTransaction,
@@ -14,8 +19,8 @@ import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
 
 export default function createCosmoshubSifchainApi(
   context: UsecaseContext,
-  cosmoshubChain: CosmoshubChain,
-  sifchainChain: SifchainChain,
+  cosmoshubChain: Chain,
+  sifchainChain: Chain,
 ) {
   return new SifchainCosmoshubInterchainApi(
     context,
@@ -28,8 +33,8 @@ export class SifchainCosmoshubInterchainApi
   implements InterchainApi<CosmosInterchainTransaction> {
   constructor(
     public context: UsecaseContext,
-    public fromChain: CosmoshubChain,
-    public toChain: SifchainChain,
+    public fromChain: Chain,
+    public toChain: Chain,
   ) {}
 
   async estimateFees(params: InterchainParams) {} // no fees
@@ -39,8 +44,8 @@ export class SifchainCosmoshubInterchainApi
       async (emit) => {
         emit({ type: "signing" });
         const txSequence = await this.context.services.ibc.transferIBCTokens({
-          sourceNetwork: Network.SIFCHAIN,
-          destinationNetwork: Network.COSMOSHUB,
+          sourceNetwork: this.fromChain.network,
+          destinationNetwork: this.toChain.network,
           assetAmountToTransfer: params.assetAmount,
         });
         for (let tx of txSequence) {

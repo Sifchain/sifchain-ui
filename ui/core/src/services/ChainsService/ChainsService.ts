@@ -6,10 +6,15 @@ import {
   setChainsService,
 } from "../../entities";
 import { SifchainChain, EthereumChain, CosmoshubChain } from "./chains";
+import { IrisChain } from "./chains/IrisChain";
 
 export * from "./chains";
 
-export type AnyChain = SifchainChain | EthereumChain | CosmoshubChain;
+export type AnyChain =
+  | SifchainChain
+  | EthereumChain
+  | CosmoshubChain
+  | IrisChain;
 
 // This is private, only to make recordkeeping easier in this file so we don't
 // have to keep up with a bunch of strings
@@ -17,6 +22,7 @@ enum ChainId {
   ethereum,
   cosmoshub,
   sifchain,
+  iris,
 }
 
 export type ChainsServiceContext = {
@@ -86,6 +92,15 @@ export class ChainsService {
         ) as JsonChainConfig,
       }),
     );
+    this.addChain(
+      ChainId.iris,
+      new IrisChain({
+        assets: p.assets,
+        chainConfig: p.chains.find(
+          (c) => c.id === Network.IRIS,
+        ) as JsonChainConfig,
+      }),
+    );
 
     setChainsService(this);
   }
@@ -101,6 +116,8 @@ export class ChainsService {
         return this.cosmoshub;
       case Network.ETHEREUM:
         return this.ethereum;
+      case Network.IRIS:
+        return this.iris;
     }
   }
 
@@ -112,6 +129,9 @@ export class ChainsService {
   }
   get ethereum() {
     return this._map.get(ChainId.ethereum) as EthereumChain;
+  }
+  get iris() {
+    return this._map.get(ChainId.iris) as IrisChain;
   }
 }
 
