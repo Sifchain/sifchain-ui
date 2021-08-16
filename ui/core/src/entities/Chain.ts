@@ -3,7 +3,7 @@ import { Network } from "./Network";
 import { ChainsService } from "../services/ChainsService";
 
 export type JsonChainConfig = {
-  id: string;
+  network: string;
   displayName: string;
   blockExplorerUrl: string;
   nativeAssetSymbol: string;

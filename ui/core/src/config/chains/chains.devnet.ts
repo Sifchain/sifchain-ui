@@ -1,24 +1,26 @@
-export default {
+import { NetworkChainsLookup } from "./NetEnvChainsLookup";
+
+export default <NetworkChainsLookup>{
   sifchain: {
-    id: "sifchain",
+    network: "sifchain",
     displayName: "Sifchain",
     blockExplorerUrl: "https://blockexplorer-devnet.sifchain.finance",
     nativeAssetSymbol: "rowan",
   },
   ethereum: {
-    id: "ethereum",
+    network: "ethereum",
     displayName: "Ethereum",
     blockExplorerUrl: "https://ropsten.etherscan.io",
     nativeAssetSymbol: "eth",
   },
   cosmoshub: {
-    id: "cosmoshub",
+    network: "cosmoshub",
     displayName: "Cosmoshub",
     blockExplorerUrl: "https://mintscan.io/cosmos",
     nativeAssetSymbol: "uphoton",
   },
   iris: {
-    id: "iris",
+    network: "iris",
     displayName: "Iris",
     blockExplorerUrl: "https://nyancat.iobscan.io/",
     nativeAssetSymbol: "nyan",
