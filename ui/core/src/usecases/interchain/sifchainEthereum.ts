@@ -1,5 +1,10 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, Chain, TransactionStatus } from "../../entities";
+import {
+  IAssetAmount,
+  Chain,
+  TransactionStatus,
+  Network,
+} from "../../entities";
 import {
   InterchainApi,
   ExecutableTransaction,
@@ -13,15 +18,11 @@ import { SifchainChain, EthereumChain } from "../../services/ChainsService";
 import { calculateUnpegFee } from "../peg/utils/calculateExportFee";
 import { isOriginallySifchainNativeToken } from "../peg/utils/isOriginallySifchainNativeToken";
 
-export default function createSifchainEthereumApi(
-  context: UsecaseContext,
-  sifchainChain: SifchainChain,
-  ethereumChain: EthereumChain,
-) {
+export default function createSifchainEthereumApi(context: UsecaseContext) {
   return new SifchainEthereumInterchainApi(
     context,
-    sifchainChain,
-    ethereumChain,
+    context.services.chains.get(Network.SIFCHAIN),
+    context.services.chains.get(Network.ETHEREUM),
   );
 }
 

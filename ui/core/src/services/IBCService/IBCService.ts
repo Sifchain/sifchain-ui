@@ -242,7 +242,7 @@ export class IBCService {
         }
 
         let asset = getChainsService()
-          ?.getByNetwork(params.network)
+          ?.get(params.network)
           .assets.find((a) => a.symbol === symbol);
 
         if (asset && balance.denom.startsWith("ibc/")) {

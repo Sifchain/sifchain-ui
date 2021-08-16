@@ -182,9 +182,9 @@ export default function createEthbridgeService({
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
 
-      const ethereumAsset = getChainsService()?.sifchain.findAssetWithLikeSymbolOrThrow(
-        params.assetAmount.asset.symbol,
-      );
+      const ethereumAsset = getChainsService()
+        ?.get(Network.SIFCHAIN)
+        .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
       const tokenAddress =
         ethereumAsset.ibcDenom || ethereumAsset.address || ETH_ADDRESS;
@@ -279,9 +279,9 @@ export default function createEthbridgeService({
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
 
-      const ethereumAsset = getChainsService()?.sifchain.findAssetWithLikeSymbolOrThrow(
-        params.assetAmount.asset.symbol,
-      );
+      const ethereumAsset = getChainsService()
+        ?.get(Network.SIFCHAIN)
+        .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
       const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
 
       const lockParams = {

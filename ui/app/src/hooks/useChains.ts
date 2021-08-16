@@ -5,5 +5,5 @@ export const useChains = () => {
 };
 
 export const useChainsList = () => {
-  return useCore().services.chains.getAll();
+  return useCore().services.chains.list();
 };

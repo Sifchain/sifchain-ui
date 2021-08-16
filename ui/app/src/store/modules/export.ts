@@ -49,8 +49,8 @@ export const exportStore = Vuextra.createStore({
       self.setUnpegEvent(undefined);
 
       const interchain = useCore().usecases.interchain(
-        useChains().sifchain,
-        useChains().getByNetwork(ctx.state.draft.network),
+        useChains().get(Network.SIFCHAIN),
+        useChains().get(ctx.state.draft.network),
       );
       const executable = interchain.transfer({
         assetAmount: payload.assetAmount,

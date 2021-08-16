@@ -17,15 +17,11 @@ import { isBroadcastTxFailure } from "@cosmjs/stargate";
 import { findAttribute, parseRawLog, Log } from "@cosmjs/stargate/build/logs";
 import { createIteratorSubject } from "../../utils/iteratorSubject";
 
-export default function createCosmoshubSifchainApi(
-  context: UsecaseContext,
-  cosmoshubChain: CosmoshubChain,
-  sifchainChain: SifchainChain,
-) {
+export default function createCosmoshubSifchainApi(context: UsecaseContext) {
   return new CosmoshubSifchainInterchainApi(
     context,
-    cosmoshubChain,
-    sifchainChain,
+    context.services.chains.get(Network.COSMOSHUB),
+    context.services.chains.get(Network.SIFCHAIN),
   );
 }
 

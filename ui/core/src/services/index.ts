@@ -29,7 +29,6 @@ export type WithService<T extends keyof Services = keyof Services> = {
 export type ServiceContext = {
   blockExplorerUrl: string;
   assets: IAsset[];
-  chains: JsonChainConfig[];
 } & EthereumServiceContext &
   SifServiceContext &
   ClpServiceContext &

@@ -96,9 +96,7 @@ export const walletConnections: WalletConnection[] = [
     networkTokenSymbol: "unyan",
     walletIconSrc: require("@/assets/keplr.jpg"),
     getAddressExplorerUrl: (config: AppConfig, address: string) => {
-      const iris = config.chains.find((c) => c.id === Network.IRIS);
-      if (!iris) return "";
-      return iris.blockExplorerUrl + "/address/" + address;
+      return config.chains.iris.blockExplorerUrl + "/address/" + address;
     },
     useWalletState: () => {
       return rootStore.accounts.computed((s) => {
