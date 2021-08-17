@@ -7,12 +7,13 @@ import React, {
 } from "react";
 import { Store } from "../store";
 import { effect, stop } from "@vue/reactivity";
-import { isAmount, isAssetAmount } from "../entities";
+import { isAmount, isAssetAmount, Network } from "../entities";
 import { AccountPool } from "../store/pools";
 import { Api } from "../api";
 import { Services } from "../services";
 import { setupSifchainApi } from "../setupSifchainApi";
 import { NetworkEnv } from "config/getEnv";
+import { WalletStoreEntry } from "store/wallet";
 
 type ExtractorFn<T, A extends any[] = []> = (store: Store, ...args: A) => T;
 
@@ -121,7 +122,7 @@ export function useSifchainEvents() {
   return useMemo(() => ctx.services.bus, [ctx.services.bus]);
 }
 
-export const useEthState = createStateHook<Store["wallet"]["eth"]>(
+export const useEthState = createStateHook<WalletStoreEntry>(
   "useEthState",
   (store) => ({
     chainId: store.wallet.get(Network.ETHEREUM).chainId,
@@ -137,7 +138,7 @@ export const useEthState = createStateHook<Store["wallet"]["eth"]>(
   },
 );
 
-export const useSifState = createStateHook<Store["wallet"]["sif"]>(
+export const useSifState = createStateHook<WalletStoreEntry>(
   "useSifState",
   (store) => ({
     address: store.wallet.get(Network.SIFCHAIN).address,

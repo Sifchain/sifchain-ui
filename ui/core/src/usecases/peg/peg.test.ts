@@ -1,4 +1,4 @@
-import { AssetAmount } from "../../entities";
+import { AssetAmount, Network } from "../../entities";
 import { getTestingTokens } from "../../test/utils/getTestingToken";
 import { Peg, PegEvent, PegSentEvent } from "./peg";
 
