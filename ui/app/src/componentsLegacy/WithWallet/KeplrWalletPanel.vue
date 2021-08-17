@@ -16,8 +16,10 @@ export default defineComponent({
         console.log("KeplrWalletController", error);
       }
     }
-    const address = computed(() => store.wallet.sif.address);
-    const connected = computed(() => store.wallet.sif.isConnected);
+    const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
+    const connected = computed(
+      () => store.wallet.get(Network.SIFCHAIN).isConnected,
+    );
     return {
       address,
       connected,

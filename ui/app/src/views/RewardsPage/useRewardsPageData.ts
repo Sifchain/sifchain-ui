@@ -2,6 +2,7 @@ import { computed, ComputedRef } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { getExistingClaimsData } from "@/componentsLegacy/shared/utils";
+import { accountStore } from "@/store/modules/accounts";
 
 // TODO REACTIVE
 
@@ -50,8 +51,8 @@ const useExistingClaimsData = (
 export const useRewardsPageData = (props: { address: string }) => {
   props.address = props.address || "sif10c6s2u0ga576jsah6979wjc58uuchd864llzty";
 
-  const { store, config, services } = useCore();
-  const address = computed(() => store.wallet.sif.address);
+  const { config, services } = useCore();
+  const address = accountStore.refs.sifchain.address.computed();
 
   const lmRes = useLiquidityMiningData(address);
   const vsRes = useValidatorSubsidyData(address);

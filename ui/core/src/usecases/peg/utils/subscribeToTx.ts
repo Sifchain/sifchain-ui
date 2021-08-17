@@ -1,7 +1,7 @@
 import { reactive } from "@vue/reactivity";
 import { UsecaseContext } from "../..";
 import { PegTxEventEmitter } from "../../../services/EthbridgeService/PegTxEventEmitter";
-import { TransactionStatus } from "../../../entities";
+import { TransactionStatus, Network } from "../../../entities";
 import { Services } from "../../../services";
 import { Store } from "../../../store";
 import { Transaction } from "web3-core";
@@ -17,12 +17,12 @@ export function SubscribeToTx({
   // Helper to set store tx status
   // Should this live behind a store service API?
   function storeSetTxStatus(tx: TransactionStatus) {
-    if (!tx.hash || !store.wallet.eth.address) return;
+    if (!tx.hash || !store.wallet.get(Network.ETHEREUM).address) return;
 
-    store.tx.eth[store.wallet.eth.address] =
-      store.tx.eth[store.wallet.eth.address] || reactive({});
+    store.tx.eth[store.wallet.get(Network.ETHEREUM).address] =
+      store.tx.eth[store.wallet.get(Network.ETHEREUM).address] || reactive({});
 
-    store.tx.eth[store.wallet.eth.address][tx.hash] = tx;
+    store.tx.eth[store.wallet.get(Network.ETHEREUM).address][tx.hash] = tx;
 
     if (tx.state === "accepted") {
       services.bus.dispatch({

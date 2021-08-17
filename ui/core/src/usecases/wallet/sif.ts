@@ -1,4 +1,4 @@
-import { Address, TxParams } from "../../entities";
+import { Address, TxParams, Network } from "../../entities";
 import { UsecaseContext } from "..";
 import { effect, ReactiveEffect, stop } from "@vue/reactivity";
 
@@ -13,14 +13,16 @@ export default ({
       effects.push(
         effect(() => {
           console.log("state.connected:", state.connected);
-          if (store.wallet.sif.isConnected !== state.connected) {
-            store.wallet.sif.isConnected = state.connected;
-            if (store.wallet.sif.isConnected) {
+          if (
+            store.wallet.get(Network.SIFCHAIN).isConnected !== state.connected
+          ) {
+            store.wallet.get(Network.SIFCHAIN).isConnected = state.connected;
+            if (store.wallet.get(Network.SIFCHAIN).isConnected) {
               services.bus.dispatch({
                 type: "WalletConnectedEvent",
                 payload: {
                   walletType: "sif",
-                  address: store.wallet.sif.address,
+                  address: store.wallet.get(Network.SIFCHAIN).address,
                 },
               });
             }
@@ -30,13 +32,13 @@ export default ({
 
       effects.push(
         effect(() => {
-          store.wallet.sif.address = state.address;
+          store.wallet.get(Network.SIFCHAIN).address = state.address;
         }),
       );
 
       effects.push(
         effect(() => {
-          store.wallet.sif.balances = state.balances;
+          store.wallet.get(Network.SIFCHAIN).balances = state.balances;
         }),
       );
 
@@ -61,7 +63,7 @@ export default ({
         // TODO type
         await services.sif.connect();
 
-        store.wallet.sif.isConnected = true;
+        store.wallet.get(Network.SIFCHAIN).isConnected = true;
       } catch (error) {
         console.error(error);
         services.bus.dispatch({

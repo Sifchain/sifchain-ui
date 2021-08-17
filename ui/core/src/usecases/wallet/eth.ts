@@ -1,5 +1,5 @@
 import { effect, ReactiveEffect, stop } from "@vue/reactivity";
-import { UsecaseContext } from "../..";
+import { UsecaseContext, Network } from "../..";
 import { Asset, IAsset } from "../../entities";
 import B from "../../entities/utils/B";
 import { isSupportedEVMChain } from "../utils";
@@ -22,7 +22,7 @@ export default ({
       });
 
       const unsubscribeChainId = services.eth.onChainIdDetected((chainId) => {
-        store.wallet.eth.chainId = chainId;
+        store.wallet.get(Network.ETHEREUM).chainId = chainId;
       });
 
       const etheriumState = services.eth.getState();
@@ -30,16 +30,19 @@ export default ({
       effects.push(
         effect(() => {
           // Only show connected when we have an address
-          if (store.wallet.eth.isConnected !== etheriumState.connected) {
-            store.wallet.eth.isConnected =
+          if (
+            store.wallet.get(Network.ETHEREUM).isConnected !==
+            etheriumState.connected
+          ) {
+            store.wallet.get(Network.ETHEREUM).isConnected =
               etheriumState.connected && !!etheriumState.address;
 
-            if (store.wallet.eth.isConnected) {
+            if (store.wallet.get(Network.ETHEREUM).isConnected) {
               services.bus.dispatch({
                 type: "WalletConnectedEvent",
                 payload: {
                   walletType: "eth",
-                  address: store.wallet.eth.address,
+                  address: store.wallet.get(Network.ETHEREUM).address,
                 },
               });
             }
@@ -49,13 +52,13 @@ export default ({
 
       effects.push(
         effect(() => {
-          store.wallet.eth.address = etheriumState.address;
+          store.wallet.get(Network.ETHEREUM).address = etheriumState.address;
         }),
       );
 
       effects.push(
         effect(() => {
-          store.wallet.eth.balances = etheriumState.balances;
+          store.wallet.get(Network.ETHEREUM).balances = etheriumState.balances;
         }),
       );
 
@@ -76,7 +79,7 @@ export default ({
     },
 
     isSupportedNetwork() {
-      return isSupportedEVMChain(store.wallet.eth.chainId);
+      return isSupportedEVMChain(store.wallet.get(Network.ETHEREUM).chainId);
     },
 
     async disconnectEthWallet() {

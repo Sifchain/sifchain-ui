@@ -48,7 +48,7 @@ export default defineComponent({
     const liquidityProvider = ref(null) as Ref<LiquidityProvider | null>;
     const withdrawExternalAssetAmount: Ref<string | null> = ref(null);
     const withdrawNativeAssetAmount: Ref<string | null> = ref(null);
-    const address = computed(() => store.wallet.sif.address);
+    const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
     const state = ref(0);
 
     effect(() => {
@@ -56,7 +56,7 @@ export default defineComponent({
       services.clp
         .getLiquidityProvider({
           symbol: externalAssetSymbol.value,
-          lpAddress: store.wallet.sif.address,
+          lpAddress: store.wallet.get(Network.SIFCHAIN).address,
         })
         .then((liquidityProviderResult) => {
           liquidityProvider.value = liquidityProviderResult;
@@ -75,7 +75,7 @@ export default defineComponent({
         wBasisPoints,
         asymmetry,
         liquidityProvider,
-        sifAddress: toRef(store.wallet.sif, "address"),
+        sifAddress: toRef(store.wallet.get(Network.SIFCHAIN). "address"),
         poolFinder,
       });
       state.value = calcData.state;

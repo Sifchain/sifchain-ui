@@ -82,8 +82,8 @@ export default defineComponent({
     const amount = ref("0.0");
     const address = computed(() =>
       mode.value === "import"
-        ? store.wallet.sif.address
-        : store.wallet.eth.address,
+        ? store.wallet.get(Network.SIFCHAIN).address
+        : store.wallet.get(Network.ETHEREUM).address,
     );
 
     const isMaxActive = computed(() => {
@@ -136,8 +136,8 @@ export default defineComponent({
     const accountBalance = computed(() => {
       const balances =
         mode.value === "import"
-          ? store.wallet.eth.balances
-          : store.wallet.sif.balances;
+          ? store.wallet.get(Network.ETHEREUM).balances
+          : store.wallet.get(Network.SIFCHAIN).balances;
       return balances.find((balance) => {
         return (
           balance.asset.symbol.toLowerCase() === symbol.value.toLowerCase()

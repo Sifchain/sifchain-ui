@@ -4,6 +4,7 @@ import { defineComponent, ref } from "vue";
 import { LiquidityProvider, Pool } from "@sifchain/sdk";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { usePoolStats } from "@/hooks/usePoolStats";
+import { accountStore } from "@/store/modules/accounts";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
@@ -47,13 +48,13 @@ export const usePoolPageData = () => {
   const accountPools = computed(() => {
     if (
       !store.accountpools ||
-      !store.wallet.sif.address ||
-      !store.accountpools[store.wallet.sif.address]
+      !accountStore.state.sifchain.address ||
+      !store.accountpools[accountStore.state.sifchain.address]
     ) {
       return [];
     }
     return Object.entries(
-      store.accountpools[store.wallet.sif.address] ?? {},
+      store.accountpools[accountStore.state.sifchain.address] ?? {},
     ).map(([poolName, accountPool]) => {
       return {
         ...accountPool,

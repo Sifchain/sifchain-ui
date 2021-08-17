@@ -10,7 +10,10 @@ export default defineComponent({
     const { store } = useCore();
 
     const balances = computed(() => {
-      return [...store.wallet.eth.balances, ...store.wallet.sif.balances];
+      return [
+        ...store.wallet.get(Network.ETHEREUM).balances,
+        ...store.wallet.get(Network.SIFCHAIN).balances,
+      ];
     });
 
     const available = computed(() => {

@@ -1,6 +1,6 @@
 import { Ref, toRefs } from "@vue/reactivity";
 import { Store } from ".";
-import { Asset, Pool } from "../entities";
+import { Asset, Pool, Network } from "../entities";
 import { AccountPool } from "./pools";
 import { createPoolKey } from "../utils/pool";
 
@@ -34,7 +34,9 @@ export const createAccountPoolFinder: AccountPoolFinderFn = (s: Store) => (
   if (typeof a === "string") a = Asset.get(a);
   if (typeof b === "string") b = Asset.get(b);
 
-  const accountpools = toRefs(s.accountpools[s.wallet.sif.address] || {});
+  const accountpools = toRefs(
+    s.accountpools[s.wallet.get(Network.SIFCHAIN).address] || {},
+  );
   const key = createPoolKey(a, b);
 
   const accountPoolRef = accountpools[key] as Ref<AccountPool> | undefined;

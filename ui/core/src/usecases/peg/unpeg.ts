@@ -76,8 +76,8 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
 
     const tx = await lockOrBurnFn({
       assetAmount,
-      ethereumRecipient: store.wallet.eth.address,
-      fromAddress: store.wallet.sif.address,
+      ethereumRecipient: store.wallet.get(Network.ETHEREUM).address,
+      fromAddress: store.wallet.get(Network.SIFCHAIN).address,
       feeAmount,
     });
 

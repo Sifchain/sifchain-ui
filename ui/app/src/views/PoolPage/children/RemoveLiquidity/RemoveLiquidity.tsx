@@ -10,14 +10,15 @@ import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useCore } from "@/hooks/useCore";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { accountStore } from "@/store/modules/accounts";
 
 export default defineComponent({
   setup(props) {
     const data = useRemoveLiquidityData();
     const router = useRouter();
     const appWalletPicker = useAppWalletPicker();
-    const { store } = useCore();
 
+    const sifAccountRef = accountStore.refs.sifchain.computed();
     const amountRangeRef = ref();
 
     const transactionDetails = useTransactionDetails({
@@ -238,7 +239,7 @@ export default defineComponent({
             </div>
           </Form.FieldSet>
           <Form.Details class="mt-[10px]" details={detailsRef.value} />
-          {!store.wallet.sif.isConnected ? (
+          {!sifAccountRef.value.connected ? (
             <Button.CallToAction
               onClick={() => appWalletPicker.show()}
               class="mt-[10px]"

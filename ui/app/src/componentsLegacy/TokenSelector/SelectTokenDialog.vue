@@ -50,7 +50,7 @@ export default defineComponent({
         displayList: forceShowAllATokens ? allSifTokens : displayList,
       });
 
-      const balances = store.wallet.sif.balances;
+      const balances = store.wallet.get(Network.SIFCHAIN).balances;
 
       let tokens = disableSelected({ list, selectedTokens });
 

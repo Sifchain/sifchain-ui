@@ -1,12 +1,22 @@
-import { IAssetAmount } from "./AssetAmount";
+import { IAssetAmount, Chain } from "./";
 
-export type Wallet = {
-  addresses: WalletAddress[];
-};
+export enum WalletType {
+  KEPLR = "keplr",
+  METAMASK = "metamask",
+}
 
-export type WalletAddress = {
+export interface Wallet {
+  type: WalletType;
+  displayName: string;
+  iconSrc: string;
+
+  loadForChain(chain: Chain): Promise<WalletConnection>;
+}
+
+export type WalletConnection = {
   address: string;
-  balance: IAssetAmount;
+  balances: IAssetAmount[];
+  connected: boolean;
 };
 
 export type Mnemonic = string;

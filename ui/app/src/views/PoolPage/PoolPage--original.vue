@@ -29,13 +29,13 @@ export default defineComponent({
     const accountPools = computed(() => {
       if (
         !store.accountpools ||
-        !store.wallet.sif.address ||
-        !store.accountpools[store.wallet.sif.address]
+        !store.wallet.get(Network.SIFCHAIN).address ||
+        !store.accountpools[store.wallet.get(Network.SIFCHAIN).address]
       )
         return [];
 
       return Object.entries(
-        store.accountpools[store.wallet.sif.address] ?? {},
+        store.accountpools[store.wallet.get(Network.SIFCHAIN).address] ?? {},
       ).map(([poolName, accountPool]) => {
         return {
           ...accountPool,

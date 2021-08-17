@@ -63,7 +63,7 @@ export default defineComponent({
     const buttonRef = computed(() => {
       const buttons = [
         {
-          condition: !store.wallet.sif.isConnected,
+          condition: !store.wallet.get(Network.SIFCHAIN).isConnected,
           name: "Connect Sifchain Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
@@ -74,7 +74,7 @@ export default defineComponent({
         {
           condition:
             importDraft.value.network === Network.ETHEREUM &&
-            !store.wallet.eth.isConnected,
+            !store.wallet.get(Network.ETHEREUM).isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
@@ -254,7 +254,7 @@ export default defineComponent({
           <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
             <input
               readonly
-              value={store.wallet.sif.address}
+              value={store.wallet.get(Network.SIFCHAIN).address}
               class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
               onClick={(e) => {
                 (e.target as HTMLInputElement).setSelectionRange(0, 99999999);

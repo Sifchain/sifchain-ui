@@ -8,8 +8,8 @@ import {
   IAssetAmount,
   TransactionStatus,
 } from "@sifchain/sdk";
-import { getNetworkBalances } from "./useWallet";
 import { isLikeSymbol } from "@/utils/symbol";
+import { accountStore } from "@/store/modules/accounts";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -29,14 +29,15 @@ export const useTokenList = (
   const { store, config, usecases } = useCore();
 
   const pendingPegTxList = computed(() => {
+    const ethRef = accountStore.refs.ethereum.computed();
     if (
-      !store.wallet.eth.address ||
+      !ethRef.value.address ||
       !store.tx.eth ||
-      !store.tx.eth[store.wallet.eth.address]
+      !store.tx.eth[ethRef.value.address]
     )
       return [];
 
-    const txs = store.tx.eth[store.wallet.eth.address];
+    const txs = store.tx.eth[ethRef.value.address];
 
     const txKeys = Object.keys(txs);
 
@@ -84,7 +85,8 @@ export const useTokenList = (
         return networksSet.has(asset.network);
       })
       .map((asset: IAsset) => {
-        const balances = getNetworkBalances(store, asset.network);
+        const balances = accountStore.refs[asset.network].balances.computed()
+          .value;
 
         const amount = balances?.find(({ asset: { symbol, ibcDenom } }) => {
           return asset.symbol.toLowerCase() === symbol.toLowerCase();

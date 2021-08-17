@@ -53,7 +53,7 @@ async function getEarnedRewards(address: string, asset?: IAsset) {
 export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   const { config, store, accountPoolFinder, poolFinder } = useCore();
 
-  const address = computed(() => store.wallet.sif.address);
+  const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
   const earnedRewards = ref<string | null>(null);
   const earnedRewardsNegative = ref<boolean>(false);
 

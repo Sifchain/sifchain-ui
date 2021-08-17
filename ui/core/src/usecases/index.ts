@@ -1,12 +1,13 @@
 import { Services, WithService } from "../services";
 import { Store, WithStore } from "../store";
 import ethWalletActions from "./wallet/eth";
-import cosmoshubWalletActions from "./wallet/cosmoshub";
 import clpActions from "./clp";
 import walletActions from "./wallet/sif";
 import pegActions from "./peg";
-import rewardActions from "./reward";
 import interchainActions from "./interchain";
+import rewardActions from "./reward";
+import KeplrActions from "./walletNew/keplr";
+import MetamaskActions from "./walletNew/metamask";
 
 export type UsecaseContext<
   T extends keyof Services = keyof Services,
@@ -18,9 +19,12 @@ export function createUsecases(context: UsecaseContext) {
     interchain: interchainActions(context),
     clp: clpActions(context),
     wallet: {
-      cosmoshub: cosmoshubWalletActions(context),
       sif: walletActions(context),
       eth: ethWalletActions(context),
+    },
+    walletNew: {
+      keplr: KeplrActions(context),
+      metamask: MetamaskActions(context),
     },
     peg: pegActions(context),
     reward: rewardActions(context),

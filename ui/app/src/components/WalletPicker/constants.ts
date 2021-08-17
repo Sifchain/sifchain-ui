@@ -2,6 +2,7 @@ import { computed, ComputedRef } from "@vue/reactivity";
 import { AppConfig, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { rootStore } from "../../store";
+import { accountStore } from "@/store/modules/accounts";
 
 export type WalletConnection = {
   walletName: string;
@@ -37,10 +38,9 @@ export const walletConnections: WalletConnection[] = [
       });
     },
     useWalletApi: () => {
-      const { usecases } = useCore();
       return computed(() => ({
-        connect: () => usecases.wallet.eth.connectToEthWallet(),
-        disconnect: () => usecases.wallet.eth.disconnectEthWallet(),
+        connect: () => accountStore.actions.load(Network.ETHEREUM),
+        disconnect: () => accountStore.actions.disconnect(Network.ETHEREUM),
       }));
     },
   },
@@ -53,13 +53,17 @@ export const walletConnections: WalletConnection[] = [
       return `${config.blockExplorerUrl}/account/${address}`;
     },
     useWalletState: () => {
-      const { store } = useCore();
-      return computed(() => store.wallet.sif);
+      return rootStore.accounts.computed((s) => {
+        const w = s.state.sifchain;
+        return {
+          isConnected: w.connected,
+          address: w.address,
+        };
+      });
     },
     useWalletApi: () => {
-      const { usecases } = useCore();
       return computed(() => ({
-        connect: () => usecases.wallet.sif.connectToSifWallet(),
+        connect: () => accountStore.actions.load(Network.SIFCHAIN),
         disconnect: undefined,
       }));
     },
@@ -82,10 +86,8 @@ export const walletConnections: WalletConnection[] = [
       });
     },
     useWalletApi: () => {
-      const { usecases } = useCore();
       return computed(() => ({
-        connect: () =>
-          rootStore.accounts.loadIBCAccount({ network: Network.COSMOSHUB }),
+        connect: () => accountStore.actions.load(Network.COSMOSHUB),
         disconnect: undefined,
       }));
     },
@@ -109,9 +111,7 @@ export const walletConnections: WalletConnection[] = [
     },
     useWalletApi: () => {
       return computed(() => ({
-        connect: () => {
-          // rootStore.accounts.loadIBCAccount({ network: Network.IRIS })
-        },
+        connect: () => accountStore.actions.load(Network.IRIS),
         disconnect: undefined,
       }));
     },

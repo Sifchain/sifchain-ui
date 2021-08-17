@@ -4,99 +4,81 @@ import { useCore } from "./useCore";
 import { useSubscription } from "./useSubscrition";
 import { rootStore } from "@/store";
 import { watch } from "vue";
+import { accountStore } from "@/store/modules/accounts";
+
+const mirrorToCore = (network: Network) => {
+  const data = accountStore.state[network];
+  useCore().store.wallet.set(network, {
+    isConnected: data.connected,
+    balances: data.balances,
+    address: data.address,
+  });
+};
+
+// NOTE(ajoslin): we only want to auto-connect to a wallet/chain if the user has
+// connected before. First time user connects, we persist it to localStorage.
+// If and only if that value is in localStorage on load, auto try to connect the wallet on load.
+// This prevents many Keplr connect popups from showing on load for each network.
+const persistConnected = {
+  get: (network: Network) => {
+    return (
+      useCore().services.storage.getItem(`walletConnected_${network}`) ===
+      "true"
+    );
+  },
+  set: (network: Network, value: Boolean) => {
+    return useCore().services.storage.setItem(
+      `walletConnected_${network}`,
+      String(!!value),
+    );
+  },
+};
 
 export function useInitialize() {
   const { usecases, store } = useCore();
 
   // Initialize usecases / watches
   usecases.clp.initClp();
-  usecases.wallet.sif.initSifWallet();
   usecases.wallet.eth.initEthWallet();
-  usecases.wallet.cosmoshub.initCosmoshubWallet();
 
   // initialize subscriptions
   useSubscription(
-    computed(() => store.wallet.eth.address), // Needs a ref
+    computed(() => store.wallet.get(Network.ETHEREUM).address), // Needs a ref
     usecases.peg.subscribeToUnconfirmedPegTxs,
   );
 
+  Object.values(Network).forEach((network) => {
+    watch(
+      accountStore.refs[network].computed(),
+      (value) => {
+        persistConnected.set(network, value.connected);
+        mirrorToCore(network);
+      },
+      {
+        deep: true,
+      },
+    );
+
+    if (persistConnected.get(network)) {
+      accountStore.actions.load(network);
+    }
+  });
+
   // useSubscription(
-  //   computed(() => store.wallet.sif.address),
+  //   computed(() => store.wallet.get(Network.SIFCHAIN).address),
   //   () => usecases.reward.subscribeToRewardData("vs"),
   // );
   // useSubscription(
-  //   computed(() => store.wallet.sif.address),
+  //   computed(() => store.wallet.get(Network.SIFCHAIN).address),
   //   () => usecases.reward.subscribeToRewardData("lm"),
   // );
 
   // useSubscription(
-  //   computed(() => store.wallet.sif.lmUserData),
+  //   computed(() => store.wallet.get(Network.SIFCHAIN).lmUserData),
   //   usecases.reward.notifyLmMaturity,
   // );
   // useSubscription(
-  //   computed(() => store.wallet.sif.vsUserData),
+  //   computed(() => store.wallet.get(Network.SIFCHAIN).vsUserData),
   //   usecases.reward.notifyVsMaturity,
-  // );
-
-  // Bridge from old useCore to new wallet store
-  // For now, this wallet store is a facade for core.
-  [
-    {
-      network: Network.ETHEREUM,
-      store: store.wallet.eth,
-    },
-    {
-      network: Network.SIFCHAIN,
-      store: store.wallet.sif,
-    },
-  ].forEach((data) => {
-    watch(
-      () => data.store.isConnected,
-      () => {
-        rootStore.accounts.setConnected({
-          network: data.network,
-          connected: data.store.isConnected,
-        });
-      },
-    );
-    watch(
-      () => data.store.address,
-      () => {
-        rootStore.accounts.setAddress({
-          network: data.network,
-          address: data.store.address,
-        });
-      },
-    );
-    watch(
-      () => data.store.balances,
-      () => {
-        rootStore.accounts.setBalances({
-          network: data.network,
-          balances: data.store.balances,
-        });
-      },
-    );
-  });
-
-  watch(
-    () => store.wallet.sif.isConnected,
-    async (val) => {
-      if (val) {
-        rootStore.accounts.loadIBCAccount({ network: Network.COSMOSHUB });
-        // rootStore.accounts.loadIBCAccount({ network: Network.IRIS });
-      }
-    },
-    { immediate: true },
-  );
-
-  // watch(
-  //   () => rootStore.accounts.refs.iris.computed(),
-  //   (ref) => {
-  //     store.wallet.iris.isConnected = ref.value.connected;
-  //     store.wallet.iris.address = ref.value.address;
-  //     store.wallet.iris.balances = ref.value.balances;
-  //   },
-  //   { deep: true },
   // );
 }

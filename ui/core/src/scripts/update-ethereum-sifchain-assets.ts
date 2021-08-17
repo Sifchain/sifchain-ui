@@ -4,6 +4,7 @@ import { setupSifchainApi } from "../setupSifchainApi";
 import fs from "fs";
 import Web3 from "web3";
 import ethAssetsRaw from "../config/networks/ethereum/assets.ethereum.sifchain-devnet.json";
+import { IAsset } from "entities";
 const sifchain = setupSifchainApi(NetworkEnv.DEVNET);
 (async () => {
   const tokensAddresses = await sifchain.services.ethbridge.fetchAllTokenAddresses(
@@ -24,7 +25,7 @@ const sifchain = setupSifchainApi(NetworkEnv.DEVNET);
         address:
           tokensAddresses?.[
             sifchain.config.assets.find(
-              (a2) =>
+              (a2: IAsset) =>
                 a2.homeNetwork === Network.SIFCHAIN &&
                 a2.symbol.toLowerCase().includes(a.symbol.toLowerCase()),
             )?.symbol || ""

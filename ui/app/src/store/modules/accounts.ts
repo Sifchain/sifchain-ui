@@ -11,45 +11,30 @@ export interface IWalletServiceState {
   balances: IAssetAmount[];
   log: string;
 }
+const initWalletState = (network: Network) => ({
+  network,
+  accounts: [],
+  balances: [],
+  address: "",
+  connected: false,
+  log: "",
+});
 
+const getUsecase = (network: Network) => {
+  return core.usecases.walletNew[
+    network === Network.ETHEREUM ? "metamask" : "keplr"
+  ];
+};
 export const accountStore = Vuextra.createStore({
   name: "accounts",
   options: {
     devtools: true,
   },
   state: {
-    sifchain: {
-      network: Network.SIFCHAIN,
-      accounts: [],
-      address: "",
-      connected: false,
-      balances: [],
-      log: "",
-    },
-    ethereum: {
-      network: Network.ETHEREUM,
-      accounts: [],
-      address: "",
-      connected: false,
-      balances: [],
-      log: "",
-    },
-    cosmoshub: {
-      network: Network.COSMOSHUB,
-      accounts: [],
-      address: "",
-      connected: false,
-      balances: [],
-      log: "",
-    },
-    iris: {
-      network: Network.IRIS,
-      accounts: [],
-      address: "",
-      connected: false,
-      balances: [],
-      log: "",
-    },
+    ethereum: initWalletState(Network.ETHEREUM),
+    sifchain: initWalletState(Network.SIFCHAIN),
+    cosmoshub: initWalletState(Network.COSMOSHUB),
+    iris: initWalletState(Network.IRIS),
   } as Record<Network, IWalletServiceState>,
   getters: (state) => ({
     connectedNetworkCount: () => {
@@ -68,29 +53,36 @@ export const accountStore = Vuextra.createStore({
     },
   }),
   actions: (context) => ({
-    async loadIBCAccount(p: { network: Network }) {
-      const load = async () => {
-        return core.services.ibc.createWalletByNetwork(p.network).then((w) => {
-          accountStore.setConnected({ network: p.network, connected: true });
-          accountStore.setAddress({
-            network: p.network,
-            address: w.addresses[0],
-          });
-          accountStore.setBalances({
-            network: p.network,
-            balances: w.balances,
-          });
-          core.store.wallet.cosmoshub.balances = w.balances;
-        });
-      };
+    async load(network: Network) {
+      const usecase = getUsecase(network);
+      try {
+        const state = await usecase.load(network);
 
-      await load();
-      setInterval(async () => {
-        load();
-      }, 7500);
+        console.log(network, state);
+
+        accountStore.setConnected({ network, connected: state.connected });
+        accountStore.setBalances({ network, balances: state.balances });
+        accountStore.setAddress({ network, address: state.address });
+
+        if (!state.connected) return;
+
+        setInterval(async () => {
+          const { balances, changed } = await usecase.getBalances(network, {
+            balances: state.balances,
+            address: state.address,
+          });
+          if (changed) {
+            accountStore.setBalances({ network, balances });
+          }
+        }, 10 * 1000);
+      } catch (error) {
+        console.error(network, "wallet connect error", error);
+      }
     },
-    connect(network: Network) {
-      accountStore.mutations.setConnected({ network, connected: true });
+
+    async disconnect(network: Network) {
+      const usecase = getUsecase(network);
+      return usecase.disconnect(network);
     },
   }),
   modules: [],

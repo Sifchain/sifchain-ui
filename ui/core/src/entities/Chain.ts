@@ -1,4 +1,4 @@
-import { IAsset } from "../";
+import { IAsset, WalletType } from "../";
 import { Network } from "./Network";
 import { ChainsService } from "../services/ChainsService";
 
