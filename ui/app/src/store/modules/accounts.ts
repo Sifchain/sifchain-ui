@@ -55,6 +55,9 @@ export const accountStore = Vuextra.createStore({
   actions: (context) => ({
     async load(network: Network) {
       const usecase = getUsecase(network);
+      if (network === Network.ETHEREUM) {
+        core.usecases.wallet.eth.initEthWallet();
+      }
       try {
         const state = await usecase.load(network);
 
