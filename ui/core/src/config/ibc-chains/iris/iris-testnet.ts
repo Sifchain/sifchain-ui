@@ -5,12 +5,12 @@ export const IRIS_TESTNET: IBCChainConfig = {
   network: Network.COSMOSHUB,
   chainId: "iris-testnet",
   rpcUrl: "https://iris-testnet-proxy.vercel.app/api/rpc",
-  restUrl: "https://iris-testnet-proxy.vercel.app/rest",
+  restUrl: "https://iris-testnet-proxy.vercel.app/api/rest",
   keplrChainInfo: {
     rpc: "https://iris-testnet-proxy.vercel.app/api/rpc",
-    rest: "https://iris-testnet-proxy.vercel.app/rest",
+    rest: "https://iris-testnet-proxy.vercel.app/api/rest",
     chainId: "iris-testnet",
-    chainName: "IRIS Testnet",
+    chainName: "Iris Testnet",
     stakeCurrency: {
       coinDenom: "NYAN",
       coinMinimalDenom: "unyan",
@@ -46,7 +46,7 @@ export const IRIS_TESTNET: IBCChainConfig = {
         coinGeckoId: "iris",
       },
     ],
-    coinType: 118,
+    coinType: 556,
     features: ["stargate", "ibc-transfer"],
   },
 };
