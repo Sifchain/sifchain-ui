@@ -633,6 +633,17 @@
       "priceUsd": 0,
       "symbol": "LEASH",
       "transferLimit": "99999999999999999999999"
+    },
+    {
+      "address": "0x79065740cf6e3b0c3a903a45ec9fc1c3a088de3f",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      "name": "Photon",
+      "network": "ethereum",
+      "homeNetwork": "cosmoshub",
+      "priceUsd": 0,
+      "symbol": "uphoton",
+      "transferLimit": "99999999999999999999999"
     }
   ]
 }
