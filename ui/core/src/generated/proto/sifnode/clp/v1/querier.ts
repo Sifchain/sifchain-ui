@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { Pool, LiquidityProvider, Asset } from "./types";
+import { Pool, LiquidityProvider, Asset } from "../../../sifnode/clp/v1/types";
 import {
   PageRequest,
   PageResponse,

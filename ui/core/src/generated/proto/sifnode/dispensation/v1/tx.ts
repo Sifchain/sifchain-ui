@@ -5,7 +5,7 @@ import {
   DistributionType,
   distributionTypeFromJSON,
   distributionTypeToJSON,
-} from "./types";
+} from "../../../sifnode/dispensation/v1/types";
 
 export const protobufPackage = "sifnode.dispensation.v1";
 

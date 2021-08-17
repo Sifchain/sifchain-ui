@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { Asset } from "./types";
+import { Asset } from "../../../sifnode/clp/v1/types";
 
 export const protobufPackage = "sifnode.clp.v1";
 

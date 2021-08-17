@@ -9,9 +9,6 @@ for dir in $proto_dirs; do
     -I=$SIFNODE_PROTO_PARENT_DIR/proto \
     -I=$SIFNODE_PROTO_PARENT_DIR/third_party/proto gogoproto/gogo.proto \
     --proto_path="$SIFNODE_PROTO_PARENT_DIR" \
-    # Python-specific
-    # --python_out="./py" \
-    # TypeScript-specific
     --plugin=../node_modules/.bin/protoc-gen-ts_proto \
     --ts_proto_out="../src/generated/proto" \
     --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=true" \

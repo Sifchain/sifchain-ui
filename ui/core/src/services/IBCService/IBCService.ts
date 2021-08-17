@@ -125,7 +125,6 @@ export class IBCService {
   ) {
     const wallet = await this.createWalletByNetwork(sourceNetwork);
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
-    queryClient;
     const allChannels = await queryClient.ibc.channel.allChannels();
     const clients = await Promise.all(
       allChannels.channels.map(async (channel) => {

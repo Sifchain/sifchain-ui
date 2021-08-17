@@ -27,6 +27,8 @@ export interface RegistryEntry {
   address: string;
   externalSymbol: string;
   transferLimit: string;
+  ibcDenom: string;
+  ibcDecimals: Long;
 }
 
 const baseGenesisState: object = { adminAccount: "" };
@@ -189,6 +191,8 @@ const baseRegistryEntry: object = {
   address: "",
   externalSymbol: "",
   transferLimit: "",
+  ibcDenom: "",
+  ibcDecimals: Long.ZERO,
 };
 
 export const RegistryEntry = {
@@ -234,6 +238,12 @@ export const RegistryEntry = {
     }
     if (message.transferLimit !== "") {
       writer.uint32(106).string(message.transferLimit);
+    }
+    if (message.ibcDenom !== "") {
+      writer.uint32(114).string(message.ibcDenom);
+    }
+    if (!message.ibcDecimals.isZero()) {
+      writer.uint32(120).int64(message.ibcDecimals);
     }
     return writer;
   },
@@ -283,6 +293,12 @@ export const RegistryEntry = {
           break;
         case 13:
           message.transferLimit = reader.string();
+          break;
+        case 14:
+          message.ibcDenom = reader.string();
+          break;
+        case 15:
+          message.ibcDecimals = reader.int64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -359,6 +375,16 @@ export const RegistryEntry = {
     } else {
       message.transferLimit = "";
     }
+    if (object.ibcDenom !== undefined && object.ibcDenom !== null) {
+      message.ibcDenom = String(object.ibcDenom);
+    } else {
+      message.ibcDenom = "";
+    }
+    if (object.ibcDecimals !== undefined && object.ibcDecimals !== null) {
+      message.ibcDecimals = Long.fromString(object.ibcDecimals);
+    } else {
+      message.ibcDecimals = Long.ZERO;
+    }
     return message;
   },
 
@@ -384,6 +410,9 @@ export const RegistryEntry = {
       (obj.externalSymbol = message.externalSymbol);
     message.transferLimit !== undefined &&
       (obj.transferLimit = message.transferLimit);
+    message.ibcDenom !== undefined && (obj.ibcDenom = message.ibcDenom);
+    message.ibcDecimals !== undefined &&
+      (obj.ibcDecimals = (message.ibcDecimals || Long.ZERO).toString());
     return obj;
   },
 
@@ -453,6 +482,16 @@ export const RegistryEntry = {
       message.transferLimit = object.transferLimit;
     } else {
       message.transferLimit = "";
+    }
+    if (object.ibcDenom !== undefined && object.ibcDenom !== null) {
+      message.ibcDenom = object.ibcDenom;
+    } else {
+      message.ibcDenom = "";
+    }
+    if (object.ibcDecimals !== undefined && object.ibcDecimals !== null) {
+      message.ibcDecimals = object.ibcDecimals as Long;
+    } else {
+      message.ibcDecimals = Long.ZERO;
     }
     return message;
   },
