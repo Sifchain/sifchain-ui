@@ -18,7 +18,7 @@ import { Form } from "@/components/Form";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
 import { exportStore } from "@/store/modules/export";
-import { useManagedInputValueRef } from "@/hooks/useInputDefaultValueRef";
+import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { effect } from "@vue/reactivity";
 
 export default defineComponent({

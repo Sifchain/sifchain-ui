@@ -183,7 +183,7 @@ export default function createEthbridgeService({
       const ethereumChainId = await web3.eth.net.getId();
 
       const ethereumAsset = getChainsService()
-        ?.get(Network.SIFCHAIN)
+        ?.get(Network.ETHEREUM)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
       const tokenAddress =
@@ -280,7 +280,7 @@ export default function createEthbridgeService({
       const ethereumChainId = await web3.eth.net.getId();
 
       const ethereumAsset = getChainsService()
-        ?.get(Network.SIFCHAIN)
+        ?.get(Network.ETHEREUM)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
       const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
 

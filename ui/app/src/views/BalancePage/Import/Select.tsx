@@ -19,7 +19,7 @@ import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
 import { rootStore } from "../../../store";
 import { importStore } from "@/store/modules/import";
-import { useManagedInputValueRef } from "@/hooks/useInputDefaultValueRef";
+import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 
 export default defineComponent({
   name: "ImportSelect",

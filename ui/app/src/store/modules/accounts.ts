@@ -93,6 +93,12 @@ export const accountStore = Vuextra.createStore({
 
         if (!state.connected) return;
 
+        // NOTE(ajoslin): more formal fix coming later to lazyload non-sif/eth assets.
+        const UPDATE_INTERVAL =
+          network === Network.SIFCHAIN || network === Network.ETHEREUM
+            ? 5 * 1000
+            : 60 * 1000;
+
         setInterval(async () => {
           const { balances, changed } = await usecase.getBalances(network, {
             balances: state.balances,
@@ -101,7 +107,7 @@ export const accountStore = Vuextra.createStore({
           if (changed) {
             accountStore.setBalances({ network, balances });
           }
-        }, 10 * 1000);
+        }, UPDATE_INTERVAL);
       } catch (error) {
         console.error(network, "wallet connect error", error);
       }
