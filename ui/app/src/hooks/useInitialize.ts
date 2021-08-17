@@ -8,7 +8,6 @@ import { accountStore } from "@/store/modules/accounts";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
-  console.log(useCore().store.wallet.get(network));
 
   useCore().store.wallet.set(network, {
     ...useCore().store.wallet.get(network),
@@ -45,10 +44,11 @@ export function useInitialize() {
   usecases.wallet.eth.initEthWallet();
 
   // initialize subscriptions
-  useSubscription(
-    computed(() => store.wallet.get(Network.ETHEREUM).address), // Needs a ref
-    usecases.peg.subscribeToUnconfirmedPegTxs,
-  );
+  watch(accountStore.refs.ethereum.address.computed(), (value) => {
+    if (value) {
+      usecases.peg.subscribeToUnconfirmedPegTxs();
+    }
+  });
 
   Object.values(Network).forEach((network) => {
     watch(
