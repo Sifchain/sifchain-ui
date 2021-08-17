@@ -109,8 +109,9 @@ export const walletConnections: WalletConnection[] = [
     },
     useWalletApi: () => {
       return computed(() => ({
-        connect: () =>
-          rootStore.accounts.loadIBCAccount({ network: Network.IRIS }),
+        connect: () => {
+          // rootStore.accounts.loadIBCAccount({ network: Network.IRIS })
+        },
         disconnect: undefined,
       }));
     },
