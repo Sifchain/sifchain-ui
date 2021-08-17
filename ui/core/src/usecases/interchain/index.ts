@@ -5,6 +5,7 @@ import CosmoshubSifchain from "./cosmoshubSifchain";
 import SifchainEthereum from "./sifchainEthereum";
 import SifchainCosmoshub from "./sifchainCosmoshub";
 import IrisSifchain from "./irisSifchain";
+import SifchainIris from "./sifchainIris";
 import {
   EthereumChain,
   SifchainChain,
@@ -19,7 +20,7 @@ export default function InterchainUsecase(context: UsecaseContext) {
   const irisSifchain = IrisSifchain(context);
   const sifchainEthereum = SifchainEthereum(context);
   const sifchainCosmoshub = SifchainCosmoshub(context);
-  const sifchainIris = IrisSifchain(context);
+  const sifchainIris = SifchainIris(context);
 
   return (from: Chain, to: Chain) => {
     if (from instanceof EthereumChain && to instanceof SifchainChain) {
