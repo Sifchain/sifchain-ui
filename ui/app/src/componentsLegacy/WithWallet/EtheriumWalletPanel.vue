@@ -15,8 +15,10 @@ export default defineComponent({
     async function handleConnectClicked() {
       await usecases.wallet.eth.connectToEthWallet();
     }
-    const address = computed(() => store.wallet.eth.address);
-    const connected = computed(() => store.wallet.eth.isConnected);
+    const address = computed(() => store.wallet.get(Network.ETHEREUM).address);
+    const connected = computed(
+      () => store.wallet.get(Network.ETHEREUM).isConnected,
+    );
     return {
       address,
       connected,

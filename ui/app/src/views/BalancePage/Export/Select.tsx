@@ -92,7 +92,7 @@ export default defineComponent({
     const buttonRef = computed(() => {
       const buttons = [
         {
-          condition: !store.wallet.sif.isConnected,
+          condition: !store.wallet.get(Network.SIFCHAIN).isConnected,
           name: "Connect Sifchain Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
@@ -103,7 +103,7 @@ export default defineComponent({
         {
           condition:
             exportParams.value.network === Network.ETHEREUM &&
-            !store.wallet.eth.isConnected,
+            !store.wallet.get(Network.ETHEREUM).isConnected,
           name: "Connect Ethereum Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
@@ -231,7 +231,7 @@ export default defineComponent({
               readonly
               value={
                 exportParams.value.network === Network.ETHEREUM
-                  ? store.wallet.eth.address
+                  ? store.wallet.get(Network.ETHEREUM).address
                   : rootStore.accounts.state.cosmoshub.address
               }
               class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"

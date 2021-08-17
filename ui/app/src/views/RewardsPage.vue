@@ -57,7 +57,7 @@ export default defineComponent({
   },
   setup() {
     const { store, usecases, config } = useCore();
-    const address = computed(() => store.wallet.sif.address);
+    const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
     const transactionState = ref<ConfirmState | string>("selecting");
     const transactionStateMsg = ref<string>("");
     const transactionHash = ref<string | null>(null);

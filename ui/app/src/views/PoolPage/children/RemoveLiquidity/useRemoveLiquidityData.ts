@@ -14,11 +14,11 @@ import { computed, effect, Ref, toRef } from "@vue/reactivity";
 import { getLMData } from "@/componentsLegacy/shared/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { debounce } from "@/views/utils/debounce";
+import { accountStore } from "@/store/modules/accounts";
 
 export function useRemoveLiquidityData() {
-  const { store, usecases, poolFinder, services, config } = useCore();
+  const { usecases, poolFinder, services, config } = useCore();
   const route = useRoute();
-  const router = useRouter();
 
   const transactionStatus = ref<TransactionStatus | null>(null);
 
@@ -36,7 +36,7 @@ export function useRemoveLiquidityData() {
   const liquidityProvider = ref(null) as Ref<LiquidityProvider | null>;
   const withdrawExternalAssetAmount: Ref<string | null> = ref(null);
   const withdrawNativeAssetAmount: Ref<string | null> = ref(null);
-  const address = computed(() => store.wallet.sif.address);
+  const address = accountStore.refs.sifchain.address.computed();
   const state = ref(0);
 
   const externalAsset = computed(() =>
@@ -50,7 +50,7 @@ export function useRemoveLiquidityData() {
     services.clp
       .getLiquidityProvider({
         asset: externalAsset.value,
-        lpAddress: store.wallet.sif.address,
+        lpAddress: address.value,
       })
       .then((liquidityProviderResult) => {
         liquidityProvider.value = liquidityProviderResult;
@@ -71,7 +71,7 @@ export function useRemoveLiquidityData() {
         wBasisPoints,
         asymmetry,
         liquidityProvider,
-        sifAddress: toRef(store.wallet.sif, "address"),
+        sifAddress: address,
         poolFinder,
       });
       state.value = calcData.state;

@@ -264,7 +264,7 @@ export function Peg(
     }
     if (
       assetAmount.asset.network === Network.ETHEREUM &&
-      !isSupportedEVMChain(store.wallet.eth.chainId)
+      !isSupportedEVMChain(store.wallet.get(Network.ETHEREUM).chainId)
     ) {
       services.bus.dispatch({
         type: "ErrorEvent",
@@ -283,7 +283,7 @@ export function Peg(
 
     if (assetAmount.symbol !== "eth") {
       yield { type: "approve_started" };
-      const address = store.wallet.eth.address;
+      const address = store.wallet.get(Network.ETHEREUM).address;
       try {
         await services.ethbridge.approveBridgeBankSpend(address, assetAmount);
       } catch (err) {
@@ -304,7 +304,7 @@ export function Peg(
 
     const tx = await new Promise<TransactionStatus>((resolve) => {
       const pegTx = lockOrBurnFn(
-        store.wallet.sif.address,
+        store.wallet.get(Network.SIFCHAIN).address,
         assetAmount,
         config.ethConfirmations,
       );

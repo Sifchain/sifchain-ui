@@ -79,7 +79,7 @@ export class EthereumService implements IWalletService {
 
         if (isEventEmittingProvider(provider)) {
           provider.on("chainChanged", () => window.location.reload());
-          provider.on("accountsChanged", () => this.updateData());
+          provider.on("accountsChanged", () => window.location.reload());
         }
         // What network is the provider on
         if (isMetaMaskInpageProvider(provider)) {
@@ -160,7 +160,10 @@ export class EthereumService implements IWalletService {
         }
       }
       this.addWeb3Subscription();
-      await this.updateData();
+      this.state.connected = true;
+      this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
+      this.state.address = this.state.accounts[0];
+      this.state.balances = await this.getBalance();
     } catch (err) {
       this.web3 = null;
       this.removeWeb3Subscription();

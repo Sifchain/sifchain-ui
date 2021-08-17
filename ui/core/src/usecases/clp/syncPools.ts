@@ -6,7 +6,6 @@ import { createPoolKey } from "../../utils";
 import { AccountPool } from "../../store/pools";
 
 type PickSif = Pick<Services["sif"], "getState">;
-type PickIbc = Pick<Services["ibc"], "symbolLookup">;
 type PickClp = Pick<
   Services["clp"],
   "getPoolSymbolsByLiquidityProvider" | "getRawPools" | "getLiquidityProvider"
@@ -16,7 +15,6 @@ type PickChains = Pick<
   "get" | "findChainAssetMatch" | "findChainAssetMatch"
 >;
 type SyncPoolsArgs = {
-  ibc: PickIbc;
   sif: PickSif;
   clp: PickClp;
   chains: PickChains;
@@ -25,7 +23,7 @@ type SyncPoolsArgs = {
 type SyncPoolsStore = Pick<Store, "accountpools" | "pools">;
 
 export function SyncPools(
-  { ibc, sif, clp, chains }: SyncPoolsArgs,
+  { sif, clp, chains }: SyncPoolsArgs,
   store: SyncPoolsStore,
 ) {
   return async function syncPools() {

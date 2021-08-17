@@ -26,6 +26,7 @@ import { KeplrChainConfig } from "../../utils/parseConfig";
 import { parseTxFailure } from "./parseTxFailure";
 import IBCService from "../IBCService";
 import { IBCChainConfig } from "../../config/ibc-chains/IBCChainConfig";
+import { NetworkChainsLookup } from "../../config/chains/NetEnvChainsLookup";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;

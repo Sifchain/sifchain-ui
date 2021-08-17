@@ -4,6 +4,7 @@ import { Swap } from "./swap";
 import { AddLiquidity } from "./addLiquidity";
 import { RemoveLiquidity } from "./removeLiquidity";
 import { SyncPools } from "./syncPools";
+import { Network } from "../../entities";
 
 export default ({
   services,
@@ -41,7 +42,7 @@ export default ({
       effects.push(
         effect(() => {
           // When sif address changes syncPools
-          store.wallet.sif.address;
+          store.wallet.get(Network.SIFCHAIN).address;
           syncPools();
         }),
       );

@@ -43,7 +43,11 @@ export class EthereumSifchainInterchainApi
 
   transfer(params: InterchainParams) {
     return new ExecutableTransaction<InterchainTransaction>(async (emit) => {
-      if (!isSupportedEVMChain(this.context.store.wallet.eth.chainId)) {
+      if (
+        !isSupportedEVMChain(
+          this.context.store.wallet.get(Network.ETHEREUM).chainId,
+        )
+      ) {
         this.context.services.bus.dispatch({
           type: "ErrorEvent",
           payload: {

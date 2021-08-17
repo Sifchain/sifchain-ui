@@ -69,13 +69,13 @@ export default defineComponent({
 
     const pendingPegTxList = computed(() => {
       if (
-        !store.wallet.eth.address ||
+        !store.wallet.get(Network.ETHEREUM).address ||
         !store.tx.eth ||
-        !store.tx.eth[store.wallet.eth.address]
+        !store.tx.eth[store.wallet.get(Network.ETHEREUM).address]
       )
         return null;
 
-      const txs = store.tx.eth[store.wallet.eth.address];
+      const txs = store.tx.eth[store.wallet.get(Network.ETHEREUM).address];
 
       const txKeys = Object.keys(txs);
 
@@ -104,8 +104,8 @@ export default defineComponent({
     const assetList = computed<TokenListItem[]>(() => {
       const balances =
         selectedTab.value === "External Tokens"
-          ? store.wallet.eth.balances
-          : store.wallet.sif.balances;
+          ? store.wallet.get(Network.ETHEREUM).balances
+          : store.wallet.get(Network.SIFCHAIN).balances;
 
       const pegList = pendingPegTxList.value;
 

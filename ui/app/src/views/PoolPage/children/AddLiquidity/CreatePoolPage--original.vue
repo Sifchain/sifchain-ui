@@ -115,16 +115,16 @@ export default defineComponent({
     const liquidityProvider = computed(() => {
       if (
         !fromSymbol.value ||
-        !store.wallet.sif.address ||
-        !store.accountpools[store.wallet.sif.address] ||
-        !store.accountpools[store.wallet.sif.address][
+        !store.wallet.get(Network.SIFCHAIN).address ||
+        !store.accountpools[store.wallet.get(Network.SIFCHAIN).address] ||
+        !store.accountpools[store.wallet.get(Network.SIFCHAIN).address][
           `${fromSymbol.value}_rowan`
         ]
       )
         return null;
 
       return (
-        store.accountpools[store.wallet.sif.address][
+        store.accountpools[store.wallet.get(Network.SIFCHAIN).address][
           `${fromSymbol.value}_rowan`
         ].lp || null
       );

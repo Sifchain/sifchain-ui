@@ -17,10 +17,10 @@ export class BaseChain implements Chain {
     this.assets = params.assets.filter(
       (a) => a.network === params.chainConfig.network,
     );
-    (this.nativeAsset = this.assets.find(
+    this.nativeAsset = this.assets.find(
       (a) => a.symbol === params.chainConfig.nativeAssetSymbol,
-    ) as IAsset),
-      (this.blockExplorerUrl = params.chainConfig.blockExplorerUrl);
+    ) as IAsset;
+    this.blockExplorerUrl = params.chainConfig.blockExplorerUrl;
   }
 
   findAssetWithLikeSymbol(symbol: string) {

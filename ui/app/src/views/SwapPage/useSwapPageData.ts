@@ -97,9 +97,9 @@ export const useSwapPageData = () => {
   const selectedField = ref<"from" | "to" | null>("from");
   const core = useCore();
   const getAccountBalance = () => {
-    return store.wallet.sif.balances.find(
-      (balance) => balance.asset.symbol === fromSymbol.value,
-    );
+    return store.wallet
+      .get(Network.SIFCHAIN)
+      .balances.find((balance) => balance.asset.symbol === fromSymbol.value);
   };
   const fromAsset = computed(() => {
     return (
@@ -151,7 +151,7 @@ export const useSwapPageData = () => {
     providerFee,
     minimumReceived,
   } = useSwapCalculator({
-    balances: computed(() => store.wallet.sif.balances),
+    balances: computed(() => store.wallet.get(Network.SIFCHAIN).balances),
     fromAmount,
     toAmount,
     fromSymbol,

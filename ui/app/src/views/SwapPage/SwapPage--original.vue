@@ -59,7 +59,7 @@ export default defineComponent({
     }
 
     const balances = computed(() => {
-      return store.wallet.sif.balances;
+      return store.wallet.get(Network.SIFCHAIN).balances;
     });
 
     const getAccountBalance = () => {

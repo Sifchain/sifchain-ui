@@ -124,10 +124,10 @@ export function useSifchainEvents() {
 export const useEthState = createStateHook<Store["wallet"]["eth"]>(
   "useEthState",
   (store) => ({
-    chainId: store.wallet.eth.chainId,
-    address: store.wallet.eth.address,
-    balances: store.wallet.eth.balances,
-    isConnected: store.wallet.eth.isConnected,
+    chainId: store.wallet.get(Network.ETHEREUM).chainId,
+    address: store.wallet.get(Network.ETHEREUM).address,
+    balances: store.wallet.get(Network.ETHEREUM).balances,
+    isConnected: store.wallet.get(Network.ETHEREUM).isConnected,
   }),
   {
     chainId: "",
@@ -140,11 +140,11 @@ export const useEthState = createStateHook<Store["wallet"]["eth"]>(
 export const useSifState = createStateHook<Store["wallet"]["sif"]>(
   "useSifState",
   (store) => ({
-    address: store.wallet.sif.address,
-    balances: store.wallet.sif.balances,
-    isConnected: store.wallet.sif.isConnected,
-    lmUserData: store.wallet.sif.lmUserData,
-    vsUserData: store.wallet.sif.vsUserData,
+    address: store.wallet.get(Network.SIFCHAIN).address,
+    balances: store.wallet.get(Network.SIFCHAIN).balances,
+    isConnected: store.wallet.get(Network.SIFCHAIN).isConnected,
+    lmUserData: null,
+    vsUserData: null,
   }),
   {
     address: "",
