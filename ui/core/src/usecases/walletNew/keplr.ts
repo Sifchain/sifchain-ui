@@ -16,11 +16,8 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
         balances,
         client,
       } = await context.services.ibc.createWalletByNetwork(network);
-      console.log("HELLO");
 
       clients.set(network, client);
-
-      console.log(network, { addresses, balances, client });
 
       return {
         connected: true,

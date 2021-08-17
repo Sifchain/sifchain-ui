@@ -74,7 +74,7 @@ export const accountStore = Vuextra.createStore({
           if (changed) {
             accountStore.setBalances({ network, balances });
           }
-        }, 5000);
+        }, 10 * 1000);
       } catch (error) {
         console.error(network, "wallet connect error", error);
       }
