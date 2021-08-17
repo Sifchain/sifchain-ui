@@ -40,6 +40,18 @@ export const accountStore = Vuextra.createStore({
     connectedNetworkCount: () => {
       return Object.values(state).filter((v) => v?.connected).length;
     },
+    balancesBySymbol: () =>
+      Object.fromEntries(
+        Object.entries(state).map(([walletName, walletState]) => {
+          return [
+            walletName,
+            walletState.balances.reduce((prev, curr) => {
+              prev[curr.symbol] = curr;
+              return prev;
+            }, {} as Record<string, IAssetAmount>),
+          ];
+        }),
+      ) as Record<string, Record<string, IAssetAmount>>,
   }),
   mutations: (state) => ({
     setConnected(payload: { network: Network; connected: boolean }) {
@@ -49,7 +61,22 @@ export const accountStore = Vuextra.createStore({
       state[payload.network].address = payload.address;
     },
     setBalances(payload: { network: Network; balances: IAssetAmount[] }) {
-      state[payload.network].balances = payload.balances;
+      const balBySymbol = self.getters.balancesBySymbol[payload.network];
+      payload.balances.forEach((b) => {
+        const prevBal = balBySymbol[b.symbol];
+        // if wasn't in balances before, add it.
+        if (!prevBal) return state[payload.network].balances.push(b);
+        // if balance hasn't changed, skip it
+        if (prevBal.toBigInt().toString() === b.toBigInt().toString()) {
+          return;
+        }
+        // if it has changed, replace it
+        const index = state[payload.network].balances.find(
+          (b2) => b2.symbol === b.symbol,
+        );
+        if (typeof index !== "number") return;
+        state[payload.network].balances[index] = b;
+      });
     },
   }),
   actions: (context) => ({
@@ -87,3 +114,5 @@ export const accountStore = Vuextra.createStore({
   }),
   modules: [],
 });
+
+const self = accountStore;

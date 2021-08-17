@@ -165,6 +165,13 @@ function createStore<
     getters,
   } as const;
 
+  type MappedGetters<T> = T extends Record<any, () => any>
+    ? {
+        [K in keyof T]: ReturnType<T[K]>;
+      }
+    : T;
+
+  type GettersType = MappedGetters<ComposerReturnType>;
   const vuextraStore = {
     ...wrappedActions,
     ...wrappedMutations,
@@ -176,10 +183,12 @@ function createStore<
         get(target, p, receiver) {
           return getters[typeof p === "string" ? config.name + "/" + p : p];
         },
-      }) as Record<
-        keyof ComposerReturnType,
-        ReturnType<ComposerReturnType[keyof ComposerReturnType]>
-      >;
+      }) as GettersType;
+
+      //   Record<
+      //   keyof ComposerReturnType,
+      //   ReturnType<ComposerReturnType[keyof ComposerReturnType]>
+      // >;
     },
     get state() {
       return getStore().state[config.name] as State;
@@ -199,12 +208,12 @@ function createStore<
     },
   };
 
-  type GettersType = Readonly<
-    Record<
-      keyof ComposerReturnType,
-      ReturnType<ComposerReturnType[keyof ComposerReturnType]>
-    >
-  >;
+  // type GettersType = Readonly<
+  //   Record<
+  //     keyof ComposerReturnType,
+  //     ReturnType<ComposerReturnType[keyof ComposerReturnType]>
+  //   >
+  // >;
   type DeepReadonly<T> = T extends object
     ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>
     : Readonly<T>;
@@ -290,7 +299,7 @@ function createStore<
       // }
       return Reflect.get(vuextraStore, p, vuextraStore);
     },
-  }) as typeof vuextraStore & GettersType & { getters: GettersType };
+  }) as typeof vuextraStore & { getters: GettersType };
 
   type StoreProxyType = typeof storeProxy;
   return storeProxy as DeepReadonly<

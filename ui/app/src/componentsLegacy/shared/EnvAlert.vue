@@ -48,6 +48,7 @@ export default defineComponent({
       <>
         <Cmp />
         <select
+          value={env}
           onInput={(e) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
