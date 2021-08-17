@@ -15,12 +15,22 @@ const mirrorToCore = (network: Network) => {
   });
 };
 
+// NOTE(ajoslin): we only want to auto-connect to a wallet/chain if the user has
+// connected before. First time user connects, we persist it to localStorage.
+// If and only if that value is in localStorage on load, auto try to connect the wallet on load.
+// This prevents many Keplr connect popups from showing on load for each network.
 const persistConnected = {
   get: (network: Network) => {
-    return localStorage.getItem(`walletConnected_${network}`) === "true";
+    return (
+      useCore().services.storage.getItem(`walletConnected_${network}`) ===
+      "true"
+    );
   },
   set: (network: Network, value: Boolean) => {
-    return localStorage.setItem(`walletConnected_${network}`, String(!!value));
+    return useCore().services.storage.setItem(
+      `walletConnected_${network}`,
+      String(!!value),
+    );
   },
 };
 
