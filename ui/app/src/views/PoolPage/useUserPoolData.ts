@@ -7,7 +7,7 @@ import {
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
-import { Amount, getErrorMessage, IAsset } from "@sifchain/sdk";
+import { Amount, getErrorMessage, IAsset, Network } from "@sifchain/sdk";
 
 const DECIMALS = 5;
 
@@ -83,14 +83,14 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
     "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707";
 
   const fromAsset = computed(() => {
-    return useCore().services.chains.sifchain.findAssetWithLikeSymbol(
-      fromSymbol.value,
-    );
+    return useCore()
+      .services.chains.get(Network.SIFCHAIN)
+      .findAssetWithLikeSymbol(fromSymbol.value);
   });
   const toAsset = computed(() => {
-    return useCore().services.chains.sifchain.findAssetWithLikeSymbol(
-      toSymbol.value,
-    );
+    return useCore()
+      .services.chains.get(Network.SIFCHAIN)
+      .findAssetWithLikeSymbol(toSymbol.value);
   });
 
   const calculateRewards = async (address: string, fromSymbol: string) => {

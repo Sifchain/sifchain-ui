@@ -3,6 +3,7 @@ import { Asset, Network } from "../entities";
 import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
 import { JsonChainConfig } from "../entities/Chain";
 import { IBCChainConfig } from "../config/ibc-chains/IBCChainConfig";
+import { NetworkChainsLookup } from "../config/chains/NetEnvChainsLookup";
 
 type TokenConfig = {
   symbol: string;
@@ -102,7 +103,6 @@ export type CoreConfig = {
   nativeAsset: string; // symbol
   bridgebankContractAddress: string;
   keplrChainConfig: KeplrChainConfig;
-  chains: JsonChainConfig[];
 };
 
 export function parseAssets(configAssets: AssetConfig[]): Asset[] {
@@ -113,6 +113,7 @@ export function parseConfig(
   config: CoreConfig,
   assets: Asset[],
   ibcChainConfigsByNetwork: Record<Network, IBCChainConfig | null>,
+  chains: NetworkChainsLookup,
 ): ServiceContext {
   const nativeAsset = assets.find((a) => a.symbol === config.nativeAsset);
 
@@ -159,6 +160,6 @@ export function parseConfig(
       chainId: config.sifChainId,
       currencies: sifAssets,
     },
-    chains: config.chains,
+    chains: chains,
   };
 }

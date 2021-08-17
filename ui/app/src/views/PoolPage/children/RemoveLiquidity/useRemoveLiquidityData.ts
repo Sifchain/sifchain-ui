@@ -3,6 +3,7 @@ import Layout from "@/componentsLegacy/Layout/Layout.vue";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
   LiquidityProvider,
+  Network,
   PoolState,
   TransactionStatus,
   useRemoveLiquidityCalculator,
@@ -39,9 +40,9 @@ export function useRemoveLiquidityData() {
   const state = ref(0);
 
   const externalAsset = computed(() =>
-    services.chains.sifchain.findAssetWithLikeSymbol(
-      externalAssetSymbol.value || "",
-    ),
+    services.chains
+      .get(Network.SIFCHAIN)
+      .findAssetWithLikeSymbol(externalAssetSymbol.value || ""),
   );
 
   effect(() => {

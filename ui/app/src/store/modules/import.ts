@@ -1,6 +1,6 @@
 import { useChainsList, useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
+import { IAssetAmount, Network } from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
@@ -28,9 +28,9 @@ export const importStore = Vuextra.createStore({
       pegEvent: undefined,
     },
   } as State,
-  getters: (state) => ({
+  getters: () => ({
     chains() {
-      return useChainsList().filter((c) => c !== useChains().sifchain);
+      return useChainsList().filter((c) => c.network !== Network.SIFCHAIN);
     },
   }),
   mutations: (state) => ({
@@ -49,8 +49,8 @@ export const importStore = Vuextra.createStore({
       self.setPegEvent(undefined);
 
       const interchain = useCore().usecases.interchain(
-        useChains().getByNetwork(ctx.state.draft.network),
-        useChains().sifchain,
+        useChains().get(ctx.state.draft.network),
+        useChains().get(Network.SIFCHAIN),
       );
       const executable = interchain.transfer({
         assetAmount: payload.assetAmount,

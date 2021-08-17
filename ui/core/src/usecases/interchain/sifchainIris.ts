@@ -1,11 +1,12 @@
 import { UsecaseContext } from "..";
 import { SifchainChain, IrisChain } from "../../services/ChainsService";
 import { SifchainCosmoshubInterchainApi } from "./sifchainCosmoshub";
+import { Network } from "../../entities";
 
-export default function createSifchainIrisApi(
-  context: UsecaseContext,
-  fromChain: SifchainChain,
-  toChain: IrisChain,
-) {
-  return new SifchainCosmoshubInterchainApi(context, fromChain, toChain);
+export default function createSifchainIrisApi(context: UsecaseContext) {
+  return new SifchainCosmoshubInterchainApi(
+    context,
+    context.services.chains.get(Network.COSMOSHUB),
+    context.services.chains.get(Network.SIFCHAIN),
+  );
 }

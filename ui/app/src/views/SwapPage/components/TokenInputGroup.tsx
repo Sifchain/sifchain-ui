@@ -11,6 +11,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
+import { useInputDefaultValueRef } from "@/hooks/useInputDefaultValueRef";
 
 function required<T>(type: T) {
   return {
@@ -49,8 +50,7 @@ export const TokenInputGroup = defineComponent({
     const propRefs = toRefs(props);
     const selectIsOpen = ref(false);
     const selfRef = ref();
-
-    const inputRef = computed(() => selfRef.value?.querySelector("input"));
+    const inputRef = useInputDefaultValueRef("");
 
     watch(
       [inputRef, propRefs.amount],
@@ -125,6 +125,7 @@ export const TokenInputGroup = defineComponent({
               </div>
             </Button.Select>
             <Input.Base
+              ref={inputRef}
               class="token-input flex-1"
               startContent={
                 !!props.onSetToMaxAmount && (

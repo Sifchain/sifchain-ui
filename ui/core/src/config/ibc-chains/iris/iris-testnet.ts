@@ -4,11 +4,11 @@ import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
 export const IRIS_TESTNET: IBCChainConfig = {
   network: Network.COSMOSHUB,
   chainId: "iris-testnet",
-  rpcUrl: "http://35.234.10.84:26657/",
-  restUrl: "http://35.234.10.84:1317",
+  rpcUrl: "https://iris-testnet-proxy.vercel.app/api/rpc",
+  restUrl: "https://iris-testnet-proxy.vercel.app/rest",
   keplrChainInfo: {
-    rpc: "http://35.234.10.84:26657/",
-    rest: "http://35.234.10.84:1317",
+    rpc: "https://iris-testnet-proxy.vercel.app/api/rpc",
+    rest: "https://iris-testnet-proxy.vercel.app/rest",
     chainId: "iris-testnet",
     chainName: "IRIS Testnet",
     stakeCurrency: {

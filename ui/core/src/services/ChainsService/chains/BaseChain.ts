@@ -15,7 +15,7 @@ export class BaseChain implements Chain {
     }
 
     this.assets = params.assets.filter(
-      (a) => a.network === params.chainConfig.id,
+      (a) => a.network === params.chainConfig.network,
     );
     (this.nativeAsset = this.assets.find(
       (a) => a.symbol === params.chainConfig.nativeAssetSymbol,

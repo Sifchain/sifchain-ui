@@ -13,7 +13,7 @@ type PickClp = Pick<
 >;
 type PickChains = Pick<
   Services["chains"],
-  "getByNetwork" | "findChainAssetMatch" | "findChainAssetMatch"
+  "get" | "findChainAssetMatch" | "findChainAssetMatch"
 >;
 type SyncPoolsArgs = {
   ibc: PickIbc;
@@ -32,7 +32,7 @@ export function SyncPools(
     const state = sif.getState();
 
     // UPdate pools
-    const nativeAsset = chains.getByNetwork(Network.SIFCHAIN).nativeAsset;
+    const nativeAsset = chains.get(Network.SIFCHAIN).nativeAsset;
     const rawPools = await clp.getRawPools();
     const pools = rawPools
       .map((pool) => {
@@ -89,7 +89,7 @@ export function SyncPools(
 
           const pool = createPoolKey(
             asset,
-            chains.getByNetwork(Network.SIFCHAIN).nativeAsset,
+            chains.get(Network.SIFCHAIN).nativeAsset,
           );
 
           currentAccountPools[pool] = { lp, pool };

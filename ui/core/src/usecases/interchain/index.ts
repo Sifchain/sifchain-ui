@@ -1,12 +1,10 @@
 import { UsecaseContext } from "..";
 import { IAssetAmount, Chain, Network } from "../../entities";
-
 import EthereumSifchain from "./ethereumSifchain";
 import CosmoshubSifchain from "./cosmoshubSifchain";
 import SifchainEthereum from "./sifchainEthereum";
 import SifchainCosmoshub from "./sifchainCosmoshub";
 import IrisSifchain from "./irisSifchain";
-
 import {
   EthereumChain,
   SifchainChain,
@@ -16,28 +14,13 @@ import {
 
 export default function InterchainUsecase(context: UsecaseContext) {
   const chains = context.services.chains;
-  const ethereumSifchain = EthereumSifchain(
-    context,
-    chains.ethereum,
-    chains.sifchain,
-  );
-  const cosmoshubSifchain = CosmoshubSifchain(
-    context,
-    chains.cosmoshub,
-    chains.sifchain,
-  );
-  const irisSifchain = IrisSifchain(context, chains.iris, chains.sifchain);
-  const sifchainEthereum = SifchainEthereum(
-    context,
-    chains.cosmoshub,
-    chains.sifchain,
-  );
-  const sifchainCosmoshub = SifchainCosmoshub(
-    context,
-    chains.sifchain,
-    chains.cosmoshub,
-  );
-  const sifchainIris = IrisSifchain(context, chains.sifchain, chains.iris);
+  const ethereumSifchain = EthereumSifchain(context);
+  const cosmoshubSifchain = CosmoshubSifchain(context);
+  const irisSifchain = IrisSifchain(context);
+  const sifchainEthereum = SifchainEthereum(context);
+  const sifchainCosmoshub = SifchainCosmoshub(context);
+  const sifchainIris = IrisSifchain(context);
+
   return (from: Chain, to: Chain) => {
     if (from instanceof EthereumChain && to instanceof SifchainChain) {
       return ethereumSifchain;

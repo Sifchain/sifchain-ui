@@ -19,6 +19,7 @@ import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
 import { rootStore } from "../../../store";
 import { importStore } from "@/store/modules/import";
+import { useInputDefaultValueRef } from "@/hooks/useInputDefaultValueRef";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -27,6 +28,7 @@ export default defineComponent({
     const { store } = useCore();
     const appWalletPicker = useAppWalletPicker();
     const selectIsOpen = ref(false);
+    const inputRef = useInputDefaultValueRef("");
 
     const {
       tokenRef,
@@ -218,6 +220,7 @@ export default defineComponent({
           </div>
 
           <Input.Base
+            ref={inputRef}
             type="number"
             min="0"
             style={{

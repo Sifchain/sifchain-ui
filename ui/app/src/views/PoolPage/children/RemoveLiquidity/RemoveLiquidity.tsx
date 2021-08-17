@@ -155,6 +155,10 @@ export default defineComponent({
                       value = 100;
                       input.value = "100";
                     }
+                    if (value < 0) {
+                      value = 0;
+                      input.value = "0";
+                    }
                     data.wBasisPoints.value = (
                       (value / 100) *
                       10000

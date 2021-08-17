@@ -1,5 +1,10 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, Chain, TransactionStatus } from "../../entities";
+import {
+  IAssetAmount,
+  Chain,
+  TransactionStatus,
+  Network,
+} from "../../entities";
 import {
   InterchainApi,
   ExecutableTransaction,
@@ -14,15 +19,11 @@ import { createIteratorSubject } from "../../utils/iteratorSubject";
 
 const ETH_CONFIRMATIONS = 50;
 
-export default function createEthereumSifchainApi(
-  context: UsecaseContext,
-  ethereumChain: EthereumChain,
-  sifchainChain: SifchainChain,
-) {
+export default function createEthereumSifchainApi(context: UsecaseContext) {
   return new EthereumSifchainInterchainApi(
     context,
-    ethereumChain,
-    sifchainChain,
+    context.services.chains.get(Network.ETHEREUM),
+    context.services.chains.get(Network.SIFCHAIN),
   );
 }
 
