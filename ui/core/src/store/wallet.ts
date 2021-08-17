@@ -17,14 +17,9 @@ const initWalletStore = () => ({
   balances: [],
 });
 
+// NOTE(ajoslin): we should aim to eliminate this state from here
+// and migrate it onto the Chain.
 export type WalletStore = {
-  // DEPRECATED //
-  eth: WalletStoreEntry;
-  sif: WalletStoreEntry;
-  cosmoshub: WalletStoreEntry;
-  iris: WalletStoreEntry;
-
-  // NEW STUFF //
   _map: Map<Network, WalletStoreEntry>;
   get: (network: Network) => WalletStoreEntry;
   set: (network: Network, data: WalletStoreEntry) => void;
@@ -32,12 +27,6 @@ export type WalletStore = {
 };
 
 export const wallet = reactive<WalletStore>({
-  // DEPRECATED
-  eth: initWalletStore(),
-  sif: initWalletStore(),
-  cosmoshub: initWalletStore(),
-  iris: initWalletStore(),
-
   _map: reactive(new Map()),
   get: (network: Network) => {
     let value = wallet._map.get(network);
