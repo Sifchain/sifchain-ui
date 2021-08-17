@@ -18,6 +18,7 @@ import { Form } from "@/components/Form";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
 import { exportStore } from "@/store/modules/export";
+import { useInputDefaultValueRef } from "@/hooks/useInputDefaultValueRef";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -26,6 +27,8 @@ export default defineComponent({
     const { store } = useCore();
     const exportData = useExportData();
     const walletPicker = useAppWalletPicker();
+
+    const inputRef = useInputDefaultValueRef("");
 
     const {
       networksRef,
@@ -158,6 +161,7 @@ export default defineComponent({
           </label>
 
           <Input.Base
+            ref={inputRef}
             containerClass="mt-[10px]"
             startContent={
               !!exportTokenRef.value && (
