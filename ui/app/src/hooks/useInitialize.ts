@@ -8,7 +8,10 @@ import { accountStore } from "@/store/modules/accounts";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
+  console.log(useCore().store.wallet.get(network));
+
   useCore().store.wallet.set(network, {
+    ...useCore().store.wallet.get(network),
     isConnected: data.connected,
     balances: data.balances,
     address: data.address,

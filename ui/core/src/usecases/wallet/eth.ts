@@ -22,7 +22,10 @@ export default ({
       });
 
       const unsubscribeChainId = services.eth.onChainIdDetected((chainId) => {
-        store.wallet.get(Network.ETHEREUM).chainId = chainId;
+        store.wallet.set(Network.ETHEREUM, {
+          ...store.wallet.get(Network.ETHEREUM),
+          chainId,
+        });
       });
 
       const etheriumState = services.eth.getState();
