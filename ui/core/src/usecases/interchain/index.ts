@@ -14,6 +14,11 @@ import {
 } from "../../services/ChainsService/chains";
 
 export default function InterchainUsecase(context: UsecaseContext) {
+  /* 
+    Please do not copy & paste these when setting up the inverse 
+    of an interchain.
+    i.e. `const sifchainIris = IrisSifchain(context);`
+  */
   const chains = context.services.chains;
   const ethereumSifchain = EthereumSifchain(context);
   const cosmoshubSifchain = CosmoshubSifchain(context);

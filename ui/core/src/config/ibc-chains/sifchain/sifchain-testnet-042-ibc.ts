@@ -7,7 +7,7 @@ export const SIFCHAIN_TESTNET_042: IBCChainConfig = {
   rpcUrl: "https://rpc-testnet-042-ibc.sifchain.finance",
   restUrl: "https://api-testnet-042-ibc.sifchain.finance",
   keplrChainInfo: {
-    chainName: "SifDev-042-IBC",
+    chainName: "SifTest-042-IBC",
     chainId: "sifchain-testnet-042-ibc",
     rpc: "https://rpc-testnet-042-ibc.sifchain.finance",
     rest: "https://api-testnet-042-ibc.sifchain.finance",
