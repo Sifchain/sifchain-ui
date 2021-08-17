@@ -34,8 +34,8 @@ export default function InterchainUsecase(context: UsecaseContext) {
   );
   const sifchainCosmoshub = SifchainCosmoshub(
     context,
-    chains.cosmoshub,
     chains.sifchain,
+    chains.cosmoshub,
   );
   const sifchainIris = IrisSifchain(context, chains.sifchain, chains.iris);
   return (from: Chain, to: Chain) => {
