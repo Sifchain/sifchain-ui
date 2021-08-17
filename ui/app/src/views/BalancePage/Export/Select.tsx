@@ -18,7 +18,7 @@ import { Form } from "@/components/Form";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
 import { exportStore } from "@/store/modules/export";
-import { useInputDefaultValueRef } from "@/hooks/useInputDefaultValueRef";
+import { useManagedInputValueRef } from "@/hooks/useInputDefaultValueRef";
 import { effect } from "@vue/reactivity";
 
 export default defineComponent({
@@ -39,8 +39,12 @@ export default defineComponent({
     const networkRef = computed(() => exportParams.value.network);
 
     // If given amount is 0, show blank in input. Otherwise, show amount.
-    const inputRef = useInputDefaultValueRef(
-      String(parseFloat(exportParams.value.amount) || ""),
+    const inputRef = useManagedInputValueRef(
+      computed(() =>
+        parseFloat(exportParams.value.amount) === 0
+          ? ""
+          : exportParams.value.amount,
+      ),
     );
 
     const handleSetMax = () => {
@@ -165,7 +169,7 @@ export default defineComponent({
           </label>
 
           <Input.Base
-            ref={inputRef}
+            inputRef={inputRef}
             containerClass="mt-[10px]"
             startContent={
               !!exportTokenRef.value && (

@@ -19,7 +19,7 @@ import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
 import { rootStore } from "../../../store";
 import { importStore } from "@/store/modules/import";
-import { useInputDefaultValueRef } from "@/hooks/useInputDefaultValueRef";
+import { useManagedInputValueRef } from "@/hooks/useInputDefaultValueRef";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -28,7 +28,7 @@ export default defineComponent({
     const { store } = useCore();
     const appWalletPicker = useAppWalletPicker();
     const selectIsOpen = ref(false);
-    const inputRef = useInputDefaultValueRef("");
+    const router = useRouter();
 
     const {
       tokenRef,
@@ -38,7 +38,14 @@ export default defineComponent({
       importDraft,
       exitImport,
     } = useImportData();
-    const router = useRouter();
+
+    const inputRef = useManagedInputValueRef(
+      computed(() =>
+        parseFloat(importDraft.value.amount) === 0
+          ? ""
+          : importDraft.value.amount,
+      ),
+    );
 
     const validationErrorRef = computed(() => {
       if (!tokenRef.value) {
@@ -220,7 +227,7 @@ export default defineComponent({
           </div>
 
           <Input.Base
-            ref={inputRef}
+            inputRef={inputRef}
             type="number"
             min="0"
             style={{

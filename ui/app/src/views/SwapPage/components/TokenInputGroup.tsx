@@ -11,7 +11,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-import { useInputDefaultValueRef } from "@/hooks/useInputDefaultValueRef";
+import { useManagedInputValueRef } from "@/hooks/useInputDefaultValueRef";
 
 function required<T>(type: T) {
   return {
@@ -50,21 +50,10 @@ export const TokenInputGroup = defineComponent({
     const propRefs = toRefs(props);
     const selectIsOpen = ref(false);
     const selfRef = ref();
-    const inputRef = useInputDefaultValueRef("");
-
-    watch(
-      [inputRef, propRefs.amount],
-      () => {
-        // Don't overwrite user's input value while the input is focused
-        if (
-          inputRef.value &&
-          propRefs.amount.value &&
-          document.activeElement !== inputRef.value
-        ) {
-          inputRef.value.value = propRefs.amount.value;
-        }
-      },
-      { immediate: true },
+    const inputRef = useManagedInputValueRef(
+      computed(() =>
+        parseFloat(propRefs.amount.value) === 0 ? "" : propRefs.amount.value,
+      ),
     );
 
     return () => {
@@ -125,7 +114,7 @@ export const TokenInputGroup = defineComponent({
               </div>
             </Button.Select>
             <Input.Base
-              ref={inputRef}
+              inputRef={inputRef}
               class="token-input flex-1"
               startContent={
                 !!props.onSetToMaxAmount && (
