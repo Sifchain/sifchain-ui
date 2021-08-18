@@ -28,7 +28,7 @@ const persistConnected = {
       "true"
     );
   },
-  set: (network: Network, value: Boolean) => {
+  set: (network: Network, value: boolean) => {
     return useCore().services.storage.setItem(
       `walletConnected_${network}`,
       String(!!value),

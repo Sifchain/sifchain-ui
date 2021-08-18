@@ -7,6 +7,7 @@ import {
   MsgTransferEncodeObject,
   BroadcastTxResponse,
   isBroadcastTxFailure,
+  IndexedTx,
 } from "@cosmjs/stargate";
 import { IBCChainConfig } from "./IBCChainConfig";
 import {
@@ -21,7 +22,7 @@ import {
 import { loadConnectionByChainIds } from "./loadConnectionByChainIds";
 import getKeplrProvider from "../SifService/getKeplrProvider";
 import { IWalletService } from "../IWalletService";
-import { parseRawLog } from "@cosmjs/stargate/build/logs";
+import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
 import {
   QueryClient,
   setupBankExtension,
@@ -47,6 +48,7 @@ import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/
 import Long from "long";
 import JSBI from "jsbi";
 import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
+import { Tx } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -75,6 +77,48 @@ export class IBCService {
       throw new Error(`No chain config for network ${network}`);
     }
     return chainConfig;
+  }
+
+  async extractTransferMetadataFromTx(tx: IndexedTx | BroadcastTxResponse) {
+    const logs = parseRawLog(tx.rawLog);
+    const sequence = findAttribute(logs, "send_packet", "packet_sequence")
+      .value;
+    const dstChannel = findAttribute(logs, "send_packet", "packet_dst_channel")
+      .value;
+    const dstPort = findAttribute(logs, "send_packet", "packet_dst_port").value;
+    const packet = findAttribute(logs, "send_packet", "packet_data").value;
+    const timeoutTimestampNanoseconds = findAttribute(
+      logs,
+      "send_packet",
+      "packet_timeout_timestamp",
+    ).value;
+    return {
+      sequence,
+      dstChannel,
+      dstPort,
+      packet,
+      timeoutTimestampNanoseconds,
+    };
+  }
+
+  async checkIfPacketReceivedByTx(
+    txOrTxHash: string | IndexedTx | BroadcastTxResponse,
+    network: Network,
+  ) {
+    const sourceChain = this.loadChainConfigByNetwork(network);
+    const client = await StargateClient.connect(sourceChain.rpcUrl);
+    const tx =
+      typeof txOrTxHash === "string"
+        ? await client.getTx(txOrTxHash)
+        : txOrTxHash;
+    if (!tx) throw new Error("invalid txOrTxHash. not found");
+    const meta = await this.extractTransferMetadataFromTx(tx);
+    this.checkIfPacketReceived(
+      network,
+      meta.dstChannel,
+      meta.dstPort,
+      meta.sequence,
+    );
   }
 
   async checkIfPacketReceived(
@@ -118,12 +162,8 @@ export class IBCService {
     const allChannels = await queryClient.ibc.channel.allChannels();
   }
 
-  async loadDestinationChainTxBySourceChainTxHash(
-    sourceChainTxHash: string,
-    sourceNetwork: Network,
-    destinationNetwork: Network,
-  ) {
-    const wallet = await this.createWalletByNetwork(sourceNetwork);
+  async logIBCNetworkMetadata(destinationNetwork: Network) {
+    const wallet = await this.createWalletByNetwork(destinationNetwork);
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
     const allChannels = await queryClient.ibc.channel.allChannels();
     const clients = await Promise.all(
@@ -151,15 +191,12 @@ export class IBCService {
         };
       }),
     );
-    // console.log(sourceNetwork.toUpperCase());
-    // console.table(
-    //   clients.filter((c) => {
-    //     if (destinationNetwork === Network.COSMOSHUB) {
-    //       // return c.chainId.includes("sifchain");
-    //     }
-    //     return true;
-    //   }),
-    // );
+    console.log(destinationNetwork.toUpperCase());
+    console.table(
+      clients.filter((c) => {
+        return true;
+      }),
+    );
     const allCxns = await Promise.all(
       (await queryClient.ibc.connection.allConnections()).connections.map(
         async (cxn) => {
@@ -169,10 +206,7 @@ export class IBCService {
         },
       ),
     );
-    console.log({ sourceNetwork, allChannels, allCxns, clients });
-
-    const tx = await wallet.client.getTx(sourceChainTxHash);
-    parseRawLog(tx?.rawLog);
+    console.log({ destinationNetwork, allChannels, allCxns, clients });
   }
 
   async createWalletByNetwork(network: Network) {

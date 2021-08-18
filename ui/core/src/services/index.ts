@@ -1,5 +1,5 @@
 import { CoreConfig } from "./../utils/parseConfig";
-import { IAsset, Chain, JsonChainConfig } from "../entities";
+import { IAsset, Chain, JsonChainConfig, Network } from "../entities";
 // Everything here represents services that are effectively remote data storage
 export * from "./EthereumService/utils/getMetamaskProvider";
 
@@ -44,6 +44,18 @@ export type ServiceContext = {
 export function createServices(context: ServiceContext) {
   const ChainsService = createChainsService(context);
   const IBCService = createIBCService(context);
+
+  /* 
+
+    Let's leave the metadata logging in place at least until IBC is off the ground. 
+    I have to look this up for someone several times a day.
+    
+    - McCall
+    
+  */
+  IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
+  IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
+
   const EthereumService = ethereumService(context);
   const EthbridgeService = ethbridgeService(context);
   const SifService = sifService(context);

@@ -7,9 +7,6 @@ export default defineComponent({
   name: "WalletPicker",
   props: {},
   setup() {
-    const walletCount = rootStore.accounts.computed(
-      (s) => s.connectedNetworkCount,
-    );
     return () => (
       <div class="w-[304px]">
         {walletConnections.map((connection) => (

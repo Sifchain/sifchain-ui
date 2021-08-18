@@ -20,7 +20,7 @@ type PegServices = {
     "burnToSifchain" | "lockToSifchain" | "approveBridgeBankSpend"
   >;
   bus: Pick<Services["bus"], "dispatch">;
-  ibc: Pick<Services["ibc"], "transferIBCTokens" | "checkIfPacketReceived">;
+  ibc: Services["ibc"];
 };
 
 type PegStore = Pick<Store, "wallet" | "tx">;
@@ -75,7 +75,6 @@ export function Peg(
               }),
             };
           } else {
-            const logs = parseRawLog(tx.rawLog);
             /* 
               [
                   {
@@ -197,29 +196,14 @@ export function Peg(
                 state: "completed",
               },
             };
-            const sequence = findAttribute(
-              logs,
-              "send_packet",
-              "packet_sequence",
-            );
-            const dstChannel = findAttribute(
-              logs,
-              "send_packet",
-              "packet_dst_channel",
-            );
-            const dstPort = findAttribute(
-              logs,
-              "send_packet",
-              "packet_dst_port",
-            );
-            const timeoutTimestampNanoseconds = findAttribute(
-              logs,
-              "send_packet",
-              "packet_timeout_timestamp",
-            );
+            const {
+              timeoutTimestampNanoseconds,
+              dstChannel,
+              dstPort,
+              sequence,
+            } = await services.ibc.extractTransferMetadataFromTx(tx);
             const timeoutTimestampMs =
-              BigInt(timeoutTimestampNanoseconds.value as string) /
-              BigInt(1000000);
+              BigInt(timeoutTimestampNanoseconds as string) / BigInt(1000000);
             while (true) {
               await new Promise((r) => setTimeout(r, 1000));
               if (+timeoutTimestampMs.toString() < Date.now()) {
@@ -238,9 +222,9 @@ export function Peg(
               try {
                 const received = await services.ibc.checkIfPacketReceived(
                   Network.SIFCHAIN,
-                  dstChannel.value,
-                  dstPort.value,
-                  sequence.value,
+                  dstChannel,
+                  dstPort,
+                  sequence,
                 );
                 if (received) {
                   services.bus.dispatch({
