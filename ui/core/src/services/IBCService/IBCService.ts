@@ -60,6 +60,7 @@ export class IBCService {
     cosmoshub: {},
     sifchain: {},
     iris: {},
+    akash: {},
   };
   symbolLookup: Record<string, string> = {};
 
@@ -268,6 +269,7 @@ export class IBCService {
     const destinationChain = this.loadChainConfigByNetwork(
       params.destinationNetwork,
     );
+    console.log({ sourceChain, destinationChain });
     const keplr = await getKeplrProvider();
     await keplr?.experimentalSuggestChain(sourceChain.keplrChainInfo);
     await keplr?.experimentalSuggestChain(destinationChain.keplrChainInfo);

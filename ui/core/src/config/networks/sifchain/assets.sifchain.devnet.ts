@@ -24,6 +24,17 @@ const sifchainDevnetAssets: { assets: IAsset[] } = {
       displaySymbol: "nyan",
       homeNetwork: Network.IRIS,
     },
+    {
+      symbol: "uakt",
+      decimals: 6,
+      name: "AKT",
+      network: Network.SIFCHAIN,
+      label: "AKT",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676",
+      displaySymbol: "akt",
+      homeNetwork: Network.AKASH,
+    },
   ],
 };
 

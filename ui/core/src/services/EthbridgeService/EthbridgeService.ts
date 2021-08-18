@@ -411,11 +411,11 @@ export default function createEthbridgeService({
       tokenAddr = await bridgeBankContract.methods
         .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toUpperCase())
         .call();
-      console.log(
-        "CRO TVL: ",
-        +(await bridgeBankContract.methods.getLockedFunds("ccro").call()) /
-          10e18,
-      );
+      // console.log(
+      //   "CRO TVL: ",
+      //   +(await bridgeBankContract.methods.getLockedFunds("ccro").call()) /
+      //     10e18,
+      // );
       if (!+tokenAddr) {
         if (asset.symbol.replace(/^c/, "").toLowerCase() === "eth") {
           // Ethereum's address is correctly 0x00000...

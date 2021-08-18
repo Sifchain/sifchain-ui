@@ -2,13 +2,13 @@ import { Network } from "../../../entities";
 import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
 
 export const IRIS_TESTNET: IBCChainConfig = {
-  network: Network.COSMOSHUB,
+  network: Network.IRIS,
   chainId: "nyancat-8",
-  rpcUrl: "https://iris-testnet-proxy.vercel.app/api/rpc",
-  restUrl: "https://iris-testnet-proxy.vercel.app/api/rest",
+  rpcUrl: "https://sifchain-testnet-proxies.vercel.app/api/nyancat-8/rpc",
+  restUrl: "https://sifchain-testnet-proxies.vercel.app/api/nyancat-8/rest",
   keplrChainInfo: {
-    rpc: "https://iris-testnet-proxy.vercel.app/api/rpc",
-    rest: "https://iris-testnet-proxy.vercel.app/api/rest",
+    rpc: "https://sifchain-testnet-proxies.vercel.app/api/nyancat-8/rpc",
+    rest: "https://sifchain-testnet-proxies.vercel.app/api/nyancat-8/rest",
     chainId: "nyancat-8",
     chainName: "Iris Testnet",
     stakeCurrency: {

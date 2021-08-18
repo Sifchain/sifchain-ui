@@ -23,6 +23,12 @@ export default <NetworkChainsLookup>{
     network: "iris",
     displayName: "Iris",
     blockExplorerUrl: "https://nyancat.iobscan.io/",
-    nativeAssetSymbol: "nyan",
+    nativeAssetSymbol: "unyan",
+  },
+  akash: {
+    network: "akash",
+    displayName: "Akash",
+    blockExplorerUrl: "https://akash.bigdipper.live/",
+    nativeAssetSymbol: "uakt",
   },
 };

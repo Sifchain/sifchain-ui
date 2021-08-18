@@ -43,6 +43,13 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
         network,
         address: current.address,
       });
+      // if (network === Network.SIFCHAIN) {
+      //   console.log(
+      //     "BALANCE",
+      //     balances,
+      //     diffBalances(current.balances, balances),
+      //   );
+      // }
       return {
         balances,
         changed: diffBalances(current.balances, balances),

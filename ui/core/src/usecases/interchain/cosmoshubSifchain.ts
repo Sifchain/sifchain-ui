@@ -36,6 +36,7 @@ export class CosmoshubSifchainInterchainApi
   async estimateFees(params: InterchainParams) {} // no fees
 
   transfer(params: InterchainParams) {
+    console.log("transfer", this.fromChain, this.toChain);
     return new ExecutableTransaction<CosmosInterchainTransaction>(
       async (emit) => {
         emit({ type: "signing" });
