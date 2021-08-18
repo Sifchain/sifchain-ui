@@ -85,12 +85,17 @@ export const useTokenList = (
         return networksSet.has(asset.network);
       })
       .map((asset: IAsset) => {
-        const balances = accountStore.refs[asset.network].balances.computed()
-          .value;
+        const balancesRef = accountStore.computed(
+          (s) => s.state[asset.network].balances,
+        );
+        const balances = balancesRef.value;
 
-        const amount = balances?.find(({ asset: { symbol, ibcDenom } }) => {
+        const amount = balances?.find(({ asset: { symbol } }) => {
           return asset.symbol.toLowerCase() === symbol.toLowerCase();
         });
+        if (asset.symbol === "unyan") {
+          console.log("reload and recalibrate", amount?.toBigInt().toString());
+        }
 
         // Get pegTxs for asset
         const ethereumImportTransactions = pegList

@@ -1,3 +1,4 @@
+import balancesAreDifferent from "@sifchain/sdk/src/usecases/walletNew/utils/balancesAreDifferent";
 import { IAssetAmount, Network } from "../../../../core/src";
 import { useCore } from "../../hooks/useCore";
 import { Vuextra } from "../Vuextra";
@@ -62,22 +63,14 @@ export const accountStore = Vuextra.createStore({
       state[payload.network].address = payload.address;
     },
     setBalances(payload: { network: Network; balances: IAssetAmount[] }) {
-      const balBySymbol = self.getters.balancesBySymbol[payload.network];
-      payload.balances.forEach((b) => {
-        const prevBal = balBySymbol[b.symbol];
-        // if wasn't in balances before, add it.
-        if (!prevBal) return state[payload.network].balances.push(b);
-        // if balance hasn't changed, skip it
-        if (prevBal.toBigInt().toString() === b.toBigInt().toString()) {
-          return;
-        }
-        // if it has changed, replace it
-        const index = state[payload.network].balances.find(
-          (b2) => b2.symbol === b.symbol,
-        );
-        if (typeof index !== "number") return;
-        state[payload.network].balances[index] = b;
-      });
+      if (
+        balancesAreDifferent(
+          accountStore.state[payload.network].balances,
+          payload.balances,
+        )
+      ) {
+        state[payload.network].balances = payload.balances;
+      }
     },
   }),
   actions: (context) => ({
@@ -102,13 +95,12 @@ export const accountStore = Vuextra.createStore({
               : (20 + Math.random() * 20) * 1000; // Some drift on updates for other chains.
 
           setTimeout(async () => {
-            const { balances, changed } = await usecase.getBalances(network, {
-              balances: state.balances,
-              address: state.address,
-            });
-            if (changed) {
-              accountStore.setBalances({ network, balances });
-            }
+            const balances = await usecase.getBalances(
+              network,
+              accountStore.state[network].address,
+            );
+
+            accountStore.setBalances({ network, balances });
             scheduleUpdate();
           }, UPDATE_DELAY);
         })();
