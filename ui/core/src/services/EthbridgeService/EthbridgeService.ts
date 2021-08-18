@@ -457,10 +457,14 @@ export default function createEthbridgeService({
         )) {
           if (tokens[asset.displaySymbol]) continue;
 
-          tokens[asset.symbol] = await this.fetchTokenAddress(
-            asset,
-            loadWeb3Instance,
-          );
+          try {
+            tokens[asset.symbol] = await this.fetchTokenAddress(
+              asset,
+              loadWeb3Instance,
+            );
+          } catch (error) {
+            console.error("Error fetching eth data for", asset.symbol, error);
+          }
         }
         console.log("\n\n\n\n\n\n\n");
         console.log(tokens);

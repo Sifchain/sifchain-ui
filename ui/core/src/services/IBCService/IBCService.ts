@@ -61,6 +61,7 @@ export class IBCService {
     sifchain: {},
     iris: {},
     akash: {},
+    sentinel: {},
   };
   symbolLookup: Record<string, string> = {};
 

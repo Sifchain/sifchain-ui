@@ -117,7 +117,9 @@ export default function createSifService({
         state.connected = !!client;
         state.address = client.senderAddress;
         state.accounts = await client.getAccounts();
-        state.balances = await instance.getBalance(client.senderAddress);
+
+        // Don't fetch balances here... thats the job of the new wallet store.
+        state.balances = []; // await instance.getBalance(client.senderAddress);
       } catch (e) {
         console.error("Sifchain Wallet Connect Error", e);
         if (!e.toString().toLowerCase().includes("no address found on chain")) {
@@ -169,7 +171,7 @@ export default function createSifService({
         keplrChainConfig.chainId,
       );
       const accounts = await offlineSigner.getAccounts();
-      console.log("account", accounts);
+      // console.log("account", accounts);
       const address = accounts?.[0]?.address || "";
       if (!address) {
         throw "No address on sif account";
@@ -205,7 +207,7 @@ export default function createSifService({
         try {
           await keplrProvider.experimentalSuggestChain(keplrChainConfig);
           await keplrProvider.enable(keplrChainConfig.chainId);
-          console.log("enabling keplr", keplrChainConfig);
+          // console.log("enabling keplr", keplrChainConfig);
           triggerUpdate();
         } catch (error) {
           console.log(error);

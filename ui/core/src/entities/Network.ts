@@ -4,4 +4,5 @@ export enum Network {
   COSMOSHUB = "cosmoshub",
   IRIS = "iris",
   AKASH = "akash",
+  SENTINEL = "sentinel",
 }

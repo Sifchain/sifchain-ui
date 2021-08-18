@@ -140,4 +140,28 @@ export const walletConnections: WalletConnection[] = [
       }));
     },
   },
+  {
+    walletName: "Keplr",
+    network: Network.SENTINEL,
+    networkTokenSymbol: "udvpn",
+    walletIconSrc: require("@/assets/keplr.jpg"),
+    getAddressExplorerUrl: (config: AppConfig, address: string) => {
+      return config.chains.akash.blockExplorerUrl + "/address/" + address;
+    },
+    useWalletState: () => {
+      return rootStore.accounts.computed((s) => {
+        const w = s.state.sentinel;
+        return {
+          isConnected: w.connected,
+          address: w.address,
+        };
+      });
+    },
+    useWalletApi: () => {
+      return computed(() => ({
+        connect: () => accountStore.actions.load(Network.SENTINEL),
+        disconnect: undefined,
+      }));
+    },
+  },
 ];

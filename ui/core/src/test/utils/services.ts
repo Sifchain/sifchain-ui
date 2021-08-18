@@ -21,6 +21,7 @@ export async function createTestSifService(account?: TestSifAccount) {
       ethereum: null,
       iris: null,
       akash: null,
+      sentinel: null,
     },
   });
 

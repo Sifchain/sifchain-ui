@@ -29,6 +29,9 @@ const connectionsByChainIds: {
     "akash-testnet-6": {
       channelId: "channel-77",
     },
+    "sentinelhub-2": {
+      channelId: "channel-79",
+    },
   },
   "sifchain-devnet-042": {
     "cosmoshub-testnet": {
@@ -59,6 +62,11 @@ const connectionsByChainIds: {
   "nyancat-8": {
     "sifchain-devnet-1": {
       channelId: "channel-13",
+    },
+  },
+  "sentinelhub-2": {
+    "sifchain-devnet-1": {
+      channelId: "channel-19",
     },
   },
 };

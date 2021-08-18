@@ -37,6 +37,7 @@ export const accountStore = Vuextra.createStore({
     cosmoshub: initWalletState(Network.COSMOSHUB),
     iris: initWalletState(Network.IRIS),
     akash: initWalletState(Network.AKASH),
+    sentinel: initWalletState(Network.SENTINEL),
   } as Record<Network, IWalletServiceState>,
   getters: (state) => ({
     connectedNetworkCount: () => {

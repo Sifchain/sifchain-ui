@@ -11,6 +11,7 @@ import {
   CosmoshubChain,
   AkashChain,
   IrisChain,
+  SentinelChain,
 } from "./chains";
 import { NetworkChainsLookup } from "../../config/chains/NetEnvChainsLookup";
 
@@ -21,7 +22,8 @@ export type AnyChain =
   | EthereumChain
   | CosmoshubChain
   | IrisChain
-  | AkashChain;
+  | AkashChain
+  | SentinelChain;
 
 export type ChainsServiceContext = {
   assets: IAsset[];
@@ -34,6 +36,7 @@ const networkChainCtorLookup = {
   [Network.COSMOSHUB]: CosmoshubChain,
   [Network.IRIS]: IrisChain,
   [Network.AKASH]: AkashChain,
+  [Network.SENTINEL]: SentinelChain,
 };
 
 export class ChainsService {

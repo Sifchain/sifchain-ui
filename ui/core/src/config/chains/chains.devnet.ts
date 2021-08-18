@@ -31,4 +31,10 @@ export default <NetworkChainsLookup>{
     blockExplorerUrl: "https://akash.bigdipper.live/",
     nativeAssetSymbol: "uakt",
   },
+  sentinel: {
+    network: "sentinel",
+    displayName: "Sentinel",
+    blockExplorerUrl: "https://explorer.sentinel.co/",
+    nativeAssetSymbol: "udvpn",
+  },
 };
