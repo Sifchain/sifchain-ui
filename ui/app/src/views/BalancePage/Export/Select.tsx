@@ -20,6 +20,8 @@ import { rootStore } from "@/store";
 import { exportStore } from "@/store/modules/export";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { effect } from "@vue/reactivity";
+import { accountStore } from "@/store/modules/accounts";
+import { useChains } from "@/hooks/useChains";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -109,10 +111,10 @@ export default defineComponent({
           },
         },
         {
-          condition:
-            exportParams.value.network === Network.ETHEREUM &&
-            !store.wallet.get(Network.ETHEREUM).isConnected,
-          name: "Connect Ethereum Wallet",
+          condition: !accountStore.state[networkRef.value].connected,
+          name: `Connect ${
+            useChains().get(networkRef.value).displayName
+          } Wallet`,
           icon: "interactive/arrows-in" as IconName,
           props: {
             onClick: () => walletPicker.show(),

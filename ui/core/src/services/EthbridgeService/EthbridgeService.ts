@@ -182,12 +182,11 @@ export default function createEthbridgeService({
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
 
-      const ethereumAsset = getChainsService()
-        ?.get(Network.ETHEREUM)
+      const sifAsset = getChainsService()
+        ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      const tokenAddress =
-        ethereumAsset.ibcDenom || ethereumAsset.address || ETH_ADDRESS;
+      const tokenAddress = sifAsset.ibcDenom || sifAsset.address || ETH_ADDRESS;
 
       console.log("burnToEthereum: start: ", tokenAddress);
 
@@ -410,7 +409,7 @@ export default function createEthbridgeService({
       );
       let tokenAddr: string;
       tokenAddr = await bridgeBankContract.methods
-        .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toLowerCase())
+        .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toUpperCase())
         .call();
       console.log(
         "CRO TVL: ",
@@ -423,12 +422,12 @@ export default function createEthbridgeService({
           return tokenAddr;
         }
         tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken("e" + asset.symbol.toLowerCase())
+          .getBridgeToken("e" + asset.symbol.toUpperCase())
           .call();
       }
       if (!+tokenAddr) {
         tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken(asset.symbol.toLowerCase())
+          .getBridgeToken(asset.symbol.toUpperCase())
           .call();
       }
       if (!+tokenAddr) {

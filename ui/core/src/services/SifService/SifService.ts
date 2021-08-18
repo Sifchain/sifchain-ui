@@ -98,40 +98,39 @@ export default function createSifService({
 
   const triggerUpdate = debounce(
     async () => {
-      try {
-        if (!polling) {
-          polling = setInterval(() => {
-            triggerUpdate();
-          }, 2000);
-        }
-        await instance.setClient();
-        if (!client) {
-          state.connected = false;
-          state.address = "";
-          state.balances = [];
-          state.accounts = [];
-          state.log = "";
-          return;
-        }
-
-        state.connected = !!client;
-        state.address = client.senderAddress;
-        state.accounts = await client.getAccounts();
-        state.balances = await instance.getBalance(client.senderAddress);
-      } catch (e) {
-        console.error("Sifchain Wallet Connect Error", e);
-        if (!e.toString().toLowerCase().includes("no address found on chain")) {
-          state.connected = false;
-          state.address = "";
-          state.balances = [];
-          state.accounts = [];
-          state.log = "";
-          if (polling) {
-            clearInterval(polling);
-            polling = null;
-          }
-        }
-      }
+      // try {
+      //   if (!polling) {
+      //     polling = setInterval(() => {
+      //       triggerUpdate();
+      //     }, 2000);
+      //   }
+      //   await instance.setClient();
+      //   if (!client) {
+      //     state.connected = false;
+      //     state.address = "";
+      //     state.balances = [];
+      //     state.accounts = [];
+      //     state.log = "";
+      //     return;
+      //   }
+      //   state.connected = !!client;
+      //   state.address = client.senderAddress;
+      //   state.accounts = await client.getAccounts();
+      //   state.balances = await instance.getBalance(client.senderAddress);
+      // } catch (e) {
+      //   console.error("Sifchain Wallet Connect Error", e);
+      //   if (!e.toString().toLowerCase().includes("no address found on chain")) {
+      //     state.connected = false;
+      //     state.address = "";
+      //     state.balances = [];
+      //     state.accounts = [];
+      //     state.log = "";
+      //     if (polling) {
+      //       clearInterval(polling);
+      //       polling = null;
+      //     }
+      //   }
+      // }
     },
     100,
     { leading: true },

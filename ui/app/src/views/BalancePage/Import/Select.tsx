@@ -20,6 +20,8 @@ import { useRouter } from "vue-router";
 import { rootStore } from "../../../store";
 import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
+import { accountStore } from "@/store/modules/accounts";
+import { useChains } from "@/hooks/useChains";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -70,7 +72,7 @@ export default defineComponent({
     const buttonRef = computed(() => {
       const buttons = [
         {
-          condition: !store.wallet.get(Network.SIFCHAIN).isConnected,
+          condition: !accountStore.state.sifchain.connected,
           name: "Connect Sifchain Wallet",
           icon: "interactive/arrows-in" as IconName,
           props: {
@@ -80,9 +82,12 @@ export default defineComponent({
         },
         {
           condition:
-            importDraft.value.network === Network.ETHEREUM &&
-            !store.wallet.get(Network.ETHEREUM).isConnected,
-          name: "Connect Ethereum Wallet",
+            tokenRef.value &&
+            !accountStore.state[tokenRef.value.asset.network].connected,
+          name: `Connect ${
+            tokenRef.value &&
+            useChains().get(tokenRef.value.asset.network).displayName
+          } Wallet`,
           icon: "interactive/arrows-in" as IconName,
           props: {
             onClick: () => appWalletPicker.show(),

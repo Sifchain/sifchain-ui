@@ -125,6 +125,7 @@ export class IBCService {
   ) {
     const wallet = await this.createWalletByNetwork(sourceNetwork);
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
+
     const allChannels = await queryClient.ibc.channel.allChannels();
     const clients = await Promise.all(
       allChannels.channels.map(async (channel) => {
@@ -136,6 +137,7 @@ export class IBCService {
           }/client_state`,
         ).then((r) => r.json());
 
+        // console.log(parsedClientState);
         // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
         //   channel.portId,
         //   channel.channelId,
@@ -152,14 +154,14 @@ export class IBCService {
       }),
     );
     // console.log(sourceNetwork.toUpperCase());
-    // console.table(
-    //   clients.filter((c) => {
-    //     if (destinationNetwork === Network.COSMOSHUB) {
-    //       // return c.chainId.includes("sifchain");
-    //     }
-    //     return true;
-    //   }),
-    // );
+    console.table(
+      clients.filter((c) => {
+        if (destinationNetwork === Network.IRIS) {
+          // return c.chainId.includes("sifchain");
+        }
+        return true;
+      }),
+    );
     const allCxns = await Promise.all(
       (await queryClient.ibc.connection.allConnections()).connections.map(
         async (cxn) => {

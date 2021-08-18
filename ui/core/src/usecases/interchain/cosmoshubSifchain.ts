@@ -39,7 +39,6 @@ export class CosmoshubSifchainInterchainApi
     return new ExecutableTransaction<CosmosInterchainTransaction>(
       async (emit) => {
         emit({ type: "signing" });
-        debugger;
         try {
           const txSequence = await this.context.services.ibc.transferIBCTokens({
             sourceNetwork: this.fromChain.network,
