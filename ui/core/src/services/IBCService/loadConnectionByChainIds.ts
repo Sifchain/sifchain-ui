@@ -27,7 +27,7 @@ const connectionsByChainIds: {
       channelId: "channel-42",
     },
     "akash-testnet-6": {
-      channelId: "channel-41",
+      channelId: "channel-77",
     },
   },
   "sifchain-devnet-042": {
@@ -53,7 +53,7 @@ const connectionsByChainIds: {
   },
   "akash-testnet-6": {
     "sifchain-devnet-1": {
-      channelId: "channel-34",
+      channelId: "channel-44",
     },
   },
   "nyancat-8": {
