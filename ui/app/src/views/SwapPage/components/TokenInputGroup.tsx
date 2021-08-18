@@ -114,6 +114,7 @@ export const TokenInputGroup = defineComponent({
               </div>
             </Button.Select>
             <Input.Base
+              placeholder={"0"}
               inputRef={inputRef}
               class="token-input flex-1"
               startContent={
