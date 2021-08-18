@@ -24,7 +24,7 @@ const connectionsByChainIds: {
       channelId: "channel-61",
     },
     "nyancat-8": {
-      channelId: "channel-60",
+      channelId: "channel-64",
     },
   },
   "sifchain-devnet-042": {
@@ -50,7 +50,7 @@ const connectionsByChainIds: {
   },
   "nyancat-8": {
     "sifchain-devnet-1": {
-      channelId: "channel-17",
+      channelId: "channel-19",
     },
   },
 };
