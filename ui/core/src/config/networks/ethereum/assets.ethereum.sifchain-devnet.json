@@ -644,6 +644,17 @@
       "priceUsd": 0,
       "symbol": "uphoton",
       "transferLimit": "99999999999999999999999"
+    },
+    {
+      "address": "",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      "name": "Nyan",
+      "network": "ethereum",
+      "homeNetwork": "iris",
+      "priceUsd": 0,
+      "symbol": "unyan",
+      "transferLimit": "99999999999999999999999"
     }
   ]
 }
