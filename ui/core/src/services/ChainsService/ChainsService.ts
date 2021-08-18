@@ -5,8 +5,13 @@ import {
   Network,
   setChainsService,
 } from "../../entities";
-import { SifchainChain, EthereumChain, CosmoshubChain } from "./chains";
-import { IrisChain } from "./chains/IrisChain";
+import {
+  SifchainChain,
+  EthereumChain,
+  CosmoshubChain,
+  AkashChain,
+  IrisChain,
+} from "./chains";
 import { NetworkChainsLookup } from "../../config/chains/NetEnvChainsLookup";
 
 export * from "./chains";
@@ -15,7 +20,8 @@ export type AnyChain =
   | SifchainChain
   | EthereumChain
   | CosmoshubChain
-  | IrisChain;
+  | IrisChain
+  | AkashChain;
 
 export type ChainsServiceContext = {
   assets: IAsset[];
@@ -27,6 +33,7 @@ const networkChainCtorLookup = {
   [Network.ETHEREUM]: EthereumChain,
   [Network.COSMOSHUB]: CosmoshubChain,
   [Network.IRIS]: IrisChain,
+  [Network.AKASH]: AkashChain,
 };
 
 export class ChainsService {

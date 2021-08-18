@@ -5,7 +5,11 @@ import { WalletActions } from "./types";
 import { StargateClient } from "@cosmjs/stargate";
 
 // TODO(ajoslin): handle account switches gracefully
-window.addEventListener("keplr_keystorechange", () => window.location.reload());
+try {
+  window?.addEventListener("keplr_keystorechange", () =>
+    window.location.reload(),
+  );
+} catch (e) {}
 
 export default function KeplrActions(context: UsecaseContext): WalletActions {
   let clients = new Map<Network, StargateClient>();
@@ -43,6 +47,13 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
         network,
         address: current.address,
       });
+      // if (network === Network.SIFCHAIN) {
+      //   console.log(
+      //     "BALANCE",
+      //     balances,
+      //     diffBalances(current.balances, balances),
+      //   );
+      // }
       return {
         balances,
         changed: diffBalances(current.balances, balances),

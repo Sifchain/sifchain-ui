@@ -11,7 +11,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-import { useManagedInputValueRef } from "@/hooks/useInputDefaultValueRef";
+import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 
 function required<T>(type: T) {
   return {

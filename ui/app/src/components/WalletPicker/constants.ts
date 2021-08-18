@@ -116,4 +116,28 @@ export const walletConnections: WalletConnection[] = [
       }));
     },
   },
+  {
+    walletName: "Keplr",
+    network: Network.AKASH,
+    networkTokenSymbol: "uakt",
+    walletIconSrc: require("@/assets/keplr.jpg"),
+    getAddressExplorerUrl: (config: AppConfig, address: string) => {
+      return config.chains.akash.blockExplorerUrl + "/address/" + address;
+    },
+    useWalletState: () => {
+      return rootStore.accounts.computed((s) => {
+        const w = s.state.akash;
+        return {
+          isConnected: w.connected,
+          address: w.address,
+        };
+      });
+    },
+    useWalletApi: () => {
+      return computed(() => ({
+        connect: () => accountStore.actions.load(Network.AKASH),
+        disconnect: undefined,
+      }));
+    },
+  },
 ];

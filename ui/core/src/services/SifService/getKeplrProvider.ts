@@ -10,6 +10,7 @@ let numChecks = 0;
 
 // Detect mossible keplr provider from browser
 export default async function getKeplrProvider(): Promise<provider | null> {
+  const window = global.window || global;
   if (typeof window === "undefined") return null;
 
   const win = window as WindowWithPossibleKeplr;

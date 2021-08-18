@@ -7,6 +7,6 @@ export default function createSifchainIrisApi(context: UsecaseContext) {
   return new SifchainCosmoshubInterchainApi(
     context,
     context.services.chains.get(Network.SIFCHAIN),
-    context.services.chains.get(Network.IRIS),
+    context.services.chains.get(Network.AKASH),
   );
 }

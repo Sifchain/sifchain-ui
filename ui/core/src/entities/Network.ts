@@ -3,4 +3,5 @@ export enum Network {
   ETHEREUM = "ethereum",
   COSMOSHUB = "cosmoshub",
   IRIS = "iris",
+  AKASH = "akash",
 }

@@ -182,12 +182,11 @@ export default function createEthbridgeService({
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
 
-      const ethereumAsset = getChainsService()
+      const sifAsset = getChainsService()
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      const tokenAddress =
-        ethereumAsset.ibcDenom || ethereumAsset.address || ETH_ADDRESS;
+      const tokenAddress = sifAsset.ibcDenom || sifAsset.address || ETH_ADDRESS;
 
       console.log("burnToEthereum: start: ", tokenAddress);
 
@@ -280,7 +279,7 @@ export default function createEthbridgeService({
       const ethereumChainId = await web3.eth.net.getId();
 
       const ethereumAsset = getChainsService()
-        ?.get(Network.SIFCHAIN)
+        ?.get(Network.ETHEREUM)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
       const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
 
@@ -410,25 +409,25 @@ export default function createEthbridgeService({
       );
       let tokenAddr: string;
       tokenAddr = await bridgeBankContract.methods
-        .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toLowerCase())
+        .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toUpperCase())
         .call();
-      console.log(
-        "CRO TVL: ",
-        +(await bridgeBankContract.methods.getLockedFunds("ccro").call()) /
-          10e18,
-      );
+      // console.log(
+      //   "CRO TVL: ",
+      //   +(await bridgeBankContract.methods.getLockedFunds("ccro").call()) /
+      //     10e18,
+      // );
       if (!+tokenAddr) {
         if (asset.symbol.replace(/^c/, "").toLowerCase() === "eth") {
           // Ethereum's address is correctly 0x00000...
           return tokenAddr;
         }
         tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken("e" + asset.symbol.toLowerCase())
+          .getBridgeToken("e" + asset.symbol.toUpperCase())
           .call();
       }
       if (!+tokenAddr) {
         tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken(asset.symbol.toLowerCase())
+          .getBridgeToken(asset.symbol.toUpperCase())
           .call();
       }
       if (!+tokenAddr) {

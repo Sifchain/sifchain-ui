@@ -9,6 +9,8 @@ import {
   isBroadcastTxFailure,
   IndexedTx,
 } from "@cosmjs/stargate";
+import { OfflineSigner } from "@cosmjs/proto-signing";
+
 import { IBCChainConfig } from "./IBCChainConfig";
 import {
   Amount,
@@ -49,7 +51,7 @@ import Long from "long";
 import JSBI from "jsbi";
 import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
 import { Tx } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
-
+import {} from "@cosmjs/stargate";
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   assets: Asset[];
@@ -62,6 +64,7 @@ export class IBCService {
     cosmoshub: {},
     sifchain: {},
     iris: {},
+    akash: {},
   };
   symbolLookup: Record<string, string> = {};
 
@@ -70,6 +73,16 @@ export class IBCService {
     return new this(context);
   }
 
+  public loadChainConfigByChainId(chainId: string): IBCChainConfig {
+    // @ts-ignore
+    const chainConfig = Object.values(
+      this.context.ibcChainConfigsByNetwork,
+    ).find((c) => c?.chainId === chainId);
+    if (!chainConfig) {
+      throw new Error(`No chain config for network ${chainId}`);
+    }
+    return chainConfig;
+  }
   public loadChainConfigByNetwork(network: Network): IBCChainConfig {
     // @ts-ignore
     const chainConfig = this.context.ibcChainConfigsByNetwork[network];
@@ -103,18 +116,19 @@ export class IBCService {
 
   async checkIfPacketReceivedByTx(
     txOrTxHash: string | IndexedTx | BroadcastTxResponse,
-    network: Network,
+    destinationNetwork: Network,
   ) {
-    const sourceChain = this.loadChainConfigByNetwork(network);
+    const sourceChain = this.loadChainConfigByNetwork(destinationNetwork);
     const client = await StargateClient.connect(sourceChain.rpcUrl);
     const tx =
       typeof txOrTxHash === "string"
         ? await client.getTx(txOrTxHash)
         : txOrTxHash;
-    if (!tx) throw new Error("invalid txOrTxHash. not found");
+    if (typeof tx !== "object" || tx === null)
+      throw new Error("invalid txOrTxHash. not found");
     const meta = await this.extractTransferMetadataFromTx(tx);
-    this.checkIfPacketReceived(
-      network,
+    return this.checkIfPacketReceived(
+      destinationNetwork,
       meta.dstChannel,
       meta.dstPort,
       meta.sequence,
@@ -165,6 +179,7 @@ export class IBCService {
   async logIBCNetworkMetadata(destinationNetwork: Network) {
     const wallet = await this.createWalletByNetwork(destinationNetwork);
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
+
     const allChannels = await queryClient.ibc.channel.allChannels();
     const clients = await Promise.all(
       allChannels.channels.map(async (channel) => {
@@ -176,6 +191,7 @@ export class IBCService {
           }/client_state`,
         ).then((r) => r.json());
 
+        // console.log(parsedClientState);
         // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
         //   channel.portId,
         //   channel.channelId,
@@ -291,28 +307,39 @@ export class IBCService {
     return assetAmounts;
   }
 
-  async transferIBCTokens(params: {
-    sourceNetwork: Network;
-    destinationNetwork: Network;
-    assetAmountToTransfer: IAssetAmount;
-  }): Promise<BroadcastTxResponse[]> {
+  async transferIBCTokens(
+    params: {
+      sourceNetwork: Network;
+      destinationNetwork: Network;
+      assetAmountToTransfer: IAssetAmount;
+    },
+    // Load testing options
+    {
+      maxMsgsPerBatch = 800,
+      maxAmountPerMsg = `9223372036854775807`,
+      gasPerBatch = undefined,
+      loadOfflineSigner = (
+        chainId: string,
+      ): Promise<OfflineSigner | undefined> | undefined =>
+        getKeplrProvider().then((keplr) => keplr?.getOfflineSigner(chainId)),
+    } = {},
+  ): Promise<BroadcastTxResponse[]> {
     const sourceChain = this.loadChainConfigByNetwork(params.sourceNetwork);
     const destinationChain = this.loadChainConfigByNetwork(
       params.destinationNetwork,
     );
+    console.log({ sourceChain, destinationChain });
     const keplr = await getKeplrProvider();
     await keplr?.experimentalSuggestChain(sourceChain.keplrChainInfo);
     await keplr?.experimentalSuggestChain(destinationChain.keplrChainInfo);
     await keplr?.enable(destinationChain.chainId);
-    const recievingSigner = await keplr?.getOfflineSigner(
-      destinationChain.chainId,
-    );
+    const recievingSigner = await loadOfflineSigner(destinationChain.chainId);
     if (!recievingSigner) throw new Error("No recieving signer");
     const [toAccount] = (await recievingSigner?.getAccounts()) || [];
     if (!toAccount) throw new Error("No account found for recieving signer");
 
     await keplr?.enable(sourceChain.chainId);
-    const sendingSigner = await keplr?.getOfflineSigner(sourceChain.chainId);
+    const sendingSigner = await loadOfflineSigner(sourceChain.chainId);
     if (!sendingSigner) throw new Error("No sending signer");
 
     console.log(
@@ -403,7 +430,7 @@ export class IBCService {
       JSBI.greaterThanOrEqual(
         JSBI.BigInt(transferMsgs[0].value.token?.amount || "0"),
         // Max uint64
-        JSBI.BigInt(`9223372036854775807`),
+        JSBI.BigInt(maxAmountPerMsg),
       )
     ) {
       transferMsgs = [...transferMsgs, ...transferMsgs].map((tfMsg) => {
@@ -424,8 +451,6 @@ export class IBCService {
     }
 
     const batches = [];
-    const maxMsgsPerBatch = 800;
-    // const maxMsgsPerBatch = 1024;
     while (transferMsgs.length) {
       batches.push(transferMsgs.splice(0, maxMsgsPerBatch));
     }
@@ -437,7 +462,6 @@ export class IBCService {
       try {
         // const gasPerMessage = 39437;
         // const gasPerMessage = 39437;
-        const gasPerMessage = 30437;
         console.log(JSON.stringify(batch));
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,
@@ -446,13 +470,13 @@ export class IBCService {
             ...sendingStargateClient.fees.transfer,
             amount: [
               {
-                denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom,
+                denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
                 amount:
                   sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
                   "",
               },
             ],
-            gas: calculateGasForIBCTransfer(batch.length),
+            gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
           },
         );
         console.log({ brdcstTxRes });

@@ -23,6 +23,12 @@ const connectionsByChainIds: {
     "cosmoshub-testnet": {
       channelId: "channel-61",
     },
+    "nyancat-8": {
+      channelId: "channel-42",
+    },
+    "akash-testnet-6": {
+      channelId: "channel-41",
+    },
   },
   "sifchain-devnet-042": {
     "cosmoshub-testnet": {
@@ -43,6 +49,16 @@ const connectionsByChainIds: {
     },
     "sifchain-testnet-042-ibc": {
       channelId: "channel-86",
+    },
+  },
+  "akash-testnet-6": {
+    "sifchain-devnet-1": {
+      channelId: "channel-34",
+    },
+  },
+  "nyancat-8": {
+    "sifchain-devnet-1": {
+      channelId: "channel-13",
     },
   },
 };

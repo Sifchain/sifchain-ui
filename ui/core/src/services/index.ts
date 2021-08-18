@@ -44,7 +44,14 @@ export type ServiceContext = {
 export function createServices(context: ServiceContext) {
   const ChainsService = createChainsService(context);
   const IBCService = createIBCService(context);
-
+  const EthereumService = ethereumService(context);
+  const EthbridgeService = ethbridgeService(context);
+  const SifService = sifService(context);
+  const ClpService = clpService(context);
+  const EventBusService = eventBusService(context);
+  const DispensationService = createDispensationService(context);
+  const CryptoeconomicsService = cryptoeconomicsService(context);
+  const StorageService = storageService(context);
   /* 
 
     Let's leave the metadata logging in place at least until IBC is off the ground. 
@@ -53,18 +60,13 @@ export function createServices(context: ServiceContext) {
     - McCall
     
   */
-  IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
-  IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
+  try {
+    if (!global.window) throw "";
+    IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
+    IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
+    EthbridgeService?.fetchAllTokenAddresses();
+  } catch (e) {}
 
-  const EthereumService = ethereumService(context);
-  const EthbridgeService = ethbridgeService(context);
-  const SifService = sifService(context);
-  const ClpService = clpService(context);
-  const EventBusService = eventBusService(context);
-  const DispensationService = createDispensationService(context);
-  EthbridgeService?.fetchAllTokenAddresses();
-  const CryptoeconomicsService = cryptoeconomicsService(context);
-  const StorageService = storageService(context);
   return {
     chains: ChainsService,
     ibc: IBCService,

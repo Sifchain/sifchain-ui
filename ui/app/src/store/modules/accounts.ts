@@ -35,6 +35,7 @@ export const accountStore = Vuextra.createStore({
     sifchain: initWalletState(Network.SIFCHAIN),
     cosmoshub: initWalletState(Network.COSMOSHUB),
     iris: initWalletState(Network.IRIS),
+    akash: initWalletState(Network.AKASH),
   } as Record<Network, IWalletServiceState>,
   getters: (state) => ({
     connectedNetworkCount: () => {
@@ -93,15 +94,24 @@ export const accountStore = Vuextra.createStore({
 
         if (!state.connected) return;
 
-        setInterval(async () => {
-          const { balances, changed } = await usecase.getBalances(network, {
-            balances: state.balances,
-            address: state.address,
-          });
-          if (changed) {
-            accountStore.setBalances({ network, balances });
-          }
-        }, 10 * 1000);
+        (function scheduleUpdate() {
+          // NOTE(ajoslin): more formal fix coming later to lazyload non-sif/eth assets.
+          const UPDATE_DELAY =
+            network === Network.SIFCHAIN || network === Network.ETHEREUM
+              ? 5 * 1000
+              : (20 + Math.random() * 20) * 1000; // Some drift on updates for other chains.
+
+          setTimeout(async () => {
+            const { balances, changed } = await usecase.getBalances(network, {
+              balances: state.balances,
+              address: state.address,
+            });
+            if (changed) {
+              accountStore.setBalances({ network, balances });
+            }
+            scheduleUpdate();
+          }, UPDATE_DELAY);
+        })();
       } catch (error) {
         console.error(network, "wallet connect error", error);
       }

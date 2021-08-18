@@ -89,11 +89,18 @@ export function getConfig(
       network: Network.IRIS,
     })),
   );
+  const akashAssets = parseAssets(
+    sifchainAssets.map((a) => ({
+      ...a,
+      network: Network.AKASH,
+    })),
+  );
   const allAssets = [
     ...sifchainAssets,
     ...ethereumAssets,
     ...cosmoshubAssets,
     ...irisAssets,
+    ...akashAssets,
   ].map(cacheAsset);
 
   const configMap: ConfigMap = {

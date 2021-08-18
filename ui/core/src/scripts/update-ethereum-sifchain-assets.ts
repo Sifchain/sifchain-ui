@@ -1,7 +1,6 @@
 import { Network, NetworkEnv } from "..";
 import { getConfig } from "../config/getConfig";
 import { setupSifchainApi } from "../setupSifchainApi";
-import fs from "fs";
 import Web3 from "web3";
 import ethAssetsRaw from "../config/networks/ethereum/assets.ethereum.sifchain-devnet.json";
 import { IAsset } from "entities";
@@ -32,14 +31,14 @@ const sifchain = setupSifchainApi(NetworkEnv.DEVNET);
           ],
       };
     });
-  fs.writeFileSync(
-    "./updated-eth-assets.json",
-    JSON.stringify(
-      {
-        assets: ethAssets,
-      },
-      null,
-      2,
-    ),
-  );
+  // fs.writeFileSync(
+  //   "./updated-eth-assets.json",
+  //   JSON.stringify(
+  //     {
+  //       assets: ethAssets,
+  //     },
+  //     null,
+  //     2,
+  //   ),
+  // );
 })();

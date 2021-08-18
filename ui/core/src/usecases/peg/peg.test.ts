@@ -1,3 +1,4 @@
+import { IBCService } from "services/IBCService/IBCService";
 import { AssetAmount, Network } from "../../entities";
 import { getTestingTokens } from "../../test/utils/getTestingToken";
 import { Peg, PegEvent, PegSentEvent } from "./peg";
@@ -22,10 +23,10 @@ function createPeg() {
     {
       ethbridge,
       bus,
-      ibc: {
+      ibc: ({
         transferIBCTokens: jest.fn(),
         checkIfPacketReceived: jest.fn(),
-      },
+      } as unknown) as IBCService,
     },
     { wallet, tx },
     { ethConfirmations: 50 },

@@ -145,6 +145,7 @@ test("parseConfig", () => {
         ethereum: null,
         cosmoshub: null,
         iris: null,
+        akash: null,
       },
       require("../config/chains/chains.devnet.ts").default,
     ),
