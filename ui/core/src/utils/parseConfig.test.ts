@@ -146,6 +146,7 @@ test("parseConfig", () => {
         cosmoshub: null,
         iris: null,
         akash: null,
+        sentinel: null,
       },
       require("../config/chains/chains.devnet.ts").default,
     ),

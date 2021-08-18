@@ -51,6 +51,7 @@ const testConfig: SifServiceContext = {
     cosmoshub: null,
     iris: null,
     akash: null,
+    sentinel: null,
   },
   keplrChainConfig: {
     rest: "",

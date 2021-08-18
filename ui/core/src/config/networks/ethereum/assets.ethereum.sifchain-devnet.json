@@ -659,7 +659,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
+      "address": "0x8ba31C93a5E3F856B82a16f81414fb1A78d9de07",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676",
       "name": "AKT",
