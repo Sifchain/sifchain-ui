@@ -10,15 +10,15 @@ import {
 } from "@sifchain/sdk";
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
+import { InterchainTx } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 
 export type TokenListItem = {
   amount: IAssetAmount;
   asset: IAsset;
-  importTxs: {
-    network: Network;
-    tx: TransactionStatus;
+  pendingImports: {
+    transactionStatus: TransactionStatus;
+    interchainTx: InterchainTx;
   }[];
-  supported: boolean;
 };
 
 export const useTokenList = (
@@ -28,56 +28,12 @@ export const useTokenList = (
 ) => {
   const { store, config, usecases } = useCore();
 
-  const pendingPegTxList = computed(() => {
-    const ethRef = accountStore.refs.ethereum.computed();
-    if (
-      !ethRef.value.address ||
-      !store.tx.eth ||
-      !store.tx.eth[ethRef.value.address]
-    )
-      return [];
-
-    const txs = store.tx.eth[ethRef.value.address];
-
-    const txKeys = Object.keys(txs);
-
-    const list: TransactionStatus[] = [];
-    for (const key of txKeys) {
-      const txStatus = txs[key];
-
-      // Are only interested in pending txs with a symbol
-      if (!txStatus.symbol || txStatus.state !== "accepted") continue;
-
-      list.push(txStatus);
-    }
-
-    return list;
-  });
-
-  const txMatchesUnpegSymbol = (pegAssetSymbol: string) => (
-    txStatus: TransactionStatus,
-  ) => {
-    return (
-      txStatus.symbol?.toLowerCase() ===
-      getUnpeggedSymbol(pegAssetSymbol.toLowerCase()).toLowerCase()
-    );
-  };
-
-  function getIsSupportedNetwork(asset: IAsset): boolean {
-    if (asset.network === "ethereum") {
-      return usecases.wallet.eth.isSupportedNetwork();
-    }
-
-    if (asset.network === "sifchain") {
-      return true; // TODO: Handle the case of whether the network is supported
-    }
-    return false;
-  }
-
   const tokenList = computed<TokenListItem[]>(() => {
-    const pegList = pendingPegTxList.value;
+    const pendingTransfers = Object.values(store.tx.pendingTransfers);
 
     const networksSet = new Set(props.networks?.value || []);
+
+    console.log("pendingTransfers", pendingTransfers);
 
     return config.assets
       .filter((asset: IAsset) => {
@@ -85,29 +41,26 @@ export const useTokenList = (
         return networksSet.has(asset.network);
       })
       .map((asset: IAsset) => {
-        const balances = accountStore.refs[asset.network].balances.computed()
-          .value;
+        const balancesRef = accountStore.computed(
+          (s) => s.state[asset.network].balances,
+        );
+        const balances = balancesRef.value;
 
-        const amount = balances?.find(({ asset: { symbol, ibcDenom } }) => {
+        const amount = balances?.find(({ asset: { symbol } }) => {
           return asset.symbol.toLowerCase() === symbol.toLowerCase();
         });
 
-        // Get pegTxs for asset
-        const ethereumImportTransactions = pegList
-          ? pegList.filter(txMatchesUnpegSymbol(asset.symbol))
-          : [];
+        const assetTransfers = pendingTransfers.filter((transfer) => {
+          return (
+            transfer.interchainTx.toChain.network === asset.network &&
+            isLikeSymbol(transfer.interchainTx.assetAmount.symbol, asset.symbol)
+          );
+        });
 
-        // Is the asset from a supported network
-        // TODO(ajoslin): remove
-        const supported = getIsSupportedNetwork(asset);
         return {
           amount: !amount ? AssetAmount(asset, "0") : amount,
           asset,
-          importTxs: ethereumImportTransactions.map((tx) => ({
-            network: Network.ETHEREUM,
-            tx,
-          })),
-          supported,
+          pendingImports: assetTransfers,
         };
       })
       .sort((a, b) => {

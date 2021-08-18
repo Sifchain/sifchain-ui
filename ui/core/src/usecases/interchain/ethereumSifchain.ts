@@ -8,7 +8,7 @@ import {
 import {
   InterchainApi,
   ExecutableTransaction,
-  InterchainTransaction,
+  SifchainInterchainTx,
   InterchainParams,
 } from "./_InterchainApi";
 import { SubscribeToTx } from "../peg/utils/subscribeToTx";
@@ -28,7 +28,7 @@ export default function createEthereumSifchainApi(context: UsecaseContext) {
 }
 
 export class EthereumSifchainInterchainApi
-  implements InterchainApi<InterchainTransaction> {
+  implements InterchainApi<SifchainInterchainTx> {
   subscribeToTx: ReturnType<typeof SubscribeToTx>;
 
   constructor(
@@ -42,7 +42,7 @@ export class EthereumSifchainInterchainApi
   async estimateFees(params: InterchainParams) {} // no fees
 
   transfer(params: InterchainParams) {
-    return new ExecutableTransaction<InterchainTransaction>(async (emit) => {
+    return new ExecutableTransaction(async (emit) => {
       if (
         !isSupportedEVMChain(
           this.context.store.wallet.get(Network.ETHEREUM).chainId,
@@ -108,17 +108,17 @@ export class EthereumSifchainInterchainApi
 
         return {
           ...params,
-          fromChainId: this.fromChain.id,
-          toChainId: this.toChain.id,
+          fromChain: this.fromChain,
+          toChain: this.toChain,
           hash: hash,
-        } as InterchainTransaction;
+        } as SifchainInterchainTx;
       } catch (transactionStatus) {
         emit({ type: "tx_error", tx: transactionStatus });
       }
     });
   }
 
-  async *subscribeToTransfer(transferTx: InterchainTransaction) {
+  async *subscribeToTransfer(transferTx: SifchainInterchainTx) {
     const pegTx = this.context.services.ethbridge.createPegTx(
       ETH_CONFIRMATIONS,
       transferTx.assetAmount.asset.symbol,
@@ -126,9 +126,12 @@ export class EthereumSifchainInterchainApi
     );
     const { iterator, feed, end } = createIteratorSubject<TransactionStatus>();
     this.subscribeToTx(pegTx, (tx: TransactionStatus) => {
+      console.log("feed", tx);
       feed(tx);
       if (tx.state === "completed" || tx.state === "failed") end();
     });
-    return iterator;
+    for await (const ev of iterator) {
+      yield ev;
+    }
   }
 }

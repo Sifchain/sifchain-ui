@@ -24,33 +24,33 @@ export function SubscribeToTx({
 
     store.tx.eth[store.wallet.get(Network.ETHEREUM).address][tx.hash] = tx;
 
-    if (tx.state === "accepted") {
-      services.bus.dispatch({
-        type: "PegTransactionPendingEvent",
-        payload: {
-          hash: tx.hash,
-        },
-      });
-    } else if (tx.state === "completed") {
-      services.bus.dispatch({
-        type: "PegTransactionCompletedEvent",
-        payload: {
-          hash: tx.hash,
-        },
-      });
-    } else if (tx.state === "failed") {
-      services.bus.dispatch({
-        type: "PegTransactionErrorEvent",
-        payload: {
-          txStatus: {
-            hash: tx.hash || "",
-            memo: "Transaction Error",
-            state: "failed",
-          },
-          message: "Transaction Error",
-        },
-      });
-    }
+    // if (tx.state === "accepted") {
+    //   services.bus.dispatch({
+    //     type: "PegTransactionPendingEvent",
+    //     payload: {
+    //       hash: tx.hash,
+    //     },
+    //   });
+    // } else if (tx.state === "completed") {
+    //   services.bus.dispatch({
+    //     type: "PegTransactionCompletedEvent",
+    //     payload: {
+    //       hash: tx.hash,
+    //     },
+    //   });
+    // } else if (tx.state === "failed") {
+    //   services.bus.dispatch({
+    //     type: "PegTransactionErrorEvent",
+    //     payload: {
+    //       txStatus: {
+    //         hash: tx.hash || "",
+    //         memo: "Transaction Error",
+    //         state: "failed",
+    //       },
+    //       message: "Transaction Error",
+    //     },
+    //   });
+    // }
   }
 
   /**
@@ -67,6 +67,7 @@ export function SubscribeToTx({
     }
 
     tx.onTxHash(({ txHash }) => {
+      console.log("onTxHash", txHash);
       onUpdated({
         hash: txHash,
         memo: "Transaction Accepted",

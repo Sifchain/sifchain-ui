@@ -1,8 +1,12 @@
 import { NetworkEnv } from "../../getEnv";
-import { COSMOSHUB_TESTNET } from "./sentinel-testnet";
+import { SENTINEL_TESTNET } from "./sentinel-testnet";
 import { NetEnvChainConfigLookup } from "../NetEnvChainConfigLookup";
 
 export default <NetEnvChainConfigLookup>{
-  [NetworkEnv.TESTNET_042_IBC]: COSMOSHUB_TESTNET,
-  [NetworkEnv.DEVNET_042]: COSMOSHUB_TESTNET,
+  [NetworkEnv.LOCALNET]: SENTINEL_TESTNET,
+  [NetworkEnv.TESTNET_042_IBC]: SENTINEL_TESTNET,
+  [NetworkEnv.DEVNET_042]: SENTINEL_TESTNET,
+  [NetworkEnv.DEVNET_042]: SENTINEL_TESTNET,
+  [NetworkEnv.DEVNET]: SENTINEL_TESTNET,
+  [NetworkEnv.MAINNET]: SENTINEL_TESTNET,
 };

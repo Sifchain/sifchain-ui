@@ -160,23 +160,25 @@ export default defineComponent({
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80">
               {isNoBalanceRef.value
-                ? props.tokenItem.importTxs.length
+                ? props.tokenItem.pendingImports.length
                   ? "..."
                   : null
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
 
-            {props.tokenItem.importTxs.length > 0 && (
+            {props.tokenItem.pendingImports.length > 0 && (
               <Tooltip
                 arrow
                 interactive
+                key={JSON.stringify(props.tokenItem.pendingImports)}
                 placement="top"
                 appendTo={() =>
                   document.querySelector("#portal-target") as Element
                 }
+                maxWidth={"none"}
                 offset={[112, 20]}
                 content={
-                  <div class="text-left w-[250px]">
+                  <div class="text-left w-[400px]">
                     <p class="mb-1">
                       You have the following pending import transactions. The
                       imported tokens will usually be available for use on
@@ -184,24 +186,27 @@ export default defineComponent({
                       minutes.
                     </p>
                     <ul class="list-disc list-inside">
-                      {props.tokenItem.importTxs.map(({ tx, network }) => (
-                        <li>
-                          <a
-                            class="font-normal text-accent-base hover:text-underline"
-                            href={getBlockExplorerUrl(
-                              config.sifChainId,
-                              tx.hash,
-                              network,
-                            )}
-                            title={tx.hash}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <span class="capitalize">{network}</span> Import{" "}
-                            {shortenHash(tx.hash)}
-                          </a>
-                        </li>
-                      ))}
+                      {props.tokenItem.pendingImports.map(
+                        ({ interchainTx }) => (
+                          <li>
+                            Import {formatAssetAmount(interchainTx.assetAmount)}{" "}
+                            {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
+                            from {interchainTx.fromChain.displayName} (
+                            <a
+                              class="font-normal text-accent-base hover:text-underline"
+                              href={interchainTx.toChain.getBlockExplorerUrlForTxHash(
+                                interchainTx.hash,
+                              )}
+                              title={interchainTx.hash}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {shortenHash(interchainTx.hash)}
+                            </a>
+                            )
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
                 }

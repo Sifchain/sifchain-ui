@@ -58,6 +58,14 @@ export function sortAndFilterTokens(props: {
         if (aAmountParsed !== bAmountParsed) {
           return !!aAmountParsed > !!bAmountParsed ? -1 : 1;
         }
+
+        const aImporting = a.pendingImports.length > 0;
+        const bImporting = b.pendingImports.length > 0;
+        if (aImporting && !bImporting) {
+          return -1;
+        } else if (bImporting && !aImporting) {
+          return 1;
+        }
         return a.asset.displaySymbol.localeCompare(b.asset.displaySymbol);
       }
     });

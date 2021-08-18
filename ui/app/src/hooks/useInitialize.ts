@@ -44,28 +44,35 @@ export function useInitialize() {
   usecases.wallet.eth.initEthWallet();
 
   // initialize subscriptions
-  watch(accountStore.refs.ethereum.address.computed(), (value) => {
-    if (value) {
-      usecases.peg.subscribeToUnconfirmedPegTxs();
-    }
-  });
+  // watch(accountStore.refs.ethereum.address.computed(), (value) => {
+  //   if (value) {
+  //     usecases.peg.subscribeToUnconfirmedPegTxs();
+  //   }
+  // });
 
-  Object.values(Network).forEach((network) => {
-    watch(
-      accountStore.refs[network].computed(),
-      (value) => {
-        persistConnected.set(network, value.connected);
-        mirrorToCore(network);
-      },
-      {
-        deep: true,
-      },
-    );
-
-    if (persistConnected.get(network)) {
-      accountStore.actions.load(network);
-    }
-  });
+  // Connect to networks in sequence, starting with Sifchain.
+  Object.values(Network)
+    .sort((n) => (n === Network.SIFCHAIN ? -1 : 1))
+    .reduce((promise, network) => {
+      watch(
+        accountStore.refs[network].computed(),
+        (value) => {
+          persistConnected.set(network, value.connected);
+          mirrorToCore(network);
+        },
+        {
+          deep: true,
+        },
+      );
+      return promise.then(async () => {
+        if (
+          persistConnected.get(network) &&
+          !accountStore.state[network].connected
+        ) {
+          await accountStore.actions.load(network);
+        }
+      });
+    }, Promise.resolve());
 
   // useSubscription(
   //   computed(() => store.wallet.get(Network.SIFCHAIN).address),

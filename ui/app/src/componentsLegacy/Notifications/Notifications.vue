@@ -5,6 +5,7 @@ import { useCore } from "@/hooks/useCore";
 import { AppEvent } from "@sifchain/sdk/src/services/EventBusService";
 import { Notification } from "./types";
 import { NotificationElement } from "./NotificationElement";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 
 // Visual Notifications are a view level system here we work out which ones are displayed to the user
 function parseEventToNotifications(event: AppEvent): Notification | null {
@@ -22,29 +23,43 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
     };
   }
 
-  if (event.type === "PegTransactionPendingEvent") {
-    return {
-      type: "info",
-      message: "Import Transaction Pending",
-      loader: true,
-    };
-  }
+  if (
+    event.type === "PegTransactionPendingEvent" ||
+    event.type === "PegTransactionErrorEvent" ||
+    event.type === "PegTransactionCompletedEvent"
+  ) {
+    const title = `${formatAssetAmount(
+      event.payload.interchainTx.assetAmount,
+    )} ${event.payload.interchainTx.assetAmount.displaySymbol.toUpperCase()} from ${
+      event.payload.interchainTx.fromChain.displayName
+    }`;
 
-  if (event.type === "PegTransactionErrorEvent") {
-    return {
-      type: "error",
-      message: event.payload.message,
-    };
-  }
-
-  if (event.type === "PegTransactionCompletedEvent") {
-    return {
-      type: "success",
-      message: `Transfer ${event.payload.hash} has succeded.`,
-    };
+    if (event.type === "PegTransactionPendingEvent") {
+      return {
+        id: event.payload.interchainTx.hash,
+        type: "info",
+        message: `Import Pending: ${title}...`,
+        loader: true,
+      };
+    } else if (event.type === "PegTransactionErrorEvent") {
+      return {
+        id: event.payload.interchainTx.hash,
+        type: "error",
+        message: ["Import Error", event.payload.transactionStatus.memo || ""]
+          .filter((i) => i !== "")
+          .join(": "),
+      };
+    } else if (event.type === "PegTransactionCompletedEvent") {
+      return {
+        id: event.payload.interchainTx.hash,
+        type: "success",
+        message: `Import Complete! ${title}`,
+      };
+    }
   }
 
   if (event.type === "WalletConnectedEvent") {
+    return null;
     // const message = {
     //   sif: "Sif Account Connected",
     //   eth: "Connected to Metamask",
@@ -93,6 +108,14 @@ export default defineComponent({
 
     services.bus.onAny((event) => {
       const notification = parseEventToNotifications(event);
+
+      if (notification?.id) {
+        // If an id is specified, remove other notifications with same id
+        notifications.forEach((item, index) => {
+          if (item.id === notification.id)
+            notifications.splice(notifications.indexOf(item), 1);
+        });
+      }
       if (notification !== null) notifications.unshift(notification);
     });
 
@@ -111,7 +134,7 @@ export default defineComponent({
     <transition-group name="list">
       <NotificationElement
         v-for="(item, index) in notifications"
-        v-bind:key="item.message"
+        v-bind:key="item.id"
         :index="index"
         :onRemove="removeItem"
         :notification="item"

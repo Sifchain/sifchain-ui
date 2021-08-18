@@ -65,6 +65,7 @@ export class IBCService {
     sifchain: {},
     iris: {},
     akash: {},
+    sentinel: {},
   };
   symbolLookup: Record<string, string> = {};
 
@@ -266,6 +267,21 @@ export class IBCService {
     };
   }
 
+  // NOTE(ajoslin):
+  // We can have for example 1inch from testnet and 1inch from devnet both in our cosmoshub testnet wallet.
+  // This makes sure both don't show up.
+  // This method ?may? be very unperformant once we load channel ids from api, for now it's fine.
+  async isValidEnvironmentChannel(network: Network, channelId: string) {
+    if (network === Network.SIFCHAIN) return true;
+    const sourceChain = this.loadChainConfigByNetwork(network);
+    const sif = this.loadChainConfigByNetwork(Network.SIFCHAIN);
+    const data = await loadConnectionByChainIds({
+      sourceChainId: sourceChain.keplrChainInfo.chainId,
+      counterpartyChainId: sif.keplrChainInfo.chainId,
+    });
+    return data?.channelId === channelId;
+  }
+
   async getAllBalances(params: {
     network: Network;
     client: StargateClient;
@@ -276,18 +292,37 @@ export class IBCService {
     const balances = await params.client.getAllBalances(params.address);
     const assetAmounts: IAssetAmount[] = [];
 
+    let SKIP_ASSET = "___skip_asset";
+
     for (let balance of balances) {
       try {
         let symbol = balance.denom;
         let denomTrace: QueryDenomTraceResponse | null = null;
         if (balance.denom.startsWith("ibc/")) {
-          denomTrace = await queryClient.ibc.transfer.denomTrace(
-            balance.denom.split("/")[1],
-          );
-          symbol = denomTrace.denomTrace?.baseDenom ?? symbol;
-          this.networkDenomLookup[sourceChain.network as Network][symbol] =
-            balance.denom;
-          this.symbolLookup[balance.denom] = symbol;
+          if (this.symbolLookup[balance.denom]) {
+            symbol = this.symbolLookup[balance.denom];
+            if (symbol === SKIP_ASSET) continue;
+          } else {
+            denomTrace = await queryClient.ibc.transfer.denomTrace(
+              balance.denom.split("/")[1],
+            );
+            const [, channelId] = (denomTrace.denomTrace?.path || "").split(
+              "/",
+            );
+
+            if (
+              channelId &&
+              !(await this.isValidEnvironmentChannel(params.network, channelId))
+            ) {
+              this.symbolLookup[balance.denom] = SKIP_ASSET;
+              continue;
+            } else {
+              symbol = denomTrace.denomTrace?.baseDenom ?? symbol;
+              this.networkDenomLookup[sourceChain.network as Network][symbol] =
+                balance.denom;
+              this.symbolLookup[balance.denom] = symbol;
+            }
+          }
         }
 
         let asset = getChainsService()

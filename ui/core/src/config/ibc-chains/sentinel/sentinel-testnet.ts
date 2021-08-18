@@ -1,19 +1,19 @@
 import { Network } from "../../../entities";
 import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
 
-export const COSMOSHUB_TESTNET: IBCChainConfig = {
-  network: Network.COSMOSHUB,
+export const SENTINEL_TESTNET: IBCChainConfig = {
+  network: Network.SENTINEL,
   chainId: "sentinelhub-2",
-  rpcUrl: "http://rpc.sentinel.co",
-  restUrl: "http://api.sentinel.co",
+  rpcUrl: "https://rpc-sentinel.keplr.app",
+  restUrl: "https://lcd-sentinel.keplr.app",
   keplrChainInfo: {
-    rpc: "http://rpc.sentinel.co",
-    rest: "http://api.sentinel.co",
+    rpc: "https://rpc-sentinel.keplr.app",
+    rest: "https://lcd-sentinel.keplr.app",
     chainId: "sentinelhub-2",
-    chainName: "Sentinel Testnet",
+    chainName: "Sentinel",
     stakeCurrency: {
-      coinDenom: "TSENT",
-      coinMinimalDenom: "tsent",
+      coinDenom: "udvpn",
+      coinMinimalDenom: "udvpn",
       coinDecimals: 18,
       coinGeckoId: "sentinel",
     },
@@ -32,16 +32,16 @@ export const COSMOSHUB_TESTNET: IBCChainConfig = {
     },
     currencies: [
       {
-        coinDenom: "TSENT",
-        coinMinimalDenom: "tsent",
+        coinDenom: "udvpn",
+        coinMinimalDenom: "udvpn",
         coinDecimals: 18,
         coinGeckoId: "sentinel",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "TSENT",
-        coinMinimalDenom: "tsent",
+        coinDenom: "udvpn",
+        coinMinimalDenom: "udvpn",
         coinDecimals: 18,
         coinGeckoId: "sentinel",
       },
