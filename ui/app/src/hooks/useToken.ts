@@ -93,9 +93,6 @@ export const useTokenList = (
         const amount = balances?.find(({ asset: { symbol } }) => {
           return asset.symbol.toLowerCase() === symbol.toLowerCase();
         });
-        if (asset.symbol === "unyan") {
-          console.log("reload and recalibrate", amount?.toBigInt().toString());
-        }
 
         // Get pegTxs for asset
         const ethereumImportTransactions = pegList
