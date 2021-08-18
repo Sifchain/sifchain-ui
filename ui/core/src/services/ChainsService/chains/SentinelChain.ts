@@ -3,7 +3,7 @@ import { BaseChain } from "./BaseChain";
 
 export class SentinelChain extends BaseChain implements Chain {
   id = "sentinel";
-  displayName = "sentinel";
+  displayName = "Sentinel";
   network = Network.SENTINEL;
 
   getBlockExplorerUrlForTxHash(hash: string) {
