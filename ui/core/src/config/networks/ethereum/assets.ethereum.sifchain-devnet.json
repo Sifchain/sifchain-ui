@@ -671,7 +671,7 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
+      "address": "0x2513D9F97b1bAca5Bd70049334Fb8E0Dd2828BF7",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
       "name": "DVPN",
