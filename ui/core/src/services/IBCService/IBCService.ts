@@ -234,13 +234,17 @@ export class IBCService {
         let symbol = balance.denom;
         let denomTrace: QueryDenomTraceResponse | null = null;
         if (balance.denom.startsWith("ibc/")) {
-          denomTrace = await queryClient.ibc.transfer.denomTrace(
-            balance.denom.split("/")[1],
-          );
-          symbol = denomTrace.denomTrace?.baseDenom ?? symbol;
-          this.networkDenomLookup[sourceChain.network as Network][symbol] =
-            balance.denom;
-          this.symbolLookup[balance.denom] = symbol;
+          if (this.symbolLookup[balance.denom]) {
+            symbol = this.symbolLookup[balance.denom];
+          } else {
+            denomTrace = await queryClient.ibc.transfer.denomTrace(
+              balance.denom.split("/")[1],
+            );
+            symbol = denomTrace.denomTrace?.baseDenom ?? symbol;
+            this.networkDenomLookup[sourceChain.network as Network][symbol] =
+              balance.denom;
+            this.symbolLookup[balance.denom] = symbol;
+          }
         }
 
         let asset = getChainsService()

@@ -1,6 +1,5 @@
 import { Network, WalletType, IAssetAmount } from "../../entities";
 import { UsecaseContext } from "..";
-import diffBalances from "./utils/diffBalances";
 import { WalletActions } from "./types";
 
 export default function MetamaskActions(
@@ -20,17 +19,9 @@ export default function MetamaskActions(
       };
     },
 
-    async getBalances(
-      network: Network,
-      current: { address: string; balances: IAssetAmount[] },
-    ) {
+    async getBalances(network: Network, address: string) {
       // Eth service already does this on its own, updating its state..
-      const state = services.eth.getState();
-
-      return {
-        balances: state.balances,
-        changed: diffBalances(state.balances, current.balances),
-      };
+      return services.eth.getState().balances;
     },
 
     async disconnect(network: Network) {

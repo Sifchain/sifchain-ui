@@ -1,6 +1,5 @@
 import { Network, WalletType, IAssetAmount } from "../../entities";
 import { UsecaseContext } from "..";
-import diffBalances from "./utils/diffBalances";
 import { WalletActions } from "./types";
 import { StargateClient } from "@cosmjs/stargate";
 
@@ -26,34 +25,17 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
       };
     },
 
-    async getBalances(
-      network: Network,
-      current: {
-        address: string;
-        balances: IAssetAmount[];
-      },
-    ) {
+    async getBalances(network: Network, address: string) {
       const client = clients.get(network);
       if (!client)
         throw new Error(
           `Cannot get balances for ${network}, not yet connected.`,
         );
-      const balances = await context.services.ibc.getAllBalances({
+      return context.services.ibc.getAllBalances({
         client,
         network,
-        address: current.address,
+        address,
       });
-      // if (network === Network.SIFCHAIN) {
-      //   console.log(
-      //     "BALANCE",
-      //     balances,
-      //     diffBalances(current.balances, balances),
-      //   );
-      // }
-      return {
-        balances,
-        changed: diffBalances(current.balances, balances),
-      };
     },
 
     async disconnect(network: Network) {
