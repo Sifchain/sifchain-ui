@@ -18,6 +18,7 @@ import {
   AkashChain,
   SentinelChain,
 } from "../../services/ChainsService/chains";
+import InterchainTxManager from "./txManager";
 
 export default function InterchainUsecase(context: UsecaseContext) {
   /* 
@@ -37,7 +38,7 @@ export default function InterchainUsecase(context: UsecaseContext) {
   const sifchainAkash = SifchainAkash(context);
   const sifchainSentinel = SifchainSentinel(context);
 
-  return (from: Chain, to: Chain) => {
+  const interchain = (from: Chain, to: Chain) => {
     if (from instanceof EthereumChain && to instanceof SifchainChain) {
       return ethereumSifchain;
     } else if (from instanceof CosmoshubChain && to instanceof SifchainChain) {
@@ -64,4 +65,8 @@ export default function InterchainUsecase(context: UsecaseContext) {
       );
     }
   };
+
+  const txManager = InterchainTxManager(context, interchain);
+
+  return interchain;
 }

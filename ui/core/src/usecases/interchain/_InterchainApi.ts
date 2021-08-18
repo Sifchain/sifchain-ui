@@ -3,10 +3,13 @@ import {
   TransactionStatus,
   Chain,
   AssetAmount,
+  Network,
 } from "../../entities";
 import { UsecaseContext } from "..";
 import { PegEvent } from "../peg/peg";
 import { IterableEmitter } from "../../utils/IterableEmitter";
+import { EventEmitter } from "events";
+import TypedEmitter from "typed-emitter";
 import { defer } from "../../utils/defer";
 import { Log } from "@cosmjs/stargate/build/logs";
 
@@ -16,17 +19,27 @@ export type InterchainParams = {
   toAddress: string;
 };
 
-export type InterchainTransaction = InterchainParams & {
-  fromChainId: string;
-  toChainId: string;
+export type SifchainInterchainTx = InterchainParams & {
+  fromChain: Chain;
+  toChain: Chain;
+  assetAmount: IAssetAmount;
+  fromAddress: string;
+  toAddress: string;
   hash: string;
 };
 
-export type CosmosInterchainTransaction = InterchainTransaction & {
+export type IBCInterchainTx = SifchainInterchainTx & {
   meta?: {
     logs?: Log[];
   };
 };
+
+export type InterchainTx = SifchainInterchainTx | IBCInterchainTx;
+
+export interface InterchainTxEvents {
+  tx_sent: (tx: InterchainTx) => void;
+}
+export const interchainTxEmitter = new EventEmitter() as TypedEmitter<InterchainTxEvents>;
 
 export abstract class InterchainApi<TxType> {
   abstract fromChain: Chain;
@@ -36,7 +49,7 @@ export abstract class InterchainApi<TxType> {
     params: InterchainParams,
   ): Promise<IAssetAmount | undefined | void>;
 
-  abstract transfer(params: InterchainParams): ExecutableTransaction<TxType>;
+  abstract transfer(params: InterchainParams): ExecutableTransaction;
 
   abstract subscribeToTransfer(
     transferTx: TxType,
@@ -47,7 +60,7 @@ export class IterableTxEmitter<
   EventType,
   ResultTxType
 > extends IterableEmitter<EventType> {
-  private deferred = defer<ResultTxType | undefined>();
+  deferred = defer<ResultTxType | undefined>();
 
   constructor(
     private fn: (
@@ -81,9 +94,14 @@ export class IterableTxEmitter<
   }
 }
 
-export class ExecutableTransaction<ResultTxType> extends IterableTxEmitter<
+// interface ExecutableTxEvent {
+//   transfer_sent: (AnyInt
+// }
+// export const executableTxEmitter = new EventEmitter() as TypedEmitter<ExecutableTxEvent>()
+
+export class ExecutableTransaction extends IterableTxEmitter<
   PegEvent,
-  ResultTxType
+  InterchainTx
 > {
   handleError(message?: string) {
     this.emit({
@@ -93,6 +111,13 @@ export class ExecutableTransaction<ResultTxType> extends IterableTxEmitter<
         hash: "",
         memo: message,
       },
+    });
+  }
+
+  execute() {
+    super.execute();
+    this.deferred.promise.then((tx?: InterchainTx) => {
+      if (tx) interchainTxEmitter.emit("tx_sent", tx);
     });
   }
 }

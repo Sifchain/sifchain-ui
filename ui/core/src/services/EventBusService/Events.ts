@@ -1,4 +1,5 @@
 import { TransactionStatus } from "../../entities";
+import { InterchainTx } from "../../usecases/interchain/_InterchainApi";
 
 // Add more wallet types here as they come up
 type WalletType = "sif" | "eth" | "cosmoshub";
@@ -61,21 +62,25 @@ type WalletConnectionErrorEvent = {
 
 type PegTransactionPendingEvent = {
   type: "PegTransactionPendingEvent";
-  payload: { hash: string };
+  payload: {
+    interchainTx: InterchainTx;
+    transactionStatus: TransactionStatus;
+  };
 };
 
 type PegTransactionCompletedEvent = {
   type: "PegTransactionCompletedEvent";
   payload: {
-    hash: string;
+    interchainTx: InterchainTx;
+    transactionStatus: TransactionStatus;
   };
 };
 
 type PegTransactionErrorEvent = {
   type: "PegTransactionErrorEvent";
   payload: {
-    txStatus: TransactionStatus;
-    message: string;
+    interchainTx: InterchainTx;
+    transactionStatus: TransactionStatus;
   };
 };
 

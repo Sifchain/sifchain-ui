@@ -1,6 +1,7 @@
 import { reactive } from "@vue/reactivity";
 
 import { TransactionStatus } from "../entities";
+import { InterchainTx } from "../usecases/interchain/_InterchainApi";
 
 // Store for reporting on current tx status
 export type TxStore = {
@@ -10,6 +11,16 @@ export type TxStore = {
       [hash: string]: TransactionStatus;
     };
   };
+
+  pendingTransfers: {
+    [hash: string]: {
+      interchainTx: InterchainTx;
+      transactionStatus: TransactionStatus;
+    };
+  };
 };
 
-export const tx = reactive<TxStore>({ eth: {} }) as TxStore;
+export const tx = reactive<TxStore>({
+  eth: {},
+  pendingTransfers: {},
+}) as TxStore;

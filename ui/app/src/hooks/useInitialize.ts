@@ -44,11 +44,11 @@ export function useInitialize() {
   usecases.wallet.eth.initEthWallet();
 
   // initialize subscriptions
-  watch(accountStore.refs.ethereum.address.computed(), (value) => {
-    if (value) {
-      usecases.peg.subscribeToUnconfirmedPegTxs();
-    }
-  });
+  // watch(accountStore.refs.ethereum.address.computed(), (value) => {
+  //   if (value) {
+  //     usecases.peg.subscribeToUnconfirmedPegTxs();
+  //   }
+  // });
 
   // Connect to networks in sequence, starting with Sifchain.
   Object.values(Network)

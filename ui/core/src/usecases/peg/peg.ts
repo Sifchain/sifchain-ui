@@ -61,12 +61,12 @@ export function Peg(
         });
         for (let tx of txSequence) {
           if (isBroadcastTxFailure(tx)) {
-            services.bus.dispatch({
-              type: "ErrorEvent",
-              payload: {
-                message: "IBC Transfer Failed",
-              },
-            });
+            // services.bus.dispatch({
+            //   type: "ErrorEvent",
+            //   payload: {
+            //     message: "IBC Transfer Failed",
+            //   },
+            // });
             yield {
               type: "tx_error",
               tx: parseTxFailure({
@@ -183,12 +183,12 @@ export function Peg(
               ]
             */
             // debugger;
-            services.bus.dispatch({
-              type: "PegTransactionPendingEvent",
-              payload: {
-                hash: tx.transactionHash,
-              },
-            });
+            // services.bus.dispatch({
+            //   type: "PegTransactionPendingEvent",
+            //   payload: {
+            //     hash: tx.transactionHash,
+            //   },
+            // });
             yield {
               type: "sent",
               tx: {
@@ -223,16 +223,16 @@ export function Peg(
             while (true) {
               await new Promise((r) => setTimeout(r, 1000));
               if (+timeoutTimestampMs.toString() < Date.now()) {
-                services.bus.dispatch({
-                  type: "PegTransactionErrorEvent",
-                  payload: {
-                    message: "Timed out waiting for packet receipt.",
-                    txStatus: {
-                      state: "failed",
-                      hash: tx.transactionHash,
-                    },
-                  },
-                });
+                // services.bus.dispatch({
+                //   type: "PegTransactionErrorEvent",
+                //   payload: {
+                //     message: "Timed out waiting for packet receipt.",
+                //     txStatus: {
+                //       state: "failed",
+                //       hash: tx.transactionHash,
+                //     },
+                //   },
+                // });
                 break;
               }
               try {
@@ -243,12 +243,12 @@ export function Peg(
                   sequence.value,
                 );
                 if (received) {
-                  services.bus.dispatch({
-                    type: "PegTransactionCompletedEvent",
-                    payload: {
-                      hash: tx.transactionHash,
-                    },
-                  });
+                  // services.bus.dispatch({
+                  //   type: "PegTransactionCompletedEvent",
+                  //   payload: {
+                  //     hash: tx.transactionHash,
+                  //   },
+                  // });
                   return;
                 }
               } catch (e) {}
@@ -266,12 +266,12 @@ export function Peg(
       assetAmount.asset.network === Network.ETHEREUM &&
       !isSupportedEVMChain(store.wallet.get(Network.ETHEREUM).chainId)
     ) {
-      services.bus.dispatch({
-        type: "ErrorEvent",
-        payload: {
-          message: "EVM Network not supported!",
-        },
-      });
+      // services.bus.dispatch({
+      //   type: "ErrorEvent",
+      //   payload: {
+      //     message: "EVM Network not supported!",
+      //   },
+      // });
       return {
         type: "tx_error",
         tx: {

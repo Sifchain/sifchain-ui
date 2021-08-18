@@ -183,8 +183,11 @@ export const useLpPoolsState = createStateHook<
 
 export const useTxState = createStateHook<Store["tx"]>(
   "useTxState",
-  (store) => ({ eth: store.tx.eth }),
-  { eth: {} },
+  (store) => ({
+    eth: store.tx.eth,
+    pendingTransfers: store.tx.pendingTransfers,
+  }),
+  { eth: {}, pendingTransfers: {} },
 );
 
 export const useAssetState = createStateHook<Store["asset"]>(

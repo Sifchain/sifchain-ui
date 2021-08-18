@@ -56,14 +56,14 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
     case "approve_started": {
       return {
         heading: "Waiting for Approval",
-        description: "Approve this transaction in your wallet",
+        description: "Approving transaction in your wallet...",
       };
     }
     // case 'approved': {} What do with this???
     case "signing": {
       return {
         heading: "Waiting for Confirmation",
-        description: "Confirm this transaction in your wallet",
+        description: "Confirming transaction in your wallet...",
       };
     }
     case "approve_error": {

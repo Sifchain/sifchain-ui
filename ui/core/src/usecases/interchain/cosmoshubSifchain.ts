@@ -8,9 +8,9 @@ import {
 import {
   InterchainApi,
   ExecutableTransaction,
-  InterchainTransaction,
+  SifchainInterchainTx,
   InterchainParams,
-  CosmosInterchainTransaction,
+  IBCInterchainTx,
 } from "./_InterchainApi";
 import { SifchainChain, CosmoshubChain } from "../../services/ChainsService";
 import { isBroadcastTxFailure } from "@cosmjs/stargate";
@@ -26,7 +26,7 @@ export default function createCosmoshubSifchainApi(context: UsecaseContext) {
 }
 
 export class CosmoshubSifchainInterchainApi
-  implements InterchainApi<CosmosInterchainTransaction> {
+  implements InterchainApi<IBCInterchainTx> {
   constructor(
     public context: UsecaseContext,
     public fromChain: Chain,
@@ -37,65 +37,68 @@ export class CosmoshubSifchainInterchainApi
 
   transfer(params: InterchainParams) {
     console.log("transfer", this.fromChain, this.toChain);
-    return new ExecutableTransaction<CosmosInterchainTransaction>(
-      async (emit) => {
-        emit({ type: "signing" });
-        try {
-          const txSequence = await this.context.services.ibc.transferIBCTokens({
-            sourceNetwork: this.fromChain.network,
-            destinationNetwork: this.toChain.network,
-            assetAmountToTransfer: params.assetAmount,
-          });
-          for (let tx of txSequence) {
-            if (isBroadcastTxFailure(tx)) {
-              this.context.services.bus.dispatch({
-                type: "ErrorEvent",
-                payload: {
-                  message: "IBC Transfer Failed",
-                },
-              });
-              emit({
-                type: "tx_error",
-                tx: {
-                  state: tx.rawLog?.includes("out of gas")
-                    ? "out_of_gas"
-                    : "failed",
-                  memo: tx.rawLog || "",
-                  hash: tx.transactionHash,
-                },
-              });
-              return;
-            } else {
-              const logs = parseRawLog(tx.rawLog);
-              emit({
-                type: "sent",
-                tx: { state: "completed", hash: tx.transactionHash },
-              });
-
-              return {
-                ...params,
-                fromChainId: this.fromChain.id,
-                toChainId: this.toChain.id,
+    return new ExecutableTransaction(async (emit) => {
+      emit({ type: "signing" });
+      try {
+        const txSequence = await this.context.services.ibc.transferIBCTokens({
+          sourceNetwork: this.fromChain.network,
+          destinationNetwork: this.toChain.network,
+          assetAmountToTransfer: params.assetAmount,
+        });
+        for (let tx of txSequence) {
+          if (isBroadcastTxFailure(tx)) {
+            this.context.services.bus.dispatch({
+              type: "ErrorEvent",
+              payload: {
+                message: "IBC Transfer Failed",
+              },
+            });
+            emit({
+              type: "tx_error",
+              tx: {
+                state: tx.rawLog?.includes("out of gas")
+                  ? "out_of_gas"
+                  : "failed",
+                memo: tx.rawLog || "",
                 hash: tx.transactionHash,
-                meta: { logs },
-              } as CosmosInterchainTransaction;
-            }
+              },
+            });
+            return;
+          } else {
+            const logs = parseRawLog(tx.rawLog);
+            emit({
+              type: "sent",
+              tx: { state: "completed", hash: tx.transactionHash },
+            });
+
+            return {
+              ...params,
+              fromChain: this.fromChain,
+              toChain: this.toChain,
+              hash: tx.transactionHash,
+              meta: { logs },
+            } as IBCInterchainTx;
           }
-        } catch (err) {
-          // "signing_error"?
-          console.error(err);
-          emit({ type: "approve_error" });
-          return;
         }
-      },
-    );
+      } catch (err) {
+        // "signing_error"?
+        console.error(err);
+        emit({ type: "approve_error" });
+        return;
+      }
+    });
   }
 
   async *subscribeToTransfer(
-    tx: CosmosInterchainTransaction,
+    tx: IBCInterchainTx,
   ): AsyncGenerator<TransactionStatus> {
     const logs = tx.meta?.logs;
     if (!logs) return;
+
+    yield {
+      state: "accepted",
+      hash: tx.hash,
+    };
 
     const sequence = findAttribute(logs, "send_packet", "packet_sequence");
     const dstChannel = findAttribute(logs, "send_packet", "packet_dst_channel");
@@ -111,16 +114,6 @@ export class CosmoshubSifchainInterchainApi
     while (true) {
       await new Promise((r) => setTimeout(r, 1000));
       if (+timeoutTimestampMs.toString() < Date.now()) {
-        this.context.services.bus.dispatch({
-          type: "PegTransactionErrorEvent",
-          payload: {
-            message: "Timed out waiting for packet receipt.",
-            txStatus: {
-              state: "failed",
-              hash: tx.hash,
-            },
-          },
-        });
         yield {
           state: "failed",
           hash: tx.hash,
@@ -136,12 +129,6 @@ export class CosmoshubSifchainInterchainApi
           sequence.value,
         );
         if (received) {
-          this.context.services.bus.dispatch({
-            type: "PegTransactionCompletedEvent",
-            payload: {
-              hash: tx.hash,
-            },
-          });
           yield {
             state: "completed",
             hash: tx.hash,
