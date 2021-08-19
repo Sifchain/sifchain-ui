@@ -117,6 +117,7 @@ export class ExecutableTransaction extends IterableTxEmitter<
   execute() {
     super.execute();
     this.deferred.promise.then((tx?: InterchainTx) => {
+      console.log("tx_sent", tx);
       if (tx) interchainTxEmitter.emit("tx_sent", tx);
     });
   }
