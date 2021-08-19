@@ -4,11 +4,15 @@ import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
 export const COSMOSHUB_TESTNET: IBCChainConfig = {
   network: Network.COSMOSHUB,
   chainId: "cosmoshub-testnet",
-  rpcUrl: "https://rpc.testnet.cosmos.network/",
-  restUrl: "https://api.testnet.cosmos.network",
+  rpcUrl:
+    "https://sifchain-testnet-proxies.vercel.app/api/cosmoshub-testnet/rpc",
+  restUrl:
+    "https://sifchain-testnet-proxies.vercel.app/api/cosmoshub-testnet/rest",
   keplrChainInfo: {
-    rpc: "https://rpc.testnet.cosmos.network/",
-    rest: "https://api.testnet.cosmos.network",
+    rpc:
+      "https://sifchain-testnet-proxies.vercel.app/api/cosmoshub-testnet/rpc",
+    rest:
+      "https://sifchain-testnet-proxies.vercel.app/api/cosmoshub-testnet/rest",
     chainId: "cosmoshub-testnet",
     chainName: "Cosmos Testnet",
     stakeCurrency: {
