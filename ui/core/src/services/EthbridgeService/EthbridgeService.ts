@@ -447,31 +447,29 @@ export default function createEthbridgeService({
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
     ) {
-      await new Promise((r) => setTimeout(r, 8000));
-      console.log("loading tokens for ", bridgebankContractAddress);
-
-      try {
-        const tokens: Record<string, string> = {};
-        for (let asset of assets.filter(
-          (a) => a.network === Network.SIFCHAIN,
-        )) {
-          if (tokens[asset.displaySymbol]) continue;
-
-          try {
-            tokens[asset.symbol] = await this.fetchTokenAddress(
-              asset,
-              loadWeb3Instance,
-            );
-          } catch (error) {
-            console.error("Error fetching eth data for", asset.symbol, error);
-          }
-        }
-        console.log("\n\n\n\n\n\n\n");
-        console.log(tokens);
-        return tokens;
-      } catch (e) {
-        console.error(e);
-      }
+      // await new Promise((r) => setTimeout(r, 8000));
+      // console.log("loading tokens for ", bridgebankContractAddress);
+      // try {
+      //   const tokens: Record<string, string> = {};
+      //   for (let asset of assets.filter(
+      //     (a) => a.network === Network.SIFCHAIN,
+      //   )) {
+      //     if (tokens[asset.displaySymbol]) continue;
+      //     try {
+      //       tokens[asset.symbol] = await this.fetchTokenAddress(
+      //         asset,
+      //         loadWeb3Instance,
+      //       );
+      //     } catch (error) {
+      //       console.error("Error fetching eth data for", asset.symbol, error);
+      //     }
+      //   }
+      //   console.log("\n\n\n\n\n\n\n");
+      //   console.log(tokens);
+      //   return tokens;
+      // } catch (e) {
+      //   console.error(e);
+      // }
     },
   };
 }

@@ -61,12 +61,14 @@ export default function InterchainUsecase(context: UsecaseContext) {
       return sifchainSentinel;
     } else {
       throw new Error(
-        `Token transfer from chain ${from.id} to chain ${to.id} not supported!`,
+        `Token transfer from chain ${from.network} to chain ${to.network} not supported!`,
       );
     }
   };
 
   const txManager = InterchainTxManager(context, interchain);
+  txManager.listenForSentTransfers();
+  txManager.loadSavedTransferList();
 
   return interchain;
 }

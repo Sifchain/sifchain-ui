@@ -1,18 +1,20 @@
-import { Chain, JsonChainConfig, IAsset, Network } from "../../../entities";
+import { Chain, IAsset, Network, ChainConfig } from "../../../entities";
 import { isLikeSymbol } from "../../../utils/isLikeSymbol";
 
 export class BaseChain implements Chain {
-  id = "_base";
-  displayName = "_Base";
-  network = Network.SIFCHAIN;
+  get network() {
+    return this.chainConfig.network;
+  }
+  get displayName() {
+    return this.chainConfig.displayName;
+  }
+
+  chainConfig: ChainConfig;
   assets: IAsset[];
   nativeAsset: IAsset;
-  blockExplorerUrl: string;
 
-  constructor(params: { assets: IAsset[]; chainConfig: JsonChainConfig }) {
-    if (!params.chainConfig) {
-      throw new Error(`Missing chainConfig for chain id ${this.id}`);
-    }
+  constructor(params: { assets: IAsset[]; chainConfig: ChainConfig }) {
+    this.chainConfig = params.chainConfig;
 
     this.assets = params.assets.filter(
       (a) => a.network === params.chainConfig.network,
@@ -20,7 +22,6 @@ export class BaseChain implements Chain {
     this.nativeAsset = this.assets.find(
       (a) => a.symbol === params.chainConfig.nativeAssetSymbol,
     ) as IAsset;
-    this.blockExplorerUrl = params.chainConfig.blockExplorerUrl;
   }
 
   findAssetWithLikeSymbol(symbol: string) {
@@ -31,11 +32,14 @@ export class BaseChain implements Chain {
       isLikeSymbol(asset.symbol, symbol),
     );
     if (!asset)
-      throw new Error(`Asset ${symbol} not found in chain ${this.id}`);
+      throw new Error(`Asset ${symbol} not found in chain ${this.displayName}`);
     return asset;
   }
 
   getBlockExplorerUrlForTxHash(hash: string) {
-    return `${this.blockExplorerUrl}/tx/${hash}`;
+    return `${this.chainConfig.blockExplorerUrl}/tx/${hash}`;
+  }
+  getBlockExplorerUrlForAddress(address: string) {
+    return `${this.chainConfig.blockExplorerUrl}/account/${address}`;
   }
 }

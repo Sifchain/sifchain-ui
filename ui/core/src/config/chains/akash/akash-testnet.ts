@@ -1,8 +1,11 @@
-import { Network } from "../../../entities";
-import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
+import { Network, IBCChainConfig } from "../../../entities";
 
 export const AKASH_TESTNET: IBCChainConfig = {
   network: Network.AKASH,
+  chainType: "ibc",
+  displayName: "Akash",
+  blockExplorerUrl: "https://akash.bigdipper.live/",
+  nativeAssetSymbol: "uakt",
   chainId: "akash-testnet-6",
   rpcUrl: "https://sifchain-testnet-proxies.vercel.app/api/akash-testnet-6/rpc",
   restUrl:

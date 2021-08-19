@@ -1,167 +1,56 @@
 import { computed, ComputedRef } from "@vue/reactivity";
-import { AppConfig, Network } from "@sifchain/sdk";
+import { AppConfig, Chain, getChainsService, Network } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { rootStore } from "../../store";
 import { accountStore } from "@/store/modules/accounts";
+import { useChains } from "@/hooks/useChains";
 
 export type WalletConnection = {
   walletName: string;
-  network: Network;
-  networkTokenSymbol: string;
   walletIconSrc: string;
-  getAddressExplorerUrl: (config: AppConfig, address: string) => string;
-  useWalletState: () => ComputedRef<{
-    isConnected: boolean;
-    address: string;
-  }>;
-  useWalletApi: () => ComputedRef<{
-    connect: () => any;
-    disconnect?: () => any; // Keplr has no disconnect so it's optional...?
-  }>;
+  getChain: () => Chain;
+  connect: () => any;
+  disconnect?: () => any;
 };
 
-export const walletConnections: WalletConnection[] = [
-  {
+type WalletConfig = {
+  id: "keplr" | "metamask";
+  walletName: string;
+  walletIconSrc: string;
+};
+const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
+  metamask: {
+    id: "metamask",
     walletName: "Metamask",
-    network: Network.ETHEREUM,
-    networkTokenSymbol: "eth",
     walletIconSrc: require("@/assets/metamask.png"),
-    getAddressExplorerUrl: (config: AppConfig, address: string) => {
-      return `https://etherscan.io/address/${address}`;
-    },
-    useWalletState: () => {
-      return rootStore.accounts.computed((s) => {
-        return {
-          isConnected: s.state.ethereum.connected,
-          address: s.state.ethereum.address,
-        };
-      });
-    },
-    useWalletApi: () => {
-      return computed(() => ({
-        connect: () => accountStore.actions.load(Network.ETHEREUM),
-        disconnect: () => accountStore.actions.disconnect(Network.ETHEREUM),
-      }));
-    },
   },
-  {
+  keplr: {
+    id: "keplr",
     walletName: "Keplr",
-    networkTokenSymbol: "rowan",
-    network: Network.SIFCHAIN,
     walletIconSrc: require("@/assets/keplr.jpg"),
-    getAddressExplorerUrl: (config: AppConfig, address: string) => {
-      return `${config.blockExplorerUrl}/account/${address}`;
-    },
-    useWalletState: () => {
-      return rootStore.accounts.computed((s) => {
-        const w = s.state.sifchain;
-        return {
-          isConnected: w.connected,
-          address: w.address,
-        };
-      });
-    },
-    useWalletApi: () => {
-      return computed(() => ({
-        connect: () => accountStore.actions.load(Network.SIFCHAIN),
-        disconnect: undefined,
-      }));
-    },
   },
-  {
-    walletName: "Keplr",
-    network: Network.COSMOSHUB,
-    networkTokenSymbol: "uphoton",
-    walletIconSrc: require("@/assets/keplr.jpg"),
-    getAddressExplorerUrl: (config: AppConfig, address: string) => {
-      return `https://www.mintscan.io/cosmos/account/${address}`;
-    },
-    useWalletState: () => {
-      return rootStore.accounts.computed((s) => {
-        const w = s.state.cosmoshub;
-        return {
-          isConnected: w.connected,
-          address: w.address,
-        };
-      });
-    },
-    useWalletApi: () => {
-      return computed(() => ({
-        connect: () => accountStore.actions.load(Network.COSMOSHUB),
-        disconnect: undefined,
-      }));
-    },
-  },
-  {
-    walletName: "Keplr",
-    network: Network.IRIS,
-    networkTokenSymbol: "unyan",
-    walletIconSrc: require("@/assets/keplr.jpg"),
-    getAddressExplorerUrl: (config: AppConfig, address: string) => {
-      return config.chains.iris.blockExplorerUrl + "/address/" + address;
-    },
-    useWalletState: () => {
-      return rootStore.accounts.computed((s) => {
-        const w = s.state.iris;
-        return {
-          isConnected: w.connected,
-          address: w.address,
-        };
-      });
-    },
-    useWalletApi: () => {
-      return computed(() => ({
-        connect: () => accountStore.actions.load(Network.IRIS),
-        disconnect: undefined,
-      }));
-    },
-  },
-  {
-    walletName: "Keplr",
-    network: Network.AKASH,
-    networkTokenSymbol: "uakt",
-    walletIconSrc: require("@/assets/keplr.jpg"),
-    getAddressExplorerUrl: (config: AppConfig, address: string) => {
-      return config.chains.akash.blockExplorerUrl + "/address/" + address;
-    },
-    useWalletState: () => {
-      return rootStore.accounts.computed((s) => {
-        const w = s.state.akash;
-        return {
-          isConnected: w.connected,
-          address: w.address,
-        };
-      });
-    },
-    useWalletApi: () => {
-      return computed(() => ({
-        connect: () => accountStore.actions.load(Network.AKASH),
-        disconnect: undefined,
-      }));
-    },
-  },
-  {
-    walletName: "Keplr",
-    network: Network.SENTINEL,
-    networkTokenSymbol: "udvpn",
-    walletIconSrc: require("@/assets/keplr.jpg"),
-    getAddressExplorerUrl: (config: AppConfig, address: string) => {
-      return config.chains.akash.blockExplorerUrl + "/address/" + address;
-    },
-    useWalletState: () => {
-      return rootStore.accounts.computed((s) => {
-        const w = s.state.sentinel;
-        return {
-          isConnected: w.connected,
-          address: w.address,
-        };
-      });
-    },
-    useWalletApi: () => {
-      return computed(() => ({
-        connect: () => accountStore.actions.load(Network.SENTINEL),
-        disconnect: undefined,
-      }));
-    },
-  },
+};
+
+const createWalletConnection = (
+  walletId: WalletConfig["id"],
+  network: Network,
+): WalletConnection => ({
+  ...walletConfigLookup[walletId],
+  getChain: () => useChains().get(network),
+  connect: () => useCore().usecases.walletNew[walletId].load(network),
+  disconnect:
+    network === Network.ETHEREUM
+      ? () => {
+          return useCore().usecases.walletNew[walletId].disconnect(network);
+        }
+      : undefined,
+});
+
+export const walletConnections: WalletConnection[] = [
+  createWalletConnection("keplr", Network.SENTINEL),
+  createWalletConnection("keplr", Network.AKASH),
+  createWalletConnection("keplr", Network.IRIS),
+  createWalletConnection("keplr", Network.COSMOSHUB),
+  createWalletConnection("metamask", Network.ETHEREUM),
+  createWalletConnection("keplr", Network.SIFCHAIN),
 ];
