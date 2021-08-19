@@ -1,11 +1,8 @@
-import { Network, IBCChainConfig } from "../../../entities";
+import { Network } from "../../../entities";
+import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
 
 export const SENTINEL_TESTNET: IBCChainConfig = {
-  chainType: "ibc",
   network: Network.SENTINEL,
-  displayName: "Sentinel",
-  blockExplorerUrl: "https://explorer.sentinel.co/",
-  nativeAssetSymbol: "udvpn",
   chainId: "sentinelhub-2",
   rpcUrl: "https://rpc-sentinel.keplr.app",
   restUrl: "https://lcd-sentinel.keplr.app",

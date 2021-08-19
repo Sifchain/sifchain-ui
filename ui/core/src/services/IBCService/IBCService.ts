@@ -7,6 +7,7 @@ import {
 } from "@cosmjs/stargate";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 
+import { IBCChainConfig } from "./IBCChainConfig";
 import {
   Asset,
   AssetAmount,
@@ -14,9 +15,6 @@ import {
   Network,
   IAsset,
   getChainsService,
-  ChainConfig,
-  NetworkChainConfigLookup,
-  IBCChainConfig,
 } from "../../entities";
 import getKeplrProvider from "../SifService/getKeplrProvider";
 import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
@@ -39,7 +37,7 @@ export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   sifApiUrl: string;
   assets: Asset[];
-  chainConfigsByNetwork: NetworkChainConfigLookup;
+  ibcChainConfigsByNetwork: Record<Network, IBCChainConfig | null>;
 }
 
 export class IBCService {
@@ -61,19 +59,19 @@ export class IBCService {
 
   public loadChainConfigByChainId(chainId: string): IBCChainConfig {
     // @ts-ignore
-    const chainConfig = Object.values(this.context.chainConfigsByNetwork).find(
-      (c) => c?.chainId === chainId,
-    );
-    if (chainConfig?.chainType !== "ibc") {
-      throw new Error(`No IBC chain config for network ${chainId}`);
+    const chainConfig = Object.values(
+      this.context.ibcChainConfigsByNetwork,
+    ).find((c) => c?.chainId === chainId);
+    if (!chainConfig) {
+      throw new Error(`No chain config for network ${chainId}`);
     }
     return chainConfig;
   }
   public loadChainConfigByNetwork(network: Network): IBCChainConfig {
     // @ts-ignore
-    const chainConfig = this.context.chainConfigsByNetwork[network];
-    if (chainConfig?.chainType !== "ibc") {
-      throw new Error(`No IBC chain config for network ${network}`);
+    const chainConfig = this.context.ibcChainConfigsByNetwork[network];
+    if (!chainConfig) {
+      throw new Error(`No chain config for network ${network}`);
     }
     return chainConfig;
   }

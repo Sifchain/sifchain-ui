@@ -5,7 +5,7 @@ import { WalletConnection } from "./constants";
 import WalletConnectionDropdown from "./WalletConnectionDropdown";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import { TokenIcon } from "../TokenIcon";
-import { accountStore } from "@/store/modules/accounts";
+import { Asset } from "@sifchain/sdk";
 
 export default defineComponent({
   name: "WalletConnection",
@@ -16,14 +16,13 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const stateRef = accountStore.refs[
-      props.connection.getChain().network
-    ].computed();
+    const stateRef = props.connection.useWalletState();
+    const apiRef = props.connection.useWalletApi();
     const instanceRef = ref<TooltipInstance | null>(null);
 
     const handleClick = () => {
-      if (stateRef.value.connected) return;
-      props.connection.connect();
+      if (stateRef.value.isConnected) return;
+      apiRef.value.connect();
     };
 
     return () => (
@@ -37,7 +36,7 @@ export default defineComponent({
           }}
           onMount={(instance: TooltipInstance) => {
             // Do not open if not connected...
-            if (!stateRef.value.connected) instance.hide();
+            if (!stateRef.value.isConnected) instance.hide();
           }}
           placement="bottom-end"
           onClickOutside={() => instanceRef.value?.hide()}
@@ -60,19 +59,19 @@ export default defineComponent({
             onClick={handleClick}
             class={[
               "h-[42px] flex items-center px-[10px] w-full border border-solid rounded cursor-pointer focus:bg-black hover:bg-black transition-all",
-              stateRef.value.connected
+              stateRef.value.isConnected
                 ? `border-connected-base`
                 : `border-transparent`,
             ]}
           >
             <div class="flex-1 items-center flex text-left">
               <TokenIcon
-                assetValue={props.connection.getChain().nativeAsset}
+                assetValue={Asset.get(props.connection.networkTokenSymbol)}
                 class="w-[22px]"
               />
               <div class="ml-[13px]">
                 <div class="text-sm font-bold leading-none capitalize">
-                  {props.connection.getChain().network}
+                  {props.connection.network}
                 </div>
                 <div class="text-sm opacity-50 capitalize text-left">
                   {props.connection.walletName}
@@ -85,7 +84,7 @@ export default defineComponent({
                 class={"w-[20px] max-w-[20px] h-[20px] rounded"}
               />
               <div class="flex items-center">
-                {stateRef.value.connected
+                {stateRef.value.isConnected
                   ? shortenHash(stateRef.value.address, 6, 4)
                   : "Connect"}
                 <AssetIcon

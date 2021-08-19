@@ -15,6 +15,14 @@ export async function createTestSifService(account?: TestSifAccount) {
     sifRpcUrl: "http://localhost:26657",
     assets: getTestingTokens(["CATK", "CBTK", "CETH", "ROWAN"]),
     keplrChainConfig: {} as KeplrChainConfig,
+    ibcChainConfigsByNetwork: {
+      sifchain: null,
+      cosmoshub: null,
+      ethereum: null,
+      iris: null,
+      akash: null,
+      sentinel: null,
+    },
   });
 
   if (account) {

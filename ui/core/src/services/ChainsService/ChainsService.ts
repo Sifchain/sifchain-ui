@@ -1,9 +1,9 @@
 import {
   IAsset,
+  JsonChainConfig,
   Chain,
   Network,
   setChainsService,
-  NetworkChainConfigLookup,
 } from "../../entities";
 import {
   SifchainChain,
@@ -13,6 +13,7 @@ import {
   IrisChain,
   SentinelChain,
 } from "./chains";
+import { NetworkChainsLookup } from "../../config/chains/NetEnvChainsLookup";
 
 export * from "./chains";
 
@@ -26,7 +27,7 @@ export type AnyChain =
 
 export type ChainsServiceContext = {
   assets: IAsset[];
-  chainConfigsByNetwork: NetworkChainConfigLookup;
+  chains: NetworkChainsLookup;
 };
 
 const networkChainCtorLookup = {
@@ -40,9 +41,9 @@ const networkChainCtorLookup = {
 
 export class ChainsService {
   private _list: Chain[] = [];
-  private map: Map<Network, Chain> = new Map();
+  private map: Map<Network, AnyChain> = new Map();
 
-  addChain(chain: Chain) {
+  addChain(chain: AnyChain) {
     this._list.push(chain);
     this.map.set(chain.network, chain);
   }
@@ -72,13 +73,16 @@ export class ChainsService {
     return result;
   }
 
-  constructor(private context: ChainsServiceContext) {
+  constructor(p: {
+    assets: IAsset[];
+    chains: Record<Network, JsonChainConfig>;
+  }) {
     Object.keys(networkChainCtorLookup).forEach((network) => {
       const n = network as Network;
       this.addChain(
         new networkChainCtorLookup[n]({
-          assets: this.context.assets,
-          chainConfig: this.context.chainConfigsByNetwork[n],
+          assets: p.assets,
+          chainConfig: p.chains[n],
         }),
       );
     });
@@ -88,7 +92,7 @@ export class ChainsService {
   list() {
     return this._list;
   }
-  get(network: Network): Chain {
+  get(network: Network): AnyChain {
     const chain = this.map.get(network);
     if (!chain) throw new Error("Chain not found for " + network);
     return chain;

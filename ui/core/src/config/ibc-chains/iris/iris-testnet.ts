@@ -1,10 +1,7 @@
-import { Network, IBCChainConfig } from "../../../entities";
+import { Network } from "../../../entities";
+import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
 
 export const IRIS_TESTNET: IBCChainConfig = {
-  chainType: "ibc",
-  displayName: "Iris",
-  blockExplorerUrl: "https://nyancat.iobscan.io/",
-  nativeAssetSymbol: "unyan",
   network: Network.IRIS,
   chainId: "nyancat-8",
   rpcUrl: "https://sifchain-testnet-proxies.vercel.app/api/nyancat-8/rpc",

@@ -1,5 +1,5 @@
 import { CoreConfig } from "./../utils/parseConfig";
-import { IAsset, Chain, Network } from "../entities";
+import { IAsset, Chain, JsonChainConfig, Network } from "../entities";
 // Everything here represents services that are effectively remote data storage
 export * from "./EthereumService/utils/getMetamaskProvider";
 

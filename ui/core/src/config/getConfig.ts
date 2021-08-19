@@ -25,7 +25,8 @@ import {
 import { Asset, Network } from "../entities";
 import { ServiceContext } from "../services";
 import { NetworkEnv } from "./getEnv";
-import { chainConfigByNetworkEnv } from "./chains";
+import { chainConfigByNetworkEnv } from "./ibc-chains";
+import { netEnvChainsLookup } from "./chains";
 
 type ConfigMap = Record<NetworkEnv, ServiceContext>;
 
@@ -114,31 +115,37 @@ export function getConfig(
       localnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.LOCALNET],
+      netEnvChainsLookup[NetworkEnv.LOCALNET],
     ),
     devnet: parseConfig(
       devnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET],
+      netEnvChainsLookup[NetworkEnv.DEVNET],
     ),
     devnet_042: parseConfig(
       devnet042config as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET_042],
+      netEnvChainsLookup[NetworkEnv.DEVNET_042],
     ),
     testnet: parseConfig(
       testnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET],
+      netEnvChainsLookup[NetworkEnv.TESTNET],
     ),
     mainnet: parseConfig(
       mainnnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.MAINNET],
+      netEnvChainsLookup[NetworkEnv.MAINNET],
     ),
     testnet_042_ibc: parseConfig(
       testnet042ibcconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET_042_IBC],
+      netEnvChainsLookup[NetworkEnv.TESTNET_042_IBC],
     ),
   };
 
