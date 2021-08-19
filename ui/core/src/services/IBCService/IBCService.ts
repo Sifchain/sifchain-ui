@@ -1,19 +1,14 @@
 import {
-  BroadcastTxFailure,
   SigningStargateClient,
   StargateClient,
-  defaultRegistryTypes,
-  defaultGasLimits,
   MsgTransferEncodeObject,
   BroadcastTxResponse,
-  isBroadcastTxFailure,
   IndexedTx,
 } from "@cosmjs/stargate";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 
 import { IBCChainConfig } from "./IBCChainConfig";
 import {
-  Amount,
   Asset,
   AssetAmount,
   IAssetAmount,
@@ -21,39 +16,26 @@ import {
   IAsset,
   getChainsService,
 } from "../../entities";
-import { loadConnectionByChainIds } from "./loadConnectionByChainIds";
 import getKeplrProvider from "../SifService/getKeplrProvider";
-import { IWalletService } from "../IWalletService";
 import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
 import {
   QueryClient,
   setupBankExtension,
   setupIbcExtension,
   setupAuthExtension,
-  createProtobufRpcClient,
 } from "@cosmjs/stargate/build/queries";
-import {
-  BroadcastTxCommitResponse,
-  BroadcastTxParams,
-  BroadcastTxSyncResponse,
-  Tendermint34Client,
-} from "@cosmjs/tendermint-rpc";
-import { QueryClientImpl } from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/query";
-import { ValueOp } from "@cosmjs/stargate/build/codec/tendermint/crypto/proof";
-import { setupMintExtension } from "@cosmjs/launchpad";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
-import { getNetworkEnv, NetworkEnv } from "../../config/getEnv";
-import { chainConfigByNetworkEnv } from "../../config/ibc-chains";
 import { fetch } from "cross-fetch";
-import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
 import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
 import Long from "long";
 import JSBI from "jsbi";
 import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
-import { Tx } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 import {} from "@cosmjs/stargate";
+import { TokenRegistry } from "./tokenRegistry";
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
+  sifApiUrl: string;
   assets: Asset[];
   ibcChainConfigsByNetwork: Record<Network, IBCChainConfig | null>;
 }
@@ -69,6 +51,7 @@ export class IBCService {
   };
   symbolLookup: Record<string, string> = {};
 
+  tokenRegistry = TokenRegistry(this.context);
   constructor(private context: IBCServiceContext) {}
   static create(context: IBCServiceContext) {
     return new this(context);
@@ -270,16 +253,13 @@ export class IBCService {
   // NOTE(ajoslin):
   // We can have for example 1inch from testnet and 1inch from devnet both in our cosmoshub testnet wallet.
   // This makes sure both don't show up.
-  // This method ?may? be very unperformant once we load channel ids from api, for now it's fine.
   async isValidEnvironmentChannel(network: Network, channelId: string) {
     if (network === Network.SIFCHAIN) return true;
-    const sourceChain = this.loadChainConfigByNetwork(network);
-    const sif = this.loadChainConfigByNetwork(Network.SIFCHAIN);
-    const data = await loadConnectionByChainIds({
-      sourceChainId: sourceChain.keplrChainInfo.chainId,
-      counterpartyChainId: sif.keplrChainInfo.chainId,
+    const data = await this.tokenRegistry.loadConnectionByNetworks({
+      sourceNetwork: Network.SIFCHAIN,
+      destinationNetwork: network,
     });
-    return data?.channelId === channelId;
+    return data.channelId === channelId;
   }
 
   async getAllBalances(params: {
@@ -423,9 +403,9 @@ export class IBCService {
       },
     );
 
-    const { channelId } = await loadConnectionByChainIds({
-      sourceChainId: sourceChain.chainId,
-      counterpartyChainId: destinationChain.chainId,
+    const { channelId } = await this.tokenRegistry.loadConnectionByNetworks({
+      sourceNetwork: params.sourceNetwork,
+      destinationNetwork: params.destinationNetwork,
     });
 
     const symbol = params.assetAmountToTransfer.asset.symbol;

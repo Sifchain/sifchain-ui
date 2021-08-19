@@ -38,7 +38,7 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
       return {
         id: event.payload.interchainTx.hash,
         type: "info",
-        message: `Import Pending: ${title}...`,
+        message: `Import Pending: ${title}`,
         loader: true,
       };
     } else if (event.type === "PegTransactionErrorEvent") {

@@ -268,18 +268,19 @@ export default function createSifService({
       }
 
       ensureSifAddress(address);
-      return IBCService({
-        assets: assets,
-        ibcChainConfigsByNetwork,
-      })
-        .createWalletByNetwork(Network.SIFCHAIN)
-        .then((w) => {
-          state.connected = true;
-          state.accounts = w.addresses;
-          state.balances = w?.balances;
-          return w.balances;
-          // console.table(w.balances);
-        });
+      return state.balances;
+      // return IBCService({
+      //   assets: assets,
+      //   ibcChainConfigsByNetwork,
+      // })
+      //   .createWalletByNetwork(Network.SIFCHAIN)
+      //   .then((w) => {
+      //     state.connected = true;
+      //     state.accounts = w.addresses;
+      //     state.balances = w?.balances;
+      //     return w.balances;
+      //     // console.table(w.balances);
+      //   });
       // try {
       //   const account = await client.getAccount(address);
       //   if (!account) {
