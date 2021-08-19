@@ -4,8 +4,7 @@ import { defineComponent, PropType, computed, ref, onUnmounted } from "vue";
 import { WalletConnection } from "./constants";
 import copy from "copy-to-clipboard";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { RouterLink } from "vue-router";
-import { TooltipInstance } from "../Tooltip";
+import { accountStore } from "@/store/modules/accounts";
 
 export default defineComponent({
   name: "WalletConnectionDropdown",
@@ -21,13 +20,13 @@ export default defineComponent({
   },
   setup(props) {
     const { config } = useCore();
-    const stateRef = props.connection.useWalletState();
-    const apiRef = props.connection.useWalletApi();
+    const stateRef = accountStore.refs[
+      props.connection.getChain().network
+    ].computed();
     const addressExplorerUrl = computed(() => {
-      return props.connection.getAddressExplorerUrl(
-        config,
-        stateRef.value.address,
-      );
+      return props.connection
+        .getChain()
+        .getBlockExplorerUrlForAddress(stateRef.value.address);
     });
 
     const copiedRef = ref(false);
@@ -58,12 +57,12 @@ export default defineComponent({
       },
       // Some wallets have no disconnect..
       {
-        hide: !apiRef.value.disconnect,
+        hide: !props.connection.disconnect,
         tag: "button",
         name: "Disconnect",
         icon: "interactive/link" as IconName,
         props: {
-          onClick: apiRef.value.disconnect,
+          onClick: props.connection.disconnect,
         },
       },
       {

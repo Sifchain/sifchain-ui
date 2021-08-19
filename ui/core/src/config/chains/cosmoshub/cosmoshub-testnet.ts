@@ -1,8 +1,11 @@
-import { Network } from "../../../entities";
-import { IBCChainConfig } from "../../../services/IBCService/IBCChainConfig";
+import { Network, IBCChainConfig } from "../../../entities";
 
 export const COSMOSHUB_TESTNET: IBCChainConfig = {
   network: Network.COSMOSHUB,
+  chainType: "ibc",
+  displayName: "Cosmoshub",
+  blockExplorerUrl: "https://mintscan.io/cosmos",
+  nativeAssetSymbol: "uphoton",
   chainId: "cosmoshub-testnet",
   rpcUrl:
     "https://sifchain-testnet-proxies.vercel.app/api/cosmoshub-testnet/rpc",

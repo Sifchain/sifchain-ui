@@ -25,8 +25,6 @@ import getKeplrProvider from "./getKeplrProvider";
 import { KeplrChainConfig } from "../../utils/parseConfig";
 import { parseTxFailure } from "./parseTxFailure";
 import IBCService from "../IBCService";
-import { IBCChainConfig } from "../../config/ibc-chains/IBCChainConfig";
-import { NetworkChainsLookup } from "../../config/chains/NetEnvChainsLookup";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;
@@ -35,7 +33,6 @@ export type SifServiceContext = {
   sifRpcUrl: string;
   keplrChainConfig: KeplrChainConfig;
   assets: Asset[];
-  ibcChainConfigsByNetwork: Record<Network, IBCChainConfig | null>;
 };
 type HandlerFn<T> = (a: T) => void;
 
@@ -51,7 +48,6 @@ export default function createSifService({
   sifRpcUrl,
   keplrChainConfig,
   assets,
-  ibcChainConfigsByNetwork,
 }: SifServiceContext) {
   const state: {
     connected: boolean;
@@ -271,7 +267,7 @@ export default function createSifService({
       return state.balances;
       // return IBCService({
       //   assets: assets,
-      //   ibcChainConfigsByNetwork,
+      //   chainConfigsByNetwork,
       // })
       //   .createWalletByNetwork(Network.SIFCHAIN)
       //   .then((w) => {

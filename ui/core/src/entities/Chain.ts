@@ -1,30 +1,42 @@
 import { IAsset, WalletType } from "../";
 import { Network } from "./Network";
 import { ChainsService } from "../services/ChainsService";
-
-export type JsonChainConfig = {
-  network: string;
-  displayName: string;
-  blockExplorerUrl: string;
-  nativeAssetSymbol: string;
-};
-
-export interface Chain {
-  id: string;
-  displayName: string;
-  blockExplorerUrl: string;
-
-  nativeAsset: IAsset;
-  assets: IAsset[];
-
-  findAssetWithLikeSymbol(symbol: string): IAsset | undefined;
-  getBlockExplorerUrlForTxHash(hash: string): string;
-
-  // Preserve a link between Network enum and Chain object so
-  // that we can map to legacy parts of the application that use Network enums.
-  network: Network;
-}
+import { ChainInfo } from "@keplr-wallet/types";
 
 let chainsService: ChainsService;
 export const getChainsService = () => chainsService;
 export const setChainsService = (c: ChainsService) => (chainsService = c);
+
+export type BaseChainConfig = {
+  network: Network;
+  chainId: string;
+  displayName: string;
+  blockExplorerUrl: string;
+  nativeAssetSymbol: string;
+};
+export type EthChainConfig = BaseChainConfig & {
+  chainType: "eth";
+};
+export type IBCChainConfig = BaseChainConfig & {
+  chainType: "ibc";
+  rpcUrl: string;
+  restUrl: string;
+  keplrChainInfo: ChainInfo;
+};
+
+export type ChainConfig = IBCChainConfig | EthChainConfig;
+
+export type NetworkChainConfigLookup = Record<Network, ChainConfig>;
+
+export interface Chain {
+  chainConfig: ChainConfig;
+  network: Network;
+  displayName: string;
+  nativeAsset: IAsset;
+  assets: IAsset[];
+
+  findAssetWithLikeSymbol(symbol: string): IAsset | undefined;
+  findAssetWithLikeSymbolOrThrow(symbol: string): IAsset;
+  getBlockExplorerUrlForTxHash(hash: string): string;
+  getBlockExplorerUrlForAddress(hash: string): string;
+}

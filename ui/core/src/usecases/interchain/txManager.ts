@@ -77,7 +77,7 @@ export default function InterchainTxManager(
   const { services, store } = context;
   const txList = PersistentTxList(context);
 
-  const subscribeToPegTx = async (tx: InterchainTx) => {
+  const listenToImportTx = async (tx: InterchainTx) => {
     const api = interchain(tx.fromChain, tx.toChain);
 
     for await (const ev of api.subscribeToTransfer(tx)) {
@@ -108,21 +108,26 @@ export default function InterchainTxManager(
     txList.remove(tx);
   };
 
-  // Load from storage and subscribe on bootup
-  txList.get().forEach((tx) => {
-    if (tx.toChain.network === Network.SIFCHAIN) {
-      subscribeToPegTx(tx);
-    }
-  });
-
   const onTxSent = (tx: InterchainTx) => {
     console.log("===onTxSent", tx);
     txList.add(tx);
     if (tx.toChain.network === Network.SIFCHAIN) {
-      subscribeToPegTx(tx);
+      listenToImportTx(tx);
     }
   };
-  interchainTxEmitter.on("tx_sent", onTxSent);
 
-  return () => interchainTxEmitter.off("tx_sent", onTxSent);
+  return {
+    listenForSentTransfers: () => {
+      interchainTxEmitter.on("tx_sent", onTxSent);
+      return interchainTxEmitter.off("tx_sent", onTxSent);
+    },
+    loadSavedTransferList() {
+      // Load from storage and subscribe on bootup
+      txList.get().forEach((tx) => {
+        if (tx.toChain.network === Network.SIFCHAIN) {
+          listenToImportTx(tx);
+        }
+      });
+    },
+  };
 }
