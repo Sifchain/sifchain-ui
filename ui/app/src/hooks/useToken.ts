@@ -33,8 +33,6 @@ export const useTokenList = (
 
     const networksSet = new Set(props.networks?.value || []);
 
-    console.log("pendingTransfers", pendingTransfers);
-
     return config.assets
       .filter((asset: IAsset) => {
         if (!networksSet.size) return true;

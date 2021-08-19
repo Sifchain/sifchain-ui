@@ -71,7 +71,7 @@ export default defineComponent({
     });
     return () => (
       <Teleport to={props.teleportTo}>
-        <div class="overflow-hidden fixed h-screen bg-gray-300 bg-opacity-30 z-20 inset-0 animate-fade-in duration-300" />
+        <div class="overflow-hidden fixed h-screen bg-white bg-opacity-25 z-20 inset-0 animate-fade-in duration-300" />
         <div
           class={[
             "overflow-y-scroll h-screen fixed left-sidebar inset-0 flex items-center shorter:items-start shorter:py-[4vh] justify-center z-20 animate-fade-in duration-500 animate-fade-in-up",
