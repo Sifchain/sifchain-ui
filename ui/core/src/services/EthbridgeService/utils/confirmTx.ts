@@ -14,7 +14,7 @@ export async function getConfirmations(web3: Web3, txHash: string) {
     // In this case we return 0 as number of confirmations
     return trx.blockNumber === null ? 0 : currentBlock - trx.blockNumber;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return 0;
   }
 }

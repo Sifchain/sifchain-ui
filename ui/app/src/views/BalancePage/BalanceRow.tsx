@@ -194,7 +194,7 @@ export default defineComponent({
                             from {interchainTx.fromChain.displayName} (
                             <a
                               class="font-normal text-accent-base hover:text-underline"
-                              href={interchainTx.toChain.getBlockExplorerUrlForTxHash(
+                              href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
                                 interchainTx.hash,
                               )}
                               title={interchainTx.hash}
