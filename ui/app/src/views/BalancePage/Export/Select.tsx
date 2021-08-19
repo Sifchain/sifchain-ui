@@ -146,6 +146,9 @@ export default defineComponent({
       })),
     );
     const networkOpenRef = ref(false);
+    const targetAddressRef = accountStore.computed(
+      (s) => s.state[exportParams.value.network].address,
+    );
 
     return () => (
       <Modal
@@ -238,11 +241,7 @@ export default defineComponent({
           <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
             <input
               readonly
-              value={
-                exportParams.value.network === Network.ETHEREUM
-                  ? store.wallet.get(Network.ETHEREUM).address
-                  : rootStore.accounts.state.cosmoshub.address
-              }
+              value={targetAddressRef.value}
               class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
               onClick={(e) => {
                 (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
