@@ -1,9 +1,9 @@
 import { RouteLocationRaw, useRouter } from "vue-router";
-import { computed, ref, Ref } from "vue";
+import { computed, ref, Ref, watch } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useToken, useTokenList } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network, AssetAmount, toBaseUnits } from "@sifchain/sdk";
+import { Network, AssetAmount, toBaseUnits, IAssetAmount } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
@@ -12,6 +12,8 @@ import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { isLikeSymbol } from "@sifchain/sdk/src/utils/isLikeSymbol";
+import { effect } from "@vue/reactivity";
+import sif from "@sifchain/sdk/src/usecases/wallet/sif";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -109,13 +111,28 @@ export const useImportData = () => {
 
   const sifchainBalance = computed(() => nativeToken.value?.amount);
 
+  // If the import is too fast, the "from" and "to" values in the preview will live-update
+  // while the post-confirmation screen is still up!
+  // Get the sifchain balance one time so that we can display "old value before import"
+  // vs "new value after import" without the balance live updating.
+  const oneTimeSifchainBalance = ref<IAssetAmount | undefined>();
+  watch(
+    [sifchainBalance],
+    () => {
+      if (sifchainBalance.value && !oneTimeSifchainBalance.value) {
+        oneTimeSifchainBalance.value = sifchainBalance.value;
+      }
+    },
+    { immediate: true },
+  );
+
   const detailsRef = computed<[any, any][]>(() => [
     [
       "Current Sifchain Balance",
       <span class="flex items-center font-mono">
-        {sifchainBalance.value ? (
+        {oneTimeSifchainBalance.value ? (
           <>
-            {formatAssetAmount(sifchainBalance.value)}{" "}
+            {formatAssetAmount(oneTimeSifchainBalance.value)}{" "}
             {sifchainBalance.value?.asset.displaySymbol.toUpperCase()}
             <TokenIcon
               size={18}
@@ -159,20 +176,20 @@ export const useImportData = () => {
         <Button.InlineHelp>Estimated amount</Button.InlineHelp>
       </>,
       <span class="flex items-center font-mono">
-        {sifchainBalance.value && computedImportAssetAmount.value ? (
+        {oneTimeSifchainBalance.value && computedImportAssetAmount.value ? (
           <>
             {formatAssetAmount(
               AssetAmount(
-                sifchainBalance.value.asset,
-                sifchainBalance.value.add(
+                oneTimeSifchainBalance.value.asset,
+                oneTimeSifchainBalance.value.add(
                   computedImportAssetAmount.value.amount,
                 ),
               ),
             )}{" "}
-            {(sifchainBalance.value?.asset.displaySymbol || "").toUpperCase()}{" "}
+            {oneTimeSifchainBalance.value.asset.displaySymbol.toUpperCase()}{" "}
             <TokenIcon
               size={18}
-              assetValue={sifchainBalance.value.asset}
+              assetValue={oneTimeSifchainBalance.value.asset}
               class="ml-[4px]"
             />
           </>
