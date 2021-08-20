@@ -6,7 +6,7 @@ import { UnpegEvent } from "../../../../core/src/usecases/peg/unpeg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
 
-const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = true;
+const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = false;
 export type ExportDraft = {
   amount: string;
   network: Network;

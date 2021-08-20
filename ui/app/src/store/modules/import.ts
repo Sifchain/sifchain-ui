@@ -5,7 +5,7 @@ import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
 
-const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = true;
+const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = false;
 
 export type ImportDraft = {
   amount: string;
