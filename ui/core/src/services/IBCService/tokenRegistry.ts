@@ -56,9 +56,9 @@ export const TokenRegistry = (context: { sifApiUrl: string }) => {
       );
 
       if (sourceIsNative) {
-        return { channelId: item?.src_channel };
-      } else {
         return { channelId: item?.dest_channel };
+      } else {
+        return { channelId: item?.src_channel };
       }
     },
   };
