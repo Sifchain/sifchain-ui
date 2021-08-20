@@ -50,9 +50,10 @@ export function getConfig(
     "sifchain.localnet": parseAssets(
       assetsSifchainLocalnet.assets as AssetConfig[],
     ),
-    "sifchain.mainnet": parseAssets(
-      assetsSifchainMainnet.assets as AssetConfig[],
-    ),
+    "sifchain.mainnet": parseAssets([
+      ...assetsSifchainDevnet.assets,
+      ...assetsSifchainMainnet.assets,
+    ] as AssetConfig[]),
     "sifchain.devnet": parseAssets([
       ...assetsSifchainDevnet.assets,
       ...assetsSifchainMainnet.assets,

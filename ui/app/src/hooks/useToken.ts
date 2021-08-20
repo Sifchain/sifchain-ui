@@ -24,6 +24,7 @@ export type TokenListItem = {
 export const useTokenList = (
   props: {
     networks?: Ref<Network[]>;
+    showDecomissionedAssetsWithBalance?: boolean;
   } = {},
 ) => {
   const { store, config, usecases } = useCore();
@@ -60,6 +61,15 @@ export const useTokenList = (
           asset,
           pendingImports: assetTransfers,
         };
+      })
+      .filter((token) => {
+        if (token.asset.decommissioned) {
+          return (
+            props.showDecomissionedAssetsWithBalance &&
+            parseFloat(token.amount.amount.toString()) > 0
+          );
+        }
+        return true;
       })
       .sort((a, b) => {
         if (a.asset.symbol === config.nativeAsset.symbol) return -1;

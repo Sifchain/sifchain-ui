@@ -68,6 +68,7 @@ export default defineComponent({
         name: "Import",
         visible: true,
         props: {
+          disabled: props.tokenItem.asset.decommissioned,
           replace: false,
           to: getImportLocation("select", {
             symbol: props.tokenItem.asset.symbol,
@@ -109,6 +110,7 @@ export default defineComponent({
         visible: expandedRef.value,
         tag: RouterLink,
         props: {
+          disabled: props.tokenItem.asset.decommissioned,
           to: {
             name: "AddLiquidity",
             params: {
@@ -127,6 +129,7 @@ export default defineComponent({
         tag: RouterLink,
         visible: expandedRef.value,
         props: {
+          disabled: props.tokenItem.asset.decommissioned,
           to: {
             name: "Swap",
             query: { fromSymbol: props.tokenItem.asset.symbol },

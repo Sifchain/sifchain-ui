@@ -354,19 +354,21 @@ const UserPoolItem = defineComponent({
                 ))}
               </div>
               <div class="p-[4px]">
-                <Button.Inline
-                  to={{
-                    name: "AddLiquidity",
-                    params: {
-                      externalAsset: currentPoolStat.value.symbol.toLowerCase(),
-                    },
-                  }}
-                  replace
-                  class="w-[140px] !bg-black !text-accent-base"
-                  icon="interactive/plus"
-                >
-                  Add Liquidity
-                </Button.Inline>
+                {!externalAmount.value?.asset.decommissioned && (
+                  <Button.Inline
+                    to={{
+                      name: "AddLiquidity",
+                      params: {
+                        externalAsset: currentPoolStat.value.symbol.toLowerCase(),
+                      },
+                    }}
+                    replace
+                    class="w-[140px] !bg-black !text-accent-base"
+                    icon="interactive/plus"
+                  >
+                    Add Liquidity
+                  </Button.Inline>
+                )}
                 {!!accountPoolData.myPoolShare?.value && (
                   <Button.Inline
                     to={{

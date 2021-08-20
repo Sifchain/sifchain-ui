@@ -193,7 +193,8 @@
       "priceUsd": 0.070311,
       "symbol": "CRO",
       "transferLimit": "7111262818051",
-      "homeNetwork": "ethereum"
+      "homeNetwork": "ethereum",
+      "decomissioned": true
     },
     {
       "address": "0xbe0c274D086C072a68150f956d7c5E95414B3f37",

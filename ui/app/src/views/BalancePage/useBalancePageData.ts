@@ -24,6 +24,7 @@ export const useBalancePageData = (initialState: BalancePageState) => {
   });
   const tokenList = useTokenList({
     networks: ref([Network.SIFCHAIN]),
+    showDecomissionedAssetsWithBalance: true,
   });
 
   const displayedTokenList = computed<TokenListItem[]>(() => {

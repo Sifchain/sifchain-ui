@@ -53,7 +53,9 @@ export default defineComponent({
       if (!tokenRef.value) {
         return "Select Token";
       }
-
+      if (tokenRef.value.asset.decommissioned) {
+        return `Import Not Allowed for ${tokenRef.value.asset.displaySymbol}`;
+      }
       if (!computedImportAssetAmount.value) {
         return "Enter Amount";
       }

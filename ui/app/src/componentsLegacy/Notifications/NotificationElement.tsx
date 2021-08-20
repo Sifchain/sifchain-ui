@@ -45,7 +45,7 @@ export const NotificationElement = defineComponent({
     onMounted(() => {
       timeoutId = setTimeout(() => {
         removeRef.value();
-      }, 15 * 1000);
+      }, 10 * 1000);
     });
     onUnmounted(() => clearTimeout(timeoutId));
 
