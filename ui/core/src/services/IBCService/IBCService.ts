@@ -334,9 +334,9 @@ export class IBCService {
         },
         timeoutHeight: {
           // revisionHeight: timeoutHeight,
-          revisionHeight: timeoutHeight,
+          // revisionHeight: timeoutHeight,
         },
-        // timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
+        timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
       }),
     };
     let transferMsgs: MsgTransferEncodeObject[] = [transferMsg];
@@ -377,7 +377,7 @@ export class IBCService {
       try {
         // const gasPerMessage = 39437;
         // const gasPerMessage = 39437;
-        console.log(JSON.stringify(batch));
+        // console.log(JSON.(batch));
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,
           batch,
@@ -391,7 +391,7 @@ export class IBCService {
                   "",
               },
             ],
-            gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
+            // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
           },
         );
         console.log({ brdcstTxRes });
