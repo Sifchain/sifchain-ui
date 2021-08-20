@@ -7,8 +7,8 @@ import {
   SigningStargateClient,
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { TokenRegistry } from "services/IBCService/tokenRegistry";
-import getKeplrProvider from "services/SifService/getKeplrProvider";
+import { TokenRegistry } from "../../IBCService/tokenRegistry";
+import getKeplrProvider from "../../SifService/getKeplrProvider";
 import {
   AssetAmount,
   Chain,
@@ -16,7 +16,8 @@ import {
   IAssetAmount,
   IBCChainConfig,
   Network,
-} from "../../entities";
+} from "../../../entities";
+import memoize from "lodash/memoize";
 import {
   CosmosWalletProvider,
   WalletConnectionState,
@@ -34,24 +35,37 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
   tokenRegistry: ReturnType<typeof TokenRegistry>;
 
+  static create(context: WalletProviderContext) {
+    return new KeplrWalletProvider(context);
+  }
   constructor(public context: WalletProviderContext) {
     super();
     this.tokenRegistry = TokenRegistry(context);
+
+    // TODO(ajoslin): handle account switches gracefully
+    try {
+      window?.addEventListener("keplr_keystorechange", () =>
+        window.location.reload(),
+      );
+    } catch (e) {}
   }
 
-  supportedProtocols = [
-    Network.AKASH,
-    Network.COSMOSHUB,
-    Network.IRIS,
-    Network.SENTINEL,
-    Network.SIFCHAIN,
-  ];
-
-  isLoaded(chain: Chain): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async hasConnected(chain: Chain) {
+    const chainConfig = getIBCChainConfig(chain);
+    const keplr = await getKeplrProvider();
+    try {
+      await keplr?.getKey(chainConfig.keplrChainInfo.chainId);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
-  async canDisconnect(chain: Chain) {
+  isChainSupported(chain: Chain) {
+    return chain.chainConfig.chainType === "ibc";
+  }
+
+  canDisconnect(chain: Chain) {
     return false;
   }
   async disconnect(chain: Chain) {
@@ -71,6 +85,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return sendingSigner;
   }
 
+  getStargateClientCached = memoize(this.getStargateClient.bind(this));
   async getStargateClient(chain: Chain) {
     const chainConfig = getIBCChainConfig(chain);
     const sendingSigner = await this.getSendingSigner(chain);
@@ -93,6 +108,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     );
   }
 
+  getQueryClientCached = memoize(this.getQueryClient.bind(this));
   async getQueryClient(chain: Chain) {
     const chainConfig = getIBCChainConfig(chain);
     const tendermintClient = await Tendermint34Client.connect(
@@ -109,9 +125,10 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   async connect(chain: Chain): Promise<WalletConnectionState> {
     const sendingSigner = await this.getSendingSigner(chain);
 
-    const [address] = (await sendingSigner.getAccounts()).map(
-      (acc) => acc.address,
-    );
+    const address = (await sendingSigner.getAccounts())[0]?.address;
+    if (!address) {
+      throw new Error("No address to connect to");
+    }
     const balances = await this.fetchBalances(chain, address);
 
     return {
@@ -123,12 +140,10 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    const [queryClient, balances] = await Promise.all([
-      this.getQueryClient(chain),
-      this.getStargateClient(chain).then((stargate) => {
-        return stargate.getAllBalances(address);
-      }),
-    ]);
+    const queryClient = await this.getQueryClientCached(chain);
+    const stargate = await this.getStargateClientCached(chain);
+    const balances = await stargate.getAllBalances(address);
+
     const assetAmounts: IAssetAmount[] = [];
 
     const tokenRegistry = await this.tokenRegistry.load();

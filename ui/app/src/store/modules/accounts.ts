@@ -26,6 +26,9 @@ const getUsecase = (network: Network) => {
     network === Network.ETHEREUM ? "metamask" : "keplr"
   ];
 };
+
+const walletBalancePolls = new Map<string, NodeJS.Timeout>();
+
 export const accountStore = Vuextra.createStore({
   name: "accounts",
   options: {
@@ -80,22 +83,21 @@ export const accountStore = Vuextra.createStore({
       try {
         const state = await usecase.load(network);
 
-        console.log(network, state);
-
         accountStore.setConnected({ network, connected: state.connected });
         accountStore.setBalances({ network, balances: state.balances });
         accountStore.setAddress({ network, address: state.address });
 
         if (!state.connected) return;
+        if (walletBalancePolls.has(network)) return;
 
         (function scheduleUpdate() {
           // NOTE(ajoslin): more formal fix coming later to lazyload non-sif/eth assets.
           const UPDATE_DELAY =
             network === Network.SIFCHAIN || network === Network.ETHEREUM
               ? 3 * 1000
-              : (20 + Math.random() * 20) * 1000; // Some drift on updates for other chains.
+              : (15 + Math.random() * 10) * 1000; // Some drift on updates for other chains.
 
-          setTimeout(async () => {
+          const timeoutId = setTimeout(async () => {
             const balances = await usecase.getBalances(
               network,
               accountStore.state[network].address,
@@ -104,6 +106,7 @@ export const accountStore = Vuextra.createStore({
             accountStore.setBalances({ network, balances });
             scheduleUpdate();
           }, UPDATE_DELAY);
+          walletBalancePolls.set(network, timeoutId);
         })();
       } catch (error) {
         console.error(network, "wallet connect error", error);
@@ -112,6 +115,13 @@ export const accountStore = Vuextra.createStore({
 
     async disconnect(network: Network) {
       const usecase = getUsecase(network);
+
+      const timeoutId = walletBalancePolls.get(network);
+      if (timeoutId != null) {
+        clearTimeout(timeoutId);
+      }
+      walletBalancePolls.delete(network);
+
       return usecase.disconnect(network);
     },
   }),

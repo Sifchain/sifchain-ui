@@ -9,12 +9,9 @@ import { OfflineSigner } from "@cosmjs/proto-signing";
 
 import {
   Asset,
-  AssetAmount,
   IAssetAmount,
   Network,
-  IAsset,
   getChainsService,
-  ChainConfig,
   NetworkChainConfigLookup,
   IBCChainConfig,
 } from "../../entities";
@@ -27,14 +24,14 @@ import {
   setupAuthExtension,
 } from "@cosmjs/stargate/build/queries";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 import { fetch } from "cross-fetch";
 import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
 import Long from "long";
 import JSBI from "jsbi";
 import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
-import {} from "@cosmjs/stargate";
 import { TokenRegistry } from "./tokenRegistry";
+import { KeplrWalletProvider } from "../WalletService";
+
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   sifApiUrl: string;
@@ -54,6 +51,9 @@ export class IBCService {
   symbolLookup: Record<string, string> = {};
 
   tokenRegistry = TokenRegistry(this.context);
+
+  keplrProvider = KeplrWalletProvider.create(this.context);
+
   constructor(private context: IBCServiceContext) {}
   static create(context: IBCServiceContext) {
     return new this(context);
@@ -157,13 +157,10 @@ export class IBCService {
     return queryClient;
   }
 
-  async getIBCDenom(asset: IAsset) {
-    const queryClient = await this.loadQueryClientByNetwork(Network.COSMOSHUB);
-    const allChannels = await queryClient.ibc.channel.allChannels();
-  }
-
   async logIBCNetworkMetadata(destinationNetwork: Network) {
-    const wallet = await this.createWalletByNetwork(destinationNetwork);
+    await this.keplrProvider.connect(
+      getChainsService().get(destinationNetwork),
+    );
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
 
     const allChannels = await queryClient.ibc.channel.allChannels();
@@ -211,47 +208,6 @@ export class IBCService {
     console.log({ destinationNetwork, allChannels, allCxns, clients });
   }
 
-  async createWalletByNetwork(network: Network) {
-    const keplr = await getKeplrProvider();
-    const sourceChain = this.loadChainConfigByNetwork(network);
-    await keplr?.experimentalSuggestChain(sourceChain.keplrChainInfo);
-    await keplr?.enable(sourceChain.chainId);
-    const sendingSigner = await keplr?.getOfflineSigner(sourceChain.chainId);
-    if (!sendingSigner)
-      throw new Error("No sending signer for " + sourceChain.chainId);
-    const stargate = await SigningStargateClient?.connectWithSigner(
-      sourceChain.rpcUrl,
-      sendingSigner,
-      {
-        gasLimits: {
-          send: 80000,
-          ibcTransfer: 120000,
-          delegate: 250000,
-          undelegate: 250000,
-          redelegate: 250000,
-          // The gas multiplication per rewards.
-          withdrawRewards: 140000,
-          govVote: 250000,
-        },
-      },
-    );
-
-    const addresses = (await sendingSigner.getAccounts()).map(
-      (acc) => acc.address,
-    );
-    const balances = await this.getAllBalances({
-      client: stargate,
-      network,
-      address: addresses[0],
-    });
-
-    return {
-      client: stargate,
-      addresses,
-      balances,
-    };
-  }
-
   // NOTE(ajoslin):
   // We can have for example 1inch from testnet and 1inch from devnet both in our cosmoshub testnet wallet.
   // This makes sure both don't show up.
@@ -261,66 +217,6 @@ export class IBCService {
       (item) =>
         item.src_channel === channelId || item.dest_channel === channelId,
     );
-  }
-
-  async getAllBalances(params: {
-    network: Network;
-    client: StargateClient;
-    address: string;
-  }) {
-    const sourceChain = this.loadChainConfigByNetwork(params.network);
-    const queryClient = await this.loadQueryClientByNetwork(params.network);
-    const balances = await params.client.getAllBalances(params.address);
-    const assetAmounts: IAssetAmount[] = [];
-
-    let SKIP_ASSET = "___skip_asset";
-
-    for (let balance of balances) {
-      try {
-        let symbol = balance.denom;
-        let denomTrace: QueryDenomTraceResponse | null = null;
-        if (balance.denom.startsWith("ibc/")) {
-          if (this.symbolLookup[balance.denom]) {
-            symbol = this.symbolLookup[balance.denom];
-            if (symbol === SKIP_ASSET) continue;
-          } else {
-            denomTrace = await queryClient.ibc.transfer.denomTrace(
-              balance.denom.split("/")[1],
-            );
-            const [, channelId] = (denomTrace.denomTrace?.path || "").split(
-              "/",
-            );
-
-            if (
-              channelId &&
-              !(await this.isValidEnvironmentChannel(params.network, channelId))
-            ) {
-              this.symbolLookup[balance.denom] = SKIP_ASSET;
-              continue;
-            } else {
-              symbol = denomTrace.denomTrace?.baseDenom ?? symbol;
-              this.networkDenomLookup[sourceChain.network as Network][symbol] =
-                balance.denom;
-              this.symbolLookup[balance.denom] = symbol;
-            }
-          }
-        }
-
-        let asset = getChainsService()
-          ?.get(params.network)
-          .assets.find((a) => a.symbol === symbol);
-
-        if (asset && balance.denom.startsWith("ibc/")) {
-          asset.ibcDenom = balance.denom;
-        }
-        const assetAmount = AssetAmount(asset || symbol, balance?.amount);
-        assetAmounts.push(assetAmount);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    return assetAmounts;
   }
 
   async transferIBCTokens(

@@ -1,9 +1,10 @@
-import { Chain } from "index";
-import TypedEmitter from "typed-emitter";
-import { EventEmitter } from "events";
 import { Keplr } from "@keplr-wallet/types";
-import { Network, IAssetAmount } from "entities";
+import { Network, IAssetAmount, Chain } from "../../../entities";
 import { KeplrWalletProvider } from "./KeplrWalletProvider";
+
+export type WalletProviderContext = {
+  sifApiUrl: string;
+};
 
 export type WalletConnectionState = {
   chain: Chain;
@@ -13,27 +14,19 @@ export type WalletConnectionState = {
   address: string;
 };
 
-interface WalletProviderEvents {
-  connect: (state: WalletConnectionState) => void;
-  disconnect: (state: WalletConnectionState) => void;
-}
-
-export type WalletProviderContext = {
-  sifApiUrl: string;
-};
-
-export abstract class WalletProvider extends (EventEmitter as new () => TypedEmitter<WalletProviderEvents>) {
-  abstract supportedProtocols: Network[];
-
+export abstract class WalletProvider {
   abstract context: WalletProviderContext;
 
+  abstract isChainSupported(chain: Chain): boolean;
+
   // abstract async isEnabled(chain: Chain): Promise<boolean>;
-  abstract async connect(chain: Chain): Promise<WalletConnectionState>;
+  abstract connect(chain: Chain): Promise<WalletConnectionState>;
+  abstract hasConnected(chain: Chain): Promise<boolean>;
 
-  abstract async canDisconnect(chain: Chain): Promise<boolean>;
-  abstract async disconnect(chain: Chain): Promise<void>;
+  abstract canDisconnect(chain: Chain): boolean;
+  abstract disconnect(chain: Chain): Promise<void>;
 
-  abstract async fetchBalances(
+  abstract fetchBalances(
     chain: Chain,
     address: string,
   ): Promise<IAssetAmount[]>;
