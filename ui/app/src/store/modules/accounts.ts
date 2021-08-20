@@ -118,4 +118,4 @@ export const accountStore = Vuextra.createStore({
   modules: [],
 });
 
-const self = accountStore;
+(window as any).accountStore = accountStore;

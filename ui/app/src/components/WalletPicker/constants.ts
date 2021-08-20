@@ -37,11 +37,11 @@ const createWalletConnection = (
 ): WalletConnection => ({
   ...walletConfigLookup[walletId],
   getChain: () => useChains().get(network),
-  connect: () => useCore().usecases.walletNew[walletId].load(network),
+  connect: () => accountStore.load(network),
   disconnect:
     network === Network.ETHEREUM
       ? () => {
-          return useCore().usecases.walletNew[walletId].disconnect(network);
+          return accountStore.disconnect(network);
         }
       : undefined,
 });

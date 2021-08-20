@@ -107,11 +107,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async connect(chain: Chain): Promise<WalletConnectionState> {
-    const chainConfig = getIBCChainConfig(chain);
-
     const sendingSigner = await this.getSendingSigner(chain);
-    const stargate = await this.getStargateClient(chain);
-    const queryClient = await this.getQueryClient(chain);
 
     const [address] = (await sendingSigner.getAccounts()).map(
       (acc) => acc.address,
