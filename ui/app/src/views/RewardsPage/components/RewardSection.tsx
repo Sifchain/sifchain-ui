@@ -151,7 +151,7 @@ export const RewardSection = defineComponent({
                 disabled={!sifConnected.value}
                 rel="noopener noreferrer"
               >
-                More Info
+                More Info 
               </Button.Inline> mt-[6px]*/}
               <Button.Inline
                 onClick={() => props.onClaimIntent()}
