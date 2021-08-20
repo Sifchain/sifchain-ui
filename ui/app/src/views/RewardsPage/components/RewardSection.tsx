@@ -143,7 +143,7 @@ export const RewardSection = defineComponent({
 
           <div class="flex items-center justify-center">
             <div class="p-[6px] w-[140px] bg-black rounded-lg">
-              <Button.Inline
+              {/* <Button.Inline
                 class="w-full no-underline"
                 icon="interactive/circle-info"
                 href={props.infoLink}
@@ -152,10 +152,10 @@ export const RewardSection = defineComponent({
                 rel="noopener noreferrer"
               >
                 More Info
-              </Button.Inline>
+              </Button.Inline> mt-[6px]*/}
               <Button.Inline
                 onClick={() => props.onClaimIntent()}
-                class="w-full mt-[6px]"
+                class="w-full"
                 icon="navigation/rewards"
                 active
                 disabled={

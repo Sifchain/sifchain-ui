@@ -3,6 +3,7 @@ import PageCard from "@/components/PageCard";
 import { useRewardsPageData } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
+import { SunsetRewardSection } from "./components/SunsetRewardSection";
 import ClaimRewardsModal from "./components/ClaimRewardsModal";
 import { CryptoeconomicsRewardType } from "@sifchain/sdk/src/services/CryptoeconomicsService";
 import Layout from "@/componentsLegacy/Layout/Layout.vue";
@@ -80,7 +81,6 @@ export default defineComponent({
               <div class="w-[200px] text-right">Projected Full Amount</div>
               <div class="flex-1 text-right">Claimable Amount</div>
             </div>
-
             <RewardSection
               rewardType="lm"
               data={lmData.value}
@@ -92,7 +92,18 @@ export default defineComponent({
               }}
             />
             <div class="my-[16px] border border-dashed border-white opacity-40" />
-            <RewardSection
+            <SunsetRewardSection
+              rewardType="lm"
+              data={lmData.value}
+              alreadyClaimed={!!vsClaim.value}
+              infoLink={lmInfoLink.value}
+              onClaimIntent={() => {
+                claimRewardType.value = "lm";
+                isClaimModalOpened.value = true;
+              }}
+            />
+            <div class="my-[16px] border border-dashed border-white opacity-40" />
+            <SunsetRewardSection
               rewardType="vs"
               data={vsData.value}
               alreadyClaimed={!!lmClaim.value}
