@@ -1,4 +1,3 @@
-import { IBCServiceContext } from "./IBCService";
 import { Chain, Network, getChainsService } from "../../entities";
 
 export type TokenRegistryItem = {
@@ -11,7 +10,7 @@ export type TokenRegistryItem = {
   dest_channel?: string;
 };
 
-export const TokenRegistry = (context: IBCServiceContext) => {
+export const TokenRegistry = (context: { sifApiUrl: string }) => {
   let tokenRegistry: TokenRegistryItem[];
   const loadTokenRegistry = async () => {
     if (!tokenRegistry) {
@@ -27,6 +26,7 @@ export const TokenRegistry = (context: IBCServiceContext) => {
   };
 
   return {
+    load: loadTokenRegistry,
     async loadConnectionByNetworks(params: {
       sourceNetwork: Network;
       destinationNetwork: Network;

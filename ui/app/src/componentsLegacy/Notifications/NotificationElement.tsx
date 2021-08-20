@@ -45,15 +45,19 @@ export const NotificationElement = defineComponent({
     onMounted(() => {
       timeoutId = setTimeout(() => {
         removeRef.value();
-      }, 10 * 1000);
+      }, 15 * 1000);
     });
     onUnmounted(() => clearTimeout(timeoutId));
 
     return () => (
       <div
-        onClick={() => removeRef.value()}
+        onClick={() => {
+          props.notification.onAction?.();
+          removeRef.value();
+        }}
         class={[
           "h-[40px] flex px-[14px] bg-black drop-shadow-lg mb-[16px] rounded-lg relative cursor-pointer text-md items-center tracking-[-0.025em]",
+          props.notification.onAction && "cursor-pointer",
           data.class,
         ]}
       >

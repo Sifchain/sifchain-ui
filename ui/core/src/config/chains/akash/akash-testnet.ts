@@ -4,7 +4,7 @@ export const AKASH_TESTNET: IBCChainConfig = {
   network: Network.AKASH,
   chainType: "ibc",
   displayName: "Akash",
-  blockExplorerUrl: "https://akash.bigdipper.live/",
+  blockExplorerUrl: "https://testnet.akash.aneka.io",
   nativeAssetSymbol: "uakt",
   chainId: "akash-testnet-6",
   rpcUrl: "https://sifchain-testnet-proxies.vercel.app/api/akash-testnet-6/rpc",

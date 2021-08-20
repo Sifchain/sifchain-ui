@@ -3,4 +3,5 @@ export type Notification = {
   type: "error" | "success" | "info";
   message: string;
   loader?: boolean;
+  onAction?: () => void;
 };

@@ -1,36 +1,47 @@
 import { Chain } from "index";
 import TypedEmitter from "typed-emitter";
 import { EventEmitter } from "events";
-import { OfflineSigner } from "@cosmjs/proto-signing";
+import { Keplr } from "@keplr-wallet/types";
 import { Network, IAssetAmount } from "entities";
+import { KeplrWalletProvider } from "./KeplrWalletProvider";
 
 export type WalletConnectionState = {
   chain: Chain;
-  provider: WalletProvider;
+  // TODO: figure out why this provider type hates me.
+  provider: WalletProvider | CosmosWalletProvider | KeplrWalletProvider;
   balances: IAssetAmount[];
   address: string;
 };
 
 interface WalletProviderEvents {
-  loaded: (state: WalletConnectionState) => void;
-  unloaded: (state: WalletConnectionState) => void;
-  balances_changed: (state: WalletConnectionState) => void;
+  connect: (state: WalletConnectionState) => void;
+  disconnect: (state: WalletConnectionState) => void;
 }
+
+export type WalletProviderContext = {
+  sifApiUrl: string;
+};
 
 export abstract class WalletProvider extends (EventEmitter as new () => TypedEmitter<WalletProviderEvents>) {
   abstract supportedProtocols: Network[];
 
-  abstract async isLoaded(chain: Chain): Promise<boolean>;
-  abstract async load(chain: Chain): Promise<WalletConnectionState | undefined>;
-  abstract async unload(chain: Chain): Promise<void>;
+  abstract context: WalletProviderContext;
+
+  // abstract async isEnabled(chain: Chain): Promise<boolean>;
+  abstract async connect(chain: Chain): Promise<WalletConnectionState>;
+
+  abstract async canDisconnect(chain: Chain): Promise<boolean>;
+  abstract async disconnect(chain: Chain): Promise<void>;
 
   abstract async fetchBalances(
-    state: WalletConnectionState,
+    chain: Chain,
+    address: string,
   ): Promise<IAssetAmount[]>;
-  abstract async fetchAndEmitChangedBalances(
-    state: WalletConnectionState,
-  ): Promise<IAssetAmount[] | undefined>;
 }
 export abstract class CosmosWalletProvider extends WalletProvider {
-  abstract getSendingSigner(chain: Chain): Promise<OfflineSigner>;
+  // NOTE(ajoslin): having issues with getOfflineSigner return type for now...
+  // getting around it by referencing it directly this way.
+  abstract getSendingSigner(
+    chain: Chain,
+  ): Promise<ReturnType<Keplr["getOfflineSigner"]>>;
 }

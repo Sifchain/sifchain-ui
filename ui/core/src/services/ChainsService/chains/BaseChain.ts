@@ -1,5 +1,6 @@
 import { Chain, IAsset, Network, ChainConfig } from "../../../entities";
 import { isLikeSymbol } from "../../../utils/isLikeSymbol";
+import { urlJoin } from "url-join-ts";
 
 export class BaseChain implements Chain {
   get network() {
@@ -37,9 +38,9 @@ export class BaseChain implements Chain {
   }
 
   getBlockExplorerUrlForTxHash(hash: string) {
-    return `${this.chainConfig.blockExplorerUrl}/tx/${hash}`;
+    return urlJoin(this.chainConfig.blockExplorerUrl, "transaction", hash);
   }
   getBlockExplorerUrlForAddress(address: string) {
-    return `${this.chainConfig.blockExplorerUrl}/account/${address}`;
+    return urlJoin(this.chainConfig.blockExplorerUrl, "accounts", address);
   }
 }

@@ -34,12 +34,21 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
       event.payload.interchainTx.fromChain.displayName
     }`;
 
+    const action = () => {
+      window.open(
+        event.payload.interchainTx.fromChain.getBlockExplorerUrlForTxHash(
+          event.payload.interchainTx.hash,
+        ),
+      );
+    };
+
     if (event.type === "PegTransactionPendingEvent") {
       return {
         id: event.payload.interchainTx.hash,
         type: "info",
         message: `Import Pending: ${title}`,
         loader: true,
+        onAction: action,
       };
     } else if (event.type === "PegTransactionErrorEvent") {
       return {
@@ -48,6 +57,7 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
         message: ["Import Error", event.payload.transactionStatus.memo || ""]
           .filter((i) => i !== "")
           .join(": "),
+        onAction: action,
       };
     } else if (event.type === "PegTransactionCompletedEvent") {
       return {

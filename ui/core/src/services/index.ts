@@ -62,9 +62,11 @@ export function createServices(context: ServiceContext) {
   */
   try {
     if (!global.window) throw "";
-    IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
-    IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
-    EthbridgeService?.fetchAllTokenAddresses();
+    setTimeout(() => {
+      IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
+      IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
+      EthbridgeService?.fetchAllTokenAddresses();
+    }, 8 * 1000);
   } catch (e) {}
 
   return {

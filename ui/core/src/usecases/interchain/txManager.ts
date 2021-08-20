@@ -122,8 +122,10 @@ export default function InterchainTxManager(
       return () => interchainTxEmitter.off("tx_sent", onTxSent);
     },
     loadSavedTransferList() {
+      console.log("loadSavedTransferList");
       // Load from storage and subscribe on bootup
       txList.get().forEach((tx) => {
+        console.log("loading", tx);
         if (tx.toChain.network === Network.SIFCHAIN) {
           listenToImportTx(tx);
         }

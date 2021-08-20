@@ -69,7 +69,7 @@ export function useInitialize() {
           persistConnected.get(network) &&
           !accountStore.state[network].connected
         ) {
-          await accountStore.actions.load(network);
+          accountStore.actions.load(network);
         }
       });
     }, Promise.resolve());
