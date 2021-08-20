@@ -58,6 +58,7 @@ const {
       assetAmountToTransfer: AssetAmount(Asset(symbol), amount),
     },
     {
+      shouldBatchTransfers: true,
       maxAmountPerMsg: maxAmountPerMsg,
       maxMsgsPerBatch: maxMsgsPerBatch,
       loadOfflineSigner: (chainId: string) =>

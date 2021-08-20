@@ -96,9 +96,10 @@ export default function createSifService({
     async () => {
       try {
         if (!polling) {
-          polling = setInterval(() => {
+          while (true) {
             triggerUpdate();
-          }, 2000);
+            await new Promise((r) => setTimeout(r, 15000));
+          }
         }
         await instance.setClient();
         if (!client) {

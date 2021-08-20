@@ -331,6 +331,7 @@ export class IBCService {
     },
     // Load testing options
     {
+      shouldBatchTransfers = false,
       maxMsgsPerBatch = 800,
       maxAmountPerMsg = `9223372036854775807`,
       gasPerBatch = undefined,
@@ -414,14 +415,13 @@ export class IBCService {
     // initially set low
     const timeoutInMinutes = 5;
     const timeoutTimestampInSeconds = Math.floor(
-      // Date.now() / 1000 + 60 * timeoutInMinutes,
-      60 * timeoutInMinutes,
+      new Date().getTime() / 1000 + 60 * timeoutInMinutes,
     );
     const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
       ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
       : undefined;
-    // const currentHeight = await receivingStargateCient.getHeight();
-    // const timeoutHeight = Long.fromNumber(currentHeight + 600);
+    const currentHeight = await receivingStargateCient.getHeight();
+    const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const transferMsg: MsgTransferEncodeObject = {
       typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
       value: IbcTransferV1Tx.MsgTransfer.fromPartial({
@@ -438,12 +438,14 @@ export class IBCService {
         },
         timeoutHeight: {
           // revisionHeight: timeoutHeight,
+          revisionHeight: timeoutHeight,
         },
-        timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
+        // timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
       }),
     };
     let transferMsgs: MsgTransferEncodeObject[] = [transferMsg];
     while (
+      shouldBatchTransfers &&
       JSBI.greaterThanOrEqual(
         JSBI.BigInt(transferMsgs[0].value.token?.amount || "0"),
         // Max uint64

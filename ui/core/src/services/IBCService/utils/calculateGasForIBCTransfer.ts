@@ -11,7 +11,7 @@ export const gasSample: {
   },
   {
     transferMsgCount: 1,
-    gas: 79048,
+    gas: 99048,
   },
   {
     transferMsgCount: 2,
@@ -35,12 +35,14 @@ export const gasSample: {
   },
 ];
 
+const GAS_COEFF = 1.3;
+
 export function calculateGasForIBCTransfer(x: number) {
   let y = 0;
   for (let [gasIndex, gasPoint] of gasSample.entries()) {
     if (gasIndex == 0) continue;
-    const y1 = gasSample[gasIndex - 1].gas;
-    const y2 = gasPoint.gas;
+    const y1 = gasSample[gasIndex - 1].gas * GAS_COEFF;
+    const y2 = gasPoint.gas * GAS_COEFF;
     const x1 = gasSample[gasIndex - 1].transferMsgCount;
     const x2 = gasPoint.transferMsgCount;
     if (x > x1) {
