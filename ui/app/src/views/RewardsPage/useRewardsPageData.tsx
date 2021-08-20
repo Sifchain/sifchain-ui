@@ -6,6 +6,7 @@ import {
   CryptoeconomicsRewardType,
   CryptoeconomicsUserData,
 } from "../../../../core/src/services/CryptoeconomicsService";
+import { accountStore } from "@/store/modules/accounts";
 
 // TODO REACTIVE
 
@@ -49,7 +50,7 @@ export const useRewardsPageData = (props: { address: string }) => {
   props.address = props.address || "sif10c6s2u0ga576jsah6979wjc58uuchd864llzty";
 
   const { store, config, services } = useCore();
-  const address = computed(() => store.wallet.sif.address);
+  const address = accountStore.refs.sifchain.address.computed();
 
   const lmRes = useLiquidityMiningData(address);
   const vsRes = useValidatorSubsidyData(address);

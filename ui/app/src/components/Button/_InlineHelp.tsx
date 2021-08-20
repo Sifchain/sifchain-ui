@@ -11,6 +11,7 @@ export const _InlineHelp = defineComponent({
   setup(
     props: ButtonHTMLAttributes & {
       size?: number;
+      iconClass?: string;
     },
     ctx: SetupContext,
   ) {
@@ -34,7 +35,7 @@ export const _InlineHelp = defineComponent({
           content={<div>{ctx.slots?.default?.()}</div>}
         >
           <AssetIcon
-            class="text-accent-base inline"
+            class={["text-accent-base inline", props.iconClass]}
             size={props.size || 16}
             icon="interactive/circle-question"
           ></AssetIcon>

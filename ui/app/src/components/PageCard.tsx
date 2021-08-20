@@ -15,7 +15,7 @@ import { useRoute, useRouter } from "vue-router";
 export default defineComponent({
   props: {
     heading: {
-      type: String,
+      type: Object as PropType<JSX.Element | string>,
       required: true,
     },
     headerContent: {
@@ -34,7 +34,7 @@ export default defineComponent({
     onMounted(() => {
       initialRoute.value = router.currentRoute.value.path;
     });
-    // debugger;
+
     return () => (
       <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px] ">
         <div

@@ -15,6 +15,7 @@ import { RouterView } from "vue-router";
 
 import { effect } from "@vue/reactivity";
 import router from "@/router";
+import { Button } from "@/components/Button/Button";
 
 export default defineComponent({
   name: "BalancePage",
@@ -58,7 +59,16 @@ export default defineComponent({
     return () => (
       <Layout>
         <PageCard
-          heading="Balances"
+          heading={
+            <div class="flex items-center">
+              Balances
+              <Button.InlineHelp iconClass={"text-gray-300"}>
+                These are your balances within Sifchain. Press Import to bring
+                your tokens in from other chains. Then you can swap, export to
+                other chains, and provide liquidity.
+              </Button.InlineHelp>
+            </div>
+          }
           iconName="navigation/balances"
           class="w-[800px]"
           withOverflowSpace
