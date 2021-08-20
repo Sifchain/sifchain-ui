@@ -13,10 +13,8 @@ const [filename] = process.argv.slice(2);
 const content = fs.readFileSync(path.join(process.cwd(), filename)).toString();
 console.log({ content });
 const {
-  precision = 18,
   amountPerMessage = 9.2,
   symbol = "cusdt",
-  amountPerMessageRaw = +amountPerMessage * (10 * 10 ** precision),
   messagesToSend = 10,
   // defaults to max safe uint64
   maxAmountPerMsg = `9223372036854775807`,

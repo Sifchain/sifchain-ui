@@ -414,7 +414,8 @@ export class IBCService {
     // initially set low
     const timeoutInMinutes = 5;
     const timeoutTimestampInSeconds = Math.floor(
-      Date.now() / 1000 + 60 * timeoutInMinutes,
+      // Date.now() / 1000 + 60 * timeoutInMinutes,
+      60 * timeoutInMinutes,
     );
     const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
       ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
