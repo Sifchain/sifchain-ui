@@ -10,16 +10,17 @@ import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
 import { defineComponent, PropType, computed } from "vue";
 import { useCore } from "@/hooks/useCore";
+import { accountStore } from "@/store/modules/accounts";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   lm: {
-    heading: ".39 Liquidity Mining",
+    heading: "Liquidity Mining",
     icon: "navigation/pool" as IconName,
     description:
       "Earn additional rewards by providing liquidity to any of Sifchain's pools.",
   },
   vs: {
-    heading: ".39 Validator Subsidy",
+    heading: "Validator Subsidy",
     icon: "interactive/lock" as IconName,
     description:
       "Earn additional rewards by staking a node or delegating to a staked node.",
@@ -40,67 +41,130 @@ export const RewardSection = defineComponent({
   name: "RewardSection",
   props: {
     rewardType: {
-      type: String,
+      type: String as PropType<CryptoeconomicsRewardType>,
       required: true,
     },
-    data: {
-      type: Object as PropType<CryptoeconomicsUserData>,
-      required: true,
-    },
+    data: { type: Object as PropType<CryptoeconomicsUserData>, required: true },
     alreadyClaimed: { type: Boolean, required: true },
     infoLink: { type: String, required: true },
     onClaimIntent: { type: Function as PropType<() => void>, required: true },
   },
   setup(props) {
+    const { store } = useCore();
     const displayData = computed(
-      () =>
-        REWARD_TYPE_DISPLAY_DATA[props.rewardType as CryptoeconomicsRewardType],
+      () => REWARD_TYPE_DISPLAY_DATA[props.rewardType],
+    );
+
+    const sifConnected = accountStore.refs.sifchain.connected.computed();
+
+    const details = computed(() =>
+      [
+        {
+          hide: props.rewardType !== "vs",
+          name: "Reserved Comission Rewards",
+          tooltip:
+            "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
+          amount:
+            props.data?.user
+              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
+        },
+        {
+          name: "Pending Dispensation",
+          tooltip:
+            "This is the amount that will be dispensed on Friday. Any new claimable amounts will need to be claimed after the next dispensation.",
+          amount:
+            props.data?.user?.claimedCommissionsAndRewardsAwaitingDispensation,
+        },
+        {
+          name: "Dispensed Rewards",
+          tooltip: "Rewards that have already been dispensed.",
+          amount: props.data?.user?.dispensed,
+        },
+      ].filter((item) => !item.hide),
     );
 
     return () => (
       <>
-        <div class="text-left text-lg flex items-center">
-          <AssetIcon
-            icon={displayData.value.icon}
-            size={20}
-            class="mr-[10px]"
-          />
-          {displayData.value.heading}
+        <div class="mt-[10px] text-lg flex">
+          <div class="text-left w-[250px] flex items-center">
+            <AssetIcon
+              icon={displayData.value.icon}
+              size={20}
+              class="mr-[10px]"
+            />
+            {displayData.value.heading}
+          </div>
+          <div class="font-mono w-[200px] text-right flex justify-end items-center">
+            {/* Full Amount */}
+            {formatRowanNumber(
+              props.data?.user?.totalCommissionsAndRewardsAtMaturity,
+            )}
+            <TokenIcon
+              assetValue={Asset.get("rowan")}
+              size={20}
+              class="ml-[10px]"
+            />
+          </div>
+          <div class="text-right justify-end flex-1 font-mono flex items-center">
+            {/* Claimable Amount */}
+            {formatRowanNumber(
+              props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
+            )}
+            <TokenIcon
+              assetValue={Asset.get("rowan")}
+              size={20}
+              class="ml-[10px]"
+            />
+          </div>
         </div>
-        <div class="flex text-sm items-center gap-[10px]">
-          <div class="opacity-50">
-            Users could earn additional rewards by{" "}
-            {props.rewardType === "vs"
-              ? "staking a node or delegating to a staked node"
-              : "providing liquidity to any of Sifchain's pools"}{" "}
-            within our .39 environment. Participants are now fully determined at
-            this point in time.
+        <div class="mt-[10px] flex justify-between text-sm bg-gray-base py-2 px-3">
+          <div class="flex flex-col justify-between">
+            <div class="opacity-50 mb-[20px]">
+              {displayData.value.description}
+            </div>
+
+            {details.value.map((detail, index) => (
+              <div
+                key={index}
+                class="mt-[6px] first:mt-0 flex w-[400px] justify-between"
+              >
+                <span class="whitespace-nowrap flex items-center">
+                  {detail.name}
+                  {!!detail.tooltip && (
+                    <Button.InlineHelp>{detail.tooltip}</Button.InlineHelp>
+                  )}
+                </span>
+                <span class="w-[250px] text-right">
+                  {formatRowanNumber(detail.amount)}
+                </span>
+              </div>
+            ))}
           </div>
 
           <div class="flex items-center justify-center">
-            <div class="p-[6px] w-[150px] bg-black rounded-lg">
+            <div class="p-[6px] w-[140px] bg-black rounded-lg">
               <Button.Inline
                 class="w-full no-underline"
-                href={
-                  "https://docs.sifchain.finance/resources/rewards-programs#liquidity-mining-and-validator-subsidy-rewards-on-sifchain"
-                }
-                target="_blank"
                 icon="interactive/circle-info"
+                href={props.infoLink}
+                target="_blank"
+                disabled={!sifConnected.value}
                 rel="noopener noreferrer"
               >
-                Learn More
+                More Info
               </Button.Inline>
               <Button.Inline
+                onClick={() => props.onClaimIntent()}
                 class="w-full mt-[6px]"
-                href={
-                  "https://docs.google.com/spreadsheets/d/1f-ibZyx5O2f1wsNxvi56Kg8fkdys_DVmwhf7mjKDrDU/edit#gid=686570385"
-                }
-                target="_blank"
                 icon="navigation/rewards"
-                rel="noopener noreferrer"
                 active
+                disabled={
+                  !props.data?.user
+                    ?.totalClaimableCommissionsAndClaimableRewards ||
+                  props.alreadyClaimed
+                }
               >
-                Payout Schedule
+                {props.alreadyClaimed ? "Pending Claim" : "Claim Reward"}
               </Button.Inline>
             </div>
           </div>

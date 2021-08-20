@@ -29,11 +29,16 @@ export default defineComponent({
     return () => {
       if (isLoading.value) {
         return (
-          <div class="absolute left-0 top-[180px] w-full flex justify-center">
-            <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
-              <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
+          <Layout>
+            <div class="absolute left-0 top-[180px] w-full flex justify-center">
+              <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+                <AssetIcon
+                  icon="interactive/anim-racetrack-spinner"
+                  size={64}
+                />
+              </div>
             </div>
-          </div>
+          </Layout>
         );
       }
       if (error.value) {
@@ -46,6 +51,36 @@ export default defineComponent({
             heading="Rewards"
             iconName="navigation/rewards"
           >
+            {isClaimModalOpened.value && (
+              <ClaimRewardsModal
+                address={address.value}
+                rewardType={claimRewardType.value as CryptoeconomicsRewardType}
+                data={
+                  claimRewardType.value === "vs" ? vsData.value : lmData.value
+                }
+                onClose={() => (isClaimModalOpened.value = false)}
+              />
+            )}
+            <p>
+              Earn rewards by participating in any of our rewards-earning
+              programs. Please see additional information of our{" "}
+              <a
+                href="https://docs.sifchain.finance/resources/rewards-programs"
+                rel="noopener noreferrer"
+                target="_blank"
+                class="underline"
+              >
+                current rewards program
+              </a>{" "}
+              and how to become eligible.
+            </p>
+
+            <div class="mt-[21px] text-md opacity-50 flex">
+              <div class="w-[250px] text-left">Reward Program</div>
+              <div class="w-[200px] text-right">Projected Full Amount</div>
+              <div class="flex-1 text-right">Claimable Amount</div>
+            </div>
+
             <RewardSection
               rewardType="lm"
               data={lmData.value}
