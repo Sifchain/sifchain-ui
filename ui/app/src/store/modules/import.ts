@@ -1,9 +1,11 @@
 import { useChainsList, useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import { IAssetAmount, Network } from "@sifchain/sdk";
+import { Asset, IAssetAmount, Network } from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
+
+const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = true;
 
 export type ImportDraft = {
   amount: string;
@@ -11,6 +13,7 @@ export type ImportDraft = {
   symbol: string;
   pegEvent: PegEvent | undefined;
 };
+
 type State = {
   draft: ImportDraft;
   pendingPegEvents: [string, PegEvent][];
@@ -28,9 +31,21 @@ export const importStore = Vuextra.createStore({
       pegEvent: undefined,
     },
   } as State,
-  getters: () => ({
+  getters: (state) => ({
     chains() {
-      return useChainsList().filter((c) => c.network !== Network.SIFCHAIN);
+      const asset = Asset(state.draft.symbol);
+      return (
+        useChainsList()
+          .filter((c) => c.network !== Network.SIFCHAIN)
+          // Disallow IBC export of ethereum & sifchain-native tokens
+          .filter((chain) =>
+            NATIVE_TOKEN_IBC_EXPORTS_ENABLED
+              ? true
+              : [Network.ETHEREUM, Network.SIFCHAIN].includes(asset.homeNetwork)
+              ? chain.network === Network.ETHEREUM
+              : true,
+          )
+      );
     },
   }),
   mutations: (state) => ({

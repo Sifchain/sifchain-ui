@@ -1,11 +1,12 @@
 import { useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
+import { Asset, IAsset, IAssetAmount, Network } from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { UnpegEvent } from "../../../../core/src/usecases/peg/unpeg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
 
+const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = true;
 export type ExportDraft = {
   amount: string;
   network: Network;
@@ -30,8 +31,18 @@ export const exportStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     networks() {
-      return Object.values(Network).filter(
-        (network) => network !== Network.SIFCHAIN,
+      const asset = Asset(state.draft.symbol);
+      return (
+        Object.values(Network)
+          .filter((network) => network !== Network.SIFCHAIN)
+          // Disallow IBC export of ethereum & sifchain-native tokens
+          .filter((n) =>
+            NATIVE_TOKEN_IBC_EXPORTS_ENABLED
+              ? true
+              : [Network.ETHEREUM, Network.SIFCHAIN].includes(asset.homeNetwork)
+              ? n === Network.ETHEREUM
+              : true,
+          )
       );
     },
   }),

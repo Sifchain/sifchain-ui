@@ -6,7 +6,7 @@ import {
   computed,
 } from "vue";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { Notification } from "./types";
+import { INotification } from "./INotification";
 
 const notificationData = {
   error: {
@@ -26,7 +26,7 @@ const notificationData = {
 export const NotificationElement = defineComponent({
   name: "NotificationElement",
   props: {
-    notification: { type: Object as PropType<Notification>, required: true },
+    notification: { type: Object as PropType<INotification>, required: true },
     index: { type: Number, required: true },
     onRemove: {
       type: Function as PropType<(index: number) => void>,
@@ -52,12 +52,12 @@ export const NotificationElement = defineComponent({
     return () => (
       <div
         onClick={() => {
-          props.notification.onAction?.();
+          props.notification?.onAction?.();
           removeRef.value();
         }}
         class={[
           "h-[40px] flex px-[14px] bg-black drop-shadow-lg mb-[16px] rounded-lg relative cursor-pointer text-md items-center tracking-[-0.025em]",
-          props.notification.onAction && "cursor-pointer",
+          props.notification?.onAction && "cursor-pointer",
           data.class,
         ]}
       >

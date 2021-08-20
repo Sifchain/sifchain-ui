@@ -70,8 +70,12 @@ type MutationsBase<State> = (
 ) => Readonly<Record<string, (arg?: any) => void>>;
 
 type GettersBase<State> = (
-  state: State,
+  state: DeepReadonly<State>,
 ) => Readonly<Record<string, (arg?: any) => void>>;
+
+type DeepReadonly<T> = T extends object
+  ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>
+  : Readonly<T>;
 
 function createStore<
   State,
@@ -148,7 +152,7 @@ function createStore<
   const getters = Object.fromEntries(
     Object.entries(getterComposer({} as any)).map(([key, fn]) => [
       key,
-      function (state: State) {
+      function (state: DeepReadonly<State>) {
         return (getterComposer(state) as Record<string, () => any>)[key]();
       },
     ]),
@@ -214,9 +218,6 @@ function createStore<
   //     ReturnType<ComposerReturnType[keyof ComposerReturnType]>
   //   >
   // >;
-  type DeepReadonly<T> = T extends object
-    ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>
-    : Readonly<T>;
 
   function vuextraComputed<T>(
     arg: (state: DeepReadonly<typeof storeProxy>) => T,
@@ -302,7 +303,7 @@ function createStore<
   }) as typeof vuextraStore & { getters: GettersType };
 
   type StoreProxyType = typeof storeProxy;
-  return storeProxy as DeepReadonly<
+  return storeProxy as Readonly<
     typeof storeProxy & {
       computed: typeof vuextraComputed;
       refs: DeepComputedProxy<

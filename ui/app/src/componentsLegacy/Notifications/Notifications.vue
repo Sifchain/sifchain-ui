@@ -3,12 +3,12 @@ import { computed, defineComponent } from "vue";
 import { reactive, ref, Ref } from "@vue/reactivity"; /* eslint-disable-line */
 import { useCore } from "@/hooks/useCore";
 import { AppEvent } from "@sifchain/sdk/src/services/EventBusService";
-import { Notification } from "./types";
+import { INotification } from "./INotification";
 import { NotificationElement } from "./NotificationElement";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 
 // Visual Notifications are a view level system here we work out which ones are displayed to the user
-function parseEventToNotifications(event: AppEvent): Notification | null {
+function parseEventToNotifications(event: AppEvent): INotification | null {
   if (event.type === "NoLiquidityPoolsFoundEvent") {
     return {
       type: "error",
@@ -159,7 +159,7 @@ export default defineComponent({
   },
   setup() {
     const { services } = useCore();
-    const notifications = reactive<Notification[]>([]);
+    const notifications = reactive<INotification[]>([]);
 
     services.bus.onAny((event) => {
       const notification = parseEventToNotifications(event);

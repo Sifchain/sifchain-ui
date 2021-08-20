@@ -6,7 +6,7 @@ const BitcoinCosmoshubConnnection = "";
 const client = new Client({
   chains: [
     new IrisChain({
-      counterparties: [],
+      connections: [{}],
     }),
   ],
 });
