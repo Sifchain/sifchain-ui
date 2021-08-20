@@ -1,6 +1,7 @@
 import { useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import {
+  AppCookies,
   Asset,
   getEnv,
   getNetworkEnv,
@@ -39,7 +40,7 @@ export const exportStore = Vuextra.createStore({
   getters: (state) => ({
     networks() {
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        getNetworkEnv(window.location.hostname) !== NetworkEnv.TESTNET_042_IBC;
+        AppCookies().getEnv() !== NetworkEnv.TESTNET_042_IBC;
       const asset = Asset(state.draft.symbol);
       return (
         Object.values(Network)
