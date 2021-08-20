@@ -256,12 +256,11 @@ export class IBCService {
   // We can have for example 1inch from testnet and 1inch from devnet both in our cosmoshub testnet wallet.
   // This makes sure both don't show up.
   async isValidEnvironmentChannel(network: Network, channelId: string) {
-    if (network === Network.SIFCHAIN) return true;
-    const data = await this.tokenRegistry.loadConnectionByNetworks({
-      sourceNetwork: Network.SIFCHAIN,
-      destinationNetwork: network,
-    });
-    return data.channelId === channelId;
+    const tokenRegistry = await this.tokenRegistry.load();
+    return tokenRegistry.some(
+      (item) =>
+        item.src_channel === channelId || item.dest_channel === channelId,
+    );
   }
 
   async getAllBalances(params: {

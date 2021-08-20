@@ -189,7 +189,7 @@ export default defineComponent({
     <transition-group name="list">
       <NotificationElement
         v-for="(item, index) in notifications"
-        v-bind:key="item.id"
+        v-bind:key="item.id + item.message + index"
         :index="index"
         :onRemove="removeItem"
         :notification="item"
