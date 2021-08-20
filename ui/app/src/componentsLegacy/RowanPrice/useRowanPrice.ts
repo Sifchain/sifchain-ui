@@ -17,11 +17,15 @@ export const useRowanPrice = () => {
     }
   });
 
-  watchEffect(() => {
-    const i = setInterval(() => price.reload.value(), 10000);
-    return () => {
-      clearInterval(i);
-    };
+  watchEffect(async (onInvalidate) => {
+    let shouldBreak = false;
+    while (!shouldBreak) {
+      await price.reload.value();
+      await new Promise((r) => setTimeout(r, 10000));
+    }
+    onInvalidate(() => {
+      shouldBreak = true;
+    });
   });
 
   return price;
