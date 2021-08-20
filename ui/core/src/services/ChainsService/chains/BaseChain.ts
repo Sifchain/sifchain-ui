@@ -38,7 +38,7 @@ export class BaseChain implements Chain {
   }
 
   getBlockExplorerUrlForTxHash(hash: string) {
-    return urlJoin(this.chainConfig.blockExplorerUrl, "transaction", hash);
+    return urlJoin(this.chainConfig.blockExplorerUrl, "transactions", hash);
   }
   getBlockExplorerUrlForAddress(address: string) {
     return urlJoin(this.chainConfig.blockExplorerUrl, "accounts", address);

@@ -84,6 +84,30 @@ type PegTransactionErrorEvent = {
   };
 };
 
+type UnpegTransactionPendingEvent = {
+  type: "UnpegTransactionPendingEvent";
+  payload: {
+    interchainTx: InterchainTx;
+    transactionStatus: TransactionStatus;
+  };
+};
+
+type UnpegTransactionCompletedEvent = {
+  type: "UnpegTransactionCompletedEvent";
+  payload: {
+    interchainTx: InterchainTx;
+    transactionStatus: TransactionStatus;
+  };
+};
+
+type UnpegTransactionErrorEvent = {
+  type: "UnpegTransactionErrorEvent";
+  payload: {
+    interchainTx: InterchainTx;
+    transactionStatus: TransactionStatus;
+  };
+};
+
 type NoLiquidityPoolsFoundEvent = {
   type: "NoLiquidityPoolsFoundEvent";
   payload: {};
@@ -98,6 +122,9 @@ export type AppEvent =
   | WalletConnectionErrorEvent
   | PegTransactionPendingEvent
   | PegTransactionCompletedEvent
+  | PegTransactionErrorEvent
+  | UnpegTransactionPendingEvent
+  | UnpegTransactionCompletedEvent
+  | UnpegTransactionErrorEvent
   | NoLiquidityPoolsFoundEvent
-  | TransactionErrorEvent
-  | PegTransactionErrorEvent;
+  | TransactionErrorEvent;

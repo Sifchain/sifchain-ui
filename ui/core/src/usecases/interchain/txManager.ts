@@ -77,43 +77,53 @@ export default function InterchainTxManager(
   const { services, store } = context;
   const txList = PersistentTxList(context);
 
-  const listenToImportTx = async (tx: InterchainTx) => {
+  const subscribeToInterchainTx = async (tx: InterchainTx) => {
     const api = interchain(tx.fromChain, tx.toChain);
 
-    for await (const ev of api.subscribeToTransfer(tx)) {
-      const payload = {
-        interchainTx: tx,
-        transactionStatus: ev,
-      };
-      store.tx.pendingTransfers[tx.hash] = payload;
+    const isImport = tx.toChain.network === Network.SIFCHAIN;
 
-      if (ev.state === "accepted") {
-        services.bus.dispatch({
-          type: "PegTransactionPendingEvent",
-          payload,
-        });
-      } else if (ev.state === "completed") {
-        services.bus.dispatch({
-          type: "PegTransactionCompletedEvent",
-          payload,
-        });
-      } else if (ev.state === "failed") {
-        services.bus.dispatch({
-          type: "PegTransactionErrorEvent",
-          payload,
-        });
+    try {
+      for await (const ev of api.subscribeToTransfer(tx)) {
+        const payload = {
+          interchainTx: tx,
+          transactionStatus: ev,
+        };
+        store.tx.pendingTransfers[tx.hash] = payload;
+
+        if (ev.state === "accepted") {
+          services.bus.dispatch({
+            type: isImport
+              ? "PegTransactionPendingEvent"
+              : "UnpegTransactionPendingEvent",
+            payload,
+          });
+        } else if (ev.state === "completed") {
+          services.bus.dispatch({
+            type: isImport
+              ? "PegTransactionCompletedEvent"
+              : "UnpegTransactionCompletedEvent",
+            payload,
+          });
+        } else if (ev.state === "failed") {
+          services.bus.dispatch({
+            type: isImport
+              ? "PegTransactionErrorEvent"
+              : "UnpegTransactionErrorEvent",
+            payload,
+          });
+        }
       }
+    } catch (error) {
+      console.error("got error listening to transfer. stopping", error);
     }
     delete store.tx.pendingTransfers[tx.hash];
     txList.remove(tx);
   };
 
   const onTxSent = (tx: InterchainTx) => {
-    if (tx.toChain.network === Network.SIFCHAIN) {
-      console.log("===onTxSent", tx);
-      txList.add(tx);
-      listenToImportTx(tx);
-    }
+    console.log("===onTxSent", tx);
+    txList.add(tx);
+    subscribeToInterchainTx(tx);
   };
 
   return {
@@ -125,10 +135,8 @@ export default function InterchainTxManager(
       console.log("loadSavedTransferList");
       // Load from storage and subscribe on bootup
       txList.get().forEach((tx) => {
-        console.log("loading", tx);
-        if (tx.toChain.network === Network.SIFCHAIN) {
-          listenToImportTx(tx);
-        }
+        console.log("listening to saved tx", tx);
+        subscribeToInterchainTx(tx);
       });
     },
   };

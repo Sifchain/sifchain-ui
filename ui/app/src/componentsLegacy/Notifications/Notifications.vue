@@ -68,6 +68,51 @@ function parseEventToNotifications(event: AppEvent): Notification | null {
     }
   }
 
+  if (
+    event.type === "UnpegTransactionPendingEvent" ||
+    event.type === "UnpegTransactionErrorEvent" ||
+    event.type === "UnpegTransactionCompletedEvent"
+  ) {
+    const title = `${formatAssetAmount(
+      event.payload.interchainTx.assetAmount,
+    )} ${event.payload.interchainTx.assetAmount.displaySymbol.toUpperCase()} to ${
+      event.payload.interchainTx.toChain.displayName
+    }`;
+
+    const action = () => {
+      window.open(
+        event.payload.interchainTx.fromChain.getBlockExplorerUrlForTxHash(
+          event.payload.interchainTx.hash,
+        ),
+      );
+    };
+
+    if (event.type === "UnpegTransactionPendingEvent") {
+      return {
+        id: event.payload.interchainTx.hash,
+        type: "info",
+        message: `Exporting ${title}`,
+        loader: true,
+        onAction: action,
+      };
+    } else if (event.type === "UnpegTransactionErrorEvent") {
+      return {
+        id: event.payload.interchainTx.hash,
+        type: "error",
+        message: ["Export Error", event.payload.transactionStatus.memo || ""]
+          .filter((i) => i !== "")
+          .join(": "),
+        onAction: action,
+      };
+    } else if (event.type === "UnpegTransactionCompletedEvent") {
+      return {
+        id: event.payload.interchainTx.hash,
+        type: "success",
+        message: `Export Complete! ${title}`,
+      };
+    }
+  }
+
   if (event.type === "WalletConnectedEvent") {
     return null;
     // const message = {

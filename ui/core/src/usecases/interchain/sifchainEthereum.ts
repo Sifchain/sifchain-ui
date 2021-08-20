@@ -103,6 +103,11 @@ export class SifchainEthereumInterchainApi
   async *subscribeToTransfer(
     tx: SifchainInterchainTx,
   ): AsyncGenerator<TransactionStatus> {
-    throw "not implemented";
+    // We haven't implemented subscribing to exports, so
+    // just give one accepted event then abort.
+    yield {
+      state: "accepted",
+      hash: tx.hash,
+    };
   }
 }
