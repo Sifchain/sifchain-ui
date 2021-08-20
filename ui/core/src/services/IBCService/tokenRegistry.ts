@@ -10,8 +10,9 @@ export type TokenRegistryItem = {
   dest_channel?: string;
 };
 
+let tokenRegistry: TokenRegistryItem[];
+
 export const TokenRegistry = (context: { sifApiUrl: string }) => {
-  let tokenRegistry: TokenRegistryItem[];
   const loadTokenRegistry = async () => {
     if (!tokenRegistry) {
       const res = await fetch(`${context.sifApiUrl}/tokenregistry/entries`);
