@@ -1,11 +1,15 @@
 import { useChainsList, useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import { Asset, IAssetAmount, Network } from "@sifchain/sdk";
+import {
+  Asset,
+  getNetworkEnv,
+  IAssetAmount,
+  Network,
+  NetworkEnv,
+} from "@sifchain/sdk";
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
-
-const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = false;
 
 export type ImportDraft = {
   amount: string;
@@ -33,6 +37,8 @@ export const importStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
+      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
+        getNetworkEnv(window.location.hostname) !== NetworkEnv.TESTNET_042_IBC;
       const asset = Asset(state.draft.symbol);
       return (
         useChainsList()
