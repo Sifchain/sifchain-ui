@@ -1,4 +1,4 @@
-import { Chain, Network } from "../../../entities";
+import { Chain, Network } from "../../entities";
 import { BaseChain } from "./BaseChain";
 import { urlJoin } from "url-join-ts";
 

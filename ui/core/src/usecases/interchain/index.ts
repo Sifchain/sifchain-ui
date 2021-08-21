@@ -17,7 +17,7 @@ import {
   IrisChain,
   AkashChain,
   SentinelChain,
-} from "../../services/ChainsService/chains";
+} from "../../clients/chains";
 import InterchainTxManager from "./txManager";
 
 export default function InterchainUsecase(context: UsecaseContext) {

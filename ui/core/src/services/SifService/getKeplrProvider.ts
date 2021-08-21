@@ -29,7 +29,7 @@ export default async function getKeplrProvider(): Promise<provider | null> {
     await sleep(100);
     return getKeplrProvider();
   }
-  win.keplr.suggestToken;
+
   numChecks = 0;
   return win.keplr;
 }

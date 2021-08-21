@@ -1,5 +1,5 @@
-import { Chain, IAsset, Network, ChainConfig } from "../../../entities";
-import { isLikeSymbol } from "../../../utils/isLikeSymbol";
+import { Chain, IAsset, Network, ChainConfig } from "../../entities";
+import { isLikeSymbol } from "../../utils/isLikeSymbol";
 import { urlJoin } from "url-join-ts";
 
 export class BaseChain implements Chain {

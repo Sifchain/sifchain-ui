@@ -30,7 +30,7 @@ import Long from "long";
 import JSBI from "jsbi";
 import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
 import { TokenRegistry } from "./tokenRegistry";
-import { KeplrWalletProvider } from "../WalletService";
+import { KeplrWalletProvider } from "clients/wallets";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;

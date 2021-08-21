@@ -12,17 +12,19 @@ import {
   AkashChain,
   IrisChain,
   SentinelChain,
-} from "./chains";
+} from "../../clients/chains";
 
-export * from "./chains";
+export * from "../../clients/chains";
 
-export type AnyChain =
-  | SifchainChain
-  | EthereumChain
-  | CosmoshubChain
-  | IrisChain
-  | AkashChain
-  | SentinelChain;
+// Commented out to prevent usage for time being, as this likely needs to be implementation/config
+// level rather than sdk-level
+// export type AnyChain =
+//   | SifchainChain
+//   | EthereumChain
+//   | CosmoshubChain
+//   | IrisChain
+//   | AkashChain
+//   | SentinelChain;
 
 export type ChainsServiceContext = {
   assets: IAsset[];

@@ -1,5 +1,5 @@
 import { Keplr } from "@keplr-wallet/types";
-import { Network, IAssetAmount, Chain } from "../../../entities";
+import { Network, IAssetAmount, Chain } from "../../entities";
 import { KeplrWalletProvider } from "./KeplrWalletProvider";
 
 export type WalletProviderContext = {
@@ -9,7 +9,7 @@ export type WalletProviderContext = {
 export type WalletConnectionState = {
   chain: Chain;
   // TODO: figure out why this provider type hates me.
-  provider: WalletProvider | CosmosWalletProvider | KeplrWalletProvider;
+  provider: WalletProvider;
   balances: IAssetAmount[];
   address: string;
 };

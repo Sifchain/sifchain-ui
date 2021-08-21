@@ -7,8 +7,7 @@ import {
   SigningStargateClient,
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { TokenRegistry } from "../../IBCService/tokenRegistry";
-import getKeplrProvider from "../../SifService/getKeplrProvider";
+import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 import {
   AssetAmount,
   Chain,
@@ -16,13 +15,14 @@ import {
   IAssetAmount,
   IBCChainConfig,
   Network,
-} from "../../../entities";
+} from "../../entities";
 import memoize from "lodash/memoize";
 import {
   CosmosWalletProvider,
   WalletConnectionState,
   WalletProviderContext,
 } from "./types";
+import { TokenRegistry } from "services/IBCService/tokenRegistry";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
