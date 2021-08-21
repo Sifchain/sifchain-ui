@@ -40,19 +40,30 @@ export const exportStore = Vuextra.createStore({
   getters: (state) => ({
     networks() {
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        AppCookies().getEnv() !== NetworkEnv.TESTNET_042_IBC;
+        AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
       const asset = Asset(state.draft.symbol);
       return (
         Object.values(Network)
           .filter((network) => network !== Network.SIFCHAIN)
           // Disallow IBC export of ethereum & sifchain-native tokens
-          .filter((n) =>
-            NATIVE_TOKEN_IBC_EXPORTS_ENABLED
-              ? true
-              : [Network.ETHEREUM, Network.SIFCHAIN].includes(asset.homeNetwork)
-              ? n === Network.ETHEREUM
-              : true,
-          )
+          .filter((n) => {
+            if (NATIVE_TOKEN_IBC_EXPORTS_ENABLED) {
+              // return all tokens when native IBC exports are enabled
+              return true;
+            } else {
+              // if IBC exports are disabled
+              if (
+                // if it's rowan or an etherem token
+                [Network.ETHEREUM, Network.SIFCHAIN].includes(asset.homeNetwork)
+              ) {
+                // only show ethereum network
+                return n === Network.ETHEREUM;
+              } else {
+                // let them export any IBC token to any IBC network
+                return true;
+              }
+            }
+          })
       );
     },
   }),
