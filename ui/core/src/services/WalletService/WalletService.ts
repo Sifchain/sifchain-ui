@@ -1,4 +1,4 @@
-import { KeplrWalletProvider } from "clients/wallets";
+import { KeplrWalletProvider } from "../../clients/wallets";
 
 export type WalletServiceContext = {
   sifApiUrl: string;

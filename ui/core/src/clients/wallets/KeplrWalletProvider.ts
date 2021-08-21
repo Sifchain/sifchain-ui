@@ -22,7 +22,7 @@ import {
   WalletConnectionState,
   WalletProviderContext,
 } from "./types";
-import { TokenRegistry } from "services/IBCService/tokenRegistry";
+import { TokenRegistry } from "../../services/IBCService/tokenRegistry";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
