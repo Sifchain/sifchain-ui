@@ -307,9 +307,19 @@ export class IBCService {
       : undefined;
     const currentHeight = await receivingStargateCient.getHeight();
     const timeoutHeight = Long.fromNumber(currentHeight + 150);
-    const registryEntryDenom = await (
-      await TokenRegistry(this.context).load()
-    ).find((t) => t.baseDenom === symbol)?.denom;
+    const registry = await this.tokenRegistry.load();
+    const registryEntry = registry.find((t) => t.baseDenom === symbol);
+
+    if (!registryEntry) {
+      throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
+    }
+
+    let transferDenom: string;
+    if (destinationChain.nativeAssetSymbol === registryEntry.baseDenom) {
+      transferDenom = registryEntry.denom;
+    } else {
+      transferDenom = registryEntry.baseDenom;
+    }
 
     const transferMsg: MsgTransferEncodeObject = {
       typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
@@ -319,7 +329,7 @@ export class IBCService {
         sender: fromAccount.address,
         receiver: toAccount.address,
         token: {
-          denom: registryEntryDenom,
+          denom: transferDenom,
           // denom: symbol,
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
