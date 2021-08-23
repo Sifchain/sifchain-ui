@@ -1,33 +1,22 @@
 import { Chain, Network, getChainsService } from "../../entities";
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
+import { RegistryEntry } from "../../generated/proto/sifnode/tokenregistry/v1/types";
 
-export type TokenRegistryItem = {
-  is_whitelisted: boolean;
-  decimals: string;
-  denom?: string;
-  base_denom?: string;
-  path?: string;
-  src_channel?: string;
-  dest_channel?: string;
-};
-
-let tokenRegistry: TokenRegistryItem[];
-
-export const TokenRegistry = (context: { sifApiUrl: string }) => {
+export const TokenRegistry = (context: { sifRpcUrl: string }) => {
+  let tokenRegistry: RegistryEntry[];
   const loadTokenRegistry = async () => {
     if (!tokenRegistry) {
-      const res = await fetch(`${context.sifApiUrl}/tokenregistry/entries`);
-      if (!res.ok) {
-        throw new Error("Issue loading token registry");
-      }
-
-      tokenRegistry = (await res.json()).result.registry
-        .entries as TokenRegistryItem[];
+      const dex = await NativeDexClient.connect(context.sifRpcUrl);
+      const res = await dex.query?.tokenregistry.Entries({});
+      const data = res?.registry?.entries;
+      if (!data) throw new Error("Whitelist not found");
+      tokenRegistry = data as RegistryEntry[];
     }
     return tokenRegistry;
   };
 
   return {
-    load: loadTokenRegistry,
+    load: () => loadTokenRegistry(),
     async loadConnectionByNetworks(params: {
       sourceNetwork: Network;
       destinationNetwork: Network;
@@ -45,7 +34,7 @@ export const TokenRegistry = (context: { sifApiUrl: string }) => {
 
       const sourceIsNative = params.sourceChain.network === Network.SIFCHAIN;
 
-      const matchChain = sourceIsNative
+      const counterpartyChain = sourceIsNative
         ? params.destinationChain
         : params.sourceChain;
 
@@ -53,14 +42,16 @@ export const TokenRegistry = (context: { sifApiUrl: string }) => {
         .reverse()
         .find(
           (item) =>
-            item.base_denom?.toLowerCase() ===
-            matchChain.nativeAsset.symbol.toLowerCase(),
+            item.baseDenom?.toLowerCase() ===
+            counterpartyChain.nativeAsset.symbol.toLowerCase(),
         );
 
+      console.log(item, items);
+
       if (sourceIsNative) {
-        return { channelId: item?.src_channel };
+        return { channelId: item?.ibcChannelId };
       } else {
-        return { channelId: item?.dest_channel };
+        return { channelId: item?.ibcCounterpartyChannelId };
       }
     },
   };

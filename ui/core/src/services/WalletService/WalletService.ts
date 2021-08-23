@@ -1,7 +1,7 @@
 import { KeplrWalletProvider } from "../../clients/wallets";
 
 export type WalletServiceContext = {
-  sifApiUrl: string;
+  sifRpcUrl: string;
 };
 
 export class WalletService {
