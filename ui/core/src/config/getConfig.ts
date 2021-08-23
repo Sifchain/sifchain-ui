@@ -14,7 +14,8 @@ import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.j
 
 import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet.json";
 import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet.json";
-import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet";
+import assetsExternalTestnet from "./networks/sifchain/assets.external.testnet";
+import assetsExternalMainnet from "./networks/sifchain/assets.external.mainnet";
 
 import {
   parseConfig,
@@ -51,11 +52,11 @@ export function getConfig(
       assetsSifchainLocalnet.assets as AssetConfig[],
     ),
     "sifchain.mainnet": parseAssets([
-      ...assetsSifchainDevnet.assets,
+      ...assetsExternalMainnet.assets,
       ...assetsSifchainMainnet.assets,
     ] as AssetConfig[]),
     "sifchain.devnet": parseAssets([
-      ...assetsSifchainDevnet.assets,
+      ...assetsExternalTestnet.assets,
       ...assetsSifchainMainnet.assets,
     ] as AssetConfig[]),
     "ethereum.localnet": parseAssets(
