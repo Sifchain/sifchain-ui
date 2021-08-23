@@ -3,7 +3,7 @@ import { Network, IAssetAmount, Chain } from "../../entities";
 import { KeplrWalletProvider } from "./KeplrWalletProvider";
 
 export type WalletProviderContext = {
-  sifApiUrl: string;
+  sifRpcUrl: string;
 };
 
 export type WalletConnectionState = {
