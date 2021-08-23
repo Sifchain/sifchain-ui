@@ -62,9 +62,6 @@ describe("swapCalculator", () => {
       slippage,
     }));
 
-    selectedField.value = "from";
-    expect(state.value).toBe(SwapState.SELECT_TOKENS);
-
     balances.value = [
       AssetAmount(ATK, "1000000000000000000000"),
       AssetAmount(BTK, "1000000000000000000000"),
