@@ -2,6 +2,7 @@ button {
   transition: all 450ms ease;
   cursor: pointer;
 }
+
 button:hover,
 .button:hover {
   filter: brightness(90%);

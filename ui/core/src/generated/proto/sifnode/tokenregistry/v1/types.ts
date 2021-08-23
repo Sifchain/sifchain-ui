@@ -27,8 +27,40 @@ export interface RegistryEntry {
   address: string;
   externalSymbol: string;
   transferLimit: string;
+  /**
+   * TODO: Remove before merging to develop
+   *
+   * @deprecated
+   */
   ibcDenom: string;
+  /**
+   * TODO: Remove before merging to develop
+   *
+   * @deprecated
+   */
   ibcDecimals: Long;
+  /**
+   * The name of denomination unit of this token that is the smallest unit stored.
+   * IBC imports of this RegistryEntry convert and store funds as unit_denom.
+   * Several different denom units of a token may be imported into this same unit denom,
+   * they should all be stored under the same unit_denom if they are the same token.
+   * When exporting a RegistryEntry where unit_denom != denom,
+   * then unit_denom can, in future, be used to indicate the source of funds for a denom unit that does not actually
+   * exist on chain, enabling other chains to overcome the uint64 limit on the packet level and import large amounts
+   * of high precision tokens easily.
+   * ie. microrowan -> rowan
+   * i.e rowan -> rowan
+   */
+  unitDenom: string;
+  /**
+   * The name of denomination unit of this token that should appear on counterparty chain when this unit is exported.
+   * If empty, the denom is exported as is.
+   * Generally this will only be used to map a high precision (unit_denom) to a lower precision,
+   * to overcome the current uint64 limit on the packet level.
+   * i.e rowan -> microrowan
+   * i.e microrowan -> microrowan
+   */
+  ibcCounterPartyDenom: string;
 }
 
 const baseGenesisState: object = { adminAccount: "" };
@@ -193,6 +225,8 @@ const baseRegistryEntry: object = {
   transferLimit: "",
   ibcDenom: "",
   ibcDecimals: Long.ZERO,
+  unitDenom: "",
+  ibcCounterPartyDenom: "",
 };
 
 export const RegistryEntry = {
@@ -244,6 +278,12 @@ export const RegistryEntry = {
     }
     if (!message.ibcDecimals.isZero()) {
       writer.uint32(120).int64(message.ibcDecimals);
+    }
+    if (message.unitDenom !== "") {
+      writer.uint32(130).string(message.unitDenom);
+    }
+    if (message.ibcCounterPartyDenom !== "") {
+      writer.uint32(138).string(message.ibcCounterPartyDenom);
     }
     return writer;
   },
@@ -299,6 +339,12 @@ export const RegistryEntry = {
           break;
         case 15:
           message.ibcDecimals = reader.int64() as Long;
+          break;
+        case 16:
+          message.unitDenom = reader.string();
+          break;
+        case 17:
+          message.ibcCounterPartyDenom = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -385,6 +431,19 @@ export const RegistryEntry = {
     } else {
       message.ibcDecimals = Long.ZERO;
     }
+    if (object.unitDenom !== undefined && object.unitDenom !== null) {
+      message.unitDenom = String(object.unitDenom);
+    } else {
+      message.unitDenom = "";
+    }
+    if (
+      object.ibcCounterPartyDenom !== undefined &&
+      object.ibcCounterPartyDenom !== null
+    ) {
+      message.ibcCounterPartyDenom = String(object.ibcCounterPartyDenom);
+    } else {
+      message.ibcCounterPartyDenom = "";
+    }
     return message;
   },
 
@@ -413,6 +472,9 @@ export const RegistryEntry = {
     message.ibcDenom !== undefined && (obj.ibcDenom = message.ibcDenom);
     message.ibcDecimals !== undefined &&
       (obj.ibcDecimals = (message.ibcDecimals || Long.ZERO).toString());
+    message.unitDenom !== undefined && (obj.unitDenom = message.unitDenom);
+    message.ibcCounterPartyDenom !== undefined &&
+      (obj.ibcCounterPartyDenom = message.ibcCounterPartyDenom);
     return obj;
   },
 
@@ -492,6 +554,19 @@ export const RegistryEntry = {
       message.ibcDecimals = object.ibcDecimals as Long;
     } else {
       message.ibcDecimals = Long.ZERO;
+    }
+    if (object.unitDenom !== undefined && object.unitDenom !== null) {
+      message.unitDenom = object.unitDenom;
+    } else {
+      message.unitDenom = "";
+    }
+    if (
+      object.ibcCounterPartyDenom !== undefined &&
+      object.ibcCounterPartyDenom !== null
+    ) {
+      message.ibcCounterPartyDenom = object.ibcCounterPartyDenom;
+    } else {
+      message.ibcCounterPartyDenom = "";
     }
     return message;
   },

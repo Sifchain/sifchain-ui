@@ -49,16 +49,18 @@ export const TokenRegistry = (context: { sifApiUrl: string }) => {
         ? params.destinationChain
         : params.sourceChain;
 
-      const item = items.find(
-        (item) =>
-          item.base_denom?.toLowerCase() ===
-          matchChain.nativeAsset.symbol.toLowerCase(),
-      );
+      const item = items
+        .reverse()
+        .find(
+          (item) =>
+            item.base_denom?.toLowerCase() ===
+            matchChain.nativeAsset.symbol.toLowerCase(),
+        );
 
       if (sourceIsNative) {
-        return { channelId: item?.dest_channel };
-      } else {
         return { channelId: item?.src_channel };
+      } else {
+        return { channelId: item?.dest_channel };
       }
     },
   };
