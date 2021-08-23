@@ -34,7 +34,7 @@ import { KeplrWalletProvider } from "../../clients/wallets";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
-  sifApiUrl: string;
+  sifRpcUrl: string;
   assets: Asset[];
   chainConfigsByNetwork: NetworkChainConfigLookup;
 }
@@ -208,17 +208,6 @@ export class IBCService {
     console.log({ destinationNetwork, allChannels, allCxns, clients });
   }
 
-  // NOTE(ajoslin):
-  // We can have for example 1inch from testnet and 1inch from devnet both in our cosmoshub testnet wallet.
-  // This makes sure both don't show up.
-  async isValidEnvironmentChannel(network: Network, channelId: string) {
-    const tokenRegistry = await this.tokenRegistry.load();
-    return tokenRegistry.some(
-      (item) =>
-        item.src_channel === channelId || item.dest_channel === channelId,
-    );
-  }
-
   async transferIBCTokens(
     params: {
       sourceNetwork: Network;
@@ -320,7 +309,7 @@ export class IBCService {
     const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const registryEntryDenom = await (
       await TokenRegistry(this.context).load()
-    ).find((t) => t.base_denom === symbol)?.denom;
+    ).find((t) => t.baseDenom === symbol)?.denom;
 
     const transferMsg: MsgTransferEncodeObject = {
       typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",

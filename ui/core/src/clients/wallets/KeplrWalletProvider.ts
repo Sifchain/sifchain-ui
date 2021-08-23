@@ -148,58 +148,33 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const tokenRegistry = await this.tokenRegistry.load();
 
-    const getCoinData = async (
-      coin: Coin,
-    ): Promise<{ symbol: string; ibcDenom?: string } | undefined> => {
-      // If it's a non ibc symbol, go ahead and return it
-      if (!coin.denom.startsWith("ibc/")) {
-        return { symbol: coin.denom };
-      }
-
-      // If it's a cached ibc symbol, return cached value
-      // (or if it's cached as invalid, skip it)
-      if (this.symbolLookup[coin.denom]) {
-        const { symbol, invalid } = this.symbolLookup[coin.denom];
-        return invalid ? undefined : { symbol };
-      }
-
-      // Otherwise, run a denom trace to look up the ibc hash's match
-      const denomTrace = await queryClient.ibc.transfer.denomTrace(
-        coin.denom.split("/")[1],
-      );
-      const [, channelId] = (denomTrace.denomTrace?.path || "").split("/");
-
-      // if this came from an invalid channel (ie testnet coin in devnet)
-      // then ignore it.
-      const isInvalidChannel =
-        channelId &&
-        !tokenRegistry.some(
-          (item) =>
-            item.src_channel === channelId || item.dest_channel === channelId,
-        );
-      if (isInvalidChannel) {
-        this.symbolLookup[coin.denom] = { symbol: "", invalid: true };
-        return;
-      }
-
-      const symbol = denomTrace.denomTrace?.baseDenom ?? coin.denom;
-      this.symbolLookup[coin.denom] = { symbol, invalid: false };
-      return { symbol, ibcDenom: coin.denom };
-    };
-
     for (let coin of balances) {
       try {
-        const data = await getCoinData(coin);
-        if (!data) continue;
+        if (!coin.denom.startsWith("ibc/")) {
+          const asset = chain.assets.find(
+            (asset) => asset.symbol === coin.denom,
+          );
+          assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
+        } else {
+          const registryEntry = tokenRegistry.find(
+            (item) => item.denom === coin.denom,
+          );
+          if (!registryEntry) continue; // Skip this coin, it isnt allowed.
 
-        const { ibcDenom, symbol } = data;
-        const asset = chain.assets.find((asset) => asset.symbol === symbol);
-
-        if (asset && ibcDenom) {
-          asset.ibcDenom = ibcDenom;
+          const asset = chain.assets.find(
+            (asset) =>
+              asset.symbol.toLowerCase() ===
+              registryEntry.baseDenom.toLowerCase(),
+          );
+          if (asset) {
+            asset.ibcDenom = registryEntry.denom;
+          }
+          const assetAmount = AssetAmount(
+            asset || registryEntry.baseDenom,
+            coin.amount,
+          );
+          assetAmounts.push(assetAmount);
         }
-        const assetAmount = AssetAmount(asset || symbol, coin.amount);
-        assetAmounts.push(assetAmount);
       } catch (error) {
         console.error(chain.network, "coin error", coin, error);
       }
