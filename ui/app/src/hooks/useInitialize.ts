@@ -65,28 +65,30 @@ export function useInitialize() {
   );
 
   // Connect to networks in sequence, starting with Sifchain.
-  Object.values(Network)
-    .sort((n) => (n === Network.SIFCHAIN ? -1 : 1))
-    .reduce((promise, network) => {
-      watch(
-        accountStore.refs[network].computed(),
-        (value) => {
-          persistConnected.set(network, value.connected);
-          mirrorToCore(network);
-        },
-        {
-          deep: true,
-        },
-      );
-      return promise.then(async () => {
-        if (
-          persistConnected.get(network) &&
-          !accountStore.state[network].connected
-        ) {
-          accountStore.actions.load(network);
-        }
-      });
-    }, Promise.resolve());
+  [
+    Network.SIFCHAIN,
+    ...Object.values(Network).filter((n) => n !== Network.SIFCHAIN),
+  ].reduce((promise, network) => {
+    watch(
+      accountStore.refs[network].computed(),
+      (value) => {
+        persistConnected.set(network, value.connected);
+        mirrorToCore(network);
+      },
+      {
+        deep: true,
+      },
+    );
+    return promise.then(async () => {
+      if (
+        persistConnected.get(network) &&
+        !accountStore.state[network].connected
+      ) {
+        accountStore.actions.load(network);
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+    });
+  }, Promise.resolve());
 
   // useSubscription(
   //   computed(() => store.wallet.get(Network.SIFCHAIN).address),

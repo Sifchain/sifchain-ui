@@ -81,11 +81,12 @@ export class EthereumSifchainInterchainApi
 
       emit({ type: "signing" });
 
-      const lockOrBurnFn = isOriginallySifchainNativeToken(
+      const lockOrBurnFn = (isOriginallySifchainNativeToken(
         params.assetAmount.asset,
       )
         ? this.context.services.ethbridge.burnToSifchain
-        : this.context.services.ethbridge.lockToSifchain;
+        : this.context.services.ethbridge.lockToSifchain
+      ).bind(this.context.services.ethbridge);
 
       const pegTx = lockOrBurnFn(
         params.toAddress,

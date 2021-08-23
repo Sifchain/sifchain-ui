@@ -4,6 +4,8 @@ import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { suggestEthereumAsset } from "@sifchain/sdk/src/services/EthereumService/utils/ethereumUtils";
+import { useCore } from "@/hooks/useCore";
+import { exportStore } from "@/store/modules/export";
 
 export default defineComponent({
   name: "ExportProcessingModal",
@@ -14,7 +16,7 @@ export default defineComponent({
 
     const shouldAskToAddToken = computed(() => {
       return (
-        exportData.targetTokenRef.value?.asset.network === Network.ETHEREUM &&
+        exportStore.state.draft.network === Network.ETHEREUM &&
         exportData.exportTokenRef.value?.asset.homeNetwork !== Network.ETHEREUM
       );
     });
@@ -33,7 +35,15 @@ export default defineComponent({
 
     const handleSuggestAsset = async () => {
       if (exportData.targetTokenRef.value?.asset) {
-        await suggestEthereumAsset(exportData.targetTokenRef.value?.asset);
+        const address =
+          (await useCore().services.ethbridge.fetchSymbolAddress(
+            exportStore.state.draft.symbol,
+          )) || "0x0000000000000000000000000000000000000000";
+
+        await suggestEthereumAsset(
+          exportData.targetTokenRef.value?.asset,
+          address,
+        );
         hasAddedToken.value = true;
       }
     };

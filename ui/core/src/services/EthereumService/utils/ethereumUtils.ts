@@ -156,7 +156,10 @@ export async function getEtheriumBalance(web3: Web3, address: Address) {
   );
 }
 
-export async function suggestEthereumAsset(asset: IAsset) {
+export async function suggestEthereumAsset(
+  asset: IAsset,
+  contractAddress: string,
+) {
   const ethereum = await detectEthereumProvider();
   if (!ethereum) return false;
   const wasAdded = await ethereum.request({
@@ -165,7 +168,7 @@ export async function suggestEthereumAsset(asset: IAsset) {
       // @ts-ignore
       type: "ERC20",
       options: {
-        address: asset.address,
+        address: contractAddress,
         symbol: asset.symbol,
         decimals: asset.decimals,
         image: asset.imageUrl,
