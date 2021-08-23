@@ -7,13 +7,11 @@ export const AKASH_TESTNET: IBCChainConfig = {
   blockExplorerUrl: "https://testnet.akash.aneka.io",
   nativeAssetSymbol: "uakt",
   chainId: "akash-testnet-6",
-  rpcUrl: "https://sifchain-testnet-proxies.vercel.app/api/akash-testnet-6/rpc",
-  restUrl:
-    "https://sifchain-testnet-proxies.vercel.app/api/akash-testnet-6/rest",
+  rpcUrl: "https://sifchain-proxies.vercel.app/api/akash-testnet-6/rpc",
+  restUrl: "https://sifchain-proxies.vercel.app/api/akash-testnet-6/rest",
   keplrChainInfo: {
-    rpc: "https://sifchain-testnet-proxies.vercel.app/api/akash-testnet-6/rpc",
-    rest:
-      "https://sifchain-testnet-proxies.vercel.app/api/akash-testnet-6/rest",
+    rpc: "https://sifchain-proxies.vercel.app/api/akash-testnet-6/rpc",
+    rest: "https://sifchain-proxies.vercel.app/api/akash-testnet-6/rest",
     chainId: "akash-testnet-6",
     chainName: "Akash Testnet",
     stakeCurrency: {
