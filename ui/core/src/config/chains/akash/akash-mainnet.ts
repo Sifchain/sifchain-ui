@@ -7,10 +7,10 @@ export const AKASH_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://akash.bigdipper.live",
   nativeAssetSymbol: "uakt",
   chainId: "akashnet-2",
-  rpcUrl: "https://rpc.akash.forbole.com",
+  rpcUrl: "https://rpc-akash.keplr.app",
   restUrl: "https://lcd-akash.keplr.app",
   keplrChainInfo: {
-    rpc: "https://rpc.akash.forbole.com",
+    rpc: "https://rpc-akash.keplr.app",
     rest: "https://lcd-akash.keplr.app",
     chainId: "akashnet-2",
     chainName: "Akash",
