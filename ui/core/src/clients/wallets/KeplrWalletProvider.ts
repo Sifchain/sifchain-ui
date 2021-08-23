@@ -162,7 +162,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           if (!registryEntry) continue; // Skip this coin, it isnt allowed.
 
           const asset = chain.assets.find(
-            (asset) => asset.symbol === registryEntry.baseDenom,
+            (asset) =>
+              asset.symbol.toLowerCase() ===
+              registryEntry.baseDenom.toLowerCase(),
           );
           if (asset) {
             asset.ibcDenom = registryEntry.denom;
