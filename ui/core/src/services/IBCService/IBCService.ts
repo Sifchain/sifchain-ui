@@ -316,8 +316,10 @@ export class IBCService {
 
     let transferDenom: string;
     if (destinationChain.nativeAssetSymbol === registryEntry.baseDenom) {
+      // transfering TO registryEntry: use ibc hash
       transferDenom = registryEntry.denom;
     } else {
+      // transfering FROM registryEntry: use symbol
       transferDenom = registryEntry.baseDenom;
     }
 
