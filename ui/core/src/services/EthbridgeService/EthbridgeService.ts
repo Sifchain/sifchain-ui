@@ -186,7 +186,10 @@ export default function createEthbridgeService({
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      const tokenAddress = sifAsset.ibcDenom || sifAsset.address || ETH_ADDRESS;
+      const tokenAddress =
+        sifAsset.ibcDenom ||
+        (await this.fetchTokenAddress(sifAsset)) ||
+        ETH_ADDRESS;
 
       console.log("burnToEthereum: start: ", tokenAddress);
 
@@ -281,7 +284,6 @@ export default function createEthbridgeService({
       const ethereumAsset = getChainsService()
         ?.get(Network.ETHEREUM)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
-      const tokenAddress = ethereumAsset.address || ETH_ADDRESS;
 
       const lockParams = {
         ethereum_receiver: params.ethereumRecipient,
@@ -294,11 +296,11 @@ export default function createEthbridgeService({
           params.assetAmount.asset.ibcDenom || params.assetAmount.asset.symbol,
         cosmos_sender: params.fromAddress,
         ethereum_chain_id: `${ethereumChainId}`,
-        token_contract_address: tokenAddress,
+        token_contract_address:
+          (await this.fetchTokenAddress(ethereumAsset)) || ETH_ADDRESS,
         ceth_amount: params.feeAmount.toBigInt().toString(),
       };
 
-      console.log("lockToEthereum: TRY LOCK", tokenAddress);
       const lockReceipt = await sifUnsignedClient.lock(lockParams);
       console.log("lockToEthereum: LOCKED", lockReceipt);
 
@@ -396,6 +398,14 @@ export default function createEthbridgeService({
       return pegTx;
     },
 
+    async fetchSymbolAddress(symbol: string) {
+      return this.fetchTokenAddress(
+        getChainsService()
+          .get(Network.SIFCHAIN)
+          .findAssetWithLikeSymbolOrThrow(symbol),
+      );
+    },
+
     async fetchTokenAddress(
       // asset to fetch token for
       asset: IAsset,
@@ -407,40 +417,36 @@ export default function createEthbridgeService({
         web3,
         bridgebankContractAddress,
       );
-      let tokenAddr: string;
-      tokenAddr = await bridgeBankContract.methods
-        .getLockedTokenAddress(asset.symbol.replace(/^c/, "").toUpperCase())
-        .call();
-      // console.log(
-      //   "CRO TVL: ",
-      //   +(await bridgeBankContract.methods.getLockedFunds("ccro").call()) /
-      //     10e18,
-      // );
-      if (!+tokenAddr) {
-        if (asset.symbol.replace(/^c/, "").toLowerCase() === "eth") {
-          // Ethereum's address is correctly 0x00000...
-          return tokenAddr;
-        }
-        tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken("e" + asset.symbol.toUpperCase())
+
+      const attemptSymbols = [
+        asset.ibcDenom,
+        asset.symbol.replace(/^c/, ""),
+        asset.symbol.replace(/^e/, ""),
+        asset.displaySymbol,
+        asset.symbol,
+        "e" + asset.symbol,
+      ].filter((item, index, array) => {
+        return !!item && array.indexOf(item) === index;
+      });
+
+      let tokenAddress: string = "0";
+      let nextAttempt: string | undefined;
+      while (
+        attemptSymbols.length > 0 &&
+        (nextAttempt = attemptSymbols.shift())
+      ) {
+        tokenAddress = await bridgeBankContract.methods
+          .getBridgeToken(nextAttempt)
           .call();
-      }
-      if (!+tokenAddr) {
-        tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken(asset.symbol.toUpperCase())
+        if (!tokenAddress.startsWith("0x0")) break;
+
+        tokenAddress = await bridgeBankContract.methods
+          .getLockedTokenAddress(nextAttempt)
           .call();
+        if (!tokenAddress.startsWith("0x0")) break;
       }
-      if (!+tokenAddr) {
-        tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken(asset.symbol.toLowerCase())
-          .call();
-      }
-      if (!+tokenAddr && asset.ibcDenom) {
-        tokenAddr = await bridgeBankContract.methods
-          .getBridgeToken(asset.ibcDenom)
-          .call();
-      }
-      return tokenAddr;
+
+      return tokenAddress.startsWith("0x0") ? undefined : tokenAddress;
     },
 
     async fetchAllTokenAddresses(
@@ -454,7 +460,7 @@ export default function createEthbridgeService({
       //   for (let asset of assets.filter(
       //     (a) => a.network === Network.SIFCHAIN,
       //   )) {
-      //     if (tokens[asset.displaySymbol]) continue;
+      //     if (tokens[asset.displaySymbol] || !asset.symbol) continue;
       //     try {
       //       tokens[asset.symbol] = await this.fetchTokenAddress(
       //         asset,

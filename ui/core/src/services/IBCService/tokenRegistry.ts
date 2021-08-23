@@ -46,7 +46,10 @@ export const TokenRegistry = (context: { sifRpcUrl: string }) => {
             counterpartyChain.nativeAsset.symbol.toLowerCase(),
         );
 
-      console.log(item, items);
+      // console.log("loadConnection", {
+      //   ...params,
+      //   counterpartyWhitelistItem: item,
+      // });
 
       if (sourceIsNative) {
         return { channelId: item?.ibcChannelId };

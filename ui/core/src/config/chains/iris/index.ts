@@ -5,8 +5,8 @@ import { NetEnvChainConfigLookup } from "../NetEnvChainConfigLookup";
 export default <NetEnvChainConfigLookup>{
   [NetworkEnv.LOCALNET]: IRIS_TESTNET,
   [NetworkEnv.TESTNET_042_IBC]: IRIS_TESTNET,
-  [NetworkEnv.TESTNET]: IRIS_TESTNET,
   [NetworkEnv.DEVNET_042]: IRIS_TESTNET,
   [NetworkEnv.DEVNET]: IRIS_TESTNET,
   [NetworkEnv.MAINNET]: IRIS_TESTNET,
+  [NetworkEnv.TESTNET]: IRIS_TESTNET,
 };

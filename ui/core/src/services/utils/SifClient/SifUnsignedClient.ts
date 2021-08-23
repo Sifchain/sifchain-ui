@@ -87,7 +87,7 @@ export class SifUnSignedClient
   claim: IDispensationApi["claim"];
 
   onNewBlock<T>(handler: HandlerFn<T>) {
-    console.log("received onNewBlock handler");
+    // console.log("received onNewBlock handler");
     if (!this.subscriber) console.error("Subscriber not setup");
     this.subscriber?.on("NewBlock", handler);
     return () => {

@@ -47,11 +47,12 @@ export class SifchainEthereumInterchainApi
       const feeAmount = await this.estimateFees(params);
       emit({ type: "signing" });
 
-      const lockOrBurnFn = isOriginallySifchainNativeToken(
+      const lockOrBurnFn = (isOriginallySifchainNativeToken(
         params.assetAmount.asset,
       )
         ? this.context.services.ethbridge.lockToEthereum
-        : this.context.services.ethbridge.burnToEthereum;
+        : this.context.services.ethbridge.burnToEthereum
+      ).bind(this.context.services.ethbridge);
 
       const tx = await lockOrBurnFn({
         assetAmount: params.assetAmount,
