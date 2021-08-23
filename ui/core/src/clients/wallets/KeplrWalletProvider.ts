@@ -140,7 +140,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    const queryClient = await this.getQueryClientCached(chain);
     const stargate = await this.getStargateClientCached(chain);
     const balances = await stargate.getAllBalances(address);
 
@@ -152,7 +151,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       try {
         if (!coin.denom.startsWith("ibc/")) {
           const asset = chain.assets.find(
-            (asset) => asset.symbol === coin.denom,
+            (asset) => asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
           );
           assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
         } else {

@@ -54,7 +54,6 @@ export function useInitialize() {
   watch(
     accountStore.refs.sifchain.computed(),
     (value) => {
-      console.log("sync it!", value);
       const storeState = accountStore.state.sifchain;
       const state = services.sif.getState();
       state.balances = storeState.balances;
