@@ -1,13 +1,13 @@
 import { NetworkEnv } from "../../getEnv";
-import { SENTINEL_TESTNET } from "./sentinel-testnet";
 import { NetEnvChainConfigLookup } from "../NetEnvChainConfigLookup";
+import { SENTINEL_MAINNET } from "./sentinel-mainnet";
 
 export default <NetEnvChainConfigLookup>{
-  [NetworkEnv.LOCALNET]: SENTINEL_TESTNET,
-  [NetworkEnv.TESTNET_042_IBC]: SENTINEL_TESTNET,
-  [NetworkEnv.DEVNET_042]: SENTINEL_TESTNET,
-  [NetworkEnv.DEVNET_042]: SENTINEL_TESTNET,
-  [NetworkEnv.DEVNET]: SENTINEL_TESTNET,
-  [NetworkEnv.TESTNET]: SENTINEL_TESTNET,
-  [NetworkEnv.MAINNET]: SENTINEL_TESTNET,
+  [NetworkEnv.LOCALNET]: SENTINEL_MAINNET,
+  [NetworkEnv.TESTNET_042_IBC]: SENTINEL_MAINNET,
+  [NetworkEnv.DEVNET_042]: SENTINEL_MAINNET,
+  [NetworkEnv.DEVNET_042]: SENTINEL_MAINNET,
+  [NetworkEnv.DEVNET]: SENTINEL_MAINNET,
+  [NetworkEnv.TESTNET]: SENTINEL_MAINNET,
+  [NetworkEnv.MAINNET]: SENTINEL_MAINNET,
 };
