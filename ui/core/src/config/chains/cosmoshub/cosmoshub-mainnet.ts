@@ -7,11 +7,11 @@ export const COSMOSHUB_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://mintscan.io/cosmos",
   nativeAssetSymbol: "uatom",
   chainId: "cosmoshub-4",
-  rpcUrl: "https://rpc.cosmos.network",
-  restUrl: "https://api.cosmos.network",
+  rpcUrl: "https://rpc-cosmoshub.keplr.app",
+  restUrl: "https://lcd-cosmoshub.keplr.app",
   keplrChainInfo: {
-    rpc: "https://rpc.cosmos.network",
-    rest: "https://api.cosmos.network",
+    rpc: "https://rpc-cosmoshub.keplr.app",
+    rest: "https://lcd-cosmoshub.keplr.app",
     chainId: "cosmoshub-4",
     chainName: "Cosmos",
     stakeCurrency: {
