@@ -44,7 +44,7 @@ export class IBCService {
     ethereum: {},
     cosmoshub: {},
     sifchain: {},
-    iris: {},
+    // iris: {},
     akash: {},
     sentinel: {},
   };
