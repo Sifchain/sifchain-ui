@@ -318,6 +318,10 @@ export class IBCService {
       : undefined;
     const currentHeight = await receivingStargateCient.getHeight();
     const timeoutHeight = Long.fromNumber(currentHeight + 150);
+    const registryEntryDenom = await (
+      await TokenRegistry(this.context).load()
+    ).find((t) => t.base_denom === symbol)?.denom;
+
     const transferMsg: MsgTransferEncodeObject = {
       typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
       value: IbcTransferV1Tx.MsgTransfer.fromPartial({
@@ -326,9 +330,7 @@ export class IBCService {
         sender: fromAccount.address,
         receiver: toAccount.address,
         token: {
-          denom:
-            this.networkDenomLookup[sourceChain.network as Network][symbol] ||
-            symbol,
+          denom: registryEntryDenom,
           // denom: symbol,
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
