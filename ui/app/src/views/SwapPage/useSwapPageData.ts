@@ -223,8 +223,6 @@ export const useSwapPageData = () => {
     connected,
     nextStepMessage: computed(() => {
       switch (state.value) {
-        case SwapState.SELECT_TOKENS:
-          return "Select Tokens";
         case SwapState.ZERO_AMOUNTS:
           return "Please enter an amount";
         case SwapState.INSUFFICIENT_FUNDS:
@@ -236,9 +234,6 @@ export const useSwapPageData = () => {
         case SwapState.VALID_INPUT:
           return "Swap";
       }
-    }),
-    disableInputFields: computed(() => {
-      return state.value === SwapState.SELECT_TOKENS;
     }),
     handleFromSymbolClicked(next: () => void) {
       selectedField.value = "from";

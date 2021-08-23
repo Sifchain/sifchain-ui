@@ -1,7 +1,7 @@
 import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
-import { defineComponent, computed, watchEffect, onMounted } from "vue";
+import { defineComponent, computed, watchEffect, onMounted, ref } from "vue";
 import { useSwapPageData } from "../useSwapPageData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
@@ -14,8 +14,7 @@ export const ApproveSwap = defineComponent({
     onMounted(() => {
       data.handleBeginSwap();
     });
-
-    const detailsRef = computed<FormDetailsType>(() => ({
+    const getDetails = (): FormDetailsType => ({
       label: "Swapping",
       details: [
         [
@@ -49,7 +48,11 @@ export const ApproveSwap = defineComponent({
           <span class="font-mono">{data.toAmount.value}</span>,
         ],
       ],
-    }));
+    });
+
+    // Only get deatils once so swap amount doesn't update live
+    // as liquidity changes due to big swaps
+    const detailsRef = ref(getDetails());
 
     const transactionDetails = useTransactionDetails({
       tx: data.txStatus,

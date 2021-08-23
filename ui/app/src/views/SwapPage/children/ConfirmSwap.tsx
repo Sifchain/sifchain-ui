@@ -69,7 +69,7 @@ export const ConfirmSwap = defineComponent({
               priceImpact={(data.priceImpact.value ?? "") + "%"}
               liquidityProviderFee={data.providerFee.value ?? ""}
               minimumReceived={data.minimumReceived.value}
-            ></SwapDetails>
+            />
           </Form.FieldSet>
           {/* <div class="text-center w-full font-medium mt-[10px]">
             Confirm this transaction in your wallet.

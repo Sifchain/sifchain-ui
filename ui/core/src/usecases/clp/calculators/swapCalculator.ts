@@ -12,7 +12,6 @@ import { useField } from "./useField";
 import { trimZeros, useBalances } from "./utils";
 import { format } from "../../../utils/format";
 export enum SwapState {
-  SELECT_TOKENS,
   ZERO_AMOUNTS,
   INSUFFICIENT_FUNDS,
   VALID_INPUT,
@@ -241,7 +240,7 @@ export function useSwapCalculator(input: {
   // Derive state
   const state = computed(() => {
     // SwapState.INSUFFICIENT_LIQUIDITY is probably better here
-    if (!pool.value) return SwapState.SELECT_TOKENS;
+    if (!pool.value) return SwapState.INSUFFICIENT_LIQUIDITY;
     const fromTokenLiquidity = (pool.value as IPool).amounts.find(
       (amount) => amount.asset.symbol === fromField.asset.value?.symbol,
     );
