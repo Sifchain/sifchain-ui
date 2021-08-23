@@ -37,7 +37,7 @@ const persistConnected = {
 };
 
 export function useInitialize() {
-  const { usecases, store } = useCore();
+  const { usecases, store, services } = useCore();
 
   // Initialize usecases / watches
   usecases.clp.initClp();
@@ -49,6 +49,21 @@ export function useInitialize() {
   //     usecases.peg.subscribeToUnconfirmedPegTxs();
   //   }
   // });
+
+  // Support legacy code that uses sif service getState().
+  watch(
+    accountStore.refs.sifchain.computed(),
+    (value) => {
+      console.log("sync it!", value);
+      const storeState = accountStore.state.sifchain;
+      const state = services.sif.getState();
+      state.balances = storeState.balances;
+      state.address = storeState.address;
+      state.connected = storeState.connected;
+      state.accounts = [storeState.address];
+    },
+    { deep: true },
+  );
 
   // Connect to networks in sequence, starting with Sifchain.
   Object.values(Network)
