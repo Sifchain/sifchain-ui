@@ -1,6 +1,6 @@
 import { EthChainConfig, Network } from "../../../entities";
 
-export const ETHEREUM_DEVNET: EthChainConfig = {
+export const ETHEREUM_TESTNET: EthChainConfig = {
   chainType: "eth",
   chainId: "0x3", // Ropsten
   network: Network.ETHEREUM,

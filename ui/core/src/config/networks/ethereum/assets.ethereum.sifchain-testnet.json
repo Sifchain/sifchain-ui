@@ -634,6 +634,54 @@
       "priceUsd": 0,
       "symbol": "LEASH",
       "transferLimit": "99999999999999999999999"
+    },
+    {
+      "address": "",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      "name": "Photon",
+      "network": "ethereum",
+      "homeNetwork": "cosmoshub",
+      "priceUsd": 0,
+      "symbol": "uphoton",
+      "displaySymbol": "photon",
+      "transferLimit": "99999999999999999999999"
+    },
+    {
+      "address": "",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
+      "name": "Nyan",
+      "network": "ethereum",
+      "homeNetwork": "iris",
+      "priceUsd": 0,
+      "symbol": "unyan",
+      "displaySymbol": "nyan",
+      "transferLimit": "99999999999999999999999"
+    },
+    {
+      "address": "",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676",
+      "name": "AKT",
+      "network": "ethereum",
+      "homeNetwork": "akash",
+      "priceUsd": 0,
+      "symbol": "uakt",
+      "displaySymbol": "akt",
+      "transferLimit": "99999999999999999999999"
+    },
+    {
+      "address": "",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
+      "name": "DVPN",
+      "network": "ethereum",
+      "homeNetwork": "sentinel",
+      "priceUsd": 0,
+      "symbol": "udvpn",
+      "displaySymbol": "dvpn",
+      "transferLimit": "99999999999999999999999"
     }
   ]
 }

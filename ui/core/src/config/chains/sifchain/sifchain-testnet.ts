@@ -1,19 +1,19 @@
 import { Network, IBCChainConfig } from "../../../entities";
 
-export const SIFCHAIN_DEVNET_042_IBC: IBCChainConfig = {
+export const SIFCHAIN_TESTNET: IBCChainConfig = {
   network: Network.SIFCHAIN,
   chainType: "ibc",
   displayName: "Sifchain",
-  blockExplorerUrl: "https://blockexplorer-devnet.sifchain.finance",
+  blockExplorerUrl: "https://blockexplorer-testnet.sifchain.finance",
   nativeAssetSymbol: "rowan",
-  chainId: "sifchain-devnet-042-ibc",
-  rpcUrl: "https://rpc-devnet-042-ibc.sifchain.finance",
-  restUrl: "https://api-devnet-042-ibc.sifchain.finance",
+  chainId: "sifchain-testnet",
+  rpcUrl: "https://rpc-testnet.sifchain.finance",
+  restUrl: "https://api-testnet.sifchain.finance",
   keplrChainInfo: {
-    chainName: "SifDev-042-IBC",
-    chainId: "sifchain-devnet-042-ibc",
-    rpc: "https://rpc-devnet-042-ibc.sifchain.finance",
-    rest: "https://api-devnet-042-ibc.sifchain.finance",
+    chainName: "Sifchain testnet",
+    chainId: "sifchain-testnet",
+    rpc: "https://rpc-testnet.sifchain.finance",
+    rest: "https://api-testnet.sifchain.finance",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",
@@ -50,5 +50,6 @@ export const SIFCHAIN_DEVNET_042_IBC: IBCChainConfig = {
       average: 6500000000000,
       high: 8000000000000,
     },
+    features: ["stargate", "ibc-transfer"],
   },
 };
