@@ -94,43 +94,41 @@ export default function createSifService({
 
   const triggerUpdate = debounce(
     async () => {
-      try {
-        if (!polling) {
-          while (true) {
-            triggerUpdate();
-            await new Promise((r) => setTimeout(r, 15000));
-          }
-        }
-        await instance.setClient();
-        if (!client) {
-          state.connected = false;
-          state.address = "";
-          state.balances = [];
-          state.accounts = [];
-          state.log = "";
-          return;
-        }
-
-        state.connected = !!client;
-        state.address = client.senderAddress;
-        state.accounts = await client.getAccounts();
-
-        // Don't fetch balances here... thats the job of the new wallet store.
-        state.balances = []; // await instance.getBalance(client.senderAddress);
-      } catch (e) {
-        console.error("Sifchain Wallet Connect Error", e);
-        if (!e.toString().toLowerCase().includes("no address found on chain")) {
-          state.connected = false;
-          state.address = "";
-          state.balances = [];
-          state.accounts = [];
-          state.log = "";
-          if (polling) {
-            clearInterval(polling);
-            polling = null;
-          }
-        }
-      }
+      // try {
+      //   if (!polling) {
+      //     while (true) {
+      //       triggerUpdate();
+      //       await new Promise((r) => setTimeout(r, 15000));
+      //     }
+      //   }
+      //   await instance.setClient();
+      //   if (!client) {
+      //     state.connected = false;
+      //     state.address = "";
+      //     state.balances = [];
+      //     state.accounts = [];
+      //     state.log = "";
+      //     return;
+      //   }
+      //   state.connected = !!client;
+      //   state.address = client.senderAddress;
+      //   state.accounts = await client.getAccounts();
+      //   // Don't fetch balances here... thats the job of the new wallet store.
+      //   state.balances = []; // await instance.getBalance(client.senderAddress);
+      // } catch (e) {
+      //   console.error("Sifchain Wallet Connect Error", e);
+      //   if (!e.toString().toLowerCase().includes("no address found on chain")) {
+      //     state.connected = false;
+      //     state.address = "";
+      //     state.balances = [];
+      //     state.accounts = [];
+      //     state.log = "";
+      //     if (polling) {
+      //       clearInterval(polling);
+      //       polling = null;
+      //     }
+      //   }
+      // }
     },
     100,
     { leading: true },
@@ -150,9 +148,9 @@ export default function createSifService({
 
     async setClient() {
       if (!keplrProvider) {
-        return;
+        keplrProvider = await keplrProviderPromise;
       }
-      if (connecting || state.connected) {
+      if (connecting || client) {
         return;
       }
       connecting = true;
@@ -205,7 +203,7 @@ export default function createSifService({
           await keplrProvider.experimentalSuggestChain(keplrChainConfig);
           await keplrProvider.enable(keplrChainConfig.chainId);
           // console.log("enabling keplr", keplrChainConfig);
-          triggerUpdate();
+          await instance.setClient();
         } catch (error) {
           console.log(error);
           throw { message: "Failed to Suggest Chain" };
