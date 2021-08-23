@@ -10,7 +10,7 @@ import {
   EthereumChain,
   CosmoshubChain,
   AkashChain,
-  IrisChain,
+  // IrisChain,
   SentinelChain,
 } from "../../clients/chains";
 
@@ -35,7 +35,7 @@ const networkChainCtorLookup = {
   [Network.SIFCHAIN]: SifchainChain,
   [Network.ETHEREUM]: EthereumChain,
   [Network.COSMOSHUB]: CosmoshubChain,
-  [Network.IRIS]: IrisChain,
+  // [Network.IRIS]: IrisChain,
   [Network.AKASH]: AkashChain,
   [Network.SENTINEL]: SentinelChain,
 };

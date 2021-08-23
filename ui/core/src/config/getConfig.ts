@@ -83,12 +83,12 @@ export function getConfig(
       network: Network.COSMOSHUB,
     })),
   );
-  const irisAssets = parseAssets(
-    sifchainAssets.map((a) => ({
-      ...a,
-      network: Network.IRIS,
-    })),
-  );
+  // const irisAssets = parseAssets(
+  //   sifchainAssets.map((a) => ({
+  //     ...a,
+  //     network: Network.IRIS,
+  //   })),
+  // );
   const akashAssets = parseAssets(
     sifchainAssets.map((a) => ({
       ...a,
@@ -105,7 +105,7 @@ export function getConfig(
     ...sifchainAssets,
     ...ethereumAssets,
     ...cosmoshubAssets,
-    ...irisAssets,
+    // ...irisAssets,
     ...akashAssets,
     ...sentinelAssets,
   ].map(cacheAsset);
