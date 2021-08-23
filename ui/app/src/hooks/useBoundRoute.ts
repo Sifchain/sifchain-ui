@@ -105,8 +105,11 @@ export const useBoundRoute = (bindings: Binding) => {
     if (didChangeRoute) replaceRouteIfChanged(nextRoute);
   };
 
+  const isMounted = ref(false);
+
   onMounted(() => {
     setBindingsFromRoute(router.currentRoute.value);
+    isMounted.value = true;
   });
 
   watch(
@@ -117,6 +120,7 @@ export const useBoundRoute = (bindings: Binding) => {
       ];
     },
     (newBindings, oldBindings) => {
+      if (!isMounted.value) return;
       if (isUpdatingBindings.value) {
         isUpdatingBindings.value = false;
         return;
