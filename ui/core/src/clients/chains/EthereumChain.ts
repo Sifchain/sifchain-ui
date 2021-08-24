@@ -23,8 +23,8 @@ export class EthereumChain extends BaseChain implements Chain {
       .findAssetWithLikeSymbolOrThrow("ceth");
 
     const feeNumber = isOriginallySifchainNativeToken(transferAmount.asset)
-      ? "23580000000000000"
-      : "23580000000000000";
+      ? "35370000000000000"
+      : "35370000000000000";
 
     return AssetAmount(ceth, feeNumber);
   }
