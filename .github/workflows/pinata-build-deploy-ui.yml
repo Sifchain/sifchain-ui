@@ -5,7 +5,7 @@ on:
     branches:
       - develop
       - testnet
-      - master
+      # - master
 
 jobs:
   build:
@@ -173,13 +173,31 @@ jobs:
         with:
           cid: ${{ steps.pinata.outputs.hash }}
 
-      - name: Write Code Comment
-        uses: mshick/add-pr-comment@v1
+      - name: Extract env from branch name
+        shell: bash
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "$BRANCH_NAME"
+
+          if [[ $BRANCH_NAME == 'develop' ]] 
+          then
+            echo "::set-output name=env::devnet"
+          elif [[ $BRANCH_NAME == 'master' ]]
+          then
+            echo "::set-output name=env::dex"          
+          else
+            echo "::set-output name=env::$BRANCH_NAME"
+          fi
+
+        id: extract_env
+
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.14.0
         with:
-          message: |
-            VUE_APP_DEPLOYMENT_TAG: ${{ env.VUE_APP_DEPLOYMENT_TAG }} \
-            IPFS Hash: ${{ steps.pinata.outputs.hash }}\
-            URL: <https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}>
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: "github-actions[bot]"
-          allow-repeats: false
+          payload: "{\"pinata_url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
+          \"branch\":\"${{ steps.extract_env.outputs.env }}\",\"github_hash\": \"${{ github.sha }}\", 
+          \"sif_url\": \"https://${{ steps.extract_env.outputs.env }}.sifchain.finance\", 
+          \"msg\": \"${{github.event.head_commit.message}}\" }"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
