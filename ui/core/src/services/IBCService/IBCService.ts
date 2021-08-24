@@ -30,7 +30,7 @@ import * as IbcTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/
 import Long from "long";
 import JSBI from "jsbi";
 import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
-import { TokenRegistry } from "./tokenRegistry";
+import { TokenRegistryService } from "../TokenRegistryService/TokenRegistryService";
 import { KeplrWalletProvider } from "../../clients/wallets";
 
 export interface IBCServiceContext {
@@ -51,7 +51,7 @@ export class IBCService {
   };
   symbolLookup: Record<string, string> = {};
 
-  tokenRegistry = TokenRegistry(this.context);
+  tokenRegistry = TokenRegistryService(this.context);
 
   keplrProvider = KeplrWalletProvider.create(this.context);
 

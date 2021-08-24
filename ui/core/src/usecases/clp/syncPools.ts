@@ -14,16 +14,18 @@ type PickChains = Pick<
   Services["chains"],
   "get" | "findChainAssetMatch" | "findChainAssetMatch"
 >;
+type PickTokenRegistry = Pick<Services["tokenRegistry"], "load">;
 type SyncPoolsArgs = {
   sif: PickSif;
   clp: PickClp;
   chains: PickChains;
+  tokenRegistry: PickTokenRegistry;
 };
 
 type SyncPoolsStore = Pick<Store, "accountpools" | "pools">;
 
 export function SyncPools(
-  { sif, clp, chains }: SyncPoolsArgs,
+  { sif, clp, chains, tokenRegistry }: SyncPoolsArgs,
   store: SyncPoolsStore,
 ) {
   return async function syncPools() {
@@ -32,20 +34,29 @@ export function SyncPools(
     // UPdate pools
     const nativeAsset = chains.get(Network.SIFCHAIN).nativeAsset;
     const rawPools = await clp.getRawPools();
+    const registry = await tokenRegistry.load();
+
     const pools = rawPools
       .map((pool) => {
         const externalSymbol = pool.external_asset.symbol;
-        const chainAsset = chains.findChainAssetMatch(
-          isIBCDenom(externalSymbol)
-            ? { ibcDenom: externalSymbol }
-            : { symbol: externalSymbol },
+        const entry = registry.find(
+          (item) =>
+            item.denom === externalSymbol || item.baseDenom === externalSymbol,
         );
+        if (!entry) return null;
 
-        if (!chainAsset) return null;
+        const asset = chains
+          .get(Network.SIFCHAIN)
+          .findAssetWithLikeSymbol(entry.baseDenom);
+
+        if (!asset) {
+          console.log(entry, externalSymbol);
+        }
+        if (!asset) return null;
 
         return Pool(
           AssetAmount(nativeAsset, pool.native_asset_balance),
-          AssetAmount(chainAsset.asset, pool.external_asset_balance),
+          AssetAmount(asset, pool.external_asset_balance),
           Amount(pool.pool_units),
         );
       })
@@ -72,11 +83,16 @@ export function SyncPools(
 
       await Promise.all(
         accountPoolSymbols.map(async (symbol) => {
-          const chainAsset = chains.findChainAssetMatch(
-            isIBCDenom(symbol) ? { ibcDenom: symbol } : { symbol: symbol },
+          const entry = registry.find(
+            (item) => item.denom === symbol || item.baseDenom === symbol,
           );
-          if (!chainAsset) return;
-          const asset = chainAsset.asset;
+          if (!entry) return null;
+
+          const asset = chains
+            .get(Network.SIFCHAIN)
+            .findAssetWithLikeSymbol(entry.baseDenom);
+
+          if (!asset) return;
 
           const lp = await clp.getLiquidityProvider({
             asset,

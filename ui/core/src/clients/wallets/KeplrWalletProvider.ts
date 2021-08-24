@@ -22,7 +22,7 @@ import {
   WalletConnectionState,
   WalletProviderContext,
 } from "./types";
-import { TokenRegistry } from "../../services/IBCService/tokenRegistry";
+import { TokenRegistryService } from "../../services/TokenRegistryService/TokenRegistryService";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
@@ -33,14 +33,14 @@ const getIBCChainConfig = (chain: Chain) => {
 export class KeplrWalletProvider extends CosmosWalletProvider {
   symbolLookup: Record<string, { symbol: string; invalid: boolean }> = {};
 
-  tokenRegistry: ReturnType<typeof TokenRegistry>;
+  tokenRegistry: ReturnType<typeof TokenRegistryService>;
 
   static create(context: WalletProviderContext) {
     return new KeplrWalletProvider(context);
   }
   constructor(public context: WalletProviderContext) {
     super();
-    this.tokenRegistry = TokenRegistry(context);
+    this.tokenRegistry = TokenRegistryService(context);
 
     // TODO(ajoslin): handle account switches gracefully
     try {

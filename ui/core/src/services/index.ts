@@ -20,6 +20,9 @@ import cryptoeconomicsService, {
 } from "./CryptoeconomicsService";
 import storageService, { StorageServiceContext } from "./StorageService";
 import createWalletService, { WalletServiceContext } from "./WalletService";
+import createTokenRegistry, {
+  TokenRegistryContext,
+} from "./TokenRegistryService";
 
 export type Services = ReturnType<typeof createServices>;
 
@@ -41,7 +44,8 @@ export type ServiceContext = {
   StorageServiceContext &
   IBCServiceContext &
   ChainsServiceContext &
-  WalletServiceContext;
+  WalletServiceContext &
+  TokenRegistryContext;
 
 export function createServices(context: ServiceContext) {
   const ChainsService = createChainsService(context);
@@ -55,6 +59,7 @@ export function createServices(context: ServiceContext) {
   const CryptoeconomicsService = cryptoeconomicsService(context);
   const StorageService = storageService(context);
   const WalletService = createWalletService(context);
+  const TokenRegistryService = createTokenRegistry(context);
   /* 
 
     Let's leave the metadata logging in place at least until IBC is off the ground. 
@@ -84,5 +89,6 @@ export function createServices(context: ServiceContext) {
     cryptoeconomics: CryptoeconomicsService,
     storage: StorageService,
     wallet: WalletService,
+    tokenRegistry: TokenRegistryService,
   };
 }
