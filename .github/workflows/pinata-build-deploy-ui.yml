@@ -189,6 +189,6 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
-          payload: "{\"url\":https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }},\"github_ref\":$GITHUB_REF,\"github_hash\": \"asdf\" }"
+          payload: "{\"url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",\"github_ref\":\"$GITHUB_REF\",\"github_hash\": \"asdf\" }"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
