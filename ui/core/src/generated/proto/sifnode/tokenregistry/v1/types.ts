@@ -4,6 +4,50 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.tokenregistry.v1";
 
+export enum Permission {
+  UNSPECIFIED = 0,
+  CLP = 1,
+  IBCEXPORT = 2,
+  IBCIMPORT = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function permissionFromJSON(object: any): Permission {
+  switch (object) {
+    case 0:
+    case "UNSPECIFIED":
+      return Permission.UNSPECIFIED;
+    case 1:
+    case "CLP":
+      return Permission.CLP;
+    case 2:
+    case "IBCEXPORT":
+      return Permission.IBCEXPORT;
+    case 3:
+    case "IBCIMPORT":
+      return Permission.IBCIMPORT;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return Permission.UNRECOGNIZED;
+  }
+}
+
+export function permissionToJSON(object: Permission): string {
+  switch (object) {
+    case Permission.UNSPECIFIED:
+      return "UNSPECIFIED";
+    case Permission.CLP:
+      return "CLP";
+    case Permission.IBCEXPORT:
+      return "IBCEXPORT";
+    case Permission.IBCIMPORT:
+      return "IBCIMPORT";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 export interface GenesisState {
   adminAccount: string;
   registry?: Registry;
@@ -19,48 +63,18 @@ export interface RegistryEntry {
   denom: string;
   baseDenom: string;
   path: string;
-  srcChannel: string;
-  destChannel: string;
+  ibcChannelId: string;
+  ibcCounterpartyChannelId: string;
   displayName: string;
   displaySymbol: string;
   network: string;
   address: string;
   externalSymbol: string;
   transferLimit: string;
-  /**
-   * TODO: Remove before merging to develop
-   *
-   * @deprecated
-   */
-  ibcDenom: string;
-  /**
-   * TODO: Remove before merging to develop
-   *
-   * @deprecated
-   */
-  ibcDecimals: Long;
-  /**
-   * The name of denomination unit of this token that is the smallest unit stored.
-   * IBC imports of this RegistryEntry convert and store funds as unit_denom.
-   * Several different denom units of a token may be imported into this same unit denom,
-   * they should all be stored under the same unit_denom if they are the same token.
-   * When exporting a RegistryEntry where unit_denom != denom,
-   * then unit_denom can, in future, be used to indicate the source of funds for a denom unit that does not actually
-   * exist on chain, enabling other chains to overcome the uint64 limit on the packet level and import large amounts
-   * of high precision tokens easily.
-   * ie. microrowan -> rowan
-   * i.e rowan -> rowan
-   */
+  permissions: Permission[];
   unitDenom: string;
-  /**
-   * The name of denomination unit of this token that should appear on counterparty chain when this unit is exported.
-   * If empty, the denom is exported as is.
-   * Generally this will only be used to map a high precision (unit_denom) to a lower precision,
-   * to overcome the current uint64 limit on the packet level.
-   * i.e rowan -> microrowan
-   * i.e microrowan -> microrowan
-   */
-  ibcCounterPartyDenom: string;
+  ibcCounterpartyDenom: string;
+  ibcCounterpartyChainId: string;
 }
 
 const baseGenesisState: object = { adminAccount: "" };
@@ -215,18 +229,18 @@ const baseRegistryEntry: object = {
   denom: "",
   baseDenom: "",
   path: "",
-  srcChannel: "",
-  destChannel: "",
+  ibcChannelId: "",
+  ibcCounterpartyChannelId: "",
   displayName: "",
   displaySymbol: "",
   network: "",
   address: "",
   externalSymbol: "",
   transferLimit: "",
-  ibcDenom: "",
-  ibcDecimals: Long.ZERO,
+  permissions: 0,
   unitDenom: "",
-  ibcCounterPartyDenom: "",
+  ibcCounterpartyDenom: "",
+  ibcCounterpartyChainId: "",
 };
 
 export const RegistryEntry = {
@@ -249,11 +263,11 @@ export const RegistryEntry = {
     if (message.path !== "") {
       writer.uint32(42).string(message.path);
     }
-    if (message.srcChannel !== "") {
-      writer.uint32(50).string(message.srcChannel);
+    if (message.ibcChannelId !== "") {
+      writer.uint32(50).string(message.ibcChannelId);
     }
-    if (message.destChannel !== "") {
-      writer.uint32(58).string(message.destChannel);
+    if (message.ibcCounterpartyChannelId !== "") {
+      writer.uint32(58).string(message.ibcCounterpartyChannelId);
     }
     if (message.displayName !== "") {
       writer.uint32(66).string(message.displayName);
@@ -273,17 +287,19 @@ export const RegistryEntry = {
     if (message.transferLimit !== "") {
       writer.uint32(106).string(message.transferLimit);
     }
-    if (message.ibcDenom !== "") {
-      writer.uint32(114).string(message.ibcDenom);
+    writer.uint32(122).fork();
+    for (const v of message.permissions) {
+      writer.int32(v);
     }
-    if (!message.ibcDecimals.isZero()) {
-      writer.uint32(120).int64(message.ibcDecimals);
-    }
+    writer.ldelim();
     if (message.unitDenom !== "") {
       writer.uint32(130).string(message.unitDenom);
     }
-    if (message.ibcCounterPartyDenom !== "") {
-      writer.uint32(138).string(message.ibcCounterPartyDenom);
+    if (message.ibcCounterpartyDenom !== "") {
+      writer.uint32(138).string(message.ibcCounterpartyDenom);
+    }
+    if (message.ibcCounterpartyChainId !== "") {
+      writer.uint32(146).string(message.ibcCounterpartyChainId);
     }
     return writer;
   },
@@ -292,6 +308,7 @@ export const RegistryEntry = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseRegistryEntry } as RegistryEntry;
+    message.permissions = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -311,10 +328,10 @@ export const RegistryEntry = {
           message.path = reader.string();
           break;
         case 6:
-          message.srcChannel = reader.string();
+          message.ibcChannelId = reader.string();
           break;
         case 7:
-          message.destChannel = reader.string();
+          message.ibcCounterpartyChannelId = reader.string();
           break;
         case 8:
           message.displayName = reader.string();
@@ -334,17 +351,24 @@ export const RegistryEntry = {
         case 13:
           message.transferLimit = reader.string();
           break;
-        case 14:
-          message.ibcDenom = reader.string();
-          break;
         case 15:
-          message.ibcDecimals = reader.int64() as Long;
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.permissions.push(reader.int32() as any);
+            }
+          } else {
+            message.permissions.push(reader.int32() as any);
+          }
           break;
         case 16:
           message.unitDenom = reader.string();
           break;
         case 17:
-          message.ibcCounterPartyDenom = reader.string();
+          message.ibcCounterpartyDenom = reader.string();
+          break;
+        case 18:
+          message.ibcCounterpartyChainId = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -356,6 +380,7 @@ export const RegistryEntry = {
 
   fromJSON(object: any): RegistryEntry {
     const message = { ...baseRegistryEntry } as RegistryEntry;
+    message.permissions = [];
     if (object.isWhitelisted !== undefined && object.isWhitelisted !== null) {
       message.isWhitelisted = Boolean(object.isWhitelisted);
     } else {
@@ -381,15 +406,20 @@ export const RegistryEntry = {
     } else {
       message.path = "";
     }
-    if (object.srcChannel !== undefined && object.srcChannel !== null) {
-      message.srcChannel = String(object.srcChannel);
+    if (object.ibcChannelId !== undefined && object.ibcChannelId !== null) {
+      message.ibcChannelId = String(object.ibcChannelId);
     } else {
-      message.srcChannel = "";
+      message.ibcChannelId = "";
     }
-    if (object.destChannel !== undefined && object.destChannel !== null) {
-      message.destChannel = String(object.destChannel);
+    if (
+      object.ibcCounterpartyChannelId !== undefined &&
+      object.ibcCounterpartyChannelId !== null
+    ) {
+      message.ibcCounterpartyChannelId = String(
+        object.ibcCounterpartyChannelId,
+      );
     } else {
-      message.destChannel = "";
+      message.ibcCounterpartyChannelId = "";
     }
     if (object.displayName !== undefined && object.displayName !== null) {
       message.displayName = String(object.displayName);
@@ -421,15 +451,10 @@ export const RegistryEntry = {
     } else {
       message.transferLimit = "";
     }
-    if (object.ibcDenom !== undefined && object.ibcDenom !== null) {
-      message.ibcDenom = String(object.ibcDenom);
-    } else {
-      message.ibcDenom = "";
-    }
-    if (object.ibcDecimals !== undefined && object.ibcDecimals !== null) {
-      message.ibcDecimals = Long.fromString(object.ibcDecimals);
-    } else {
-      message.ibcDecimals = Long.ZERO;
+    if (object.permissions !== undefined && object.permissions !== null) {
+      for (const e of object.permissions) {
+        message.permissions.push(permissionFromJSON(e));
+      }
     }
     if (object.unitDenom !== undefined && object.unitDenom !== null) {
       message.unitDenom = String(object.unitDenom);
@@ -437,12 +462,20 @@ export const RegistryEntry = {
       message.unitDenom = "";
     }
     if (
-      object.ibcCounterPartyDenom !== undefined &&
-      object.ibcCounterPartyDenom !== null
+      object.ibcCounterpartyDenom !== undefined &&
+      object.ibcCounterpartyDenom !== null
     ) {
-      message.ibcCounterPartyDenom = String(object.ibcCounterPartyDenom);
+      message.ibcCounterpartyDenom = String(object.ibcCounterpartyDenom);
     } else {
-      message.ibcCounterPartyDenom = "";
+      message.ibcCounterpartyDenom = "";
+    }
+    if (
+      object.ibcCounterpartyChainId !== undefined &&
+      object.ibcCounterpartyChainId !== null
+    ) {
+      message.ibcCounterpartyChainId = String(object.ibcCounterpartyChainId);
+    } else {
+      message.ibcCounterpartyChainId = "";
     }
     return message;
   },
@@ -456,9 +489,10 @@ export const RegistryEntry = {
     message.denom !== undefined && (obj.denom = message.denom);
     message.baseDenom !== undefined && (obj.baseDenom = message.baseDenom);
     message.path !== undefined && (obj.path = message.path);
-    message.srcChannel !== undefined && (obj.srcChannel = message.srcChannel);
-    message.destChannel !== undefined &&
-      (obj.destChannel = message.destChannel);
+    message.ibcChannelId !== undefined &&
+      (obj.ibcChannelId = message.ibcChannelId);
+    message.ibcCounterpartyChannelId !== undefined &&
+      (obj.ibcCounterpartyChannelId = message.ibcCounterpartyChannelId);
     message.displayName !== undefined &&
       (obj.displayName = message.displayName);
     message.displaySymbol !== undefined &&
@@ -469,17 +503,22 @@ export const RegistryEntry = {
       (obj.externalSymbol = message.externalSymbol);
     message.transferLimit !== undefined &&
       (obj.transferLimit = message.transferLimit);
-    message.ibcDenom !== undefined && (obj.ibcDenom = message.ibcDenom);
-    message.ibcDecimals !== undefined &&
-      (obj.ibcDecimals = (message.ibcDecimals || Long.ZERO).toString());
+    if (message.permissions) {
+      obj.permissions = message.permissions.map((e) => permissionToJSON(e));
+    } else {
+      obj.permissions = [];
+    }
     message.unitDenom !== undefined && (obj.unitDenom = message.unitDenom);
-    message.ibcCounterPartyDenom !== undefined &&
-      (obj.ibcCounterPartyDenom = message.ibcCounterPartyDenom);
+    message.ibcCounterpartyDenom !== undefined &&
+      (obj.ibcCounterpartyDenom = message.ibcCounterpartyDenom);
+    message.ibcCounterpartyChainId !== undefined &&
+      (obj.ibcCounterpartyChainId = message.ibcCounterpartyChainId);
     return obj;
   },
 
   fromPartial(object: DeepPartial<RegistryEntry>): RegistryEntry {
     const message = { ...baseRegistryEntry } as RegistryEntry;
+    message.permissions = [];
     if (object.isWhitelisted !== undefined && object.isWhitelisted !== null) {
       message.isWhitelisted = object.isWhitelisted;
     } else {
@@ -505,15 +544,18 @@ export const RegistryEntry = {
     } else {
       message.path = "";
     }
-    if (object.srcChannel !== undefined && object.srcChannel !== null) {
-      message.srcChannel = object.srcChannel;
+    if (object.ibcChannelId !== undefined && object.ibcChannelId !== null) {
+      message.ibcChannelId = object.ibcChannelId;
     } else {
-      message.srcChannel = "";
+      message.ibcChannelId = "";
     }
-    if (object.destChannel !== undefined && object.destChannel !== null) {
-      message.destChannel = object.destChannel;
+    if (
+      object.ibcCounterpartyChannelId !== undefined &&
+      object.ibcCounterpartyChannelId !== null
+    ) {
+      message.ibcCounterpartyChannelId = object.ibcCounterpartyChannelId;
     } else {
-      message.destChannel = "";
+      message.ibcCounterpartyChannelId = "";
     }
     if (object.displayName !== undefined && object.displayName !== null) {
       message.displayName = object.displayName;
@@ -545,15 +587,10 @@ export const RegistryEntry = {
     } else {
       message.transferLimit = "";
     }
-    if (object.ibcDenom !== undefined && object.ibcDenom !== null) {
-      message.ibcDenom = object.ibcDenom;
-    } else {
-      message.ibcDenom = "";
-    }
-    if (object.ibcDecimals !== undefined && object.ibcDecimals !== null) {
-      message.ibcDecimals = object.ibcDecimals as Long;
-    } else {
-      message.ibcDecimals = Long.ZERO;
+    if (object.permissions !== undefined && object.permissions !== null) {
+      for (const e of object.permissions) {
+        message.permissions.push(e);
+      }
     }
     if (object.unitDenom !== undefined && object.unitDenom !== null) {
       message.unitDenom = object.unitDenom;
@@ -561,12 +598,20 @@ export const RegistryEntry = {
       message.unitDenom = "";
     }
     if (
-      object.ibcCounterPartyDenom !== undefined &&
-      object.ibcCounterPartyDenom !== null
+      object.ibcCounterpartyDenom !== undefined &&
+      object.ibcCounterpartyDenom !== null
     ) {
-      message.ibcCounterPartyDenom = object.ibcCounterPartyDenom;
+      message.ibcCounterpartyDenom = object.ibcCounterpartyDenom;
     } else {
-      message.ibcCounterPartyDenom = "";
+      message.ibcCounterpartyDenom = "";
+    }
+    if (
+      object.ibcCounterpartyChainId !== undefined &&
+      object.ibcCounterpartyChainId !== null
+    ) {
+      message.ibcCounterpartyChainId = object.ibcCounterpartyChainId;
+    } else {
+      message.ibcCounterpartyChainId = "";
     }
     return message;
   },
