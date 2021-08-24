@@ -2,6 +2,11 @@ import { Network, WalletType, IAssetAmount } from "../../entities";
 import { UsecaseContext } from "..";
 import { WalletActions } from "./types";
 
+const chainIdName = new Map([
+  ["0x1", "Ethereum Mainnet"],
+  ["0x3", "Ropsten Test Network"],
+]);
+
 export default function MetamaskActions(
   context: UsecaseContext,
 ): WalletActions {
@@ -9,7 +14,28 @@ export default function MetamaskActions(
 
   return {
     async load(network: Network) {
-      await services.eth.connect();
+      await new Promise<void>((resolve, reject) => {
+        const validChainId = services.chains.get(Network.ETHEREUM).chainConfig
+          .chainId;
+
+        services.eth.onChainIdDetected(async (chainId) => {
+          if (chainId !== validChainId) {
+            services.bus.dispatch({
+              type: "WalletConnectionErrorEvent",
+              payload: {
+                walletType: "eth",
+                message: `Metamask failed to connect. Please select ${chainIdName.get(
+                  validChainId,
+                )}.`,
+              },
+            });
+            reject();
+          } else {
+            resolve();
+          }
+        });
+        services.eth.connect();
+      });
 
       const state = services.eth.getState();
       return {
