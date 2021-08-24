@@ -1,9 +1,9 @@
 {
   "sifAddrPrefix": "sif",
-  "sifApiUrl": "https://api-testnet-042-ibc.sifchain.finance",
-  "sifWsUrl": "wss://rpc-testnet-042-ibc.finance/websocket",
-  "sifRpcUrl": "https://rpc-testnet-042-ibc.sifchain.finance",
-  "sifChainId": "sifchain-testnet-042-ibc",
+  "sifApiUrl": "https://api-testnet.sifchain.finance",
+  "sifWsUrl": "wss://rpc-testnet.finance/websocket",
+  "sifRpcUrl": "https://rpc-testnet.sifchain.finance",
+  "sifChainId": "sifchain-testnet",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
   "blockExplorerUrl": "https://blockexplorer-testnet.sifchain.finance",
