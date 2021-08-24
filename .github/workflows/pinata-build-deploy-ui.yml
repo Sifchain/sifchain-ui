@@ -27,7 +27,7 @@ jobs:
             echo "CURRENT_BRANCH=master" >> $GITHUB_ENV
           fi
 
-          if [[ $GITHUB_REF == 'refs/heads/testnet' ]]; then
+          if [[ $GITHUB_REF == 'refs/heads/slack-webhook' ]]; then
             echo "CURRENT_BRANCH=testnet" >> $GITHUB_ENV
           fi
       - name: capture image name to env
