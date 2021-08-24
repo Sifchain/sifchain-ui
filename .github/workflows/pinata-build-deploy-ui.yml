@@ -191,11 +191,12 @@ jobs:
           BRANCH_NAME=develop
           echo "$BRANCH_NAME"
 
-          if [[ $BRANCH_NAME == 'develop' ]]; then
+          if [[ $BRANCH_NAME == 'develop' ]] 
+          then
             echo "::set-output name=branch::devnet"
+          else
+            echo "::set-output name=branch::$BRANCH_NAME"
           fi
-
-          echo "::set-output name=branch::$BRANCH_NAME"
 
         id: extract_branch
 
