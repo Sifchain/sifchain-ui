@@ -45,7 +45,7 @@ claimTests.forEach(({ rewardType }) => {
     );
     const claimFn = Claim(services);
     await claimFn({
-      claimType: "2",
+      claimType: 2,
       fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
     });
   });
@@ -112,7 +112,7 @@ claimTests.forEach(({ rewardType }) => {
     );
     const claimFn = Claim(services);
     await claimFn({
-      claimType: "2",
+      claimType: 2,
       fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
     });
   });
