@@ -186,7 +186,13 @@ jobs:
       #     allow-repeats: false
       - name: Extract branch name
         shell: bash
-        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+        run: |
+          echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}"
+          if [[ $BRANCH_NAME == 'develop']]; then
+            echo "::set-output name=branch::devnet"
+          fi
+          echo "::set-output name=branch::$BRANCH_NAME"
+
         id: extract_branch
 
       - name: Send custom JSON data to Slack workflow
