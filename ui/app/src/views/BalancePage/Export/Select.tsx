@@ -219,6 +219,7 @@ export default defineComponent({
           <div class="block mt-[10px]">
             Network
             <SelectDropdown
+              key={optionsRef.value.map((o) => o.value).join("")}
               options={optionsRef}
               value={networkRef}
               onChangeValue={(value) => {
