@@ -1,7 +1,7 @@
 import { Chain, Network, IAssetAmount } from "../../entities";
 import { urlJoin } from "url-join-ts";
 import { BaseChain } from "./_BaseChain";
-import { calculateIBCExportFee } from "../utils";
+import { calculateIBCExportFee } from "../../utils/ibcExportFees";
 
 export class IrisChain extends BaseChain implements Chain {
   getBlockExplorerUrlForAddress(address: string) {

@@ -7,7 +7,7 @@ import {
 } from "../../entities";
 import { BaseChain } from "./_BaseChain";
 import { urlJoin } from "url-join-ts";
-import { calculateIBCExportFee } from "../utils";
+import { calculateIBCExportFee } from "../../utils/ibcExportFees";
 
 export class CosmoshubChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {

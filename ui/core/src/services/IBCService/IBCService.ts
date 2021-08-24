@@ -32,6 +32,7 @@ import JSBI from "jsbi";
 import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
 import { TokenRegistryService } from "../TokenRegistryService/TokenRegistryService";
 import { KeplrWalletProvider } from "../../clients/wallets";
+import { IBC_EXPORT_FEE_ADDRESS } from "../../utils/ibcExportFees";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -391,7 +392,7 @@ export class IBCService {
         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
         value: {
           fromAddress: fromAccount.address,
-          toAddress: "sif1j9gx4ddf8eg3g8wk2ff0tfwzsksptm4t7wj00h",
+          toAddress: IBC_EXPORT_FEE_ADDRESS,
           amount: [
             {
               denom: feeEntry.denom,
