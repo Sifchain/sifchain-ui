@@ -3,7 +3,7 @@ import { defineComponent, ref } from "vue";
 import { computed, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { LiquidityProvider, Pool } from "@sifchain/sdk";
-import Layout from "@/components/Layout/Layout.vue";
+import Layout from "@/components/Layout/Layout";
 import PoolList from "@/components/PoolList/PoolList.vue";
 import PoolListItem from "@/components/PoolList/PoolListItem.vue";
 import SifButton from "@/components/SifButton/SifButton.vue";

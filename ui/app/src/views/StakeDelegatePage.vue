@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useCore } from "@/hooks/useCore";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import Loader from "@/componentsLegacy/Loader/Loader.vue";
 
 export default defineComponent({

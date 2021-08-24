@@ -6,7 +6,7 @@ import { RewardSection } from "./components/RewardSection";
 import { SunsetRewardSection } from "./components/SunsetRewardSection";
 import ClaimRewardsModal from "./components/ClaimRewardsModal";
 import { CryptoeconomicsRewardType } from "@sifchain/sdk/src/services/CryptoeconomicsService";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import { accountStore } from "@/store/modules/accounts";
 
 export default defineComponent({

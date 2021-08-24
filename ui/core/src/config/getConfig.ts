@@ -12,9 +12,9 @@ import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.sifchain-
 import assetsEthereumTestnet042IBC from "./networks/ethereum/assets.ethereum.sifchain-testnet-042.json";
 import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.json";
 
-import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet.json";
+import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet";
 import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet";
-import assetsExternalTestnet from "./networks/sifchain/assets.external.testnet";
+import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet";
 
 import {
   parseConfig,
@@ -44,7 +44,6 @@ export function getConfig(
   applicationNetworkEnv: NetworkEnv = NetworkEnv.LOCALNET,
   sifchainAssetTag: ChainNetwork = "sifchain.localnet",
   ethereumAssetTag: ChainNetwork = "ethereum.localnet",
-  cosmoshubAssetTag: ChainNetwork = "cosmoshub.testnet",
 ): AppConfig {
   const assetMap: Partial<AssetMap> = {
     "sifchain.localnet": parseAssets(
@@ -53,10 +52,9 @@ export function getConfig(
     "sifchain.mainnet": parseAssets(
       assetsSifchainMainnet.assets as AssetConfig[],
     ),
-    "sifchain.devnet": parseAssets([
-      ...assetsExternalTestnet.assets,
-      ...assetsSifchainMainnet.assets,
-    ] as AssetConfig[]),
+    "sifchain.devnet": parseAssets(
+      assetsSifchainDevnet.assets as AssetConfig[],
+    ),
     "ethereum.localnet": parseAssets(
       assetsEthereumLocalnet.assets as AssetConfig[],
     ),

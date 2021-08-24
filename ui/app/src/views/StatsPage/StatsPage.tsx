@@ -1,7 +1,7 @@
 import { defineComponent, computed, Ref, ref } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
 import PageCard from "@/components/PageCard";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/components/AssetIcon";

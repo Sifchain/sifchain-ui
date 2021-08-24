@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import { computed, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { Asset, AssetAmount } from "@sifchain/sdk";

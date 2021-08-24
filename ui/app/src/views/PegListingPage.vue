@@ -1,7 +1,7 @@
 <script lang="ts">
 import Tab from "@/componentsLegacy/Tab/Tab.vue";
 import Tabs from "@/componentsLegacy/Tabs/Tabs.vue";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetList from "@/componentsLegacy/AssetList/AssetList.vue";
 import SifInput from "@/componentsLegacy/SifInput/SifInput.vue";
 import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
