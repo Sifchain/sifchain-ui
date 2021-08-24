@@ -187,8 +187,7 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          #BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          BRANCH_NAME=develop
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
           echo "$BRANCH_NAME"
 
           if [[ $BRANCH_NAME == 'develop' ]] 
