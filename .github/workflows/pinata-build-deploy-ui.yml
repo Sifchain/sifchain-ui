@@ -19,7 +19,7 @@ jobs:
       # for some reason this appears unavailable in github API... might be missing something?
       - name: capture branch name to env
         run: |
-          if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
+          if [[ $GITHUB_REF == 'refs/heads/slack-webhook' ]]; then
             echo "CURRENT_BRANCH=develop" >> $GITHUB_ENV
           fi
 
@@ -27,7 +27,7 @@ jobs:
             echo "CURRENT_BRANCH=master" >> $GITHUB_ENV
           fi
 
-          if [[ $GITHUB_REF == 'refs/heads/slack-webhook' ]]; then
+          if [[ $GITHUB_REF == 'refs/heads/testnet' ]]; then
             echo "CURRENT_BRANCH=testnet" >> $GITHUB_ENV
           fi
       - name: capture image name to env
