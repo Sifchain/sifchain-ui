@@ -23,6 +23,13 @@ export default ({
 
       const etheriumState = services.eth.getState();
 
+      const unsubscribeChainId = services.eth.onChainIdDetected((chainId) => {
+        store.wallet.set(Network.ETHEREUM, {
+          ...store.wallet.get(Network.ETHEREUM),
+          chainId,
+        });
+      });
+
       effects.push(
         effect(() => {
           // Only show connected when we have an address
@@ -67,6 +74,7 @@ export default ({
 
       return () => {
         unsubscribeProvider();
+        unsubscribeChainId();
         for (let ef of effects) {
           stop(ef);
         }
