@@ -1,4 +1,5 @@
 import { LcdClient, Msg } from "@cosmjs/launchpad";
+import { DistributionType } from "../../../../../generated/proto/sifnode/dispensation/v1/types";
 
 type BaseReq = {
   from: string;
@@ -9,7 +10,7 @@ type BaseReq = {
 
 type IClaimParams = {
   base_req: BaseReq;
-  claim_type: "2" | "3";
+  claim_type: DistributionType;
   signer: string;
 };
 

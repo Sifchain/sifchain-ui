@@ -17,7 +17,7 @@ const REWARD_TYPE_DISPLAY_DATA = {
     heading: "Liquidity Mining",
     icon: "navigation/pool" as IconName,
     description:
-      "Earn additional rewards by providing liquidity to any of Sifchain's pools.",
+      "Earn additional rewards by providing liquidity to any of Sifchain's IBC token pools.",
   },
   vs: {
     heading: "Validator Subsidy",
@@ -159,6 +159,7 @@ export const RewardSection = defineComponent({
                 icon="navigation/rewards"
                 active
                 disabled={
+                  true ||
                   !props.data?.user
                     ?.totalClaimableCommissionsAndClaimableRewards ||
                   props.alreadyClaimed

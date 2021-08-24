@@ -7,6 +7,7 @@ import { SunsetRewardSection } from "./components/SunsetRewardSection";
 import ClaimRewardsModal from "./components/ClaimRewardsModal";
 import { CryptoeconomicsRewardType } from "@sifchain/sdk/src/services/CryptoeconomicsService";
 import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import { accountStore } from "@/store/modules/accounts";
 
 export default defineComponent({
   name: "RewardsPage",
@@ -22,7 +23,7 @@ export default defineComponent({
       vsInfoLink,
       lmInfoLink,
       address,
-    } = useRewardsPageData({ address: "" });
+    } = useRewardsPageData();
 
     const isClaimModalOpened = ref(false);
     const claimRewardType = ref("vs");

@@ -12,6 +12,7 @@ import { Amount, format, Asset } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
+import { DistributionType } from "../../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
 
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
@@ -48,7 +49,11 @@ export default defineComponent({
         state: "requested",
       };
       const status = await usecases.reward.claim({
-        claimType: claimTypeMap[props.rewardType] as "2" | "3",
+        // claimType: claimTypeMap[props.rewardType] as "2" | "3",
+        claimType:
+          props.rewardType === "lm"
+            ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
+            : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
         fromAddress: props.address,
       });
       transactionStatusRef.value = status;
@@ -132,8 +137,8 @@ export default defineComponent({
             multiplier again and will continue to accumulate if within the
             eligibility timeframe.
             <br />
-            <br /> Unless you have reached full maturity, we reccomend that you
-            do not claim so you vcan realize your full rewards. Please note that
+            <br /> Unless you have reached full maturity, we recommend that you
+            do not claim so you can realize your full rewards. Please note that
             the rewards will be dispensed at the end of the week.
             <br />
             <br />
