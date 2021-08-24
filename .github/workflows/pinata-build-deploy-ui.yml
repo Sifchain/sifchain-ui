@@ -184,10 +184,10 @@ jobs:
       #     repo-token: ${{ secrets.GITHUB_TOKEN }}
       #     repo-token-user-login: "github-actions[bot]"
       #     allow-repeats: false
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
 
       - name: Send custom JSON data to Slack workflow
         id: slack
