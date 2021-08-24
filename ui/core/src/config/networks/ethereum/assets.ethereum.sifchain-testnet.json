@@ -650,18 +650,6 @@
     {
       "address": "",
       "decimals": 18,
-      "imageUrl": "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
-      "name": "Nyan",
-      "network": "ethereum",
-      "homeNetwork": "iris",
-      "priceUsd": 0,
-      "symbol": "unyan",
-      "displaySymbol": "nyan",
-      "transferLimit": "99999999999999999999999"
-    },
-    {
-      "address": "",
-      "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676",
       "name": "AKT",
       "network": "ethereum",

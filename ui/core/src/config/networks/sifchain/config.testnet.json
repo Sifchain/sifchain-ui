@@ -10,8 +10,8 @@
   "cryptoeconomicsUrl": "https://api-cryptoeconomics.sifchain.finance/api",
   "bridgebankContractAddress": "0x6CfD69783E3fFb44CBaaFF7F509a4fcF0d8e2835",
   "keplrChainConfig": {
-    "chainName": "SifchainTestnet-IBC",
-    "chainId": "",
+    "chainName": "Sifchain Testnet",
+    "chainId": "sifchain-testnet",
     "rpc": "",
     "rest": "",
     "stakeCurrency": {
