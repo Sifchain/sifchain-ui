@@ -13,17 +13,6 @@ const sifchainDevnetAssets: { assets: IAsset[] } = {
       displaySymbol: "atom",
       homeNetwork: Network.COSMOSHUB,
     },
-    // {
-    //   symbol: "unyan",
-    //   decimals: 6,
-    //   name: "Nyan",
-    //   network: Network.SIFCHAIN,
-    //   label: "Nyan",
-    //   imageUrl:
-    //     "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
-    //   displaySymbol: "nyan",
-    //   homeNetwork: Network.IRIS,
-    // },
     {
       symbol: "uakt",
       decimals: 6,

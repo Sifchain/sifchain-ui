@@ -3,7 +3,7 @@ const JSBI = require("jsbi");
 console.log({ JSBI });
 const {
   assets,
-} = require("../src/config/networks/sifchain/assets.sifchain.mainnet.json");
+} = require("../src/config/networks/sifchain/assets.sifchain.mainnet");
 fetch(`https://data.sifchain.finance/beta/asset/tokenStats`)
   .then((d) => d.json())
   .then((data) => {
