@@ -32,14 +32,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watchEffect } from "vue";
 import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
 import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
 import Layout from "@/componentsLegacy/Layout/Layout";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { accountStore } from "./store/modules/accounts";
+import { Amount } from "@sifchain/sdk";
 
+const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
+
+let hasShownGetRowanModal = false;
 export default defineComponent({
   name: "App",
   components: {
@@ -55,6 +60,27 @@ export default defineComponent({
     },
   },
   setup() {
+    const router = useRouter();
+    watchEffect(() => {
+      const balances = accountStore.state.sifchain.balances;
+      const hasSufficientRowanToTrade = balances.find(
+        (b) =>
+          b.asset.symbol.toLowerCase() === "rowan" &&
+          b.amount.greaterThan(ROWAN_GAS_FEE),
+      );
+      const hasImportedAssets = balances.find(
+        (b) =>
+          b.asset.symbol.toLowerCase() !== "rowan" && b.amount.greaterThan("0"),
+      );
+      if (
+        !hasSufficientRowanToTrade &&
+        hasImportedAssets &&
+        !hasShownGetRowanModal
+      ) {
+        hasShownGetRowanModal = true;
+        router.push({ name: "GetRowan" });
+      }
+    });
     /// Initialize app
     useInitialize();
   },

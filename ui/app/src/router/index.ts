@@ -28,6 +28,7 @@ import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import { DeepReadonly } from "vue";
+import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 
 type SwapPageMeta = {
   title: string;
@@ -147,6 +148,11 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
       title: "Balances - Sifchain",
     },
     children: [
+      {
+        name: "GetRowan",
+        path: "get-rowan",
+        component: GetRowanModal,
+      },
       {
         name: "Import",
         path: "import/:displaySymbol/select",
