@@ -91,7 +91,8 @@ export default defineComponent({
 
       if (
         feeAmountRef.value?.amount.greaterThan("0") &&
-        feeAssetBalanceRef.value?.amount.lessThan(feeAmountRef.value)
+        (!feeAssetBalanceRef.value ||
+          feeAssetBalanceRef.value?.amount.lessThan(feeAmountRef.value))
       ) {
         return `Not enough ${feeAmountRef.value.displaySymbol.toUpperCase()} for ${formatAssetAmount(
           feeAmountRef.value,
