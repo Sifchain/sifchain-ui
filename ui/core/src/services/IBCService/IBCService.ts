@@ -417,6 +417,14 @@ export class IBCService {
         // const gasPerMessage = 39437;
         // const gasPerMessage = 39437;
         // console.log(JSON.(batch));
+        let externalGasPrices: any = {};
+        try {
+          externalGasPrices = await fetch(
+            "https://gas-meter.vercel.app/gas-v1.json",
+          )
+            .then((r) => r.json())
+            .catch((e) => {});
+        } catch (e) {}
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,
           batch,
@@ -430,6 +438,12 @@ export class IBCService {
                   "",
               },
             ],
+            ...(externalGasPrices &&
+            externalGasPrices[sourceChain.chainId || ""]
+              ? {
+                  gas: externalGasPrices[sourceChain.chainId || ""],
+                }
+              : {}),
             // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
           },
         );
