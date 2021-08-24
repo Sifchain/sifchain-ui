@@ -1,6 +1,7 @@
-import { Chain, Network } from "../../entities";
-import { BaseChain } from "./BaseChain";
+import { Chain, Network, IAssetAmount } from "../../entities";
 import { urlJoin } from "url-join-ts";
+import { BaseChain } from "./_BaseChain";
+import { calculateIBCExportFee } from "../../utils/ibcExportFees";
 
 export class IrisChain extends BaseChain implements Chain {
   getBlockExplorerUrlForAddress(address: string) {
@@ -8,5 +9,8 @@ export class IrisChain extends BaseChain implements Chain {
   }
   getBlockExplorerUrlForTxHash(hash: string) {
     return this.chainConfig.blockExplorerUrl + `#/tx?txHash=${hash}`;
+  }
+  calculateTransferFeeToChain(transferAmount: IAssetAmount) {
+    return calculateIBCExportFee(transferAmount);
   }
 }

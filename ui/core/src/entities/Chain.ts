@@ -1,4 +1,4 @@
-import { IAsset, WalletType } from "../";
+import { IAsset, WalletType, IAssetAmount } from "../";
 import { Network } from "./Network";
 import { ChainsService } from "../services/ChainsService";
 import { ChainInfo } from "@keplr-wallet/types";
@@ -34,6 +34,8 @@ export interface Chain {
   displayName: string;
   nativeAsset: IAsset;
   assets: IAsset[];
+
+  calculateTransferFeeToChain(transferAmount: IAssetAmount): IAssetAmount;
 
   findAssetWithLikeSymbol(symbol: string): IAsset | undefined;
   findAssetWithLikeSymbolOrThrow(symbol: string): IAsset;

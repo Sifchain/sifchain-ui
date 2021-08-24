@@ -1,5 +1,4 @@
 import { UsecaseContext } from "..";
-import { calculateUnpegFee } from "./utils/calculateExportFee";
 import { SubscribeToUnconfirmedPegTxs } from "./subscribeToUnconfirmedPegTxs";
 import { Unpeg } from "./unpeg";
 import { Peg } from "./peg";
@@ -26,7 +25,6 @@ export default ({ services, store }: UsecaseContext) => {
     }),
     getSifTokens: () => services.sif.getSupportedTokens(),
     getEthTokens: () => services.eth.getSupportedTokens(),
-    calculateUnpegFee,
     unpeg: Unpeg(services, store),
     peg: Peg(services, store, config),
   };

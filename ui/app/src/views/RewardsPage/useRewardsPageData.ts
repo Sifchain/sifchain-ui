@@ -8,14 +8,15 @@ import { accountStore } from "@/store/modules/accounts";
 
 const useLiquidityMiningData = (address: ComputedRef<string>) => {
   const { services } = useCore();
+  const addressChanged = computed(() => !!address.value);
   return computed(() => {
     return useAsyncData(async () => {
-      return null;
+      // return null;
       if (!address.value) return null;
       return services.cryptoeconomics.fetchLmData({
         address: address.value,
       });
-    });
+    }, addressChanged);
   });
 };
 
@@ -48,13 +49,12 @@ const useExistingClaimsData = (
   });
 };
 
-export const useRewardsPageData = (props: { address: string }) => {
-  props.address = props.address || "sif10c6s2u0ga576jsah6979wjc58uuchd864llzty";
-
+export const useRewardsPageData = () => {
   const { config, services } = useCore();
   const address = accountStore.refs.sifchain.address.computed();
 
   const lmRes = useLiquidityMiningData(address);
+
   const vsRes = useValidatorSubsidyData(address);
   const claimsRes = useExistingClaimsData(address, config.sifApiUrl);
 

@@ -8,7 +8,7 @@ import {
   getExistingClaimsData,
   IHasClaimed,
 } from "@/componentsLegacy/shared/utils";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
 import { Copy } from "@/componentsLegacy/Text";
 import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";

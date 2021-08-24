@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent, ref, watch, onMounted } from "vue";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
   Asset,

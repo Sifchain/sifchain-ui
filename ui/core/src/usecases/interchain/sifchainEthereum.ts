@@ -15,7 +15,6 @@ import {
 import { parseTxFailure } from "../../services/SifService/parseTxFailure";
 import { SubscribeToTx } from "../peg/utils/subscribeToTx";
 import { SifchainChain, EthereumChain } from "../../services/ChainsService";
-import { calculateUnpegFee } from "../peg/utils/calculateExportFee";
 import { isOriginallySifchainNativeToken } from "../peg/utils/isOriginallySifchainNativeToken";
 
 export default function createSifchainEthereumApi(context: UsecaseContext) {
@@ -39,7 +38,7 @@ export class SifchainEthereumInterchainApi
   }
 
   async estimateFees(params: InterchainParams) {
-    return calculateUnpegFee(params.assetAmount.asset);
+    return this.toChain.calculateTransferFeeToChain(params.assetAmount);
   }
 
   transfer(params: InterchainParams) {

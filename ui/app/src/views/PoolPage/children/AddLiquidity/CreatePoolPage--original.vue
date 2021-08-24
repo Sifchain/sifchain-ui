@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import CurrencyPairPanel from "@/componentsLegacy/CurrencyPairPanel/Index.vue";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import SelectTokenDialogSif from "@/componentsLegacy/TokenSelector/SelectTokenDialogSif.vue";

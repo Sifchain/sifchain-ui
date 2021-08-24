@@ -21,13 +21,6 @@ export default ({
         });
       });
 
-      const unsubscribeChainId = services.eth.onChainIdDetected((chainId) => {
-        store.wallet.set(Network.ETHEREUM, {
-          ...store.wallet.get(Network.ETHEREUM),
-          chainId,
-        });
-      });
-
       const etheriumState = services.eth.getState();
 
       effects.push(
@@ -74,7 +67,6 @@ export default ({
 
       return () => {
         unsubscribeProvider();
-        unsubscribeChainId();
         for (let ef of effects) {
           stop(ef);
         }

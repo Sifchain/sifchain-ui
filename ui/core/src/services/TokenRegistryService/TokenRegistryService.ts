@@ -1,8 +1,12 @@
 import { Chain, Network, getChainsService } from "../../entities";
-import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 import { RegistryEntry } from "../../generated/proto/sifnode/tokenregistry/v1/types";
+import { NativeDexClient } from "../utils/SifClient/NativeDexClient";
 
-export const TokenRegistry = (context: { sifRpcUrl: string }) => {
+export type TokenRegistryContext = {
+  sifRpcUrl: string;
+};
+
+export const TokenRegistryService = (context: TokenRegistryContext) => {
   let tokenRegistry: RegistryEntry[];
   const loadTokenRegistry = async () => {
     if (!tokenRegistry) {
@@ -59,3 +63,5 @@ export const TokenRegistry = (context: { sifRpcUrl: string }) => {
     },
   };
 };
+
+export default TokenRegistryService;

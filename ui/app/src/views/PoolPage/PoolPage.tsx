@@ -4,7 +4,7 @@ import { usePoolStatItem } from "@/hooks/usePoolStatItem";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { computed, ref } from "@vue/reactivity";
 import { defineComponent, PropType } from "vue";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import { RouterView } from "vue-router";
 import {
   PoolPageAccountPool,

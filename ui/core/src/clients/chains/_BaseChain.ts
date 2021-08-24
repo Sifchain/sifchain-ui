@@ -1,4 +1,12 @@
-import { Chain, IAsset, Network, ChainConfig } from "../../entities";
+import {
+  Chain,
+  IAsset,
+  Network,
+  ChainConfig,
+  IAssetAmount,
+  AssetAmount,
+  getChainsService,
+} from "../../entities";
 import { isLikeSymbol } from "../../utils/isLikeSymbol";
 import { urlJoin } from "url-join-ts";
 
@@ -14,15 +22,24 @@ export class BaseChain implements Chain {
   assets: IAsset[];
   nativeAsset: IAsset;
 
-  constructor(params: { assets: IAsset[]; chainConfig: ChainConfig }) {
-    this.chainConfig = params.chainConfig;
+  constructor(public context: { assets: IAsset[]; chainConfig: ChainConfig }) {
+    this.chainConfig = context.chainConfig;
 
-    this.assets = params.assets.filter(
-      (a) => a.network === params.chainConfig.network,
+    this.assets = context.assets.filter(
+      (a) => a.network === context.chainConfig.network,
     );
     this.nativeAsset = this.assets.find(
-      (a) => a.symbol === params.chainConfig.nativeAssetSymbol,
+      (a) => a.symbol === context.chainConfig.nativeAssetSymbol,
     ) as IAsset;
+  }
+
+  calculateTransferFeeToChain(assetAmount: IAssetAmount) {
+    const rowan = getChainsService()
+      .get(Network.SIFCHAIN)
+      .findAssetWithLikeSymbolOrThrow("rowan");
+
+    // Default 0 fee
+    return AssetAmount(rowan, "0");
   }
 
   findAssetWithLikeSymbol(symbol: string) {

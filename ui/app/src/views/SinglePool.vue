@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, watch, onMounted } from "vue";
 import { computed, ref, ComputedRef } from "@vue/reactivity";
-import Layout from "@/componentsLegacy/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import SifButton from "@/componentsLegacy/SifButton/SifButton.vue";
 import {
   getAssetLabel,

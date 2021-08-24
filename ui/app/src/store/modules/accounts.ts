@@ -69,7 +69,7 @@ export const accountStore = Vuextra.createStore({
     setBalances(payload: { network: Network; balances: IAssetAmount[] }) {
       if (
         balancesAreDifferent(
-          accountStore.state[payload.network].balances,
+          self.state[payload.network].balances,
           payload.balances,
         )
       ) {
@@ -83,9 +83,9 @@ export const accountStore = Vuextra.createStore({
       try {
         const state = await usecase.load(network);
 
-        accountStore.setConnected({ network, connected: state.connected });
-        accountStore.setBalances({ network, balances: state.balances });
-        accountStore.setAddress({ network, address: state.address });
+        self.setConnected({ network, connected: state.connected });
+        self.setBalances({ network, balances: state.balances });
+        self.setAddress({ network, address: state.address });
 
         if (!state.connected) return;
         if (walletBalancePolls.has(network)) return;
@@ -100,10 +100,10 @@ export const accountStore = Vuextra.createStore({
           const timeoutId = setTimeout(async () => {
             const balances = await usecase.getBalances(
               network,
-              accountStore.state[network].address,
+              self.state[network].address,
             );
 
-            accountStore.setBalances({ network, balances });
+            self.setBalances({ network, balances });
             scheduleUpdate();
           }, UPDATE_DELAY);
           walletBalancePolls.set(network, timeoutId);
@@ -127,5 +127,7 @@ export const accountStore = Vuextra.createStore({
   }),
   modules: [],
 });
+
+const self = accountStore;
 
 (window as any).accountStore = accountStore;
