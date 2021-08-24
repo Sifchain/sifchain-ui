@@ -6,6 +6,7 @@ on:
       - develop
       - testnet
       - master
+      - slack-webhook
 
 jobs:
   build:
@@ -183,3 +184,11 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: "github-actions[bot]"
           allow-repeats: false
+
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.14.0
+        with:
+          payload: "{\"url\":https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }},\"github_ref\":$GITHUB_REF,\"github_hash\": \"asdf\" }"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
