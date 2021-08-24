@@ -1,6 +1,7 @@
 import BetaWarningBanner from "@/components/BetaWarningBanner";
 import { AssetAmount } from "@sifchain/sdk";
 import { defineComponent } from "@vue/runtime-core";
+import LayoutBackground from "./LayoutBackground";
 
 export default defineComponent({
   name: "Layout",
@@ -11,18 +12,8 @@ export default defineComponent({
           {context.slots.default?.()}
           <div id="modal-target"></div>
           <BetaWarningBanner />
+          <LayoutBackground />
         </div>
-        <div
-          class="z-[-1] w-full h-[100vh] fixed top-0 left-0 transition duration-500"
-          style={{
-            transition: "background-image",
-            backgroundImage: `url(${require("@/assets/background.webp")})`,
-            backgroundSize: "cover",
-            backgroundPosition: "top center",
-            backgroundAttachment: "fixed",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
       </>
     );
   },

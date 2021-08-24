@@ -1,9 +1,16 @@
 import { computed, ComputedRef } from "@vue/reactivity";
-import { AppConfig, Chain, getChainsService, Network } from "@sifchain/sdk";
+import {
+  AppConfig,
+  Chain,
+  getChainsService,
+  IBCChainConfig,
+  Network,
+} from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { rootStore } from "../../store";
 import { accountStore } from "@/store/modules/accounts";
-import { useChains } from "@/hooks/useChains";
+import { useChains, useChainsList } from "@/hooks/useChains";
+import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
 
 export type WalletConnection = {
   walletName: string;
@@ -34,17 +41,36 @@ const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
 const createWalletConnection = (
   walletId: WalletConfig["id"],
   network: Network,
-): WalletConnection => ({
-  ...walletConfigLookup[walletId],
-  getChain: () => useChains().get(network),
-  connect: () => accountStore.load(network),
-  disconnect:
-    network === Network.ETHEREUM
-      ? () => {
-          return accountStore.disconnect(network);
+): WalletConnection => {
+  const chain = useChains().get(network);
+  return {
+    ...walletConfigLookup[walletId],
+    getChain: () => chain,
+    connect: async () => {
+      if (chain.chainConfig.chainType === "ibc") {
+        const keplr = await getKeplrProvider();
+        if (
+          keplr &&
+          useChains().get(Network.SIFCHAIN).chainConfig.chainId === "sifchain"
+        ) {
+          const configs = useChainsList()
+            .filter((chain) => chain.chainConfig.chainType === "ibc")
+            .map((chain) => chain.chainConfig as IBCChainConfig);
+          await (window as any).keplr.enable(
+            ...configs.map((chainConfig) => chainConfig.keplrChainInfo.chainId),
+          );
         }
-      : undefined,
-});
+      }
+      accountStore.load(network);
+    },
+    disconnect:
+      network === Network.ETHEREUM
+        ? () => {
+            return accountStore.disconnect(network);
+          }
+        : undefined,
+  };
+};
 
 export const walletConnections: WalletConnection[] = [
   createWalletConnection("keplr", Network.SENTINEL),
