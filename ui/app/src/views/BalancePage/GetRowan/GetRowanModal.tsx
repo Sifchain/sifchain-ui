@@ -62,7 +62,7 @@ export default defineComponent({
             >
               @sifchain
             </a>{" "}
-            and <b>#getrowan</b> in a public tweet your sif address&nbsp; (
+            and <b>#getrowan</b> in a public tweet with your sif address&nbsp; (
             <small>{accountStore.state.sifchain.address}</small>)<br></br>
           </p>
           <a
