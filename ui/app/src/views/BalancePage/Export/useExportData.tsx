@@ -15,6 +15,8 @@ import { UnpegEvent } from "../../../../../core/src/usecases/peg/unpeg";
 import { useUnpegEventDetails } from "@/hooks/useTransactionDetails";
 import { rootStore } from "@/store";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { useChains } from "@/hooks/useChains";
+import { accountStore } from "@/store/modules/accounts";
 
 export type ExportParams = {
   amount?: string;
@@ -90,9 +92,20 @@ export const useExportData = () => {
   );
 
   const feeAmountRef = computed(() => {
-    return exportTokenRef.value
-      ? usecases.peg.calculateUnpegFee(exportTokenRef.value.asset)
-      : null;
+    if (!computedExportAssetAmount.value || !exportTokenRef.value) return null;
+    const fee = useChains()
+      .get(exportStore.state.draft.network)
+      .calculateTransferFeeToChain(computedExportAssetAmount.value);
+    return fee;
+  });
+
+  const feeAssetBalanceRef = computed(() => {
+    if (!feeAmountRef.value?.network) return;
+    return accountStore.state[feeAmountRef.value?.network].balances.find(
+      (asset) => {
+        return asset.symbol === feeAmountRef.value?.symbol;
+      },
+    );
   });
 
   const networksRef = computed(() => rootStore.export.getters.networks);
@@ -147,19 +160,21 @@ export const useExportData = () => {
             </span>
           ),
         ],
-        exportParams.value.network === Network.ETHEREUM && [
+        feeAmountRef.value?.amount?.greaterThan("0") && [
           <>
-            Transaction Fee
-            <Button.InlineHelp>
+            Export Fee
+            <Button.InlineHelp key={exportStore.state.draft.network}>
               <div class="w-[200px]">
-                This is a fixed fee amount. This is a temporary solution as we
-                are working towards improving this amount in upcoming versions
-                of the network.
+                {exportStore.state.draft.network === Network.ETHEREUM
+                  ? `This is a fixed fee amount. This is a temporary solution as we are working towards improving this amount in upcoming versions of the network.`
+                  : `This is a fixed UI fee amount. IBC relayers are expensive and this helps us keep the lights on.`}
               </div>
             </Button.InlineHelp>
           </>,
           <span class="flex items-center font-mono">
-            {!feeAmountRef.value ? null : formatAssetAmount(feeAmountRef.value)}{" "}
+            {!feeAmountRef.value
+              ? null
+              : formatAssetAmount(feeAmountRef.value).replace(/0+$/, "")}{" "}
             {(
               feeAmountRef.value?.asset.displaySymbol ||
               feeAmountRef.value?.asset.symbol ||
@@ -188,6 +203,7 @@ export const useExportData = () => {
     unpegEventRef,
     unpegEventDetails,
     feeAmountRef,
+    feeAssetBalanceRef,
     headingRef,
     detailsRef,
     exitExport,

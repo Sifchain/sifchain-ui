@@ -36,6 +36,7 @@ export default defineComponent({
       exportTokenRef,
       computedExportAssetAmount,
       feeAmountRef,
+      feeAssetBalanceRef,
     } = exportData;
     const exportParams = exportStore.refs.draft.computed();
     const networkRef = computed(() => exportParams.value.network);
@@ -73,15 +74,28 @@ export default defineComponent({
 
     const validationErrorRef = computed(() => {
       if (!exportTokenRef.value) {
-        return "Select Token";
+        ("Select Token");
       }
       if (
+        feeAssetBalanceRef.value &&
         feeAmountRef.value &&
-        feeAmountRef.value?.asset.symbol ===
-          exportTokenRef.value?.asset.symbol &&
-        exportTokenRef.value.amount.lessThanOrEqual(feeAmountRef.value?.amount)
+        feeAmountRef.value.asset.symbol === exportTokenRef.value?.asset.symbol
       ) {
-        return "Not Enough Balance To Pay Fee";
+        const totalAmount = exportTokenRef.value.amount.add(
+          feeAmountRef.value.toBigInt().toString(),
+        );
+        if (totalAmount.greaterThan(feeAssetBalanceRef.value)) {
+          return `Not enough ${feeAmountRef.value.displaySymbol.toUpperCase()} for Export Amount plus Fee`;
+        }
+      }
+
+      if (
+        feeAmountRef.value?.amount.greaterThan("0") &&
+        feeAssetBalanceRef.value?.amount.lessThan(feeAmountRef.value)
+      ) {
+        return `Not enough ${feeAmountRef.value.displaySymbol.toUpperCase()} for ${formatAssetAmount(
+          feeAmountRef.value,
+        )} ${feeAmountRef.value.symbol.toUpperCase()} fee`;
       }
       if (!computedExportAssetAmount.value) {
         return "Enter Amount";
@@ -91,6 +105,7 @@ export default defineComponent({
       }
 
       if (
+        exportTokenRef.value &&
         computedExportAssetAmount.value?.greaterThan(
           exportTokenRef.value.amount,
         )

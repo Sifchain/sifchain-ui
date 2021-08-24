@@ -4,6 +4,7 @@ import {
   MsgTransferEncodeObject,
   BroadcastTxResponse,
   IndexedTx,
+  MsgSendEncodeObject,
 } from "@cosmjs/stargate";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 
@@ -342,16 +343,17 @@ export class IBCService {
         timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
       }),
     };
-    let transferMsgs: MsgTransferEncodeObject[] = [transferMsg];
+
+    let encodeMsgs: MsgTransferEncodeObject[] = [transferMsg];
     while (
       shouldBatchTransfers &&
       JSBI.greaterThanOrEqual(
-        JSBI.BigInt(transferMsgs[0].value.token?.amount || "0"),
+        JSBI.BigInt(encodeMsgs[0].value.token?.amount || "0"),
         // Max uint64
         JSBI.BigInt(maxAmountPerMsg),
       )
     ) {
-      transferMsgs = [...transferMsgs, ...transferMsgs].map((tfMsg) => {
+      encodeMsgs = [...encodeMsgs, ...encodeMsgs].map((tfMsg) => {
         return {
           ...tfMsg,
           value: {
@@ -366,6 +368,39 @@ export class IBCService {
           },
         };
       });
+    }
+
+    const transferMsgs: Array<MsgTransferEncodeObject | MsgSendEncodeObject> = [
+      ...encodeMsgs,
+    ];
+
+    const feeAmount = getChainsService()
+      .get(params.destinationNetwork)
+      .calculateTransferFeeToChain(params.assetAmountToTransfer);
+    if (feeAmount?.amount.greaterThan("0")) {
+      const feeEntry = registry.find(
+        (item) => item.baseDenom === feeAmount.asset.symbol,
+      );
+      if (!feeEntry) {
+        throw new Error(
+          "Failed to find whiteliste entry for fee symbol " +
+            feeAmount.asset.symbol,
+        );
+      }
+      const sendFeeMsg: MsgSendEncodeObject = {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+        value: {
+          fromAddress: fromAccount.address,
+          toAddress: "sif1j9gx4ddf8eg3g8wk2ff0tfwzsksptm4t7wj00h",
+          amount: [
+            {
+              denom: feeEntry.denom,
+              amount: feeAmount.toBigInt().toString(),
+            },
+          ],
+        },
+      };
+      transferMsgs.unshift(sendFeeMsg);
     }
 
     const batches = [];

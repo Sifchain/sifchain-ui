@@ -1,9 +1,13 @@
 import { isBroadcastTxFailure } from "@cosmjs/stargate";
 import { parseTxFailure } from "../../services/SifService/parseTxFailure";
-import { IAssetAmount, Network, TransactionStatus } from "../../entities";
+import {
+  IAssetAmount,
+  Network,
+  TransactionStatus,
+  AssetAmount,
+} from "../../entities";
 import { Services } from "../../services";
 import { Store } from "../../store";
-import { calculateUnpegFee } from "./utils/calculateExportFee";
 import { isOriginallySifchainNativeToken } from "./utils/isOriginallySifchainNativeToken";
 
 type UnpegServices = {
@@ -33,86 +37,87 @@ export function Unpeg(services: UnpegServices, store: UnpegStore) {
     assetAmount: IAssetAmount,
     destinationNetwork: Network,
   ): AsyncGenerator<UnpegEvent> {
-    yield { type: "signing" };
-    if (destinationNetwork === Network.COSMOSHUB) {
-      const txSequence = await services.ibc.transferIBCTokens({
-        sourceNetwork: Network.SIFCHAIN,
-        destinationNetwork: Network.COSMOSHUB,
-        assetAmountToTransfer: assetAmount,
-      });
-      for (let tx of txSequence) {
-        if (isBroadcastTxFailure(tx)) {
-          services.bus.dispatch({
-            type: "ErrorEvent",
-            payload: {
-              message: "IBC Transfer Failed",
-            },
-          });
-          yield {
-            type: "tx_error",
-            tx: parseTxFailure({
-              transactionHash: tx.transactionHash,
-              rawLog: tx.rawLog || "",
-            }),
-          };
-        } else {
-          yield {
-            type: "sent",
-            tx: {
-              state: "completed",
-              hash: tx.transactionHash,
-              memo: "Transaction Completed",
-            },
-          };
-        }
-      }
-      return;
-    }
-    const lockOrBurnFn = isOriginallySifchainNativeToken(assetAmount.asset)
-      ? services.ethbridge.lockToEthereum
-      : services.ethbridge.burnToEthereum;
+    throw "deprecated";
+    // yield { type: "signing" };
+    // if (destinationNetwork === Network.COSMOSHUB) {
+    //   const txSequence = await services.ibc.transferIBCTokens({
+    //     sourceNetwork: Network.SIFCHAIN,
+    //     destinationNetwork: Network.COSMOSHUB,
+    //     assetAmountToTransfer: assetAmount,
+    //   });
+    //   for (let tx of txSequence) {
+    //     if (isBroadcastTxFailure(tx)) {
+    //       services.bus.dispatch({
+    //         type: "ErrorEvent",
+    //         payload: {
+    //           message: "IBC Transfer Failed",
+    //         },
+    //       });
+    //       yield {
+    //         type: "tx_error",
+    //         tx: parseTxFailure({
+    //           transactionHash: tx.transactionHash,
+    //           rawLog: tx.rawLog || "",
+    //         }),
+    //       };
+    //     } else {
+    //       yield {
+    //         type: "sent",
+    //         tx: {
+    //           state: "completed",
+    //           hash: tx.transactionHash,
+    //           memo: "Transaction Completed",
+    //         },
+    //       };
+    //     }
+    //   }
+    //   return;
+    // }
+    // const lockOrBurnFn = isOriginallySifchainNativeToken(assetAmount.asset)
+    //   ? services.ethbridge.lockToEthereum
+    //   : services.ethbridge.burnToEthereum;
 
-    const feeAmount = calculateUnpegFee(assetAmount.asset);
+    // const feeAmount = AssetAmount("ceth", 0);
 
-    const tx = await lockOrBurnFn({
-      assetAmount,
-      ethereumRecipient: store.wallet.get(Network.ETHEREUM).address,
-      fromAddress: store.wallet.get(Network.SIFCHAIN).address,
-      feeAmount,
-    });
+    // const tx = await lockOrBurnFn({
+    //   assetAmount,
+    //   ethereumRecipient: store.wallet.get(Network.ETHEREUM).address,
+    //   fromAddress: store.wallet.get(Network.SIFCHAIN).address,
+    //   feeAmount,
+    // });
 
-    const txStatus = await services.sif.signAndBroadcast(tx.value.msg);
+    // const txStatus = await services.sif.signAndBroadcast(tx.value.msg);
 
-    if (txStatus.state !== "accepted") {
-      services.bus.dispatch({
-        type: "TransactionErrorEvent",
-        payload: {
-          txStatus,
-          message: txStatus.memo || "There was an error while unpegging",
-        },
-      });
-      yield {
-        type: "tx_error",
-        tx: parseTxFailure({
-          transactionHash: txStatus.hash,
-          rawLog: txStatus.memo || "",
-        }),
-      };
-    } else {
-      yield {
-        type: "sent",
-        tx: txStatus,
-      };
-    }
+    // if (txStatus.state !== "accepted") {
+    //   services.bus.dispatch({
+    //     type: "TransactionErrorEvent",
+    //     payload: {
+    //       txStatus,
+    //       message: txStatus.memo || "There was an error while unpegging",
+    //     },
+    //   });
+    //   yield {
+    //     type: "tx_error",
+    //     tx: parseTxFailure({
+    //       transactionHash: txStatus.hash,
+    //       rawLog: txStatus.memo || "",
+    //     }),
+    //   };
+    // } else {
+    //   yield {
+    //     type: "sent",
+    //     tx: txStatus,
+    //   };
+    // }
 
-    console.log(
-      "unpeg txStatus.state",
-      txStatus.state,
-      txStatus.memo,
-      txStatus.code,
-      tx.value.msg,
-    );
+    // console.log(
+    //   "unpeg txStatus.state",
+    //   txStatus.state,
+    //   txStatus.memo,
+    //   txStatus.code,
+    //   tx.value.msg,
+    // );
 
-    return txStatus;
+    // return txStatus;
   };
 }
