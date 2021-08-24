@@ -187,13 +187,14 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          #BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          BRANCH_NAME=develop
           echo "$BRANCH_NAME"
 
           if [[ $BRANCH_NAME == 'develop' ]]; then
             echo "::set-output name=branch::devnet"
           fi
-          
+
           echo "::set-output name=branch::$BRANCH_NAME"
 
         id: extract_branch
