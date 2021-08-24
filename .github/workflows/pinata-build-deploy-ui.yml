@@ -19,7 +19,7 @@ jobs:
       - name: capture branch name to env
         run: |
           if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            echo "CURRENT_BRANCH=574fbb79a6686963955aa9c2597424dac4e69e14" >> $GITHUB_ENV
+            echo "CURRENT_BRANCH=develop" >> $GITHUB_ENV
           fi
 
           if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
