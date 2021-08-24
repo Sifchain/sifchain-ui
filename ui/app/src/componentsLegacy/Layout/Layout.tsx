@@ -12,8 +12,8 @@ export default defineComponent({
           {context.slots.default?.()}
           <div id="modal-target"></div>
           <BetaWarningBanner />
-          <LayoutBackground />
         </div>
+        <LayoutBackground />
       </>
     );
   },

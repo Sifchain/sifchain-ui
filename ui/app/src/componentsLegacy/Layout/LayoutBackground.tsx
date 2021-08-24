@@ -163,7 +163,7 @@ export default defineComponent({
             <div class="cursor-pointer">
               <AssetIcon
                 icon="interactive/picture"
-                class="text-white opacity-50"
+                class="text-white opacity-60"
                 size={36}
               />
             </div>
