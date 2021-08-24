@@ -179,7 +179,7 @@ jobs:
           message: |
             VUE_APP_DEPLOYMENT_TAG: ${{ env.VUE_APP_DEPLOYMENT_TAG }} \
             IPFS Hash: ${{ steps.pinata.outputs.hash }}\
-            URL: <https://gateway.pinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}>
+            URL: <https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}>
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: "github-actions[bot]"
           allow-repeats: false
