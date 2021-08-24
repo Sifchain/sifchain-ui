@@ -184,16 +184,17 @@ jobs:
       #     repo-token: ${{ secrets.GITHUB_TOKEN }}
       #     repo-token-user-login: "github-actions[bot]"
       #     allow-repeats: false
-      - name: Set output
-        id: vars
-        run: echo ::set-output name=short_ref::$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
 
       - name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
           payload: "{\"url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
-          \"github_ref\":\"${{github.ref}}\",\"github_hash\": \"${{github.sha}}\", \"test\": \"${GITHUB_REF##*/}\", 
+          \"github_ref\":\"${{github.ref}}\",\"github_hash\": \"${{ steps.extract_branch.outputs.branch }}\", \"test\": \"${{github.ref##*/}}\", 
           \"env_url\": \"https://${{ steps.vars.outputs.short_ref }}.sifchain.finance\" }"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
