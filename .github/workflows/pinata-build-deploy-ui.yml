@@ -174,7 +174,7 @@ jobs:
       #   with:
       #     cid: ${{ steps.pinata.outputs.hash }}
 
-      - name: Extract branch name
+      - name: Extract env from branch name
         shell: bash
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
@@ -182,22 +182,22 @@ jobs:
 
           if [[ $BRANCH_NAME == 'develop' ]] 
           then
-            echo "::set-output name=branch::devnet"
+            echo "::set-output name=env::devnet"
           elif [[ $BRANCH_NAME == 'master' ]]
           then
-            echo "::set-output name=branch::dex"          
+            echo "::set-output name=env::dex"          
           else
-            echo "::set-output name=branch::$BRANCH_NAME"
+            echo "::set-output name=env::$BRANCH_NAME"
           fi
 
-        id: extract_branch
+        id: extract_env
 
       - name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
           payload: "{\"pinata_url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
-          \"branch\":\"${{ steps.extract_branch.outputs.branch }}\",\"github_hash\": \"${{ github.sha }}\", 
-          \"sif_url\": \"https://${{ steps.extract_branch.outputs.branch }}.sifchain.finance\" }"
+          \"branch\":\"${{ steps.extract_branch.outputs.env }}\",\"github_hash\": \"${{ github.sha }}\", 
+          \"sif_url\": \"https://${{ steps.extract_branch.outputs.env }}.sifchain.finance\" }"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
