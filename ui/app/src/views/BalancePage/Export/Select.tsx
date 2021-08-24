@@ -79,9 +79,12 @@ export default defineComponent({
       if (
         feeAssetBalanceRef.value &&
         feeAmountRef.value &&
+        computedExportAssetAmount.value &&
         feeAmountRef.value.asset.symbol === exportTokenRef.value?.asset.symbol
       ) {
-        const totalAmount = exportTokenRef.value.amount.add(feeAmountRef.value);
+        const totalAmount = computedExportAssetAmount.value.add(
+          feeAmountRef.value,
+        );
         if (totalAmount.greaterThan(feeAssetBalanceRef.value)) {
           return `Not enough ${feeAmountRef.value.displaySymbol.toUpperCase()} for Export Amount plus Fee`;
         }
