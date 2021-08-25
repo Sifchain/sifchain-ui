@@ -21,18 +21,19 @@ export type TokenListItem = {
   }[];
 };
 
-export const useTokenList = (
-  props: {
-    networks?: Ref<Network[]>;
-    showDecomissionedAssetsWithBalance?: boolean;
-  } = {},
-) => {
+export type TokenListParams = {
+  networks?: Ref<Network[]>;
+  showDecomissionedAssetsWithBalance?: boolean;
+  showDecomissionedAssets?: boolean;
+};
+
+export const useTokenList = (params: TokenListParams) => {
   const { store, config, usecases } = useCore();
 
   const tokenList = computed<TokenListItem[]>(() => {
     const pendingTransfers = Object.values(store.tx.pendingTransfers);
 
-    const networksSet = new Set(props.networks?.value || []);
+    const networksSet = new Set(params.networks?.value || []);
 
     return config.assets
       .filter((asset: IAsset) => {
@@ -64,8 +65,11 @@ export const useTokenList = (
       })
       .filter((token) => {
         if (token.asset.decommissioned) {
+          if (params.showDecomissionedAssets) {
+            return true;
+          }
           return (
-            props.showDecomissionedAssetsWithBalance &&
+            params.showDecomissionedAssetsWithBalance &&
             parseFloat(token.amount.amount.toString()) > 0
           );
         }
@@ -84,8 +88,9 @@ export const useTokenList = (
 export const useToken = (params: {
   network: Ref<Network>;
   symbol: Ref<string>;
+  tokenListParams?: TokenListParams;
 }) => {
-  const tokenListRef = useTokenList();
+  const tokenListRef = useTokenList(params.tokenListParams || {});
 
   return computed(() => {
     return tokenListRef.value?.find((token) => {

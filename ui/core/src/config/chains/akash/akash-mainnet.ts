@@ -4,7 +4,7 @@ export const AKASH_MAINNET: IBCChainConfig = {
   network: Network.AKASH,
   chainType: "ibc",
   displayName: "Akash",
-  blockExplorerUrl: "https://akash.bigdipper.live",
+  blockExplorerUrl: "https://akash.aneka.io",
   nativeAssetSymbol: "uakt",
   chainId: "akashnet-2",
   rpcUrl: "https://rpc-akash.keplr.app",
