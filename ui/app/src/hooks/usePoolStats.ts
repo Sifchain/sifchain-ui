@@ -29,6 +29,8 @@ export interface Headers {
   "Access-Control-Allow-Origin": string;
 }
 
+const hasLoggedError: Record<string, boolean> = {};
+
 export const usePoolStats = () => {
   const { store } = useCore();
   const data = useAsyncDataCached("poolStats", async () => {
@@ -68,7 +70,12 @@ export const usePoolStats = () => {
         noPrefixAssetLookup[poolStat.symbol];
 
       if (!asset) {
-        return console.log("Found asset no match for poolStat", poolStat);
+        if (!hasLoggedError[poolStat.symbol]) {
+          // Don't spam logs for not-found stats, because this happens a lot
+          hasLoggedError[poolStat.symbol] = true;
+          console.log("Found no asset match for poolStat", poolStat);
+        }
+        return;
       }
 
       poolStatLookup[asset.symbol] = {

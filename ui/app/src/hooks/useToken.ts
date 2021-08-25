@@ -11,14 +11,13 @@ import {
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
 import { InterchainTx } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
+import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 
 export type TokenListItem = {
   amount: IAssetAmount;
   asset: IAsset;
-  pendingImports: {
-    transactionStatus: TransactionStatus;
-    interchainTx: InterchainTx;
-  }[];
+  pendingImports: PendingTransferItem[];
+  pendingExports: PendingTransferItem[];
 };
 
 export type TokenListParams = {
@@ -50,17 +49,27 @@ export const useTokenList = (params: TokenListParams) => {
           return asset.symbol.toLowerCase() === symbol.toLowerCase();
         });
 
-        const assetTransfers = pendingTransfers.filter((transfer) => {
-          return (
-            transfer.interchainTx.toChain.network === asset.network &&
+        const pendingImports: PendingTransferItem[] = [];
+        const pendingExports: PendingTransferItem[] = [];
+        pendingTransfers.forEach((transfer) => {
+          if (
             isLikeSymbol(transfer.interchainTx.assetAmount.symbol, asset.symbol)
-          );
+          ) {
+            const array =
+              transfer.interchainTx.toChain.network === asset.network
+                ? pendingImports
+                : transfer.interchainTx.fromChain.network === asset.network
+                ? pendingExports
+                : null;
+            if (array) array.push(transfer);
+          }
         });
 
         return {
           amount: !amount ? AssetAmount(asset, "0") : amount,
           asset,
-          pendingImports: assetTransfers,
+          pendingImports,
+          pendingExports,
         };
       })
       .filter((token) => {
