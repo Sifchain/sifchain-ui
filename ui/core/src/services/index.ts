@@ -73,6 +73,7 @@ export function createServices(context: ServiceContext) {
     setTimeout(() => {
       IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
       IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
+      IBCService.logIBCNetworkMetadata(Network.SENTINEL);
       EthbridgeService?.fetchAllTokenAddresses();
     }, 8 * 1000);
   } catch (e) {}
