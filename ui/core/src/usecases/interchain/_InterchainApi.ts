@@ -38,6 +38,7 @@ export type InterchainTx = SifchainInterchainTx | IBCInterchainTx;
 
 export interface InterchainTxEvents {
   tx_sent: (tx: InterchainTx) => void;
+  tx_complete: (tx: InterchainTx) => void;
 }
 export const interchainTxEmitter = new EventEmitter() as TypedEmitter<InterchainTxEvents>;
 
