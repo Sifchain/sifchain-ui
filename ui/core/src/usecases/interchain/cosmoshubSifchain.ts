@@ -17,6 +17,8 @@ import { isBroadcastTxFailure } from "@cosmjs/stargate";
 import { findAttribute, parseRawLog, Log } from "@cosmjs/stargate/build/logs";
 import { createIteratorSubject } from "../../utils/iteratorSubject";
 
+import { IBCTransferSubscriber } from "./utils";
+
 export default function createCosmoshubSifchainApi(context: UsecaseContext) {
   return new CosmoshubSifchainInterchainApi(
     context,
@@ -27,6 +29,7 @@ export default function createCosmoshubSifchainApi(context: UsecaseContext) {
 
 export class CosmoshubSifchainInterchainApi
   implements InterchainApi<IBCInterchainTx> {
+  subscriber = IBCTransferSubscriber(this.context);
   constructor(
     public context: UsecaseContext,
     public fromChain: Chain,
@@ -92,50 +95,8 @@ export class CosmoshubSifchainInterchainApi
   async *subscribeToTransfer(
     tx: IBCInterchainTx,
   ): AsyncGenerator<TransactionStatus> {
-    const logs = tx.meta?.logs;
-    if (!logs) return;
-
-    yield {
-      state: "accepted",
-      hash: tx.hash,
-    };
-
-    const sequence = findAttribute(logs, "send_packet", "packet_sequence");
-    const dstChannel = findAttribute(logs, "send_packet", "packet_dst_channel");
-    const dstPort = findAttribute(logs, "send_packet", "packet_dst_port");
-    const timeoutTimestampNanoseconds = findAttribute(
-      logs,
-      "send_packet",
-      "packet_timeout_timestamp",
-    );
-    const timeoutTimestampMs =
-      BigInt(timeoutTimestampNanoseconds.value as string) / BigInt(1000000);
-
-    while (true) {
-      await new Promise((r) => setTimeout(r, 1000));
-      if (+timeoutTimestampMs.toString() < Date.now()) {
-        yield {
-          state: "failed",
-          hash: tx.hash,
-          memo: "Timed out waiting for packet receipt",
-        };
-        break;
-      }
-      try {
-        const received = await this.context.services.ibc.checkIfPacketReceived(
-          Network.SIFCHAIN,
-          dstChannel.value,
-          dstPort.value,
-          sequence.value,
-        );
-        if (received) {
-          yield {
-            state: "completed",
-            hash: tx.hash,
-          };
-          return;
-        }
-      } catch (e) {}
+    for await (const ev of this.subscriber.subscribe(tx)) {
+      yield ev;
     }
   }
 }

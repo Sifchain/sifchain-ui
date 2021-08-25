@@ -163,6 +163,9 @@ const UserPoolItem = defineComponent({
     const externalToken = useToken({
       network: ref(Network.SIFCHAIN),
       symbol: externalSymbolRef,
+      tokenListParams: {
+        showDecomissionedAssets: true,
+      },
     });
 
     const pool = computed(

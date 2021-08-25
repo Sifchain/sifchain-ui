@@ -98,12 +98,7 @@ export const accountStore = Vuextra.createStore({
               : (15 + Math.random() * 10) * 1000; // Some drift on updates for other chains.
 
           const timeoutId = setTimeout(async () => {
-            const balances = await usecase.getBalances(
-              network,
-              self.state[network].address,
-            );
-
-            self.setBalances({ network, balances });
+            await self.updateBalances(network);
             scheduleUpdate();
           }, UPDATE_DELAY);
           walletBalancePolls.set(network, timeoutId);
@@ -111,6 +106,18 @@ export const accountStore = Vuextra.createStore({
       } catch (error) {
         console.error(network, "wallet connect error", error);
       }
+    },
+
+    async updateBalances(network: Network) {
+      if (!self.state[network].connected) return;
+
+      const usecase = getUsecase(network);
+      const balances = await usecase.getBalances(
+        network,
+        self.state[network].address,
+      );
+
+      self.setBalances({ network, balances });
     },
 
     async disconnect(network: Network) {
