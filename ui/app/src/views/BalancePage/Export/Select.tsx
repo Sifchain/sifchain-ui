@@ -124,7 +124,10 @@ export default defineComponent({
           icon: "interactive/arrows-in" as IconName,
           props: {
             disabled: false,
-            onClick: () => walletPicker.show(),
+            onClick: () => {
+              walletPicker.show();
+              accountStore.load(Network.SIFCHAIN);
+            },
           },
         },
         {
@@ -134,7 +137,10 @@ export default defineComponent({
           } Wallet`,
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () => walletPicker.show(),
+            onClick: () => {
+              walletPicker.show();
+              accountStore.load(networkRef.value);
+            },
           },
         },
         {

@@ -87,6 +87,8 @@ export default defineComponent({
               <div class="flex items-center">
                 {stateRef.value.connected
                   ? shortenHash(stateRef.value.address, 6, 4)
+                  : stateRef.value.connecting
+                  ? "Connecting..."
                   : "Connect"}
                 {stateRef.value.connecting ? (
                   <AssetIcon
