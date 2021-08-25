@@ -51,7 +51,6 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
         message: `Import Pending: ${title}`,
         loader: true,
         onAction: action,
-        manualClose: true,
       };
     } else if (event.type === "PegTransactionErrorEvent") {
       return {
@@ -100,7 +99,6 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
         message: `Export Pending: ${title}`,
         loader: true,
         onAction: action,
-        manualClose: true,
       };
     } else if (event.type === "UnpegTransactionErrorEvent") {
       return {
