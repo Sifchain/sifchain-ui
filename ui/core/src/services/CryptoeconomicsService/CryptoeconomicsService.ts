@@ -62,6 +62,14 @@ export default function createCryptoeconomicsService(
     ) => {
       return `https://cryptoeconomics.sifchain.finance/#${address}&type=${rewardType}`;
     },
+    async fetchSummaryAPY() {
+      const summaryAPY: number = await fetch(
+        `https://api-cryptoeconomics.sifchain.finance/api/lm?key=apy-summary`,
+      )
+        .then((r) => r.json())
+        .then((r) => r.summaryAPY);
+      return summaryAPY;
+    },
     fetchVsData: (options: FetchDataProps) =>
       fetchData({
         ...options,

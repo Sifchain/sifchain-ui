@@ -39,7 +39,7 @@ export default defineComponent({
           icon="navigation/rowan"
           showClose
           onClose={() => {
-            router.back();
+            router.push({ name: "Balances" });
           }}
         >
           <p class="text-[22px]">Begin your journey with Sifchain</p>

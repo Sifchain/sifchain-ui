@@ -46,7 +46,7 @@ export const usePoolStatItem = (props: { pool: Ref<PoolStat | undefined> }) => {
       arb,
       poolDepth,
       volume,
-      poolAPY,
+      poolAPY: props.pool.value?.poolAPY,
       image,
     };
   });
