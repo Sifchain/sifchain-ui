@@ -1,3 +1,5 @@
+import { symbolWithoutPrefix } from "@/utils/symbol";
+import { getChainsService, IAsset, Network } from "@sifchain/sdk";
 import { computed } from "vue";
 import { useAsyncData } from "./useAsyncData";
 import { useAsyncDataCached } from "./useAsyncDataCached";
@@ -50,10 +52,24 @@ export const usePoolStats = () => {
   const pools = computed(() => {
     if (isLoading.value) return [];
 
-    const poolStatLookup: Record<string, PoolStat> = {};
+    const noPrefixAssetLookup: Record<string, IAsset> = {};
+    getChainsService()
+      .get(Network.SIFCHAIN)
+      .assets.forEach((asset) => {
+        noPrefixAssetLookup[
+          symbolWithoutPrefix(asset.symbol).toLowerCase()
+        ] = asset;
+      });
 
+    const poolStatLookup: Record<string, PoolStat> = {};
     data.data.value?.poolData.pools.forEach((poolStat) => {
-      poolStatLookup[poolStat.symbol] = poolStat;
+      const symbol = noPrefixAssetLookup[poolStat.symbol.toLowerCase()].symbol;
+      if (!symbol)
+        return console.log("Failed to find match for poolStat", poolStat);
+      poolStatLookup[symbol] = {
+        ...poolStat,
+        symbol,
+      };
     });
 
     const pools = Object.values(store.pools);
