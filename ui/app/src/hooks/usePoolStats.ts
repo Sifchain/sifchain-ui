@@ -23,6 +23,7 @@ export interface PoolStat {
   poolDepth: string;
   volume: string;
   arb: string;
+  poolAPY: string;
 }
 
 export interface Headers {
@@ -30,18 +31,33 @@ export interface Headers {
 }
 
 export const usePoolStats = () => {
-  const { store } = useCore();
+  const { store, services } = useCore();
+
   const data = useAsyncDataCached("poolStats", async () => {
+    let cryptoeconSummaryAPY = await services.cryptoeconomics
+      .fetchSummaryAPY()
+      .catch((e) => console.error(e));
+    cryptoeconSummaryAPY = cryptoeconSummaryAPY || 0;
     const res = await fetch(
       "https://data.sifchain.finance/beta/asset/tokenStats",
     );
     const json: PoolStatsResponseData = await res.json();
     const poolData = json.body;
-
     return {
-      poolData,
+      poolData: {
+        ...poolData,
+        pools: poolData.pools.map((p) => ({
+          ...p,
+          poolAPY: (
+            (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
+              100 +
+            (/(akt|vpn|atom)/gim.test(p.symbol) ? cryptoeconSummaryAPY || 0 : 0)
+          ).toFixed(1),
+        })),
+      },
       liqAPY: 0,
       rowanUsd: poolData.rowanUSD,
+      cryptoeconSummaryAPY: cryptoeconSummaryAPY,
     };
   });
 
