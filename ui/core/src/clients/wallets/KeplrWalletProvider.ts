@@ -140,15 +140,21 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     };
   }
 
-  denomTraceLookup: Record<string, QueryDenomTraceResponse> = {};
+  denomTraceLookup: Record<
+    string,
+    Record<string, QueryDenomTraceResponse>
+  > = {};
   async denomTrace(chain: Chain, denom: string) {
-    if (!this.denomTraceLookup[denom]) {
-      const queryClient = await this.getQueryClientCached(chain);
-      this.denomTraceLookup[denom] = await queryClient.ibc.transfer.denomTrace(
-        denom,
-      );
+    if (!this.denomTraceLookup[chain.chainConfig.chainId]) {
+      this.denomTraceLookup[chain.chainConfig.chainId] = {};
     }
-    return this.denomTraceLookup[denom];
+    if (!this.denomTraceLookup[chain.chainConfig.chainId][denom]) {
+      const queryClient = await this.getQueryClientCached(chain);
+      this.denomTraceLookup[chain.chainConfig.chainId][
+        denom
+      ] = await queryClient.ibc.transfer.denomTrace(denom);
+    }
+    return this.denomTraceLookup[chain.chainConfig.chainId][denom];
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
@@ -185,9 +191,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           if (isInvalidChannel) continue;
 
           const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
-          if (chain.displayName === "Sifchain") {
-            console.log(coin, denomTrace.denomTrace, { isInvalidChannel });
-          }
 
           const asset = chain.assets.find(
             (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
