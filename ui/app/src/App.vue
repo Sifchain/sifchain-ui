@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect } from "vue";
+import { defineComponent, watchEffect, ref, onMounted } from "vue";
 import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
@@ -41,10 +41,26 @@ import Layout from "@/componentsLegacy/Layout/Layout";
 import { useRoute, useRouter } from "vue-router";
 import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
+import OnboardingModal from "@/components/OnboardingModal";
 
 const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
 
-let hasShownGetRowanModal = false;
+let hasShownGetRowanModal = (() => {
+  try {
+    const val = !!localStorage.getItem("hasShownGetRowanModal");
+    return val;
+  } catch (e) {
+    return true;
+  }
+})();
+let hasShownOnboardingModal = (() => {
+  try {
+    const val = !!localStorage.getItem("hasShownOnboardingModal");
+    return val;
+  } catch (e) {
+    return true;
+  }
+})();
 export default defineComponent({
   name: "App",
   components: {
@@ -52,6 +68,7 @@ export default defineComponent({
     EnvAlert,
     SideBar,
     Layout,
+    OnboardingModal,
   },
   computed: {
     key() {
@@ -60,7 +77,14 @@ export default defineComponent({
     },
   },
   setup() {
+    const shouldShowOnboardingModal = ref(false);
     const router = useRouter();
+    const hasHadValidChanceToLoadBalances = ref(false);
+    onMounted(() => {
+      setTimeout(() => {
+        hasHadValidChanceToLoadBalances.value = true;
+      }, 3000);
+    });
     watchEffect(() => {
       const balances = accountStore.state.sifchain.balances;
       const hasSufficientRowanToTrade = balances.find(
@@ -72,6 +96,8 @@ export default defineComponent({
         (b) =>
           b.asset.symbol.toLowerCase() !== "rowan" && b.amount.greaterThan("0"),
       );
+      const shouldPossiblyShowOnboardingModal =
+        hasHadValidChanceToLoadBalances.value;
       if (
         !hasSufficientRowanToTrade &&
         hasImportedAssets &&
@@ -79,10 +105,22 @@ export default defineComponent({
       ) {
         hasShownGetRowanModal = true;
         router.push({ name: "GetRowan" });
+        localStorage.setItem("hasShownGetRowanModal", "true");
+      } else if (
+        shouldPossiblyShowOnboardingModal &&
+        !hasImportedAssets &&
+        !hasShownOnboardingModal
+      ) {
+        router.push({
+          name: "Welcome",
+        });
+        hasShownOnboardingModal = true;
+        localStorage.setItem("hasShownOnboardingModal", "true");
       }
     });
     /// Initialize app
     useInitialize();
+    return { shouldShowOnboardingModal };
   },
 });
 </script>

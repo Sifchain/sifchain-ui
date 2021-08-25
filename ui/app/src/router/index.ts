@@ -29,6 +29,7 @@ import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
+import OnboardingModal from "@/components/OnboardingModal";
 
 type SwapPageMeta = {
   title: string;
@@ -78,6 +79,11 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
       swapState: "idle",
     } as SwapPageMeta,
     children: [
+      {
+        path: "/welcome",
+        name: "Welcome",
+        component: OnboardingModal,
+      },
       {
         path: "confirm",
         name: "ConfirmSwap",
