@@ -59,7 +59,6 @@ export const usePoolStats = () => {
         noPrefixAssetLookup[
           symbolWithoutPrefix(asset.symbol).toLowerCase()
         ] = asset;
-        noPrefixAssetLookup[asset.displaySymbol.toLowerCase()] = asset;
       });
 
     const poolStatLookup: Record<string, PoolStat> = {};
@@ -68,8 +67,7 @@ export const usePoolStats = () => {
         noPrefixAssetLookup[poolStat.symbol.toLowerCase()] ||
         noPrefixAssetLookup[poolStat.symbol];
 
-      if (!asset && !(asset as any).__hasLogged) {
-        (asset as any).__hasLogged = true;
+      if (!asset) {
         return console.log("Found asset no match for poolStat", poolStat);
       }
 
