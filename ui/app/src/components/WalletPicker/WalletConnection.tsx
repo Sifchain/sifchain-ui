@@ -88,15 +88,22 @@ export default defineComponent({
                 {stateRef.value.connected
                   ? shortenHash(stateRef.value.address, 6, 4)
                   : "Connect"}
-                <AssetIcon
-                  icon="interactive/chevron-down"
-                  class="ml-[10px] w-[15px] h-[15px] transition-all"
-                  style={{
-                    transform: !instanceRef.value
-                      ? "rotate(-90deg)"
-                      : "rotate(0deg)",
-                  }}
-                />
+                {stateRef.value.connecting ? (
+                  <AssetIcon
+                    icon="interactive/anim-racetrack-spinner"
+                    class="ml-[10px] w-[15px] h-[15px] transition-all"
+                  />
+                ) : (
+                  <AssetIcon
+                    icon="interactive/chevron-down"
+                    class="ml-[10px] w-[15px] h-[15px] transition-all"
+                    style={{
+                      transform: !instanceRef.value
+                        ? "rotate(-90deg)"
+                        : "rotate(0deg)",
+                    }}
+                  />
+                )}
               </div>
             </div>
           </button>
