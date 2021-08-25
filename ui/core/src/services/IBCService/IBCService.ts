@@ -310,21 +310,20 @@ export class IBCService {
     const currentHeight = await receivingStargateCient.getHeight();
     const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const registry = await this.tokenRegistry.load();
-    const tokenRegistryEntry = registry.find((t) => t.baseDenom === symbol);
+    const transferTokenEntry = registry.find((t) => t.baseDenom === symbol);
 
-    if (!tokenRegistryEntry) {
+    if (!transferTokenEntry) {
       throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
     }
 
     let transferDenom: string;
-    const sifchainChain = getChainsService().get(Network.SIFCHAIN);
-
-    if (destinationChain.chainId === sifchainChain.chainConfig.chainId) {
-      // transfering into sifchain: use baseDenom (ie uakt)
-      transferDenom = tokenRegistryEntry.baseDenom;
+    console.log({ transferTokenEntry });
+    if (sourceChain.nativeAssetSymbol === transferTokenEntry.baseDenom) {
+      // transfering FROM token entry's token's chain: use baseDenom
+      transferDenom = transferTokenEntry.baseDenom;
     } else {
-      // transfering out of sifchain: use denom (ie ibc/xxx)
-      transferDenom = tokenRegistryEntry.denom;
+      // transfering this entry's token elsewhere: use ibc hash
+      transferDenom = transferTokenEntry.denom;
     }
 
     const transferMsg: MsgTransferEncodeObject = {
@@ -452,6 +451,7 @@ export class IBCService {
         console.log({ brdcstTxRes });
         responses.push(brdcstTxRes);
       } catch (e) {
+        console.error(e);
         responses.push({
           code:
             +e.message.split("code ").pop().split(" ")[0] || 100000000000000000,

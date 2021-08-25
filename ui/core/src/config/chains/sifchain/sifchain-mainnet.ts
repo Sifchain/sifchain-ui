@@ -10,7 +10,7 @@ export const SIFCHAIN_MAINNET: IBCChainConfig = {
   rpcUrl: "https://rpc.sifchain.finance",
   restUrl: "https://api.sifchain.finance",
   keplrChainInfo: {
-    chainName: "Sifchain IBC",
+    chainName: "Sifchain",
     chainId: "sifchain-1",
     rpc: "https://rpc",
     rest: "https://api",
