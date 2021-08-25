@@ -317,13 +317,14 @@ export class IBCService {
     }
 
     let transferDenom: string;
-    console.log({ transferTokenEntry });
+
     if (sourceChain.nativeAssetSymbol === transferTokenEntry.baseDenom) {
       // transfering FROM token entry's token's chain: use baseDenom
       transferDenom = transferTokenEntry.baseDenom;
     } else {
       // transfering this entry's token elsewhere: use ibc hash
-      transferDenom = transferTokenEntry.denom;
+      transferDenom =
+        params.assetAmountToTransfer.asset.ibcDenom || transferTokenEntry.denom;
     }
 
     const transferMsg: MsgTransferEncodeObject = {
