@@ -5,7 +5,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { PoolState } from "@sifchain/sdk";
+import { Network, PoolState } from "@sifchain/sdk";
 import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useCore } from "@/hooks/useCore";
@@ -57,6 +57,7 @@ export default defineComponent({
       if (data.modalStatus.value === "processing") {
         return (
           <TransactionDetailsModal
+            network={Network.SIFCHAIN}
             icon="interactive/minus"
             onClose={close}
             details={detailsRef}
