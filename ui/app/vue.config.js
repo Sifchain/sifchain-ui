@@ -42,7 +42,7 @@ module.exports = {
   },
   css: {
     extract: {
-      filename: "app.css",
+      filename: "app.[hash].css",
     },
     loaderOptions: {
       sass: {
