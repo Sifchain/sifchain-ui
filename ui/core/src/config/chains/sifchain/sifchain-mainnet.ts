@@ -6,12 +6,12 @@ export const SIFCHAIN_MAINNET: IBCChainConfig = {
   displayName: "Sifchain",
   blockExplorerUrl: "https://blockexplorer.sifchain.finance",
   nativeAssetSymbol: "rowan",
-  chainId: "sifchain",
+  chainId: "sifchain-1",
   rpcUrl: "https://rpc.sifchain.finance",
   restUrl: "https://api.sifchain.finance",
   keplrChainInfo: {
-    chainName: "Sifchain",
-    chainId: "sifchain",
+    chainName: "Sifchain IBC",
+    chainId: "sifchain-1",
     rpc: "https://rpc",
     rest: "https://api",
     stakeCurrency: {
