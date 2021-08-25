@@ -1,4 +1,5 @@
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { useChainsList } from "@/hooks/useChains";
 import { TokenListItem } from "@/hooks/useToken";
 import { Network } from "@sifchain/sdk";
 
@@ -15,15 +16,23 @@ export function sortAndFilterTokens(props: {
   props.sortBy = props.sortBy || "symbol";
   props.searchQuery = props.searchQuery || "";
 
-  const promotedTokensByRank = [
-    props.network === Network.SIFCHAIN && "rowan",
-    props.network === Network.ETHEREUM && "eth",
-    props.network === Network.COSMOSHUB && "uphoton",
-  ].reduce((prev, curr, currIndex) => {
-    if (!curr) return prev;
-    prev[curr] = currIndex;
-    return prev;
-  }, {} as { [key: string]: number });
+  const promotedTokensByRank = useChainsList()
+    .map((chain) => {
+      return props.network === chain.network && chain.nativeAsset.symbol;
+    })
+    .reduce((prev, curr, currIndex) => {
+      if (!curr) return prev;
+      prev[curr] = currIndex;
+      return prev;
+    }, {} as { [key: string]: number });
+
+  const getTokenPendingImportTotal = (token: TokenListItem) => {
+    let total = 0;
+    token.pendingImports.forEach((data) => {
+      total += parseFloat(data.interchainTx.assetAmount.amount.toString());
+    });
+    return total;
+  };
 
   const array = props.tokens
     .filter((token) => {
@@ -38,6 +47,8 @@ export function sortAndFilterTokens(props: {
       );
     })
     .sort((a: TokenListItem, b: TokenListItem) => {
+      const isAtom = a.asset.symbol === "uatom" || b.asset.symbol === "uatom";
+
       if (props.sortBy === "balance") {
         // Balance: descending
         return (
@@ -47,25 +58,24 @@ export function sortAndFilterTokens(props: {
       } else {
         // Sort by: Name, then balance, then rank
         const [aRank, bRank] = [
-          promotedTokensByRank[a.asset.displaySymbol.toLowerCase()] ?? Infinity,
-          promotedTokensByRank[b.asset.displaySymbol.toLowerCase()] ?? Infinity,
+          promotedTokensByRank[a.asset.symbol.toLowerCase()] ?? Infinity,
+          promotedTokensByRank[b.asset.symbol.toLowerCase()] ?? Infinity,
         ];
+        if (isAtom) {
+          console.log({ isAtom, aRank, bRank });
+        }
+
         if (aRank !== Infinity || bRank !== Infinity) {
           return aRank < bRank ? -1 : bRank < aRank ? 1 : 0;
         }
-        const aAmountParsed = +a.amount.amount.toString();
-        const bAmountParsed = +b.amount.amount.toString();
+        const aAmountParsed =
+          +a.amount.amount.toString() + getTokenPendingImportTotal(a);
+        const bAmountParsed =
+          +b.amount.amount.toString() + getTokenPendingImportTotal(b);
         if (aAmountParsed !== bAmountParsed) {
           return !!aAmountParsed > !!bAmountParsed ? -1 : 1;
         }
 
-        const aImporting = a.pendingImports.length > 0;
-        const bImporting = b.pendingImports.length > 0;
-        if (aImporting && !bImporting) {
-          return -1;
-        } else if (bImporting && !aImporting) {
-          return 1;
-        }
         return a.asset.displaySymbol.localeCompare(b.asset.displaySymbol);
       }
     });
