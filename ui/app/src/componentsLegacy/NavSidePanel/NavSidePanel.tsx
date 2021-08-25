@@ -10,6 +10,7 @@ import MoreMenu from "./NavMoreMenu";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
+import { accountStore } from "@/store/modules/accounts";
 
 export default defineComponent({
   props: {},
@@ -106,6 +107,16 @@ export default defineComponent({
                   </div>
                 }
               />
+              {!accountStore.state.sifchain.balances.find(
+                (b) =>
+                  b.asset.symbol.includes("rowan") && b.amount.greaterThan("0"),
+              ) ? (
+                <NavSidePanelItem
+                  displayName="Get Free Rowan"
+                  icon="navigation/rowan"
+                  href="/balances/get-rowan"
+                />
+              ) : null}
               <Tooltip
                 trigger="click"
                 placement="bottom"
