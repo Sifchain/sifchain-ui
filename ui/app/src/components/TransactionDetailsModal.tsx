@@ -9,6 +9,7 @@ import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
 import { FormDetailsType } from "./Form";
 import { Network } from "@sifchain/sdk";
 import { getImportLocation } from "@/views/BalancePage/Import/useImportData";
+import { useChains } from "@/hooks/useChains";
 
 export default defineComponent({
   name: "TransactionDetailsModal",
@@ -33,8 +34,8 @@ export default defineComponent({
       type: Object as PropType<Ref<JSX.Element>>,
     },
     network: {
-      type: String as Extract<Network, "ethereum" | "cosmoshub">,
-      required: false,
+      type: String as PropType<Network>,
+      required: true,
     },
   },
   setup(props) {
@@ -62,11 +63,11 @@ export default defineComponent({
                 class="text-white block text-center cursor-pointer mt-[10px] text-base underline"
                 target="_blank"
                 rel="noopener noreferrer"
-                href={getBlockExplorerUrl(
-                  config.sifChainId,
-                  props.transactionDetails.value.tx.hash,
-                  props.network,
-                )}
+                href={useChains()
+                  .get(props.network)
+                  .getBlockExplorerUrlForTxHash(
+                    props.transactionDetails.value.tx.hash,
+                  )}
               >
                 View Transaction on the Block Explorer
               </a>
