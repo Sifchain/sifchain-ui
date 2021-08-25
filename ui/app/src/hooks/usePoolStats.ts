@@ -63,13 +63,14 @@ export const usePoolStats = () => {
 
     const poolStatLookup: Record<string, PoolStat> = {};
     data.data.value?.poolData.pools.forEach((poolStat) => {
-      const symbol = noPrefixAssetLookup[poolStat.symbol.toLowerCase()].symbol;
-      if (!symbol)
-        return console.log("Failed to find match for poolStat", poolStat);
-      poolStatLookup[symbol] = {
-        ...poolStat,
-        symbol,
-      };
+      try {
+        const symbol =
+          noPrefixAssetLookup[poolStat.symbol.toLowerCase()].symbol;
+        poolStatLookup[symbol] = {
+          ...poolStat,
+          symbol,
+        };
+      } catch (error) {}
     });
 
     const pools = Object.values(store.pools);
