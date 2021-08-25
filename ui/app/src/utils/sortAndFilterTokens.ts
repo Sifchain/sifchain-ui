@@ -16,15 +16,12 @@ export function sortAndFilterTokens(props: {
   props.sortBy = props.sortBy || "symbol";
   props.searchQuery = props.searchQuery || "";
 
-  const promotedTokensByRank = useChainsList()
-    .map((chain) => {
-      return props.network === chain.network && chain.nativeAsset.symbol;
-    })
-    .reduce((prev, curr, currIndex) => {
-      if (!curr) return prev;
-      prev[curr] = currIndex;
-      return prev;
-    }, {} as { [key: string]: number });
+  const promotedTokensByRank: Record<string, number> = {};
+  useChainsList().forEach((chain) => {
+    if (props.network === chain.network) {
+      promotedTokensByRank[chain.nativeAsset.symbol] = 0;
+    }
+  });
 
   const getTokenPendingImportTotal = (token: TokenListItem) => {
     let total = 0;
@@ -47,8 +44,6 @@ export function sortAndFilterTokens(props: {
       );
     })
     .sort((a: TokenListItem, b: TokenListItem) => {
-      const isAtom = a.asset.symbol === "uatom" || b.asset.symbol === "uatom";
-
       if (props.sortBy === "balance") {
         // Balance: descending
         return (
@@ -61,9 +56,6 @@ export function sortAndFilterTokens(props: {
           promotedTokensByRank[a.asset.symbol.toLowerCase()] ?? Infinity,
           promotedTokensByRank[b.asset.symbol.toLowerCase()] ?? Infinity,
         ];
-        if (isAtom) {
-          console.log({ isAtom, aRank, bRank });
-        }
 
         if (aRank !== Infinity || bRank !== Infinity) {
           return aRank < bRank ? -1 : bRank < aRank ? 1 : 0;

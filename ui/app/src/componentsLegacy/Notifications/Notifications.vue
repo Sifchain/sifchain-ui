@@ -91,7 +91,7 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
       return {
         id: event.payload.interchainTx.hash,
         type: "info",
-        message: `Exporting ${title}`,
+        message: `Export Pending: ${title}`,
         loader: true,
         onAction: action,
       };

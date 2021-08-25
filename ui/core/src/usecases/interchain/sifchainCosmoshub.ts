@@ -16,6 +16,7 @@ import { parseTxFailure } from "../../services/SifService/parseTxFailure";
 import { SifchainChain, CosmoshubChain } from "../../services/ChainsService";
 import { isBroadcastTxFailure } from "@cosmjs/stargate";
 import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
+import { IBCTransferSubscriber } from "./utils";
 
 export default function createCosmoshubSifchainApi(context: UsecaseContext) {
   return new SifchainCosmoshubInterchainApi(
@@ -27,6 +28,7 @@ export default function createCosmoshubSifchainApi(context: UsecaseContext) {
 
 export class SifchainCosmoshubInterchainApi
   implements InterchainApi<IBCInterchainTx> {
+  subscriber = IBCTransferSubscriber(this.context);
   constructor(
     public context: UsecaseContext,
     public fromChain: Chain,
@@ -84,11 +86,8 @@ export class SifchainCosmoshubInterchainApi
   async *subscribeToTransfer(
     tx: IBCInterchainTx,
   ): AsyncGenerator<TransactionStatus> {
-    // We haven't implemented subscribing to exports, so
-    // just give one accepted event then abort.
-    yield {
-      state: "accepted",
-      hash: tx.hash,
-    };
+    for await (const ev of this.subscriber.subscribe(tx)) {
+      yield ev;
+    }
   }
 }

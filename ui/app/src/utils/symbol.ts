@@ -1,5 +1,5 @@
 export function symbolWithoutPrefix(symbol: string) {
-  return symbol.replace(/^(c|e|u)/, "");
+  return symbol.toLowerCase().replace(/^(c|e|u)/, "");
 }
 
 export function isLikeSymbol(symbol1: string, symbol2: string) {
