@@ -14,6 +14,7 @@ import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { Tooltip } from "@/components/Tooltip";
 import { effect } from "@vue/reactivity";
+import { Network } from "@sifchain/sdk";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -129,6 +130,7 @@ export default defineComponent({
       if (data.modalStatus.value === "processing") {
         return (
           <TransactionDetailsModal
+            network={Network.SIFCHAIN}
             icon="interactive/plus"
             onClose={close}
             details={detailsRef}

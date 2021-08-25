@@ -52,6 +52,7 @@ export default defineComponent({
       return (
         <TransactionDetailsModal
           transactionDetails={exportData.unpegEventDetails}
+          network={exportStore.state.draft.network}
           completedCta={completedCtaRef as Ref<JSX.Element>}
           icon="interactive/arrow-up"
           details={exportData.detailsRef}

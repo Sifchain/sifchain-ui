@@ -28,6 +28,7 @@ export default defineComponent({
     });
     return () => (
       <TransactionDetailsModal
+        network={importStore.state.draft.network}
         transactionDetails={pegEventDetails}
         icon="interactive/arrow-down"
         onClose={exitImport}
