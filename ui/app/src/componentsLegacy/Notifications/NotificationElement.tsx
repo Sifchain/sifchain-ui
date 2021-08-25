@@ -43,6 +43,7 @@ export const NotificationElement = defineComponent({
 
     let timeoutId: NodeJS.Timeout;
     onMounted(() => {
+      if (props.notification.manualClose) return;
       timeoutId = setTimeout(() => {
         removeRef.value();
       }, 10 * 1000);
@@ -56,7 +57,7 @@ export const NotificationElement = defineComponent({
           removeRef.value();
         }}
         class={[
-          "h-[40px] flex px-[14px] bg-black drop-shadow-lg mb-[16px] rounded-lg relative cursor-pointer text-md items-center tracking-[-0.025em]",
+          "h-[40px] flex px-[10px] bg-black drop-shadow-lg mb-[16px] rounded-lg relative cursor-pointer text-md items-center tracking-[-0.025em]",
           props.notification?.onAction && "cursor-pointer",
           data.class,
         ]}
@@ -71,6 +72,24 @@ export const NotificationElement = defineComponent({
           class="mr-[6px]"
         />
         {props.notification.message}
+        {!!props.notification.manualClose && (
+          <>
+            <div class="flex-1" />
+            <button
+              onClick={(ev) => {
+                removeRef.value();
+                ev.stopPropagation();
+              }}
+              class="text-white p-[2px] ml-[8px] hover:bg-gray-action_button cursor-pointer rounded-sm"
+            >
+              <AssetIcon
+                icon="interactive/close"
+                class="opacity-50"
+                size={20}
+              />
+            </button>
+          </>
+        )}
       </div>
     );
   },

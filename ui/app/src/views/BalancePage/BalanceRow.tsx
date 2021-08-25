@@ -159,69 +159,130 @@ export default defineComponent({
             </span>
           </div>
         </td>
-        <td class="text-right align-middle min-w-[200px]">
+        <td class="text-right align-middle min-w-[160px]">
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80">
               {isNoBalanceRef.value
-                ? props.tokenItem.pendingImports.length
+                ? props.tokenItem.pendingImports.length ||
+                  props.tokenItem.pendingExports.length
                   ? "..."
                   : null
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
 
-            {props.tokenItem.pendingImports.length > 0 && (
-              <Tooltip
-                arrow
-                interactive
-                key={JSON.stringify(props.tokenItem.pendingImports)}
-                placement="top"
-                appendTo={() =>
-                  document.querySelector("#portal-target") as Element
-                }
-                maxWidth={"none"}
-                offset={[112, 20]}
-                content={
-                  <div class="text-left w-[400px]">
-                    <p class="mb-1">
-                      You have the following pending import transactions. The
-                      imported tokens will usually be available for use on
-                      Sifchain within 20 minutes, sometimes upwards of 60
-                      minutes.
-                    </p>
-                    <ul class="list-disc list-inside">
-                      {props.tokenItem.pendingImports.map(
-                        ({ interchainTx }) => (
-                          <li>
-                            Import {formatAssetAmount(interchainTx.assetAmount)}{" "}
-                            {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
-                            from {interchainTx.fromChain.displayName} (
-                            <a
-                              class="font-normal text-accent-base hover:text-underline"
-                              href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
-                                interchainTx.hash,
-                              )}
-                              title={interchainTx.hash}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {shortenHash(interchainTx.hash)}
-                            </a>
-                            )
-                          </li>
-                        ),
-                      )}
-                    </ul>
+            <div class="absolute top-50% left-[100%] ml-[2px] flex items-center gap-[4px]">
+              {props.tokenItem.pendingImports.length > 0 && (
+                <Tooltip
+                  arrow
+                  interactive
+                  key={JSON.stringify(props.tokenItem.pendingImports)}
+                  placement="top"
+                  appendTo={() =>
+                    document.querySelector("#portal-target") as Element
+                  }
+                  maxWidth={"none"}
+                  content={
+                    <div class="text-left w-[400px]">
+                      <p class="mb-1">
+                        You have the following pending import transactions. The
+                        imported tokens will usually be available for use on
+                        Sifchain within 20 minutes, sometimes upwards of 60
+                        minutes.
+                      </p>
+                      <ul class="list-disc list-inside">
+                        {props.tokenItem.pendingImports.map(
+                          ({ interchainTx }) => (
+                            <li>
+                              Import{" "}
+                              {formatAssetAmount(interchainTx.assetAmount)}{" "}
+                              {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
+                              from {interchainTx.fromChain.displayName} (
+                              <a
+                                class="font-normal text-accent-base hover:text-underline"
+                                href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
+                                  interchainTx.hash,
+                                )}
+                                title={interchainTx.hash}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {shortenHash(interchainTx.hash)}
+                              </a>
+                              )
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  }
+                >
+                  <div>
+                    <AssetIcon
+                      size={20}
+                      icon="interactive/arrow-down"
+                      class="text-gray-800 animate-pulse-slow"
+                    />
                   </div>
-                }
-              >
-                <div class="absolute top-50% left-[100%] translate-y-[-50%]">
-                  <ProgressRing size={28} ringWidth={4} progress={50} />
-                </div>
-              </Tooltip>
-            )}
+                </Tooltip>
+              )}
+              {props.tokenItem.pendingExports.length > 0 && (
+                <Tooltip
+                  arrow
+                  interactive
+                  key={JSON.stringify(props.tokenItem.pendingExports)}
+                  placement="top"
+                  appendTo={() =>
+                    document.querySelector("#portal-target") as Element
+                  }
+                  maxWidth={"none"}
+                  content={
+                    <div class="text-left w-[400px]">
+                      <p class="mb-1">
+                        You have the following pending export transactions. The
+                        exported tokens will usually be available for use on
+                        their target chain within 20 minutes, sometimes upwards
+                        of 60 minutes.
+                      </p>
+                      <ul class="list-disc list-inside">
+                        {props.tokenItem.pendingExports.map(
+                          ({ interchainTx }) => (
+                            <li>
+                              Export{" "}
+                              {formatAssetAmount(interchainTx.assetAmount)}{" "}
+                              {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
+                              to {interchainTx.toChain.displayName} (
+                              <a
+                                class="font-normal text-accent-base hover:text-underline"
+                                href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
+                                  interchainTx.hash,
+                                )}
+                                title={interchainTx.hash}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {shortenHash(interchainTx.hash)}
+                              </a>
+                              )
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  }
+                >
+                  <div>
+                    <AssetIcon
+                      size={20}
+                      icon="interactive/arrow-up"
+                      class="text-gray-800 animate-pulse-slow"
+                    />
+                  </div>
+                </Tooltip>
+              )}
+            </div>
           </div>
         </td>
-        <td class="text-right align-middle w-[380px]">
+        <td class="text-right align-middle w-[420px]">
           <div class="inline-flex items-center">
             {buttonsRef.value
               .filter((definition) => definition.visible)
