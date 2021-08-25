@@ -107,7 +107,8 @@ export default defineComponent({
                   </div>
                 }
               />
-              {!accountStore.state.sifchain.balances.find(
+              {!accountStore.state.sifchain.connecting &&
+              !accountStore.state.sifchain.balances.find(
                 (b) =>
                   b.asset.symbol.includes("rowan") && b.amount.greaterThan("0"),
               ) ? (

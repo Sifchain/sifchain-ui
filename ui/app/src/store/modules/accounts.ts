@@ -10,6 +10,7 @@ export interface IWalletServiceState {
   accounts: string[];
   connected: boolean;
   balances: IAssetAmount[];
+  connecting: boolean;
   log: string;
 }
 const initWalletState = (network: Network) => ({
@@ -18,6 +19,7 @@ const initWalletState = (network: Network) => ({
   balances: [],
   address: "",
   connected: false,
+  connecting: false,
   log: "",
 });
 
@@ -60,6 +62,9 @@ export const accountStore = Vuextra.createStore({
       ) as Record<string, Record<string, IAssetAmount>>,
   }),
   mutations: (state) => ({
+    setConnecting(payload: { network: Network; connecting: boolean }) {
+      state[payload.network].connecting = payload.connecting;
+    },
     setConnected(payload: { network: Network; connected: boolean }) {
       state[payload.network].connected = payload.connected;
     },
@@ -80,9 +85,11 @@ export const accountStore = Vuextra.createStore({
   actions: (context) => ({
     async load(network: Network) {
       const usecase = getUsecase(network);
+      self.setConnecting({ network, connecting: true });
       try {
         const state = await usecase.load(network);
 
+        self.setConnecting({ network, connecting: false });
         self.setConnected({ network, connected: state.connected });
         self.setBalances({ network, balances: state.balances });
         self.setAddress({ network, address: state.address });
@@ -104,6 +111,7 @@ export const accountStore = Vuextra.createStore({
           walletBalancePolls.set(network, timeoutId);
         })();
       } catch (error) {
+        self.setConnecting({ network, connecting: false });
         console.error(network, "wallet connect error", error);
       }
     },
