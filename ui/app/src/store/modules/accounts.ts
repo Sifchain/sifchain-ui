@@ -101,7 +101,7 @@ export const accountStore = Vuextra.createStore({
           // NOTE(ajoslin): more formal fix coming later to lazyload non-sif/eth assets.
           const UPDATE_DELAY =
             network === Network.SIFCHAIN || network === Network.ETHEREUM
-              ? 3 * 1000
+              ? 4.5 * 1000
               : (15 + Math.random() * 10) * 1000; // Some drift on updates for other chains.
 
           const timeoutId = setTimeout(async () => {
