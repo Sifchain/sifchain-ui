@@ -8,7 +8,7 @@ export const SIFCHAIN_MAINNET: IBCChainConfig = {
   nativeAssetSymbol: "rowan",
   chainId: "sifchain-1",
   rpcUrl: "https://rpc.sifchain.finance",
-  restUrl: "https://api.sifchain.finance",
+  restUrl: "https://api-int.sifchain.finance",
   keplrChainInfo: {
     chainName: "Sifchain",
     chainId: "sifchain-1",
