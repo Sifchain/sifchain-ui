@@ -13,7 +13,6 @@ import { toPool } from "../utils/SifClient/toPool";
 import { RawPool } from "../utils/SifClient/x/clp";
 import TokenRegistryService from "../../services/TokenRegistryService";
 import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
-import { memoize } from "lodash";
 import { PoolsRes } from "../../generated/proto/sifnode/clp/v1/querier";
 
 export type ClpServiceContext = {
@@ -71,13 +70,13 @@ export default function createClpService({
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
 }: ClpServiceContext): IClpService {
   const client = sifUnsignedClient;
-  const getDexClient = memoize(() => NativeDexClient.connect(sifRpcUrl));
+  const dexClientPromise = NativeDexClient.connect(sifRpcUrl);
 
   const tokenRegistry = TokenRegistryService({ sifRpcUrl });
 
   const instance: IClpService = {
     async getRawPools() {
-      const queryClient = await getDexClient();
+      const queryClient = await dexClientPromise;
       return queryClient.query.clp.GetPools({});
     },
     async getPools() {
@@ -97,7 +96,7 @@ export default function createClpService({
       // Unfortunately it is expensive for the backend to
       // filter pools so we need to annoyingly do this in two calls
       // First we get the metadata
-      const queryClient = await getDexClient();
+      const queryClient = await dexClientPromise;
       const { assets } = await queryClient.query.clp.GetAssetList({
         lpAddress: address,
       });
