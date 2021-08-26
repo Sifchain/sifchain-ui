@@ -130,6 +130,7 @@ export function useRemoveLiquidityData() {
         wBasisPoints.value,
         asymmetry.value,
       );
+      setTimeout(() => usecases.clp.syncPools(), 2500);
     },
 
     PoolState,
