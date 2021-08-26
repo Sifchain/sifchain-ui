@@ -5,6 +5,7 @@ import {
   BroadcastTxResponse,
   IndexedTx,
   MsgSendEncodeObject,
+  AminoTypes,
 } from "@cosmjs/stargate";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 
@@ -159,55 +160,66 @@ export class IBCService {
     return queryClient;
   }
 
-  async logIBCNetworkMetadata(destinationNetwork: Network) {
-    await this.keplrProvider.connect(
-      getChainsService().get(destinationNetwork),
-    );
-    const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
+  async logIBCNetworkMetadata(networks: Network[]) {
+    const clientData: {
+      chainId: string;
+      ctx: {
+        chainId: string;
+        // ackCount: allAcks.acknowledgements.length,
+        connection: string;
+        channelId: string;
+        counterpartyChannelId?: string;
+      }[];
+    }[] = [];
+    for (let destinationNetwork of networks) {
+      await this.keplrProvider.connect(
+        getChainsService().get(destinationNetwork),
+      );
+      const queryClient = await this.loadQueryClientByNetwork(
+        destinationNetwork,
+      );
+      const chainConfig = this.loadChainConfigByNetwork(destinationNetwork);
+      const allChannels = await queryClient.ibc.channel.allChannels();
+      const clients = await Promise.all(
+        allChannels.channels.map(async (channel) => {
+          const parsedClientState = await fetch(
+            `${chainConfig.restUrl}/ibc/core/connection/v1beta1/connections/${channel.connectionHops[0]}/client_state`,
+          ).then((r) => r.json());
 
-    const allChannels = await queryClient.ibc.channel.allChannels();
-    const clients = await Promise.all(
-      allChannels.channels.map(async (channel) => {
-        const parsedClientState = await fetch(
-          `${
-            this.loadChainConfigByNetwork(destinationNetwork).restUrl
-          }/ibc/core/connection/v1beta1/connections/${
-            channel.connectionHops[0]
-          }/client_state`,
-        ).then((r) => r.json());
+          // console.log(parsedClientState);
+          // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
+          //   channel.portId,
+          //   channel.channelId,
+          // );
 
-        // console.log(parsedClientState);
-        // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
-        //   channel.portId,
-        //   channel.channelId,
-        // );
-
-        return {
-          chainId:
-            parsedClientState.identified_client_state.client_state.chain_id,
-          // ackCount: allAcks.acknowledgements.length,
-          connection: channel.connectionHops[0],
-          channelId: channel.channelId,
-          counterpartyChannelId: channel.counterparty?.channelId,
-        };
-      }),
-    );
-    console.log(destinationNetwork.toUpperCase());
-    console.table(
-      clients.filter((c) => {
-        return true;
-      }),
-    );
-    const allCxns = await Promise.all(
-      (await queryClient.ibc.connection.allConnections()).connections.map(
-        async (cxn) => {
           return {
-            cxn,
+            chainId:
+              parsedClientState.identified_client_state.client_state.chain_id,
+            // ackCount: allAcks.acknowledgements.length,
+            connection: channel.connectionHops[0],
+            channelId: channel.channelId,
+            counterpartyChannelId: channel.counterparty?.channelId,
           };
-        },
-      ),
-    );
-    console.log({ destinationNetwork, allChannels, allCxns, clients });
+        }),
+      );
+      clientData.push({
+        chainId: chainConfig.chainId,
+        ctx: clients,
+      });
+    }
+    console.log("\n\nNETWORK CONNECTIONS TABLE");
+    clientData.forEach((d) => {});
+    console.log("\n\n");
+    // const allCxns = await Promise.all(
+    //   (await queryClient.ibc.connection.allConnections()).connections.map(
+    //     async (cxn) => {
+    //       return {
+    //         cxn,
+    //       };
+    //     },
+    //   ),
+    // );
+    // console.log({ destinationNetwork, allChannels, allCxns, clients });
   }
 
   async transferIBCTokens(
@@ -238,6 +250,7 @@ export class IBCService {
     await keplr?.experimentalSuggestChain(destinationChain.keplrChainInfo);
     await keplr?.enable(destinationChain.chainId);
     const recievingSigner = await loadOfflineSigner(destinationChain.chainId);
+
     if (!recievingSigner) throw new Error("No recieving signer");
     const [toAccount] = (await recievingSigner?.getAccounts()) || [];
     if (!toAccount) throw new Error("No account found for recieving signer");
