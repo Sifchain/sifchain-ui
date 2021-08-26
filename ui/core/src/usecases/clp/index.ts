@@ -34,10 +34,12 @@ export default ({
       });
 
       // Then every transaction
-
-      const unsubscribe = services.sif.onNewBlock(async () => {
+      let syncTimeoutId: NodeJS.Timeout;
+      let unsubscribe = () => clearTimeout(syncTimeoutId);
+      (async function poolsLoop() {
         await syncPools();
-      });
+        setTimeout(poolsLoop, 15 * 1000);
+      })();
 
       effects.push(
         effect(() => {
