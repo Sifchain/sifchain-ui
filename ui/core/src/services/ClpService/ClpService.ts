@@ -109,7 +109,7 @@ export default function createClpService({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
           source_chain: params.externalAssetAmount.asset.network as string,
-          symbol: externalAssetEntry.denom || externalAssetEntry.baseDenom,
+          symbol: externalAssetEntry.denom,
           ticker: params.externalAssetAmount.asset.symbol,
         },
         external_asset_amount: params.externalAssetAmount.toBigInt().toString(),
@@ -126,7 +126,7 @@ export default function createClpService({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
           source_chain: params.externalAssetAmount.asset.homeNetwork as string,
-          symbol: externalAssetEntry.denom || externalAssetEntry.baseDenom,
+          symbol: externalAssetEntry.denom,
           ticker: params.externalAssetAmount.asset.symbol,
         },
         external_asset_amount: params.externalAssetAmount.toBigInt().toString(),
@@ -136,26 +136,35 @@ export default function createClpService({
     },
 
     async swap(params) {
+      const sentAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
+        params.sentAmount,
+      );
+      const receivedAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
+        params.receivedAsset,
+      );
       return await client.swap({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         received_asset: {
           source_chain: params.receivedAsset.network as string,
-          symbol: params.receivedAsset.ibcDenom ?? params.receivedAsset.symbol,
-          ticker: params.receivedAsset.ibcDenom ?? params.receivedAsset.symbol,
+          symbol: receivedAssetEntry.denom,
+          ticker: receivedAssetEntry.baseDenom,
         },
         sent_amount: params.sentAmount.toBigInt().toString(),
         sent_asset: {
           source_chain: params.sentAmount.asset.network as string,
-          symbol: params.sentAmount.ibcDenom ?? params.sentAmount.symbol,
-          ticker: params.sentAmount.ibcDenom ?? params.sentAmount.symbol,
+          symbol: sentAssetEntry.denom,
+          ticker: sentAssetEntry.baseDenom,
         },
         min_receiving_amount: params.minimumReceived.toBigInt().toString(),
         signer: params.fromAddress,
       });
     },
     async getLiquidityProvider(params) {
+      const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
+        params.asset,
+      );
       const response = await client.getLiquidityProvider({
-        symbol: params.asset.ibcDenom || params.asset.symbol,
+        symbol: externalAssetEntry.denom,
         lpAddress: params.lpAddress,
       });
 
@@ -188,7 +197,7 @@ export default function createClpService({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
           source_chain: params.asset.network as string,
-          symbol: externalAssetEntry.denom || externalAssetEntry.baseDenom,
+          symbol: externalAssetEntry.denom,
           ticker: params.asset.symbol,
         },
         signer: params.fromAddress,
