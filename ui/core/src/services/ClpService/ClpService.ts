@@ -11,6 +11,7 @@ import {
 import { SifUnSignedClient } from "../utils/SifClient";
 import { toPool } from "../utils/SifClient/toPool";
 import { RawPool } from "../utils/SifClient/x/clp";
+import TokenRegistryService from "../../services/TokenRegistryService";
 
 export type ClpServiceContext = {
   nativeAsset: IAsset;
@@ -68,6 +69,8 @@ export default function createClpService({
 }: ClpServiceContext): IClpService {
   const client = sifUnsignedClient;
 
+  const tokenRegistry = TokenRegistryService({ sifRpcUrl });
+
   const instance: IClpService = {
     async getRawPools() {
       return client.getPools();
@@ -99,13 +102,14 @@ export default function createClpService({
       nativeAssetAmount: IAssetAmount;
       externalAssetAmount: IAssetAmount;
     }) {
+      const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
+        params.externalAssetAmount.asset,
+      );
       return await client.addLiquidity({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
           source_chain: params.externalAssetAmount.asset.network as string,
-          symbol:
-            params.externalAssetAmount.asset.ibcDenom ||
-            params.externalAssetAmount.asset.symbol,
+          symbol: externalAssetEntry.denom || externalAssetEntry.baseDenom,
           ticker: params.externalAssetAmount.asset.symbol,
         },
         external_asset_amount: params.externalAssetAmount.toBigInt().toString(),
@@ -115,13 +119,14 @@ export default function createClpService({
     },
 
     async createPool(params) {
+      const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
+        params.externalAssetAmount.asset,
+      );
       return await client.createPool({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
           source_chain: params.externalAssetAmount.asset.homeNetwork as string,
-          symbol:
-            params.externalAssetAmount.asset.ibcDenom ||
-            params.externalAssetAmount.asset.symbol,
+          symbol: externalAssetEntry.denom || externalAssetEntry.baseDenom,
           ticker: params.externalAssetAmount.asset.symbol,
         },
         external_asset_amount: params.externalAssetAmount.toBigInt().toString(),
@@ -175,12 +180,15 @@ export default function createClpService({
     },
 
     async removeLiquidity(params) {
+      const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
+        params.asset,
+      );
       return await client.removeLiquidity({
         asymmetry: params.asymmetry,
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
           source_chain: params.asset.network as string,
-          symbol: params.asset.ibcDenom || params.asset.symbol,
+          symbol: externalAssetEntry.denom || externalAssetEntry.baseDenom,
           ticker: params.asset.symbol,
         },
         signer: params.fromAddress,
