@@ -170,7 +170,7 @@ export default function createClpService({
       const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
         params.asset,
       );
-      const dexClient = dexClientPromise;
+      const dexClient = await dexClientPromise;
       const response = await dexClient.query.clp.GetLiquidityProvider({
         symbol: externalAssetEntry.denom,
         lpAddress: params.lpAddress,
