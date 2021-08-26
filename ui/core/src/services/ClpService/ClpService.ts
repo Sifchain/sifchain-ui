@@ -12,6 +12,8 @@ import { SifUnSignedClient } from "../utils/SifClient";
 import { toPool } from "../utils/SifClient/toPool";
 import { RawPool } from "../utils/SifClient/x/clp";
 import TokenRegistryService from "../../services/TokenRegistryService";
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
+import { PoolsRes } from "../../generated/proto/sifnode/clp/v1/querier";
 
 export type ClpServiceContext = {
   nativeAsset: IAsset;
@@ -23,7 +25,7 @@ export type ClpServiceContext = {
 };
 
 type IClpService = {
-  getRawPools: () => Promise<RawPool[]>;
+  getRawPools: () => Promise<PoolsRes>;
   getPools: () => Promise<Pool[]>;
   getPoolSymbolsByLiquidityProvider: (address: string) => Promise<string[]>;
   swap: (params: {
@@ -68,12 +70,14 @@ export default function createClpService({
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
 }: ClpServiceContext): IClpService {
   const client = sifUnsignedClient;
+  const dexClientPromise = NativeDexClient.connect(sifRpcUrl);
 
   const tokenRegistry = TokenRegistryService({ sifRpcUrl });
 
   const instance: IClpService = {
     async getRawPools() {
-      return client.getPools();
+      const queryClient = await dexClientPromise;
+      return queryClient.query.clp.GetPools({});
     },
     async getPools() {
       try {
@@ -92,9 +96,11 @@ export default function createClpService({
       // Unfortunately it is expensive for the backend to
       // filter pools so we need to annoyingly do this in two calls
       // First we get the metadata
-      const poolMeta = await client.getAssets(address);
-      if (!poolMeta) return [];
-      return poolMeta.map(({ symbol }) => symbol);
+      const queryClient = await dexClientPromise;
+      const { assets } = await queryClient.query.clp.GetAssetList({
+        lpAddress: address,
+      });
+      return assets?.map((a) => a.symbol) ?? [];
     },
 
     async addLiquidity(params: {
@@ -122,6 +128,7 @@ export default function createClpService({
       const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
         params.externalAssetAmount.asset,
       );
+
       return await client.createPool({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         external_asset: {
@@ -163,28 +170,29 @@ export default function createClpService({
       const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
         params.asset,
       );
-      const response = await client.getLiquidityProvider({
+      const dexClient = await getDexClient();
+      const response = await dexClient.query.clp.GetLiquidityProvider({
         symbol: externalAssetEntry.denom,
         lpAddress: params.lpAddress,
       });
 
       const {
-        liquidity_provider,
-        native_asset_balance,
-        external_asset_balance,
-      } = response.result;
+        liquidityProvider,
+        nativeAssetBalance,
+        externalAssetBalance,
+      } = response;
 
-      const {
-        liquidity_provider_units,
-        liquidity_provider_address,
-      } = liquidity_provider;
+      if (!liquidityProvider) return null;
+
+      const { liquidityProviderUnits, liquidityProviderAddress } =
+        liquidityProvider || {};
 
       return LiquidityProvider(
         params.asset,
-        Amount(liquidity_provider_units),
-        liquidity_provider_address,
-        Amount(native_asset_balance),
-        Amount(external_asset_balance),
+        Amount(liquidityProviderUnits),
+        liquidityProviderAddress,
+        Amount(nativeAssetBalance),
+        Amount(externalAssetBalance),
       );
     },
 

@@ -70,6 +70,7 @@ export function createServices(context: ServiceContext) {
   */
   try {
     if (!global.window) throw "";
+    if (localStorage.DO_NOT_SPAM) throw "";
     if (location.hostname !== "dex.sifchain.finance") {
       setTimeout(() => {
         IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
