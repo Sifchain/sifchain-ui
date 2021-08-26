@@ -35,10 +35,10 @@ export default ({
 
       // Then every transaction
       let syncTimeoutId: NodeJS.Timeout;
-      let unsubscribe = () => clearTimeout(syncTimeoutId);
+      const unsubscribe = () => clearTimeout(syncTimeoutId);
       (async function poolsLoop() {
         await syncPools();
-        setTimeout(poolsLoop, 15 * 1000);
+        syncTimeoutId = setTimeout(poolsLoop, 15 * 1000);
       })();
 
       effects.push(
