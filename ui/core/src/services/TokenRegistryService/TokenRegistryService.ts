@@ -1,4 +1,4 @@
-import { Chain, Network, getChainsService } from "../../entities";
+import { Chain, Network, getChainsService, IAsset } from "../../entities";
 import { RegistryEntry } from "../../generated/proto/sifnode/tokenregistry/v1/types";
 import { NativeDexClient } from "../utils/SifClient/NativeDexClient";
 
@@ -19,8 +19,18 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
     return tokenRegistry;
   };
 
-  return {
+  const self = {
     load: () => loadTokenRegistry(),
+    findAssetEntry: async (asset: IAsset) => {
+      const items = await loadTokenRegistry();
+      return items.find((item) => item.baseDenom === asset.symbol);
+    },
+    findAssetEntryOrThrow: async (asset: IAsset) => {
+      const entry = await self.findAssetEntry(asset);
+      if (!entry)
+        throw new Error("TokenRegistry entry not found for " + asset.symbol);
+      return entry;
+    },
     async loadConnectionByNetworks(params: {
       sourceNetwork: Network;
       destinationNetwork: Network;
@@ -62,6 +72,7 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
       }
     },
   };
+  return self;
 };
 
 export default TokenRegistryService;

@@ -310,19 +310,21 @@ export class IBCService {
     const currentHeight = await receivingStargateCient.getHeight();
     const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const registry = await this.tokenRegistry.load();
-    const registryEntry = registry.find((t) => t.baseDenom === symbol);
+    const transferTokenEntry = registry.find((t) => t.baseDenom === symbol);
 
-    if (!registryEntry) {
+    if (!transferTokenEntry) {
       throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
     }
 
     let transferDenom: string;
-    if (destinationChain.nativeAssetSymbol === registryEntry.baseDenom) {
-      // transfering TO registryEntry: use ibc hash
-      transferDenom = registryEntry.denom;
+
+    if (sourceChain.nativeAssetSymbol === transferTokenEntry.baseDenom) {
+      // transfering FROM token entry's token's chain: use baseDenom
+      transferDenom = transferTokenEntry.baseDenom;
     } else {
-      // transfering FROM registryEntry: use symbol
-      transferDenom = registryEntry.baseDenom;
+      // transfering this entry's token elsewhere: use ibc hash
+      transferDenom =
+        params.assetAmountToTransfer.asset.ibcDenom || transferTokenEntry.denom;
     }
 
     const transferMsg: MsgTransferEncodeObject = {
@@ -450,6 +452,7 @@ export class IBCService {
         console.log({ brdcstTxRes });
         responses.push(brdcstTxRes);
       } catch (e) {
+        console.error(e);
         responses.push({
           code:
             +e.message.split("code ").pop().split(" ")[0] || 100000000000000000,

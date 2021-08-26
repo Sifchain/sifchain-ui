@@ -38,9 +38,13 @@ export const importStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
+      const IBC_ETHEREUM_TRANSFERS_ENABLED = false;
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
         AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
       const asset = Asset(state.draft.symbol);
+      const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
+        asset.homeNetwork,
+      );
       return (
         useChainsList()
           .filter((c) => c.network !== Network.SIFCHAIN)
@@ -53,7 +57,7 @@ export const importStore = Vuextra.createStore({
               // if IBC exports are disabled
               if (
                 // if it's rowan or an etherem token
-                [Network.ETHEREUM, Network.SIFCHAIN].includes(asset.homeNetwork)
+                !isExternalIBCAsset
               ) {
                 // only show ethereum network
                 return n.network === Network.ETHEREUM;
@@ -62,6 +66,12 @@ export const importStore = Vuextra.createStore({
                 return true;
               }
             }
+          })
+          .filter((n) => {
+            if (isExternalIBCAsset && !IBC_ETHEREUM_TRANSFERS_ENABLED) {
+              return n.network !== Network.ETHEREUM;
+            }
+            return true;
           })
       );
     },

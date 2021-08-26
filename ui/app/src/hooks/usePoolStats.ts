@@ -1,3 +1,5 @@
+import { symbolWithoutPrefix } from "@/utils/symbol";
+import { getChainsService, IAsset, Network } from "@sifchain/sdk";
 import { computed } from "vue";
 import { useAsyncData } from "./useAsyncData";
 import { useAsyncDataCached } from "./useAsyncDataCached";
@@ -21,25 +23,43 @@ export interface PoolStat {
   poolDepth: string;
   volume: string;
   arb: string;
+  poolAPY: string;
 }
 
 export interface Headers {
   "Access-Control-Allow-Origin": string;
 }
 
+const hasLoggedError: Record<string, boolean> = {};
+
 export const usePoolStats = () => {
-  const { store } = useCore();
+  const { store, services } = useCore();
+
   const data = useAsyncDataCached("poolStats", async () => {
+    let cryptoeconSummaryAPY = await services.cryptoeconomics
+      .fetchSummaryAPY()
+      .catch((e) => console.error(e));
+    cryptoeconSummaryAPY = cryptoeconSummaryAPY || 0;
     const res = await fetch(
       "https://data.sifchain.finance/beta/asset/tokenStats",
     );
     const json: PoolStatsResponseData = await res.json();
     const poolData = json.body;
-
     return {
-      poolData,
+      poolData: {
+        ...poolData,
+        pools: poolData.pools.map((p) => ({
+          ...p,
+          poolAPY: (
+            (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
+              100 +
+            (/(akt|vpn|atom)/gim.test(p.symbol) ? cryptoeconSummaryAPY || 0 : 0)
+          ).toFixed(1),
+        })),
+      },
       liqAPY: 0,
       rowanUsd: poolData.rowanUSD,
+      cryptoeconSummaryAPY: cryptoeconSummaryAPY,
     };
   });
 
@@ -50,10 +70,34 @@ export const usePoolStats = () => {
   const pools = computed(() => {
     if (isLoading.value) return [];
 
-    const poolStatLookup: Record<string, PoolStat> = {};
+    const noPrefixAssetLookup: Record<string, IAsset> = {};
+    getChainsService()
+      .get(Network.SIFCHAIN)
+      .assets.forEach((asset) => {
+        noPrefixAssetLookup[
+          symbolWithoutPrefix(asset.symbol).toLowerCase()
+        ] = asset;
+      });
 
+    const poolStatLookup: Record<string, PoolStat> = {};
     data.data.value?.poolData.pools.forEach((poolStat) => {
-      poolStatLookup[poolStat.symbol] = poolStat;
+      const asset =
+        noPrefixAssetLookup[poolStat.symbol.toLowerCase()] ||
+        noPrefixAssetLookup[poolStat.symbol];
+
+      if (!asset) {
+        if (!hasLoggedError[poolStat.symbol]) {
+          // Don't spam logs for not-found stats, because this happens a lot
+          hasLoggedError[poolStat.symbol] = true;
+          console.log("Found no asset match for poolStat", poolStat);
+        }
+        return;
+      }
+
+      poolStatLookup[asset.symbol] = {
+        ...poolStat,
+        symbol: asset.symbol,
+      };
     });
 
     const pools = Object.values(store.pools);

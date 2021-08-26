@@ -70,11 +70,14 @@ export function createServices(context: ServiceContext) {
   */
   try {
     if (!global.window) throw "";
-    setTimeout(() => {
-      IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
-      IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
-      EthbridgeService?.fetchAllTokenAddresses();
-    }, 8 * 1000);
+    if (location.hostname !== "dex.sifchain.finance") {
+      setTimeout(() => {
+        IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
+        IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
+        IBCService.logIBCNetworkMetadata(Network.SENTINEL);
+        EthbridgeService?.fetchAllTokenAddresses();
+      }, 8 * 1000);
+    }
   } catch (e) {}
 
   return {

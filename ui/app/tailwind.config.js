@@ -111,6 +111,7 @@ module.exports = {
       animation: {
         "fade-in": "fadeIn 150ms ease-out 1",
         "fade-in-up": "fadeInUp 200ms ease-out 1",
+        "pulse-slow": "pulse 3s infinite",
       },
       keyframes: {
         fadeIn: {

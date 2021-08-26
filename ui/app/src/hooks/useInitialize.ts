@@ -5,6 +5,10 @@ import { useSubscription } from "./useSubscrition";
 import { rootStore } from "@/store";
 import { watch } from "vue";
 import { accountStore } from "@/store/modules/accounts";
+import {
+  InterchainTx,
+  interchainTxEmitter,
+} from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -89,6 +93,15 @@ export function useInitialize() {
       }
     });
   }, Promise.resolve());
+
+  interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {
+    accountStore.updateBalances(tx.toChain.network);
+    accountStore.updateBalances(tx.fromChain.network);
+  });
+  interchainTxEmitter.on("tx_complete", (tx: InterchainTx) => {
+    accountStore.updateBalances(tx.toChain.network);
+    accountStore.updateBalances(tx.fromChain.network);
+  });
 
   // useSubscription(
   //   computed(() => store.wallet.get(Network.SIFCHAIN).address),

@@ -24,7 +24,7 @@ export function useStatsPageData(initialState: StatsPageState) {
 
   const statsRef = computed<StatsItem[]>(() => {
     if (!res.data.value) return [];
-    const { liqAPY, poolData } = res.data.value;
+    const { liqAPY, poolData, cryptoeconSummaryAPY } = res.data.value;
 
     const array = poolData.pools
       .map((pool) => {
@@ -36,7 +36,7 @@ export function useStatsPageData(initialState: StatsPageState) {
           volume: parseFloat(pool.volume) || 0,
           arbitrage: parseFloat(pool.arb) || 0,
         };
-        item.poolApy = (item.volume / item.depth) * 100;
+        item.poolApy = pool.poolAPY;
 
         return item as StatsItem;
       })

@@ -44,7 +44,7 @@ export const TokenSelectDropdown = defineComponent({
     sortBy: {
       type: String as PropType<TokenSortBy>,
       required: false,
-      default: () => "balance",
+      default: () => "symbol",
     },
   },
   setup(props) {

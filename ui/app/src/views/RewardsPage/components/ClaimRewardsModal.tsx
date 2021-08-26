@@ -2,7 +2,7 @@ import { defineComponent, PropType, ref, computed, Ref } from "vue";
 import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { TransactionStatus } from "@sifchain/sdk";
+import { Network, TransactionStatus } from "@sifchain/sdk";
 import {
   CryptoeconomicsRewardType,
   CryptoeconomicsUserData,
@@ -106,6 +106,7 @@ export default defineComponent({
       if (transactionStatusRef.value) {
         return (
           <TransactionDetailsModal
+            network={Network.SIFCHAIN}
             icon="navigation/rewards"
             onClose={props.onClose}
             transactionDetails={transactionDetails}
