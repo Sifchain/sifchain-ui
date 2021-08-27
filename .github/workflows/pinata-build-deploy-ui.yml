@@ -6,7 +6,7 @@ on:
       - develop
       - testnet
       # - master
-      - work-compile-time
+      - workflow-compile-time
 
 jobs:
   build:
