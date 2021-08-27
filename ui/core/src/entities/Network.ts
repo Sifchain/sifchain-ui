@@ -1,8 +1,11 @@
 export enum Network {
   SIFCHAIN = "sifchain",
   ETHEREUM = "ethereum",
-  COSMOSHUB = "cosmoshub",
-  IRIS = "iris",
+  // The rest... sort by name
   AKASH = "akash",
+  COSMOSHUB = "cosmoshub",
+  CRYPTO_ORG = "crypto-org",
+  IRIS = "iris",
+  PERSISTENCE = "persistence",
   SENTINEL = "sentinel",
 }

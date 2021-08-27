@@ -12,6 +12,8 @@ import {
   AkashChain,
   IrisChain,
   SentinelChain,
+  CryptoOrgChain,
+  PersistenceChain,
 } from "../../clients/chains";
 
 export * from "../../clients/chains";
@@ -38,6 +40,8 @@ const networkChainCtorLookup = {
   [Network.IRIS]: IrisChain,
   [Network.AKASH]: AkashChain,
   [Network.SENTINEL]: SentinelChain,
+  [Network.CRYPTO_ORG]: CryptoOrgChain,
+  [Network.PERSISTENCE]: PersistenceChain,
 };
 
 export class ChainsService {

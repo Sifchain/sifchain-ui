@@ -72,7 +72,7 @@ export default defineComponent({
               />
               <div class="ml-[13px]">
                 <div class="text-sm font-bold leading-none capitalize">
-                  {props.connection.getChain().network}
+                  {props.connection.getChain().displayName}
                 </div>
                 <div class="text-sm opacity-50 capitalize text-left">
                   {props.connection.walletName}

@@ -33,6 +33,7 @@ export default defineComponent({
     });
 
     const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
+    const isWalletConnecting = rootStore.accounts.refs.isConnecting.computed();
 
     return () => (
       <div class="overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-gray-base text-white fixed left-0 top-0 bottom-0 portrait:hidden">
@@ -200,6 +201,13 @@ export default defineComponent({
                       }}
                       class="w-[20px] h-[20px]"
                     />
+                  ) : isWalletConnecting.value ? (
+                    <div class="flex-shrink-0 flex-1 flex items-center justify-end">
+                      <AssetIcon
+                        icon="interactive/anim-racetrack-spinner"
+                        size={20}
+                      />
+                    </div>
                   ) : (
                     <div class="w-[20px] h-[20px] ml-auto rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
                       {connectedNetworkCount.value}

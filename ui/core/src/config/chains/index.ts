@@ -4,6 +4,8 @@ import cosmoshub from "./cosmoshub";
 import iris from "./iris";
 import akash from "./akash";
 import sentinel from "./sentinel";
+import cryptoOrg from "./crypto-org";
+import persistence from "./persistence";
 
 import { NetworkEnv } from "../getEnv";
 import { Network } from "../../entities";
@@ -19,6 +21,8 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.AKASH]: akash[env],
         [Network.SENTINEL]: sentinel[env],
         [Network.ETHEREUM]: ethereum[env],
+        [Network.CRYPTO_ORG]: cryptoOrg[env],
+        [Network.PERSISTENCE]: persistence[env],
       },
     ];
   }),

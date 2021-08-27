@@ -86,7 +86,7 @@ export default defineComponent({
                 : undefined
             }
           />
-          {!poolDataWithUserData.value?.length ? (
+          {!poolDataWithUserData.value?.length || data.isLoading.value ? (
             <div class="absolute left-0 top-[180px] w-full flex justify-center">
               <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
                 <AssetIcon

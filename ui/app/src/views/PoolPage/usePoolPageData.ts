@@ -67,6 +67,7 @@ export const usePoolPageData = () => {
   });
 
   return {
+    isLoading: computed(() => !store.poolsLoadState.loaded),
     accountPools,
     selectedPool,
     stats,

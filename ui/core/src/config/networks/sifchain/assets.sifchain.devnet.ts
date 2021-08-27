@@ -620,5 +620,27 @@ export default {
       displaySymbol: "nyan",
       homeNetwork: "iris",
     },
+    {
+      symbol: "basecro",
+      displaySymbol: "cro",
+      decimals: 8,
+      name: "CRO",
+      network: "sifchain",
+      label: "CRO",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/7310/small/cypto.png?1547043960",
+      homeNetwork: "crypto-org",
+    },
+    {
+      symbol: "uxprt",
+      displaySymbol: "xprt",
+      decimals: 8,
+      name: "xprt",
+      network: "sifchain",
+      label: "xprt",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/14582/small/512_Light.png?1617149658",
+      homeNetwork: "persistence",
+    },
   ],
 };

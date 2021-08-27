@@ -92,16 +92,6 @@ export default function createClpService({
         return [];
       }
     },
-    async getPoolSymbolsByLiquidityProvider(address: string) {
-      // Unfortunately it is expensive for the backend to
-      // filter pools so we need to annoyingly do this in two calls
-      // First we get the metadata
-      const queryClient = await dexClientPromise;
-      const { assets } = await queryClient.query.clp.GetAssetList({
-        lpAddress: address,
-      });
-      return assets?.map((a) => a.symbol) ?? [];
-    },
 
     async addLiquidity(params: {
       fromAddress: string;
@@ -167,33 +157,37 @@ export default function createClpService({
       });
     },
     async getLiquidityProvider(params) {
-      const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
-        params.asset,
-      );
-      const dexClient = await dexClientPromise;
-      const response = await dexClient.query.clp.GetLiquidityProvider({
-        symbol: externalAssetEntry.denom,
+      const response = await client.getLiquidityProvider({
+        symbol: params.asset.ibcDenom || params.asset.symbol,
         lpAddress: params.lpAddress,
       });
 
       const {
-        liquidityProvider,
-        nativeAssetBalance,
-        externalAssetBalance,
-      } = response;
+        liquidity_provider,
+        native_asset_balance,
+        external_asset_balance,
+      } = response.result;
 
-      if (!liquidityProvider) return null;
-
-      const { liquidityProviderUnits, liquidityProviderAddress } =
-        liquidityProvider || {};
+      const {
+        liquidity_provider_units,
+        liquidity_provider_address,
+      } = liquidity_provider;
 
       return LiquidityProvider(
         params.asset,
-        Amount(liquidityProviderUnits),
-        liquidityProviderAddress,
-        Amount(nativeAssetBalance),
-        Amount(externalAssetBalance),
+        Amount(liquidity_provider_units),
+        liquidity_provider_address,
+        Amount(native_asset_balance),
+        Amount(external_asset_balance),
       );
+    },
+    async getPoolSymbolsByLiquidityProvider(address: string) {
+      // Unfortunately it is expensive for the backend to
+      // filter pools so we need to annoyingly do this in two calls
+      // First we get the metadata
+      const poolMeta = await client.getAssets(address);
+      if (!poolMeta) return [];
+      return poolMeta.map(({ symbol }) => symbol);
     },
 
     async removeLiquidity(params) {
