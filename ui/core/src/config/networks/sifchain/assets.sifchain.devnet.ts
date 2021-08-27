@@ -638,8 +638,7 @@ export default {
       name: "xprt",
       network: "sifchain",
       label: "xprt",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/14582/small/512_Light.png?1617149658",
+      imageUrl: "https://persistence.one/favicon.png",
       homeNetwork: "persistence",
     },
   ],
