@@ -12,6 +12,6 @@ if (process.env.NODE_ENV === "development") {
   // @ts-ignore
   app.config.devtools = true;
 }
-
+console.log(process.env);
 app.use(vuexStore);
 app.use(router).mount("#app");
