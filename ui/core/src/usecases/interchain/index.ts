@@ -1,15 +1,5 @@
 import { UsecaseContext } from "..";
 import { IAssetAmount, Chain, Network } from "../../entities";
-import EthereumSifchain from "./ethereumSifchain";
-import CosmoshubSifchain from "./cosmoshubSifchain";
-import SifchainEthereum from "./sifchainEthereum";
-import SifchainCosmoshub from "./sifchainCosmoshub";
-// import IrisSifchain from "./irisSifchain";
-// import SifchainIris from "./sifchainIris";
-import AkashSifchain from "./akashSifchain";
-import SifchainAkash from "./sifchainAkash";
-import SentinelSifchain from "./sentinelSifchain";
-import SifchainSentinel from "./sifchainSentinel";
 import {
   EthereumChain,
   SifchainChain,
@@ -19,51 +9,34 @@ import {
   SentinelChain,
 } from "../../clients/chains";
 import InterchainTxManager from "./txManager";
+import { SifchainCosmosInterchainApi } from "./sifchainCosmosInterchain";
+import { EthereumSifchainInterchainApi } from "./ethereumSifchainInterchain";
+import { CosmosSifchainInterchainApi } from "./cosmosSifchainInterchain";
+import { SifchainEthereumInterchainApi } from "./sifchainEthereumInterchain";
 
 export default function InterchainUsecase(context: UsecaseContext) {
-  /* 
-    Please do not copy & paste these when setting up the inverse 
-    of an interchain.
-    i.e. `const sifchainIris = IrisSifchain(context);`
-  */
-  const chains = context.services.chains;
-  const ethereumSifchain = EthereumSifchain(context);
-  const cosmoshubSifchain = CosmoshubSifchain(context);
-  // const irisSifchain = IrisSifchain(context);
-  const akashSifchain = AkashSifchain(context);
-  const sentinelSifchain = SentinelSifchain(context);
-  const sifchainEthereum = SifchainEthereum(context);
-  const sifchainCosmoshub = SifchainCosmoshub(context);
-  // const sifchainIris = SifchainIris(context);
-  const sifchainAkash = SifchainAkash(context);
-  const sifchainSentinel = SifchainSentinel(context);
+  const sifchainEthereum = new SifchainEthereumInterchainApi(context);
+  const sifchainCosmos = new SifchainCosmosInterchainApi(context);
+  const ethereumSifchain = new EthereumSifchainInterchainApi(context);
+  const cosmosSifchain = new CosmosSifchainInterchainApi(context);
 
   const interchain = (from: Chain, to: Chain) => {
-    if (from instanceof EthereumChain && to instanceof SifchainChain) {
-      return ethereumSifchain;
-    } else if (from instanceof CosmoshubChain && to instanceof SifchainChain) {
-      return cosmoshubSifchain;
-      // } else if (from instanceof IrisChain && to instanceof SifchainChain) {
-      //   return irisSifchain;
-    } else if (from instanceof AkashChain && to instanceof SifchainChain) {
-      return akashSifchain;
-    } else if (from instanceof SentinelChain && to instanceof SifchainChain) {
-      return sentinelSifchain;
-    } else if (from instanceof SifchainChain && to instanceof EthereumChain) {
-      return sifchainEthereum;
-    } else if (from instanceof SifchainChain && to instanceof CosmoshubChain) {
-      return sifchainCosmoshub;
-      // } else if (from instanceof SifchainChain && to instanceof IrisChain) {
-      //   return sifchainIris;
-    } else if (from instanceof SifchainChain && to instanceof AkashChain) {
-      return sifchainAkash;
-    } else if (from instanceof SifchainChain && to instanceof SentinelChain) {
-      return sifchainSentinel;
-    } else {
-      throw new Error(
-        `Token transfer from chain ${from.network} to chain ${to.network} not supported!`,
-      );
+    if (from instanceof SifchainChain) {
+      if (to.chainConfig.chainType === "ibc") {
+        return sifchainCosmos;
+      } else if (to.chainConfig.chainType === "eth") {
+        return sifchainEthereum;
+      }
+    } else if (to instanceof SifchainChain) {
+      if (from.chainConfig.chainType === "ibc") {
+        return cosmosSifchain;
+      } else if (from.chainConfig.chainType === "eth") {
+        return ethereumSifchain;
+      }
     }
+    throw new Error(
+      `Token transfer from chain ${from.network} to chain ${to.network} not supported!`,
+    );
   };
 
   const txManager = InterchainTxManager(context, interchain);

@@ -609,5 +609,16 @@ export default {
       displaySymbol: "dvpn",
       homeNetwork: "sentinel",
     },
+    {
+      symbol: "unyan",
+      decimals: 6,
+      name: "Nyan",
+      network: "sifchain",
+      label: "Nyan",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
+      displaySymbol: "nyan",
+      homeNetwork: "iris",
+    },
   ],
 };

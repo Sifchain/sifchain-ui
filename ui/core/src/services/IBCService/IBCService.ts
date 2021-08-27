@@ -42,16 +42,6 @@ export interface IBCServiceContext {
 }
 
 export class IBCService {
-  networkDenomLookup: Record<Network, Record<string, string>> = {
-    ethereum: {},
-    cosmoshub: {},
-    sifchain: {},
-    // iris: {},
-    akash: {},
-    sentinel: {},
-  };
-  symbolLookup: Record<string, string> = {};
-
   tokenRegistry = TokenRegistryService(this.context);
 
   keplrProvider = KeplrWalletProvider.create(this.context);
