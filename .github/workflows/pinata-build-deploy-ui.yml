@@ -82,7 +82,7 @@ jobs:
 
       - name: Build App
         run: |
-          cd ui && yarn install --frozen-lockfile && yarn build --tag $BRANCH_NAME --no-setup
+          cd ui && yarn install --production --frozen-lockfile && yarn build --tag $BRANCH_NAME --no-setup
 
       # Can't save envs between jobs so using artifacts
       - name: Save package meta
