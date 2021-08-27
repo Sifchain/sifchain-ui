@@ -189,6 +189,8 @@ export default defineComponent({
                 displayName={
                   connectedNetworkCount.value === 0
                     ? "Connect Wallets"
+                    : isWalletConnecting.value
+                    ? "Connecting Wallets"
                     : "Connected Wallets"
                 }
                 class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-200"]}
