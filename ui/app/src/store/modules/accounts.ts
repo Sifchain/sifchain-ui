@@ -40,7 +40,7 @@ export const accountStore = Vuextra.createStore({
     ethereum: initWalletState(Network.ETHEREUM),
     sifchain: initWalletState(Network.SIFCHAIN),
     cosmoshub: initWalletState(Network.COSMOSHUB),
-    // iris: initWalletState(Network.IRIS),
+    iris: initWalletState(Network.IRIS),
     akash: initWalletState(Network.AKASH),
     sentinel: initWalletState(Network.SENTINEL),
   } as Record<Network, IWalletServiceState>,

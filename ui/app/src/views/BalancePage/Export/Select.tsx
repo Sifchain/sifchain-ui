@@ -164,7 +164,7 @@ export default defineComponent({
 
     const optionsRef = computed<SelectDropdownOption[]>(() =>
       networksRef.value.map((network) => ({
-        content: <div class="capitalize">{network}</div>,
+        content: useChains().get(network).displayName,
         value: network,
       })),
     );
@@ -248,7 +248,7 @@ export default defineComponent({
                 class="w-full relative capitalize pl-[16px] mt-[10px]"
                 active={networkOpenRef.value}
               >
-                {exportParams.value.network}
+                {useChains().get(exportParams.value.network).displayName}
               </Button.Select>
             </SelectDropdown>
           </div>

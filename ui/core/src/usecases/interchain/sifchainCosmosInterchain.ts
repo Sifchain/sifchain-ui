@@ -18,31 +18,21 @@ import { isBroadcastTxFailure } from "@cosmjs/stargate";
 import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
 import { IBCTransferSubscriber } from "./utils";
 
-export default function createCosmoshubSifchainApi(context: UsecaseContext) {
-  return new SifchainCosmoshubInterchainApi(
-    context,
-    context.services.chains.get(Network.SIFCHAIN),
-    context.services.chains.get(Network.COSMOSHUB),
-  );
-}
-
-export class SifchainCosmoshubInterchainApi
+export class SifchainCosmosInterchainApi
   implements InterchainApi<IBCInterchainTx> {
   subscriber = IBCTransferSubscriber(this.context);
-  constructor(
-    public context: UsecaseContext,
-    public fromChain: Chain,
-    public toChain: Chain,
-  ) {}
+  constructor(public context: UsecaseContext) {}
 
-  async estimateFees(params: InterchainParams) {} // no fees
+  async estimateFees(params: InterchainParams) {
+    return params.toChain.calculateTransferFeeToChain(params.assetAmount);
+  }
 
   transfer(params: InterchainParams) {
     return new ExecutableTransaction(async (emit) => {
       emit({ type: "signing" });
       const txSequence = await this.context.services.ibc.transferIBCTokens({
-        sourceNetwork: this.fromChain.network,
-        destinationNetwork: this.toChain.network,
+        sourceNetwork: params.fromChain.network,
+        destinationNetwork: params.toChain.network,
         assetAmountToTransfer: params.assetAmount,
       });
       for (let tx of txSequence) {
@@ -72,8 +62,8 @@ export class SifchainCosmoshubInterchainApi
           return {
             ...params,
             hash: tx.transactionHash,
-            fromChain: this.fromChain,
-            toChain: this.toChain,
+            fromChain: params.fromChain,
+            toChain: params.toChain,
             meta: {
               logs: parseRawLog(tx.rawLog),
             },

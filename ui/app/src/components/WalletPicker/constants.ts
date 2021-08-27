@@ -75,7 +75,7 @@ const createWalletConnection = (
 export const walletConnections: WalletConnection[] = [
   createWalletConnection("keplr", Network.SENTINEL),
   createWalletConnection("keplr", Network.AKASH),
-  // createWalletConnection("keplr", Network.IRIS),
+  createWalletConnection("keplr", Network.IRIS),
   createWalletConnection("keplr", Network.COSMOSHUB),
   createWalletConnection("metamask", Network.ETHEREUM),
   createWalletConnection("keplr", Network.SIFCHAIN),

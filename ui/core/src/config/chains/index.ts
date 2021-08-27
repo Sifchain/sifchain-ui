@@ -1,7 +1,7 @@
 import ethereum from "./ethereum";
 import sifchain from "./sifchain";
 import cosmoshub from "./cosmoshub";
-// import iris from "./iris";
+import iris from "./iris";
 import akash from "./akash";
 import sentinel from "./sentinel";
 
@@ -15,7 +15,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
       {
         [Network.SIFCHAIN]: sifchain[env],
         [Network.COSMOSHUB]: cosmoshub[env],
-        // [Network.IRIS]: iris[env],
+        [Network.IRIS]: iris[env],
         [Network.AKASH]: akash[env],
         [Network.SENTINEL]: sentinel[env],
         [Network.ETHEREUM]: ethereum[env],
