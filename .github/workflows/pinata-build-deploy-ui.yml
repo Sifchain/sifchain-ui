@@ -50,6 +50,7 @@ jobs:
           else
             echo "ENV_NAME=devnet" >> $GITHUB_ENV
             echo "SUBDOMAIN=devnet" >> $GITHUB_ENV
+            echo "BRANCH_NAME=develop" >> $GITHUB_ENV
             # echo "::set-output name=env::$BRANCH_NAME"
           fi
 
@@ -65,7 +66,11 @@ jobs:
       - name: Get Contract
         shell: bash
         run: |          
+          # echo "${{env}}" >> ./ui/app/.env
+          # echo "$GITHUB_ENV"
           wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_SIFCHAIN_ID}/BridgeBank.json
+          echo VUE_APP_VERSION=$VUE_APP_VERSION >> ./ui/app/.env
+          echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
       - name: Use Node.js
         uses: actions/setup-node@v2.1.4
@@ -83,8 +88,7 @@ jobs:
       - name: Save package meta
         run: |
           mkdir -p ./ui/app/dist;
-          echo $CURRENT_BRANCH > ./ui/app/dist/.branch; 
-          echo $IMAGE_NAME > ./ui/app/dist/.image
+          echo $BRANCH_NAME > ./ui/app/dist/.branch; 
 
       - uses: actions/upload-artifact@master
         with:
