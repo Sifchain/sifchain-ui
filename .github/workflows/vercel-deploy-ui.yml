@@ -7,6 +7,7 @@ on:
       - "!develop"
       - "!testnet"
       - "!master"
+      - "!workflow-compile-time"
 
 jobs:
   deploy:
