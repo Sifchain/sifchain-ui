@@ -2,7 +2,6 @@ import { TransactionStatus } from "../../entities";
 import { AppEvent } from "../../services/EventBusService";
 
 export function isSupportedEVMChain(chainId?: string) {
-  console.log("isSupportedEVMChain", chainId);
   if (!chainId) return false;
   // List of supported EVM chainIds
   const supportedEVMChainIds = [

@@ -29,7 +29,8 @@ export default defineComponent({
             Here's a list of security measures taken
           </a>
           , but please note that all transactions conducted are at your own
-          risk. This platform is not open to US users.
+          risk. <br />
+          <b class="text-md">This platform is not open to U.S. persons.</b>
         </div>
         <button
           class="bg-accent-accent_gradient_to h-[40px] px-[14px] flex items-center rounded-b"

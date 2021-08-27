@@ -19,33 +19,23 @@ import { createIteratorSubject } from "../../utils/iteratorSubject";
 
 import { IBCTransferSubscriber } from "./utils";
 
-export default function createCosmoshubSifchainApi(context: UsecaseContext) {
-  return new CosmoshubSifchainInterchainApi(
-    context,
-    context.services.chains.get(Network.COSMOSHUB),
-    context.services.chains.get(Network.SIFCHAIN),
-  );
-}
-
-export class CosmoshubSifchainInterchainApi
+export class CosmosSifchainInterchainApi
   implements InterchainApi<IBCInterchainTx> {
   subscriber = IBCTransferSubscriber(this.context);
-  constructor(
-    public context: UsecaseContext,
-    public fromChain: Chain,
-    public toChain: Chain,
-  ) {}
+  constructor(public context: UsecaseContext) {}
 
-  async estimateFees(params: InterchainParams) {} // no fees
+  async estimateFees(params: InterchainParams) {
+    return params.toChain.calculateTransferFeeToChain(params.assetAmount);
+  }
 
   transfer(params: InterchainParams) {
-    console.log("transfer", this.fromChain, this.toChain);
+    console.log("transfer", params.fromChain, params.toChain);
     return new ExecutableTransaction(async (emit) => {
       emit({ type: "signing" });
       try {
         const txSequence = await this.context.services.ibc.transferIBCTokens({
-          sourceNetwork: this.fromChain.network,
-          destinationNetwork: this.toChain.network,
+          sourceNetwork: params.fromChain.network,
+          destinationNetwork: params.toChain.network,
           assetAmountToTransfer: params.assetAmount,
         });
         for (let tx of txSequence) {
@@ -76,8 +66,8 @@ export class CosmoshubSifchainInterchainApi
 
             return {
               ...params,
-              fromChain: this.fromChain,
-              toChain: this.toChain,
+              fromChain: params.fromChain,
+              toChain: params.toChain,
               hash: tx.transactionHash,
               meta: { logs },
             } as IBCInterchainTx;
