@@ -176,6 +176,7 @@ export function createApi(usecases: Usecases, services: Services): Api {
     ...usecases.clp,
     import: peg,
     export: unpeg,
+    ...usecases.interchain,
     ...otherPegUsecases,
     ...usecases.reward,
     ...usecases.wallet.eth,

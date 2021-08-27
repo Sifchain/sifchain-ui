@@ -24,7 +24,7 @@ it("switches the env when provided with an _env string", () => {
 it("switches the env when provided with a second _env string", () => {
   const location = {
     href: "/#/foo",
-    search: "?_env=0",
+    search: "?_env=mainnet",
   };
 
   switchEnv({ location, cookies });
@@ -43,7 +43,7 @@ it("doesnt switch the env when no string is provided", () => {
   expect(location.href).toBe("/#/foo");
 });
 
-it("doesnt switch the env when provided with an _env string out of bounds of SifEnv", () => {
+it("doesnt switch the env when provided with an _env string out of bounds of NetworkEnv", () => {
   const location = {
     href: "/#/foo",
     search: "?_env=7",
@@ -54,7 +54,7 @@ it("doesnt switch the env when provided with an _env string out of bounds of Sif
   expect(location.href).toBe("/#/foo");
 });
 
-it("doesnt switch the env when provided with another _env string out of bounds of SifEnv", () => {
+it("doesnt switch the env when provided with another _env string out of bounds of NetworkEnv", () => {
   const location = {
     href: "/#/foo",
     search: "?_env=-1",

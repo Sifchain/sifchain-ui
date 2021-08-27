@@ -1,8 +1,13 @@
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 import {
+  Amount,
+  Asset,
+  AssetAmount,
   ErrorCode,
   getErrorMessage,
   IAsset,
   IAssetAmount,
+  Network,
 } from "../../entities";
 import { Services } from "../../services";
 import { ReportTransactionError } from "../utils";
@@ -15,8 +20,9 @@ export type SwapArgs = {
   bus: PickBus;
   sif: PickSif;
   clp: PickClp;
+  ibc: Pick<Services["ibc"], "loadChainConfigByNetwork">;
 };
-export function Swap({ bus, sif, clp }: SwapArgs) {
+export function Swap({ bus, sif, clp, ibc }: SwapArgs) {
   return async (
     sentAmount: IAssetAmount,
     receivedAsset: IAsset,

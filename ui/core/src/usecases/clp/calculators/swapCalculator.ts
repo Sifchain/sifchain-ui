@@ -12,7 +12,6 @@ import { useField } from "./useField";
 import { trimZeros, useBalances } from "./utils";
 import { format } from "../../../utils/format";
 export enum SwapState {
-  SELECT_TOKENS,
   ZERO_AMOUNTS,
   INSUFFICIENT_FUNDS,
   VALID_INPUT,
@@ -98,9 +97,22 @@ export function useSwapCalculator(input: {
     // to get ratio needs to be divided by amount as input by user
     const amountAsInput = format(amount.amount, amount.asset);
 
-    return `${format(swapResult.divide(amountAsInput), swapResult.asset, {
-      mantissa: 6,
-    })} ${swapResult.label} per ${amount.label}`;
+    let formatted;
+    try {
+      formatted = format(swapResult.divide(amountAsInput), swapResult.asset, {
+        mantissa: 6,
+      });
+    } catch (error) {
+      if (/division by zero/i.test(error.message)) {
+        formatted = "0.0";
+      } else {
+        throw error;
+      }
+    }
+
+    return `${formatted} ${
+      swapResult.asset.displaySymbol?.toUpperCase() || swapResult.label
+    } per ${amount.asset.displaySymbol?.toUpperCase() || amount.label}`;
   });
 
   // Selected field changes when the user changes the field selection
@@ -228,7 +240,7 @@ export function useSwapCalculator(input: {
   // Derive state
   const state = computed(() => {
     // SwapState.INSUFFICIENT_LIQUIDITY is probably better here
-    if (!pool.value) return SwapState.SELECT_TOKENS;
+    if (!pool.value) return SwapState.INSUFFICIENT_LIQUIDITY;
     const fromTokenLiquidity = (pool.value as IPool).amounts.find(
       (amount) => amount.asset.symbol === fromField.asset.value?.symbol,
     );

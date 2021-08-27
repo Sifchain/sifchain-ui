@@ -1,0 +1,29 @@
+.slider {
+  margin-bottom: 1rem;
+  width: 100%;
+  .input {
+    width: 100%;
+    cursor: pointer;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    & > * {
+      width: 32%;
+    }
+    & > *:first-child {
+      text-align: left;
+    }
+    & > *:last-child {
+      text-align: right;
+    }
+
+    .label {
+      transition: opacity $trans_fast;
+      &:hover {
+        cursor: pointer;
+        color: $c_black;
+      }
+    }
+  }
+}

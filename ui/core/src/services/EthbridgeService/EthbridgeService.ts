@@ -2,7 +2,12 @@ import { provider } from "web3-core";
 import Web3 from "web3";
 import { getBridgeBankContract } from "./bridgebankContract";
 import { getTokenContract } from "./tokenContract";
-import { IAssetAmount } from "../../entities";
+import {
+  IAssetAmount,
+  getChainsService,
+  IAsset,
+  Network,
+} from "../../entities";
 import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
@@ -24,6 +29,7 @@ export type EthbridgeServiceContext = {
   bridgetokenContractAddress: string;
   getWeb3Provider: () => Promise<provider>;
   sifUnsignedClient?: SifUnSignedClient;
+  assets: IAsset[];
 };
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -36,6 +42,7 @@ export default function createEthbridgeService({
   bridgebankContractAddress,
   getWeb3Provider,
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
+  assets,
 }: EthbridgeServiceContext) {
   // Pull this out to a util?
   // How to handle context/dependency injection?
@@ -59,6 +66,11 @@ export default function createEthbridgeService({
     symbol?: string,
     txHash?: string,
   ): PegTxEventEmitter {
+    console.log("createPegTx", {
+      confirmations,
+      symbol,
+      txHash,
+    });
     const emitter = createPegTxEventEmitter(txHash, symbol);
 
     // decorate pegtx to invert dependency to web3 and confirmations
@@ -123,6 +135,7 @@ export default function createEthbridgeService({
   }
 
   return {
+    createPegTx,
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
@@ -168,7 +181,16 @@ export default function createEthbridgeService({
     }) {
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
-      const tokenAddress = params.assetAmount.asset.address ?? ETH_ADDRESS;
+
+      const sifAsset = getChainsService()
+        ?.get(Network.SIFCHAIN)
+        .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
+
+      const tokenAddress =
+        sifAsset.ibcDenom ||
+        (await this.fetchTokenAddress(sifAsset)) ||
+        ETH_ADDRESS;
+
       console.log("burnToEthereum: start: ", tokenAddress);
 
       const txReceipt = await sifUnsignedClient.burn({
@@ -213,7 +235,11 @@ export default function createEthbridgeService({
           bridgebankContractAddress,
         );
         const accounts = await web3.eth.getAccounts();
-        const coinDenom = assetAmount.asset.address || ETH_ADDRESS; // eth address is ""
+        const coinDenom =
+          assetAmount.asset.ibcDenom ||
+          assetAmount.asset.address ||
+          ETH_ADDRESS; // eth address is ""
+
         const amount = assetAmount.toBigInt().toString();
         const fromAddress = accounts[0];
 
@@ -254,7 +280,10 @@ export default function createEthbridgeService({
     }) {
       const web3 = await ensureWeb3();
       const ethereumChainId = await web3.eth.net.getId();
-      const tokenAddress = params.assetAmount.asset.address ?? ETH_ADDRESS;
+
+      const ethereumAsset = getChainsService()
+        ?.get(Network.ETHEREUM)
+        .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
       const lockParams = {
         ethereum_receiver: params.ethereumRecipient,
@@ -263,14 +292,15 @@ export default function createEthbridgeService({
           from: params.fromAddress,
         },
         amount: params.assetAmount.toBigInt().toString(),
-        symbol: params.assetAmount.asset.symbol,
+        symbol:
+          params.assetAmount.asset.ibcDenom || params.assetAmount.asset.symbol,
         cosmos_sender: params.fromAddress,
         ethereum_chain_id: `${ethereumChainId}`,
-        token_contract_address: tokenAddress,
+        token_contract_address:
+          (await this.fetchTokenAddress(ethereumAsset)) || ETH_ADDRESS,
         ceth_amount: params.feeAmount.toBigInt().toString(),
       };
 
-      console.log("lockToEthereum: TRY LOCK", tokenAddress);
       const lockReceipt = await sifUnsignedClient.lock(lockParams);
       console.log("lockToEthereum: LOCKED", lockReceipt);
 
@@ -312,6 +342,15 @@ export default function createEthbridgeService({
       confirmations: number,
       account?: string,
     ) {
+      console.log(
+        "burnToSifchain",
+        sifRecipient,
+        assetAmount.asset.symbol,
+        assetAmount.amount.toBigInt().toString(),
+        confirmations,
+        account,
+      );
+
       const pegTx = createPegTx(confirmations, assetAmount.asset.symbol);
 
       function handleError(err: any) {
@@ -357,6 +396,86 @@ export default function createEthbridgeService({
       });
 
       return pegTx;
+    },
+
+    async fetchSymbolAddress(symbol: string) {
+      return this.fetchTokenAddress(
+        getChainsService()
+          .get(Network.SIFCHAIN)
+          .findAssetWithLikeSymbolOrThrow(symbol),
+      );
+    },
+
+    async fetchTokenAddress(
+      // asset to fetch token for
+      asset: IAsset,
+      // optional: pass in HTTP, or other provider (for testing)
+      loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
+    ) {
+      const web3 = await loadWeb3Instance();
+      const bridgeBankContract = await getBridgeBankContract(
+        web3,
+        bridgebankContractAddress,
+      );
+
+      const attemptSymbols = [
+        asset.ibcDenom,
+        asset.symbol.replace(/^c/, ""),
+        asset.symbol.replace(/^e/, ""),
+        asset.displaySymbol,
+        asset.symbol,
+        "e" + asset.symbol,
+      ].filter((item, index, array) => {
+        return !!item && array.indexOf(item) === index;
+      });
+
+      let tokenAddress: string = "0";
+      let nextAttempt: string | undefined;
+      while (
+        attemptSymbols.length > 0 &&
+        (nextAttempt = attemptSymbols.shift())
+      ) {
+        tokenAddress = await bridgeBankContract.methods
+          .getBridgeToken(nextAttempt)
+          .call();
+        if (!tokenAddress.startsWith("0x0")) break;
+
+        tokenAddress = await bridgeBankContract.methods
+          .getLockedTokenAddress(nextAttempt)
+          .call();
+        if (!tokenAddress.startsWith("0x0")) break;
+      }
+
+      return tokenAddress.startsWith("0x0") ? undefined : tokenAddress;
+    },
+
+    async fetchAllTokenAddresses(
+      // optional: pass in HTTP, or other provider (for testing)
+      loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
+    ) {
+      // await new Promise((r) => setTimeout(r, 8000));
+      // console.log("loading tokens for ", bridgebankContractAddress);
+      // try {
+      //   const tokens: Record<string, string> = {};
+      //   for (let asset of assets.filter(
+      //     (a) => a.network === Network.SIFCHAIN,
+      //   )) {
+      //     if (tokens[asset.displaySymbol] || !asset.symbol) continue;
+      //     try {
+      //       tokens[asset.symbol] = await this.fetchTokenAddress(
+      //         asset,
+      //         loadWeb3Instance,
+      //       );
+      //     } catch (error) {
+      //       console.error("Error fetching eth data for", asset.symbol, error);
+      //     }
+      //   }
+      //   console.log("\n\n\n\n\n\n\n");
+      //   console.log(tokens);
+      //   return tokens;
+      // } catch (e) {
+      //   console.error(e);
+      // }
     },
   };
 }

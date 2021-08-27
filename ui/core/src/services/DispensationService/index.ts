@@ -1,3 +1,4 @@
+import { DistributionType } from "../../generated/proto/sifnode/dispensation/v1/types";
 import { IAsset } from "../../entities";
 
 import { SifUnSignedClient } from "../utils/SifClient";
@@ -12,7 +13,7 @@ export type IDispensationServiceContext = {
 };
 
 type IDispensationService = {
-  claim: (params: { claimType: "2" | "3"; fromAddress: string }) => any;
+  claim: (params: { claimType: DistributionType; fromAddress: string }) => any;
 };
 
 export default function createDispensationService({
@@ -24,7 +25,6 @@ export default function createDispensationService({
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
 }: IDispensationServiceContext): IDispensationService {
   const client = sifUnsignedClient;
-
   const instance: IDispensationService = {
     async claim(params) {
       return await client.claim({

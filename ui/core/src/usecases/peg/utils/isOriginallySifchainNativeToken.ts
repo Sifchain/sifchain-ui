@@ -1,5 +1,8 @@
-import { IAsset } from "../../../entities";
+import { IAsset, Network } from "../../../entities";
 
 export function isOriginallySifchainNativeToken(asset: IAsset) {
-  return ["erowan", "rowan"].includes(asset.symbol);
+  return (
+    asset.homeNetwork !== Network.ETHEREUM ||
+    asset.symbol.toLowerCase() === "erowan"
+  );
 }

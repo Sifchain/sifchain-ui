@@ -7,16 +7,16 @@ import {
   getVSData,
   getExistingClaimsData,
   IHasClaimed,
-} from "@/components/shared/utils";
-import Layout from "@/components/Layout/Layout.vue";
-import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
-import { Copy } from "@/components/Text";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
-import Modal from "@/components/Modal/Modal.vue";
-import ModalView from "@/components/Modal/Modal.vue";
-import PairTable from "@/components/PairTable/PairTable.vue";
-import { ConfirmState } from "@/types";
-import RewardContainer from "@/components/RewardContainer/RewardContainer.vue";
+} from "@/componentsLegacy/shared/utils";
+import Layout from "@/componentsLegacy/Layout/Layout";
+import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
+import { Copy } from "@/componentsLegacy/Text";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
+import Modal from "@/componentsLegacy/Modal/Modal.vue";
+import ModalView from "@/componentsLegacy/Modal/Modal.vue";
+import PairTable from "@/componentsLegacy/PairTable/PairTable.vue";
+import { ConfirmState, ConfirmStateEnum } from "@/types";
+import RewardContainer from "@/componentsLegacy/RewardContainer/RewardContainer.vue";
 import { toConfirmState } from "./utils/toConfirmState";
 
 const claimTypeMap = {
@@ -57,7 +57,7 @@ export default defineComponent({
   },
   setup() {
     const { store, usecases, config } = useCore();
-    const address = computed(() => store.wallet.sif.address);
+    const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
     const transactionState = ref<ConfirmState | string>("selecting");
     const transactionStateMsg = ref<string>("");
     const transactionHash = ref<string | null>(null);
@@ -93,7 +93,7 @@ export default defineComponent({
       if (!claimType.value) {
         return console.error("No claim type");
       }
-      transactionState.value = "signing";
+      transactionState.value = ConfirmStateEnum.Signing;
       const tx = await usecases.reward.claim({
         fromAddress: address.value,
         claimType: claimTypeMap[claimType.value] as "2" | "3",

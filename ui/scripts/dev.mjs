@@ -16,4 +16,7 @@ Run a development server with hotloading and code watch from http://localhost:80
 const core = resolve(__dirname, "../core");
 const app = resolve(__dirname, "../app");
 
-await Promise.all([$`cd ${app} && yarn serve`, $`cd ${core} && yarn watch`]);
+await Promise.all([
+  $`cd ${app} && rm -rf ./node_modules/.cache/ && yarn serve`,
+  $`cd ${core} && yarn watch`,
+]);

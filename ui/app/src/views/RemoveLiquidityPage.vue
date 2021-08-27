@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch, onMounted } from "vue";
-import Layout from "@/components/Layout/Layout.vue";
-import { useWalletButton } from "@/components/WithWallet/useWalletButton";
+import Layout from "@/componentsLegacy/Layout/Layout";
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
   Asset,
   LiquidityProvider,
@@ -11,14 +11,14 @@ import {
 import { useCore } from "@/hooks/useCore";
 import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
-import AssetItem from "@/components/AssetItem/AssetItem.vue";
-import Slider from "@/components/Slider/Slider.vue";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
+import AssetItem from "@/componentsLegacy/AssetItem/AssetItem.vue";
+import Slider from "@/componentsLegacy/Slider/Slider.vue";
 import { toConfirmState } from "./utils/toConfirmState";
-import { ConfirmState } from "@/types";
-import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
-import DetailsPanelRemove from "@/components/DetailsPanelRemove/DetailsPanelRemove.vue";
-import { getLMData } from "@/components/shared/utils";
+import { ConfirmState, ConfirmStateEnum } from "@/types";
+import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
+import DetailsPanelRemove from "@/componentsLegacy/DetailsPanelRemove/DetailsPanelRemove.vue";
+import { getLMData } from "@/componentsLegacy/shared/utils";
 
 export default defineComponent({
   components: {
@@ -33,7 +33,7 @@ export default defineComponent({
     const { store, usecases, poolFinder, services, config } = useCore();
     const route = useRoute();
     const router = useRouter();
-    const transactionState = ref<ConfirmState>("selecting");
+    const transactionState = ref<ConfirmState>(ConfirmStateEnum.Selecting);
     const transactionHash = ref<string | null>(null);
     const transactionStateMsg = ref<string>("");
     const asymmetry = ref("0");
@@ -48,7 +48,7 @@ export default defineComponent({
     const liquidityProvider = ref(null) as Ref<LiquidityProvider | null>;
     const withdrawExternalAssetAmount: Ref<string | null> = ref(null);
     const withdrawNativeAssetAmount: Ref<string | null> = ref(null);
-    const address = computed(() => store.wallet.sif.address);
+    const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
     const state = ref(0);
 
     effect(() => {
@@ -56,7 +56,7 @@ export default defineComponent({
       services.clp
         .getLiquidityProvider({
           symbol: externalAssetSymbol.value,
-          lpAddress: store.wallet.sif.address,
+          lpAddress: store.wallet.get(Network.SIFCHAIN).address,
         })
         .then((liquidityProviderResult) => {
           liquidityProvider.value = liquidityProviderResult;
@@ -75,7 +75,7 @@ export default defineComponent({
         wBasisPoints,
         asymmetry,
         liquidityProvider,
-        sifAddress: toRef(store.wallet.sif, "address"),
+        sifAddress: toRef(store.wallet.get(Network.SIFCHAIN). "address"),
         poolFinder,
       });
       state.value = calcData.state;
@@ -118,7 +118,7 @@ export default defineComponent({
         )
           return;
 
-        transactionState.value = "confirming";
+        transactionState.value = ConfirmStateEnum.Confirming;
       },
       async handleAskConfirmClicked() {
         if (
@@ -128,7 +128,7 @@ export default defineComponent({
         )
           return;
 
-        transactionState.value = "signing";
+        transactionState.value = ConfirmStateEnum.Signing;
         const tx = await usecases.clp.removeLiquidity(
           Asset.get(externalAssetSymbol.value),
           wBasisPoints.value,
@@ -143,7 +143,7 @@ export default defineComponent({
         if (transactionState.value === "confirmed") {
           router.push("/pool");
         } else {
-          transactionState.value = "selecting";
+          transactionState.value = ConfirmStateEnum.Selecting;
         }
       },
       PoolState,

@@ -1,18 +1,18 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Layout from "@/components/Layout/Layout.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import { computed, ref, toRefs } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { Asset, AssetAmount } from "@sifchain/sdk";
-import CurrencyField from "@/components/CurrencyField/CurrencyField.vue";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
+import CurrencyField from "@/componentsLegacy/CurrencyField/CurrencyField.vue";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
 
-import RaisedPanel from "@/components/RaisedPanel/RaisedPanel.vue";
+import RaisedPanel from "@/componentsLegacy/RaisedPanel/RaisedPanel.vue";
 import { useRouter } from "vue-router";
-import SifInput from "@/components/SifInput/SifInput.vue";
-import DetailsTable from "@/components/DetailsTable/DetailsTable.vue";
-import Label from "@/components/Label/Label.vue";
-import RaisedPanelColumn from "@/components/RaisedPanelColumn/RaisedPanelColumn.vue";
+import SifInput from "@/componentsLegacy/SifInput/SifInput.vue";
+import DetailsTable from "@/componentsLegacy/DetailsTable/DetailsTable.vue";
+import Label from "@/componentsLegacy/Label/Label.vue";
+import RaisedPanelColumn from "@/componentsLegacy/RaisedPanelColumn/RaisedPanelColumn.vue";
 import { trimZeros } from "@sifchain/sdk";
 import BigNumber from "bignumber.js";
 import {
@@ -20,11 +20,11 @@ import {
   getPeggedSymbol,
   getUnpeggedSymbol,
   useAssetItem,
-} from "@/components/shared/utils";
+} from "@/componentsLegacy/shared/utils";
 import { toConfirmState } from "./utils/toConfirmState";
 import { getMaxAmount } from "./utils/getMaxAmount";
-import { ConfirmState } from "../types";
-import ConfirmationModal from "@/components/ConfirmationModal/ConfirmationModal.vue";
+import { ConfirmState, ConfirmStateEnum } from "../types";
+import ConfirmationModal from "@/componentsLegacy/ConfirmationModal/ConfirmationModal.vue";
 import { format, toBaseUnits } from "@sifchain/sdk";
 import { PegSentEvent, PegTxError } from "@sifchain/sdk/src/usecases/peg/peg";
 
@@ -54,7 +54,7 @@ export default defineComponent({
         : "import";
     });
 
-    const transactionState = ref<ConfirmState>("selecting");
+    const transactionState = ref<ConfirmState>(ConfirmStateEnum.Selecting);
     const transactionStateMsg = ref<string>("");
     const transactionHash = ref<string | null>(null);
 
@@ -82,8 +82,8 @@ export default defineComponent({
     const amount = ref("0.0");
     const address = computed(() =>
       mode.value === "import"
-        ? store.wallet.sif.address
-        : store.wallet.eth.address,
+        ? store.wallet.get(Network.SIFCHAIN).address
+        : store.wallet.get(Network.ETHEREUM).address,
     );
 
     const isMaxActive = computed(() => {
@@ -101,13 +101,13 @@ export default defineComponent({
       for await (const event of usecases.peg.peg(assetAmount)) {
         switch (event.type) {
           case "approve_started":
-            transactionState.value = "approving";
+            transactionState.value = ConfirmStateEnum.Approving;
             break;
           case "approve_error":
-            transactionState.value = "rejected";
+            transactionState.value = ConfirmStateEnum.Rejected;
             break;
           case "signing":
-            transactionState.value = "signing";
+            transactionState.value = ConfirmStateEnum.Signing;
             break;
           case "sent":
           case "tx_error": {
@@ -121,7 +121,7 @@ export default defineComponent({
     }
 
     async function handleUnpegRequested() {
-      transactionState.value = "signing";
+      transactionState.value = ConfirmStateEnum.Signing;
       const asset = Asset.get(symbol.value);
 
       const tx = await usecases.peg.unpeg(
@@ -136,8 +136,8 @@ export default defineComponent({
     const accountBalance = computed(() => {
       const balances =
         mode.value === "import"
-          ? store.wallet.eth.balances
-          : store.wallet.sif.balances;
+          ? store.wallet.get(Network.ETHEREUM).balances
+          : store.wallet.get(Network.SIFCHAIN).balances;
       return balances.find((balance) => {
         return (
           balance.asset.symbol.toLowerCase() === symbol.value.toLowerCase()
@@ -168,10 +168,10 @@ export default defineComponent({
 
     function requestTransactionModalClose() {
       if (transactionState.value === "confirmed") {
-        transactionState.value = "selecting";
+        transactionState.value = ConfirmStateEnum.Selecting;
         router.push("/balances"); // TODO push back to peg, but load unpeg tab when unpegging -> dynamic routing?
       } else {
-        transactionState.value = "selecting";
+        transactionState.value = ConfirmStateEnum.Selecting;
       }
     }
     const feeAmount = computed(() => {
@@ -211,7 +211,7 @@ export default defineComponent({
         amount.value = newAmount;
       },
       handleActionClicked: () => {
-        transactionState.value = "confirming";
+        transactionState.value = ConfirmStateEnum.Confirming;
       },
       handlePegRequested,
       handleUnpegRequested,

@@ -7,7 +7,11 @@ export type IAsset = {
   name: string;
   network: Network;
   symbol: string;
+  ibcDenom?: string;
+  displaySymbol: string;
   label: string;
+  homeNetwork: Network;
+  decommissioned?: true;
 };
 type ReadonlyAsset = Readonly<IAsset>;
 const assetMap = new Map<string, ReadonlyAsset>();
@@ -24,10 +28,11 @@ function isAsset(value: any): value is IAsset {
 export function Asset(assetOrSymbol: IAsset | string): ReadonlyAsset {
   // If it is an asset then cache it and return it
   if (isAsset(assetOrSymbol)) {
-    assetMap.set(
-      assetOrSymbol.symbol.toLowerCase(),
-      assetOrSymbol as ReadonlyAsset,
-    );
+    const asset = assetOrSymbol as IAsset;
+    assetMap.set(assetOrSymbol.symbol.toLowerCase(), {
+      ...asset,
+      displaySymbol: asset.displaySymbol || asset.symbol,
+    } as ReadonlyAsset);
     return assetOrSymbol;
   }
 

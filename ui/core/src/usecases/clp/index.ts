@@ -4,12 +4,13 @@ import { Swap } from "./swap";
 import { AddLiquidity } from "./addLiquidity";
 import { RemoveLiquidity } from "./removeLiquidity";
 import { SyncPools } from "./syncPools";
+import { Network } from "../../entities";
 
 export default ({
   services,
   store,
 }: UsecaseContext<
-  "sif" | "clp" | "bus",
+  "sif" | "clp" | "bus" | "ibc" | "chains" | "tokenRegistry",
   "pools" | "wallet" | "accountpools"
 >) => {
   const syncPools = SyncPools(services, store);
@@ -33,15 +34,17 @@ export default ({
       });
 
       // Then every transaction
-
-      const unsubscribe = services.sif.onNewBlock(async () => {
+      let syncTimeoutId: NodeJS.Timeout;
+      const unsubscribe = () => clearTimeout(syncTimeoutId);
+      (async function poolsLoop() {
         await syncPools();
-      });
+        syncTimeoutId = setTimeout(poolsLoop, 15 * 1000);
+      })();
 
       effects.push(
         effect(() => {
           // When sif address changes syncPools
-          store.wallet.sif.address;
+          store.wallet.get(Network.SIFCHAIN).address;
           syncPools();
         }),
       );

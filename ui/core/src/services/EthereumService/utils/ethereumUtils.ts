@@ -8,9 +8,16 @@ import {
   WebsocketProvider,
 } from "web3-core";
 
-import { Address, Asset, AssetAmount, Network } from "../../../entities";
+import {
+  Address,
+  Asset,
+  AssetAmount,
+  Network,
+  IAsset,
+} from "../../../entities";
 
 import erc20TokenAbi from "./erc20TokenAbi";
+import detectEthereumProvider from "@metamask/detect-provider";
 
 export function getTokenContract(web3: Web3, asset: Asset) {
   return new web3.eth.Contract(erc20TokenAbi, asset.address);
@@ -140,9 +147,33 @@ export async function getEtheriumBalance(web3: Web3, address: Address) {
       label: "ETH",
       address: "",
       decimals: 18,
+      displaySymbol: "eth",
       name: "Ethereum",
       network: Network.ETHEREUM,
+      homeNetwork: Network.ETHEREUM,
     },
     ethBalance,
   );
+}
+
+export async function suggestEthereumAsset(
+  asset: IAsset,
+  contractAddress: string,
+) {
+  const ethereum = await detectEthereumProvider();
+  if (!ethereum) return false;
+  const wasAdded = await ethereum.request({
+    method: "wallet_watchAsset",
+    params: {
+      // @ts-ignore
+      type: "ERC20",
+      options: {
+        address: contractAddress,
+        symbol: asset.symbol,
+        decimals: asset.decimals,
+        image: asset.imageUrl,
+      },
+    },
+  });
+  return !!wasAdded;
 }

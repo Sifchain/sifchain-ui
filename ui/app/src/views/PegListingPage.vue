@@ -1,19 +1,22 @@
 <script lang="ts">
-import Tab from "@/components/Tab/Tab.vue";
-import Tabs from "@/components/Tabs/Tabs.vue";
-import Layout from "@/components/Layout/Layout.vue";
-import AssetList from "@/components/AssetList/AssetList.vue";
-import SifInput from "@/components/SifInput/SifInput.vue";
-import ActionsPanel from "@/components/ActionsPanel/ActionsPanel.vue";
-import SifButton from "@/components/SifButton/SifButton.vue";
-import Tooltip from "@/components/Tooltip/Tooltip.vue";
-import Icon from "@/components/Icon/Icon.vue";
+import Tab from "@/componentsLegacy/Tab/Tab.vue";
+import Tabs from "@/componentsLegacy/Tabs/Tabs.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
+import AssetList from "@/componentsLegacy/AssetList/AssetList.vue";
+import SifInput from "@/componentsLegacy/SifInput/SifInput.vue";
+import ActionsPanel from "@/componentsLegacy/ActionsPanel/ActionsPanel.vue";
+import SifButton from "@/componentsLegacy/SifButton/SifButton.vue";
+import Tooltip from "@/componentsLegacy/Tooltip/Tooltip.vue";
+import Icon from "@/componentsLegacy/Icon/Icon.vue";
 
 import { sortAssetAmount } from "./utils/sortAssetAmount";
 import { useCore } from "@/hooks/useCore";
 import { defineComponent, ref } from "vue";
 import { computed } from "@vue/reactivity";
-import { getUnpeggedSymbol } from "../components/shared/utils";
+import {
+  getUnpeggedSymbol,
+  shortenHash,
+} from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
   IAsset,
@@ -66,13 +69,13 @@ export default defineComponent({
 
     const pendingPegTxList = computed(() => {
       if (
-        !store.wallet.eth.address ||
+        !store.wallet.get(Network.ETHEREUM).address ||
         !store.tx.eth ||
-        !store.tx.eth[store.wallet.eth.address]
+        !store.tx.eth[store.wallet.get(Network.ETHEREUM).address]
       )
         return null;
 
-      const txs = store.tx.eth[store.wallet.eth.address];
+      const txs = store.tx.eth[store.wallet.get(Network.ETHEREUM).address];
 
       const txKeys = Object.keys(txs);
 
@@ -101,8 +104,8 @@ export default defineComponent({
     const assetList = computed<TokenListItem[]>(() => {
       const balances =
         selectedTab.value === "External Tokens"
-          ? store.wallet.eth.balances
-          : store.wallet.sif.balances;
+          ? store.wallet.get(Network.ETHEREUM).balances
+          : store.wallet.get(Network.SIFCHAIN).balances;
 
       const pegList = pendingPegTxList.value;
 
@@ -147,13 +150,6 @@ export default defineComponent({
 
       return listedTokensSorted;
     });
-
-    // TODO: add to utils
-    function shortenHash(hash: string) {
-      const start = hash.slice(0, 7);
-      const end = hash.slice(-7);
-      return `${start}...${end}`;
-    }
 
     return {
       shortenHash,

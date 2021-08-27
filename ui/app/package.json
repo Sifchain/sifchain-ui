@@ -3,25 +3,37 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "dev": "cd .. && yarn dev",
+    "serve": "vue-cli-service serve --inspect",
     "build": "vue-cli-service build",
     "test": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@sifchain/sdk": "^1.0.0",
+    "@tailwindcss/postcss7-compat": "^2.2.4",
     "@types/color-hash": "^1.0.0",
     "@vue/reactivity": "^3.0.0",
+    "autoprefixer": "^9",
+    "clsx": "^1.1.1",
     "color-hash": "^1.0.3",
     "core-js": "^3.6.5",
+    "flip-toolkit": "^7.0.13",
     "normalize-scss": "^7.0.1",
-    "@sifchain/sdk": "^1.0.0",
+    "postcss": "^7",
+    "style-loader": "^3.0.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "tippy.js": "^6.3.1",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "^4.0.0-0",
+    "vue-tippy": "^6.0.0-alpha.30"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.0.0-beta.56",
+    "@fullhuman/postcss-purgecss": "3.0.0",
     "@types/jest": "^24.0.19",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
-    "@typescript-eslint/parser": "^2.33.0",
+    "@typescript-eslint/parser": "^4.5.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.8",
     "@vue/cli-plugin-router": "~4.5.0",
@@ -33,10 +45,14 @@
     "@vue/test-utils": "^2.0.0-0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.1.0",
+    "postcss-loader": "^6.1.0",
     "sass": "^1.27.0",
-    "sass-loader": "^10.0.4",
+    "sass-loader": "^12.1.0",
     "typescript": "~4.2.4",
-    "vue-jest": "^5.0.0-0"
+    "vue-jest": "^5.0.0-0",
+    "vue-loader": "^16.2.0",
+    "vue-svg-loader": "^0.17.0-beta.2",
+    "vue-template-compiler": "^2.6.14"
   },
   "eslintConfig": {
     "root": true,

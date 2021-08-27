@@ -1,4 +1,5 @@
-import { AssetAmount } from "../../entities";
+import { IBCService } from "services/IBCService/IBCService";
+import { AssetAmount, Network } from "../../entities";
 import { getTestingTokens } from "../../test/utils/getTestingToken";
 import { Peg, PegEvent, PegSentEvent } from "./peg";
 
@@ -19,7 +20,14 @@ function createPeg() {
   let subscribeToTx = jest.fn();
   let SubscribeToTx = () => subscribeToTx;
   let peg = Peg(
-    { ethbridge, bus },
+    {
+      ethbridge,
+      bus,
+      ibc: ({
+        transferIBCTokens: jest.fn(),
+        checkIfPacketReceived: jest.fn(),
+      } as unknown) as IBCService,
+    },
     { wallet, tx },
     { ethConfirmations: 50 },
     SubscribeToTx,
@@ -114,7 +122,7 @@ describe("Peg", () => {
     it("should return an error and supply a notification that the network isnt supported", async () => {
       const { peg, bus, wallet } = createPeg();
 
-      wallet.eth.chainId = "0x23";
+      wallet.get(Network.ETHEREUM).chainId = "0x23";
       const amount = AssetAmount(ETH, "10");
       const iter = peg(amount);
 

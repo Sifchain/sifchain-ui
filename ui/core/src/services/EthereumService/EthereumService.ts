@@ -2,6 +2,7 @@ import { reactive } from "@vue/reactivity";
 import Web3 from "web3";
 import { provider, WebsocketProvider } from "web3-core";
 import { IWalletService } from "../IWalletService";
+import detectEthereumProvider from "@metamask/detect-provider";
 import { debounce } from "lodash";
 import {
   TxHash,
@@ -10,6 +11,7 @@ import {
   AssetAmount,
   Network,
   IAssetAmount,
+  IAsset,
 } from "../../entities";
 import {
   EIPProvider,
@@ -23,7 +25,7 @@ import {
 import { Msg } from "@cosmjs/launchpad";
 
 type Address = string;
-type Balances = IAssetAmount[];
+
 type PossibleProvider = provider | EIPProvider;
 
 export type EthereumServiceContext = {
@@ -77,7 +79,7 @@ export class EthereumService implements IWalletService {
 
         if (isEventEmittingProvider(provider)) {
           provider.on("chainChanged", () => window.location.reload());
-          provider.on("accountsChanged", () => this.updateData());
+          provider.on("accountsChanged", () => window.location.reload());
         }
         // What network is the provider on
         if (isMetaMaskInpageProvider(provider)) {
@@ -158,7 +160,10 @@ export class EthereumService implements IWalletService {
         }
       }
       this.addWeb3Subscription();
-      await this.updateData();
+      this.state.connected = true;
+      this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
+      this.state.address = this.state.accounts[0];
+      this.state.balances = await this.getBalance();
     } catch (err) {
       this.web3 = null;
       this.removeWeb3Subscription();
@@ -200,7 +205,7 @@ export class EthereumService implements IWalletService {
     await this.updateData();
   }
 
-  async getBalance(address?: Address, asset?: Asset): Promise<Balances> {
+  async getBalance(address?: Address, asset?: Asset): Promise<IAssetAmount[]> {
     const supportedTokens = this.getSupportedTokens();
     const addr = address || this.state.address;
     if (!this.web3 || !addr) {

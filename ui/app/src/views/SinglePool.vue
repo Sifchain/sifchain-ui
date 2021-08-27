@@ -1,21 +1,21 @@
 <script lang="ts">
 import { defineComponent, watch, onMounted } from "vue";
 import { computed, ref, ComputedRef } from "@vue/reactivity";
-import Layout from "@/components/Layout/Layout.vue";
-import SifButton from "@/components/SifButton/SifButton.vue";
+import Layout from "@/componentsLegacy/Layout/Layout";
+import SifButton from "@/componentsLegacy/SifButton/SifButton.vue";
 import {
   getAssetLabel,
   getBlockExplorerUrl,
   getRewardEarningsUrl,
   useAssetItem,
-} from "@/components/shared/utils";
+} from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { useRoute } from "vue-router";
 import { format } from "@sifchain/sdk/src/utils/format";
-import { Amount } from "@sifchain/sdk";
-import Tooltip from "@/components/Tooltip/Tooltip.vue";
-import Icon from "@/components/Icon/Icon.vue";
-import Loader from "@/components/Loader/Loader.vue";
+import { Amount, Network } from "@sifchain/sdk";
+import Tooltip from "@/componentsLegacy/Tooltip/Tooltip.vue";
+import Icon from "@/componentsLegacy/Icon/Icon.vue";
+import Loader from "@/componentsLegacy/Loader/Loader.vue";
 
 const DECIMALS = 5;
 
@@ -39,24 +39,28 @@ export default defineComponent({
     const { config, store } = useCore();
     const route = useRoute().params.externalAsset;
 
-    const address = computed(() => store.wallet.sif.address);
+    const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
     let earnedRewards = ref<string | null>(null);
     let earnedRewardsNegative = ref<boolean>(false);
 
     const accountPool = computed(() => {
       if (
         !route ||
-        !store.wallet.sif.address ||
+        !store.wallet.get(Network.SIFCHAIN).address ||
         !store.accountpools ||
-        !store.accountpools[store.wallet.sif.address] ||
-        !store.accountpools[store.wallet.sif.address][`${route}_rowan`]
+        !store.accountpools[store.wallet.get(Network.SIFCHAIN).address] ||
+        !store.accountpools[store.wallet.get(Network.SIFCHAIN).address][
+          `${route}_rowan`
+        ]
       ) {
         return null;
       }
 
       const poolTicker = `${route}_rowan`;
       const storeAccountPool =
-        store.accountpools[store.wallet.sif.address][poolTicker];
+        store.accountpools[store.wallet.get(Network.SIFCHAIN).address][
+          poolTicker
+        ];
 
       // enrich pool ticker with pool object
       return {

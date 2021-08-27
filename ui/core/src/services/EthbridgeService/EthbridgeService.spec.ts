@@ -8,7 +8,7 @@ import {
   createTestSifService,
 } from "../../test/utils/services";
 import { getTestingTokens } from "../../test/utils/getTestingToken";
-import config from "../../config.localnet.json";
+import config from "../../config/networks/sifchain/config.localnet.json";
 import Web3 from "web3";
 import JSBI from "jsbi";
 import { sleep } from "../../test/utils/sleep";
@@ -38,6 +38,7 @@ describe("EthbridgeService", () => {
       bridgebankContractAddress: config.bridgebankContractAddress,
       bridgetokenContractAddress: EROWAN.address!,
       getWeb3Provider,
+      assets: [],
     });
   });
 

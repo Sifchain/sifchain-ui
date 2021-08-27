@@ -1,9 +1,10 @@
 import { reactive } from "@vue/reactivity";
 import { UsecaseContext } from "../..";
 import { PegTxEventEmitter } from "../../../services/EthbridgeService/PegTxEventEmitter";
-import { TransactionStatus } from "../../../entities";
+import { TransactionStatus, Network } from "../../../entities";
 import { Services } from "../../../services";
 import { Store } from "../../../store";
+import { Transaction } from "web3-core";
 
 // Using PascalCase to signify this is a factory
 export function SubscribeToTx({
@@ -15,16 +16,41 @@ export function SubscribeToTx({
 }) {
   // Helper to set store tx status
   // Should this live behind a store service API?
-  function storeSetTxStatus(
-    hash: string | undefined,
-    state: TransactionStatus,
-  ) {
-    if (!hash || !store.wallet.eth.address) return;
+  function storeSetTxStatus(tx: TransactionStatus) {
+    if (!tx.hash || !store.wallet.get(Network.ETHEREUM).address) return;
 
-    store.tx.eth[store.wallet.eth.address] =
-      store.tx.eth[store.wallet.eth.address] || reactive({});
+    store.tx.eth[store.wallet.get(Network.ETHEREUM).address] =
+      store.tx.eth[store.wallet.get(Network.ETHEREUM).address] || reactive({});
 
-    store.tx.eth[store.wallet.eth.address][hash] = state;
+    store.tx.eth[store.wallet.get(Network.ETHEREUM).address][tx.hash] = tx;
+
+    // if (tx.state === "accepted") {
+    //   services.bus.dispatch({
+    //     type: "PegTransactionPendingEvent",
+    //     payload: {
+    //       hash: tx.hash,
+    //     },
+    //   });
+    // } else if (tx.state === "completed") {
+    //   services.bus.dispatch({
+    //     type: "PegTransactionCompletedEvent",
+    //     payload: {
+    //       hash: tx.hash,
+    //     },
+    //   });
+    // } else if (tx.state === "failed") {
+    //   services.bus.dispatch({
+    //     type: "PegTransactionErrorEvent",
+    //     payload: {
+    //       txStatus: {
+    //         hash: tx.hash || "",
+    //         memo: "Transaction Error",
+    //         state: "failed",
+    //       },
+    //       message: "Transaction Error",
+    //     },
+    //   });
+    // }
   }
 
   /**
@@ -32,39 +58,29 @@ export function SubscribeToTx({
    * and update a key in the store
    * @param tx with hash set
    */
-  return function subscribeToTx(tx: PegTxEventEmitter) {
+  return function subscribeToTx(
+    tx: PegTxEventEmitter,
+    onUpdated: (tx: TransactionStatus) => void = storeSetTxStatus,
+  ) {
     function unsubscribe() {
       tx.removeListeners();
     }
 
     tx.onTxHash(({ txHash }) => {
-      storeSetTxStatus(txHash, {
+      console.log("onTxHash", txHash);
+      onUpdated({
         hash: txHash,
         memo: "Transaction Accepted",
         state: "accepted",
         symbol: tx.symbol,
       });
-
-      services.bus.dispatch({
-        type: "PegTransactionPendingEvent",
-        payload: {
-          hash: txHash,
-        },
-      });
     });
 
     tx.onComplete(({ txHash }) => {
-      storeSetTxStatus(txHash, {
+      onUpdated({
         hash: txHash,
         memo: "Transaction Complete",
         state: "completed",
-      });
-
-      services.bus.dispatch({
-        type: "PegTransactionCompletedEvent",
-        payload: {
-          hash: txHash,
-        },
       });
 
       // tx is complete so we can unsubscribe
@@ -72,22 +88,10 @@ export function SubscribeToTx({
     });
 
     tx.onError((err) => {
-      storeSetTxStatus(tx.hash, {
+      onUpdated({
         hash: tx.hash || "",
         memo: "Transaction Failed",
         state: "failed",
-      });
-
-      services.bus.dispatch({
-        type: "PegTransactionErrorEvent",
-        payload: {
-          txStatus: {
-            hash: tx.hash || "",
-            memo: "Transaction Error",
-            state: "failed",
-          },
-          message: err.payload.memo!,
-        },
       });
     });
 

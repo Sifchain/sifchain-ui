@@ -24,6 +24,7 @@ import { ensureSifAddress } from "./utils";
 import getKeplrProvider from "./getKeplrProvider";
 import { KeplrChainConfig } from "../../utils/parseConfig";
 import { parseTxFailure } from "./parseTxFailure";
+import IBCService from "../IBCService";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;
@@ -93,40 +94,41 @@ export default function createSifService({
 
   const triggerUpdate = debounce(
     async () => {
-      try {
-        if (!polling) {
-          polling = setInterval(() => {
-            triggerUpdate();
-          }, 2000);
-        }
-        await instance.setClient();
-        if (!client) {
-          state.connected = false;
-          state.address = "";
-          state.balances = [];
-          state.accounts = [];
-          state.log = "";
-          return;
-        }
-
-        state.connected = !!client;
-        state.address = client.senderAddress;
-        state.accounts = await client.getAccounts();
-        state.balances = await instance.getBalance(client.senderAddress);
-      } catch (e) {
-        console.error("Sifchain Wallet Connect Error", e);
-        if (!e.toString().toLowerCase().includes("no address found on chain")) {
-          state.connected = false;
-          state.address = "";
-          state.balances = [];
-          state.accounts = [];
-          state.log = "";
-          if (polling) {
-            clearInterval(polling);
-            polling = null;
-          }
-        }
-      }
+      // try {
+      //   if (!polling) {
+      //     while (true) {
+      //       triggerUpdate();
+      //       await new Promise((r) => setTimeout(r, 15000));
+      //     }
+      //   }
+      //   await instance.setClient();
+      //   if (!client) {
+      //     state.connected = false;
+      //     state.address = "";
+      //     state.balances = [];
+      //     state.accounts = [];
+      //     state.log = "";
+      //     return;
+      //   }
+      //   state.connected = !!client;
+      //   state.address = client.senderAddress;
+      //   state.accounts = await client.getAccounts();
+      //   // Don't fetch balances here... thats the job of the new wallet store.
+      //   state.balances = []; // await instance.getBalance(client.senderAddress);
+      // } catch (e) {
+      //   console.error("Sifchain Wallet Connect Error", e);
+      //   if (!e.toString().toLowerCase().includes("no address found on chain")) {
+      //     state.connected = false;
+      //     state.address = "";
+      //     state.balances = [];
+      //     state.accounts = [];
+      //     state.log = "";
+      //     if (polling) {
+      //       clearInterval(polling);
+      //       polling = null;
+      //     }
+      //   }
+      // }
     },
     100,
     { leading: true },
@@ -146,9 +148,9 @@ export default function createSifService({
 
     async setClient() {
       if (!keplrProvider) {
-        return;
+        keplrProvider = await keplrProviderPromise;
       }
-      if (connecting || state.connected) {
+      if (connecting || client) {
         return;
       }
       connecting = true;
@@ -164,8 +166,8 @@ export default function createSifService({
         keplrChainConfig.chainId,
       );
       const accounts = await offlineSigner.getAccounts();
-      console.log("account", accounts);
-      const address = accounts.length > 0 ? accounts[0].address : "";
+      // console.log("account", accounts);
+      const address = accounts?.[0]?.address || "";
       if (!address) {
         throw "No address on sif account";
       }
@@ -200,7 +202,8 @@ export default function createSifService({
         try {
           await keplrProvider.experimentalSuggestChain(keplrChainConfig);
           await keplrProvider.enable(keplrChainConfig.chainId);
-          triggerUpdate();
+          // console.log("enabling keplr", keplrChainConfig);
+          await instance.setClient();
         } catch (error) {
           console.log(error);
           throw { message: "Failed to Suggest Chain" };
@@ -216,6 +219,8 @@ export default function createSifService({
     isConnected() {
       return state.connected;
     },
+
+    unSignedClient,
 
     onSocketError(handler: HandlerFn<any>) {
       return unSignedClient.onSocketError(handler);
@@ -258,31 +263,43 @@ export default function createSifService({
       }
 
       ensureSifAddress(address);
-
-      try {
-        const account = await client.getAccount(address);
-        if (!account) {
-          throw "No Address found on chain";
-        } // todo handle this better
-        const supportedTokenSymbols = supportedTokens.map((s) => s.symbol);
-        return account.balance
-          .filter((balance) => supportedTokenSymbols.includes(balance.denom))
-          .map(({ amount, denom }) => {
-            const asset = supportedTokens.find(
-              (token) => token.symbol === denom,
-            )!; // will be found because of filter above
-            return AssetAmount(asset, amount);
-          })
-          .filter((balance) => {
-            // If an aseet is supplied filter for it
-            if (!asset) {
-              return true;
-            }
-            return balance.asset.symbol === asset.symbol;
-          });
-      } catch (error) {
-        throw error;
-      }
+      return state.balances;
+      // return IBCService({
+      //   assets: assets,
+      //   chainConfigsByNetwork,
+      // })
+      //   .createWalletByNetwork(Network.SIFCHAIN)
+      //   .then((w) => {
+      //     state.connected = true;
+      //     state.accounts = w.addresses;
+      //     state.balances = w?.balances;
+      //     return w.balances;
+      //     // console.table(w.balances);
+      //   });
+      // try {
+      //   const account = await client.getAccount(address);
+      //   if (!account) {
+      //     throw "No Address found on chain";
+      //   } // todo handle this better
+      //   const supportedTokenSymbols = supportedTokens.map((s) => s.symbol);
+      //   return account.balance
+      //     .filter((balance) => supportedTokenSymbols.includes(balance.denom))
+      //     .map(({ amount, denom }) => {
+      //       const asset = supportedTokens.find(
+      //         (token) => token.symbol === denom || token.ibcDenom == denom,
+      //       )!; // will be found because of filter above
+      //       return AssetAmount(asset, amount);
+      //     })
+      //     .filter((balance) => {
+      //       // If an aseet is supplied filter for it
+      //       if (!asset) {
+      //         return true;
+      //       }
+      //       return balance.asset.symbol === asset.symbol;
+      //     });
+      // } catch (error) {
+      //   throw error;
+      // }
     },
 
     async transfer(params: TxParams): Promise<any> {

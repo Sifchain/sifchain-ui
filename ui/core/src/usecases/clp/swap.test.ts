@@ -22,6 +22,9 @@ beforeEach(() => {
     bus: { dispatch },
     sif: { getState, signAndBroadcast },
     clp: { swap },
+    ibc: {
+      loadChainConfigByNetwork: jest.fn(),
+    },
   };
 });
 

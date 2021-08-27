@@ -9,31 +9,39 @@ describe("Pair", () => {
     decimals: 6,
     symbol: "atk",
     label: "ATK",
+    displaySymbol: "ATK",
     name: "AppleToken",
     address: "123",
     network: Network.ETHEREUM,
+    homeNetwork: Network.ETHEREUM,
   });
   const BTK = Asset({
     decimals: 18,
     symbol: "btk",
     label: "BTK",
+    displaySymbol: "BTK",
     name: "BananaToken",
     address: "1234",
     network: Network.ETHEREUM,
+    homeNetwork: Network.ETHEREUM,
   });
   const ETH = Asset({
     decimals: 18,
     symbol: "eth",
+    displaySymbol: "ETH",
     label: "ETH",
     name: "Ethereum",
     network: Network.ETHEREUM,
+    homeNetwork: Network.ETHEREUM,
   });
   const ROWAN = Asset({
     decimals: 18,
     symbol: "rowan",
+    displaySymbol: "ROWAN",
     label: "ROWAN",
     name: "Rowan",
     network: Network.SIFCHAIN,
+    homeNetwork: Network.ETHEREUM,
   });
 
   test("contains()", () => {

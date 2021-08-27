@@ -6,6 +6,7 @@ import {
   getConfig,
   getEnv,
   switchEnv,
+  createAccountPoolFinder,
 } from "@sifchain/sdk";
 
 switchEnv({ location: window.location });
@@ -13,12 +14,21 @@ switchEnv({ location: window.location });
 const { tag, sifAssetTag, ethAssetTag } = getEnv({
   location: window.location,
 });
+console.log("getEnv", tag, sifAssetTag, ethAssetTag);
 const config = getConfig(tag, sifAssetTag, ethAssetTag);
 const services = createServices(config);
 const store = createStore();
 const usecases = createUsecases({ store, services });
 const poolFinder = createPoolFinder(store);
+const accountPoolFinder = createAccountPoolFinder(store);
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+window["config"] = config;
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+window["services"] = services;
 // expose store on window so it is easy to inspect
 Object.defineProperty(window, "store", {
   get: function () {
@@ -65,6 +75,7 @@ export function useCore() {
     services,
     usecases,
     poolFinder,
+    accountPoolFinder,
     config,
   };
 }

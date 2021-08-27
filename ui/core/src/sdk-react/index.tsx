@@ -7,11 +7,13 @@ import React, {
 } from "react";
 import { Store } from "../store";
 import { effect, stop } from "@vue/reactivity";
-import { isAmount, isAssetAmount } from "../entities";
+import { isAmount, isAssetAmount, Network } from "../entities";
 import { AccountPool } from "../store/pools";
 import { Api } from "../api";
 import { Services } from "../services";
 import { setupSifchainApi } from "../setupSifchainApi";
+import { NetworkEnv } from "config/getEnv";
+import { WalletStoreEntry } from "store/wallet";
 
 type ExtractorFn<T, A extends any[] = []> = (store: Store, ...args: A) => T;
 
@@ -44,7 +46,7 @@ const SifchainContext = createContext<SifchainContext | undefined>(undefined);
 
 export function SifchainProvider(props: {
   children: React.ReactNode;
-  environment: "localnet" | "devnet" | "testnet" | "mainnet";
+  environment: NetworkEnv;
 }) {
   const [ctx, setCtx] = useState<SifchainContext>();
 
@@ -120,13 +122,13 @@ export function useSifchainEvents() {
   return useMemo(() => ctx.services.bus, [ctx.services.bus]);
 }
 
-export const useEthState = createStateHook<Store["wallet"]["eth"]>(
+export const useEthState = createStateHook<WalletStoreEntry>(
   "useEthState",
   (store) => ({
-    chainId: store.wallet.eth.chainId,
-    address: store.wallet.eth.address,
-    balances: store.wallet.eth.balances,
-    isConnected: store.wallet.eth.isConnected,
+    chainId: store.wallet.get(Network.ETHEREUM).chainId,
+    address: store.wallet.get(Network.ETHEREUM).address,
+    balances: store.wallet.get(Network.ETHEREUM).balances,
+    isConnected: store.wallet.get(Network.ETHEREUM).isConnected,
   }),
   {
     chainId: "",
@@ -136,14 +138,14 @@ export const useEthState = createStateHook<Store["wallet"]["eth"]>(
   },
 );
 
-export const useSifState = createStateHook<Store["wallet"]["sif"]>(
+export const useSifState = createStateHook<WalletStoreEntry>(
   "useSifState",
   (store) => ({
-    address: store.wallet.sif.address,
-    balances: store.wallet.sif.balances,
-    isConnected: store.wallet.sif.isConnected,
-    lmUserData: store.wallet.sif.lmUserData,
-    vsUserData: store.wallet.sif.vsUserData,
+    address: store.wallet.get(Network.SIFCHAIN).address,
+    balances: store.wallet.get(Network.SIFCHAIN).balances,
+    isConnected: store.wallet.get(Network.SIFCHAIN).isConnected,
+    lmUserData: null,
+    vsUserData: null,
   }),
   {
     address: "",
@@ -181,8 +183,11 @@ export const useLpPoolsState = createStateHook<
 
 export const useTxState = createStateHook<Store["tx"]>(
   "useTxState",
-  (store) => ({ eth: store.tx.eth }),
-  { eth: {} },
+  (store) => ({
+    eth: store.tx.eth,
+    pendingTransfers: store.tx.pendingTransfers,
+  }),
+  { eth: {}, pendingTransfers: {} },
 );
 
 export const useAssetState = createStateHook<Store["asset"]>(

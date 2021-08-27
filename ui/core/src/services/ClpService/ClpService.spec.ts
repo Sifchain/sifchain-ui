@@ -1,5 +1,5 @@
 import createClpService from ".";
-import { AssetAmount } from "../../entities";
+import { AssetAmount, Network } from "../../entities";
 import { getTestingTokens } from "../../test/utils/getTestingToken";
 import { useStack } from "../../../../test/stack";
 
@@ -148,7 +148,15 @@ test("swap()", async () => {
 test("getLiquidityProvider()", async () => {
   const lp = await service.getLiquidityProvider({
     lpAddress: "sif1l7hypmqk2yc334vc6vmdwzp5sdefygj2ad93p5",
-    symbol: "catk",
+    asset: {
+      symbol: "ctak",
+      decimals: 18,
+      name: "ctak",
+      network: Network.ETHEREUM,
+      displaySymbol: "ctak",
+      label: "ctak",
+      homeNetwork: Network.ETHEREUM,
+    },
   });
 
   expect(lp?.asset.symbol).toEqual("catk");

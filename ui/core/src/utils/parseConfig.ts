@@ -1,24 +1,34 @@
 import { ServiceContext } from "../services";
-import { Asset, Network } from "../entities";
+import {
+  Asset,
+  Network,
+  ChainConfig,
+  NetworkChainConfigLookup,
+} from "../entities";
 import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
+import { NetEnvChainConfigLookup } from "../config/chains/NetEnvChainConfigLookup";
 
 type TokenConfig = {
   symbol: string;
+  displaySymbol: string;
   label?: string;
   decimals: number;
   imageUrl?: string;
   name: string;
   address: string;
   network: Network;
+  homeNetwork: Network;
 };
 
 type CoinConfig = {
   label?: string;
   symbol: string;
+  displaySymbol: string;
   decimals: number;
   imageUrl?: string;
   name: string;
   network: Network;
+  homeNetwork: Network;
 };
 
 export type AssetConfig = CoinConfig | TokenConfig;
@@ -38,7 +48,11 @@ function parseLabel(a: AssetConfig) {
 }
 
 function parseAsset(a: AssetConfig): Asset {
-  return Asset({ ...a, label: parseLabel(a) });
+  return Asset({
+    ...a,
+    displaySymbol: a.displaySymbol || a.symbol,
+    label: parseLabel(a),
+  });
 }
 
 export type KeplrChainConfig = {
@@ -79,13 +93,14 @@ export type KeplrChainConfig = {
     high: number;
   };
 };
-export type ChainConfig = {
+export type CoreConfig = {
   sifAddrPrefix: string;
   sifApiUrl: string;
   sifWsUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
   cryptoeconomicsUrl: string;
+  blockExplorerUrl: string;
   web3Provider: "metamask" | string;
   // assets: AssetConfig[];
   nativeAsset: string; // symbol
@@ -98,8 +113,9 @@ export function parseAssets(configAssets: AssetConfig[]): Asset[] {
 }
 
 export function parseConfig(
-  config: ChainConfig,
+  config: CoreConfig,
   assets: Asset[],
+  chainConfigsByNetwork: NetworkChainConfigLookup,
 ): ServiceContext {
   const nativeAsset = assets.find((a) => a.symbol === config.nativeAsset);
 
@@ -123,12 +139,14 @@ export function parseConfig(
     });
 
   return {
+    chainConfigsByNetwork: chainConfigsByNetwork,
     sifAddrPrefix: config.sifAddrPrefix,
     sifApiUrl: config.sifApiUrl,
     sifWsUrl: config.sifWsUrl,
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
     cryptoeconomicsUrl: config.cryptoeconomicsUrl,
+    blockExplorerUrl: config.blockExplorerUrl,
     getWeb3Provider:
       config.web3Provider === "metamask"
         ? getMetamaskProvider

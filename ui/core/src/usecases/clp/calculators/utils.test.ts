@@ -36,15 +36,19 @@ describe("assets with zero decimals", () => {
       symbol: "catk",
       name: "Atk",
       network: Network.SIFCHAIN,
+      displaySymbol: "ATK",
       decimals: 0,
       label: "cATK",
+      homeNetwork: Network.ETHEREUM,
     }),
     btk: Asset({
       symbol: "cbtk",
+      displaySymbol: "BTK",
       name: "Btk",
       network: Network.SIFCHAIN,
       decimals: 0,
       label: "cBTK",
+      homeNetwork: Network.ETHEREUM,
     }),
   };
   test("with 1 as an amount", () => {

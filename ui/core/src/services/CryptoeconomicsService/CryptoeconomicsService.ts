@@ -1,7 +1,12 @@
 export type CryptoeconomicsUserData = null | {
-  maturityDate: Date;
-  totalClaimableCommissionsAndClaimableRewards: number;
-  user: {
+  user?: {
+    maturityDate: Date;
+    dispensed: number;
+    claimedCommissionsAndRewardsAwaitingDispensation: number;
+    currentTotalCommissionsOnClaimableDelegatorRewards: number;
+    nextRewardProjectedAPYOnTickets: number;
+    totalClaimableCommissionsAndClaimableRewards: number;
+    totalCommissionsAndRewardsAtMaturity: number;
     claimableReward: number;
     totalRewardAtMaturity: number;
     currentAPYOnTickets: number;
@@ -15,10 +20,10 @@ export type CryptoeconomicsServiceContext = {
 export type CryptoeconomicsRewardType = "vs" | "lm";
 
 export interface FetchDataProps {
-  rewardType: CryptoeconomicsRewardType;
+  rewardType?: CryptoeconomicsRewardType;
   address: string;
-  key: string;
-  timestamp: string;
+  key?: string;
+  timestamp?: string;
   snapShotSource?: string;
 }
 
@@ -42,9 +47,8 @@ export default function createCryptoeconomicsService(
       return null;
     } else {
       const json = await res.json();
-      if (json.maturityDate) {
-        // Convert string to date
-        json.maturityDate = new Date(json.maturityDate);
+      if (json.user?.maturityDateISO) {
+        json.user.maturityDate = new Date(json.user.maturityDateISO);
       }
       return json;
     }
@@ -52,6 +56,20 @@ export default function createCryptoeconomicsService(
 
   return {
     fetchData,
+    getAddressLink: (
+      address: string,
+      rewardType: CryptoeconomicsRewardType,
+    ) => {
+      return `https://cryptoeconomics.sifchain.finance/#${address}&type=${rewardType}`;
+    },
+    async fetchSummaryAPY() {
+      const summaryAPY: number = await fetch(
+        `https://api-cryptoeconomics.sifchain.finance/api/lm?key=apy-summary`,
+      )
+        .then((r) => r.json())
+        .then((r) => r.summaryAPY);
+      return summaryAPY;
+    },
     fetchVsData: (options: FetchDataProps) =>
       fetchData({
         ...options,
