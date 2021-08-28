@@ -6,7 +6,6 @@ import {
   Secp256k1HdWallet,
 } from "@cosmjs/launchpad";
 import { reactive } from "@vue/reactivity";
-import { debounce } from "lodash";
 import {
   Address,
   Asset,
@@ -16,7 +15,6 @@ import {
   TransactionStatus,
   TxParams,
 } from "../../entities";
-
 import { Mnemonic } from "../../entities";
 
 import { SifClient, SifUnSignedClient } from "../utils/SifClient";
@@ -25,6 +23,7 @@ import getKeplrProvider from "./getKeplrProvider";
 import { KeplrChainConfig } from "../../utils/parseConfig";
 import { parseTxFailure } from "./parseTxFailure";
 import IBCService from "../IBCService";
+import { debounce } from "utils/debounce";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;
@@ -92,47 +91,43 @@ export default function createSifService({
     return new SifClient(sifApiUrl, address, wallet, sifWsUrl, sifRpcUrl);
   }
 
-  const triggerUpdate = debounce(
-    async () => {
-      // try {
-      //   if (!polling) {
-      //     while (true) {
-      //       triggerUpdate();
-      //       await new Promise((r) => setTimeout(r, 15000));
-      //     }
-      //   }
-      //   await instance.setClient();
-      //   if (!client) {
-      //     state.connected = false;
-      //     state.address = "";
-      //     state.balances = [];
-      //     state.accounts = [];
-      //     state.log = "";
-      //     return;
-      //   }
-      //   state.connected = !!client;
-      //   state.address = client.senderAddress;
-      //   state.accounts = await client.getAccounts();
-      //   // Don't fetch balances here... thats the job of the new wallet store.
-      //   state.balances = []; // await instance.getBalance(client.senderAddress);
-      // } catch (e) {
-      //   console.error("Sifchain Wallet Connect Error", e);
-      //   if (!e.toString().toLowerCase().includes("no address found on chain")) {
-      //     state.connected = false;
-      //     state.address = "";
-      //     state.balances = [];
-      //     state.accounts = [];
-      //     state.log = "";
-      //     if (polling) {
-      //       clearInterval(polling);
-      //       polling = null;
-      //     }
-      //   }
-      // }
-    },
-    100,
-    { leading: true },
-  );
+  const triggerUpdate = debounce(async () => {
+    // try {
+    //   if (!polling) {
+    //     while (true) {
+    //       triggerUpdate();
+    //       await new Promise((r) => setTimeout(r, 15000));
+    //     }
+    //   }
+    //   await instance.setClient();
+    //   if (!client) {
+    //     state.connected = false;
+    //     state.address = "";
+    //     state.balances = [];
+    //     state.accounts = [];
+    //     state.log = "";
+    //     return;
+    //   }
+    //   state.connected = !!client;
+    //   state.address = client.senderAddress;
+    //   state.accounts = await client.getAccounts();
+    //   // Don't fetch balances here... thats the job of the new wallet store.
+    //   state.balances = []; // await instance.getBalance(client.senderAddress);
+    // } catch (e) {
+    //   console.error("Sifchain Wallet Connect Error", e);
+    //   if (!e.toString().toLowerCase().includes("no address found on chain")) {
+    //     state.connected = false;
+    //     state.address = "";
+    //     state.balances = [];
+    //     state.accounts = [];
+    //     state.log = "";
+    //     if (polling) {
+    //       clearInterval(polling);
+    //       polling = null;
+    //     }
+    //   }
+    // }
+  }, 100);
 
   const instance = {
     /**
