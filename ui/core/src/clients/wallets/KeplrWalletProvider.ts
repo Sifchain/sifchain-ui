@@ -198,8 +198,12 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           if (asset) {
             asset.ibcDenom = coin.denom;
           }
-          const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
-          assetAmounts.push(assetAmount);
+          try {
+            const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
+            assetAmounts.push(assetAmount);
+          } catch (error) {
+            // ignore asset, doesnt exist in our list.
+          }
         }
       } catch (error) {
         console.error(chain.network, "coin error", coin, error);
