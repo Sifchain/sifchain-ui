@@ -10,10 +10,8 @@ import {
   EthereumChain,
   CosmoshubChain,
   AkashChain,
-  IrisChain,
+  // IrisChain,
   SentinelChain,
-  CryptoOrgChain,
-  PersistenceChain,
 } from "../../clients/chains";
 
 export * from "../../clients/chains";
@@ -37,11 +35,9 @@ const networkChainCtorLookup = {
   [Network.SIFCHAIN]: SifchainChain,
   [Network.ETHEREUM]: EthereumChain,
   [Network.COSMOSHUB]: CosmoshubChain,
-  [Network.IRIS]: IrisChain,
+  // [Network.IRIS]: IrisChain,
   [Network.AKASH]: AkashChain,
   [Network.SENTINEL]: SentinelChain,
-  [Network.CRYPTO_ORG]: CryptoOrgChain,
-  [Network.PERSISTENCE]: PersistenceChain,
 };
 
 export class ChainsService {

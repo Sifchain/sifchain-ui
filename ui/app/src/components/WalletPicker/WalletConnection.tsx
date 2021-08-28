@@ -71,8 +71,8 @@ export default defineComponent({
                 class="w-[22px]"
               />
               <div class="ml-[13px]">
-                <div class="text-sm font-bold leading-none">
-                  {props.connection.getChain().displayName}
+                <div class="text-sm font-bold leading-none capitalize">
+                  {props.connection.getChain().network}
                 </div>
                 <div class="text-sm opacity-50 capitalize text-left">
                   {props.connection.walletName}

@@ -6,8 +6,8 @@ export type TokenRegistryContext = {
   sifRpcUrl: string;
 };
 
-let tokenRegistry: RegistryEntry[];
 export const TokenRegistryService = (context: TokenRegistryContext) => {
+  let tokenRegistry: RegistryEntry[];
   const loadTokenRegistry = async () => {
     if (!tokenRegistry) {
       const dex = await NativeDexClient.connect(context.sifRpcUrl);

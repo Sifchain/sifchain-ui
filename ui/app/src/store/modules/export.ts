@@ -98,8 +98,6 @@ export const exportStore = Vuextra.createStore({
         assetAmount: payload.assetAmount,
         fromAddress: accountStore.state.sifchain.address,
         toAddress: accountStore.state[ctx.state.draft.network].address,
-        fromChain: useChains().get(Network.SIFCHAIN),
-        toChain: useChains().get(ctx.state.draft.network),
       });
 
       for await (const ev of executable.generator()) {

@@ -609,37 +609,5 @@ export default {
       displaySymbol: "dvpn",
       homeNetwork: "sentinel",
     },
-    {
-      symbol: "unyan",
-      decimals: 6,
-      name: "Nyan",
-      network: "sifchain",
-      label: "Nyan",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
-      displaySymbol: "nyan",
-      homeNetwork: "iris",
-    },
-    {
-      symbol: "basecro",
-      displaySymbol: "cro",
-      decimals: 8,
-      name: "CRO",
-      network: "sifchain",
-      label: "CRO",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/7310/small/cypto.png?1547043960",
-      homeNetwork: "crypto-org",
-    },
-    {
-      symbol: "uxprt",
-      displaySymbol: "xprt",
-      decimals: 8,
-      name: "xprt",
-      network: "sifchain",
-      label: "xprt",
-      imageUrl: "https://persistence.one/favicon.png",
-      homeNetwork: "persistence",
-    },
   ],
 };

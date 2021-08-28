@@ -36,14 +36,15 @@ export const accountStore = Vuextra.createStore({
   options: {
     devtools: true,
   },
-  state: Object.values(Network).reduce((acc, network) => {
-    acc[network] = initWalletState(network);
-    return acc;
-  }, {} as Record<Network, IWalletServiceState>),
+  state: {
+    ethereum: initWalletState(Network.ETHEREUM),
+    sifchain: initWalletState(Network.SIFCHAIN),
+    cosmoshub: initWalletState(Network.COSMOSHUB),
+    // iris: initWalletState(Network.IRIS),
+    akash: initWalletState(Network.AKASH),
+    sentinel: initWalletState(Network.SENTINEL),
+  } as Record<Network, IWalletServiceState>,
   getters: (state) => ({
-    isConnecting: () => {
-      return Object.values(state).some((v) => v.connecting);
-    },
     connectedNetworkCount: () => {
       return Object.values(state).filter((v) => v?.connected).length;
     },
@@ -88,6 +89,7 @@ export const accountStore = Vuextra.createStore({
       try {
         const state = await usecase.load(network);
 
+        self.setConnecting({ network, connecting: false });
         self.setConnected({ network, connected: state.connected });
         self.setBalances({ network, balances: state.balances });
         self.setAddress({ network, address: state.address });
@@ -109,9 +111,8 @@ export const accountStore = Vuextra.createStore({
           walletBalancePolls.set(network, timeoutId);
         })();
       } catch (error) {
-        console.error(network, "wallet connect error", error);
-      } finally {
         self.setConnecting({ network, connecting: false });
+        console.error(network, "wallet connect error", error);
       }
     },
 

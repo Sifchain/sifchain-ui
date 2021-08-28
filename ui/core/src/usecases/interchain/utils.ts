@@ -10,10 +10,8 @@ export function IBCTransferSubscriber(context: UsecaseContext) {
   async function* subscribe(
     tx: IBCInterchainTx,
   ): AsyncGenerator<TransactionStatus> {
-    // Filter out non-ibc tx from logs like fee transfers
-    const logs = tx.meta?.logs?.filter((item) =>
-      item.events.some((ev) => ev.type === "ibc_transfer"),
-    );
+    console.log("subscribe", tx);
+    const logs = tx.meta?.logs;
     if (!logs) return;
 
     yield {

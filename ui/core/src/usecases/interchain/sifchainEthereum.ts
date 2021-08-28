@@ -17,16 +17,28 @@ import { SubscribeToTx } from "../peg/utils/subscribeToTx";
 import { SifchainChain, EthereumChain } from "../../services/ChainsService";
 import { isOriginallySifchainNativeToken } from "../peg/utils/isOriginallySifchainNativeToken";
 
+export default function createSifchainEthereumApi(context: UsecaseContext) {
+  return new SifchainEthereumInterchainApi(
+    context,
+    context.services.chains.get(Network.SIFCHAIN),
+    context.services.chains.get(Network.ETHEREUM),
+  );
+}
+
 export class SifchainEthereumInterchainApi
   implements InterchainApi<SifchainInterchainTx> {
   subscribeToTx: ReturnType<typeof SubscribeToTx>;
 
-  constructor(public context: UsecaseContext) {
+  constructor(
+    public context: UsecaseContext,
+    public fromChain: Chain,
+    public toChain: Chain,
+  ) {
     this.subscribeToTx = SubscribeToTx(context);
   }
 
   async estimateFees(params: InterchainParams) {
-    return params.toChain.calculateTransferFeeToChain(params.assetAmount);
+    return this.toChain.calculateTransferFeeToChain(params.assetAmount);
   }
 
   transfer(params: InterchainParams) {
@@ -82,8 +94,8 @@ export class SifchainEthereumInterchainApi
       return {
         ...params,
         hash: txStatus.hash,
-        fromChain: params.fromChain,
-        toChain: params.toChain,
+        fromChain: this.fromChain,
+        toChain: this.toChain,
       } as SifchainInterchainTx;
     });
   }
