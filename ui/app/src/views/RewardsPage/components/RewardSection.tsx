@@ -14,10 +14,10 @@ import { accountStore } from "@/store/modules/accounts";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   lm: {
-    heading: "Liquidity Mining",
+    heading: ".42 Liquidity Mining",
     icon: "navigation/pool" as IconName,
     description:
-      "Earn additional rewards by providing liquidity to any of Sifchain's IBC token pools.",
+      "Earn additional rewards by providing liquidity to any of Sifchain's Cosmos IBC token pools.",
   },
   vs: {
     heading: "Validator Subsidy",
@@ -63,6 +63,8 @@ export const RewardSection = defineComponent({
           name: "Claimable Amount",
           amount:
             props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
+          tooltip:
+            "These are rewards that you can claim now, but by doing so, you will forfeit the remainder in your Projected Full Amount",
         },
         {
           hide: props.rewardType !== "vs",
@@ -91,7 +93,7 @@ export const RewardSection = defineComponent({
     return () => (
       <>
         <div class="mt-[10px] text-lg flex">
-          <div class="text-left w-[250px] flex items-center">
+          <div class="text-left w-[450px] flex items-center">
             <AssetIcon
               icon={displayData.value.icon}
               size={20}
@@ -100,12 +102,6 @@ export const RewardSection = defineComponent({
             {displayData.value.heading}
           </div>
 
-          <div class="font-mono w-[200px] text-right flex justify-end items-center">
-            {/* Claimable Amount */}
-            {props.data?.user?.currentAPYOnTickets
-              ? props.data?.user?.currentAPYOnTickets.toFixed(1) + "%"
-              : "0%"}
-          </div>
           <div class="text-right justify-end flex-1 font-mono flex items-center">
             {/* Full Amount */}
             {formatRowanNumber(

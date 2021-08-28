@@ -24,6 +24,8 @@ export interface PoolStat {
   volume: string;
   arb: string;
   poolAPY: string;
+  rewardAPY: string;
+  totalAPY: string;
 }
 
 export interface Headers {
@@ -48,14 +50,20 @@ export const usePoolStats = () => {
     return {
       poolData: {
         ...poolData,
-        pools: poolData.pools.map((p) => ({
-          ...p,
-          poolAPY: (
+        pools: poolData.pools.map((p) => {
+          const poolAPY =
             (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
-              100 +
-            (/(akt|vpn|atom)/gim.test(p.symbol) ? cryptoeconSummaryAPY || 0 : 0)
-          ).toFixed(1),
-        })),
+            100;
+          const rewardAPY = /(akt|vpn|atom)/gim.test(p.symbol)
+            ? cryptoeconSummaryAPY || 0
+            : 0;
+          return {
+            ...p,
+            poolAPY: poolAPY.toFixed(1),
+            rewardAPY: rewardAPY.toFixed(1),
+            totalAPY: (poolAPY + rewardAPY).toFixed(1),
+          };
+        }),
       },
       liqAPY: 0,
       rowanUsd: poolData.rowanUSD,
