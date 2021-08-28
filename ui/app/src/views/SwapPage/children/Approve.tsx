@@ -6,6 +6,7 @@ import { useSwapPageData } from "../useSwapPageData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { propsToAttrMap } from "@vue/shared";
+import { Network } from "@sifchain/sdk";
 
 export const ApproveSwap = defineComponent({
   setup() {
@@ -64,6 +65,7 @@ export const ApproveSwap = defineComponent({
     return () => {
       return (
         <TransactionDetailsModal
+          network={Network.SIFCHAIN}
           icon="navigation/swap"
           onClose={data.requestTransactionModalClose}
           details={detailsRef}

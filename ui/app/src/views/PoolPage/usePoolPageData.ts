@@ -9,21 +9,24 @@ export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
-type PoolPageColumnId = "token" | "apy" | "gainLoss" | "share";
+export type PoolPageColumnId = "token" | "apy" | "gainLoss" | "share";
 export const COLUMNS: {
   id: PoolPageColumnId;
   name: string;
   class: string;
+  sortable?: boolean;
 }[] = [
   {
     id: "token",
     name: "Token Pair",
     class: "w-[233px] text-left justify-start",
+    sortable: true,
   },
   {
     id: "apy",
     name: "Pool APY",
     class: "w-[128px] text-right justify-end",
+    sortable: true,
   },
   {
     id: "gainLoss",

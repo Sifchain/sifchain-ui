@@ -200,6 +200,7 @@ export const useAddLiquidityData = () => {
       tokenBFieldAmount.value,
       tokenAFieldAmount.value,
     );
+    setTimeout(() => usecases.clp.syncPools(), 2500);
   }
 
   function requestTransactionModalClose() {

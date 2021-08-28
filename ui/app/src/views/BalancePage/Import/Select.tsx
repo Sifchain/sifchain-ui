@@ -79,7 +79,10 @@ export default defineComponent({
           icon: "interactive/arrows-in" as IconName,
           props: {
             disabled: false,
-            onClick: () => appWalletPicker.show(),
+            onClick: () => {
+              appWalletPicker.show();
+              accountStore.load(Network.SIFCHAIN);
+            },
           },
         },
         {
@@ -92,7 +95,11 @@ export default defineComponent({
           } Wallet`,
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () => appWalletPicker.show(),
+            onClick: () => {
+              appWalletPicker.show();
+              if (tokenRef.value)
+                accountStore.load(tokenRef.value.asset.network);
+            },
           },
         },
         {

@@ -10,6 +10,7 @@ import {
   PoolPageAccountPool,
   usePoolPageData,
   COLUMNS,
+  PoolPageColumnId,
 } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 import { Asset, Network } from "@sifchain/sdk";
@@ -27,13 +28,16 @@ export default defineComponent({
     const data = usePoolPageData();
     const { config } = useCore();
 
+    const sortBy = ref<PoolPageColumnId>("token");
+    const sortReverse = ref<boolean>(false);
+
     const poolDataWithUserData = computed(() => {
       const accountPoolMap = new Map<string, PoolPageAccountPool>();
       data.accountPools.value.forEach((pool) => {
         accountPoolMap.set(pool.lp.asset.symbol.toLowerCase(), pool);
       });
 
-      return (
+      const result =
         data.stats.data?.value?.poolData.pools
           .map((pool) => {
             return {
@@ -41,13 +45,17 @@ export default defineComponent({
               accountPool: accountPoolMap.get(pool.symbol.toLowerCase()),
             };
           })
-          // First sort by name
+          // First sort by name or apy
           .sort((a, b) => {
-            if (a.pool.symbol === config.nativeAsset.symbol) return -1;
-            if (b.pool.symbol === config.nativeAsset.symbol) return 1;
-            return Asset.get(a.pool.symbol).displaySymbol.localeCompare(
-              Asset.get(b.pool.symbol).displaySymbol,
-            );
+            if (sortBy.value === "token") {
+              if (a.pool.symbol === config.nativeAsset.symbol) return -1;
+              if (b.pool.symbol === config.nativeAsset.symbol) return 1;
+              return Asset.get(a.pool.symbol).displaySymbol.localeCompare(
+                Asset.get(b.pool.symbol).displaySymbol,
+              );
+            } else {
+              return parseFloat(b.pool.poolAPY) - parseFloat(a.pool.poolAPY);
+            }
           })
           // Then sort by balance
           .sort((a, b) => {
@@ -60,8 +68,11 @@ export default defineComponent({
             if (a.accountPool && !b.accountPool) return -1;
             if (b.accountPool && !a.accountPool) return 1;
             return 0;
-          })
-      );
+          }) ?? [];
+      if (sortReverse.value) {
+        result.reverse();
+      }
+      return result;
     });
 
     return () => {
@@ -104,8 +115,34 @@ export default defineComponent({
               headerContent={
                 <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
                   {COLUMNS.map((column, index) => (
-                    <div key={column.name} class={[column.class, "opacity-50"]}>
+                    <div
+                      key={column.name}
+                      onClick={() => {
+                        if (!column.sortable) return;
+                        if (sortBy.value === column.id) {
+                          sortReverse.value = !sortReverse.value;
+                        } else {
+                          sortReverse.value = false;
+                          sortBy.value = column.id;
+                        }
+                      }}
+                      class={[
+                        column.class,
+                        "opacity-50 flex items-center",
+                        column.sortable && "cursor-pointer",
+                      ]}
+                    >
                       {column.name}
+                      {column.sortable && (
+                        <AssetIcon
+                          icon="interactive/arrow-down"
+                          class={[
+                            "ml-[2px]",
+                            sortBy.value !== column.id && "invisible",
+                            sortReverse.value && "rotate-180",
+                          ]}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>

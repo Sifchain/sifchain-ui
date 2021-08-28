@@ -8,6 +8,8 @@ import {
   formatAssetAmount,
   getPeggedSymbol,
 } from "@/componentsLegacy/shared/utils";
+
+import { prettyNumber } from "@/utils/prettyNumber";
 import ProgressRing from "@/components/ProgressRing";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import Tooltip from "@/components/Tooltip";
@@ -167,7 +169,7 @@ export default defineComponent({
                   props.tokenItem.pendingExports.length
                   ? "..."
                   : null
-                : formatAssetAmount(props.tokenItem.amount)}
+                : prettyNumber(+formatAssetAmount(props.tokenItem.amount))}
             </span>
 
             <div class="absolute top-50% left-[100%] ml-[2px] flex items-center gap-[4px]">

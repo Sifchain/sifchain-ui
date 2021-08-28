@@ -19,19 +19,27 @@ async function getEarnedRewards(address: string, asset?: IAsset) {
   };
   if (!asset) return emptyRes;
 
-  const symbol = asset.ibcDenom || asset.symbol;
+  const registryEntry = await useCore().services.tokenRegistry.findAssetEntry(
+    asset,
+  );
 
-  if (invalidRewards[symbol]) return emptyRes;
+  if (!registryEntry) return emptyRes;
+  if (invalidRewards[registryEntry.denom]) return emptyRes;
 
   const earnedRewardsUrl = getRewardEarningsUrl();
-  const res = await fetch(`${earnedRewardsUrl}/${symbol}/netChange/${address}`);
+  const res = await fetch(
+    `${earnedRewardsUrl}/${registryEntry.denom.replace(
+      "ibc/",
+      "ibc_",
+    )}/netChange/${address}`,
+  );
   const parsedData = await res.json();
 
   // NOTE(ajoslin): ibc not supported yet for this endpoint...
   // to not spam the logs with invalid calls to this endpoint,
   // after 1 error stop trying.
   if (!res.ok) {
-    invalidRewards[symbol] = true;
+    invalidRewards[registryEntry.denom] = true;
     return emptyRes;
   }
 
@@ -57,6 +65,7 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   const earnedRewards = ref<string | null>(null);
   const earnedRewardsNegative = ref<boolean>(false);
 
+  const fromSymbol = ref("");
   const accountPool = computed(() => {
     const storeAccountPool = accountPoolFinder(
       props.externalAsset.value,
@@ -67,16 +76,21 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
 
     if (!storeAccountPool) return null;
 
+    // Conditionally set this because accountPool object actually gets
+    // called a lot...
+    // And each time this gets changed it triggers the watch below
+    // and re-fetches user earnedRewards
+    const symbol = pool?.externalAmount?.symbol;
+    if (symbol && symbol !== fromSymbol.value) {
+      fromSymbol.value = symbol;
+    }
+
     // enrich pool ticker with pool object
     return {
       ...storeAccountPool,
       pool,
     };
   });
-
-  const fromSymbol = computed(
-    () => accountPool?.value?.pool?.externalAmount?.symbol || "",
-  );
 
   // const USDTImage = useAssetItem('USDT').token.value?.imageUrl;
   const USDTImage =
@@ -105,7 +119,7 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
     earnedRewards.value = earnedRewardsObject.netChange;
   };
 
-  watch([address, fromSymbol], async () => {
+  watch([address, fromSymbol], async (val, oldVal) => {
     calculateRewards(address.value, fromSymbol.value);
   });
 

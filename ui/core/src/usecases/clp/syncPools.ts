@@ -36,9 +36,9 @@ export function SyncPools(
     const rawPools = await clp.getRawPools();
     const registry = await tokenRegistry.load();
 
-    const pools = rawPools
+    const pools = rawPools.pools
       .map((pool) => {
-        const externalSymbol = pool.external_asset.symbol;
+        const externalSymbol = pool.externalAsset?.symbol;
         const entry = registry.find(
           (item) =>
             item.denom === externalSymbol || item.baseDenom === externalSymbol,
@@ -55,9 +55,9 @@ export function SyncPools(
         if (!asset) return null;
 
         return Pool(
-          AssetAmount(nativeAsset, pool.native_asset_balance),
-          AssetAmount(asset, pool.external_asset_balance),
-          Amount(pool.pool_units),
+          AssetAmount(nativeAsset, pool.nativeAssetBalance),
+          AssetAmount(asset, pool.externalAssetBalance),
+          Amount(pool.poolUnits),
         );
       })
       .filter((val) => val != null) as Pool[];
