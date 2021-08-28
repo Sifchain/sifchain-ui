@@ -11,7 +11,7 @@ export default ({
   store,
 }: UsecaseContext<
   "sif" | "clp" | "bus" | "ibc" | "chains" | "tokenRegistry",
-  "pools" | "wallet" | "accountpools"
+  "pools" | "wallet" | "accountpools" | "poolsLoadState"
 >) => {
   const syncPools = SyncPools(services, store);
 
@@ -19,31 +19,24 @@ export default ({
     initClp() {
       const effects: ReactiveEffect<any>[] = [];
 
-      // Sync on load
-      syncPools().then(() => {
-        effects.push(
-          effect(() => {
-            if (Object.keys(store.pools).length === 0) {
-              services.bus.dispatch({
-                type: "NoLiquidityPoolsFoundEvent",
-                payload: {},
-              });
-            }
-          }),
-        );
-      });
-
       // Then every transaction
-
-      const unsubscribe = services.sif.onNewBlock(async () => {
-        await syncPools();
-      });
+      let syncTimeoutId: NodeJS.Timeout;
+      const unsubscribe = () => clearTimeout(syncTimeoutId);
+      async function poolsLoop() {
+        try {
+          await syncPools();
+        } catch (error) {
+          console.log("Sync pools error", error);
+        } finally {
+          syncTimeoutId = setTimeout(poolsLoop, 15 * 1000);
+        }
+      }
 
       effects.push(
         effect(() => {
           // When sif address changes syncPools
-          store.wallet.get(Network.SIFCHAIN).address;
-          syncPools();
+          const address = store.wallet.get(Network.SIFCHAIN).address;
+          if (address) poolsLoop();
         }),
       );
 

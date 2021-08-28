@@ -9,6 +9,7 @@ import { CryptoeconomicsRewardType } from "@sifchain/sdk/src/services/Cryptoecon
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { accountStore } from "@/store/modules/accounts";
 
+// This one is for the chads
 export default defineComponent({
   name: "RewardsPage",
   props: {},
@@ -79,8 +80,8 @@ export default defineComponent({
 
             <div class="mt-[21px] text-md opacity-50 flex">
               <div class="w-[250px] text-left">Reward Program</div>
-              <div class="w-[200px] text-right">Projected Full Amount</div>
-              <div class="flex-1 text-right">Claimable Amount</div>
+              <div class="w-[200px] text-right">Reward APY</div>
+              <div class="flex-1 text-right">Projected Full Amount</div>
             </div>
             <RewardSection
               rewardType="lm"

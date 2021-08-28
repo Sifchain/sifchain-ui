@@ -11,28 +11,28 @@ import {
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
 import { InterchainTx } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
+import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 
 export type TokenListItem = {
   amount: IAssetAmount;
   asset: IAsset;
-  pendingImports: {
-    transactionStatus: TransactionStatus;
-    interchainTx: InterchainTx;
-  }[];
+  pendingImports: PendingTransferItem[];
+  pendingExports: PendingTransferItem[];
 };
 
-export const useTokenList = (
-  props: {
-    networks?: Ref<Network[]>;
-    showDecomissionedAssetsWithBalance?: boolean;
-  } = {},
-) => {
+export type TokenListParams = {
+  networks?: Ref<Network[]>;
+  showDecomissionedAssetsWithBalance?: boolean;
+  showDecomissionedAssets?: boolean;
+};
+
+export const useTokenList = (params: TokenListParams) => {
   const { store, config, usecases } = useCore();
 
   const tokenList = computed<TokenListItem[]>(() => {
     const pendingTransfers = Object.values(store.tx.pendingTransfers);
 
-    const networksSet = new Set(props.networks?.value || []);
+    const networksSet = new Set(params.networks?.value || []);
 
     return config.assets
       .filter((asset: IAsset) => {
@@ -49,23 +49,36 @@ export const useTokenList = (
           return asset.symbol.toLowerCase() === symbol.toLowerCase();
         });
 
-        const assetTransfers = pendingTransfers.filter((transfer) => {
-          return (
-            transfer.interchainTx.toChain.network === asset.network &&
+        const pendingImports: PendingTransferItem[] = [];
+        const pendingExports: PendingTransferItem[] = [];
+        pendingTransfers.forEach((transfer) => {
+          if (
             isLikeSymbol(transfer.interchainTx.assetAmount.symbol, asset.symbol)
-          );
+          ) {
+            const array =
+              transfer.interchainTx.toChain.network === asset.network
+                ? pendingImports
+                : transfer.interchainTx.fromChain.network === asset.network
+                ? pendingExports
+                : null;
+            if (array) array.push(transfer);
+          }
         });
 
         return {
           amount: !amount ? AssetAmount(asset, "0") : amount,
           asset,
-          pendingImports: assetTransfers,
+          pendingImports,
+          pendingExports,
         };
       })
       .filter((token) => {
         if (token.asset.decommissioned) {
+          if (params.showDecomissionedAssets) {
+            return true;
+          }
           return (
-            props.showDecomissionedAssetsWithBalance &&
+            params.showDecomissionedAssetsWithBalance &&
             parseFloat(token.amount.amount.toString()) > 0
           );
         }
@@ -84,8 +97,9 @@ export const useTokenList = (
 export const useToken = (params: {
   network: Ref<Network>;
   symbol: Ref<string>;
+  tokenListParams?: TokenListParams;
 }) => {
-  const tokenListRef = useTokenList();
+  const tokenListRef = useTokenList(params.tokenListParams || {});
 
   return computed(() => {
     return tokenListRef.value?.find((token) => {

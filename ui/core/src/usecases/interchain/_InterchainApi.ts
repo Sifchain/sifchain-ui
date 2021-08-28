@@ -17,6 +17,8 @@ export type InterchainParams = {
   assetAmount: IAssetAmount;
   fromAddress: string;
   toAddress: string;
+  fromChain: Chain;
+  toChain: Chain;
 };
 
 export type SifchainInterchainTx = InterchainParams & {
@@ -38,16 +40,14 @@ export type InterchainTx = SifchainInterchainTx | IBCInterchainTx;
 
 export interface InterchainTxEvents {
   tx_sent: (tx: InterchainTx) => void;
+  tx_complete: (tx: InterchainTx) => void;
 }
 export const interchainTxEmitter = new EventEmitter() as TypedEmitter<InterchainTxEvents>;
 
 export abstract class InterchainApi<TxType> {
-  abstract fromChain: Chain;
-  abstract toChain: Chain;
-
   abstract estimateFees(
     params: InterchainParams,
-  ): Promise<IAssetAmount | undefined | void>;
+  ): Promise<IAssetAmount | undefined>;
 
   abstract transfer(params: InterchainParams): ExecutableTransaction;
 
@@ -117,7 +117,6 @@ export class ExecutableTransaction extends IterableTxEmitter<
   execute() {
     super.execute();
     this.deferred.promise.then((tx?: InterchainTx) => {
-      console.log("tx_sent", tx);
       if (tx) interchainTxEmitter.emit("tx_sent", tx);
     });
   }

@@ -71,8 +71,8 @@ export default defineComponent({
                 class="w-[22px]"
               />
               <div class="ml-[13px]">
-                <div class="text-sm font-bold leading-none capitalize">
-                  {props.connection.getChain().network}
+                <div class="text-sm font-bold leading-none">
+                  {props.connection.getChain().displayName}
                 </div>
                 <div class="text-sm opacity-50 capitalize text-left">
                   {props.connection.walletName}
@@ -87,16 +87,25 @@ export default defineComponent({
               <div class="flex items-center">
                 {stateRef.value.connected
                   ? shortenHash(stateRef.value.address, 6, 4)
+                  : stateRef.value.connecting
+                  ? "Connecting..."
                   : "Connect"}
-                <AssetIcon
-                  icon="interactive/chevron-down"
-                  class="ml-[10px] w-[15px] h-[15px] transition-all"
-                  style={{
-                    transform: !instanceRef.value
-                      ? "rotate(-90deg)"
-                      : "rotate(0deg)",
-                  }}
-                />
+                {stateRef.value.connecting ? (
+                  <AssetIcon
+                    icon="interactive/anim-racetrack-spinner"
+                    class="ml-[10px] w-[15px] h-[15px] transition-all"
+                  />
+                ) : (
+                  <AssetIcon
+                    icon="interactive/chevron-down"
+                    class="ml-[10px] w-[15px] h-[15px] transition-all"
+                    style={{
+                      transform: !instanceRef.value
+                        ? "rotate(-90deg)"
+                        : "rotate(0deg)",
+                    }}
+                  />
+                )}
               </div>
             </div>
           </button>

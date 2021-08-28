@@ -39,7 +39,7 @@ export default defineComponent({
           icon="navigation/rowan"
           showClose
           onClose={() => {
-            router.back();
+            router.push({ name: "Balances" });
           }}
         >
           <p class="text-[22px]">Begin your journey with Sifchain</p>
@@ -62,7 +62,7 @@ export default defineComponent({
             >
               @sifchain
             </a>{" "}
-            and <b>#getrowan</b> in a public tweet your sif address&nbsp; (
+            and <b>#getrowan</b> in a public tweet with your sif address&nbsp; (
             <small>{accountStore.state.sifchain.address}</small>)<br></br>
           </p>
           <a

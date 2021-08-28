@@ -39,9 +39,13 @@ export const exportStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     networks() {
+      const IBC_ETHEREUM_TRANSFERS_ENABLED = false;
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
         AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
       const asset = Asset(state.draft.symbol);
+      const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
+        asset.homeNetwork,
+      );
       return (
         Object.values(Network)
           .filter((network) => network !== Network.SIFCHAIN)
@@ -54,7 +58,7 @@ export const exportStore = Vuextra.createStore({
               // if IBC exports are disabled
               if (
                 // if it's rowan or an etherem token
-                [Network.ETHEREUM, Network.SIFCHAIN].includes(asset.homeNetwork)
+                !isExternalIBCAsset
               ) {
                 // only show ethereum network
                 return n === Network.ETHEREUM;
@@ -63,6 +67,12 @@ export const exportStore = Vuextra.createStore({
                 return true;
               }
             }
+          })
+          .filter((n) => {
+            if (isExternalIBCAsset && !IBC_ETHEREUM_TRANSFERS_ENABLED) {
+              return n !== Network.ETHEREUM;
+            }
+            return true;
           })
       );
     },
@@ -88,6 +98,8 @@ export const exportStore = Vuextra.createStore({
         assetAmount: payload.assetAmount,
         fromAddress: accountStore.state.sifchain.address,
         toAddress: accountStore.state[ctx.state.draft.network].address,
+        fromChain: useChains().get(Network.SIFCHAIN),
+        toChain: useChains().get(ctx.state.draft.network),
       });
 
       for await (const ev of executable.generator()) {

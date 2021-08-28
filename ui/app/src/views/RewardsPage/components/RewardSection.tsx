@@ -60,6 +60,11 @@ export const RewardSection = defineComponent({
     const details = computed(() =>
       [
         {
+          name: "Claimable Amount",
+          amount:
+            props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
+        },
+        {
           hide: props.rewardType !== "vs",
           name: "Reserved Comission Rewards",
           tooltip:
@@ -94,21 +99,17 @@ export const RewardSection = defineComponent({
             />
             {displayData.value.heading}
           </div>
+
           <div class="font-mono w-[200px] text-right flex justify-end items-center">
+            {/* Claimable Amount */}
+            {props.data?.user?.currentAPYOnTickets
+              ? props.data?.user?.currentAPYOnTickets.toFixed(1) + "%"
+              : "0%"}
+          </div>
+          <div class="text-right justify-end flex-1 font-mono flex items-center">
             {/* Full Amount */}
             {formatRowanNumber(
               props.data?.user?.totalCommissionsAndRewardsAtMaturity,
-            )}
-            <TokenIcon
-              assetValue={Asset.get("rowan")}
-              size={20}
-              class="ml-[10px]"
-            />
-          </div>
-          <div class="text-right justify-end flex-1 font-mono flex items-center">
-            {/* Claimable Amount */}
-            {formatRowanNumber(
-              props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
             )}
             <TokenIcon
               assetValue={Asset.get("rowan")}
@@ -122,6 +123,7 @@ export const RewardSection = defineComponent({
             <div class="opacity-50 mb-[20px]">
               {displayData.value.description}
             </div>
+            {/* Claimable Amount */}
 
             {details.value.map((detail, index) => (
               <div

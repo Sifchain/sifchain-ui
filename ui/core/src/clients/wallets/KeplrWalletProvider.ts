@@ -23,6 +23,7 @@ import {
   WalletProviderContext,
 } from "./types";
 import { TokenRegistryService } from "../../services/TokenRegistryService/TokenRegistryService";
+import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
@@ -139,6 +140,23 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     };
   }
 
+  denomTraceLookup: Record<
+    string,
+    Record<string, QueryDenomTraceResponse>
+  > = {};
+  async denomTrace(chain: Chain, denom: string) {
+    if (!this.denomTraceLookup[chain.chainConfig.chainId]) {
+      this.denomTraceLookup[chain.chainConfig.chainId] = {};
+    }
+    if (!this.denomTraceLookup[chain.chainConfig.chainId][denom]) {
+      const queryClient = await this.getQueryClientCached(chain);
+      this.denomTraceLookup[chain.chainConfig.chainId][
+        denom
+      ] = await queryClient.ibc.transfer.denomTrace(denom);
+    }
+    return this.denomTraceLookup[chain.chainConfig.chainId][denom];
+  }
+
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
     const stargate = await this.getStargateClientCached(chain);
     const balances = await stargate.getAllBalances(address);
@@ -155,24 +173,37 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           );
           assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
         } else {
-          const registryEntry = tokenRegistry.find(
-            (item) => item.denom === coin.denom,
+          const denomTrace = await this.denomTrace(
+            chain,
+            coin.denom.split("/")[1],
           );
-          if (!registryEntry) continue; // Skip this coin, it isnt allowed.
+
+          const [, channelId] = (denomTrace.denomTrace?.path || "").split("/");
+
+          const isInvalidChannel =
+            channelId &&
+            !tokenRegistry.some(
+              (item) =>
+                item.ibcChannelId === channelId ||
+                item.ibcCounterpartyChannelId === channelId,
+            );
+
+          if (isInvalidChannel) continue;
+
+          const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
 
           const asset = chain.assets.find(
-            (asset) =>
-              asset.symbol.toLowerCase() ===
-              registryEntry.baseDenom.toLowerCase(),
+            (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
           );
           if (asset) {
-            asset.ibcDenom = registryEntry.denom;
+            asset.ibcDenom = coin.denom;
           }
-          const assetAmount = AssetAmount(
-            asset || registryEntry.baseDenom,
-            coin.amount,
-          );
-          assetAmounts.push(assetAmount);
+          try {
+            const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
+            assetAmounts.push(assetAmount);
+          } catch (error) {
+            // ignore asset, doesnt exist in our list.
+          }
         }
       } catch (error) {
         console.error(chain.network, "coin error", coin, error);

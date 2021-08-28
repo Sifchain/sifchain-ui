@@ -79,10 +79,11 @@ export default defineComponent({
       if (
         feeAssetBalanceRef.value &&
         feeAmountRef.value &&
+        computedExportAssetAmount.value &&
         feeAmountRef.value.asset.symbol === exportTokenRef.value?.asset.symbol
       ) {
-        const totalAmount = exportTokenRef.value.amount.add(
-          feeAmountRef.value.toBigInt().toString(),
+        const totalAmount = computedExportAssetAmount.value.add(
+          feeAmountRef.value,
         );
         if (totalAmount.greaterThan(feeAssetBalanceRef.value)) {
           return `Not enough ${feeAmountRef.value.displaySymbol.toUpperCase()} for Export Amount plus Fee`;
@@ -91,7 +92,8 @@ export default defineComponent({
 
       if (
         feeAmountRef.value?.amount.greaterThan("0") &&
-        feeAssetBalanceRef.value?.amount.lessThan(feeAmountRef.value)
+        (!feeAssetBalanceRef.value ||
+          feeAssetBalanceRef.value?.amount.lessThan(feeAmountRef.value))
       ) {
         return `Not enough ${feeAmountRef.value.displaySymbol.toUpperCase()} for ${formatAssetAmount(
           feeAmountRef.value,
@@ -122,7 +124,10 @@ export default defineComponent({
           icon: "interactive/arrows-in" as IconName,
           props: {
             disabled: false,
-            onClick: () => walletPicker.show(),
+            onClick: () => {
+              walletPicker.show();
+              accountStore.load(Network.SIFCHAIN);
+            },
           },
         },
         {
@@ -132,7 +137,10 @@ export default defineComponent({
           } Wallet`,
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () => walletPicker.show(),
+            onClick: () => {
+              walletPicker.show();
+              accountStore.load(networkRef.value);
+            },
           },
         },
         {
@@ -156,7 +164,7 @@ export default defineComponent({
 
     const optionsRef = computed<SelectDropdownOption[]>(() =>
       networksRef.value.map((network) => ({
-        content: <div class="capitalize">{network}</div>,
+        content: useChains().get(network).displayName,
         value: network,
       })),
     );
@@ -240,7 +248,7 @@ export default defineComponent({
                 class="w-full relative capitalize pl-[16px] mt-[10px]"
                 active={networkOpenRef.value}
               >
-                {exportParams.value.network}
+                {useChains().get(exportParams.value.network).displayName}
               </Button.Select>
             </SelectDropdown>
           </div>

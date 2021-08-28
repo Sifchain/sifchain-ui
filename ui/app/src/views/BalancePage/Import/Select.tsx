@@ -79,7 +79,10 @@ export default defineComponent({
           icon: "interactive/arrows-in" as IconName,
           props: {
             disabled: false,
-            onClick: () => appWalletPicker.show(),
+            onClick: () => {
+              appWalletPicker.show();
+              accountStore.load(Network.SIFCHAIN);
+            },
           },
         },
         {
@@ -92,7 +95,11 @@ export default defineComponent({
           } Wallet`,
           icon: "interactive/arrows-in" as IconName,
           props: {
-            onClick: () => appWalletPicker.show(),
+            onClick: () => {
+              appWalletPicker.show();
+              if (tokenRef.value)
+                accountStore.load(tokenRef.value.asset.network);
+            },
           },
         },
         {
@@ -115,7 +122,7 @@ export default defineComponent({
     const optionsRef = computed<SelectDropdownOption[]>(
       () =>
         networksRef.value?.map((network) => ({
-          content: <div class="capitalize">{network}</div>,
+          content: useChains().get(network).displayName,
           value: network,
         })) || [],
     );
@@ -176,7 +183,7 @@ export default defineComponent({
                     class="w-full relative capitalize pl-[16px] mt-[10px]"
                     active={networkOpenRef.value}
                   >
-                    {networkValue.value}
+                    {useChains().get(networkValue.value).displayName}
                   </Button.Select>
                 </SelectDropdown>
               </div>

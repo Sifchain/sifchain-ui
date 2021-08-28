@@ -10,6 +10,7 @@ export interface IWalletServiceState {
   accounts: string[];
   connected: boolean;
   balances: IAssetAmount[];
+  connecting: boolean;
   log: string;
 }
 const initWalletState = (network: Network) => ({
@@ -18,6 +19,7 @@ const initWalletState = (network: Network) => ({
   balances: [],
   address: "",
   connected: false,
+  connecting: false,
   log: "",
 });
 
@@ -34,15 +36,14 @@ export const accountStore = Vuextra.createStore({
   options: {
     devtools: true,
   },
-  state: {
-    ethereum: initWalletState(Network.ETHEREUM),
-    sifchain: initWalletState(Network.SIFCHAIN),
-    cosmoshub: initWalletState(Network.COSMOSHUB),
-    // iris: initWalletState(Network.IRIS),
-    akash: initWalletState(Network.AKASH),
-    sentinel: initWalletState(Network.SENTINEL),
-  } as Record<Network, IWalletServiceState>,
+  state: Object.values(Network).reduce((acc, network) => {
+    acc[network] = initWalletState(network);
+    return acc;
+  }, {} as Record<Network, IWalletServiceState>),
   getters: (state) => ({
+    isConnecting: () => {
+      return Object.values(state).some((v) => v.connecting);
+    },
     connectedNetworkCount: () => {
       return Object.values(state).filter((v) => v?.connected).length;
     },
@@ -60,6 +61,9 @@ export const accountStore = Vuextra.createStore({
       ) as Record<string, Record<string, IAssetAmount>>,
   }),
   mutations: (state) => ({
+    setConnecting(payload: { network: Network; connecting: boolean }) {
+      state[payload.network].connecting = payload.connecting;
+    },
     setConnected(payload: { network: Network; connected: boolean }) {
       state[payload.network].connected = payload.connected;
     },
@@ -80,6 +84,7 @@ export const accountStore = Vuextra.createStore({
   actions: (context) => ({
     async load(network: Network) {
       const usecase = getUsecase(network);
+      self.setConnecting({ network, connecting: true });
       try {
         const state = await usecase.load(network);
 
@@ -94,23 +99,32 @@ export const accountStore = Vuextra.createStore({
           // NOTE(ajoslin): more formal fix coming later to lazyload non-sif/eth assets.
           const UPDATE_DELAY =
             network === Network.SIFCHAIN || network === Network.ETHEREUM
-              ? 3 * 1000
+              ? 4.5 * 1000
               : (15 + Math.random() * 10) * 1000; // Some drift on updates for other chains.
 
           const timeoutId = setTimeout(async () => {
-            const balances = await usecase.getBalances(
-              network,
-              self.state[network].address,
-            );
-
-            self.setBalances({ network, balances });
+            await self.updateBalances(network);
             scheduleUpdate();
           }, UPDATE_DELAY);
           walletBalancePolls.set(network, timeoutId);
         })();
       } catch (error) {
         console.error(network, "wallet connect error", error);
+      } finally {
+        self.setConnecting({ network, connecting: false });
       }
+    },
+
+    async updateBalances(network: Network) {
+      if (!self.state[network].connected) return;
+
+      const usecase = getUsecase(network);
+      const balances = await usecase.getBalances(
+        network,
+        self.state[network].address,
+      );
+
+      self.setBalances({ network, balances });
     },
 
     async disconnect(network: Network) {

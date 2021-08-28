@@ -13,6 +13,9 @@ export class CosmoshubChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {
     return urlJoin(this.chainConfig.blockExplorerUrl, "txs", hash);
   }
+  getBlockExplorerUrlForAddress(hash: string) {
+    return urlJoin(this.chainConfig.blockExplorerUrl, "account", hash);
+  }
   calculateTransferFeeToChain(transferAmount: IAssetAmount) {
     return calculateIBCExportFee(transferAmount);
   }

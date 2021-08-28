@@ -154,6 +154,7 @@ export const useExportData = () => {
               ).toUpperCase()}
               <TokenIcon
                 class="ml-[4px]"
+                key={exportTokenRef.value?.asset.symbol || "undef"}
                 assetValue={exportTokenRef.value?.asset}
                 size={16}
               />

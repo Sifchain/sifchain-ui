@@ -116,6 +116,7 @@ export default function InterchainTxManager(
     } catch (error) {
       console.error("got error listening to transfer. stopping", error);
     }
+    interchainTxEmitter.emit("tx_complete", tx);
     delete store.tx.pendingTransfers[tx.hash];
     txList.remove(tx);
   };

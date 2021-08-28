@@ -19,27 +19,17 @@ import { createIteratorSubject } from "../../utils/iteratorSubject";
 
 const ETH_CONFIRMATIONS = 50;
 
-export default function createEthereumSifchainApi(context: UsecaseContext) {
-  return new EthereumSifchainInterchainApi(
-    context,
-    context.services.chains.get(Network.ETHEREUM),
-    context.services.chains.get(Network.SIFCHAIN),
-  );
-}
-
 export class EthereumSifchainInterchainApi
   implements InterchainApi<SifchainInterchainTx> {
   subscribeToTx: ReturnType<typeof SubscribeToTx>;
 
-  constructor(
-    public context: UsecaseContext,
-    public fromChain: Chain,
-    public toChain: Chain,
-  ) {
+  constructor(public context: UsecaseContext) {
     this.subscribeToTx = SubscribeToTx(context);
   }
 
-  async estimateFees(params: InterchainParams) {} // no fees
+  async estimateFees(params: InterchainParams) {
+    return params.toChain.calculateTransferFeeToChain(params.assetAmount);
+  }
 
   transfer(params: InterchainParams) {
     return new ExecutableTransaction(async (emit) => {
@@ -109,8 +99,8 @@ export class EthereumSifchainInterchainApi
 
         return {
           ...params,
-          fromChain: this.fromChain,
-          toChain: this.toChain,
+          fromChain: params.fromChain,
+          toChain: params.toChain,
           hash: hash,
         } as SifchainInterchainTx;
       } catch (transactionStatus) {
