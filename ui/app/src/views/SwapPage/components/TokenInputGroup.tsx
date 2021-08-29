@@ -45,16 +45,21 @@ export const TokenInputGroup = defineComponent({
     tokenIconUrl: optional(String),
     shouldShowNumberInputOnLeft: optional(Boolean),
     selectDisabled: optional(Boolean),
+    doNotManageInputInputValue: optional(Boolean),
   },
   setup(props) {
     const propRefs = toRefs(props);
     const selectIsOpen = ref(false);
     const selfRef = ref();
-    const inputRef = useManagedInputValueRef(
-      computed(() =>
-        parseFloat(propRefs.amount.value) === 0 ? "" : propRefs.amount.value,
-      ),
-    );
+    const inputRef = props.doNotManageInputInputValue
+      ? ref()
+      : useManagedInputValueRef(
+          computed(() =>
+            parseFloat(propRefs.amount.value) === 0
+              ? ""
+              : propRefs.amount.value,
+          ),
+        );
 
     return () => {
       /* Hide browser-native validation error tooltips via form novalidate */
@@ -142,6 +147,7 @@ export const TokenInputGroup = defineComponent({
                 }
                 props.onInputAmount(v || "");
               }}
+              {...(props.doNotManageInputInputValue && { value: props.amount })}
             />
           </div>
           <TokenSelectDropdown
