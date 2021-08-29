@@ -14,7 +14,7 @@ module.exports = {
         "accent-gradient": `linear-gradient(180deg, #D4B553 0%, #C1A04F 100%);`,
       },
       screens: {
-        portrait: { raw: "(orientation: portrait)" },
+        sm: { raw: "(max-width: 1000px)" },
         shorter: { raw: "(max-height: 800px)" },
         // => @media (orientation: portrait) { ... }
       },
