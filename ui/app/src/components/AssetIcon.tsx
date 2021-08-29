@@ -46,7 +46,6 @@ export type InteractiveIconName =
   | "close"
   | "copy"
   | "ellipsis"
-  | "hamburger"
   | "help"
   | "link"
   | "lock"

@@ -13,7 +13,6 @@ export function _Inline(
   ctx: SetupContext,
 ) {
   const Cmp = props.to ? RouterLink : props.href ? "a" : "button";
-  const content = ctx.slots.default?.();
   return (
     <Cmp
       {...props}
@@ -28,11 +27,11 @@ export function _Inline(
       {!!props.icon && (
         <AssetIcon
           icon={props.icon}
-          class={["w-[20px] h-[20px]", !!content && "mr-[4px]"]}
+          class="w-[20px] h-[20px] mr-[4px]"
           disabled={props.disabled}
         />
       )}
-      {content}
+      {ctx.slots.default?.()}
     </Cmp>
   );
 }
