@@ -246,6 +246,7 @@ export default defineComponent({
             onInputAmount={(v) => {
               data.toAmount.value = v;
             }}
+            inputDisabled={true}
             excludeSymbols={["rowan"]}
             class=""
             onSelectAsset={(asset) => {
