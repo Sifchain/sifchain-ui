@@ -22,8 +22,7 @@ import { ensureSifAddress } from "./utils";
 import getKeplrProvider from "./getKeplrProvider";
 import { KeplrChainConfig } from "../../utils/parseConfig";
 import { parseTxFailure } from "./parseTxFailure";
-import IBCService from "../IBCService";
-import { debounce } from "utils/debounce";
+import { debounce } from "../../utils/debounce";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;

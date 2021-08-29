@@ -41,8 +41,6 @@ const initState = {
   log: "unset",
 };
 
-// TODO: Refactor to be Module pattern with constructor function ie. `EthereumService()`
-
 export class EthereumService implements IWalletService {
   private web3: Web3 | null = null;
   private supportedTokens: Asset[] = [];
