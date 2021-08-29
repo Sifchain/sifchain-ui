@@ -11,10 +11,19 @@ export type StatsItem = {
   poolApy: number;
   miningBonus: number;
   totalApy: number;
+  rewardApy: number;
 };
 
 export type StatsPageState = {
-  sortBy: "asset" | "price" | "depth" | "volume" | "arbitrage" | "poolApy";
+  sortBy:
+    | "asset"
+    | "price"
+    | "depth"
+    | "volume"
+    | "arbitrage"
+    | "poolApy"
+    | "rewardApy"
+    | "totalApy";
   sortDirection: "asc" | "desc";
 };
 
@@ -22,31 +31,33 @@ export function useStatsPageData(initialState: StatsPageState) {
   const state = reactive<StatsPageState>(initialState);
   const res = usePoolStats();
 
-  const statsRef = computed<StatsItem[]>(() => {
+  const statsRef = computed(() => {
     if (!res.data.value) return [];
     const { liqAPY, poolData, cryptoeconSummaryAPY } = res.data.value;
 
     const array = poolData.pools
       .map((pool) => {
         const asset = Asset.get(pool.symbol);
-        const item: any = {
+        const item = {
           asset,
           price: parseFloat(pool.priceToken),
           depth: parseFloat(pool.poolDepth),
           volume: parseFloat(pool.volume) || 0,
           arbitrage: parseFloat(pool.arb) || 0,
+          poolApy: pool.poolAPY,
+          rewardApy: pool.rewardAPY,
+          totalApy: pool.totalAPY,
         };
-        item.poolApy = pool.poolAPY;
 
-        return item as StatsItem;
+        return item;
       })
-      .sort((a: StatsItem, b: StatsItem) => {
+      .sort((a, b) => {
         if (state.sortBy === "asset") {
           return (a.asset.displaySymbol || a.asset.symbol).localeCompare(
             b.asset.displaySymbol || b.asset.symbol,
           );
         }
-        return a[state.sortBy] - b[state.sortBy];
+        return +a[state.sortBy] - +b[state.sortBy];
       });
 
     if (state.sortDirection === "desc") {
