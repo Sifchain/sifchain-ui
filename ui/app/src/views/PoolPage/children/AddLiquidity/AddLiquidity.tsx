@@ -237,6 +237,7 @@ export default defineComponent({
             selectDisabled
             shouldShowNumberInputOnLeft
             heading="Input"
+            inputDisabled={true}
             asset={data.toAsset.value}
             amount={data.toAmount.value}
             formattedBalance={formattedToTokenBalance.value}

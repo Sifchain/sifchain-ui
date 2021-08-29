@@ -32,10 +32,10 @@ const persistConnected = {
       "true"
     );
   },
-  set: (network: Network, value: boolean) => {
+  set: (network: Network) => {
     return useCore().services.storage.setItem(
       `walletConnected_${network}`,
-      String(!!value),
+      "true",
     );
   },
 };
@@ -76,8 +76,10 @@ export function useInitialize() {
     watch(
       accountStore.refs[network].computed(),
       (value) => {
-        persistConnected.set(network, value.connected);
-        mirrorToCore(network);
+        if (value.connected) {
+          persistConnected.set(network);
+          mirrorToCore(network);
+        }
       },
       {
         deep: true,

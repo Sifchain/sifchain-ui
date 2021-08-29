@@ -8,6 +8,8 @@ import ClaimRewardsModal from "./components/ClaimRewardsModal";
 import { CryptoeconomicsRewardType } from "@sifchain/sdk/src/services/CryptoeconomicsService";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { accountStore } from "@/store/modules/accounts";
+import { Tooltip } from "@/components/Tooltip";
+import { Button } from "@/components/Button/Button";
 
 // This one is for the chads
 export default defineComponent({
@@ -80,8 +82,20 @@ export default defineComponent({
 
             <div class="mt-[21px] text-md opacity-50 flex">
               <div class="w-[250px] text-left">Reward Program</div>
-              <div class="w-[200px] text-right">Reward APY</div>
-              <div class="flex-1 text-right">Projected Full Amount</div>
+              {/* <div class="w-[200px] text-right">Reward APY</div> */}
+              <div class="flex-1 text-right">
+                Projected Full Amount
+                <Tooltip
+                  content={
+                    <>
+                      You will earn this if you leave all of your deposits
+                      pooled for at least 6 weeks.
+                    </>
+                  }
+                >
+                  <Button.InlineHelp></Button.InlineHelp>
+                </Tooltip>
+              </div>
             </div>
             <RewardSection
               rewardType="lm"
