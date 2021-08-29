@@ -117,7 +117,7 @@ export const TokenInputGroup = defineComponent({
             <Input.Base
               placeholder={"0"}
               inputRef={inputRef}
-              class="token-input flex-1"
+              class="token-input flex-1 opacity-100"
               disabled={props.inputDisabled}
               startContent={
                 !!props.onSetToMaxAmount &&
