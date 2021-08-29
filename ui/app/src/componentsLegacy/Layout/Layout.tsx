@@ -8,7 +8,7 @@ export default defineComponent({
   setup(props, context) {
     return () => (
       <>
-        <div class="flex absolute justify-center portrait:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background overflow-y-scroll bg-black bg-opacity-40">
+        <div class="flex absolute justify-center sm:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background overflow-y-scroll bg-black bg-opacity-40">
           {context.slots.default?.()}
           <div id="modal-target"></div>
           <BetaWarningBanner />
