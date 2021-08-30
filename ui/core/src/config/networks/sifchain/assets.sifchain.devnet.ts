@@ -176,9 +176,11 @@ export default {
       name: "Crypto com Coin",
       network: "sifchain",
       symbol: "ccro",
-      displaySymbol: "cro",
+      displaySymbol: "CRO (ERC-20)",
       homeNetwork: "ethereum",
       decommissioned: true,
+      decommissionReason:
+        "Crypto.org's ERC-20 token has been decommissioned on Sifchain in favor of the Cosmos CRO token. Please export all CRO (ERC-20) off of Sifchain.",
     },
     {
       decimals: 8,

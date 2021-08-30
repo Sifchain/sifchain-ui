@@ -257,13 +257,20 @@ const UserPoolItem = defineComponent({
           class={[
             "font-mono",
             +(currentItemData.value.arb || 0) < 0
-              ? "text-danger-base"
-              : "text-connected-base",
+              ? "text-connected-base"
+              : "text-danger-base",
           ]}
         >
           {currentItemData.value.arb != null
-            ? `${(+currentItemData.value.arb).toFixed(3)}%`
+            ? `${Math.abs(+currentItemData.value.arb).toFixed(3)}%`
             : "..."}
+
+          <Button.InlineHelp class="!text-gray-600">
+            This is the arbitrage opportunity available based on a differential
+            between the price of this token on Sifchain and its price on
+            CoinMarketCap. If the percentage is green, it means the token is
+            currently cheaper in Sifchain than CoinMarketCap.
+          </Button.InlineHelp>
         </span>,
       ],
       [
@@ -316,6 +323,12 @@ const UserPoolItem = defineComponent({
                             ""
                           ).toUpperCase()}
                         </div>
+                        {externalToken.value?.asset.decommissioned &&
+                          externalToken.value?.asset.decommissionReason && (
+                            <Button.InlineHelp>
+                              {externalToken.value?.asset.decommissionReason}
+                            </Button.InlineHelp>
+                          )}
                       </>
                     );
                   }

@@ -39,7 +39,7 @@ export default defineComponent({
       {
         name: "Token",
         sortBy: "symbol" as BalancePageState["sortBy"],
-        class: "text-left",
+        class: "text-left min-w-[150px]",
         ref: ref<HTMLElement>(),
       },
       {

@@ -192,9 +192,11 @@
       "network": "ethereum",
       "priceUsd": 0.070311,
       "symbol": "CRO",
+      "displaySymbol": "CRO (ERC-20)",
       "transferLimit": "7111262818051",
       "homeNetwork": "ethereum",
-      "decomissioned": true
+      "decommissioned": true,
+      "decommissionReason": "Crypto.org's ERC-20 token has been decommissioned on Sifchain in favor of the Cosmos CRO token. Please export all CRO (ERC-20) off of Sifchain."
     },
     {
       "address": "0xED75e6a9a2a5E35c1e49f083E7708bD0CC5a3635",

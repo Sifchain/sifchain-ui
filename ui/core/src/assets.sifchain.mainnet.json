@@ -159,9 +159,10 @@
       "name": "Crypto com Coin",
       "network": "sifchain",
       "symbol": "ccro",
-      "displaySymbol": "cro",
+      "displaySymbol": "CRO (ERC-20)",
       "homeNetwork": "ethereum",
-      "decommissioned": true
+      "decommissioned": true,
+      "decommissionReason": "Crypto.org's ERC-20 token has been decommissioned on Sifchain in favor of the Cosmos CRO token. Please export all CRO (ERC-20) off of Sifchain."
     },
     {
       "decimals": 8,
@@ -572,7 +573,7 @@
       "label": "CRO",
       "imageUrl": "https://assets.coingecko.com/coins/images/7310/small/cypto.png?1547043960",
       "homeNetwork": "crypto-org",
-      "decomissioned": true
+      "decommissioned": true
     },
     {
       "symbol": "uxprt",

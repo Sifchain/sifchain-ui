@@ -159,6 +159,12 @@ export default defineComponent({
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>
+            {props.tokenItem.asset.decommissioned &&
+              props.tokenItem.asset.decommissionReason && (
+                <Button.InlineHelp>
+                  {props.tokenItem.asset.decommissionReason}
+                </Button.InlineHelp>
+              )}
           </div>
         </td>
         <td class="text-right align-middle min-w-[160px]">
