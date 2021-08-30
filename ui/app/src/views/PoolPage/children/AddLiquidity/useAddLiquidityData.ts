@@ -1,4 +1,4 @@
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
@@ -22,6 +22,7 @@ import {
 import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { accountStore } from "@/store/modules/accounts";
+import { debounce } from "@/views/utils/debounce";
 
 export const useAddLiquidityData = () => {
   const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
@@ -145,36 +146,57 @@ export const useAddLiquidityData = () => {
   function setTokenBAmount(amount: string) {
     toAmount.value = amount;
   }
+  const hasActiveSafetyLag = ref(false);
 
-  watchEffect(() => {
-    const output = usePoolCalculator({
-      balances: balances.value,
-      tokenAAmount: fromAmount.value,
-      tokenBAmount: toAmount.value,
-      tokenASymbol: fromSymbol.value,
-      tokenBSymbol: toSymbol.value,
-      poolFinder: (a: string | IAsset, b: string | IAsset) =>
-        poolFinder(a, b)?.value || null,
-      liquidityProvider: liquidityProvider.value,
-      guidedMode: asyncPooling.value,
-      lastFocusedTokenField: lastFocusedTokenField.value,
+  const updateDataWithOutput = ref(
+    debounce((output) => {
+      aPerBRatioMessage.value = output.aPerBRatioMessage;
+      bPerARatioMessage.value = output.bPerARatioMessage;
+      aPerBRatioProjectedMessage.value = output.aPerBRatioProjectedMessage;
+      bPerARatioProjectedMessage.value = output.bPerARatioProjectedMessage;
+      shareOfPoolPercent.value = output.shareOfPoolPercent;
+      totalLiquidityProviderUnits.value = output.totalLiquidityProviderUnits;
+      totalPoolUnits.value = output.totalPoolUnits;
+      poolAmounts.value = output.poolAmounts;
+      tokenAFieldAmount.value = output.tokenAFieldAmount;
+      tokenBFieldAmount.value = output.tokenBFieldAmount;
+      preExistingPool.value = output.preExistingPool;
+      state.value = output.state;
+      hasActiveSafetyLag.value = false;
+    }, 5000),
+  );
+  watch(
+    [
+      balances,
+      fromAmount,
+      toAmount,
+      fromSymbol,
+      toSymbol,
+      liquidityProvider,
+      asyncPooling,
+      lastFocusedTokenField,
       setTokenAAmount,
       setTokenBAmount,
-    });
-
-    aPerBRatioMessage.value = output.aPerBRatioMessage;
-    bPerARatioMessage.value = output.bPerARatioMessage;
-    aPerBRatioProjectedMessage.value = output.aPerBRatioProjectedMessage;
-    bPerARatioProjectedMessage.value = output.bPerARatioProjectedMessage;
-    shareOfPoolPercent.value = output.shareOfPoolPercent;
-    totalLiquidityProviderUnits.value = output.totalLiquidityProviderUnits;
-    totalPoolUnits.value = output.totalPoolUnits;
-    poolAmounts.value = output.poolAmounts;
-    tokenAFieldAmount.value = output.tokenAFieldAmount;
-    tokenBFieldAmount.value = output.tokenBFieldAmount;
-    preExistingPool.value = output.preExistingPool;
-    state.value = output.state;
-  });
+    ],
+    async () => {
+      const output = usePoolCalculator({
+        balances: balances.value,
+        tokenAAmount: fromAmount.value,
+        tokenBAmount: toAmount.value,
+        tokenASymbol: fromSymbol.value,
+        tokenBSymbol: toSymbol.value,
+        poolFinder: (a: string | IAsset, b: string | IAsset) =>
+          poolFinder(a, b)?.value || null,
+        liquidityProvider: liquidityProvider.value,
+        guidedMode: asyncPooling.value,
+        lastFocusedTokenField: lastFocusedTokenField.value,
+        setTokenAAmount,
+        setTokenBAmount,
+      });
+      hasActiveSafetyLag.value = true;
+      updateDataWithOutput.value(output);
+    },
+  );
 
   function handleNextStepClicked() {
     if (!tokenAFieldAmount.value)
@@ -227,6 +249,7 @@ export const useAddLiquidityData = () => {
     bPerARatioMessage,
     aPerBRatioProjectedMessage,
     bPerARatioProjectedMessage,
+    hasActiveSafetyLag,
     nextStepMessage: computed(() => {
       switch (state.value) {
         case PoolState.SELECT_TOKENS:
