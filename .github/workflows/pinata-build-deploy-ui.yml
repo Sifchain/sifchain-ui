@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - testnet
+      - slack-notif-fix
       # - master
 
 jobs:
@@ -67,7 +68,8 @@ jobs:
       - name: Save package meta
         run: |
           mkdir -p ./ui/app/dist;
-          echo $BRANCH_NAME > ./ui/app/dist/.branch; 
+          echo $BRANCH_NAME > ./ui/app/dist/.branch;
+          echo $ENV_NAME > ./ui/app/dist/.env_name; 
 
       - uses: actions/upload-artifact@master
         with:
@@ -85,6 +87,11 @@ jobs:
           name: fe-build-artifact-${{ github.sha }}
           path: ./ui/app/dist
 
+      - name: Extract package meta
+        run: |
+          echo "BRANCH_NAME=$(cat ./app/dist/.branch)" >> $GITHUB_ENV;
+          echo "ENV_NAME=$(cat ./app/dist/.env_name)" >> $GITHUB_ENV;
+  
       - name: Deploy App to IPFS/Pinata
         id: pinata
         uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
@@ -99,7 +106,8 @@ jobs:
       - name: Set environment for dnslink
         run: |
           echo $GITHUB_REF
-          echo "${{toJSON(env)}}"
+          echo $BRANCH_NAME
+          echo $ENV_NAME
 
           if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
             echo "Config set for DevNet deployment"
@@ -119,21 +127,21 @@ jobs:
             echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
           fi
 
-      - name: Update cloudflare DNSLink
-        env:
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
-        id: dnslink
-        uses: textileio/cloudflare-update-dnslink@master
-        with:
-          cid: ${{ steps.pinata.outputs.hash }}
+      # - name: Update cloudflare DNSLink
+      #   env:
+      #     CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+      #     CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
+      #   id: dnslink
+      #   uses: textileio/cloudflare-update-dnslink@master
+      #   with:
+      #     cid: ${{ steps.pinata.outputs.hash }}
 
       - name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
           payload: "{\"pinata_url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
-          \"branch\":\"${{ steps.extract_env.outputs.env }}\",\"github_hash\": \"${{ github.sha }}\", 
-          \"sif_url\": \"https://${{ steps.extract_env.outputs.env }}.sifchain.finance\" }"
+          \"branch\":\"${ ENV_NAME }\",\"github_hash\": \"${{ github.sha }}\", 
+          \"sif_url\": \"https://${{ ENV_NAME }}.sifchain.finance\" }"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
