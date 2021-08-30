@@ -17,7 +17,7 @@ export const PERSISTENCE_TESTNET: IBCChainConfig = {
     stakeCurrency: {
       coinDenom: "XPRT",
       coinMinimalDenom: "uxprt",
-      coinDecimals: 8,
+      coinDecimals: 6,
       coinGeckoId: "persistence",
     },
     walletUrl: "https://wallet.keplr.app/#/persistence/stake",

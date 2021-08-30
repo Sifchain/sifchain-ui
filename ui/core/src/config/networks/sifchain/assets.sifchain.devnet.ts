@@ -634,7 +634,7 @@ export default {
     {
       symbol: "uxprt",
       displaySymbol: "xprt",
-      decimals: 8,
+      decimals: 6,
       name: "xprt",
       network: "sifchain",
       label: "xprt",
