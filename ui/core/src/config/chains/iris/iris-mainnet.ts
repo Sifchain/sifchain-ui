@@ -15,7 +15,7 @@ export const IRIS_MAINNET: IBCChainConfig = {
     chainId: "irishub-1",
     chainName: "IRISnet",
     stakeCurrency: {
-      coinDenom: "iris",
+      coinDenom: "IRIS",
       coinMinimalDenom: "uiris",
       coinDecimals: 6,
       coinGeckoId: "iris",

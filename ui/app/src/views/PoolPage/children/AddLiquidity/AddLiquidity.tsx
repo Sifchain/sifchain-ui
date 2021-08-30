@@ -214,7 +214,6 @@ export default defineComponent({
         >
           <TokenInputGroup
             shouldShowNumberInputOnLeft
-            doNotManageInputInputValue
             excludeSymbols={["rowan"]}
             heading="Input"
             asset={data.fromAsset.value}
@@ -236,7 +235,6 @@ export default defineComponent({
           </div>
           <TokenInputGroup
             selectDisabled
-            doNotManageInputInputValue
             shouldShowNumberInputOnLeft
             heading="Input"
             asset={data.toAsset.value}
