@@ -34,7 +34,8 @@ jobs:
             echo "SUBDOMAIN=dex" >> $GITHUB_ENV
           elif [[ $BRANCH_NAME == 'testnet' ]]
           then
-            echo "ENV_NAME=testnet" >> $GITHUB_ENV
+            # because testnet is promoted to mainnet
+            echo "ENV_NAME=mainnet" >> $GITHUB_ENV
             echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
           else
             echo "ENV_NAME=devnet" >> $GITHUB_ENV
@@ -51,7 +52,8 @@ jobs:
       - name: Fetch contract, Write to .env
         shell: bash
         run: |     
-          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
+          # sifnode is out of sync, BRANCH_NAME is hardcoded here for now
+          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/develop/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
           echo VUE_APP_VERSION=$VUE_APP_VERSION >> ./ui/app/.env
           echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
@@ -107,21 +109,20 @@ jobs:
         run: |
           echo $GITHUB_REF
           echo $BRANCH_NAME
-          echo $ENV_NAME
 
-          if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
+          if [[ $BRANCH_NAME == 'develop' ]]; then
             echo "Config set for DevNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
             echo "RECORD_NAME=_dnslink.devnet" >> $GITHUB_ENV
           fi
 
-          if [[ $GITHUB_REF == 'refs/heads/testnet' ]]; then
+          if [[ $BRANCH_NAME == 'testnet' ]]; then
             echo "Config set for TestNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
             echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
           fi
 
-          if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
+          if [[ $BRANCH_NAME == 'master' ]]; then
             echo "Config set for MainNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
             echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
