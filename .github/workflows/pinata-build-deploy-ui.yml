@@ -89,8 +89,8 @@ jobs:
 
       - name: Extract package meta
         run: |
-          echo "BRANCH_NAME=$(cat ./app/dist/.branch)" >> $GITHUB_ENV;
-          echo "ENV_NAME=$(cat ./app/dist/.env_name)" >> $GITHUB_ENV;
+          echo "BRANCH_NAME=$(cat ./ui/app/dist/.branch)" >> $GITHUB_ENV;
+          echo "ENV_NAME=$(cat ./ui/app/dist/.env_name)" >> $GITHUB_ENV;
   
       - name: Deploy App to IPFS/Pinata
         id: pinata
