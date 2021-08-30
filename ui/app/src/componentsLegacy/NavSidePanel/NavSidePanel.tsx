@@ -12,6 +12,9 @@ import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
 import { Button } from "@/components/Button/Button";
+import ChangelogModal, {
+  changelogViewedSha,
+} from "@/components/ChangelogModal";
 
 export default defineComponent({
   props: {},
@@ -22,6 +25,8 @@ export default defineComponent({
 
     const sidebarRef = ref();
     const isOpenRef = ref(false);
+
+    const changelogOpenRef = ref(false);
 
     onMounted(() => {
       document.addEventListener("click", (ev) => {
@@ -150,6 +155,23 @@ export default defineComponent({
                     </div>
                   }
                 />
+                <NavSidePanelItem
+                  icon="navigation/changelog"
+                  onClick={() => (changelogOpenRef.value = true)}
+                  displayName={<div class="flex items-center">Changelog</div>}
+                  action={
+                    !changelogViewedSha.isLatest() && (
+                      <div class="flex flex-1 justify-end">
+                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
+                      </div>
+                    )
+                  }
+                />
+                {changelogOpenRef.value && (
+                  <ChangelogModal
+                    onClose={() => (changelogOpenRef.value = false)}
+                  />
+                )}
                 {!accountStore.state.sifchain.connecting &&
                 !accountStore.state.sifchain.balances.find(
                   (b) =>

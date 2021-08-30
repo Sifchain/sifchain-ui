@@ -63,6 +63,7 @@ export type InteractiveIconName =
 export type NavIconName =
   | "balances"
   | "dashboard"
+  | "changelog"
   | "documents"
   | "more"
   | "pool"

@@ -38,7 +38,7 @@ export const importStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
-      const IBC_ETHEREUM_TRANSFERS_ENABLED = false;
+      const IBC_ETHEREUM_ENABLED = localStorage.IBC_ETHEREUM_ENABLED || false;
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
         AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
       const asset = Asset(state.draft.symbol);
@@ -70,7 +70,7 @@ export const importStore = Vuextra.createStore({
             }
           })
           .filter((n) => {
-            if (isExternalIBCAsset && !IBC_ETHEREUM_TRANSFERS_ENABLED) {
+            if (isExternalIBCAsset && !IBC_ETHEREUM_ENABLED) {
               return n.network !== Network.ETHEREUM;
             }
             return true;
