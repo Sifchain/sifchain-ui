@@ -108,7 +108,9 @@ export const useExportData = () => {
     );
   });
 
-  const networksRef = computed(() => rootStore.export.getters.networks);
+  const networksRef = computed(() =>
+    rootStore.export.getters.chains.map((c) => c.network),
+  );
 
   const targetSymbolRef = computed(() =>
     getUnpeggedSymbol(exportParams.value.symbol),
