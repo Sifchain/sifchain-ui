@@ -6,6 +6,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
+import { Tooltip } from "@/components/Tooltip";
 
 export default defineComponent({
   name: "StatsPage",
@@ -18,6 +19,7 @@ export default defineComponent({
 
     const columns: Array<{
       name: string;
+      message?: string;
       sortBy: StatsPageState["sortBy"];
       class?: string;
       ref: Ref<HTMLElement | undefined>;
@@ -55,6 +57,19 @@ export default defineComponent({
       {
         name: "Pool APY",
         sortBy: "poolApy",
+        class: "min-w-[80px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Reward APY",
+        sortBy: "rewardApy",
+        class: "min-w-[80px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Total APY",
+        message: "Combined Pool & Reward APY's",
+        sortBy: "totalApy",
         class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
       },
@@ -105,7 +120,13 @@ export default defineComponent({
                         state.sortBy = column.sortBy;
                       }}
                     >
-                      {column.name}
+                      {column.message ? (
+                        <Tooltip content={<>{column.message}</>}>
+                          {column.name}
+                        </Tooltip>
+                      ) : (
+                        column.name
+                      )}
                       {state.sortBy === column.sortBy && (
                         <AssetIcon
                           icon="interactive/arrow-down"
@@ -175,7 +196,13 @@ export default defineComponent({
                         ${prettyNumber(item.volume)}
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {prettyNumber(item.poolApy)}%
+                        {item.poolApy}%
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        {item.rewardApy}%
+                      </td>{" "}
+                      <td class="align-middle text-right text-mono">
+                        {item.totalApy}%
                       </td>
                     </tr>
                   );

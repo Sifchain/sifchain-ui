@@ -20,6 +20,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { useChains } from "@/hooks/useChains";
 
 export default defineComponent({
   name: "PoolPage",
@@ -44,6 +45,18 @@ export default defineComponent({
               pool,
               accountPool: accountPoolMap.get(pool.symbol.toLowerCase()),
             };
+          })
+          .filter((accountPoolData) => {
+            const asset = useChains()
+              .get(Network.SIFCHAIN)
+              .lookupAssetOrThrow(accountPoolData.pool.symbol);
+            if (
+              asset.decommissioned &&
+              !accountPoolData?.accountPool?.pool.poolUnits
+            ) {
+              return false;
+            }
+            return true;
           })
           // First sort by name or apy
           .sort((a, b) => {
@@ -278,7 +291,7 @@ const UserPoolItem = defineComponent({
             onClick={() => {
               isExpandedRef.value = !isExpandedRef.value;
             }}
-            class="cursor-pointer font-mono w-full flex justify-start items-center font-medium h-[32px] font-sans group-hover:opacity-80"
+            class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] font-sans group-hover:opacity-80"
           >
             {COLUMNS.map((column) => {
               const content = (() => {
@@ -316,31 +329,7 @@ const UserPoolItem = defineComponent({
                       </div>
                     );
                   }
-                  case "gainLoss": {
-                    return (
-                      <div
-                        class={[
-                          "font-mono",
-                          !accountPoolData?.earnedRewards.value
-                            ? ""
-                            : accountPoolData?.earnedRewardsNegative.value
-                            ? "text-danger-base"
-                            : "text-connected-base",
-                        ]}
-                      >
-                        {!accountPoolData.earnedRewards.value ? (
-                          ""
-                        ) : (
-                          <>
-                            {accountPoolData?.earnedRewardsNegative.value
-                              ? "-"
-                              : ""}
-                            ${accountPoolData?.earnedRewards.value}
-                          </>
-                        )}
-                      </div>
-                    );
-                  }
+
                   case "share": {
                     return (
                       <div class="font-mono">

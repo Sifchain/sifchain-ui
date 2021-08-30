@@ -81,4 +81,6 @@ export const walletConnections: WalletConnection[] = [
   createWalletConnection("keplr", Network.AKASH),
   createWalletConnection("metamask", Network.ETHEREUM),
   createWalletConnection("keplr", Network.SIFCHAIN),
-];
+].filter((connection) => {
+  return !connection.getChain().chainConfig.hidden;
+});

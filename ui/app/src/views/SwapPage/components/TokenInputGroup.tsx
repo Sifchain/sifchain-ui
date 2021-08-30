@@ -1,10 +1,4 @@
-import {
-  computed,
-  defineComponent,
-  HTMLAttributes,
-  PropType,
-  watch,
-} from "vue";
+import { computed, defineComponent, HTMLAttributes, PropType } from "vue";
 import { ref, toRefs } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
@@ -45,6 +39,7 @@ export const TokenInputGroup = defineComponent({
     tokenIconUrl: optional(String),
     shouldShowNumberInputOnLeft: optional(Boolean),
     selectDisabled: optional(Boolean),
+    inputDisabled: optional(Boolean),
   },
   setup(props) {
     const propRefs = toRefs(props);
@@ -116,9 +111,11 @@ export const TokenInputGroup = defineComponent({
             <Input.Base
               placeholder={"0"}
               inputRef={inputRef}
-              class="token-input flex-1"
+              class="token-input flex-1 opacity-100"
+              disabled={props.inputDisabled}
               startContent={
-                !!props.onSetToMaxAmount && (
+                !!props.onSetToMaxAmount &&
+                !props.inputDisabled && (
                   <Button.Pill
                     onClick={() =>
                       props.onSetToMaxAmount && props.onSetToMaxAmount()

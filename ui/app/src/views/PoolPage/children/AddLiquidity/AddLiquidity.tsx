@@ -367,7 +367,7 @@ export default defineComponent({
               ],
             }}
           />
-          {(data.nextStepAllowed.value && (
+          {(data.nextStepAllowed.value && !data.hasActiveSafetyLag.value && (
             <Button.CallToAction
               onClick={() => data.handleNextStepClicked()}
               class="mt-[10px]"
@@ -376,12 +376,21 @@ export default defineComponent({
             </Button.CallToAction>
           )) || (
             <Button.CallToAction
-              disabled={!data.nextStepAllowed.value}
+              disabled={
+                !data.nextStepAllowed.value || data.hasActiveSafetyLag.value
+              }
               onClick={() => appWalletPicker.show()}
               class="mt-[10px]"
             >
               {/* <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" />{" "} */}
-              {data.nextStepMessage.value}
+              {data.hasActiveSafetyLag.value ? (
+                <AssetIcon
+                  size={22}
+                  icon="interactive/anim-racetrack-spinner"
+                ></AssetIcon>
+              ) : (
+                data.nextStepMessage.value
+              )}
             </Button.CallToAction>
           )}
         </Modal>

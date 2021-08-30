@@ -571,7 +571,8 @@
       "network": "sifchain",
       "label": "CRO",
       "imageUrl": "https://assets.coingecko.com/coins/images/7310/small/cypto.png?1547043960",
-      "homeNetwork": "crypto-org"
+      "homeNetwork": "crypto-org",
+      "decomissioned": true
     },
     {
       "symbol": "uxprt",

@@ -25,14 +25,10 @@ export const COLUMNS: {
   {
     id: "apy",
     name: "Pool APY",
-    class: "w-[128px] text-right justify-end",
+    class: "w-[238px] text-right justify-end",
     sortable: true,
   },
-  {
-    id: "gainLoss",
-    name: "Gain/Loss",
-    class: "w-[140px] text-right justify-end",
-  },
+
   {
     id: "share",
     name: "Your Pool Share",

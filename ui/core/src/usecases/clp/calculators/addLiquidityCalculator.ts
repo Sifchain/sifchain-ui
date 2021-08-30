@@ -1,3 +1,12 @@
+/* 
+--------------------------
+WARNING
+--------------------------
+
+This implementation is functionally correct, but causes a severe bug when implemented
+within an observer pattern. Please use `reactiveAddLiquidityCalculator` until further notice.
+
+*/
 import {
   Asset,
   AssetAmount,
