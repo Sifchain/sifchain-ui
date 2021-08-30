@@ -5,7 +5,6 @@ on:
     branches:
       - develop
       - testnet
-      - workflow-only
       # - master
 
 jobs:
@@ -120,21 +119,21 @@ jobs:
             echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
           fi
 
-      # - name: Update cloudflare DNSLink
-      #   env:
-      #     CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-      #     CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
-      #   id: dnslink
-      #   uses: textileio/cloudflare-update-dnslink@master
-      #   with:
-      #     cid: ${{ steps.pinata.outputs.hash }}
+      - name: Update cloudflare DNSLink
+        env:
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
+        id: dnslink
+        uses: textileio/cloudflare-update-dnslink@master
+        with:
+          cid: ${{ steps.pinata.outputs.hash }}
 
-      # - name: Send custom JSON data to Slack workflow
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.14.0
-      #   with:
-      #     payload: "{\"pinata_url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
-      #     \"branch\":\"${{ steps.extract_env.outputs.env }}\",\"github_hash\": \"${{ github.sha }}\", 
-      #     \"sif_url\": \"https://${{ steps.extract_env.outputs.env }}.sifchain.finance\" }"
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.14.0
+        with:
+          payload: "{\"pinata_url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
+          \"branch\":\"${{ steps.extract_env.outputs.env }}\",\"github_hash\": \"${{ github.sha }}\", 
+          \"sif_url\": \"https://${{ steps.extract_env.outputs.env }}.sifchain.finance\" }"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
