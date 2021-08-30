@@ -237,6 +237,7 @@ export default defineComponent({
             selectDisabled
             shouldShowNumberInputOnLeft
             heading="Input"
+            inputDisabled={true}
             asset={data.toAsset.value}
             amount={data.toAmount.value}
             formattedBalance={formattedToTokenBalance.value}
@@ -246,6 +247,7 @@ export default defineComponent({
             onInputAmount={(v) => {
               data.toAmount.value = v;
             }}
+            inputDisabled={true}
             excludeSymbols={["rowan"]}
             class=""
             onSelectAsset={(asset) => {
