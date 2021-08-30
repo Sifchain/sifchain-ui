@@ -51,21 +51,18 @@ jobs:
             echo "ENV_NAME=devnet" >> $GITHUB_ENV
             echo "SUBDOMAIN=devnet" >> $GITHUB_ENV
             echo "BRANCH_NAME=develop" >> $GITHUB_ENV
-            # echo "::set-output name=env::$BRANCH_NAME"
           fi
 
-      - name: Set CONTRACT_DEPLOYMENT, APP_SHA
+      - name: Set CONTRACT_DEPLOYMENT, SHA
         shell: bash
         run: |
-          # VUE_APP_CONTRACT_DEPLOYMENT
-          # VUE_APP_SHA
           echo "VUE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
           echo "VUE_APP_CONTRACT_DEPLOYMENT=$(cat ./ui/core/src/config/networks/sifchain/config.${ENV_NAME}.json | jq '.sifChainId' | tr -d '"')" >> $GITHUB_ENV
 
       - name: Fetch contract, Write to .env
         shell: bash
-        run: |          
-          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_SIFCHAIN_ID}/BridgeBank.json
+        run: |     
+          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
           echo "VUE_APP_VERSION=$(echo ${VUE_APP_VERSION} | tr -d '"')" >> ./ui/app/.env
           echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
