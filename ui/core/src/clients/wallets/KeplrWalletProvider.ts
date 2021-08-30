@@ -16,7 +16,6 @@ import {
   IBCChainConfig,
   Network,
 } from "../../entities";
-import memoize from "lodash/memoize";
 import {
   CosmosWalletProvider,
   WalletConnectionState,
@@ -24,6 +23,7 @@ import {
 } from "./types";
 import { TokenRegistryService } from "../../services/TokenRegistryService/TokenRegistryService";
 import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
+import { memoize } from "../../utils/memoize";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")

@@ -11,11 +11,7 @@ import {
 import { format } from "@sifchain/sdk/src/utils/format";
 import { useCore } from "@/hooks/useCore";
 
-export function shortenHash(
-  hash: string,
-  startLength: number = 7,
-  endLength: number = 7,
-) {
+export function shortenHash(hash: string, startLength = 7, endLength = 7) {
   const start = hash.slice(0, startLength);
   const end = hash.slice(-endLength);
   return `${start}...${end}`;

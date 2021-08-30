@@ -1,5 +1,4 @@
 import { ComputedRef, computed, watchEffect } from "vue";
-import _ from "lodash";
 import { useAsyncData, AsyncDataState } from "./useAsyncData";
 
 const cache = new Map<string, any>();

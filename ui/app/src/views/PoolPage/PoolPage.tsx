@@ -291,7 +291,7 @@ const UserPoolItem = defineComponent({
             onClick={() => {
               isExpandedRef.value = !isExpandedRef.value;
             }}
-            class="cursor-pointer font-mono w-full flex justify-start items-center font-medium h-[32px] font-sans group-hover:opacity-80"
+            class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] font-sans group-hover:opacity-80"
           >
             {COLUMNS.map((column) => {
               const content = (() => {
@@ -329,31 +329,7 @@ const UserPoolItem = defineComponent({
                       </div>
                     );
                   }
-                  case "gainLoss": {
-                    return (
-                      <div
-                        class={[
-                          "font-mono",
-                          !accountPoolData?.earnedRewards.value
-                            ? ""
-                            : accountPoolData?.earnedRewardsNegative.value
-                            ? "text-danger-base"
-                            : "text-connected-base",
-                        ]}
-                      >
-                        {!accountPoolData.earnedRewards.value ? (
-                          ""
-                        ) : (
-                          <>
-                            {accountPoolData?.earnedRewardsNegative.value
-                              ? "-"
-                              : ""}
-                            ${accountPoolData?.earnedRewards.value}
-                          </>
-                        )}
-                      </div>
-                    );
-                  }
+
                   case "share": {
                     return (
                       <div class="font-mono">

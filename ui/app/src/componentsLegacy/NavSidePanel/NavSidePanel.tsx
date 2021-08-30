@@ -21,7 +21,6 @@ export default defineComponent({
     const moreMenuRef = ref();
 
     const sidebarRef = ref();
-    const openButtonRef = ref();
     const isOpenRef = ref(false);
 
     onMounted(() => {

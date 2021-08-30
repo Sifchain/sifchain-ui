@@ -41,7 +41,6 @@ import Layout from "@/componentsLegacy/Layout/Layout";
 import { useRoute, useRouter } from "vue-router";
 import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
-import OnboardingModal from "@/components/OnboardingModal";
 
 const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
 
@@ -67,8 +66,6 @@ export default defineComponent({
     Notifications,
     EnvAlert,
     SideBar,
-    Layout,
-    OnboardingModal,
   },
   computed: {
     key() {
