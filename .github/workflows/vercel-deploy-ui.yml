@@ -58,15 +58,15 @@ jobs:
           echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
       - name: Build App
-        run: cd ./ui && yarn install --frozen-lockfile --silent && yarn stack --no-setup
+        run: cd ./ui && yarn install --frozen-lockfile --silent
 
-      # - uses: amondnet/vercel-action@v20
-      #   with:
-      #     scope: ${{ secrets.TEAM_ID }}
-      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     vercel-org-id: ${{ secrets.ORG_ID}}
-      #     vercel-project-id: ${{ secrets.PROJECT_ID}}
-      #     working-directory: .
-      #     alias-domains: |
-      #       {{BRANCH}}.sifchain.vercel.app
+      - uses: amondnet/vercel-action@v20
+        with:
+          scope: ${{ secrets.TEAM_ID }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID}}
+          vercel-project-id: ${{ secrets.PROJECT_ID}}
+          working-directory: .
+          alias-domains: |
+            {{BRANCH}}.sifchain.vercel.app
