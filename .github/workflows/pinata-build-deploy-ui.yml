@@ -15,110 +15,64 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      # for some reason this appears unavailable in github API... might be missing something?
-      - name: capture branch name to env
+      # These env variables may only be used in next step
+      - name: Set BRANCH_NAME, APP_VERSION
+        shell: bash
         run: |
-          if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
-            echo "CURRENT_BRANCH=develop" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "VUE_APP_VERSION=$(cat ./ui/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
+
+        id: extract_env
+
+      - name: Set ENV_NAME, SUBDOMAIN
+        shell: bash
+        run: |
+          if [[ $BRANCH_NAME == 'master' ]]
+          then
+            echo "ENV_NAME=mainnet" >> $GITHUB_ENV
+            echo "SUBDOMAIN=dex" >> $GITHUB_ENV
+          elif [[ $BRANCH_NAME == 'testnet' ]]
+          then
+            echo "ENV_NAME=testnet" >> $GITHUB_ENV
+            echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
+          else
+            echo "ENV_NAME=devnet" >> $GITHUB_ENV
+            echo "SUBDOMAIN=devnet" >> $GITHUB_ENV
+            echo "BRANCH_NAME=develop" >> $GITHUB_ENV
           fi
 
-          if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
-            echo "CURRENT_BRANCH=master" >> $GITHUB_ENV
-          fi
-
-          if [[ $GITHUB_REF == 'refs/heads/testnet' ]]; then
-            echo "CURRENT_BRANCH=testnet" >> $GITHUB_ENV
-          fi
-      - name: capture image name to env
+      - name: Set CONTRACT_DEPLOYMENT, SHA
+        shell: bash
         run: |
-          echo "IMAGE_NAME=ghcr.io/sifchain/sifnode/ui-stack:$CURRENT_BRANCH" >> $GITHUB_ENV
+          echo "VUE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
+          echo "VUE_APP_CONTRACT_DEPLOYMENT=$(cat ./ui/core/src/config/networks/sifchain/config.${ENV_NAME}.json | jq '.sifChainId' | tr -d '"')" >> $GITHUB_ENV
+
+      - name: Fetch contract, Write to .env
+        shell: bash
+        run: |     
+          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
+          echo VUE_APP_VERSION=$VUE_APP_VERSION >> ./ui/app/.env
+          echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
       - name: Use Node.js
         uses: actions/setup-node@v2.1.4
         with:
           node-version: "14.x"
 
-      # We need to extract shared resources from sifnode to include in our build mainly ABI files and testing tables
-      - name: Log into registry
-        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Pull instant stack image
-        run: docker pull $IMAGE_NAME
-
-      - name: Extracting ABIs
-        run: cd ./ui && yarn install --frozen-lockfile --silent && yarn stack --setup-only --tag $CURRENT_BRANCH
-
       - name: Build App
         run: |
-          cd ui && yarn install --frozen-lockfile && yarn build --tag $CURRENT_BRANCH
+          cd ui && yarn install --frozen-lockfile && yarn build --tag $BRANCH_NAME --no-setup
 
       # Can't save envs between jobs so using artifacts
       - name: Save package meta
         run: |
           mkdir -p ./ui/app/dist;
-          echo $CURRENT_BRANCH > ./ui/app/dist/.branch; 
-          echo $IMAGE_NAME > ./ui/app/dist/.image
+          echo $BRANCH_NAME > ./ui/app/dist/.branch; 
 
       - uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
           path: ./ui/app/dist
-
-  # test:
-  #   needs: build
-
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ui
-
-  #   steps:
-  #     - name: Check out code
-  #       uses: actions/checkout@v2
-
-  #     - name: Download artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: fe-build-artifact-${{ github.sha }}
-  #         # note this path doesnt take working-directory in account
-  #         path: ./ui/app/dist
-
-  #     - name: Extract package meta
-  #       run: |
-  #         echo "CURRENT_BRANCH=$(cat ./app/dist/.branch)" >> $GITHUB_ENV;
-  #         echo "IMAGE_NAME=$(cat ./app/dist/.image)" >> $GITHUB_ENV;
-
-  #     - name: Use Node.js
-  #       uses: actions/setup-node@v2.1.4
-  #       with:
-  #         node-version: "14.x"
-
-  #     - name: Log into registry
-  #       run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-  #     - name: Pull instant stack image
-  #       run: docker pull $IMAGE_NAME
-
-  #     - name: Install dependencies
-  #       run: yarn install --frozen-lockfile --silent
-
-  #     - uses: microsoft/playwright-github-action@v1
-
-  #     - name: Build e2e App
-  #       run: cd e2e && yarn install --frozen-lockfile
-
-  #     - name: Run e2e Tests
-  #       run: yarn build --tag $CURRENT_BRANCH && yarn e2e --tag $CURRENT_BRANCH
-  #       env:
-  #         CI: true
-
-  #     - name: Upload coverage report
-  #       uses: codecov/codecov-action@v1
-  #       with:
-  #         token: ${{ secrets.CODECOV_TOKEN }}
-  #         directory: ./e2e/coverage
-  #         flags: ui
-  #         verbose: true
 
   deploy:
     needs: build
@@ -145,6 +99,7 @@ jobs:
       - name: Set environment for dnslink
         run: |
           echo $GITHUB_REF
+          echo "${{toJSON(env)}}"
 
           if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
             echo "Config set for DevNet deployment"
@@ -172,24 +127,6 @@ jobs:
         uses: textileio/cloudflare-update-dnslink@master
         with:
           cid: ${{ steps.pinata.outputs.hash }}
-
-      - name: Extract env from branch name
-        shell: bash
-        run: |
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          echo "$BRANCH_NAME"
-
-          if [[ $BRANCH_NAME == 'develop' ]] 
-          then
-            echo "::set-output name=env::devnet"
-          elif [[ $BRANCH_NAME == 'master' ]]
-          then
-            echo "::set-output name=env::dex"          
-          else
-            echo "::set-output name=env::$BRANCH_NAME"
-          fi
-
-        id: extract_env
 
       - name: Send custom JSON data to Slack workflow
         id: slack
