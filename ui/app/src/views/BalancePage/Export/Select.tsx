@@ -162,11 +162,14 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
-    const optionsRef = computed<SelectDropdownOption[]>(() =>
-      networksRef.value.map((network) => ({
-        content: useChains().get(network).displayName,
-        value: network,
-      })),
+    const optionsRef = computed<SelectDropdownOption[]>(
+      () =>
+        networksRef.value
+          .map((network) => ({
+            content: useChains().get(network).displayName,
+            value: network,
+          }))
+          .sort((a, b) => a.content.localeCompare(b.content)) || [],
     );
     const networkOpenRef = ref(false);
     const targetAddressRef = accountStore.computed(

@@ -6,3 +6,4 @@ export * from "./AkashChain";
 export * from "./SentinelChain";
 export * from "./CryptoOrgChain";
 export * from "./PersistenceChain";
+export * from "./RegenChain";

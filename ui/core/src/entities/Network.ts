@@ -7,5 +7,6 @@ export enum Network {
   CRYPTO_ORG = "crypto-org",
   IRIS = "iris",
   PERSISTENCE = "persistence",
+  REGEN = "regen",
   SENTINEL = "sentinel",
 }
