@@ -81,6 +81,9 @@ export const useExportData = () => {
   const exportTokenRef = useToken({
     network: ref(Network.SIFCHAIN),
     symbol: computed(() => exportParams.value.symbol),
+    tokenListParams: {
+      showDecomissionedAssets: true,
+    },
   });
 
   const headingRef = computed(
@@ -118,6 +121,9 @@ export const useExportData = () => {
   const targetTokenRef = useToken({
     network: computed(() => exportParams.value.network),
     symbol: targetSymbolRef,
+    tokenListParams: {
+      showDecomissionedAssets: true,
+    },
   });
 
   const computedExportAssetAmount = computed(() => {
