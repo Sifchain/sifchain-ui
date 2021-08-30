@@ -17,32 +17,21 @@ jobs:
         uses: actions/checkout@v2
 
       # These env variables may only be used in next step
-      - name: Extract Environments
+      - name: Set BRANCH_NAME, APP_VERSION
         shell: bash
         run: |
-          # VUE_APP_VERSION
-          # BRANCH_NAME
-
-          # echo "BRANCH_NAME=develop" >> $GITHUB_ENV
           echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
-          # echo "::set-output name=branch::$BRANCH_NAME"
-          
-          echo "VUE_APP_VERSION=$(cat ./ui/package.json | jq '.version')" >> $GITHUB_ENV
+          echo "VUE_APP_VERSION=$(cat ./ui/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
 
         id: extract_env
 
       - name: Set ENV_NAME, SUBDOMAIN
         shell: bash
         run: |
-          # ENV_NAME
-          # SUBDOMAIN
-
           if [[ $BRANCH_NAME == 'master' ]]
           then
             echo "ENV_NAME=mainnet" >> $GITHUB_ENV
             echo "SUBDOMAIN=dex" >> $GITHUB_ENV
-            # echo "::set-output name=env::dex"
           elif [[ $BRANCH_NAME == 'testnet' ]]
           then
             echo "ENV_NAME=testnet" >> $GITHUB_ENV
@@ -63,7 +52,7 @@ jobs:
         shell: bash
         run: |     
           wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
-          echo "VUE_APP_VERSION=$(echo ${VUE_APP_VERSION} | tr -d '"')" >> ./ui/app/.env
+          echo VUE_APP_VERSION=$VUE_APP_VERSION >> ./ui/app/.env
           echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
       - name: Use Node.js
