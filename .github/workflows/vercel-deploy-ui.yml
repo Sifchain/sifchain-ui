@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "VUE_APP_VERSION=$(cat ./ui/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
+          echo "VUE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
 
         id: extract_env
 

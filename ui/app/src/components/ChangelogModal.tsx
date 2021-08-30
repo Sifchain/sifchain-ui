@@ -61,7 +61,7 @@ export default defineComponent({
       if (res.isLoading.value) return null;
       return (
         <Modal
-          heading={"Sifchain DEX Changelog"}
+          heading={"Changelog"}
           icon="navigation/changelog"
           showClose
           onClose={props.onClose}

@@ -40,3 +40,4 @@ We recommend using bookmarklets:
 | TESTNET  | `javascript:(() => {l=location;l.href=l.pathname+'?_env=testnet'})()`  |
 | DEVNET   | `javascript:(() => {l=location;l.href=l.pathname+'?_env=devnet'})()`   |
 | LOCALNET | `javascript:(() => {l=location;l.href=l.pathname+'?_env=localnet'})()` |
+
