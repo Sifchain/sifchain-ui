@@ -128,14 +128,14 @@ jobs:
             echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
           fi
 
-      # - name: Update cloudflare DNSLink
-      #   env:
-      #     CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-      #     CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
-      #   id: dnslink
-      #   uses: textileio/cloudflare-update-dnslink@master
-      #   with:
-      #     cid: ${{ steps.pinata.outputs.hash }}
+      - name: Update cloudflare DNSLink
+        env:
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
+        id: dnslink
+        uses: textileio/cloudflare-update-dnslink@master
+        with:
+          cid: ${{ steps.pinata.outputs.hash }}
 
       - name: Send custom JSON data to Slack workflow
         id: slack
