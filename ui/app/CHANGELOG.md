@@ -1,11 +1,5 @@
-# Hello
+# Release 2021.08.30
 
-* Something
-
-# Hello2
-
-* Something2
-
-# Hello3
-
-* Something3
+* Turn on IRISnet & Persistance chains
+* Start allowing reward claiming
+* Add Reward APY to the Pool screen 
