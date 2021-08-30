@@ -51,7 +51,6 @@ export default defineComponent({
     });
 
     const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
-    const isWalletConnecting = rootStore.accounts.refs.isConnecting.computed();
 
     return () => (
       <>

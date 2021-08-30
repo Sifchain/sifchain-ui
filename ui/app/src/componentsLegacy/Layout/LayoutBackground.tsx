@@ -46,6 +46,7 @@ const ImageBg = defineComponent({
       img.src = props.src.value;
       img.onload = () => {
         loadedRef.value = true;
+        loadedCache.set(props.src.value, true);
       };
     });
     const getStyle = (src: string) => ({
