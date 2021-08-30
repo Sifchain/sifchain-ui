@@ -21,7 +21,6 @@ export default defineComponent({
     const moreMenuRef = ref();
 
     const sidebarRef = ref();
-    const openButtonRef = ref();
     const isOpenRef = ref(false);
 
     onMounted(() => {
@@ -235,6 +234,8 @@ export default defineComponent({
                   displayName={
                     connectedNetworkCount.value === 0
                       ? "Connect Wallets"
+                      : accountStore.getters.isConnecting
+                      ? "Connecting..."
                       : "Connected Wallets"
                   }
                   class={[
@@ -250,6 +251,14 @@ export default defineComponent({
                         }}
                         class="w-[20px] h-[20px]"
                       />
+                    ) : accountStore.getters.isConnecting ? (
+                      <div class="flex flex-1 justify-end">
+                        <AssetIcon
+                          icon="interactive/anim-racetrack-spinner"
+                          size={20}
+                          class="flex-shrink-0"
+                        />
+                      </div>
                     ) : (
                       <div class="w-[20px] h-[20px] ml-auto rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
                         {connectedNetworkCount.value}

@@ -172,7 +172,7 @@ export default defineComponent({
                 : prettyNumber(+formatAssetAmount(props.tokenItem.amount))}
             </span>
 
-            <div class="absolute top-50% left-[100%] ml-[2px] flex items-center gap-[4px]">
+            <div class="absolute top-50% left-[100%] ml-[4px] flex items-center">
               {props.tokenItem.pendingImports.length > 0 && (
                 <Tooltip
                   arrow

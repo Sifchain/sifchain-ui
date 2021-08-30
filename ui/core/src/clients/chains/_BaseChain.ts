@@ -20,6 +20,7 @@ export class BaseChain implements Chain {
 
   chainConfig: ChainConfig;
   assets: IAsset[];
+  assetMap: Map<string, IAsset>;
   nativeAsset: IAsset;
 
   constructor(public context: { assets: IAsset[]; chainConfig: ChainConfig }) {
@@ -28,6 +29,11 @@ export class BaseChain implements Chain {
     this.assets = context.assets.filter(
       (a) => a.network === context.chainConfig.network,
     );
+
+    this.assetMap = new Map();
+    this.assets.forEach((asset) => {
+      this.assetMap.set(asset.symbol, asset);
+    });
     this.nativeAsset = this.assets.find(
       (a) => a.symbol === context.chainConfig.nativeAssetSymbol,
     ) as IAsset;
@@ -40,6 +46,19 @@ export class BaseChain implements Chain {
 
     // Default 0 fee
     return AssetAmount(rowan, "0");
+  }
+
+  lookupAsset(symbol: string) {
+    return this.assetMap.get(symbol);
+  }
+  lookupAssetOrThrow(symbol: string) {
+    const asset = this.lookupAsset(symbol);
+    if (!asset) {
+      throw new Error(
+        `Asset with symbol ${symbol} not found in chain ${this.displayName}`,
+      );
+    }
+    return asset;
   }
 
   findAssetWithLikeSymbol(symbol: string) {

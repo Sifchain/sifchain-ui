@@ -11,10 +11,7 @@ export function calculateIBCExportFee(transferAmount: IAssetAmount) {
     .findAssetWithLikeSymbolOrThrow("rowan");
 
   // ibc exports have .99 rowan fee
-  // return AssetAmount(rowan, "990000000000000000");
-
-  // NOTE(ajoslin): disable fees now they aren't working on sentinel or cosmoshub
-  return AssetAmount(rowan, "0");
+  return AssetAmount(rowan, "990000000000000000");
 }
 
 export const IBC_EXPORT_FEE_ADDRESS =

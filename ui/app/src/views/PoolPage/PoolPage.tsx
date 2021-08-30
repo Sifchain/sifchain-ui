@@ -20,6 +20,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { useChains } from "@/hooks/useChains";
 
 export default defineComponent({
   name: "PoolPage",
@@ -44,6 +45,18 @@ export default defineComponent({
               pool,
               accountPool: accountPoolMap.get(pool.symbol.toLowerCase()),
             };
+          })
+          .filter((accountPoolData) => {
+            const asset = useChains()
+              .get(Network.SIFCHAIN)
+              .lookupAssetOrThrow(accountPoolData.pool.symbol);
+            if (
+              asset.decommissioned &&
+              !accountPoolData?.accountPool?.pool.poolUnits
+            ) {
+              return false;
+            }
+            return true;
           })
           // First sort by name or apy
           .sort((a, b) => {
@@ -86,7 +99,7 @@ export default defineComponent({
                 : undefined
             }
           />
-          {!poolDataWithUserData.value?.length ? (
+          {!poolDataWithUserData.value?.length || data.isLoading.value ? (
             <div class="absolute left-0 top-[180px] w-full flex justify-center">
               <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
                 <AssetIcon

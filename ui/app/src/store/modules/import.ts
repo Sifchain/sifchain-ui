@@ -47,7 +47,9 @@ export const importStore = Vuextra.createStore({
       );
       return (
         useChainsList()
-          .filter((c) => c.network !== Network.SIFCHAIN)
+          .filter(
+            (c) => c.network !== Network.SIFCHAIN && !c.chainConfig.hidden,
+          )
           // Disallow IBC export of ethereum & sifchain-native tokens
           .filter((n) => {
             if (NATIVE_TOKEN_IBC_EXPORTS_ENABLED) {
@@ -99,6 +101,8 @@ export const importStore = Vuextra.createStore({
         assetAmount: payload.assetAmount,
         fromAddress: accountStore.state[ctx.state.draft.network].address,
         toAddress: accountStore.state.sifchain.address,
+        fromChain: useChains().get(ctx.state.draft.network),
+        toChain: useChains().get(Network.SIFCHAIN),
       });
 
       for await (const ev of executable.generator()) {
