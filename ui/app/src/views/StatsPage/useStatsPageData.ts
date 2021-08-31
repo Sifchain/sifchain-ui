@@ -1,6 +1,7 @@
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted, onUnmounted } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
 import { usePoolStats } from "@/hooks/usePoolStats";
+import { useCore } from "@/hooks/useCore";
 
 export type StatsItem = {
   asset: IAsset;
@@ -30,6 +31,14 @@ export type StatsPageState = {
 export function useStatsPageData(initialState: StatsPageState) {
   const state = reactive<StatsPageState>(initialState);
   const res = usePoolStats();
+
+  let unsubscribe: () => void;
+  onMounted(() => {
+    unsubscribe = useCore().usecases.clp.subscribeToPublicPools().unsubscribe;
+  });
+  onUnmounted(() => {
+    unsubscribe?.();
+  });
 
   const statsRef = computed(() => {
     if (!res.data.value) return [];

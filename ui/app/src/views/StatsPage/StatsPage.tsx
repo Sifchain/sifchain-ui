@@ -179,7 +179,7 @@ export default defineComponent({
                         </div>
                       </td>
                       <td class="align-middle text-right text-mono">
-                        ${prettyNumber(item.price)}
+                        ${prettyNumber(item.price, 3)}
                       </td>
                       <td
                         class={[

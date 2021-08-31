@@ -1,6 +1,7 @@
 import { computed, toRefs } from "@vue/reactivity";
+import { onUnmounted, watch } from "vue";
 import { useCore } from "@/hooks/useCore";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { LiquidityProvider, Pool } from "@sifchain/sdk";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { usePoolStats } from "@/hooks/usePoolStats";
@@ -46,12 +47,41 @@ export const COLUMNS: {
   },
 ];
 
+// Only wait for load on first visit of the page
+let hasLoadedFirstTime = false;
+
 export const usePoolPageData = () => {
-  const { store } = useCore();
+  const { store, usecases } = useCore();
 
   const selectedPool = ref<PoolPageAccountPool | null>(null);
 
   const stats = usePoolStats();
+
+  const isLoaded = ref(hasLoadedFirstTime);
+  let unsubscribePublic: () => void;
+  let unsubscribeUser: () => void;
+
+  onMounted(() => {
+    unsubscribePublic = usecases.clp.subscribeToPublicPools().unsubscribe;
+  });
+
+  watch(
+    accountStore.refs.sifchain.address.computed(),
+    async (address: string) => {
+      if (address) {
+        const userRes = usecases.clp.subscribeToUserPools(address);
+        unsubscribePublic = userRes.unsubscribe;
+        await userRes.initPromise;
+        hasLoadedFirstTime = isLoaded.value = true;
+      }
+    },
+    { immediate: true },
+  );
+
+  onUnmounted(() => {
+    unsubscribePublic?.();
+    unsubscribeUser?.();
+  });
 
   // TODO: Sort pools?
   const accountPools = computed(() => {
@@ -73,7 +103,7 @@ export const usePoolPageData = () => {
   });
 
   return {
-    isLoading: computed(() => !store.poolsLoadState.loaded),
+    isLoading: computed(() => !isLoaded.value),
     accountPools,
     selectedPool,
     stats,

@@ -6,6 +6,12 @@ import { rootStore, vuexStore } from "./store/index";
 
 const app = createApp(App);
 
+const warnings: string[] = ((window as any).warnings = []);
+// Vue spams us with warnings.. typescript handles them for us though.
+app.config.warnHandler = (msg: string) => {
+  warnings.push(msg);
+};
+
 if (process.env.NODE_ENV === "development") {
   app.config.performance = true;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
