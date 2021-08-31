@@ -175,7 +175,7 @@ export default defineComponent({
                   props.tokenItem.pendingExports.length
                   ? "..."
                   : null
-                : prettyNumber(+formatAssetAmount(props.tokenItem.amount))}
+                : formatAssetAmount(props.tokenItem.amount)}
             </span>
 
             <div class="absolute top-50% left-[100%] ml-[4px] flex items-center">
