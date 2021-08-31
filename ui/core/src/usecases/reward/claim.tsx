@@ -13,7 +13,7 @@ export type ClaimArgs = {
   sif: PickSif;
 };
 type RewardProgramName = "IBC_REWARDS_V1";
-type RewardProgramMemo = `program=${RewardProgramName}`;
+
 export function Claim({ dispensation, sif }: ClaimArgs) {
   return async ({
     rewardProgramName,
@@ -25,7 +25,7 @@ export function Claim({ dispensation, sif }: ClaimArgs) {
   }) => {
     if (!params) throw "You forgot claimType and fromAddress";
     const msg = await dispensation.claim(params);
-    const memo = `program=${rewardProgramName}` as RewardProgramMemo;
+    const memo = `program=${rewardProgramName}`;
     const client = await NativeDexClient.connect(sif.unSignedClient.rpcUrl);
     const keplrProvider = await getKeplrProvider();
     if (!keplrProvider) throw new Error("keplr not enabled");
