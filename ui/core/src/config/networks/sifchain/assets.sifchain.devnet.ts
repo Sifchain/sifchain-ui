@@ -643,5 +643,16 @@ export default {
       imageUrl: "https://persistence.one/favicon.png",
       homeNetwork: "persistence",
     },
+    {
+      symbol: "uregen",
+      displaySymbol: "regen",
+      decimals: 6,
+      name: "regen",
+      network: "sifchain",
+      label: "regen",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
+      homeNetwork: "regen",
+    },
   ],
 };

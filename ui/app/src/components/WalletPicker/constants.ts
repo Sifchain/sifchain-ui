@@ -74,6 +74,7 @@ const createWalletConnection = (
 
 export const walletConnections: WalletConnection[] = [
   createWalletConnection("keplr", Network.SENTINEL),
+  createWalletConnection("keplr", Network.REGEN),
   createWalletConnection("keplr", Network.PERSISTENCE),
   createWalletConnection("keplr", Network.IRIS),
   createWalletConnection("keplr", Network.CRYPTO_ORG),
