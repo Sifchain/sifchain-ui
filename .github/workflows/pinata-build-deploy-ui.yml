@@ -5,7 +5,6 @@ on:
     branches:
       - develop
       - testnet
-      - slack-notif-fix
       # - master
 
 jobs:
@@ -71,7 +70,7 @@ jobs:
         run: |
           mkdir -p ./ui/app/dist;
           echo $BRANCH_NAME > ./ui/app/dist/.branch;
-          echo $ENV_NAME > ./ui/app/dist/.env_name; 
+          echo $SUBDOMAIN > ./ui/app/dist/.env_name; 
 
       - uses: actions/upload-artifact@master
         with:
@@ -107,7 +106,6 @@ jobs:
 
       - name: Set environment for dnslink
         run: |
-          echo $GITHUB_REF
           echo $BRANCH_NAME
 
           if [[ $BRANCH_NAME == 'develop' ]]; then
