@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - testnet
+      - slack-notif-fix
       # - master
 
 jobs:
@@ -33,7 +34,8 @@ jobs:
             echo "SUBDOMAIN=dex" >> $GITHUB_ENV
           elif [[ $BRANCH_NAME == 'testnet' ]]
           then
-            echo "ENV_NAME=testnet" >> $GITHUB_ENV
+            # because testnet is promoted to mainnet
+            echo "ENV_NAME=mainnet" >> $GITHUB_ENV
             echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
           else
             echo "ENV_NAME=devnet" >> $GITHUB_ENV
@@ -50,7 +52,8 @@ jobs:
       - name: Fetch contract, Write to .env
         shell: bash
         run: |     
-          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
+          # sifnode is out of sync, BRANCH_NAME is hardcoded here for now
+          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/develop/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
           echo VUE_APP_VERSION=$VUE_APP_VERSION >> ./ui/app/.env
           echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
@@ -67,7 +70,8 @@ jobs:
       - name: Save package meta
         run: |
           mkdir -p ./ui/app/dist;
-          echo $BRANCH_NAME > ./ui/app/dist/.branch; 
+          echo $BRANCH_NAME > ./ui/app/dist/.branch;
+          echo $ENV_NAME > ./ui/app/dist/.env_name; 
 
       - uses: actions/upload-artifact@master
         with:
@@ -85,6 +89,11 @@ jobs:
           name: fe-build-artifact-${{ github.sha }}
           path: ./ui/app/dist
 
+      - name: Extract package meta
+        run: |
+          echo "BRANCH_NAME=$(cat ./ui/app/dist/.branch)" >> $GITHUB_ENV;
+          echo "ENV_NAME=$(cat ./ui/app/dist/.env_name)" >> $GITHUB_ENV;
+  
       - name: Deploy App to IPFS/Pinata
         id: pinata
         uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
@@ -99,21 +108,21 @@ jobs:
       - name: Set environment for dnslink
         run: |
           echo $GITHUB_REF
-          echo "${{toJSON(env)}}"
+          echo $BRANCH_NAME
 
-          if [[ $GITHUB_REF == 'refs/heads/develop' ]]; then
+          if [[ $BRANCH_NAME == 'develop' ]]; then
             echo "Config set for DevNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
             echo "RECORD_NAME=_dnslink.devnet" >> $GITHUB_ENV
           fi
 
-          if [[ $GITHUB_REF == 'refs/heads/testnet' ]]; then
+          if [[ $BRANCH_NAME == 'testnet' ]]; then
             echo "Config set for TestNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
             echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
           fi
 
-          if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
+          if [[ $BRANCH_NAME == 'master' ]]; then
             echo "Config set for MainNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
             echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
@@ -133,7 +142,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.14.0
         with:
           payload: "{\"pinata_url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
-          \"branch\":\"${{ steps.extract_env.outputs.env }}\",\"github_hash\": \"${{ github.sha }}\", 
-          \"sif_url\": \"https://${{ steps.extract_env.outputs.env }}.sifchain.finance\" }"
+          \"branch\":\"${{env.ENV_NAME}}\",\"github_hash\": \"${{ github.sha }}\", 
+          \"sif_url\": \"https://${{env.ENV_NAME}}.sifchain.finance\" }"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
