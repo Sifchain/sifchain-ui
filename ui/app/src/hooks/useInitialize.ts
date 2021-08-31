@@ -62,6 +62,9 @@ export function useInitialize() {
       state.connected = storeState.connected;
       state.accounts = [storeState.address];
       mirrorToCore(Network.SIFCHAIN);
+      if (storeState.connected) {
+        persistConnected.set(Network.SIFCHAIN);
+      }
     },
     { deep: true },
   );
