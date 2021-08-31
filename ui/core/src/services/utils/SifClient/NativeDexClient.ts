@@ -38,23 +38,23 @@ type TxGroup =
   | typeof CLPV1Tx
   | typeof TokenRegistryV1Tx;
 
-type StringsOnly<T> = T extends string ? T : string;
-type ValueOf<T> = T[keyof T];
-type CustomEncodeObject<ParentModule extends TxGroup> = {
-  typeUrl: `/${ParentModule["protobufPackage"]}.${StringsOnly<
-    keyof ParentModule
-  >}`;
-  value: ValueOf<ParentModule>;
-};
+// type StringsOnly<T> = T extends string ? T : string;
+// type ValueOf<T> = T[keyof T];
+// type CustomEncodeObject<ParentModule extends TxGroup> = {
+//   typeUrl: `/${ParentModule["protobufPackage"]}.${StringsOnly<
+//     keyof ParentModule
+//   >}`;
+//   value: ValueOf<ParentModule>;
+// };
 
-interface CustomSigningClient extends SigningStargateClient {
-  signAndBroadcast: <TxParentModule extends TxGroup>(
-    signerAddress: string,
-    messages: CustomEncodeObject<TxParentModule>[],
-    fee: StdFee,
-    memo?: string | undefined,
-  ) => Promise<BroadcastTxResponse>;
-}
+// interface CustomSigningClient extends SigningStargateClient {
+//   signAndBroadcast: <TxParentModule extends TxGroup>(
+//     signerAddress: string,
+//     messages: CustomEncodeObject<TxParentModule>[],
+//     fee: StdFee,
+//     memo?: string | undefined,
+//   ) => Promise<BroadcastTxResponse>;
+// }
 
 export class NativeDexClient {
   protected constructor(
