@@ -2,6 +2,10 @@ import { DistributionType } from "../../generated/proto/sifnode/dispensation/v1/
 import { IAsset } from "../../entities";
 
 import { SifUnSignedClient } from "../utils/SifClient";
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
+import getKeplrProvider from "../../services/SifService/getKeplrProvider";
+import { MsgCreateUserClaim } from "../../generated/proto/sifnode/dispensation/v1/tx";
+import { coins } from "@cosmjs/amino";
 
 export type IDispensationServiceContext = {
   nativeAsset: IAsset;
@@ -27,11 +31,18 @@ export default function createDispensationService({
   const client = sifUnsignedClient;
   const instance: IDispensationService = {
     async claim(params) {
-      return await client.claim({
-        base_req: { chain_id: sifChainId, from: params.fromAddress },
-        claim_type: params.claimType,
-        signer: params.fromAddress,
-      });
+      return {
+        typeUrl: `/sifnode.dispensation.v1.MsgCreateUserClaim`,
+        value: {
+          userClaimAddress: params?.fromAddress,
+          userClaimType: params?.claimType,
+        } as MsgCreateUserClaim,
+      };
+      // return await client.claim({
+      //   base_req: { chain_id: sifChainId, from: params.fromAddress },
+      //   claim_type: params.claimType,
+      //   signer: params.fromAddress,
+      // });
     },
   };
 

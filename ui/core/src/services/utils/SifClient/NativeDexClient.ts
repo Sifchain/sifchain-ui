@@ -25,11 +25,36 @@ import {
   setupIbcExtension,
   SigningStargateClient,
   StargateClient,
+  StdFee,
   TimeoutError,
 } from "@cosmjs/stargate";
 import { BroadcastTxCommitResponse } from "@cosmjs/tendermint-rpc/build/tendermint34";
 import { SimulationResponse } from "@cosmjs/stargate/build/codec/cosmos/base/abci/v1beta1/abci";
 import { sleep } from "../../../test/utils/sleep";
+
+type TxGroup =
+  | typeof EthbridgeV1Tx
+  | typeof DispensationV1Tx
+  | typeof CLPV1Tx
+  | typeof TokenRegistryV1Tx;
+
+type StringsOnly<T> = T extends string ? T : string;
+type ValueOf<T> = T[keyof T];
+type CustomEncodeObject<ParentModule extends TxGroup> = {
+  typeUrl: `/${ParentModule["protobufPackage"]}.${StringsOnly<
+    keyof ParentModule
+  >}`;
+  value: ValueOf<ParentModule>;
+};
+
+interface CustomSigningClient extends SigningStargateClient {
+  signAndBroadcast: <TxParentModule extends TxGroup>(
+    signerAddress: string,
+    messages: CustomEncodeObject<TxParentModule>[],
+    fee: StdFee,
+    memo?: string | undefined,
+  ) => Promise<BroadcastTxResponse>;
+}
 
 export class NativeDexClient {
   protected constructor(
@@ -59,6 +84,7 @@ export class NativeDexClient {
       }
       return types;
     };
+
     const nativeRegistry = new Registry([
       ...defaultRegistryTypes,
       ...createCustomTypesForModule(EthbridgeV1Tx),
@@ -66,17 +92,22 @@ export class NativeDexClient {
       ...createCustomTypesForModule(CLPV1Tx),
       ...createCustomTypesForModule(TokenRegistryV1Tx),
     ]);
+
     const client = await SigningStargateClient.connectWithSigner(
       this.rpcUrl,
       signer,
       {
         registry: nativeRegistry,
-      },
+      } as const,
     );
 
     return client;
   }
-
+  createTxClient(t34: Tendermint34Client) {
+    return {
+      // dispensation: new DispensationV1Tx.MsgClientImpl()
+    };
+  }
   private static createQueryClient(t34: Tendermint34Client) {
     return QueryClient.withExtensions(
       t34,
