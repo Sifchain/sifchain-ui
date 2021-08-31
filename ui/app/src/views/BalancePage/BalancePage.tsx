@@ -5,6 +5,7 @@ import {
   computed,
   Transition,
   KeepAlive,
+  onMounted,
 } from "vue";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetIcon from "@/components/AssetIcon";
@@ -27,6 +28,15 @@ export default defineComponent({
       expandedSymbol: "",
       sortBy: "symbol",
       reverse: false,
+    });
+
+    // There's a bug with refreshing while an import child route is open
+    // right as balance page loads... this "fixes" it. TODO: find real cause.
+    let isReady = ref(false);
+    onMounted(() => {
+      setTimeout(() => {
+        isReady.value = true;
+      }, 1000);
     });
 
     effect(() => {
@@ -169,7 +179,9 @@ export default defineComponent({
             </tbody>
           </table>
         </PageCard>
-        <RouterView></RouterView>
+        <RouterView
+          name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
+        ></RouterView>
       </Layout>
     );
   },
