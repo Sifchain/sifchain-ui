@@ -36,7 +36,7 @@ jobs:
             echo "SUBDOMAIN=dex" >> $GITHUB_ENV
           elif [[ $BRANCH_NAME == 'testnet' ]]
           then
-            echo "ENV_NAME=testnet" >> $GITHUB_ENV
+            echo "ENV_NAME=mainnet" >> $GITHUB_ENV
             echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
           else
             echo "ENV_NAME=devnet" >> $GITHUB_ENV
@@ -53,7 +53,7 @@ jobs:
       - name: Fetch contract, Write to .env
         shell: bash
         run: |     
-          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/${BRANCH_NAME}/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
+          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/develop/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
           echo VUE_APP_VERSION=$VUE_APP_VERSION >> ./ui/app/.env
           echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
 
