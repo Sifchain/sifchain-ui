@@ -74,38 +74,21 @@ export function getConfig(
 
   const sifchainAssets = assetMap[sifchainAssetTag] || [];
   const ethereumAssets = assetMap[ethereumAssetTag] || [];
-  const cosmoshubAssets = parseAssets(
-    sifchainAssets.map((a) => ({
-      ...a,
-      network: Network.COSMOSHUB,
-    })),
-  );
-  // const irisAssets = parseAssets(
-  //   sifchainAssets.map((a) => ({
-  //     ...a,
-  //     network: Network.IRIS,
-  //   })),
-  // );
-  const akashAssets = parseAssets(
-    sifchainAssets.map((a) => ({
-      ...a,
-      network: Network.AKASH,
-    })),
-  );
-  const sentinelAssets = parseAssets(
-    sifchainAssets.map((a) => ({
-      ...a,
-      network: Network.SENTINEL,
-    })),
-  );
-  const allAssets = [
-    ...sifchainAssets,
-    ...ethereumAssets,
-    ...cosmoshubAssets,
-    // ...irisAssets,
-    ...akashAssets,
-    ...sentinelAssets,
-  ].map(cacheAsset);
+
+  let allAssets = [...sifchainAssets, ...ethereumAssets];
+
+  Object.values(Network)
+    .filter((n) => n !== Network.ETHEREUM && n !== Network.SIFCHAIN)
+    .forEach((n) => {
+      allAssets.push(
+        ...sifchainAssets.map((a) => ({
+          ...a,
+          network: n,
+        })),
+      );
+    });
+
+  allAssets = allAssets.map(cacheAsset);
 
   const configMap: ConfigMap = {
     localnet: parseConfig(

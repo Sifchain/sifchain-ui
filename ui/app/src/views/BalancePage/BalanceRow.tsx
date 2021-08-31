@@ -159,6 +159,12 @@ export default defineComponent({
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>
+            {props.tokenItem.asset.decommissioned &&
+              props.tokenItem.asset.decommissionReason && (
+                <Button.InlineHelp>
+                  {props.tokenItem.asset.decommissionReason}
+                </Button.InlineHelp>
+              )}
           </div>
         </td>
         <td class="text-right align-middle min-w-[160px]">
@@ -172,7 +178,7 @@ export default defineComponent({
                 : prettyNumber(+formatAssetAmount(props.tokenItem.amount))}
             </span>
 
-            <div class="absolute top-50% left-[100%] ml-[2px] flex items-center gap-[4px]">
+            <div class="absolute top-50% left-[100%] ml-[4px] flex items-center">
               {props.tokenItem.pendingImports.length > 0 && (
                 <Tooltip
                   arrow

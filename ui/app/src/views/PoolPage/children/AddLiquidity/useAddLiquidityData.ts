@@ -148,6 +148,9 @@ export const useAddLiquidityData = () => {
   }
   const hasActiveSafetyLag = ref(false);
 
+  // WARNING: DO NOT MIGRATE TO NON-REACTIVE UTILITY WITHIN `useEffect`
+  // THIS CREATES A RECURSIVE OBSERVER LOOP AND DETRIMENTALLY BREAKS LIQUIDITY
+  // ADDS
   const {
     aPerBRatioMessage,
     bPerARatioMessage,

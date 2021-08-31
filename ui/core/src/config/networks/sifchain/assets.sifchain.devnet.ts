@@ -176,9 +176,11 @@ export default {
       name: "Crypto com Coin",
       network: "sifchain",
       symbol: "ccro",
-      displaySymbol: "cro",
+      displaySymbol: "CRO (ERC-20)",
       homeNetwork: "ethereum",
       decommissioned: true,
+      decommissionReason:
+        "Crypto.org's ERC-20 token has been decommissioned on Sifchain in favor of the Cosmos CRO token. Please export all CRO (ERC-20) off of Sifchain.",
     },
     {
       decimals: 8,
@@ -608,6 +610,38 @@ export default {
         "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
       displaySymbol: "dvpn",
       homeNetwork: "sentinel",
+    },
+    {
+      symbol: "unyan",
+      decimals: 6,
+      name: "Nyan",
+      network: "sifchain",
+      label: "Nyan",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
+      displaySymbol: "nyan",
+      homeNetwork: "iris",
+    },
+    {
+      symbol: "basecro",
+      displaySymbol: "cro",
+      decimals: 8,
+      name: "CRO",
+      network: "sifchain",
+      label: "CRO",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/7310/small/cypto.png?1547043960",
+      homeNetwork: "crypto-org",
+    },
+    {
+      symbol: "uxprt",
+      displaySymbol: "xprt",
+      decimals: 6,
+      name: "xprt",
+      network: "sifchain",
+      label: "xprt",
+      imageUrl: "https://persistence.one/favicon.png",
+      homeNetwork: "persistence",
     },
   ],
 };

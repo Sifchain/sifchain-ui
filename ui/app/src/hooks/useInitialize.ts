@@ -64,37 +64,42 @@ export function useInitialize() {
       state.address = storeState.address;
       state.connected = storeState.connected;
       state.accounts = [storeState.address];
+      mirrorToCore(Network.SIFCHAIN);
     },
     { deep: true },
   );
 
   // Connect to networks in sequence, starting with Sifchain.
-  [
-    Network.SIFCHAIN,
-    ...Object.values(Network).filter((n) => n !== Network.SIFCHAIN),
-  ].reduce((promise, network) => {
-    watch(
-      accountStore.refs[network].computed(),
-      (value) => {
-        if (value.connected) {
-          persistConnected.set(network);
-          mirrorToCore(network);
+  (async () => {
+    if (persistConnected.get(Network.SIFCHAIN)) {
+      // Don't load anything else until sif is ready (it's the most important one,
+      // other network requests happening will slow it down.)
+      await accountStore.actions.load(Network.SIFCHAIN);
+    }
+
+    Object.values(Network)
+      .filter((n) => n !== Network.SIFCHAIN)
+      .forEach((network) => {
+        watch(
+          accountStore.refs[network].computed(),
+          (value) => {
+            if (value.connected) {
+              persistConnected.set(network);
+              mirrorToCore(network);
+            }
+          },
+          {
+            deep: true,
+          },
+        );
+        if (
+          persistConnected.get(network) &&
+          !accountStore.state[network].connected
+        ) {
+          accountStore.actions.load(network);
         }
-      },
-      {
-        deep: true,
-      },
-    );
-    return promise.then(async () => {
-      if (
-        persistConnected.get(network) &&
-        !accountStore.state[network].connected
-      ) {
-        accountStore.actions.load(network);
-        await new Promise((resolve) => setTimeout(resolve, 250));
-      }
-    });
-  }, Promise.resolve());
+      });
+  })();
 
   interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {
     accountStore.updateBalances(tx.toChain.network);

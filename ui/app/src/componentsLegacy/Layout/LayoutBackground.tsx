@@ -46,6 +46,7 @@ const ImageBg = defineComponent({
       img.src = props.src.value;
       img.onload = () => {
         loadedRef.value = true;
+        loadedCache.set(props.src.value, true);
       };
     });
     const getStyle = (src: string) => ({
@@ -245,7 +246,7 @@ export default defineComponent({
           class="z-[-1] w-full h-[100vh] fixed top-0 left-0 transition-all duration-500"
         >
           {!!srcRef.value && (
-            <bgRef.value.Cmp key={bgRef.value.key} src={srcRef} bg={bgRef} />
+            <bgRef.value.Cmp key={srcRef.value} src={srcRef} bg={bgRef} />
           )}
         </div>
         <div class="absolute bottom-4 right-4 w-[36px] h-[36px]">

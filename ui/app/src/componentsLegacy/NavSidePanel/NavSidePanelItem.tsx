@@ -7,7 +7,7 @@ export default defineComponent({
   props: {
     displayName: {
       required: true,
-      type: String,
+      type: String as PropType<string | JSX.Element>,
     },
     icon: {
       required: true,
@@ -26,6 +26,9 @@ export default defineComponent({
     },
     class: {
       type: [String, Object, Array] as HTMLAttributes["class"],
+    },
+    onClick: {
+      type: Function as PropType<() => void>,
     },
   },
   setup(props) {
@@ -54,6 +57,7 @@ export default defineComponent({
           {...(Cmp.value === RouterLink && {
             to: props.href,
           })}
+          {...(props.onClick && { onClick: props.onClick })}
           class={[
             `flex items-center text-sm h-[32px] mt-[10px] px-[8px] hover:bg-gray-200  transition-colors duration-75 hover:bg-gray-200 cursor-pointer rounded w-full text-left font-semibold whitespace-nowrap`,
             isActive.value && "bg-gray-200 text-accent-base",

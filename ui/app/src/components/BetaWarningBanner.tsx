@@ -30,7 +30,7 @@ export default defineComponent({
           </a>
           , but please note that all transactions conducted are at your own
           risk. <br />
-          <b>This platform is not open to US users.</b>
+          <b class="text-md">This platform is not open to U.S. persons.</b>
         </div>
         <button
           class="bg-accent-accent_gradient_to h-[40px] px-[14px] flex items-center rounded-b"

@@ -38,6 +38,8 @@ export default defineComponent({
       },
       {
         name: "Arbitrage Opportunity",
+        message:
+          "This is the arbitrage opportunity available based on a differential between the price of this token on Sifchain and its price on CoinMarketCap. If the percentage is green, it means the token is currently cheaper in Sifchain than CoinMarketCap.",
         sortBy: "arbitrage",
         class: "min-w-[120px] text-right",
         ref: ref<HTMLElement>(),
@@ -182,12 +184,12 @@ export default defineComponent({
                       <td
                         class={[
                           "align-middle text-mono text-right",
-                          item.arbitrage >= 0
+                          item.arbitrage < 0
                             ? `text-connected-base`
                             : `text-danger-base`,
                         ]}
                       >
-                        {prettyNumber(item.arbitrage)}%
+                        {prettyNumber(Math.abs(item.arbitrage))}%
                       </td>
                       <td class="align-middle text-right text-mono">
                         ${prettyNumber(item.depth)}
