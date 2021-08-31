@@ -76,8 +76,10 @@ export const useRewardsPageData = () => {
   const vsInfoLink = computed(() =>
     services.cryptoeconomics.getAddressLink(address.value, "vs"),
   );
-  const lmInfoLink = computed(() =>
-    services.cryptoeconomics.getAddressLink(address.value, "lm"),
+  const lmInfoLink = computed(
+    () =>
+      "https://docs.sifchain.finance/resources/rewards-programs#ibc-cosmos-assets-liquidity-mining-program",
+    // services.cryptoeconomics.getAddressLink(address.value, "lm"),
   );
 
   return {

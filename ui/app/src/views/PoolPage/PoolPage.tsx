@@ -53,6 +53,10 @@ export default defineComponent({
               return Asset.get(a.pool.symbol).displaySymbol.localeCompare(
                 Asset.get(b.pool.symbol).displaySymbol,
               );
+            } else if (sortBy.value === "reward-apy") {
+              return (
+                parseFloat(b.pool.rewardAPY) - parseFloat(a.pool.rewardAPY)
+              );
             } else {
               return parseFloat(b.pool.poolAPY) - parseFloat(a.pool.poolAPY);
             }
@@ -137,7 +141,7 @@ export default defineComponent({
                         <AssetIcon
                           icon="interactive/arrow-down"
                           class={[
-                            "ml-[2px]",
+                            "pl-[2px] mr-[-22px]",
                             sortBy.value !== column.id && "invisible",
                             sortReverse.value && "rotate-180",
                           ]}
@@ -316,7 +320,16 @@ const UserPoolItem = defineComponent({
                       </div>
                     );
                   }
-
+                  case "reward-apy": {
+                    return (
+                      <div class="font-mono">
+                        {currentItemData.value.rewardAPY != null
+                          ? (+currentItemData.value.rewardAPY || 0).toFixed(2)
+                          : "..."}
+                        %
+                      </div>
+                    );
+                  }
                   case "share": {
                     return (
                       <div class="font-mono">
