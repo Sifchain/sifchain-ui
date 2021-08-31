@@ -17,6 +17,7 @@ import { SifUnSignedClient } from "../utils/SifClient";
 import { parseTxFailure } from "./parseTxFailure";
 import { Contract } from "web3-eth-contract";
 import JSBI from "jsbi";
+import TokenRegistryService from "../TokenRegistryService";
 
 // TODO: Do we break this service out to ethbridge and cosmos?
 
@@ -53,6 +54,8 @@ export default function createEthbridgeService({
     }
     return _web3;
   }
+
+  const tokenRegistry = TokenRegistryService({ sifRpcUrl });
 
   /**
    * Create an event listener to report status of a peg transaction.
@@ -186,10 +189,9 @@ export default function createEthbridgeService({
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
+      const ibcDenom = await tokenRegistry.findAssetIbcDenom(sifAsset);
       const tokenAddress =
-        sifAsset.ibcDenom ||
-        (await this.fetchTokenAddress(sifAsset)) ||
-        ETH_ADDRESS;
+        ibcDenom || (await this.fetchTokenAddress(sifAsset)) || ETH_ADDRESS;
 
       console.log("burnToEthereum: start: ", tokenAddress);
 
@@ -235,10 +237,12 @@ export default function createEthbridgeService({
           bridgebankContractAddress,
         );
         const accounts = await web3.eth.getAccounts();
-        const coinDenom =
-          assetAmount.asset.ibcDenom ||
-          assetAmount.asset.address ||
-          ETH_ADDRESS; // eth address is ""
+
+        const ibcDenom = await tokenRegistry.findAssetIbcDenom(
+          assetAmount.asset,
+        );
+
+        const coinDenom = ibcDenom || assetAmount.asset.address || ETH_ADDRESS; // eth address is ""
 
         const amount = assetAmount.toBigInt().toString();
         const fromAddress = accounts[0];
@@ -285,6 +289,10 @@ export default function createEthbridgeService({
         ?.get(Network.ETHEREUM)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
+      const entry = await tokenRegistry.findAssetEntryOrThrow(
+        params.assetAmount.asset,
+      );
+
       const lockParams = {
         ethereum_receiver: params.ethereumRecipient,
         base_req: {
@@ -292,8 +300,7 @@ export default function createEthbridgeService({
           from: params.fromAddress,
         },
         amount: params.assetAmount.toBigInt().toString(),
-        symbol:
-          params.assetAmount.asset.ibcDenom || params.assetAmount.asset.symbol,
+        symbol: entry.denom,
         cosmos_sender: params.fromAddress,
         ethereum_chain_id: `${ethereumChainId}`,
         token_contract_address:
@@ -418,8 +425,10 @@ export default function createEthbridgeService({
         bridgebankContractAddress,
       );
 
+      const entry = await tokenRegistry.findAssetEntryOrThrow(asset);
+
       const attemptSymbols = [
-        asset.ibcDenom,
+        entry.denom,
         asset.symbol.replace(/^c/, ""),
         asset.symbol.replace(/^e/, ""),
         asset.displaySymbol,

@@ -157,8 +157,10 @@ export default function createClpService({
       });
     },
     async getLiquidityProvider(params) {
+      await tokenRegistry.load();
+      const entry = await tokenRegistry.findAssetEntryOrThrow(params.asset);
       const response = await client.getLiquidityProvider({
-        symbol: params.asset.ibcDenom || params.asset.symbol,
+        symbol: entry.denom,
         lpAddress: params.lpAddress,
       });
 
