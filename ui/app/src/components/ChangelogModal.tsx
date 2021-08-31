@@ -4,7 +4,10 @@ import { defineComponent, onMounted } from "@vue/runtime-core";
 import { PropType } from "vue";
 import { Button } from "./Button/Button";
 
-const { VUE_APP_SHA = "develop" } = process.env;
+const {
+  VUE_APP_SHA = "develop",
+  VUE_APP_VERSION = "0.0.0.local",
+} = process.env;
 
 type ChangelogData = { version: string; changelog: string };
 
@@ -33,15 +36,15 @@ if (typeof window !== "undefined") {
   setTimeout(maybeFetchChangelogData, 5000);
 }
 
-export const changelogViewedSha = {
+export const changelogViewedVersion = {
   get() {
-    return localStorage.getItem("changelogViewedSha");
+    return localStorage.getItem("changelogViewedVersion");
   },
-  set(sha: string) {
-    localStorage.setItem("changelogViewedSha", sha);
+  setLatest() {
+    localStorage.setItem("changelogViewedVersion", VUE_APP_VERSION);
   },
   isLatest() {
-    return VUE_APP_SHA === this.get();
+    return VUE_APP_VERSION === this.get();
   },
 };
 
@@ -54,14 +57,14 @@ export default defineComponent({
     const res = useAsyncData(maybeFetchChangelogData);
 
     onMounted(() => {
-      changelogViewedSha.set(VUE_APP_SHA);
+      changelogViewedVersion.setLatest();
     });
 
     return () => {
       if (res.isLoading.value) return null;
       return (
         <Modal
-          heading={"Changelog"}
+          heading="Changelog"
           icon="navigation/changelog"
           showClose
           onClose={props.onClose}
