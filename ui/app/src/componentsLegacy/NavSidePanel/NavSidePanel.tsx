@@ -13,7 +13,7 @@ import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
 import { Button } from "@/components/Button/Button";
 import ChangelogModal, {
-  changelogViewedSha,
+  changelogViewedVersion,
 } from "@/components/ChangelogModal";
 
 export default defineComponent({
@@ -160,7 +160,7 @@ export default defineComponent({
                   onClick={() => (changelogOpenRef.value = true)}
                   displayName={<div class="flex items-center">Changelog</div>}
                   action={
-                    changelogViewedSha.isLatest() ? undefined : (
+                    changelogViewedVersion.isLatest() ? undefined : (
                       <div class="flex flex-1 justify-end">
                         <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
                       </div>
