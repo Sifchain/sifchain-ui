@@ -258,42 +258,6 @@ export default function createSifService({
 
       ensureSifAddress(address);
       return state.balances;
-      // return IBCService({
-      //   assets: assets,
-      //   chainConfigsByNetwork,
-      // })
-      //   .createWalletByNetwork(Network.SIFCHAIN)
-      //   .then((w) => {
-      //     state.connected = true;
-      //     state.accounts = w.addresses;
-      //     state.balances = w?.balances;
-      //     return w.balances;
-      //     // console.table(w.balances);
-      //   });
-      // try {
-      //   const account = await client.getAccount(address);
-      //   if (!account) {
-      //     throw "No Address found on chain";
-      //   } // todo handle this better
-      //   const supportedTokenSymbols = supportedTokens.map((s) => s.symbol);
-      //   return account.balance
-      //     .filter((balance) => supportedTokenSymbols.includes(balance.denom))
-      //     .map(({ amount, denom }) => {
-      //       const asset = supportedTokens.find(
-      //         (token) => token.symbol === denom || token.ibcDenom == denom,
-      //       )!; // will be found because of filter above
-      //       return AssetAmount(asset, amount);
-      //     })
-      //     .filter((balance) => {
-      //       // If an aseet is supplied filter for it
-      //       if (!asset) {
-      //         return true;
-      //       }
-      //       return balance.asset.symbol === asset.symbol;
-      //     });
-      // } catch (error) {
-      //   throw error;
-      // }
     },
 
     async transfer(params: TxParams): Promise<any> {

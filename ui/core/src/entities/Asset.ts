@@ -7,7 +7,6 @@ export type IAsset = {
   name: string;
   network: Network;
   symbol: string;
-  ibcDenom?: string;
   displaySymbol: string;
   label: string;
   homeNetwork: Network;

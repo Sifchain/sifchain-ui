@@ -160,8 +160,6 @@ export default function createClpService({
       await tokenRegistry.load();
       const entry = await tokenRegistry.findAssetEntryOrThrow(params.asset);
       const response = await client.getLiquidityProvider({
-        // cannot use params.asset.ibcDenom because ibcDenom is set when loading balances,
-        // and the user does not always have a balance for the asset they have pooled
         symbol: entry.denom,
         lpAddress: params.lpAddress,
       });

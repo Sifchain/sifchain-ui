@@ -313,8 +313,21 @@ export class IBCService {
       transferDenom = transferTokenEntry.baseDenom;
     } else {
       // transfering this entry's token elsewhere: use ibc hash
-      transferDenom =
-        params.assetAmountToTransfer.asset.ibcDenom || transferTokenEntry.denom;
+      // we need to do a denom lookup, because this asset's ibc denom will
+      // be different when transferring from anotehr network.
+      // IE:  CRO from Cosmoshub has its own ibc denom
+
+      const data = await this.keplrProvider.fetchCoinsWithBaseDenoms(
+        getChainsService().get(params.sourceNetwork),
+        fromAccount.address,
+      );
+      const match = data.find(({ coin, baseDenom }) => {
+        return (
+          baseDenom.toLowerCase() ===
+          params.assetAmountToTransfer.symbol.toLowerCase()
+        );
+      });
+      transferDenom = match?.coin.denom || transferTokenEntry.denom;
     }
 
     const transferMsg: MsgTransferEncodeObject = {
