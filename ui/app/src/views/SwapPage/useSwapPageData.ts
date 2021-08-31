@@ -16,6 +16,7 @@ import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { useRoute, useRouter } from "vue-router";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { accountStore } from "@/store/modules/accounts";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 // NOTE(ajoslin): this is not optimal but I don't want to implement
@@ -204,6 +205,9 @@ export const useSwapPageData = () => {
         toFieldAmount.value.asset,
         minimumReceived.value,
       );
+      setTimeout(() => {
+        accountStore.updateBalances(Network.SIFCHAIN);
+      }, 1000);
     }
   }
 

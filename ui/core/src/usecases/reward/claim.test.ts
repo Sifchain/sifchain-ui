@@ -1,3 +1,4 @@
+import { SifUnSignedClient } from "services/utils/SifClient";
 import { Claim, ClaimArgs } from "./claim";
 
 let services: ClaimArgs;
@@ -9,7 +10,12 @@ beforeEach(() => {
   claim = jest.fn(() => Promise.resolve());
   services = {
     dispensation: { claim },
-    sif: { signAndBroadcast },
+    sif: {
+      signAndBroadcast,
+      unSignedClient: {
+        rpcUrl: "https://rpc-testnet.sifchain.finance",
+      } as SifUnSignedClient,
+    },
   };
 });
 
@@ -47,6 +53,7 @@ claimTests.forEach(({ rewardType }) => {
     await claimFn({
       claimType: 2,
       fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
+      rewardProgramName: "IBC_REWARDS_V1",
     });
   });
 
@@ -114,6 +121,7 @@ claimTests.forEach(({ rewardType }) => {
     await claimFn({
       claimType: 2,
       fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
+      rewardProgramName: "IBC_REWARDS_V1",
     });
   });
 });

@@ -44,20 +44,17 @@ export function useInitialize() {
   const { usecases, store, services } = useCore();
 
   // Initialize usecases / watches
-  usecases.clp.initClp();
   usecases.wallet.eth.initEthWallet();
 
-  // initialize subscriptions
-  // watch(accountStore.refs.ethereum.address.computed(), (value) => {
-  //   if (value) {
-  //     usecases.peg.subscribeToUnconfirmedPegTxs();
-  //   }
-  // });
+  // this is low pri... but we want it semi quick
+  setTimeout(() => {
+    usecases.clp.syncPools.syncPublicPools();
+  }, 500);
 
   // Support legacy code that uses sif service getState().
   watch(
     accountStore.refs.sifchain.computed(),
-    (value) => {
+    () => {
       const storeState = accountStore.state.sifchain;
       const state = services.sif.getState();
       state.balances = storeState.balances;

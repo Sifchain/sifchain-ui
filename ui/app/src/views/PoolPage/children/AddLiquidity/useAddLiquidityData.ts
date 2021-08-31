@@ -5,6 +5,7 @@ import {
   Amount,
   IAsset,
   IAssetAmount,
+  Network,
   Pool,
   PoolState,
   TransactionStatus,
@@ -200,7 +201,11 @@ export const useAddLiquidityData = () => {
       tokenBFieldAmount.value,
       tokenAFieldAmount.value,
     );
-    setTimeout(() => usecases.clp.syncPools(), 2500);
+    setTimeout(() => {
+      usecases.clp.syncPools.syncUserPools(accountStore.state.sifchain.address);
+      usecases.clp.syncPools.syncPublicPools();
+      accountStore.updateBalances(Network.SIFCHAIN);
+    }, 1000);
   }
 
   function requestTransactionModalClose() {

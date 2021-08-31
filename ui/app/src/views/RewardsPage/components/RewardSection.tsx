@@ -60,13 +60,6 @@ export const RewardSection = defineComponent({
     const details = computed(() =>
       [
         {
-          name: "Claimable Amount",
-          amount:
-            props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
-          tooltip:
-            "These are rewards that you can claim now, but by doing so, you will forfeit the remainder in your Projected Full Amount",
-        },
-        {
           hide: props.rewardType !== "vs",
           name: "Reserved Comission Rewards",
           tooltip:
@@ -93,7 +86,7 @@ export const RewardSection = defineComponent({
     return () => (
       <>
         <div class="mt-[10px] text-lg flex">
-          <div class="text-left w-[450px] flex items-center">
+          <div class="text-left w-[250px] flex items-center">
             <AssetIcon
               icon={displayData.value.icon}
               size={20}
@@ -106,6 +99,17 @@ export const RewardSection = defineComponent({
             {/* Full Amount */}
             {formatRowanNumber(
               props.data?.user?.totalCommissionsAndRewardsAtMaturity,
+            )}
+            <TokenIcon
+              assetValue={Asset.get("rowan")}
+              size={20}
+              class="ml-[10px]"
+            />
+          </div>
+          <div class="w-[300px] text-right justify-end font-mono flex items-center">
+            {/* Claimable Amount */}
+            {formatRowanNumber(
+              props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
             )}
             <TokenIcon
               assetValue={Asset.get("rowan")}
@@ -141,7 +145,7 @@ export const RewardSection = defineComponent({
 
           <div class="flex items-center justify-center">
             <div class="p-[6px] w-[140px] bg-black rounded-lg">
-              {/* <Button.Inline
+              <Button.Inline
                 class="w-full no-underline"
                 icon="interactive/circle-info"
                 href={props.infoLink}
@@ -149,11 +153,11 @@ export const RewardSection = defineComponent({
                 disabled={!sifConnected.value}
                 rel="noopener noreferrer"
               >
-                More Info 
-              </Button.Inline> mt-[6px]*/}
+                Learn More
+              </Button.Inline>{" "}
               <Button.Inline
                 onClick={() => props.onClaimIntent()}
-                class="w-full"
+                class="w-full mt-[6px]"
                 icon="navigation/rewards"
                 active
                 disabled={

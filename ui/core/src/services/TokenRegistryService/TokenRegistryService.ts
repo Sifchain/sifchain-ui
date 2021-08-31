@@ -6,17 +6,19 @@ export type TokenRegistryContext = {
   sifRpcUrl: string;
 };
 
-let tokenRegistry: RegistryEntry[];
+let tokenRegistryPromise: Promise<RegistryEntry[]>;
 export const TokenRegistryService = (context: TokenRegistryContext) => {
   const loadTokenRegistry = async () => {
-    if (!tokenRegistry) {
-      const dex = await NativeDexClient.connect(context.sifRpcUrl);
-      const res = await dex.query?.tokenregistry.Entries({});
-      const data = res?.registry?.entries;
-      if (!data) throw new Error("Whitelist not found");
-      tokenRegistry = data as RegistryEntry[];
+    if (!tokenRegistryPromise) {
+      tokenRegistryPromise = (async () => {
+        const dex = await NativeDexClient.connect(context.sifRpcUrl);
+        const res = await dex.query?.tokenregistry.Entries({});
+        const data = res?.registry?.entries;
+        if (!data) throw new Error("Whitelist not found");
+        return data as RegistryEntry[];
+      })();
     }
-    return tokenRegistry;
+    return tokenRegistryPromise;
   };
 
   const self = {

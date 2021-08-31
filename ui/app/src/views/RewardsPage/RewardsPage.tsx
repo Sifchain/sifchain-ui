@@ -81,15 +81,30 @@ export default defineComponent({
             </p>
 
             <div class="mt-[21px] text-md opacity-50 flex">
-              <div class="w-[250px] text-left">Reward Program</div>
-              {/* <div class="w-[200px] text-right">Reward APY</div> */}
-              <div class="flex-1 text-right">
+              <div class="w-[150px] text-left">Reward Program</div>
+              <div class="w-[100px] flex-1 text-right">
                 Projected Full Amount
                 <Tooltip
                   content={
                     <>
                       You will earn this if you leave all of your deposits
                       pooled for at least 6 weeks.
+                    </>
+                  }
+                >
+                  <Button.InlineHelp></Button.InlineHelp>
+                </Tooltip>
+              </div>
+              <div class="w-[300px] text-right">
+                Claimable Amount
+                <Tooltip
+                  content={
+                    <>
+                      These are rewards that you can claim now, but by doing so,
+                      you will forfeit the remainder in your Projected Full
+                      Amount
+                      <div></div>
+                      <br></br>
                     </>
                   }
                 >
