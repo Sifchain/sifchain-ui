@@ -33,10 +33,6 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
         throw new Error("TokenRegistry entry not found for " + asset.symbol);
       return entry;
     },
-    findAssetIbcDenom: async (asset: IAsset) => {
-      const entry = await self.findAssetEntryOrThrow(asset);
-      if (entry.denom.startsWith("ibc/")) return entry.denom;
-    },
     async loadConnectionByNetworks(params: {
       sourceNetwork: Network;
       destinationNetwork: Network;

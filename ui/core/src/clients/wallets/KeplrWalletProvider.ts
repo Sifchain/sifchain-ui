@@ -25,11 +25,6 @@ import { TokenRegistryService } from "../../services/TokenRegistryService/TokenR
 import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 import { memoize } from "../../utils/memoize";
 
-export type CoinWithBaseDenom = {
-  coin: Coin;
-  baseDenom: string;
-};
-
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
     throw new Error("Cannot connect to non-ibc chain " + chain.displayName);
@@ -162,16 +157,15 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return this.denomTraceLookup[chain.chainConfig.chainId][denom];
   }
 
-  async fetchCoinsWithBaseDenoms(
-    chain: Chain,
-    address: string,
-  ): Promise<CoinWithBaseDenom[]> {
+  async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
     const stargate = await this.getStargateClientCached(chain);
     const balances = await stargate.getAllBalances(address);
+
     const assetAmounts: IAssetAmount[] = [];
+
     const tokenRegistry = await this.tokenRegistry.load();
 
-    const items: CoinWithBaseDenom[] = await Promise.all(
+    await Promise.all(
       balances.map(async (coin: Coin) => {
         try {
           if (!coin.denom.startsWith("ibc/")) {
@@ -201,34 +195,25 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
             if (isInvalidChannel) return;
 
             const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
-            return {
-              baseDenom,
-              coin,
-            };
+
+            const asset = chain.assets.find(
+              (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
+            );
+            if (asset) {
+              asset.ibcDenom = coin.denom;
+            }
+            try {
+              const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
+              assetAmounts.push(assetAmount);
+            } catch (error) {
+              // ignore asset, doesnt exist in our list.
+            }
           }
         } catch (error) {
           console.error(chain.network, "coin error", coin, error);
         }
       }),
     );
-    return items.filter((item: CoinWithBaseDenom) => item != null);
-  }
-
-  async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    const data = await this.fetchCoinsWithBaseDenoms(chain, address);
-    const assetAmounts: IAssetAmount[] = [];
-
-    data.forEach(({ coin, baseDenom }) => {
-      const asset = chain.assets.find(
-        (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
-      );
-      try {
-        const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
-        assetAmounts.push(assetAmount);
-      } catch (error) {
-        // ignore asset, doesnt exist in our list.
-      }
-    });
 
     return assetAmounts;
   }
