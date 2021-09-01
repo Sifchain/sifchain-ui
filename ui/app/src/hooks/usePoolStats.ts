@@ -54,7 +54,9 @@ export const usePoolStats = () => {
           const poolAPY =
             (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
             100;
-          const rewardAPY = /(akt|vpn|atom|iris|xprt)/gim.test(p.symbol)
+          const rewardAPY = /(akt|vpn|atom|iris|xprt|basecro|regen)/gim.test(
+            p.symbol,
+          )
             ? cryptoeconSummaryAPY || 0
             : 0;
           return {
