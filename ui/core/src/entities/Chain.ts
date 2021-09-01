@@ -13,6 +13,7 @@ export type BaseChainConfig = {
   chainId: string;
   displayName: string;
   blockExplorerUrl: string;
+  blockExplorerApiUrl: string;
   nativeAssetSymbol: string;
 };
 export type EthChainConfig = BaseChainConfig & {

@@ -6,13 +6,12 @@ import { Plugin } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import svgLoader from "./scripts/vite-svg-loader";
 import { minifyHtml } from "vite-plugin-html";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // We turned off vite hmr because it's buggy, so we gotta add livereload.
 import liveReload from "vite-plugin-live-reload";
+const LR_EXTENSIONS = "js,json,ts,tsx,css,scss,html,vue,webp,jpg";
 
-// import { visualizer } from 'rollup-plugin-visualizer'
-
-const EXTENSIONS = "js,json,ts,tsx,css,scss,html,vue,webp,jpg";
 export default defineConfig({
   plugins: [
     sifchainPolyfillPlugin(),
@@ -21,9 +20,9 @@ export default defineConfig({
     (svgLoader as () => Plugin)(),
     liveReload(
       [
-        `src/**/*.{${EXTENSIONS}}`,
-        `public/**/*.{${EXTENSIONS}}`,
-        `../core/src/**/*.{${EXTENSIONS}}`,
+        `src/**/*.{${LR_EXTENSIONS}}`,
+        `public/**/*.{${LR_EXTENSIONS}}`,
+        `../core/src/**/*.{${LR_EXTENSIONS}}`,
         "index.html",
       ],
       {},
@@ -42,6 +41,7 @@ export default defineConfig({
         // inlineDynamicImports: true,
         manualChunks: () => "everything.js",
       },
+      plugins: [visualizer()],
     },
   },
   server: {

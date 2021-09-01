@@ -6,5 +6,6 @@ export const ETHEREUM_TESTNET: EthChainConfig = {
   network: Network.ETHEREUM,
   displayName: "Ethereum",
   blockExplorerUrl: "https://ropsten.etherscan.io",
+  blockExplorerApiUrl: "https://api-ropsten.etherscan.io",
   nativeAssetSymbol: "eth",
 };

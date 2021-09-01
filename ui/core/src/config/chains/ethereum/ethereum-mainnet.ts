@@ -6,5 +6,6 @@ export const ETHEREUM_MAINNET: EthChainConfig = {
   network: Network.ETHEREUM,
   displayName: "Ethereum",
   blockExplorerUrl: "https://etherscan.io",
+  blockExplorerApiUrl: "https://api.etherscan.io",
   nativeAssetSymbol: "eth",
 };
