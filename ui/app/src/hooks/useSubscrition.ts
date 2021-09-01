@@ -1,4 +1,4 @@
-import { Ref, watch } from "@vue/runtime-core";
+import { Ref, watch } from "vue";
 
 /**
  * Helper to run effects in the form of a subscription

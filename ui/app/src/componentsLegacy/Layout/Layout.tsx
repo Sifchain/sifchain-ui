@@ -1,6 +1,6 @@
 import BetaWarningBanner from "@/components/BetaWarningBanner";
 import { AssetAmount } from "@sifchain/sdk";
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent } from "vue";
 import LayoutBackground from "./LayoutBackground";
 
 export default defineComponent({

@@ -40,7 +40,7 @@ export default defineComponent({
   <div class="container">
     <div v-if="rowanUSD" class="rowan">
       <Pill color="primary">
-        <img class="image" src="../../../public/images/siflogo.png" />
+        <img class="image" src="/images/siflogo.png" />
         <div>
           {{ rowanUSD }}
         </div>

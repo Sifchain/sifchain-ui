@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { defineComponent, onMounted } from "@vue/runtime-core";
+import { defineComponent, onMounted } from "vue";
 import { PropType } from "vue";
 import { Button } from "./Button/Button";
 

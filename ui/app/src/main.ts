@@ -8,8 +8,9 @@ const app = createApp(App);
 
 const warnings: string[] = ((window as any).warnings = []);
 // Vue spams us with warnings.. typescript handles them for us though.
-app.config.warnHandler = (msg: string) => {
-  warnings.push(msg);
+app.config.warnHandler = (msg: string, vm: any, trace: any) => {
+  if (/Invalid prop:/.test(msg)) return;
+  return console.warn(msg, trace);
 };
 
 if (process.env.NODE_ENV === "development") {
