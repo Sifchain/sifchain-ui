@@ -9,8 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET_042]: REGEN_MAINNET,
   [NetworkEnv.DEVNET]: REGEN_MAINNET,
   [NetworkEnv.TESTNET]: REGEN_MAINNET,
-  [NetworkEnv.MAINNET]: {
-    ...REGEN_MAINNET,
-    hidden: true,
-  },
+  [NetworkEnv.MAINNET]: REGEN_MAINNET,
 };
