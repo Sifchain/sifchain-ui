@@ -33,7 +33,7 @@ export function IBCTransferSubscriber(context: UsecaseContext) {
       BigInt(timeoutTimestampNanoseconds.value as string) / BigInt(1000000);
 
     while (true) {
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 2500 + Math.random() * 7500));
       if (+timeoutTimestampMs.toString() < Date.now()) {
         yield {
           state: "failed",
