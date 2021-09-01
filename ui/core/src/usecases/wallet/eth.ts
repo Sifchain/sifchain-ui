@@ -1,6 +1,6 @@
-import { effect, ReactiveEffect, stop } from "@vue/reactivity";
+import { effect, ReactiveEffectRunner, stop } from "@vue/reactivity";
 import { UsecaseContext, Network } from "../..";
-import { Asset, IAsset } from "../../entities";
+import { Asset } from "../../entities";
 import B from "../../entities/utils/B";
 import { isSupportedEVMChain } from "../utils";
 
@@ -10,7 +10,7 @@ export default ({
 }: UsecaseContext<"eth" | "bus", "wallet" | "asset">) => {
   const actions = {
     initEthWallet() {
-      const effects: ReactiveEffect<any>[] = [];
+      const effects: ReactiveEffectRunner<any>[] = [];
       const unsubscribeProvider = services.eth.onProviderNotFound(() => {
         services.bus.dispatch({
           type: "WalletConnectionErrorEvent",

@@ -1,19 +1,17 @@
 import Modal from "@/components/Modal";
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { defineComponent, onMounted } from "@vue/runtime-core";
+import { defineComponent, onMounted } from "vue";
 import { PropType } from "vue";
 import { Button } from "./Button/Button";
 
-const {
-  VUE_APP_SHA = "develop",
-  VUE_APP_VERSION = "0.0.0.local",
-} = process.env;
+const VITE_APP_SHA = import.meta.env.VITE_APP_SHA || "develop";
+const VITE_APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.0.0.local";
 
 type ChangelogData = { version: string; changelog: string };
 
 const fetchChangelogData = async (): Promise<ChangelogData> => {
   const res = await fetch(
-    `https://sifchain-changes-server.vercel.app/api/changes/${VUE_APP_SHA}`,
+    `https://sifchain-changes-server.vercel.app/api/changes/${VITE_APP_SHA}`,
   );
   const json = (await res.json()) as { version: string; changelog: string };
   return {
@@ -41,10 +39,10 @@ export const changelogViewedVersion = {
     return localStorage.getItem("changelogViewedVersion");
   },
   setLatest() {
-    localStorage.setItem("changelogViewedVersion", VUE_APP_VERSION);
+    localStorage.setItem("changelogViewedVersion", VITE_APP_VERSION);
   },
   isLatest() {
-    return VUE_APP_VERSION === this.get();
+    return VITE_APP_VERSION === this.get();
   },
 };
 
