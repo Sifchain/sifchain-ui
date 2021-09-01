@@ -96,7 +96,6 @@ export const TokenSelectDropdown = defineComponent({
     watch(
       props.active,
       () => {
-        console.log("WATCH!!!!!!", props.active);
         if (props.active?.value) {
           // If a click is still in progress, we don't want to attach this listener yet.
           window.requestAnimationFrame(() => {
