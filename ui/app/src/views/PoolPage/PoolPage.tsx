@@ -260,21 +260,25 @@ const UserPoolItem = defineComponent({
         <span
           class={[
             "font-mono",
-            +(currentItemData.value.arb || 0) < 0
+            currentItemData.value.arb == null
+              ? "text-gray-800"
+              : +(currentItemData.value.arb || 0) < 0
               ? "text-connected-base"
               : "text-danger-base",
           ]}
         >
           {currentItemData.value.arb != null
             ? `${Math.abs(+currentItemData.value.arb).toFixed(3)}%`
-            : "..."}
+            : "N/A"}
 
-          <Button.InlineHelp class="!text-gray-600">
-            This is the arbitrage opportunity available based on a differential
-            between the price of this token on Sifchain and its price on
-            CoinMarketCap. If the percentage is green, it means the token is
-            currently cheaper in Sifchain than CoinMarketCap.
-          </Button.InlineHelp>
+          {currentItemData.value.arb != null && (
+            <Button.InlineHelp class="!text-gray-600">
+              This is the arbitrage opportunity available based on a
+              differential between the price of this token on Sifchain and its
+              price on CoinMarketCap. If the percentage is green, it means the
+              token is currently cheaper in Sifchain than CoinMarketCap.
+            </Button.InlineHelp>
+          )}
         </span>,
       ],
       [

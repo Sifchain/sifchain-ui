@@ -52,7 +52,7 @@ export function useStatsPageData(initialState: StatsPageState) {
           price: parseFloat(pool.priceToken),
           depth: parseFloat(pool.poolDepth),
           volume: parseFloat(pool.volume) || 0,
-          arbitrage: parseFloat(pool.arb) || 0,
+          arbitrage: pool.arb == null ? null : parseFloat(pool.arb) || 0,
           poolApy: pool.poolAPY,
           rewardApy: pool.rewardAPY,
           totalApy: pool.totalAPY,
