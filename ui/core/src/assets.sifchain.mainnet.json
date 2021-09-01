@@ -572,8 +572,7 @@
       "network": "sifchain",
       "label": "CRO",
       "imageUrl": "https://assets.coingecko.com/coins/images/7310/small/cypto.png?1547043960",
-      "homeNetwork": "crypto-org",
-      "decommissioned": true
+      "homeNetwork": "crypto-org"
     },
     {
       "symbol": "uxprt",
@@ -593,8 +592,7 @@
       "network": "sifchain",
       "label": "regen",
       "imageUrl": "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
-      "homeNetwork": "regen",
-      "decommissioned": true
+      "homeNetwork": "regen"
     }
   ]
 }

@@ -6,8 +6,7 @@ import { rootStore, vuexStore } from "./store/index";
 
 const app = createApp(App);
 
-const warnings: string[] = ((window as any).warnings = []);
-// Vue spams us with warnings.. typescript handles them for us though.
+// Vue spams us with prop-type warnings.. unnecessary
 app.config.warnHandler = (msg: string, vm: any, trace: any) => {
   if (/Invalid prop:/.test(msg)) return;
   return console.warn(msg, trace);
@@ -19,7 +18,7 @@ if (process.env.NODE_ENV === "development") {
   // @ts-ignore
   app.config.devtools = true;
 }
-console.log(process.env.VUE_APP_VERSION, process.env.VUE_APP_SHA);
+console.log(import.meta.env.VITE_APP_VERSION, import.meta.env.VITE_APP_SHA);
 
 app.use(vuexStore);
 app.use(router).mount("#app");

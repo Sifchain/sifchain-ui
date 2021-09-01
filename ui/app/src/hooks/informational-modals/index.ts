@@ -7,7 +7,7 @@ const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
 
 let _hasHadBootDelay = false;
 
-const { VUE_APP_SHA = "develop" } = process.env;
+const { VITE_APP_SHA = "develop" } = process.env;
 
 type InfoModalState = {
   hasShown: boolean;
@@ -25,7 +25,7 @@ type InfoModalDefinition = {
 let changelogData: undefined | { version: string; changelogHtml: string };
 const getChangesData = async () => {
   const res = await fetch(
-    `https://sifchain-changes-server.vercel.app/api/changes/${VUE_APP_SHA}`,
+    `https://sifchain-changes-server.vercel.app/api/changes/${VITE_APP_SHA}`,
   );
   const json = (await res.json()) as { version: string; changelogHtml: string };
   changelogData = {

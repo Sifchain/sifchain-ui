@@ -20,7 +20,7 @@ jobs:
         shell: bash
         run: |
           echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "VUE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
+          echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
 
         id: extract_env
 
@@ -45,16 +45,16 @@ jobs:
       - name: Set CONTRACT_DEPLOYMENT, SHA
         shell: bash
         run: |
-          echo "VUE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
-          echo "VUE_APP_CONTRACT_DEPLOYMENT=$(cat ./ui/core/src/config/networks/sifchain/config.${ENV_NAME}.json | jq '.sifChainId' | tr -d '"')" >> $GITHUB_ENV
+          echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
+          echo "VITE_APP_CONTRACT_DEPLOYMENT=$(cat ./ui/core/src/config/networks/sifchain/config.${ENV_NAME}.json | jq '.sifChainId' | tr -d '"')" >> $GITHUB_ENV
 
       - name: Fetch contract, Write to .env
         shell: bash
         run: |     
           # sifnode is out of sync, BRANCH_NAME is hardcoded here for now
-          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/develop/smart-contracts/deployments/${VUE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
-          echo VUE_APP_VERSION=$VUE_APP_VERSION >> ./ui/app/.env
-          echo VUE_APP_SHA=$VUE_APP_SHA >> ./ui/app/.env
+          wget -P ./smart-contracts/build/contracts https://raw.githubusercontent.com/Sifchain/sifnode/develop/smart-contracts/deployments/${VITE_APP_CONTRACT_DEPLOYMENT}/BridgeBank.json
+          echo VITE_APP_VERSION=$VITE_APP_VERSION >> ./ui/app/.env
+          echo VITE_APP_SHA=$VITE_APP_SHA >> ./ui/app/.env
 
       - name: Use Node.js
         uses: actions/setup-node@v2.1.4
