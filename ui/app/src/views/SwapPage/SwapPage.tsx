@@ -27,7 +27,7 @@ export default defineComponent({
     const router = useRouter();
     const isInverted = ref(false);
 
-    watch([data.pageState.value], () => {
+    watch([data.pageState], () => {
       switch (data.pageState.value) {
         case "idle": {
           return router.push({});

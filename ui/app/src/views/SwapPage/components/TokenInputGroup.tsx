@@ -1,4 +1,10 @@
-import { computed, defineComponent, HTMLAttributes, PropType } from "vue";
+import {
+  computed,
+  defineComponent,
+  HTMLAttributes,
+  PropType,
+  watch,
+} from "vue";
 import { ref, toRefs } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";

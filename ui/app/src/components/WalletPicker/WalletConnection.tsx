@@ -19,7 +19,7 @@ export default defineComponent({
     const stateRef = accountStore.refs[
       props.connection.getChain().network
     ].computed();
-    const instanceRef = ref<TooltipInstance | null>(null);
+    const instanceRef = ref<TooltipInstance>();
 
     const handleClick = () => {
       if (stateRef.value.connected) return;
@@ -33,7 +33,7 @@ export default defineComponent({
             instanceRef.value = instance;
           }}
           onHide={() => {
-            instanceRef.value = null;
+            instanceRef.value = undefined;
           }}
           onMount={(instance: TooltipInstance) => {
             // Do not open if not connected...

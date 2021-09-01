@@ -7,26 +7,18 @@ import {
   Ref,
   SVGAttributes,
   computed,
-  VNode,
 } from "vue";
-const navIcons = ((ctx) => {
-  let keys = ctx.keys();
-  let values = keys.map(ctx);
-  return keys.reduce((o, k, i) => {
+const navIcons = ((results) => {
+  return Object.entries(results).reduce((acc, [key, value], index) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const [folderName, ...rest] = k
-      .split("./")
-      .join("")
-      .split(".")
-      .shift()
-      ?.split("/");
+    const iconName = key.replace(/^.*?\/icons\//g, "").replace(/\.svg$/, "");
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    o[`${folderName}/${rest.reverse().join("--") || ""}`] = values[i];
-    return o;
+    acc[iconName] = value;
+    return acc;
   }, {});
-})(require.context("@/assets/icons", true, /.*/)) as Record<
+})(import.meta.globEager("/src/assets/icons/**/*.svg")) as Record<
   string,
   {
     default: DefineComponent<PropType<Record<string, unknown>> & SVGAttributes>;

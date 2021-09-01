@@ -67,7 +67,7 @@ export default defineComponent({
 }
 
 .logo {
-  background: url("../../../public/images/siflogo.png");
+  background: url("/images/siflogo.png");
   background-size: cover;
   width: 64px;
   height: 64px;

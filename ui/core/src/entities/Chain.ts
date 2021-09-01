@@ -17,6 +17,7 @@ export type BaseChainConfig = {
 };
 export type EthChainConfig = BaseChainConfig & {
   chainType: "eth";
+  blockExplorerApiUrl: string;
 };
 export type IBCChainConfig = BaseChainConfig & {
   chainType: "ibc";

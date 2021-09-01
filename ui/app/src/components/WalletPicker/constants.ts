@@ -12,6 +12,9 @@ import { accountStore } from "@/store/modules/accounts";
 import { useChains, useChainsList } from "@/hooks/useChains";
 import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
 
+import metamaskSrc from "@/assets/metamask.png";
+import keplrSrc from "@/assets/keplr.jpg";
+
 export type WalletConnection = {
   walletName: string;
   walletIconSrc: string;
@@ -29,12 +32,12 @@ const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
   metamask: {
     id: "metamask",
     walletName: "Metamask",
-    walletIconSrc: require("@/assets/metamask.png"),
+    walletIconSrc: metamaskSrc,
   },
   keplr: {
     id: "keplr",
     walletName: "Keplr",
-    walletIconSrc: require("@/assets/keplr.jpg"),
+    walletIconSrc: keplrSrc,
   },
 };
 

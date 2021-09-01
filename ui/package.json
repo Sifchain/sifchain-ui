@@ -17,13 +17,6 @@
     "test": "zx ./scripts/test.mjs --tag feature__cosmos-0.42"
   },
   "devDependencies": {
-    "@openzeppelin/contracts": "^3.2.0",
-    "@openzeppelin/test-helpers": "^0.5.11",
-    "@storybook/addon-actions": "^6.2.0-beta.13",
-    "@storybook/addon-docs": "^6.2.0-beta.13",
-    "@storybook/addon-essentials": "^6.2.0-beta.13",
-    "@storybook/addon-links": "^6.2.0-beta.13",
-    "@storybook/vue3": "^6.2.0-beta.13",
     "arg": "^5.0.0",
     "concurrently": "^5.3.0",
     "ganache-cli": "^6.12.0",
@@ -33,7 +26,6 @@
     "truffle": "^5.1.48",
     "untildify": "^4.0.0",
     "vercel": "^21.0.1",
-    "vue-loader": "^16.3.0",
     "wait-on": "^5.2.1",
     "wscat": "^4.0.1",
     "zx": "^1.14.1"
@@ -56,13 +48,7 @@
     "@types/jsonp": "^0.2.0",
     "codecov": "^3.8.0",
     "css-loader": "^5.2.0",
-    "fkill-cli": "^6.1.0",
     "jsonp": "^0.2.1",
-    "prettier": "^2.2.1",
-    "sass-loader": "^10.1.1",
-    "storybook-addon-designs": "^5.4.5",
-    "storybook-vue-router": "^1.0.7",
-    "style-loader": "^2.0.0",
-    "tsconfig-paths-webpack-plugin": "^3.3.0"
+    "prettier": "^2.2.1"
   }
 }
