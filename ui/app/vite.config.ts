@@ -5,6 +5,7 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import { Plugin } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import svgLoader from "./scripts/vite-svg-loader";
+import { minifyHtml } from "vite-plugin-html";
 
 // We turned off vite hmr because it's buggy, so we gotta add livereload.
 import liveReload from "vite-plugin-live-reload";
@@ -28,6 +29,7 @@ export default defineConfig({
       {},
     ),
     viteSingleFile(),
+    minifyHtml(),
   ].filter(Boolean),
   optimizeDeps: {
     include: ["buffer", "process"],
@@ -35,7 +37,6 @@ export default defineConfig({
   build: {
     brotliSize: false,
     cssCodeSplit: false,
-    // assetsInlineLimit: 100000000,
     rollupOptions: {
       output: {
         // inlineDynamicImports: true,
