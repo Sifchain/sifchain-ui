@@ -12,6 +12,7 @@ import SvgSpinnerIcon from "../assets/icons/interactive/anim-circle-spinner.svg"
 
 // Load all SVG icons with glob so that they get included as assets
 // This will just give us their src string.
+// Our SVG loader has a rule: when it comes to items from /public, do not inline them. only return src.
 const globResult = import.meta.globEager("/images/tokens/*.svg");
 const tokenSrcMap = Object.keys(globResult).reduce((map, key) => {
   // @ts-ignore

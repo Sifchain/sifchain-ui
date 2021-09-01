@@ -35,7 +35,7 @@ export default defineConfig({
   build: {
     brotliSize: false,
     cssCodeSplit: false,
-    assetsInlineLimit: 100000000,
+    // assetsInlineLimit: 100000000,
     rollupOptions: {
       output: {
         // inlineDynamicImports: true,
