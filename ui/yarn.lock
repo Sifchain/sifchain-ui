@@ -8810,7 +8810,7 @@ chokidar@^2.1.8:
   optionalDependencies:
     fsevents "^1.2.7"
 
-chokidar@^3.5.1, chokidar@^3.5.2:
+chokidar@^3.5.0, chokidar@^3.5.1, chokidar@^3.5.2:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.2.tgz#dba3976fcadb016f66fd365021d91600d01c1e75"
   integrity sha512-ekGhOnNVPgT77r4K/U3GDhu+FQ2S8TnK/s2KbIGXi0SZWuwkZ2QNyfWdZW+TVfn84DpEP7rLeCt2UI6bJ8GwbQ==
@@ -24451,6 +24451,14 @@ vfile@^4.0.0:
     is-buffer "^2.0.0"
     unist-util-stringify-position "^2.0.0"
     vfile-message "^2.0.0"
+
+vite-plugin-live-reload@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/vite-plugin-live-reload/-/vite-plugin-live-reload-2.1.0.tgz#95b9235cbade635f315a34ba540eb76f3641a122"
+  integrity sha512-NKIcVqrraPUZbsUKCKs+0StqKAmbAh2csbFxMWTXGDUeOoHAFni9H0CxtQelrYT5bQCV9FT/RveAM8q8bMdnQQ==
+  dependencies:
+    chalk "^4.1.0"
+    chokidar "^3.5.0"
 
 vite-plugin-singlefile@^0.5.1:
   version "0.5.1"

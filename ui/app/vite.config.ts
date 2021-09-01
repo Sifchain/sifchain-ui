@@ -6,16 +6,27 @@ import { Plugin } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import svgLoader from "./scripts/vite-svg-loader";
 
+// We turned off vite hmr because it's buggy, so we gotta add livereload.
+import liveReload from "vite-plugin-live-reload";
+
 // import { visualizer } from 'rollup-plugin-visualizer'
 
-const isProduction = process.env.NODE_ENV === "production";
-
+const EXTENSIONS = "js,json,ts,tsx,css,scss,html,vue,webp,jpg";
 export default defineConfig({
   plugins: [
     sifchainPolyfillPlugin(),
     vueJsx(),
     vue(),
     (svgLoader as () => Plugin)(),
+    liveReload(
+      [
+        `src/**/*.{${EXTENSIONS}}`,
+        `public/**/*.{${EXTENSIONS}}`,
+        `../core/src/**/*.{${EXTENSIONS}}`,
+        "index.html",
+      ],
+      {},
+    ),
     viteSingleFile(),
   ].filter(Boolean),
   optimizeDeps: {
