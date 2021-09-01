@@ -184,12 +184,16 @@ export default defineComponent({
                       <td
                         class={[
                           "align-middle text-mono text-right",
-                          item.arbitrage < 0
+                          item.arbitrage == null
+                            ? "text-gray-800"
+                            : item.arbitrage < 0
                             ? `text-connected-base`
                             : `text-danger-base`,
                         ]}
                       >
-                        {prettyNumber(Math.abs(item.arbitrage))}%
+                        {item.arbitrage == null
+                          ? "N/A"
+                          : `${prettyNumber(Math.abs(item.arbitrage))}%`}
                       </td>
                       <td class="align-middle text-right text-mono">
                         ${prettyNumber(item.depth)}

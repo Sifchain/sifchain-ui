@@ -22,7 +22,7 @@ export interface PoolStat {
   priceToken: string;
   poolDepth: string;
   volume: string;
-  arb: string;
+  arb?: string;
   poolAPY: string;
   rewardAPY: string;
   totalAPY: string;
