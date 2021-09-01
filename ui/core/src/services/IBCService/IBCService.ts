@@ -6,9 +6,11 @@ import {
   IndexedTx,
   MsgSendEncodeObject,
   AminoTypes,
+  SignerData,
+  isAminoMsgDelegate,
 } from "@cosmjs/stargate";
 import { OfflineSigner } from "@cosmjs/proto-signing";
-
+import * as inflection from "inflection";
 import {
   Asset,
   IAssetAmount,
@@ -34,6 +36,22 @@ import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
 import { TokenRegistryService } from "../TokenRegistryService/TokenRegistryService";
 import { KeplrWalletProvider } from "../../clients/wallets";
 import { IBC_EXPORT_FEE_ADDRESS } from "../../utils/ibcExportFees";
+import {
+  AminoMsg,
+  encodeSecp256k1Pubkey,
+  makeSignDoc as makeSignDocAmino,
+  OfflineAminoSigner,
+  StdFee,
+} from "@cosmjs/amino";
+import { fromBase64 } from "@cosmjs/encoding";
+import { Int53 } from "@cosmjs/math";
+import {
+  EncodeObject,
+  encodePubkey,
+  makeAuthInfoBytes,
+} from "@cosmjs/proto-signing";
+import { SignMode } from "@cosmjs/proto-signing/build/codec/cosmos/tx/signing/v1beta1/signing";
+import { memoize } from "lodash";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -234,10 +252,21 @@ export class IBCService {
       maxMsgsPerBatch = 800,
       maxAmountPerMsg = `9223372036854775807`,
       gasPerBatch = undefined,
-      loadOfflineSigner = (
+      loadOfflineSigner = async (
         chainId: string,
-      ): Promise<OfflineSigner | undefined> | undefined =>
-        getKeplrProvider().then((keplr) => keplr?.getOfflineSigner(chainId)),
+      ): Promise<OfflineSigner | undefined> => {
+        const keplr = await getKeplrProvider();
+        const signer = await keplr?.getOfflineSigner(chainId);
+        const keplrKey = await keplr?.getKey(chainId);
+        // @ts-ignore
+        if (keplrKey["isNanoLedger"] && signer) {
+          // @ts-ignore
+          signer.signDirect = undefined;
+          // @ts-ignore
+          signer.signAmino = (...args) => keplr?.signAmino(chainId, ...args);
+        }
+        return signer;
+      },
     } = {},
   ): Promise<BroadcastTxResponse[]> {
     const sourceChain = this.loadChainConfigByNetwork(params.sourceNetwork);
@@ -485,4 +514,123 @@ export class IBCService {
 
 export default function createIBCService(context: IBCServiceContext) {
   return IBCService.create(context);
+}
+
+const createAminoFromEncodeObject = (encodeObject: EncodeObject): AminoMsg => {
+  const { typeUrl, value } = encodeObject;
+  const [_namespace, cosmosModule, _version, messageType] = typeUrl.split(".");
+  const convertToSnakeCaseDeep = (obj: any): any => {
+    if (typeof obj !== "object") {
+      return obj;
+    }
+    if (Array.isArray(obj)) {
+      return obj.map((item) => convertToSnakeCaseDeep(item));
+    }
+    const newObj: any = {};
+    for (let prop in obj) {
+      newObj[inflection.underscore(prop)] = convertToSnakeCaseDeep(obj[prop]);
+    }
+    return newObj;
+  };
+  const aminoValue = convertToSnakeCaseDeep(value);
+  return {
+    type: `${cosmosModule}/${messageType}`,
+    value: aminoValue,
+  };
+};
+
+interface NativeSigning {
+  sendingSigner: OfflineAminoSigner;
+  signWMeta: (
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee: StdFee,
+    memo: string,
+    signerData: SignerData,
+  ) => Promise<Uint8Array>;
+}
+
+interface NativeSigning {
+  sendingSigner: OfflineAminoSigner;
+  signWMeta: (
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee: StdFee,
+    memo: string,
+    signerData: SignerData,
+  ) => Promise<Uint8Array>;
+}
+class NativeSigningClient
+  extends SigningStargateClient
+  implements NativeSigning {
+  sendingSigner: OfflineAminoSigner;
+  constructor(...args: any[]) {
+    super(args[0], args[1], args[2]);
+    this.sendingSigner = args[1];
+  }
+  async signWMeta(
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee: StdFee,
+    memo = "",
+    signerData: SignerData,
+  ): Promise<Uint8Array> {
+    const { chainId, accountNumber, sequence } = signerData;
+    const accountFromSigner = (await this.sendingSigner.getAccounts()).find(
+      (account) => account.address === signerAddress,
+    );
+    if (!accountFromSigner) {
+      throw new Error("Failed to retrieve account from signer");
+    }
+    const aminoTypes = new AminoTypes({
+      additions: {},
+      prefix: undefined,
+    });
+    const pubkey = encodePubkey(
+      encodeSecp256k1Pubkey(accountFromSigner.pubkey),
+    );
+    const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
+    const msgs = messages.map((msg) => aminoTypes.toAmino(msg));
+
+    const signDoc = makeSignDocAmino(
+      msgs,
+      fee,
+      chainId,
+      memo,
+      accountNumber,
+      sequence,
+    );
+    const { signature, signed } = await this.sendingSigner.signAmino(
+      signerAddress,
+      signDoc,
+    );
+    const signedTxBody = {
+      messages: signed.msgs.map((msg) => aminoTypes.fromAmino(msg)),
+      memo: signed.memo,
+    };
+
+    const signedTxBodyEncodeObject: TxBodyEncodeObject = {
+      typeUrl: "/cosmos.tx.v1beta1.TxBody",
+      value: signedTxBody,
+    };
+    const signedTxBodyBytes = this.registry.encode(signedTxBodyEncodeObject);
+    const signedGasLimit = Int53.fromString(signed.fee.gas).toNumber();
+    const signedSequence = Int53.fromString(signed.sequence).toNumber();
+    const signedAuthInfoBytes = makeAuthInfoBytes(
+      [pubkey],
+      signed.fee.amount,
+      signedGasLimit,
+      signedSequence,
+      signMode,
+    );
+    const txRaw: TxRaw = TxRaw.fromPartial({
+      bodyBytes: signedTxBodyBytes,
+      authInfoBytes: signedAuthInfoBytes,
+      signatures: [fromBase64(signature.signature)],
+    });
+
+    const enc = TxRaw.encode(txRaw);
+    const dec = TxRaw.encode(TxRaw.decode(enc.finish())).finish();
+    return dec;
+  }
 }

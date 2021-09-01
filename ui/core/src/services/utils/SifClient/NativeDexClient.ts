@@ -15,6 +15,7 @@ import {
   isTsProtoGeneratedType,
   OfflineSigner,
 } from "@cosmjs/stargate/node_modules/@cosmjs/proto-signing";
+
 import {
   BroadcastTxResponse,
   createProtobufRpcClient,
@@ -66,6 +67,7 @@ export class NativeDexClient {
       ...createCustomTypesForModule(CLPV1Tx),
       ...createCustomTypesForModule(TokenRegistryV1Tx),
     ]);
+
     const client = await SigningStargateClient.connectWithSigner(
       this.rpcUrl,
       signer,
