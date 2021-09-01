@@ -31,10 +31,6 @@ export default defineComponent({
       tx: data.transactionStatus,
     });
 
-    effect(() => {
-      console.log("state", data.state.value);
-    });
-
     const close = () => {
       router.push({
         name: "Pool",
