@@ -41,7 +41,7 @@ export default function createDispensationService({
       return await client.claim({
         base_req: { chain_id: sifChainId, from: params.fromAddress },
         claim_type: params.claimType,
-        signer: params.fromAddress,
+        claim_creator: params.fromAddress,
       });
     },
   };

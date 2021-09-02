@@ -23,6 +23,7 @@ import createWalletService, { WalletServiceContext } from "./WalletService";
 import createTokenRegistry, {
   TokenRegistryContext,
 } from "./TokenRegistryService";
+import { NativeDexClient } from "./utils/SifClient/NativeDexClient";
 
 export type Services = ReturnType<typeof createServices>;
 

@@ -151,23 +151,22 @@ export class IBCService {
 
   async logIBCNetworkMetadata() {
     const allClients = [];
-    for (let destinationNetwork of [Network.SIFCHAIN]) {
-      let chainConfig: IBCChainConfig;
-      try {
-        if (destinationNetwork === Network.REGEN) throw "";
-        chainConfig = this.loadChainConfigByNetwork(destinationNetwork);
-      } catch (e) {
-        continue;
-      }
-      await this.keplrProvider.connect(
-        getChainsService().get(destinationNetwork),
-      );
-      const queryClient = await this.loadQueryClientByNetwork(
-        destinationNetwork,
-      );
-      const allChannels = await queryClient.ibc.channel.allChannels();
-      let clients = await Promise.all(
-        allChannels.channels.map(async (channel) => {
+    const destinationNetwork = Network.SIFCHAIN;
+    let chainConfig: IBCChainConfig;
+    try {
+      // if (destinationNetwork === Network.REGEN) throw "";
+      chainConfig = this.loadChainConfigByNetwork(destinationNetwork);
+    } catch (e) {
+      // continue;
+    }
+    await this.keplrProvider.connect(
+      getChainsService().get(destinationNetwork),
+    );
+    const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
+    const allChannels = await queryClient.ibc.channel.allChannels();
+    let clients = await Promise.all(
+      allChannels.channels.map(async (channel) => {
+        try {
           const parsedClientState = await fetch(
             `${chainConfig.restUrl}/ibc/core/connection/v1beta1/connections/${channel.connectionHops[0]}/client_state`,
           ).then((r) => r.json());
@@ -201,26 +200,30 @@ export class IBCService {
             srcChannel: channelId,
             destChannel: counterpartyChannelId,
           };
-        }),
-      );
-      allClients.push(...clients);
-      console.log(destinationNetwork.toUpperCase());
-      console.table(
-        clients.filter((c) => {
-          return true;
-        }),
-      );
-      const allCxns = await Promise.all(
-        (await queryClient.ibc.connection.allConnections()).connections.map(
-          async (cxn) => {
-            return {
-              cxn,
-            };
-          },
-        ),
-      );
-      console.log({ destinationNetwork, allChannels, allCxns, clients });
-    }
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+      }),
+    );
+    allClients.push(...clients.filter((c) => c));
+    console.log(destinationNetwork.toUpperCase());
+    console.table(
+      clients.filter((c) => {
+        return true;
+      }),
+    );
+    const allCxns = await Promise.all(
+      (await queryClient.ibc.connection.allConnections()).connections.map(
+        async (cxn) => {
+          return {
+            cxn,
+          };
+        },
+      ),
+    );
+    console.log({ destinationNetwork, allChannels, allCxns, clients });
+
     const tokenRegistryEntries = await this.tokenRegistry.load();
     console.log("Sifchain Connections: ");
     console.log(
@@ -228,8 +231,8 @@ export class IBCService {
         allClients.filter((clientA) => {
           return tokenRegistryEntries.some(
             (e) =>
-              e.ibcChannelId === clientA.srcChannel &&
-              e.ibcCounterpartyChannelId === clientA.destChannel,
+              e.ibcChannelId === clientA!.srcChannel &&
+              e.ibcCounterpartyChannelId === clientA!.destChannel,
           );
         }),
         null,
