@@ -354,8 +354,7 @@ export class IBCService {
 
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
-    // initially set low
-    const timeoutInMinutes = 5;
+    const timeoutInMinutes = 45;
     const timeoutTimestampInSeconds = Math.floor(
       new Date().getTime() / 1000 + 60 * timeoutInMinutes,
     );
