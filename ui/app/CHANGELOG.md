@@ -1,6 +1,6 @@
 ## Release 2021.09.02
 
-* Enabled Regen & Crypto.com!
+* Enabled Regen & Crypto.org!
 
 ## Release 2021.08.30
 
