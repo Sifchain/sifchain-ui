@@ -72,7 +72,8 @@ export class SifClient extends SigningCosmosClient {
   // `log` so we hardcode these values. It does assume logs array length is always 1
   async broadcastTx(tx: StdTx): Promise<BroadcastTxResult> {
     const result: any = await this.lcdClient.broadcastTx(tx);
-    if (!result.txhash.match(/^([0-9A-F][0-9A-F])+$/)) {
+    if (!result.txhash?.match(/^([0-9A-F][0-9A-F])+$/)) {
+      console.error("INVALID TXHASH IN RESULT", result);
       throw new Error(
         "Received ill-formatted txhash. Must be non-empty upper-case hex",
       );

@@ -226,6 +226,9 @@ export const useSwapPageData = () => {
   return {
     connected,
     nextStepMessage: computed(() => {
+      if (!accountStore.state.sifchain.address) {
+        return "Connect Sifchain Wallet";
+      }
       switch (state.value) {
         case SwapState.ZERO_AMOUNTS:
           return "Please enter an amount";

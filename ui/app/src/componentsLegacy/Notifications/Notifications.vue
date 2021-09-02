@@ -22,6 +22,7 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
     return {
       type: "error",
       message: event.payload.message,
+      manualClose: true,
     };
   }
 
@@ -181,7 +182,7 @@ export default defineComponent({
       }
       if (notification !== null) {
         notification.key = String(nextNotificationKey++);
-        notifications.unshift(notification);
+        notifications.push(notification);
       }
     });
 
@@ -197,23 +198,21 @@ export default defineComponent({
 
 <template>
   <div class="notifications-container z-50">
-    <transition-group name="list">
-      <NotificationElement
-        v-for="(item, index) in notifications"
-        v-bind:key="item.key"
-        :index="index"
-        :onRemove="removeItem"
-        :notification="item"
-      />
-    </transition-group>
+    <NotificationElement
+      v-for="(item, index) in notifications"
+      v-bind:key="item.key"
+      :index="index"
+      :onRemove="removeItem"
+      :notification="item"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .notifications-container {
   position: fixed;
-  bottom: 20px;
-  right: 40px;
+  bottom: 0;
+  right: 0;
   height: auto;
   .list-enter-active,
   .list-leave-active {

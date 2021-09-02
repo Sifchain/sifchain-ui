@@ -124,20 +124,18 @@ export default defineComponent({
             liquidityProviderFee={data.providerFee.value ?? ""}
             minimumReceived={data.minimumReceived.value}
           />
-          {
-            <Button.CallToAction
-              onClick={() => {
-                if (!data.nextStepAllowed.value) {
-                  return appWalletPicker.show();
-                }
-                data.handleNextStepClicked();
-              }}
-              disabled={!data.nextStepAllowed.value}
-              class="mt-[10px]"
-            >
-              {data.nextStepMessage.value}
-            </Button.CallToAction>
-          }
+          <Button.CallToAction
+            onClick={() => {
+              if (!data.nextStepAllowed.value) {
+                return appWalletPicker.show();
+              }
+              data.handleNextStepClicked();
+            }}
+            disabled={!data.nextStepAllowed.value}
+            class="mt-[10px]"
+          >
+            {data.nextStepMessage.value}
+          </Button.CallToAction>
           <RouterView></RouterView>
           <div class="pb-4" />
         </PageCard>
