@@ -69,7 +69,7 @@ export function parseTxFailure(txFailure: {
 
   if (
     txFailure.rawLog
-      .toLowerCase()
+      ?.toLowerCase()
       .includes("data is invalid : unexpected characters")
   ) {
     return {
