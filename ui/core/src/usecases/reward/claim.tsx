@@ -4,6 +4,7 @@ import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient"
 import { DistributionType } from "../../generated/proto/sifnode/dispensation/v1/types";
 import { Services } from "../../services";
 import { coins } from "@cosmjs/stargate";
+import { parseTxFailure } from "services/SifService/parseTxFailure";
 
 type PickDispensation = Pick<Services["dispensation"], "claim">;
 type PickSif = Pick<Services["sif"], "signAndBroadcast" | "unSignedClient">;
@@ -44,6 +45,7 @@ export function Claim({ dispensation, sif }: ClaimArgs) {
       },
       memo,
     );
+    parseTxFailure(txFailure);
     console.log(tx);
   };
 }
