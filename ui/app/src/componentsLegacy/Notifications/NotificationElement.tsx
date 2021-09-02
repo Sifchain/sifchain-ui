@@ -78,7 +78,7 @@ export const NotificationElement = defineComponent({
           removeRef.value();
         }}
         class={[
-          "absolute bottom-0 right-0 h-[40px] flex px-[10px] bg-black drop-shadow-lg rounded-lg cursor-pointer text-md items-center tracking-[-0.025em]",
+          "absolute bottom-0 right-0 h-[40px] flex px-[10px] bg-black drop-shadow-lg rounded-lg cursor-pointer text-md items-center tracking-[-0.025em] whitespace-nowrap",
           props.notification?.onAction && "cursor-pointer",
           data.class,
         ]}
@@ -99,7 +99,7 @@ export const NotificationElement = defineComponent({
               : (data.icon as IconName)
           }
           size={20}
-          class="mr-[6px]"
+          class="mr-[6px] flex-shrink-0"
         />
         {props.notification.message}
         {!!props.notification.manualClose && (
