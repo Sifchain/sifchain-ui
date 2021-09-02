@@ -88,7 +88,7 @@ export const NotificationElement = defineComponent({
             `translateX(${
               transitionState.value === "in" ? "calc(0% - 40px)" : "100%"
             })`,
-            `translateY(-${40 + props.index * 40 + (1 + props.index) * 16}px)`,
+            `translateY(-${20 + props.index * 32 + (1 + props.index) * 16}px)`,
           ].join(" "),
         }}
       >
