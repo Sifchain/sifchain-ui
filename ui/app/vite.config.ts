@@ -75,7 +75,7 @@ function sifchainPolyfillPlugin() {
   return {
     name: "sifchain-polyfill-plugin",
     transform(src, id) {
-      if (!addedPolyfills && /\.m?js$/.test(id)) {
+      if (!addedPolyfills && /\.(m?js|tsx)?$/.test(id)) {
         addedPolyfills = true;
         return {
           code: [

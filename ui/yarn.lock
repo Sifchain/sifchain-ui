@@ -5507,6 +5507,18 @@ charenc@~0.0.1:
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
   integrity sha1-wKHS86cJLgN3S/qD8UwPxXkKhmc=
 
+chart.js@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-3.5.1.tgz#73e24d23a4134a70ccdb5e79a917f156b6f3644a"
+  integrity sha512-m5kzt72I1WQ9LILwQC4syla/LD/N413RYv2Dx2nnTkRS9iv/ey1xLTt0DnPc/eWV4zI+BgEgDYBIzbQhZHc/PQ==
+
+chartjs-plugin-zoom@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/chartjs-plugin-zoom/-/chartjs-plugin-zoom-1.1.1.tgz#8a28923a17fcb5eb57a0dc94c5113bf402677647"
+  integrity sha512-1q54WOzK7FtAjkbemQeqvmFUV0btNYIQny2HbQ6Awq9wUtCz7Zmj6vIgp3C1DYMQwN0nqgpC3vnApqiwI7cSdQ==
+  dependencies:
+    hammerjs "^2.0.8"
+
 check-error@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
@@ -6480,6 +6492,11 @@ date-fns@^2.16.1:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.22.1.tgz#1e5af959831ebb1d82992bf67b765052d8f0efc4"
   integrity sha512-yUFPQjrxEmIsMqlHhAhmxkuH769baF21Kk+nZwZGyrMoyLA+LugaQtC0+Tqf9CBUUULWwUJt6Q5ySI3LJDDCGg==
+
+date-fns@^2.23.0:
+  version "2.23.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.23.0.tgz#4e886c941659af0cf7b30fafdd1eaa37e88788a9"
+  integrity sha512-5ycpauovVyAk0kXNZz6ZoB9AYMZB4DObse7P3BPWmyEjXNORTI8EJ6X0uaSAq4sCHzM1uajzrkr6HnsLQpxGXA==
 
 debug@2, debug@2.6.9, debug@^2.1.3, debug@^2.2.0, debug@^2.3.3, debug@^2.6.9:
   version "2.6.9"
@@ -8840,6 +8857,11 @@ growly@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
   integrity sha1-8QdIy+dq+WS3yWyTxrzCivEgwIE=
+
+hammerjs@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/hammerjs/-/hammerjs-2.0.8.tgz#04ef77862cff2bb79d30f7692095930222bf60f1"
+  integrity sha1-BO93hiz/K7edMPdpIJWTAiK/YPE=
 
 har-schema@^2.0.0:
   version "2.0.0"
@@ -12064,6 +12086,11 @@ modern-normalize@^1.1.0:
   resolved "https://registry.yarnpkg.com/modern-normalize/-/modern-normalize-1.1.0.tgz#da8e80140d9221426bd4f725c6e11283d34f90b7"
   integrity sha512-2lMlY1Yc1+CUy0gw4H95uNN7vjbpoED7NNRSBHE25nWfLBdmMzFCsPshlzbxHz+gYMcBEUN8V4pU16prcdPSgA==
 
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
+
 mri@^1.1.5:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/mri/-/mri-1.1.6.tgz#49952e1044db21dbf90f6cd92bc9c9a777d415a6"
@@ -13773,11 +13800,6 @@ querystring@^0.2.0:
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.1.tgz#40d77615bb09d16902a85c3e38aa8b5ed761c2dd"
   integrity sha512-wkvS7mL/JMugcup3/rMitHmd9ecIGd2lhFhK9N3UUQ450h66d1r3Y9nvXzQAW1Lq+wyx61k/1pfKS5KuKiyEbg==
 
-querystringify@^2.1.1:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
-  integrity sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==
-
 queue@6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/queue/-/queue-6.0.2.tgz#b91525283e2315c7553d2efa18d83e76432fed65"
@@ -14230,11 +14252,6 @@ require-main-filename@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-2.0.0.tgz#d0b329ecc7cc0f61649f62215be69af54aa8989b"
   integrity sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==
-
-requires-port@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
-  integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
@@ -16409,14 +16426,6 @@ url-parse-lax@^3.0.0:
   dependencies:
     prepend-http "^2.0.0"
 
-url-parse@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.0.tgz#90aba6c902aeb2d80eac17b91131c27665d5d828"
-  integrity sha512-9iT6N4s93SMfzunOyDPe4vo4nLcSu1yq0IQK1gURmjm8tQNlM6loiuCRrKG1hHGXfB2EWd6H4cGi7tGdaygMFw==
-  dependencies:
-    querystringify "^2.1.1"
-    requires-port "^1.0.0"
-
 url-set-query@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/url-set-query/-/url-set-query-1.0.0.tgz#016e8cfd7c20ee05cafe7795e892bd0702faa339"
@@ -16670,15 +16679,6 @@ vue-jest@^5.0.0-0:
     convert-source-map "^1.6.0"
     extract-from-css "^0.4.4"
     ts-jest "^24.0.0"
-
-vue-loader@^16.1.2:
-  version "16.5.0"
-  resolved "https://registry.yarnpkg.com/vue-loader/-/vue-loader-16.5.0.tgz#09c4e0712466899e34b99a686524f19165fb2892"
-  integrity sha512-WXh+7AgFxGTgb5QAkQtFeUcHNIEq3PGVQ8WskY5ZiFbWBkOwcCPRs4w/2tVyTbh2q6TVRlO3xfvIukUtjsu62A==
-  dependencies:
-    chalk "^4.1.0"
-    hash-sum "^2.0.0"
-    loader-utils "^2.0.0"
 
 vue-router@^4.0.0-0:
   version "4.0.0-beta.13"

@@ -13,6 +13,7 @@ import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { DistributionType } from "../../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
+import { RewardsChart } from "./RewardsChart";
 
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
@@ -132,30 +133,21 @@ export default defineComponent({
             Are you sure you want to claim your rewards?
           </p>
           <p class="mt-[10px]">
-            Claiming your rewards will restart all of your tickets at this very
-            moment.
-            <br />
-            <br />
-            Resetting your tickets will release your rewards based on its
-            current multiplier. Reset tickets then begin empty with a 25%
-            multiplier again and will continue to accumulate if within the
-            eligibility timeframe.
-            <br />
-            <br /> Unless you have reached full maturity, we recommend that you
-            do not claim so you can realize your full rewards. Please note that
-            the rewards will be dispensed at the end of the week.
-            <br />
-            <br />
-            Find out{" "}
+            If you claim your rewards now, you will accrue less rewards in total
+            on your currently pooled assets than if you wait to claim until your
+            Maturity Date. For more information about our rewards program,{" "}
             <a
               href="https://docs.sifchain.finance/resources/rewards-programs"
               rel="noopener noreferrer"
               target="_blank"
               class="underline"
             >
-              additional information here
+              click here
             </a>
             .
+            <div class="mt-[16px]">
+              <RewardsChart />
+            </div>
             <Form.Details class="mt-[16px]" details={detailsRef.value} />
           </p>
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>

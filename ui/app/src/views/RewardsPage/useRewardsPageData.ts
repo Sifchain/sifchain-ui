@@ -11,28 +11,24 @@ import { DistributionType } from "../../../../core/src/generated/proto/sifnode/d
 
 const useLiquidityMiningData = (address: ComputedRef<string>) => {
   const { services } = useCore();
-  return computed(() => {
-    return useAsyncData(async () => {
-      // return null;
-      if (!address.value) return null;
-      return services.cryptoeconomics.fetchLmData({
-        address: address.value,
-      });
-    }, [address]);
-  });
+  return useAsyncData(async () => {
+    // return null;
+    if (!address.value) return null;
+    return services.cryptoeconomics.fetchLmData({
+      address: address.value,
+    });
+  }, [address]);
 };
 
 const useValidatorSubsidyData = (address: ComputedRef<string>) => {
   const { services } = useCore();
-  return computed(() => {
-    return useAsyncData(async () => {
-      return null;
-      if (!address.value) return null;
-      return services.cryptoeconomics.fetchVsData({
-        address: address.value,
-      });
+  return useAsyncData(async () => {
+    return null;
+    if (!address.value) return null;
+    return services.cryptoeconomics.fetchVsData({
+      address: address.value,
     });
-  });
+  }, [address.value]);
 };
 
 const useExistingClaimsData = (
@@ -76,17 +72,14 @@ export const useRewardsPageData = () => {
   QueryClaimsByTypeRequest;
   const isLoading = computed(() => {
     return (
-      lmRes.value.isLoading.value ||
-      vsRes.value.isLoading.value ||
+      !accountStore.state.sifchain.address ||
+      lmRes.isLoading.value ||
+      vsRes.isLoading.value ||
       claimsRes.isLoading.value
     );
   });
   const error = computed(() => {
-    return (
-      lmRes.value.error.value ||
-      vsRes.value.error.value ||
-      claimsRes.error.value
-    );
+    return lmRes.error.value || vsRes.error.value || claimsRes.error.value;
   });
 
   const vsInfoLink = computed(() =>
@@ -102,8 +95,8 @@ export const useRewardsPageData = () => {
     address,
     isLoading,
     error,
-    lmData: computed(() => lmRes.value.data.value),
-    vsData: computed(() => vsRes.value.data.value),
+    lmData: computed(() => lmRes.data.value),
+    vsData: computed(() => vsRes.data.value),
     vsClaim: computed(() => claimsRes.data.value?.vs),
     lmClaim: computed(() => claimsRes.data.value?.lm),
     vsInfoLink,

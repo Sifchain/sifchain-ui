@@ -27,6 +27,11 @@ export interface FetchDataProps {
   snapShotSource?: string;
 }
 
+export type CryptoeconomicsTimeseriesItem = {
+  timestamp: number;
+  userClaimableReward: number;
+};
+
 export default function createCryptoeconomicsService(
   config: CryptoeconomicsServiceContext,
 ) {
@@ -80,5 +85,13 @@ export default function createCryptoeconomicsService(
         ...options,
         rewardType: "lm",
       }),
+    fetchTimeseriesData: async (props: { address: string }) => {
+      const data = await fetchData({
+        address: props.address,
+        rewardType: "lm",
+        key: "userTimeSeriesData",
+      });
+      return data as CryptoeconomicsTimeseriesItem[];
+    },
   };
 }
