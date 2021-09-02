@@ -115,7 +115,7 @@ export default defineComponent({
             <RewardSection
               rewardType="lm"
               data={lmData.value}
-              alreadyClaimed={!!vsClaim.value}
+              alreadyClaimed={!!lmClaim.value}
               infoLink={lmInfoLink.value}
               onClaimIntent={() => {
                 claimRewardType.value = "lm";

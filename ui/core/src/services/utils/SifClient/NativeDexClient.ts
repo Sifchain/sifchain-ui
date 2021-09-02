@@ -105,7 +105,7 @@ export class NativeDexClient {
   }
   createTxClient(t34: Tendermint34Client) {
     return {
-      // dispensation: new DispensationV1Tx.MsgClientImpl()
+      // dispensation: new DispensationV1Tx.MsgCreateClaimResponse
     };
   }
   private static createQueryClient(t34: Tendermint34Client) {
