@@ -65,6 +65,20 @@ export function parseTxFailure(txFailure: {
     };
   }
 
+  if (
+    txFailure.rawLog
+      .toLowerCase()
+      .includes("data is invalid : unexpected characters")
+  ) {
+    return {
+      code: ErrorCode.UNKNOWN_FAILURE,
+      hash: txFailure.transactionHash,
+      memo:
+        "Error processing transaction with Ledger. A fix is in progress for this. Until then, please use Sifchain without a Ledger wallet.",
+      state: "failed",
+    };
+  }
+
   return {
     code: ErrorCode.UNKNOWN_FAILURE,
     hash: txFailure.transactionHash,
