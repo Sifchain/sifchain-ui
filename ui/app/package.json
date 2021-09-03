@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "private": true,
   "scripts": {
-    "bump": "bump minor --commit --tag",
+    "bump": "bump patch --commit --tag",
     "dev": "cd .. && yarn dev",
     "serve": "vite --port 8080",
     "build": "vite build",

@@ -4,6 +4,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "bump:app": "cd ./app && yarn bump",
     "advance": "zx ./scripts/advance.mjs",
     "build": "zx ./scripts/build.mjs",
     "dev": "zx ./scripts/dev.mjs",
