@@ -154,7 +154,6 @@ async function getClaimsData(
   const data = await (
     await fetch(`${apiUrl}/dispensation/getClaims?type=${type}`)
   ).json();
-
   if (!data.result) {
     return false;
   }
@@ -180,6 +179,7 @@ export async function getExistingClaimsData(
     address.value,
     "LiquidityMining",
   );
+
   const vsClaimData = await getClaimsData(
     apiUrl,
     address.value,

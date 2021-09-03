@@ -1,6 +1,6 @@
 import { Address, TxParams, Network } from "../../entities";
 import { UsecaseContext } from "..";
-import { effect, ReactiveEffectRunner, stop } from "@vue/reactivity";
+import { effect, ReactiveEffect, stop } from "@vue/reactivity";
 
 export default ({
   services,
@@ -8,7 +8,7 @@ export default ({
 }: UsecaseContext<"sif" | "clp" | "bus", "wallet">) => {
   const actions = {
     initSifWallet() {
-      const effects: ReactiveEffectRunner[] = [];
+      const effects: ReactiveEffect[] = [];
       const state = services.sif.getState();
       effects.push(
         effect(() => {

@@ -1,4 +1,4 @@
-import { ComputedRef, computed, watchEffect } from "vue";
+import { ComputedRef, computed, watchEffect, watch } from "vue";
 import { useAsyncData, AsyncDataState } from "./useAsyncData";
 
 const cache = new Map<string, any>();
@@ -6,17 +6,15 @@ const cache = new Map<string, any>();
 export const useAsyncDataCached = <F extends () => Promise<any>>(
   cacheKey: string,
   fn: F,
-  shouldReload: ComputedRef<boolean> = computed(() => false),
+  deps: any[] = [],
 ) => {
   if (!cache.has(cacheKey)) {
-    cache.set(cacheKey, useAsyncData(fn, shouldReload));
+    cache.set(cacheKey, useAsyncData(fn, deps));
   }
   const state = cache.get(cacheKey) as AsyncDataState<F>;
 
-  watchEffect(() => {
-    if (shouldReload.value) {
-      state.reload.value();
-    }
+  watch(deps, () => {
+    state.reload.value();
   });
 
   return state;

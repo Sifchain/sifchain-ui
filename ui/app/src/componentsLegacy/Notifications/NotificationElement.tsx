@@ -4,6 +4,7 @@ import {
   onUnmounted,
   PropType,
   computed,
+  ref,
 } from "vue";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { INotification } from "./INotification";
@@ -36,19 +37,39 @@ export const NotificationElement = defineComponent({
   setup(props) {
     const data = notificationData[props.notification.type];
 
+    const transitionState = ref<"in" | "out">("out");
+    const TRANSITION_DURATION = 125;
+
+    let transitionTimeoutId: NodeJS.Timeout;
+    let autoCloseTimeoutId: NodeJS.Timeout;
+
     const removeRef = computed(() => {
       const index = props.index;
-      return () => props.onRemove(index);
+      return () => {
+        clearTimeout(transitionTimeoutId);
+        transitionState.value = "out";
+        transitionTimeoutId = setTimeout(() => {
+          props.onRemove(index);
+        }, TRANSITION_DURATION);
+      };
     });
 
-    let timeoutId: NodeJS.Timeout;
     onMounted(() => {
-      if (props.notification.manualClose) return;
-      timeoutId = setTimeout(() => {
-        removeRef.value();
-      }, 10 * 1000);
+      if (!props.notification.manualClose) {
+        autoCloseTimeoutId = setTimeout(() => {
+          removeRef.value();
+        }, 10 * 1000);
+      }
+
+      transitionTimeoutId = setTimeout(() => {
+        transitionState.value = "in";
+      }, 50);
     });
-    onUnmounted(() => clearTimeout(timeoutId));
+
+    onUnmounted(() => {
+      clearTimeout(autoCloseTimeoutId);
+      clearTimeout(transitionTimeoutId);
+    });
 
     return () => (
       <div
@@ -57,10 +78,19 @@ export const NotificationElement = defineComponent({
           removeRef.value();
         }}
         class={[
-          "h-[40px] flex px-[10px] bg-black drop-shadow-lg mb-[16px] rounded-lg relative cursor-pointer text-md items-center tracking-[-0.025em]",
+          "absolute bottom-0 right-0 h-[40px] flex px-[10px] bg-black drop-shadow-lg rounded-lg cursor-pointer text-md items-center tracking-[-0.025em] whitespace-nowrap",
           props.notification?.onAction && "cursor-pointer",
           data.class,
         ]}
+        style={{
+          transition: `${TRANSITION_DURATION}ms ease-in`,
+          transform: [
+            `translateX(${
+              transitionState.value === "in" ? "calc(0% - 40px)" : "100%"
+            })`,
+            `translateY(-${20 + props.index * 32 + (1 + props.index) * 16}px)`,
+          ].join(" "),
+        }}
       >
         <AssetIcon
           icon={
@@ -69,7 +99,7 @@ export const NotificationElement = defineComponent({
               : (data.icon as IconName)
           }
           size={20}
-          class="mr-[6px]"
+          class="mr-[6px] flex-shrink-0"
         />
         {props.notification.message}
         {!!props.notification.manualClose && (

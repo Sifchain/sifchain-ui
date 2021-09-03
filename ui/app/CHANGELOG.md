@@ -1,3 +1,7 @@
+## Release 2021.09.02
+
+* Enabled Regen & Crypto.org!
+
 ## Release 2021.08.30
 
 * Enabled IRISnet & Persistence chains. Can now import/export IRIS and XPRT.

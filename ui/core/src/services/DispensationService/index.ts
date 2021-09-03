@@ -31,18 +31,18 @@ export default function createDispensationService({
   const client = sifUnsignedClient;
   const instance: IDispensationService = {
     async claim(params) {
-      return {
-        typeUrl: `/sifnode.dispensation.v1.MsgCreateUserClaim`,
-        value: {
-          userClaimAddress: params?.fromAddress,
-          userClaimType: params?.claimType,
-        } as MsgCreateUserClaim,
-      };
-      // return await client.claim({
-      //   base_req: { chain_id: sifChainId, from: params.fromAddress },
-      //   claim_type: params.claimType,
-      //   signer: params.fromAddress,
-      // });
+      // return {
+      //   typeUrl: `/sifnode.dispensation.v1.MsgCreateUserClaim`,
+      //   value: {
+      //     userClaimAddress: params?.fromAddress,
+      //     userClaimType: params?.claimType,
+      //   } as MsgCreateUserClaim,
+      // };
+      return await client.claim({
+        base_req: { chain_id: sifChainId, from: params.fromAddress },
+        claim_type: params.claimType,
+        claim_creator: params.fromAddress,
+      });
     },
   };
 

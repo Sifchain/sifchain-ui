@@ -98,10 +98,10 @@ export default function InterchainTxManager(
             payload,
           });
         } else if (ev.state === "completed") {
+          // First emit the event so UI can update balances...
           interchainTxEmitter.emit("tx_complete", tx);
 
-          // Give a little time for balances to update on the UI
-          // before notif appears...
+          // Then wait a sec so the balance request finishes before notif appears...
           setTimeout(() => {
             services.bus.dispatch({
               type: isImport
