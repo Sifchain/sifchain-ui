@@ -161,6 +161,7 @@ export const RewardSection = defineComponent({
                 icon="navigation/rewards"
                 active
                 disabled={
+                  true ||
                   !props.data?.user
                     ?.totalClaimableCommissionsAndClaimableRewards ||
                   props.alreadyClaimed
