@@ -68,7 +68,7 @@ export default defineComponent({
           onClose={props.onClose}
         >
           <div
-            class="css-unreset"
+            class="css-unreset text-left"
             innerHTML={res.data.value?.changelog || ""}
           />
           <div class="w-full h-[16px]" />
