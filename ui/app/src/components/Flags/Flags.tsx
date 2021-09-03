@@ -6,9 +6,14 @@ import { Button } from "../Button/Button";
 
 const isProduction = import.meta.env.VITE_APP_DEPLOYMENT === "production";
 
-const loadGui = async () => {
-  return (await import("./flagsGui")).createGui;
-};
+// TODO: figure out how to dynamic import this
+// while working with our inline-everything HTML plugin
+// const loadGui = async () => {
+//   return (await import("./flagsGui")).createGui;
+// };
+
+import { createGui } from "./flagsGui";
+const loadGui = () => createGui;
 
 export const Flags = defineComponent({
   name: "FlagsGui",

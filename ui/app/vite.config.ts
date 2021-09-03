@@ -39,7 +39,7 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       output: {
-        inlineDynamicImports: false,
+        // inlineDynamicImports: true,
         manualChunks: () => "everything.js",
       },
       plugins: [visualizer()],
