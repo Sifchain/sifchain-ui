@@ -40,7 +40,7 @@ if (
     integrations: [
       new Integrations.BrowserTracing({
         routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-        tracingOrigins: ["localhost", /^\//],
+        tracingOrigins: ["localhost", /^rpc.sifchain/, /api-int.sifchain/],
       }),
     ],
     // Set tracesSampleRate to 1.0 to capture 100%
