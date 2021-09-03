@@ -1,101 +1,101 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const { resolve } = require("path");
+// const fs = require("fs");
+// const { resolve } = require("path");
 
-function loadData(location) {
-  return JSON.parse(
-    fs.readFileSync(location, {
-      encoding: "utf-8",
-    }),
-  );
-}
+// function loadData(location) {
+//   return JSON.parse(
+//     fs.readFileSync(location, {
+//       encoding: "utf-8",
+//     }),
+//   );
+// }
 
-function saveData(location, data) {
-  const parsed = Buffer.from(JSON.stringify(data, null, 2) + "\n"); // Add line break for linting to be happy
-  fs.writeFileSync(location, parsed);
-}
+// function saveData(location, data) {
+//   const parsed = Buffer.from(JSON.stringify(data, null, 2) + "\n"); // Add line break for linting to be happy
+//   fs.writeFileSync(location, parsed);
+// }
 
-function updateERowan(asset) {
-  const location = resolve(
-    __dirname,
-    "../../../smart-contracts/build/contracts/BridgeToken.json",
-  );
+// function updateERowan(asset) {
+//   const location = resolve(
+//     __dirname,
+//     "../../../smart-contracts/build/contracts/BridgeToken.json",
+//   );
 
-  const {
-    networks: {
-      5777: { address },
-    },
-  } = loadData(location);
+//   const {
+//     networks: {
+//       5777: { address },
+//     },
+//   } = loadData(location);
 
-  return { ...asset, address };
-}
+//   return { ...asset, address };
+// }
 
-function updateToken(contractName, asset) {
-  const location = resolve(
-    __dirname,
-    `../../chains/eth/build/contracts/${contractName}.json`,
-  );
+// function updateToken(contractName, asset) {
+//   const location = resolve(
+//     __dirname,
+//     `../../chains/eth/build/contracts/${contractName}.json`,
+//   );
 
-  const {
-    networks: {
-      5777: { address },
-    },
-  } = loadData(location);
-  return { ...asset, address };
-}
+//   const {
+//     networks: {
+//       5777: { address },
+//     },
+//   } = loadData(location);
+//   return { ...asset, address };
+// }
 
-// ASSET ADDRESSES
+// // ASSET ADDRESSES
 
-const assetsEthereumLocation = resolve(
-  __dirname,
-  "../src/assets.ethereum.localnet.json",
-);
+// const assetsEthereumLocation = resolve(
+//   __dirname,
+//   "../src/assets.ethereum.localnet.json",
+// );
 
-const data = loadData(assetsEthereumLocation);
+// const data = loadData(assetsEthereumLocation);
 
-data.assets = data.assets.map((asset) => {
-  switch (asset.symbol) {
-    case "atk":
-      return updateToken("AliceToken", asset);
-    case "btk":
-      return updateToken("BobToken", asset);
-    case "usdc":
-      return updateToken("UsdCoin", asset);
-    case "link":
-      return updateToken("LinkCoin", asset);
-    case "erowan":
-      return updateERowan(asset);
-  }
-  return asset;
-});
+// data.assets = data.assets.map((asset) => {
+//   switch (asset.symbol) {
+//     case "atk":
+//       return updateToken("AliceToken", asset);
+//     case "btk":
+//       return updateToken("BobToken", asset);
+//     case "usdc":
+//       return updateToken("UsdCoin", asset);
+//     case "link":
+//       return updateToken("LinkCoin", asset);
+//     case "erowan":
+//       return updateERowan(asset);
+//   }
+//   return asset;
+// });
 
-saveData(assetsEthereumLocation, data);
+// saveData(assetsEthereumLocation, data);
 
-// BRIDGEBANK ADDRESS
+// // BRIDGEBANK ADDRESS
 
-function updateBridgeBankLocation() {
-  // update bridgeBank location
-  const configLocalnetLocation = resolve(
-    __dirname,
-    "../src/config.localnet.json",
-  );
+// function updateBridgeBankLocation() {
+//   // update bridgeBank location
+//   const configLocalnetLocation = resolve(
+//     __dirname,
+//     "../src/config.localnet.json",
+//   );
 
-  const configData = loadData(configLocalnetLocation);
-  const bridgeBankLocation = resolve(
-    __dirname,
-    "../../../smart-contracts/build/contracts/BridgeBank.json",
-  );
+//   const configData = loadData(configLocalnetLocation);
+//   const bridgeBankLocation = resolve(
+//     __dirname,
+//     "../../../smart-contracts/build/contracts/BridgeBank.json",
+//   );
 
-  const {
-    networks: {
-      5777: { address: bridgeBankAddress },
-    },
-  } = loadData(bridgeBankLocation);
+//   const {
+//     networks: {
+//       5777: { address: bridgeBankAddress },
+//     },
+//   } = loadData(bridgeBankLocation);
 
-  configData.bridgebankContractAddress = bridgeBankAddress;
+//   configData.bridgebankContractAddress = bridgeBankAddress;
 
-  saveData(configLocalnetLocation, configData);
-}
+//   saveData(configLocalnetLocation, configData);
+// }
 
-updateBridgeBankLocation();
+// updateBridgeBankLocation();
