@@ -1,29 +1,5 @@
 <template>
   <div class="main">
-    <!-- <Header>
-      <template v-slot:right>
-        <WithWallet>
-          <template v-slot:disconnected="{ requestDialog }">
-            <Pill
-              data-handle="button-connected"
-              color="danger"
-              @click="requestDialog"
-            >
-              Not connected
-            </Pill>
-          </template>
-          <template v-slot:connected="{ requestDialog }">
-            <Pill
-              data-handle="button-connected"
-              @click="requestDialog"
-              color="success"
-              class="connected-button"
-              >CONNECTED</Pill
-            >
-          </template>
-        </WithWallet>
-      </template>
-    </Header> -->
     <SideBar />
     <router-view />
     <OnboardingModal
@@ -32,6 +8,7 @@
     />
     <Notifications />
     <EnvAlert />
+    <Flags />
   </div>
 </template>
 
@@ -42,6 +19,7 @@ import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
 import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
 import Layout from "@/componentsLegacy/Layout/Layout";
+import { Flags } from "@/components/Flags/Flags";
 import { useRoute, useRouter } from "vue-router";
 import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
@@ -72,6 +50,7 @@ export default defineComponent({
     EnvAlert,
     SideBar,
     OnboardingModal,
+    Flags,
   },
   computed: {
     key() {

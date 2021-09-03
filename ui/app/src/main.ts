@@ -20,7 +20,11 @@ if (process.env.NODE_ENV === "development") {
   // @ts-ignore
   app.config.devtools = true;
 }
-console.log(import.meta.env.VITE_APP_VERSION, import.meta.env.VITE_APP_SHA);
+console.log(
+  import.meta.env.VITE_APP_DEPLOYMENT,
+  import.meta.env.VITE_APP_VERSION,
+  import.meta.env.VITE_APP_SHA,
+);
 
 app.use(vuexStore);
 app.use(router).mount("#app");
