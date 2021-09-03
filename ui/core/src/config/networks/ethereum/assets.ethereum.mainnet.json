@@ -717,6 +717,28 @@
       "symbol": "ZCX",
       "transferLimit": "99999999999999999999999",
       "homeNetwork": "ethereum"
+    },
+    {
+      "address": "0x217ddead61a42369a266f1fb754eb5d3ebadc88a",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/15482/small/donkey_logo.jpg?1621012824",
+      "name": "Don-key",
+      "network": "ethereum",
+      "priceUsd": 1.00,
+      "symbol": "DON",
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
+    },
+    {
+      "address": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/15595/small/metis.PNG?1621298076",
+      "name": "Metis Token",
+      "network": "ethereum",
+      "priceUsd": 1.00,
+      "symbol": "Metis",
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     }
   ]
 }
