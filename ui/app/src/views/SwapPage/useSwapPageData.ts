@@ -1,4 +1,4 @@
-import { onMounted, watch, watchEffect } from "vue";
+import { watch, watchEffect } from "vue";
 import { computed, effect, reactive, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import {
@@ -61,10 +61,6 @@ export const useSwapPageData = () => {
   const fromAmount = ref("0");
   const toAmount = ref("0");
   const slippage = ref<string>(currentSwapInput.slippage || "1.0");
-
-  onMounted(() => {
-    fromAmount.value = toAmount.value = "0";
-  });
 
   useBoundRoute({
     query: {
