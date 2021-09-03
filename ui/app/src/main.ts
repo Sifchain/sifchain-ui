@@ -3,6 +3,8 @@ import App from "./App.vue";
 import router from "./router";
 import "./scss/index.css";
 import { rootStore, vuexStore } from "./store/index";
+import * as Sentry from "@sentry/vue";
+import { Integrations } from "@sentry/tracing";
 
 const app = createApp(App);
 
@@ -22,3 +24,28 @@ console.log(import.meta.env.VITE_APP_VERSION, import.meta.env.VITE_APP_SHA);
 
 app.use(vuexStore);
 app.use(router).mount("#app");
+
+if (
+  location.hostname === "testnet.sifchain.finance" ||
+  location.hostname === "dex.sifchain.finance"
+) {
+  Sentry.init({
+    app,
+    environment:
+      location.hostname === "testnet.sifchain.finance"
+        ? "staging"
+        : "production",
+    dsn:
+      "https://eecc7e44157b4ad4be9403adfbc42430@o987802.ingest.sentry.io/5944846",
+    integrations: [
+      new Integrations.BrowserTracing({
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+        tracingOrigins: ["localhost", /^\//],
+      }),
+    ],
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+  });
+}
