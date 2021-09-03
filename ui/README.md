@@ -19,6 +19,10 @@
 
 Running a command with the `--help` flag will display a help message explaining what the command does.
 
+# Deployment
+
+See ./app/README.md.
+
 # Testing against environments
 
 Attaching a query string var `_env` will set cookies to point your build to any environment you want:
