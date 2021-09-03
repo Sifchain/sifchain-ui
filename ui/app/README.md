@@ -6,6 +6,7 @@ As follows is our branching model:
 - Push a tag name to `develop` builds to `https://testnet.sifchain.finance`
   - Recommended: run `yarn bump:app` from `ui/` folder or `yarn bump` from `ui/app` folder, it will create the commit&tag for you.
   - Remember to `git push --tags` to get the tag to push.
+  - Run `yarn bump --push` to have it push for you!
 - Merge to `master` builds to `https://dex.sifchain.finance`
 
 # Releases and showing a changelog

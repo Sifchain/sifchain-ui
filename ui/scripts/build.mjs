@@ -28,6 +28,8 @@ const app = resolve(__dirname, "../app");
 if (!noSetup) {
   await setupStack(tagName);
 }
-await lint();
-await $`cd ${core} && yarn build`;
-await $`cd ${app} && yarn build`;
+await Promise.all([
+ lint(),
+ $`cd ${core} && yarn build`,
+ $`cd ${app} && yarn build`
+])
