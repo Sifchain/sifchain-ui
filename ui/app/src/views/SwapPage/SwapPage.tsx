@@ -1,4 +1,10 @@
-import { ComponentPublicInstance, defineComponent, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  defineComponent,
+  onMounted,
+  ref,
+  watch,
+} from "vue";
 import PageCard from "@/components/PageCard";
 import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
@@ -26,6 +32,10 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
     const isInverted = ref(false);
+
+    onMounted(() => {
+      data.fromAmount.value = data.toAmount.value = "0";
+    });
 
     watch([data.pageState], () => {
       switch (data.pageState.value) {

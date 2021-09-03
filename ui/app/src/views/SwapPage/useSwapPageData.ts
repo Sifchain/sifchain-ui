@@ -19,9 +19,13 @@ import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
+// NOTE(ajoslin): this is not optimal but I don't want to implement
+// vuex.
 const currentSwapInput = {
   fromSymbol: "cband",
   toSymbol: "ceth",
+  fromAmount: "0",
+  toAmount: "0",
   slippage: "1.0",
 };
 
@@ -58,14 +62,15 @@ export const useSwapPageData = () => {
       currentSwapInput.toSymbol,
     ),
   );
-  const fromAmount = ref("0");
-  const toAmount = ref("0");
+  const fromAmount = ref(currentSwapInput.fromAmount || "0");
+  const toAmount = ref(currentSwapInput.toAmount || "0");
   const slippage = ref<string>(currentSwapInput.slippage || "1.0");
 
   useBoundRoute({
     query: {
       from: fromSymbol,
       to: toSymbol,
+      amount: fromAmount,
       slippage: slippage,
     },
     params: {},
@@ -221,9 +226,6 @@ export const useSwapPageData = () => {
   return {
     connected,
     nextStepMessage: computed(() => {
-      if (!accountStore.state.sifchain.address) {
-        return "Connect Sifchain Wallet";
-      }
       switch (state.value) {
         case SwapState.ZERO_AMOUNTS:
           return "Please enter an amount";
