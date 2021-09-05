@@ -1,6 +1,7 @@
 import { computed, toRefs } from "@vue/reactivity";
+import { onUnmounted, watch } from "vue";
 import { useCore } from "@/hooks/useCore";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { LiquidityProvider, Pool } from "@sifchain/sdk";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { usePoolStats } from "@/hooks/usePoolStats";
@@ -9,7 +10,12 @@ export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
-export type PoolPageColumnId = "token" | "apy" | "gainLoss" | "share";
+export type PoolPageColumnId =
+  | "token"
+  | "apy"
+  | "gainLoss"
+  | "share"
+  | "reward-apy";
 export const COLUMNS: {
   id: PoolPageColumnId;
   name: string;
@@ -25,13 +31,14 @@ export const COLUMNS: {
   {
     id: "apy",
     name: "Pool APY",
-    class: "w-[128px] text-right justify-end",
+    class: "w-[138px] text-right justify-end",
     sortable: true,
   },
   {
-    id: "gainLoss",
-    name: "Gain/Loss",
-    class: "w-[140px] text-right justify-end",
+    id: "reward-apy",
+    name: "Reward APY",
+    class: "w-[138px] text-right justify-end",
+    sortable: true,
   },
   {
     id: "share",
@@ -40,12 +47,47 @@ export const COLUMNS: {
   },
 ];
 
+// Only wait for load on first visit of the page
+let userDataHasLoadedFirstTime = false;
+let poolsHasLoadedFirstTime = false;
+
 export const usePoolPageData = () => {
-  const { store } = useCore();
+  const { store, usecases } = useCore();
 
   const selectedPool = ref<PoolPageAccountPool | null>(null);
 
   const stats = usePoolStats();
+
+  const isUserDataLoaded = ref(userDataHasLoadedFirstTime);
+  const isPoolsDataLoaded = ref(poolsHasLoadedFirstTime);
+  let unsubscribePublic: () => void;
+  let unsubscribeUser: () => void;
+
+  onMounted(async () => {
+    const poolsRes = usecases.clp.subscribeToPublicPools();
+    unsubscribePublic = poolsRes.unsubscribe;
+
+    await poolsRes.initPromise;
+    poolsHasLoadedFirstTime = isPoolsDataLoaded.value = true;
+  });
+
+  watch(
+    accountStore.refs.sifchain.address.computed(),
+    async (address: string) => {
+      if (address) {
+        const userRes = usecases.clp.subscribeToUserPools(address);
+        unsubscribePublic = userRes.unsubscribe;
+        await userRes.initPromise;
+        userDataHasLoadedFirstTime = isUserDataLoaded.value = true;
+      }
+    },
+    { immediate: true },
+  );
+
+  onUnmounted(() => {
+    unsubscribePublic?.();
+    unsubscribeUser?.();
+  });
 
   // TODO: Sort pools?
   const accountPools = computed(() => {
@@ -67,7 +109,16 @@ export const usePoolPageData = () => {
   });
 
   return {
-    isLoading: computed(() => !store.poolsLoadState.loaded),
+    isLoaded: computed(() => {
+      const hasPotentialAccount =
+        accountStore.state.sifchain.connecting ||
+        accountStore.state.sifchain.connected;
+      // Show pools page as loaded if user is not connected and main data loads
+      return (
+        isPoolsDataLoaded.value &&
+        (!hasPotentialAccount || isUserDataLoaded.value)
+      );
+    }),
     accountPools,
     selectedPool,
     stats,

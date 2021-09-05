@@ -1,3 +1,5 @@
+import { Network } from "../../../entities";
+
 export default {
   assets: [
     {
@@ -176,9 +178,11 @@ export default {
       name: "Crypto com Coin",
       network: "sifchain",
       symbol: "ccro",
-      displaySymbol: "cro",
+      displaySymbol: "CRO (ERC-20)",
       homeNetwork: "ethereum",
       decommissioned: true,
+      decommissionReason:
+        "Crypto.org's ERC-20 token has been decommissioned on Sifchain in favor of the Cosmos CRO token. Please export all CRO (ERC-20) off of Sifchain.",
     },
     {
       decimals: 8,
@@ -634,12 +638,34 @@ export default {
     {
       symbol: "uxprt",
       displaySymbol: "xprt",
-      decimals: 8,
+      decimals: 6,
       name: "xprt",
       network: "sifchain",
       label: "xprt",
       imageUrl: "https://persistence.one/favicon.png",
       homeNetwork: "persistence",
+    },
+    {
+      symbol: "uregen",
+      displaySymbol: "regen",
+      decimals: 6,
+      name: "regen",
+      network: "sifchain",
+      label: "regen",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
+      homeNetwork: "regen",
+    },
+    {
+      symbol: "uosmo",
+      displaySymbol: "osmo",
+      decimals: 6,
+      name: "osmo",
+      network: "sifchain",
+      label: "osmo",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/16724/small/osmosis.jpeg?1624849879",
+      homeNetwork: "osmosis",
     },
   ],
 };

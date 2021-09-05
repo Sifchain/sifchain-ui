@@ -169,7 +169,7 @@ export async function suggestEthereumAsset(
       type: "ERC20",
       options: {
         address: contractAddress,
-        symbol: asset.symbol,
+        symbol: asset.displaySymbol.toUpperCase(),
         decimals: asset.decimals,
         image: asset.imageUrl,
       },

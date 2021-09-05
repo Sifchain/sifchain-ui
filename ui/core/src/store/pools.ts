@@ -15,10 +15,3 @@ export type AccountPoolStore = {
 
 export const pools = reactive<PoolStore>({}) as PoolStore;
 export const accountpools = reactive<AccountPoolStore>({}) as AccountPoolStore;
-
-export type PoolsLoadStateStore = {
-  loaded: boolean;
-};
-export const poolsLoadState = reactive({
-  loaded: false,
-});

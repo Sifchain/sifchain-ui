@@ -12,6 +12,7 @@ export type IAsset = {
   label: string;
   homeNetwork: Network;
   decommissioned?: true;
+  decommissionReason?: string;
 };
 type ReadonlyAsset = Readonly<IAsset>;
 const assetMap = new Map<string, ReadonlyAsset>();

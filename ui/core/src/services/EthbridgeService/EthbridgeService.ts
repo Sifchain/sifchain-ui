@@ -140,6 +140,8 @@ export default function createEthbridgeService({
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
       const tokenContract = await getTokenContract(web3, amount.asset.address!);
+      debugger;
+
       const sendArgs = {
         from: account,
         value: 0,
@@ -190,7 +192,6 @@ export default function createEthbridgeService({
         sifAsset.ibcDenom ||
         (await this.fetchTokenAddress(sifAsset)) ||
         ETH_ADDRESS;
-
       console.log("burnToEthereum: start: ", tokenAddress);
 
       const txReceipt = await sifUnsignedClient.burn({
@@ -418,35 +419,35 @@ export default function createEthbridgeService({
         bridgebankContractAddress,
       );
 
-      const attemptSymbols = [
-        asset.ibcDenom,
+      const possibleSymbols = [
+        // remove c prefix
         asset.symbol.replace(/^c/, ""),
+        // remove e prefix
         asset.symbol.replace(/^e/, ""),
+        // display symbol goes before ibc denom because the dedicated decimal-precise contracts
+        // utilize the display symbol
         asset.displaySymbol,
+        // IBC assets with dedicated decimal-precise contracts are uppercase
+        asset.displaySymbol.toUpperCase(),
+        asset.ibcDenom,
         asset.symbol,
         "e" + asset.symbol,
-      ].filter((item, index, array) => {
-        return !!item && array.indexOf(item) === index;
-      });
-
-      let tokenAddress: string = "0";
-      let nextAttempt: string | undefined;
-      while (
-        attemptSymbols.length > 0 &&
-        (nextAttempt = attemptSymbols.shift())
-      ) {
-        tokenAddress = await bridgeBankContract.methods
-          .getBridgeToken(nextAttempt)
+      ];
+      for (let symbol of possibleSymbols) {
+        // Fetch the token address from bridgebank
+        let tokenAddress = await bridgeBankContract.methods
+          .getBridgeToken(symbol)
           .call();
-        if (!tokenAddress.startsWith("0x0")) break;
 
-        tokenAddress = await bridgeBankContract.methods
-          .getLockedTokenAddress(nextAttempt)
-          .call();
-        if (!tokenAddress.startsWith("0x0")) break;
+        // Token address is a hex number. If it is non-zero (not ethereum or empty) when parsed, return it.
+        if (+tokenAddress) {
+          return tokenAddress;
+        }
+        // If this is ethereum, and the token address is empty, return the ethereum address
+        if (tokenAddress === ETH_ADDRESS && symbol?.endsWith("eth")) {
+          return tokenAddress;
+        }
       }
-
-      return tokenAddress.startsWith("0x0") ? undefined : tokenAddress;
     },
 
     async fetchAllTokenAddresses(

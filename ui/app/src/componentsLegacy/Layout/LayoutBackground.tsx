@@ -8,7 +8,7 @@ import {
   onMounted,
   onUnmounted,
   ref,
-} from "@vue/runtime-core";
+} from "vue";
 
 const layoutBgKey = "layout_bg";
 const layoutBgDefault = "default";
@@ -46,6 +46,7 @@ const ImageBg = defineComponent({
       img.src = props.src.value;
       img.onload = () => {
         loadedRef.value = true;
+        loadedCache.set(props.src.value, true);
       };
     });
     const getStyle = (src: string) => ({
@@ -89,81 +90,71 @@ const ImageBg = defineComponent({
     };
   },
 });
+
+const urls = import.meta.globEager("/src/assets/backgrounds/*.webp");
+
+const getUrl = (name: string) =>
+  urls[`/src/assets/backgrounds/${name}.webp`]?.default || "";
+
 const LAYOUT_BACKGROUNDS: LayoutBg[] = [
   {
     key: "default",
-    src: [require("@/assets/backgrounds/default.webp")],
-    thumb: require("@/assets/backgrounds/default-thumb.webp"),
+    src: [getUrl("default")],
+    thumb: getUrl("default-thumb"),
     Cmp: ImageBg,
   },
   {
     key: "forest-butterflies",
     src: [
-      require("@/assets/backgrounds/forest-butterflies-1x.webp"),
-      require("@/assets/backgrounds/forest-butterflies-2x.webp"),
-      require("@/assets/backgrounds/forest-butterflies-4x.webp"),
+      getUrl("forest-butterflies-1x"),
+      getUrl("forest-butterflies-2x"),
+      getUrl("forest-butterflies-4x"),
     ],
-    thumb: require("@/assets/backgrounds/forest-butterflies-thumb.webp"),
+    thumb: getUrl("forest-butterflies-thumb"),
     Cmp: ImageBg,
   },
   {
     key: "meadow",
-    src: [
-      require("@/assets/backgrounds/meadow-1x.webp"),
-      require("@/assets/backgrounds/meadow-2x.webp"),
-      require("@/assets/backgrounds/meadow-4x.webp"),
-    ],
-    thumb: require("@/assets/backgrounds/meadow-thumb.webp"),
+    src: [getUrl("meadow-1x"), getUrl("meadow-2x"), getUrl("meadow-4x")],
+    thumb: getUrl("meadow-thumb"),
     Cmp: ImageBg,
   },
   {
     key: "dark-forest",
     src: [
-      require("@/assets/backgrounds/dark-forest-1x.webp"),
-      require("@/assets/backgrounds/dark-forest-2x.webp"),
-      require("@/assets/backgrounds/dark-forest-4x.webp"),
+      getUrl("dark-forest-1x"),
+      getUrl("dark-forest-2x"),
+      getUrl("dark-forest-4x"),
     ],
-    thumb: require("@/assets/backgrounds/dark-forest-thumb.webp"),
+    thumb: getUrl("dark-forest-thumb"),
     Cmp: ImageBg,
   },
   {
     key: "temple",
-    src: [
-      require("@/assets/backgrounds/temple-1x.webp"),
-      require("@/assets/backgrounds/temple-2x.webp"),
-      require("@/assets/backgrounds/temple-4x.webp"),
-    ],
-    thumb: require("@/assets/backgrounds/temple-thumb.webp"),
+    src: [getUrl("temple-1x"), getUrl("temple-2x"), getUrl("temple-4x")],
+    thumb: getUrl("temple-thumb"),
     Cmp: ImageBg,
   },
   {
     key: "trail",
-    src: [
-      require("@/assets/backgrounds/trail-1x.webp"),
-      require("@/assets/backgrounds/trail-2x.webp"),
-      require("@/assets/backgrounds/trail-4x.webp"),
-    ],
-    thumb: require("@/assets/backgrounds/trail-thumb.webp"),
+    src: [getUrl("trail-1x"), getUrl("trail-2x"), getUrl("trail-4x")],
+    thumb: getUrl("trail-thumb"),
     Cmp: ImageBg,
   },
   {
     key: "view",
-    src: [
-      require("@/assets/backgrounds/view-1x.webp"),
-      require("@/assets/backgrounds/view-2x.webp"),
-      require("@/assets/backgrounds/view-4x.webp"),
-    ],
-    thumb: require("@/assets/backgrounds/view-thumb.webp"),
+    src: [getUrl("view-1x"), getUrl("view-2x"), getUrl("view-4x")],
+    thumb: getUrl("view-thumb"),
     Cmp: ImageBg,
   },
   {
     key: "dark",
     src: [
-      require("@/assets/backgrounds/dark-coin-1x.webp"),
-      require("@/assets/backgrounds/dark-coin-2x.webp"),
-      require("@/assets/backgrounds/dark-coin-4x.webp"),
+      getUrl("dark-coin-1x"),
+      getUrl("dark-coin-2x"),
+      getUrl("dark-coin-4x"),
     ],
-    thumb: require("@/assets/backgrounds/dark-coin-thumb.webp"),
+    thumb: getUrl("dark-coin-thumb"),
     Cmp: (props) => {
       return (
         <div class="w-full h-full relative bg-black">
@@ -174,12 +165,8 @@ const LAYOUT_BACKGROUNDS: LayoutBg[] = [
   },
   {
     key: "gold",
-    src: [
-      require("@/assets/backgrounds/gold-1x.webp"),
-      require("@/assets/backgrounds/gold-2x.webp"),
-      require("@/assets/backgrounds/gold-4x.webp"),
-    ],
-    thumb: require("@/assets/backgrounds/gold-coin-thumb.webp"),
+    src: [getUrl("gold-1x"), getUrl("gold-2x"), getUrl("gold-4x")],
+    thumb: getUrl("gold-coin-thumb"),
     Cmp: (props) => {
       return (
         <div class="w-full h-full relative bg-[#3B7FBA] flex items-center justify-end">
@@ -245,7 +232,7 @@ export default defineComponent({
           class="z-[-1] w-full h-[100vh] fixed top-0 left-0 transition-all duration-500"
         >
           {!!srcRef.value && (
-            <bgRef.value.Cmp key={bgRef.value.key} src={srcRef} bg={bgRef} />
+            <bgRef.value.Cmp key={srcRef.value} src={srcRef} bg={bgRef} />
           )}
         </div>
         <div class="absolute bottom-4 right-4 w-[36px] h-[36px]">

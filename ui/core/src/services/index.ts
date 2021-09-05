@@ -23,6 +23,7 @@ import createWalletService, { WalletServiceContext } from "./WalletService";
 import createTokenRegistry, {
   TokenRegistryContext,
 } from "./TokenRegistryService";
+import { NativeDexClient } from "./utils/SifClient/NativeDexClient";
 
 export type Services = ReturnType<typeof createServices>;
 
@@ -73,14 +74,15 @@ export function createServices(context: ServiceContext) {
     if (localStorage.DO_NOT_SPAM) throw "";
     if (location.hostname !== "dex.sifchain.finance") {
       setTimeout(() => {
-        IBCService.logIBCNetworkMetadata(Network.SIFCHAIN);
-        IBCService.logIBCNetworkMetadata(Network.COSMOSHUB);
-        IBCService.logIBCNetworkMetadata(Network.SENTINEL);
+        IBCService.logIBCNetworkMetadata();
         EthbridgeService?.fetchAllTokenAddresses();
       }, 8 * 1000);
     }
   } catch (e) {}
 
+  const AUTO_ENABLE_WALLETS = true;
+  WalletService.keplrProvider.tryConnectAll(...ChainsService.list());
+  debugger;
   return {
     chains: ChainsService,
     ibc: IBCService,

@@ -12,7 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": ["webpack-env", "jest"],
+    "types": ["vite/client", "jest"],
     "paths": {
       "@/*": ["src/*"],
       "@sifchain/sdk": ["../core/src"]

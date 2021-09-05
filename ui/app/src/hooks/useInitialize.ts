@@ -44,57 +44,62 @@ export function useInitialize() {
   const { usecases, store, services } = useCore();
 
   // Initialize usecases / watches
-  usecases.clp.initClp();
   usecases.wallet.eth.initEthWallet();
 
-  // initialize subscriptions
-  // watch(accountStore.refs.ethereum.address.computed(), (value) => {
-  //   if (value) {
-  //     usecases.peg.subscribeToUnconfirmedPegTxs();
-  //   }
-  // });
+  // this is low pri... but we want it semi quick
+  setTimeout(() => {
+    usecases.clp.syncPools.syncPublicPools();
+  }, 500);
 
   // Support legacy code that uses sif service getState().
   watch(
     accountStore.refs.sifchain.computed(),
-    (value) => {
+    () => {
       const storeState = accountStore.state.sifchain;
       const state = services.sif.getState();
       state.balances = storeState.balances;
       state.address = storeState.address;
       state.connected = storeState.connected;
       state.accounts = [storeState.address];
+      mirrorToCore(Network.SIFCHAIN);
+      if (storeState.connected) {
+        persistConnected.set(Network.SIFCHAIN);
+      }
     },
     { deep: true },
   );
 
   // Connect to networks in sequence, starting with Sifchain.
-  [
-    Network.SIFCHAIN,
-    ...Object.values(Network).filter((n) => n !== Network.SIFCHAIN),
-  ].reduce((promise, network) => {
-    watch(
-      accountStore.refs[network].computed(),
-      (value) => {
-        if (value.connected) {
-          persistConnected.set(network);
-          mirrorToCore(network);
+  (async () => {
+    if (persistConnected.get(Network.SIFCHAIN)) {
+      // Don't load anything else until sif is ready (it's the most important one,
+      // other network requests happening will slow it down.)
+      await accountStore.actions.load(Network.SIFCHAIN);
+    }
+
+    Object.values(Network)
+      .filter((n) => n !== Network.SIFCHAIN)
+      .forEach((network) => {
+        watch(
+          accountStore.refs[network].computed(),
+          (value) => {
+            if (value.connected) {
+              persistConnected.set(network);
+              mirrorToCore(network);
+            }
+          },
+          {
+            deep: true,
+          },
+        );
+        if (
+          persistConnected.get(network) &&
+          !accountStore.state[network].connected
+        ) {
+          accountStore.actions.load(network);
         }
-      },
-      {
-        deep: true,
-      },
-    );
-    return promise.then(async () => {
-      if (
-        persistConnected.get(network) &&
-        !accountStore.state[network].connected
-      ) {
-        accountStore.actions.load(network);
-        await new Promise((resolve) => setTimeout(resolve, 250));
-      }
-    });
-  }, Promise.resolve());
+      });
+  })();
 
   interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {
     accountStore.updateBalances(tx.toChain.network);

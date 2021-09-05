@@ -49,12 +49,15 @@ export default defineComponent({
         state: "requested",
       };
       const status = await usecases.reward.claim({
-        // claimType: claimTypeMap[props.rewardType] as "2" | "3",
+        // claimType: (claimTypeMap[
+        //   props.rewardType
+        // ] as unknown) as DistributionType,
         claimType:
           props.rewardType === "lm"
             ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
             : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
         fromAddress: props.address,
+        rewardProgramName: "IBC_REWARDS_V1",
       });
       transactionStatusRef.value = status;
     };

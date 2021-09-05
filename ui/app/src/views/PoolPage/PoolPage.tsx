@@ -20,6 +20,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { useChains } from "@/hooks/useChains";
 
 export default defineComponent({
   name: "PoolPage",
@@ -45,6 +46,18 @@ export default defineComponent({
               accountPool: accountPoolMap.get(pool.symbol.toLowerCase()),
             };
           })
+          .filter((accountPoolData) => {
+            const asset = useChains()
+              .get(Network.SIFCHAIN)
+              .lookupAssetOrThrow(accountPoolData.pool.symbol);
+            if (
+              asset.decommissioned &&
+              !accountPoolData?.accountPool?.pool.poolUnits
+            ) {
+              return false;
+            }
+            return true;
+          })
           // First sort by name or apy
           .sort((a, b) => {
             if (sortBy.value === "token") {
@@ -52,6 +65,10 @@ export default defineComponent({
               if (b.pool.symbol === config.nativeAsset.symbol) return 1;
               return Asset.get(a.pool.symbol).displaySymbol.localeCompare(
                 Asset.get(b.pool.symbol).displaySymbol,
+              );
+            } else if (sortBy.value === "reward-apy") {
+              return (
+                parseFloat(b.pool.rewardAPY) - parseFloat(a.pool.rewardAPY)
               );
             } else {
               return parseFloat(b.pool.poolAPY) - parseFloat(a.pool.poolAPY);
@@ -86,7 +103,7 @@ export default defineComponent({
                 : undefined
             }
           />
-          {!poolDataWithUserData.value?.length || data.isLoading.value ? (
+          {!poolDataWithUserData.value?.length || !data.isLoaded.value ? (
             <div class="absolute left-0 top-[180px] w-full flex justify-center">
               <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
                 <AssetIcon
@@ -137,7 +154,7 @@ export default defineComponent({
                         <AssetIcon
                           icon="interactive/arrow-down"
                           class={[
-                            "ml-[2px]",
+                            "pl-[2px] mr-[-22px]",
                             sortBy.value !== column.id && "invisible",
                             sortReverse.value && "rotate-180",
                           ]}
@@ -243,14 +260,25 @@ const UserPoolItem = defineComponent({
         <span
           class={[
             "font-mono",
-            +(currentItemData.value.arb || 0) < 0
-              ? "text-danger-base"
-              : "text-connected-base",
+            currentItemData.value.arb == null
+              ? "text-gray-800"
+              : +(currentItemData.value.arb || 0) < 0
+              ? "text-connected-base"
+              : "text-danger-base",
           ]}
         >
           {currentItemData.value.arb != null
-            ? `${(+currentItemData.value.arb).toFixed(3)}%`
-            : "..."}
+            ? `${Math.abs(+currentItemData.value.arb).toFixed(3)}%`
+            : "N/A"}
+
+          {currentItemData.value.arb != null && (
+            <Button.InlineHelp class="!text-gray-600">
+              This is the arbitrage opportunity available based on a
+              differential between the price of this token on Sifchain and its
+              price on CoinMarketCap. If the percentage is green, it means the
+              token is currently cheaper in Sifchain than CoinMarketCap.
+            </Button.InlineHelp>
+          )}
         </span>,
       ],
       [
@@ -278,7 +306,7 @@ const UserPoolItem = defineComponent({
             onClick={() => {
               isExpandedRef.value = !isExpandedRef.value;
             }}
-            class="cursor-pointer font-mono w-full flex justify-start items-center font-medium h-[32px] font-sans group-hover:opacity-80"
+            class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] font-sans group-hover:opacity-80"
           >
             {COLUMNS.map((column) => {
               const content = (() => {
@@ -303,6 +331,12 @@ const UserPoolItem = defineComponent({
                             ""
                           ).toUpperCase()}
                         </div>
+                        {externalToken.value?.asset.decommissioned &&
+                          externalToken.value?.asset.decommissionReason && (
+                            <Button.InlineHelp>
+                              {externalToken.value?.asset.decommissionReason}
+                            </Button.InlineHelp>
+                          )}
                       </>
                     );
                   }
@@ -316,28 +350,13 @@ const UserPoolItem = defineComponent({
                       </div>
                     );
                   }
-                  case "gainLoss": {
+                  case "reward-apy": {
                     return (
-                      <div
-                        class={[
-                          "font-mono",
-                          !accountPoolData?.earnedRewards.value
-                            ? ""
-                            : accountPoolData?.earnedRewardsNegative.value
-                            ? "text-danger-base"
-                            : "text-connected-base",
-                        ]}
-                      >
-                        {!accountPoolData.earnedRewards.value ? (
-                          ""
-                        ) : (
-                          <>
-                            {accountPoolData?.earnedRewardsNegative.value
-                              ? "-"
-                              : ""}
-                            ${accountPoolData?.earnedRewards.value}
-                          </>
-                        )}
+                      <div class="font-mono">
+                        {currentItemData.value.rewardAPY != null
+                          ? (+currentItemData.value.rewardAPY || 0).toFixed(2)
+                          : "..."}
+                        %
                       </div>
                     );
                   }

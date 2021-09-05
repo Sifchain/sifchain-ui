@@ -121,10 +121,12 @@ export default defineComponent({
 
     const optionsRef = computed<SelectDropdownOption[]>(
       () =>
-        networksRef.value?.map((network) => ({
-          content: useChains().get(network).displayName,
-          value: network,
-        })) || [],
+        networksRef.value
+          ?.map((network) => ({
+            content: useChains().get(network).displayName,
+            value: network,
+          }))
+          .sort((a, b) => a.content.localeCompare(b.content)) || [],
     );
     const networkOpenRef = ref(false);
 

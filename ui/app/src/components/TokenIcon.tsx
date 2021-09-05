@@ -9,9 +9,21 @@ import {
 } from "vue";
 import { IAsset } from "@sifchain/sdk";
 import SvgSpinnerIcon from "../assets/icons/interactive/anim-circle-spinner.svg";
+// Load all SVG icons with glob so that they get included as assets
+// This will just give us their src string.
+// Our SVG loader has a rule: when it comes to items from /public, do not inline them. only return src.
+const globResult = import.meta.globEager("./../../public/images/tokens/*");
 
-const defaultIcon = `anim-racetrack-spinner`;
-const imagesLoadedCache: Record<string, string> = {};
+const tokenSrcMap = Object.keys(globResult).reduce((map, key) => {
+  // @ts-ignore
+  const symbol = key
+    .split("/")
+    .pop()
+    .replace(/\.svg$/i, "");
+  map.set(symbol, globResult[key].default);
+  return map;
+}, new Map<string, string>());
+
 export const TokenIcon = defineComponent({
   props: {
     asset: {
@@ -30,61 +42,20 @@ export const TokenIcon = defineComponent({
   },
   setup(props) {
     const core = useCore();
-    const svgIconsUrl = computed(() => {
-      return "";
-      // return (
-      //   icons[props.symbol.value] ??
-      //   icons[props.symbol.value.replace(/^c/, "")] ??
-      //   icons["e" + props.symbol.value]
-      // );
-    });
     const url = ref<string | void>();
-    const hasLoaded = ref(false);
-    const currentImage = ref();
+
     watch(
       () => [props.asset?.value, props.assetValue],
       async ([asset, asset2]) => {
-        hasLoaded.value = false;
-        url.value = `/images/tokens/${defaultIcon}.svg`;
         asset = asset || asset2;
         if (!asset) return;
 
-        const svgSrc = `/images/tokens/${(
-          asset?.displaySymbol || asset?.symbol
-        )?.toUpperCase()}.svg`;
-
-        if (imagesLoadedCache[asset.displaySymbol]) {
-          hasLoaded.value = true;
-          url.value = imagesLoadedCache[asset.displaySymbol];
-          return;
-        }
-        const image = (currentImage.value = new Image());
-        image.src = svgSrc;
-        image.onload = () => {
-          // if asset has changed since image started loading, exit
-          if (currentImage.value !== image) return;
-
-          imagesLoadedCache[svgSrc] = svgSrc;
-          url.value = svgSrc;
-          hasLoaded.value = true;
-        };
-        image.onerror = () => {
-          // if asset has changed since image started loading, exit
-          if (currentImage.value !== image) return;
-
-          const coinGeckoUrl = core.config.assets
+        const svgUrl = tokenSrcMap.get(asset.displaySymbol.toUpperCase());
+        url.value =
+          svgUrl ||
+          core.config.assets
             .find((a) => a.symbol == asset?.symbol)
             ?.imageUrl?.replace("thumb", "large");
-          if (coinGeckoUrl) {
-            const image = new Image();
-            image.src = coinGeckoUrl;
-            image.onload = () => {
-              url.value = coinGeckoUrl;
-              if (asset) imagesLoadedCache[asset?.displaySymbol] = coinGeckoUrl;
-              hasLoaded.value = true;
-            };
-          }
-        };
       },
       {
         immediate: true,
@@ -98,10 +69,11 @@ export const TokenIcon = defineComponent({
           backgroundImage: `url('${url.value}')`,
           // set to the size of the icon
           // backgroundSize: `${props.size}px ${props.size}px`,
+          backgroundPosition: "center center",
           backgroundSize: `contain`,
           backgroundRepeat: "no-repeat",
         }}
-        class={[`transition-allz duration-100`, props.class]}
+        class={[`transition-all duration-100`, props.class]}
       />
     );
   },

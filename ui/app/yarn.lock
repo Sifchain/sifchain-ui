@@ -1754,9 +1754,9 @@
   dependencies:
     "@vue/shared" "3.0.0"
 
-"@vue/runtime-core@3.0.0":
+"vue@3.0.0":
   version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@vue/runtime-core/-/runtime-core-3.0.0.tgz#480febf1bfe32798b6abbd71a88f8e8b473a51c2"
+  resolved "https://registry.yarnpkg.com/vue/-/runtime-core-3.0.0.tgz#480febf1bfe32798b6abbd71a88f8e8b473a51c2"
   integrity sha512-3ABMLeA0ZbeVNLbGGLXr+pNUwqXILOqz8WCVGfDWwQb+jW114Cm8djOHVVDoqdvRETQvDf8yHSUmpKHZpQuTkA==
   dependencies:
     "@vue/reactivity" "3.0.0"
@@ -1767,7 +1767,7 @@
   resolved "https://registry.yarnpkg.com/@vue/runtime-dom/-/runtime-dom-3.0.0.tgz#e0d1f7c7e22e1318696014cc3501e06b288c2e11"
   integrity sha512-f312n5w9gK6mVvkDSj6/Xnot1XjlKXzFBYybmoy6ahAVC8ExbQ+LOWti1IZM/adU8VMNdKaw7Q53Hxz3y5jX8g==
   dependencies:
-    "@vue/runtime-core" "3.0.0"
+    "vue" "3.0.0"
     "@vue/shared" "3.0.0"
     csstype "^2.6.8"
 

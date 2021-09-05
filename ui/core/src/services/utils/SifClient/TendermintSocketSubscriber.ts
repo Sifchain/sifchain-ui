@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { EventEmitter2 } from "eventemitter2";
-import { uniqueId } from "lodash";
 import { ensureWs } from "./ensureWs";
+import { uuidv4 } from "../../../utils/uuidv4";
 
 // Helper to allow us to add listeners to the open websocket
 // In kind of a synchronous looking way
@@ -63,7 +63,7 @@ export function TendermintSocketSubscriber({ wsUrl }: { wsUrl: string }) {
             JSON.stringify({
               jsonrpc: "2.0",
               method: "subscribe",
-              id: uniqueId(),
+              id: uuidv4(),
               params: {
                 query: `tm.event='${event}'`,
               },

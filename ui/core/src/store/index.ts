@@ -1,14 +1,7 @@
 import { reactive } from "@vue/reactivity";
 import { wallet, WalletStore } from "./wallet";
 import { asset, AssetStore } from "./asset";
-import {
-  accountpools,
-  AccountPoolStore,
-  pools,
-  PoolStore,
-  poolsLoadState,
-  PoolsLoadStateStore,
-} from "./pools";
+import { accountpools, AccountPoolStore, pools, PoolStore } from "./pools";
 import { tx, TxStore } from "./tx";
 export * from "./poolFinder";
 
@@ -19,7 +12,6 @@ export type Store = {
   pools: PoolStore;
   tx: TxStore;
   accountpools: AccountPoolStore;
-  poolsLoadState: PoolsLoadStateStore;
 };
 
 export function createStore() {
@@ -29,7 +21,6 @@ export function createStore() {
     pools,
     tx,
     accountpools,
-    poolsLoadState,
   }) as Store;
 }
 

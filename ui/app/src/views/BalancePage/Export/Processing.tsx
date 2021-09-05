@@ -39,7 +39,8 @@ export default defineComponent({
           (await useCore().services.ethbridge.fetchSymbolAddress(
             exportStore.state.draft.symbol,
           )) || "0x0000000000000000000000000000000000000000";
-
+        debugger;
+        return;
         await suggestEthereumAsset(
           exportData.targetTokenRef.value?.asset,
           address,
@@ -48,6 +49,7 @@ export default defineComponent({
       }
     };
 
+    handleSuggestAsset();
     return () => {
       return (
         <TransactionDetailsModal

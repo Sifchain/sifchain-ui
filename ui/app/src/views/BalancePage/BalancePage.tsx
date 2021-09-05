@@ -5,6 +5,7 @@ import {
   computed,
   Transition,
   KeepAlive,
+  onMounted,
 } from "vue";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetIcon from "@/components/AssetIcon";
@@ -29,6 +30,15 @@ export default defineComponent({
       reverse: false,
     });
 
+    // There's a bug with refreshing while an import child route is open
+    // right as balance page loads... this "fixes" it. TODO: find real cause.
+    let isReady = ref(false);
+    onMounted(() => {
+      setTimeout(() => {
+        isReady.value = true;
+      }, 1000);
+    });
+
     effect(() => {
       if (state.searchQuery) {
         state.expandedSymbol = "";
@@ -39,7 +49,7 @@ export default defineComponent({
       {
         name: "Token",
         sortBy: "symbol" as BalancePageState["sortBy"],
-        class: "text-left",
+        class: "text-left min-w-[150px]",
         ref: ref<HTMLElement>(),
       },
       {
@@ -169,7 +179,9 @@ export default defineComponent({
             </tbody>
           </table>
         </PageCard>
-        <RouterView></RouterView>
+        <RouterView
+          name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
+        ></RouterView>
       </Layout>
     );
   },

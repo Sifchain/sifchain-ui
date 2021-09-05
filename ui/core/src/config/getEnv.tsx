@@ -89,7 +89,7 @@ const hostDefaultEnvs = [
   { test: /dex-v2.*?\.sifchain\.finance$/, net: NetworkEnv.TESTNET_042_IBC },
   { test: /sifchain\.vercel\.app$/, net: NetworkEnv.DEVNET },
   { test: /gateway\.pinata\.cloud$/, net: NetworkEnv.DEVNET },
-  { test: /localhost$/, net: NetworkEnv.LOCALNET },
+  { test: /localhost$/, net: NetworkEnv.DEVNET },
 ];
 
 export function getNetworkEnv(hostname: string) {

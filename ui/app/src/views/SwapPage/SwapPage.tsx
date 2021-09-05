@@ -1,4 +1,10 @@
-import { ComponentPublicInstance, defineComponent, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  defineComponent,
+  onMounted,
+  ref,
+  watch,
+} from "vue";
 import PageCard from "@/components/PageCard";
 import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
@@ -27,7 +33,11 @@ export default defineComponent({
     const router = useRouter();
     const isInverted = ref(false);
 
-    watch([data.pageState.value], () => {
+    onMounted(() => {
+      data.fromAmount.value = data.toAmount.value = "0";
+    });
+
+    watch([data.pageState], () => {
       switch (data.pageState.value) {
         case "idle": {
           return router.push({});
@@ -124,20 +134,18 @@ export default defineComponent({
             liquidityProviderFee={data.providerFee.value ?? ""}
             minimumReceived={data.minimumReceived.value}
           />
-          {
-            <Button.CallToAction
-              onClick={() => {
-                if (!data.nextStepAllowed.value) {
-                  return appWalletPicker.show();
-                }
-                data.handleNextStepClicked();
-              }}
-              disabled={!data.nextStepAllowed.value}
-              class="mt-[10px]"
-            >
-              {data.nextStepMessage.value}
-            </Button.CallToAction>
-          }
+          <Button.CallToAction
+            onClick={() => {
+              if (!data.nextStepAllowed.value) {
+                return appWalletPicker.show();
+              }
+              data.handleNextStepClicked();
+            }}
+            disabled={!data.nextStepAllowed.value}
+            class="mt-[10px]"
+          >
+            {data.nextStepMessage.value}
+          </Button.CallToAction>
           <RouterView></RouterView>
           <div class="pb-4" />
         </PageCard>
