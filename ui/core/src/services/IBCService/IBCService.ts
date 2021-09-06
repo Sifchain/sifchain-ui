@@ -5,13 +5,8 @@ import {
   BroadcastTxResponse,
   IndexedTx,
   MsgSendEncodeObject,
-  AminoTypes,
-  SignerData,
-  isAminoMsgDelegate,
-  AminoConverter,
 } from "@cosmjs/stargate";
 import { OfflineSigner } from "@cosmjs/proto-signing";
-import * as inflection from "inflection";
 
 import {
   Asset,
@@ -38,37 +33,12 @@ import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
 import { TokenRegistryService } from "../TokenRegistryService/TokenRegistryService";
 import { KeplrWalletProvider } from "../../clients/wallets";
 import { IBC_EXPORT_FEE_ADDRESS } from "../../utils/ibcExportFees";
-import {
-  AminoMsg,
-  encodeSecp256k1Pubkey,
-  makeSignDoc as makeSignDocAmino,
-  OfflineAminoSigner,
-  StdFee,
-} from "@cosmjs/amino";
-import { fromBase64 } from "@cosmjs/encoding";
-import { Int53 } from "@cosmjs/math";
-import {
-  EncodeObject,
-  encodePubkey,
-  makeAuthInfoBytes,
-} from "@cosmjs/proto-signing";
-import { SignMode } from "@cosmjs/proto-signing/build/codec/cosmos/tx/signing/v1beta1/signing";
-import { memoize } from "lodash";
-import {
-  TxRaw,
-  TxBody,
-} from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
-import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
-import { isAminoMsgTransfer } from "@cosmjs/stargate/build/aminomsgs";
-import { SifClient, SifUnSignedClient } from "../../services/utils/SifClient";
-import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   sifRpcUrl: string;
   assets: Asset[];
   chainConfigsByNetwork: NetworkChainConfigLookup;
-  sifUnsignedClient?: SifUnSignedClient;
 }
 
 export class IBCService {
@@ -245,6 +215,16 @@ export class IBCService {
         return true;
       }),
     );
+    const allCxns = await Promise.all(
+      (await queryClient.ibc.connection.allConnections()).connections.map(
+        async (cxn) => {
+          return {
+            cxn,
+          };
+        },
+      ),
+    );
+    console.log({ destinationNetwork, allChannels, allCxns, clients });
 
     const tokenRegistryEntries = await this.tokenRegistry.load();
     console.log("Sifchain Connections: ");
@@ -299,22 +279,10 @@ export class IBCService {
       maxMsgsPerBatch = 800,
       maxAmountPerMsg = `9223372036854775807`,
       gasPerBatch = undefined,
-      loadOfflineSigner = async (
+      loadOfflineSigner = (
         chainId: string,
-      ): Promise<OfflineSigner | undefined> => {
-        const keplr = await getKeplrProvider();
-        const signer = await keplr?.getOfflineSignerOnlyAmino(chainId);
-        const keplrKey = await keplr?.getKey(chainId);
-        // @ts-ignore
-        signer.signDirect = undefined;
-        console.log({ signer });
-        // @ts-ignore
-        if (keplrKey["isNanoLedger"] && signer) {
-          // @ts-ignore
-          // signer.signAmino = (...args) => keplr?.signAmino(chainId, ...args);
-        }
-        return signer;
-      },
+      ): Promise<OfflineSigner | undefined> | undefined =>
+        getKeplrProvider().then((keplr) => keplr?.getOfflineSigner(chainId)),
     } = {},
   ): Promise<BroadcastTxResponse[]> {
     const sourceChain = this.loadChainConfigByNetwork(params.sourceNetwork);
@@ -327,7 +295,6 @@ export class IBCService {
     await keplr?.experimentalSuggestChain(destinationChain.keplrChainInfo);
     await keplr?.enable(destinationChain.chainId);
     const recievingSigner = await loadOfflineSigner(destinationChain.chainId);
-
     if (!recievingSigner) throw new Error("No recieving signer");
     const [toAccount] = (await recievingSigner?.getAccounts()) || [];
     if (!toAccount) throw new Error("No account found for recieving signer");
@@ -343,9 +310,7 @@ export class IBCService {
         params.destinationNetwork
       }/${await recievingSigner.getAccounts().then(([a]) => a.address)}`,
     );
-    const accounts = (await sendingSigner?.getAccounts()) || [];
-    const [fromAccount] = accounts;
-    console.log(accounts);
+    const [fromAccount] = (await sendingSigner?.getAccounts()) || [];
     if (!fromAccount) {
       throw new Error("No account found for sending signer");
     }
@@ -354,10 +319,6 @@ export class IBCService {
       destinationChain.rpcUrl,
       recievingSigner,
       {
-        aminoTypes: new AminoTypes({
-          additions: createAminoAdditions(),
-          prefix: undefined,
-        }),
         gasLimits: {
           send: 80000,
           transfer: 250000,
@@ -371,14 +332,10 @@ export class IBCService {
       },
     );
 
-    const sendingStargateClient = await SigningStargateClient.connectWithSigner(
+    const sendingStargateClient = await SigningStargateClient?.connectWithSigner(
       sourceChain.rpcUrl,
       sendingSigner,
       {
-        aminoTypes: new AminoTypes({
-          additions: createAminoAdditions(),
-          prefix: undefined,
-        }),
         gasLimits: {
           send: 80000,
           transfer: 250000,
@@ -400,12 +357,12 @@ export class IBCService {
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
     const timeoutInMinutes = this.transferTimeoutMinutes;
-    // const timeoutTimestampInSeconds = Math.floor(
-    //   new Date().getTime() / 1000 + 60 * timeoutInMinutes,
-    // );
-    // const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
-    //   ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
-    //   : undefined;
+    const timeoutTimestampInSeconds = Math.floor(
+      new Date().getTime() / 1000 + 60 * timeoutInMinutes,
+    );
+    const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
+      ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
+      : undefined;
     const currentHeight = await receivingStargateCient.getHeight();
     const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const registry = await this.tokenRegistry.load();
@@ -440,9 +397,9 @@ export class IBCService {
         },
         timeoutHeight: {
           // revisionHeight: timeoutHeight,
-          revisionHeight: timeoutHeight,
+          // revisionHeight: timeoutHeight,
         },
-        // timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
+        timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
       }),
     };
 
@@ -480,7 +437,6 @@ export class IBCService {
       .get(params.destinationNetwork)
       .calculateTransferFeeToChain(params.assetAmountToTransfer);
     if (feeAmount?.amount.greaterThan("0")) {
-      console.log("CHARGING FEE");
       const feeEntry = registry.find(
         (item) => item.baseDenom === feeAmount.asset.symbol,
       );
@@ -527,123 +483,29 @@ export class IBCService {
             .then((r) => r.json())
             .catch((e) => {});
         } catch (e) {}
-        const chainId = await sendingStargateClient.getChainId();
-        const height = await sendingStargateClient.getHeight();
-        const sequence = await sendingStargateClient.getSequence(
-          fromAccount.address,
-        );
-        while (height === (await sendingStargateClient.getHeight())) {
-          await new Promise((r) => setTimeout(r, 1000));
-        }
-        this.context.sifUnsignedClient;
-        console.log("api url " + this.context.sifUnsignedClient?.apiUrl);
-
-        const aminoTypes = new AminoTypes({
-          additions: {},
-          prefix: undefined,
-        });
-        // const legacyBroadcastRes = await legacyClient.signAndBroadcast(
-        //   batch.map(aminoTypes.toAmino.bind(aminoTypes)),
-        //   {
-        //     ...sendingStargateClient.fees.transfer,
-        //   },
-        // );
-        // console.log({ legacyBroadcastRes });
-        const cosmosClient = new SigningCosmosClient(
-          sourceChain.restUrl,
-          fromAccount.address,
-          sendingSigner,
-        );
-        // const brdcstTxResLegacy = await cosmosClient.signAndBroadcast(
-        //   batch.map(aminoTypes.toAmino.bind(aminoTypes)),
-        //   sendingStargateClient.fees.transfer,
-        // );
-        // console.log({ brdcstTxResLegacy });
-        const signedMsg = await keplr?.signAmino(
-          await sendingStargateClient.getChainId(),
-          fromAccount.address,
-          {
-            msgs: batch.map(aminoTypes.toAmino.bind(aminoTypes)),
-            fee: sendingStargateClient.fees.transfer,
-            chain_id: sourceChain.chainId,
-            account_number: sequence.accountNumber.toString(),
-            sequence: sequence.sequence.toString(),
-            memo: "",
-          },
-        );
-
-        const brdcstTxResKeplr = await keplr?.sendTx(
-          await sendingStargateClient.getChainId(),
-          {
-            msg: signedMsg!.signed.msgs,
-            signatures: [signedMsg!.signature],
-            fee: {
-              ...sendingStargateClient.fees.transfer,
-              amount: [
-                ...sendingStargateClient.fees.transfer.amount.map((amt) => ({
-                  ...amt,
-                  denom: "uatom",
-                })),
-              ],
-            },
-            memo: "",
-          },
-          BroadcastMode.Block,
-        );
-        console.log({ brdcstTxResKeplr });
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,
           batch,
           {
             ...sendingStargateClient.fees.transfer,
-            // amount: [
-            //   {
-            //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
-            //     amount:
-            //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
-            //       "",
-            //   },
-            // ],
-            // ...(externalGasPrices &&
-            // externalGasPrices[sourceChain.chainId || ""]
-            //   ? {
-            //       gas: externalGasPrices[sourceChain.chainId || ""],
-            //     }
-            //   : {}),
+            amount: [
+              {
+                denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
+                amount:
+                  sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+                  "",
+              },
+            ],
+            ...(externalGasPrices &&
+            externalGasPrices[sourceChain.chainId || ""]
+              ? {
+                  gas: externalGasPrices[sourceChain.chainId || ""],
+                }
+              : {}),
             // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
           },
-          // "",
-          // {
-          //   chainId,
-          //   accountNumber: sequence.accountNumber,
-          //   sequence: sequence.sequence,
-          // },
         );
         console.log({ brdcstTxRes });
-        // const decodedTx = TxBody.decode(sig.bodyBytes);
-        // const stdTx: StdTx = {
-        //   msg: decodedTx.messages.map(aminoTypes.toAmino.bind(aminoTypes)),
-        //   fee: sendingStargateClient.fees.transfer,
-        //   signatures: sig.signatures,
-        // };
-        // const broadcastTxRes = await keplr?.sendTx(
-        //   chainId,
-        //   sig,
-        //   BroadcastMode.Block,
-        // );
-        // console.log({ broadcastTxRes });
-        // const tx_data = Buffer.from(sig).toString("base64");
-        // console.log({ tx_data });
-
-        // const txRaw: TxRaw = TxRaw.fromPartial({
-        //   bodyBytes: sig.bodyBytes,
-        //   authInfoBytes: sig.authInfoBytes,
-        //   signatures: sig.signatures,
-        // });
-
-        // const enc = TxRaw.encode(txRaw);
-        // const dec = TxRaw.encode(TxRaw.decode(enc.finish())).finish();
-
         responses.push(brdcstTxRes);
       } catch (e) {
         console.error(e);
@@ -666,160 +528,4 @@ export class IBCService {
 
 export default function createIBCService(context: IBCServiceContext) {
   return IBCService.create(context);
-}
-
-const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
-  const [_namespace, cosmosModule, _version, messageType] = typeUrl.split(".");
-  return `${cosmosModule}/${messageType}`;
-};
-
-const convertToSnakeCaseDeep = (obj: any): any => {
-  if (typeof obj !== "object") {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map((item) => convertToSnakeCaseDeep(item));
-  }
-  const newObj: any = {};
-  for (let prop in obj) {
-    newObj[inflection.underscore(prop)] = convertToSnakeCaseDeep(obj[prop]);
-  }
-  return newObj;
-};
-
-const convertToCamelCaseDeep = (obj: any): any => {
-  if (typeof obj !== "object") {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map((item) => convertToCamelCaseDeep(item));
-  }
-  const newObj: any = {};
-  for (let prop in obj) {
-    newObj[inflection.underscore(prop)] = convertToCamelCaseDeep(obj[prop]);
-  }
-  return newObj;
-};
-
-const createAminoAdditions = (): Record<string, AminoConverter> => {
-  /* 
-
-    export const liquidityTypes = {
-      '/tendermint.liquidity.v1beta1.MsgCreatePool': {
-        aminoType: 'liquidity/MsgCreatePool',
-        toAmino: ({ poolCreatorAddress, poolTypeId, depositCoins }: MsgCreatePool): AminoMsgCreatePool['value'] => ({
-          pool_creator_address: poolCreatorAddress,
-          pool_type_id: poolTypeId,
-          deposit_coins: [...depositCoins],
-        }),
-        fromAmino: ({ pool_creator_address, pool_type_id, deposit_coins }: AminoMsgCreatePool['value']): MsgCreatePool => ({
-          poolCreatorAddress: pool_creator_address,
-          poolTypeId: pool_type_id,
-          depositCoins: [...deposit_coins],
-        }),
-      }
-    };
-
-  */
-  const aminoAdditions: Record<string, AminoConverter> = {};
-  const protogens = NativeDexClient.getGeneratedTypes();
-  for (let [typeUrl, _genType] of protogens) {
-    if (!typeUrl.includes("sifnode")) continue;
-    aminoAdditions[typeUrl] = {
-      aminoType: createAminoTypeNameFromProtoTypeUrl(typeUrl),
-      toAmino: (value: any): AminoMsg => convertToSnakeCaseDeep(value),
-      fromAmino: (value: AminoMsg): any => convertToCamelCaseDeep(value),
-    };
-  }
-  console.log({ aminoAdditions });
-  return aminoAdditions;
-};
-
-interface NativeSigning {
-  sendingSigner: OfflineAminoSigner;
-  signWMeta: (
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: StdFee,
-    memo: string,
-    signerData: SignerData,
-  ) => Promise<Uint8Array>;
-}
-
-class NativeSigningClient
-  extends SigningStargateClient
-  implements NativeSigning {
-  sendingSigner: OfflineAminoSigner;
-  constructor(...args: any[]) {
-    super(args[0], args[1], args[2]);
-    this.sendingSigner = args[1];
-  }
-  async signWMeta(
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: StdFee,
-    memo = "",
-    signerData: SignerData,
-  ): Promise<Uint8Array> {
-    console.log(arguments);
-    const { chainId, accountNumber, sequence } = signerData;
-    const accountFromSigner = (await this.sendingSigner.getAccounts()).find(
-      (account) => account.address === signerAddress,
-    );
-    if (!accountFromSigner) {
-      throw new Error("Failed to retrieve account from signer");
-    }
-    const aminoTypes = new AminoTypes({
-      additions: {},
-      prefix: undefined,
-    });
-    // @ts-ignore
-    console.log(aminoTypes.register);
-    const pubkey = encodePubkey(
-      encodeSecp256k1Pubkey(accountFromSigner.pubkey),
-    );
-
-    const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
-    const msgs = messages.map((msg) => aminoTypes.toAmino(msg));
-
-    const signDoc = makeSignDocAmino(
-      msgs,
-      fee,
-      chainId,
-      memo,
-      accountNumber,
-      sequence,
-    );
-    const { signature, signed } = await this.sendingSigner.signAmino(
-      signerAddress,
-      signDoc,
-    );
-    const signedTxBody = {
-      messages: signed.msgs.map((msg) => aminoTypes.fromAmino(msg)),
-      memo: signed.memo,
-    };
-    const signedTxBodyEncodeObject: EncodeObject = {
-      typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: signedTxBody,
-    };
-    const signedTxBodyBytes = this.registry.encode(signedTxBodyEncodeObject);
-    const signedGasLimit = Int53.fromString(signed.fee.gas).toNumber();
-    const signedSequence = Int53.fromString(signed.sequence).toNumber();
-    const signedAuthInfoBytes = makeAuthInfoBytes(
-      [pubkey],
-      signed.fee.amount,
-      signedGasLimit,
-      signedSequence,
-      signMode,
-    );
-    const txRaw: TxRaw = TxRaw.fromPartial({
-      bodyBytes: signedTxBodyBytes,
-      authInfoBytes: signedAuthInfoBytes,
-      signatures: [fromBase64(signature.signature)],
-    });
-
-    const enc = TxRaw.encode(txRaw);
-    const dec = TxRaw.encode(TxRaw.decode(enc.finish())).finish();
-    return dec;
-  }
 }
