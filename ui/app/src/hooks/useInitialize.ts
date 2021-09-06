@@ -1,4 +1,4 @@
-import { Network } from "@sifchain/sdk";
+import { Chain, Network } from "@sifchain/sdk";
 import { computed } from "@vue/reactivity";
 import { useCore } from "./useCore";
 import { useSubscription } from "./useSubscrition";
@@ -25,6 +25,8 @@ const mirrorToCore = (network: Network) => {
 // connected before. First time user connects, we persist it to localStorage.
 // If and only if that value is in localStorage on load, auto try to connect the wallet on load.
 // This prevents many Keplr connect popups from showing on load for each network.
+// NOTE(mccallofthewild): Above behavior is now deprecated for keplr wallet, as the getKey method
+// now exists. Will auto-query balances.
 const persistConnected = {
   get: (network: Network) => {
     return (
@@ -40,7 +42,18 @@ const persistConnected = {
   },
 };
 
+let connectAll = () => {
+  const core = useCore();
+  if (core.services.storage.getItem("hasRejectedConnectAll") === "true") {
+    return;
+  }
+  core.services?.wallet.tryConnectAllWallets().catch((e) => {
+    core.services.storage.setItem("hasRejectedConnectAll", "true");
+  });
+};
 export function useInitialize() {
+  connectAll();
+  connectAll = () => {};
   const { usecases, store, services } = useCore();
 
   // Initialize usecases / watches
@@ -71,34 +84,27 @@ export function useInitialize() {
 
   // Connect to networks in sequence, starting with Sifchain.
   (async () => {
-    if (persistConnected.get(Network.SIFCHAIN)) {
-      // Don't load anything else until sif is ready (it's the most important one,
-      // other network requests happening will slow it down.)
-      await accountStore.actions.load(Network.SIFCHAIN);
+    for (const network of Object.values(Network)) {
+      accountStore.actions.loadIfConnected(network);
+      watch(
+        accountStore.refs[network].computed(),
+        (value) => {
+          if (value.connected) {
+            persistConnected.set(network);
+            mirrorToCore(network);
+          }
+        },
+        {
+          deep: true,
+        },
+      );
+      if (
+        persistConnected.get(network) &&
+        !accountStore.state[network].connected
+      ) {
+        accountStore.actions.load(network);
+      }
     }
-
-    Object.values(Network)
-      .filter((n) => n !== Network.SIFCHAIN)
-      .forEach((network) => {
-        watch(
-          accountStore.refs[network].computed(),
-          (value) => {
-            if (value.connected) {
-              persistConnected.set(network);
-              mirrorToCore(network);
-            }
-          },
-          {
-            deep: true,
-          },
-        );
-        if (
-          persistConnected.get(network) &&
-          !accountStore.state[network].connected
-        ) {
-          accountStore.actions.load(network);
-        }
-      });
   })();
 
   interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {

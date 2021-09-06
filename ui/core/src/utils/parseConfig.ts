@@ -139,6 +139,7 @@ export function parseConfig(
     });
 
   return {
+    chains: [],
     chainConfigsByNetwork: chainConfigsByNetwork,
     sifAddrPrefix: config.sifAddrPrefix,
     sifApiUrl: config.sifApiUrl,

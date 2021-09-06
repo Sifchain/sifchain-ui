@@ -13,6 +13,15 @@ export default function MetamaskActions(
   const { services, store } = context;
 
   return {
+    async loadIfConnected(network: Network) {
+      await new Promise((r) => setTimeout(r, 500));
+      if (services.eth.isConnected()) {
+        return this.load(network);
+      }
+      return {
+        connected: false,
+      };
+    },
     async load(network: Network) {
       // await new Promise<void>((resolve, reject) => {
       //   const validChainId = services.chains.get(Network.ETHEREUM).chainConfig

@@ -48,6 +48,7 @@ export class SifUnSignedClient
   protected readonly lcdClient: CustomLcdClient;
   private subscriber: TendermintSocketPoll | undefined;
   rpcUrl: string;
+  apiUrl: string;
   constructor(
     apiUrl: string,
     wsUrl = "ws://localhost:26657/websocket",
@@ -56,6 +57,7 @@ export class SifUnSignedClient
   ) {
     super(apiUrl, broadcastMode);
     this.rpcUrl = rpcUrl;
+    this.apiUrl = apiUrl;
     this.lcdClient = createLcdClient(apiUrl, broadcastMode);
     this.swap = this.lcdClient.clp.swap;
     this.getPools = this.lcdClient.clp.getPools;

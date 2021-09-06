@@ -129,12 +129,19 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       .filter((c) => c.chainConfig.chainType === "ibc")
       .map((c) => c.chainConfig.chainId);
     // @ts-ignore
-    keplr?.enable(chainIds);
+    return keplr?.enable(chainIds);
   }
   async connect(chain: Chain): Promise<WalletConnectionState> {
-    const sendingSigner = await this.getSendingSigner(chain);
-
-    const address = (await sendingSigner.getAccounts())[0]?.address;
+    // try to get the address quietly
+    const keplr = await getKeplrProvider();
+    const key = await keplr?.getKey(chain.chainConfig.chainId);
+    let address = key?.bech32Address;
+    // if quiet get fails, try to enable the wallet
+    if (!address) {
+      const sendingSigner = await this.getSendingSigner(chain);
+      address = (await sendingSigner.getAccounts())[0]?.address;
+    }
+    // if enabling & quiet get fails, throw.
     if (!address) {
       throw new Error("No address to connect to");
     }
@@ -166,8 +173,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    const stargate = await this.getStargateClientCached(chain);
-    const balances = await stargate.getAllBalances(address);
+    // permissionless query to get all balances
+    const queryClient = await this.getQueryClientCached(chain);
+    const balances = await queryClient?.bank.allBalances(address);
 
     const assetAmounts: IAssetAmount[] = [];
 

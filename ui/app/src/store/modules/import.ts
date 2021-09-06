@@ -90,7 +90,8 @@ export const importStore = Vuextra.createStore({
   }),
   actions: (ctx) => ({
     async runImport(payload: { assetAmount: IAssetAmount }) {
-      if (!payload.assetAmount) throw new Error("Please provide an amount");
+      if (!payload.assetAmount || !payload.assetAmount.greaterThan("0"))
+        throw new Error("Please provide an amount");
       self.setPegEvent(undefined);
 
       const interchain = useCore().usecases.interchain(
