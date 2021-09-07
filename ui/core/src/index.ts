@@ -3,7 +3,6 @@ export * from "./services";
 export * from "./usecases";
 export * from "./store";
 export * from "./usecases/clp/calculators";
-export * from "./usecases/clp/calculators/utils";
 
 // For some reason we can't reexport from the index.
 export * from "./config/AppCookies";

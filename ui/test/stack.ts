@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+// @ts-nocheck
 import { spawn, ChildProcess, exec } from "child_process";
 import { resolve } from "path";
 

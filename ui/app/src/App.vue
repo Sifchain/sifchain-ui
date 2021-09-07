@@ -25,6 +25,25 @@ import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
 import OnboardingModal from "@/components/OnboardingModal";
 
+// not currently working? - McCall
+const hideRedundantUselessMetamaskErrors = () => {
+  let hiddenCount = 0;
+  console.error = (...args: any[]) => {
+    if (++hiddenCount === 1) {
+      console.warn("Hiding redundant Metamask 'header not found' errors.");
+    }
+    if (
+      args[0] &&
+      typeof args[0] === "string" &&
+      args[0].includes("MetaMask - RPC Error: header not found")
+    ) {
+      return;
+    }
+    return console.error(...args);
+  };
+};
+hideRedundantUselessMetamaskErrors();
+
 const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
 
 let hasShownGetRowanModal = (() => {
@@ -49,7 +68,6 @@ export default defineComponent({
     Notifications,
     EnvAlert,
     SideBar,
-    OnboardingModal,
     Flags,
   },
   computed: {

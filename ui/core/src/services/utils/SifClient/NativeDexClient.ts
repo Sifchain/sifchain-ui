@@ -15,6 +15,7 @@ import {
   isTsProtoGeneratedType,
   OfflineSigner,
 } from "@cosmjs/stargate/node_modules/@cosmjs/proto-signing";
+
 import {
   BroadcastTxResponse,
   createProtobufRpcClient,
@@ -69,28 +70,33 @@ export class NativeDexClient {
     return instance;
   }
 
-  async createSigningClient(signer: OfflineSigner) {
-    const createCustomTypesForModule = (
-      nativeModule: Record<string, GeneratedType | any> & {
-        protobufPackage: string;
-      },
-    ): Iterable<[string, GeneratedType]> => {
-      let types: [string, GeneratedType][] = [];
-      for (const [prop, type] of Object.entries(nativeModule)) {
-        if (!isTsProtoGeneratedType(type)) {
-          continue;
-        }
-        types.push([`/${nativeModule.protobufPackage}.${prop}`, type]);
-      }
-      return types;
-    };
-
-    const nativeRegistry = new Registry([
+  static getGeneratedTypes() {
+    return [
       ...defaultRegistryTypes,
-      ...createCustomTypesForModule(EthbridgeV1Tx),
-      ...createCustomTypesForModule(DispensationV1Tx),
-      ...createCustomTypesForModule(CLPV1Tx),
-      ...createCustomTypesForModule(TokenRegistryV1Tx),
+      ...this.createCustomTypesForModule(EthbridgeV1Tx),
+      ...this.createCustomTypesForModule(DispensationV1Tx),
+      ...this.createCustomTypesForModule(CLPV1Tx),
+      ...this.createCustomTypesForModule(TokenRegistryV1Tx),
+    ];
+  }
+  static createCustomTypesForModule(
+    nativeModule: Record<string, GeneratedType | any> & {
+      protobufPackage: string;
+    },
+  ): Iterable<[string, GeneratedType]> {
+    let types: [string, GeneratedType][] = [];
+    for (const [prop, type] of Object.entries(nativeModule)) {
+      if (!isTsProtoGeneratedType(type)) {
+        continue;
+      }
+      types.push([`/${nativeModule.protobufPackage}.${prop}`, type]);
+    }
+    return types;
+  }
+
+  async createSigningClient(signer: OfflineSigner) {
+    const nativeRegistry = new Registry([
+      ...NativeDexClient.getGeneratedTypes(),
     ]);
 
     const client = await SigningStargateClient.connectWithSigner(

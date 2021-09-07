@@ -30,6 +30,7 @@ export type EthbridgeServiceContext = {
   getWeb3Provider: () => Promise<provider>;
   sifUnsignedClient?: SifUnSignedClient;
   assets: IAsset[];
+  peggyCompatibleCosmosBaseDenoms: Set<string>;
 };
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -43,6 +44,7 @@ export default function createEthbridgeService({
   getWeb3Provider,
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
   assets,
+  peggyCompatibleCosmosBaseDenoms,
 }: EthbridgeServiceContext) {
   // Pull this out to a util?
   // How to handle context/dependency injection?
@@ -135,11 +137,28 @@ export default function createEthbridgeService({
   }
 
   return {
+    async addEthereumAddressToPeggyCompatibleCosmosAssets() {
+      /* 
+        Should be called on load. This is a hack to make cosmos assets peggy compatible 
+        while the SDK bridge abstraction is a WIP.
+      */
+      for (let asset of assets) {
+        try {
+          if (peggyCompatibleCosmosBaseDenoms.has(asset.symbol)) {
+            asset.address = await this.fetchTokenAddress(asset);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
     createPegTx,
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
       const tokenContract = await getTokenContract(web3, amount.asset.address!);
+      debugger;
+
       const sendArgs = {
         from: account,
         value: 0,
@@ -186,11 +205,9 @@ export default function createEthbridgeService({
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      const tokenAddress =
-        sifAsset.ibcDenom ||
-        (await this.fetchTokenAddress(sifAsset)) ||
-        ETH_ADDRESS;
-
+      let tokenAddress = await this.fetchTokenAddress(sifAsset);
+      tokenAddress = +tokenAddress ? tokenAddress : sifAsset.ibcDenom;
+      tokenAddress = tokenAddress || ETH_ADDRESS;
       console.log("burnToEthereum: start: ", tokenAddress);
 
       const txReceipt = await sifUnsignedClient.burn({
@@ -407,7 +424,7 @@ export default function createEthbridgeService({
     },
 
     async fetchTokenAddress(
-      // asset to fetch token for
+      // asset to fetch token address for
       asset: IAsset,
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
@@ -418,35 +435,35 @@ export default function createEthbridgeService({
         bridgebankContractAddress,
       );
 
-      const attemptSymbols = [
-        asset.ibcDenom,
+      const possibleSymbols = [
+        // IBC assets with dedicated decimal-precise contracts are uppercase
+        asset.displaySymbol.toUpperCase(),
+        // remove c prefix
         asset.symbol.replace(/^c/, ""),
+        // remove e prefix
         asset.symbol.replace(/^e/, ""),
+        // display symbol goes before ibc denom because the dedicated decimal-precise contracts
+        // utilize the display symbol
         asset.displaySymbol,
+        asset.ibcDenom,
         asset.symbol,
         "e" + asset.symbol,
-      ].filter((item, index, array) => {
-        return !!item && array.indexOf(item) === index;
-      });
-
-      let tokenAddress: string = "0";
-      let nextAttempt: string | undefined;
-      while (
-        attemptSymbols.length > 0 &&
-        (nextAttempt = attemptSymbols.shift())
-      ) {
-        tokenAddress = await bridgeBankContract.methods
-          .getBridgeToken(nextAttempt)
+      ];
+      for (let symbol of possibleSymbols) {
+        // Fetch the token address from bridgebank
+        let tokenAddress = await bridgeBankContract.methods
+          .getBridgeToken(symbol)
           .call();
-        if (!tokenAddress.startsWith("0x0")) break;
 
-        tokenAddress = await bridgeBankContract.methods
-          .getLockedTokenAddress(nextAttempt)
-          .call();
-        if (!tokenAddress.startsWith("0x0")) break;
+        // Token address is a hex number. If it is non-zero (not ethereum or empty) when parsed, return it.
+        if (+tokenAddress) {
+          return tokenAddress;
+        }
+        // If this is ethereum, and the token address is empty, return the ethereum address
+        if (tokenAddress === ETH_ADDRESS && symbol?.endsWith("eth")) {
+          return tokenAddress;
+        }
       }
-
-      return tokenAddress.startsWith("0x0") ? undefined : tokenAddress;
     },
 
     async fetchAllTokenAddresses(

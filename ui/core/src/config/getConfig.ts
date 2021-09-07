@@ -89,37 +89,56 @@ export function getConfig(
     });
 
   allAssets = allAssets.map(cacheAsset);
-
+  const peggyCompatibleCosmosBaseDenoms = new Set([
+    "uiris",
+    "uatom",
+    "uxprt",
+    "ukava",
+    "uakt",
+    "hard",
+    "uosmo",
+    "uregen",
+    "uion",
+    // not sure if these contracts actually exist
+    "uphoton",
+    "unyan",
+  ]);
   const configMap: ConfigMap = {
     localnet: parseConfig(
       localnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.LOCALNET],
+      peggyCompatibleCosmosBaseDenoms,
     ),
     devnet: parseConfig(
       devnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET],
+      peggyCompatibleCosmosBaseDenoms,
     ),
     devnet_042: parseConfig(
       devnet042config as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET_042],
+      peggyCompatibleCosmosBaseDenoms,
     ),
     testnet: parseConfig(
       testnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET],
+      peggyCompatibleCosmosBaseDenoms,
     ),
     mainnet: parseConfig(
       mainnnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.MAINNET],
+      peggyCompatibleCosmosBaseDenoms,
     ),
     testnet_042_ibc: parseConfig(
       testnet042ibcconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET_042_IBC],
+      peggyCompatibleCosmosBaseDenoms,
     ),
   };
 

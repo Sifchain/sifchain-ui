@@ -9,20 +9,7 @@ import {
 } from "vue";
 import { IAsset } from "@sifchain/sdk";
 import SvgSpinnerIcon from "../assets/icons/interactive/anim-circle-spinner.svg";
-// Load all SVG icons with glob so that they get included as assets
-// This will just give us their src string.
-// Our SVG loader has a rule: when it comes to items from /public, do not inline them. only return src.
-const globResult = import.meta.globEager("./../../public/images/tokens/*");
-
-const tokenSrcMap = Object.keys(globResult).reduce((map, key) => {
-  // @ts-ignore
-  const symbol = key
-    .split("/")
-    .pop()
-    .replace(/\.svg$/i, "");
-  map.set(symbol, globResult[key].default);
-  return map;
-}, new Map<string, string>());
+import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
 
 export const TokenIcon = defineComponent({
   props: {
@@ -49,13 +36,7 @@ export const TokenIcon = defineComponent({
       async ([asset, asset2]) => {
         asset = asset || asset2;
         if (!asset) return;
-
-        const svgUrl = tokenSrcMap.get(asset.displaySymbol.toUpperCase());
-        url.value =
-          svgUrl ||
-          core.config.assets
-            .find((a) => a.symbol == asset?.symbol)
-            ?.imageUrl?.replace("thumb", "large");
+        url.value = getTokenIconUrl(asset);
       },
       {
         immediate: true,
