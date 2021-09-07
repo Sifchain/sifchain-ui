@@ -4,6 +4,7 @@ import { useCore } from "@/hooks/useCore";
 import {
   computed,
   defineComponent,
+  effect,
   onMounted,
   onUnmounted,
   PropType,
@@ -12,6 +13,7 @@ import {
   Teleport,
   TransitionGroup,
   watch,
+  watchEffect,
 } from "vue";
 import { IAsset, Network } from "../../../core/src";
 import { TokenIcon } from "./TokenIcon";
@@ -22,7 +24,7 @@ export const TokenSelectDropdown = defineComponent({
   props: {
     active: {
       type: Object as PropType<Ref<boolean>>,
-      required: false,
+      required: true,
     },
     onCloseIntent: {
       type: Function,
@@ -92,7 +94,7 @@ export const TokenSelectDropdown = defineComponent({
     });
 
     watch(
-      [props.active],
+      props.active,
       () => {
         if (props.active?.value) {
           // If a click is still in progress, we don't want to attach this listener yet.
@@ -111,7 +113,7 @@ export const TokenSelectDropdown = defineComponent({
           );
         }
       },
-      { immediate: true },
+      { immediate: true, deep: true },
     );
 
     watch([props.active], () => {

@@ -4,12 +4,12 @@ import { ErrorCode, getErrorMessage } from "../../entities/Errors";
 
 export function parseTxFailure(txFailure: {
   transactionHash: string;
-  rawLog: string;
+  rawLog?: string;
 }): TransactionStatus {
   console.log({ "txFailure.rawLog": txFailure.rawLog });
   // TODO: synchronise with backend and use error codes at the service level
   // and provide a localized error lookup on frontend for messages
-  if (txFailure.rawLog.toLowerCase().includes("below expected")) {
+  if (txFailure.rawLog?.toLowerCase().includes("below expected")) {
     return {
       code: ErrorCode.TX_FAILED_SLIPPAGE,
       hash: txFailure.transactionHash,
@@ -18,7 +18,7 @@ export function parseTxFailure(txFailure: {
     };
   }
 
-  if (txFailure.rawLog.toLowerCase().includes("swap_failed")) {
+  if (txFailure.rawLog?.toLowerCase().includes("swap_failed")) {
     return {
       code: ErrorCode.TX_FAILED,
       hash: txFailure.transactionHash,
@@ -27,7 +27,7 @@ export function parseTxFailure(txFailure: {
     };
   }
 
-  if (txFailure.rawLog.toLowerCase().includes("request rejected")) {
+  if (txFailure.rawLog?.toLowerCase().includes("request rejected")) {
     return {
       code: ErrorCode.USER_REJECTED,
       hash: txFailure.transactionHash,
@@ -36,7 +36,7 @@ export function parseTxFailure(txFailure: {
     };
   }
 
-  if (txFailure.rawLog.toLowerCase().includes("out of gas")) {
+  if (txFailure.rawLog?.toLowerCase().includes("out of gas")) {
     return {
       code: ErrorCode.TX_FAILED_OUT_OF_GAS,
       hash: txFailure.transactionHash,
@@ -45,7 +45,7 @@ export function parseTxFailure(txFailure: {
     };
   }
 
-  if (txFailure.rawLog.toLowerCase().includes("insufficient funds")) {
+  if (txFailure.rawLog?.toLowerCase().includes("insufficient funds")) {
     return {
       code: ErrorCode.INSUFFICIENT_FUNDS,
       hash: txFailure.transactionHash,
@@ -55,12 +55,28 @@ export function parseTxFailure(txFailure: {
   }
 
   if (
-    txFailure.rawLog.toLowerCase().includes("user does not have enough balance")
+    txFailure.rawLog
+      ?.toLowerCase()
+      .includes("user does not have enough balance")
   ) {
     return {
       code: ErrorCode.TX_FAILED_USER_NOT_ENOUGH_BALANCE,
       hash: txFailure.transactionHash,
       memo: getErrorMessage(ErrorCode.TX_FAILED_USER_NOT_ENOUGH_BALANCE),
+      state: "failed",
+    };
+  }
+
+  if (
+    txFailure.rawLog
+      ?.toLowerCase()
+      .includes("data is invalid : unexpected characters")
+  ) {
+    return {
+      code: ErrorCode.UNKNOWN_FAILURE,
+      hash: txFailure.transactionHash,
+      memo:
+        "Error processing transaction with Ledger. A fix is in progress for this. Until then, please use Sifchain without a Ledger wallet.",
       state: "failed",
     };
   }

@@ -12,6 +12,9 @@ import { accountStore } from "@/store/modules/accounts";
 import { useChains, useChainsList } from "@/hooks/useChains";
 import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
 
+import metamaskSrc from "@/assets/metamask.png";
+import keplrSrc from "@/assets/keplr.jpg";
+
 export type WalletConnection = {
   walletName: string;
   walletIconSrc: string;
@@ -29,12 +32,12 @@ const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
   metamask: {
     id: "metamask",
     walletName: "Metamask",
-    walletIconSrc: require("@/assets/metamask.png"),
+    walletIconSrc: metamaskSrc,
   },
   keplr: {
     id: "keplr",
     walletName: "Keplr",
-    walletIconSrc: require("@/assets/keplr.jpg"),
+    walletIconSrc: keplrSrc,
   },
 };
 
@@ -72,11 +75,19 @@ const createWalletConnection = (
   };
 };
 
+// Sif, then eth, then all others alphabetically
 export const walletConnections: WalletConnection[] = [
-  createWalletConnection("keplr", Network.SENTINEL),
-  createWalletConnection("keplr", Network.AKASH),
-  createWalletConnection("keplr", Network.IRIS),
-  createWalletConnection("keplr", Network.COSMOSHUB),
-  createWalletConnection("metamask", Network.ETHEREUM),
   createWalletConnection("keplr", Network.SIFCHAIN),
-];
+  createWalletConnection("metamask", Network.ETHEREUM),
+  ...Object.values(Network)
+    .filter((n) => n !== Network.SIFCHAIN && n !== Network.ETHEREUM)
+    .map((n) => createWalletConnection("keplr", n))
+    .sort((a, b) =>
+      a.getChain().displayName.localeCompare(b.getChain().displayName),
+    ),
+]
+  .filter((connection) => {
+    return !connection.getChain().chainConfig.hidden;
+  })
+  // UI displays these bottom to top
+  .reverse();

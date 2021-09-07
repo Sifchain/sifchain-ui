@@ -130,7 +130,13 @@ export function useRemoveLiquidityData() {
         wBasisPoints.value,
         asymmetry.value,
       );
-      setTimeout(() => usecases.clp.syncPools(), 2500);
+      setTimeout(() => {
+        usecases.clp.syncPools.syncUserPools(
+          accountStore.state.sifchain.address,
+        );
+        usecases.clp.syncPools.syncPublicPools();
+        accountStore.updateBalances(Network.SIFCHAIN);
+      }, 1000);
     },
 
     PoolState,

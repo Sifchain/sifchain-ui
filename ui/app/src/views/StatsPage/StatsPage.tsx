@@ -6,6 +6,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
+import { Tooltip } from "@/components/Tooltip";
 
 export default defineComponent({
   name: "StatsPage",
@@ -18,6 +19,7 @@ export default defineComponent({
 
     const columns: Array<{
       name: string;
+      message?: string;
       sortBy: StatsPageState["sortBy"];
       class?: string;
       ref: Ref<HTMLElement | undefined>;
@@ -36,6 +38,8 @@ export default defineComponent({
       },
       {
         name: "Arbitrage Opportunity",
+        message:
+          "This is the arbitrage opportunity available based on a differential between the price of this token on Sifchain and its price on CoinMarketCap. If the percentage is green, it means the token is currently cheaper in Sifchain than CoinMarketCap.",
         sortBy: "arbitrage",
         class: "min-w-[120px] text-right",
         ref: ref<HTMLElement>(),
@@ -55,6 +59,19 @@ export default defineComponent({
       {
         name: "Pool APY",
         sortBy: "poolApy",
+        class: "min-w-[80px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Reward APY",
+        sortBy: "rewardApy",
+        class: "min-w-[80px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Total APY",
+        message: "Combined Pool & Reward APY's",
+        sortBy: "totalApy",
         class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
       },
@@ -105,7 +122,13 @@ export default defineComponent({
                         state.sortBy = column.sortBy;
                       }}
                     >
-                      {column.name}
+                      {column.message ? (
+                        <Tooltip content={<>{column.message}</>}>
+                          {column.name}
+                        </Tooltip>
+                      ) : (
+                        column.name
+                      )}
                       {state.sortBy === column.sortBy && (
                         <AssetIcon
                           icon="interactive/arrow-down"
@@ -156,17 +179,21 @@ export default defineComponent({
                         </div>
                       </td>
                       <td class="align-middle text-right text-mono">
-                        ${prettyNumber(item.price)}
+                        ${prettyNumber(item.price, 3)}
                       </td>
                       <td
                         class={[
                           "align-middle text-mono text-right",
-                          item.arbitrage >= 0
+                          item.arbitrage == null
+                            ? "text-gray-800"
+                            : item.arbitrage < 0
                             ? `text-connected-base`
                             : `text-danger-base`,
                         ]}
                       >
-                        {prettyNumber(item.arbitrage)}%
+                        {item.arbitrage == null
+                          ? "N/A"
+                          : `${prettyNumber(Math.abs(item.arbitrage))}%`}
                       </td>
                       <td class="align-middle text-right text-mono">
                         ${prettyNumber(item.depth)}
@@ -175,7 +202,13 @@ export default defineComponent({
                         ${prettyNumber(item.volume)}
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {prettyNumber(item.poolApy)}%
+                        {item.poolApy}%
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        {item.rewardApy}%
+                      </td>{" "}
+                      <td class="align-middle text-right text-mono">
+                        {item.totalApy}%
                       </td>
                     </tr>
                   );

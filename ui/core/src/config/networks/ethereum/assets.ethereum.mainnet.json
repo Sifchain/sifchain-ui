@@ -193,9 +193,11 @@
       "network": "ethereum",
       "priceUsd": 0.070311,
       "symbol": "CRO",
+      "displaySymbol": "CRO (ERC-20)",
       "transferLimit": "7111262818051",
       "homeNetwork": "ethereum",
-      "decomissioned": true
+      "decommissioned": true,
+      "decommissionReason": "Crypto.org's ERC-20 token has been decommissioned on Sifchain in favor of the Cosmos CRO token. Please export all CRO (ERC-20) off of Sifchain."
     },
     {
       "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
@@ -638,7 +640,7 @@
     },
     {
       "address": "",
-      "decimals": 18,
+      "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       "name": "Atom",
       "network": "ethereum",
@@ -650,7 +652,7 @@
     },
     {
       "address": "",
-      "decimals": 18,
+      "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676",
       "name": "AKT",
       "network": "ethereum",
@@ -662,7 +664,7 @@
     },
     {
       "address": "",
-      "decimals": 18,
+      "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
       "name": "DVPN",
       "network": "ethereum",

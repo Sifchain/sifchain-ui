@@ -8,6 +8,20 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
   const { chains } = context.services;
 
   return {
+    async loadIfConnected(network: Network) {
+      const chain = chains.get(network);
+      const hasConnected = await keplrProvider.hasConnected(chain);
+      if (hasConnected) {
+        const state = await keplrProvider.connect(chain);
+        return {
+          ...state,
+          connected: true,
+        };
+      }
+      return {
+        connected: false,
+      };
+    },
     async load(network: Network) {
       const state = await keplrProvider.connect(chains.get(network));
       if (network === Network.SIFCHAIN) {

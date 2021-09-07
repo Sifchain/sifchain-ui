@@ -81,6 +81,9 @@ export const useExportData = () => {
   const exportTokenRef = useToken({
     network: ref(Network.SIFCHAIN),
     symbol: computed(() => exportParams.value.symbol),
+    tokenListParams: {
+      showDecomissionedAssets: true,
+    },
   });
 
   const headingRef = computed(
@@ -108,7 +111,9 @@ export const useExportData = () => {
     );
   });
 
-  const networksRef = computed(() => rootStore.export.getters.networks);
+  const networksRef = computed(() =>
+    rootStore.export.getters.chains.map((c) => c.network),
+  );
 
   const targetSymbolRef = computed(() =>
     getUnpeggedSymbol(exportParams.value.symbol),
@@ -116,6 +121,9 @@ export const useExportData = () => {
   const targetTokenRef = useToken({
     network: computed(() => exportParams.value.network),
     symbol: targetSymbolRef,
+    tokenListParams: {
+      showDecomissionedAssets: true,
+    },
   });
 
   const computedExportAssetAmount = computed(() => {

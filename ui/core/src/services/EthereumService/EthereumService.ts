@@ -3,7 +3,6 @@ import Web3 from "web3";
 import { provider, WebsocketProvider } from "web3-core";
 import { IWalletService } from "../IWalletService";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { debounce } from "lodash";
 import {
   TxHash,
   TxParams,
@@ -23,6 +22,7 @@ import {
 } from "./utils/ethereumUtils";
 
 import { Msg } from "@cosmjs/launchpad";
+import { debounce } from "../../utils/debounce";
 
 type Address = string;
 
@@ -31,6 +31,7 @@ type PossibleProvider = provider | EIPProvider;
 export type EthereumServiceContext = {
   getWeb3Provider: () => Promise<provider>;
   assets: Asset[];
+  peggyCompatibleCosmosBaseDenoms: Set<string>;
 };
 
 const initState = {
@@ -40,8 +41,6 @@ const initState = {
   address: "",
   log: "unset",
 };
-
-// TODO: Refactor to be Module pattern with constructor function ie. `EthereumService()`
 
 export class EthereumService implements IWalletService {
   private web3: Web3 | null = null;
@@ -64,9 +63,14 @@ export class EthereumService implements IWalletService {
   constructor(
     getWeb3Provider: () => Promise<PossibleProvider>,
     assets: Asset[],
+    peggyCompatibleCosmosBaseDenoms: Set<string>,
   ) {
     this.state = reactive({ ...initState });
-    this.supportedTokens = assets.filter((t) => t.network === Network.ETHEREUM);
+    this.supportedTokens = assets.filter(
+      (t) =>
+        t.network === Network.ETHEREUM ||
+        peggyCompatibleCosmosBaseDenoms.has(t.symbol),
+    );
     this.providerPromise = getWeb3Provider();
     this.providerPromise
       .then((provider) => {
@@ -116,24 +120,20 @@ export class EthereumService implements IWalletService {
     return this.state;
   }
 
-  private updateData = debounce(
-    async () => {
-      if (!this.web3) {
-        this.state.connected = false;
-        this.state.accounts = [];
-        this.state.address = "";
-        this.state.balances = [];
-        return;
-      }
+  private updateData = debounce(async () => {
+    if (!this.web3) {
+      this.state.connected = false;
+      this.state.accounts = [];
+      this.state.address = "";
+      this.state.balances = [];
+      return;
+    }
 
-      this.state.connected = true;
-      this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
-      this.state.address = this.state.accounts[0];
-      this.state.balances = await this.getBalance();
-    },
-    100,
-    { leading: true },
-  );
+    this.state.connected = true;
+    this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
+    this.state.address = this.state.accounts[0];
+    this.state.balances = await this.getBalance();
+  }, 100);
 
   getAddress(): Address {
     return this.state.address;
@@ -221,6 +221,8 @@ export class EthereumService implements IWalletService {
         const ethBalance = await getEtheriumBalance(web3, addr);
         balances = [ethBalance];
       } else {
+        if (asset.homeNetwork !== Network.ETHEREUM) {
+        }
         // Asset must be ERC-20
         const tokenBalance = await getTokenBalance(web3, addr, asset);
         balances = [tokenBalance];
@@ -275,8 +277,13 @@ export class EthereumService implements IWalletService {
   static create({
     getWeb3Provider,
     assets,
+    peggyCompatibleCosmosBaseDenoms,
   }: EthereumServiceContext): IWalletService {
-    return new EthereumService(getWeb3Provider, assets);
+    return new EthereumService(
+      getWeb3Provider,
+      assets,
+      peggyCompatibleCosmosBaseDenoms,
+    );
   }
 }
 

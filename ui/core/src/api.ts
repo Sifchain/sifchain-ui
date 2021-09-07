@@ -135,12 +135,6 @@ export type Api = {
   export: Usecases["peg"]["unpeg"];
 
   /**
-   * Setup CLP state watchers. Updating pools when state changes.
-   * @returns Unsubscribe function
-   */
-  initClp: Usecases["clp"]["initClp"];
-
-  /**
    * Swap sif asset amount for the given asset expecting to receive the minimum received amount.
    * @param sentAmount: IAssetAmount
    * @param receivedAsset: IAsset,

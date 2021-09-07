@@ -18,7 +18,7 @@ import { SifUnSignedClient } from "./SifUnsignedClient";
 export class SifClient extends SigningCosmosClient {
   private wallet: OfflineSigner;
   private unsignedClient: SifUnSignedClient;
-
+  rpcUrl: string;
   constructor(
     apiUrl: string,
     senderAddress: string,
@@ -30,6 +30,7 @@ export class SifClient extends SigningCosmosClient {
     broadcastMode: BroadcastMode = BroadcastMode.Block,
   ) {
     super(apiUrl, senderAddress, signer, gasPrice, gasLimits, broadcastMode);
+    this.rpcUrl = rpcUrl;
     this.wallet = signer;
     this.unsignedClient = new SifUnSignedClient(
       apiUrl,
@@ -64,11 +65,15 @@ export class SifClient extends SigningCosmosClient {
     };
   }
 
+  getRpcUrl() {
+    return this.rpcUrl;
+  }
   // NOTE(59023g): in 0.42, the result.logs array items do not include `msg_index` and
   // `log` so we hardcode these values. It does assume logs array length is always 1
   async broadcastTx(tx: StdTx): Promise<BroadcastTxResult> {
     const result: any = await this.lcdClient.broadcastTx(tx);
-    if (!result.txhash.match(/^([0-9A-F][0-9A-F])+$/)) {
+    if (!result.txhash?.match(/^([0-9A-F][0-9A-F])+$/)) {
+      console.error("INVALID TXHASH IN RESULT", result);
       throw new Error(
         "Received ill-formatted txhash. Must be non-empty upper-case hex",
       );

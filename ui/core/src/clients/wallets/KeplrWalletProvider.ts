@@ -16,7 +16,6 @@ import {
   IBCChainConfig,
   Network,
 } from "../../entities";
-import memoize from "lodash/memoize";
 import {
   CosmosWalletProvider,
   WalletConnectionState,
@@ -24,6 +23,8 @@ import {
 } from "./types";
 import { TokenRegistryService } from "../../services/TokenRegistryService/TokenRegistryService";
 import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
+import { memoize } from "../../utils/memoize";
+import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
@@ -73,7 +74,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     throw new Error("Keplr wallets cannot disconnect");
   }
 
-  async getSendingSigner(chain: Chain) {
+  async getSendingSigner(
+    chain: Chain,
+  ): Promise<OfflineSigner & OfflineDirectSigner> {
     const chainConfig = getIBCChainConfig(chain);
     const keplr = await getKeplrProvider();
     await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
@@ -123,10 +126,25 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     );
   }
 
+  async tryConnectAll(...chains: Chain[]) {
+    const keplr = await getKeplrProvider();
+    const chainIds = chains
+      .filter((c) => c.chainConfig.chainType === "ibc")
+      .map((c) => c.chainConfig.chainId);
+    // @ts-ignore
+    return keplr?.enable(chainIds);
+  }
   async connect(chain: Chain): Promise<WalletConnectionState> {
-    const sendingSigner = await this.getSendingSigner(chain);
-
-    const address = (await sendingSigner.getAccounts())[0]?.address;
+    // try to get the address quietly
+    const keplr = await getKeplrProvider();
+    const key = await keplr?.getKey(chain.chainConfig.chainId);
+    let address = key?.bech32Address;
+    // if quiet get fails, try to enable the wallet
+    if (!address) {
+      const sendingSigner = await this.getSendingSigner(chain);
+      address = (await sendingSigner.getAccounts())[0]?.address;
+    }
+    // if enabling & quiet get fails, throw.
     if (!address) {
       throw new Error("No address to connect to");
     }
@@ -158,53 +176,63 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    const stargate = await this.getStargateClientCached(chain);
-    const balances = await stargate.getAllBalances(address);
+    // permissionless query to get all balances
+    const queryClient = await this.getQueryClientCached(chain);
+    const balances = await queryClient?.bank.allBalances(address);
 
     const assetAmounts: IAssetAmount[] = [];
 
     const tokenRegistry = await this.tokenRegistry.load();
 
-    for (let coin of balances) {
-      try {
-        if (!coin.denom.startsWith("ibc/")) {
-          const asset = chain.assets.find(
-            (asset) => asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
-          );
-          assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
-        } else {
-          const denomTrace = await this.denomTrace(
-            chain,
-            coin.denom.split("/")[1],
-          );
-
-          const [, channelId] = (denomTrace.denomTrace?.path || "").split("/");
-
-          const isInvalidChannel =
-            channelId &&
-            !tokenRegistry.some(
-              (item) =>
-                item.ibcChannelId === channelId ||
-                item.ibcCounterpartyChannelId === channelId,
+    await Promise.all(
+      balances.map(async (coin: Coin) => {
+        try {
+          if (!coin.denom.startsWith("ibc/")) {
+            const asset = chain.assets.find(
+              (asset) =>
+                asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
+            );
+            assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
+          } else {
+            const denomTrace = await this.denomTrace(
+              chain,
+              coin.denom.split("/")[1],
             );
 
-          if (isInvalidChannel) continue;
+            const [, channelId] = (denomTrace.denomTrace?.path || "").split(
+              "/",
+            );
 
-          const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
+            const isInvalidChannel =
+              channelId &&
+              !tokenRegistry.some(
+                (item) =>
+                  item.ibcChannelId === channelId ||
+                  item.ibcCounterpartyChannelId === channelId,
+              );
 
-          const asset = chain.assets.find(
-            (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
-          );
-          if (asset) {
-            asset.ibcDenom = coin.denom;
+            if (isInvalidChannel) return;
+
+            const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
+
+            const asset = chain.assets.find(
+              (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
+            );
+            if (asset) {
+              asset.ibcDenom = coin.denom;
+            }
+            try {
+              const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
+              assetAmounts.push(assetAmount);
+            } catch (error) {
+              // ignore asset, doesnt exist in our list.
+            }
           }
-          const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
-          assetAmounts.push(assetAmount);
+        } catch (error) {
+          console.error(chain.network, "coin error", coin, error);
         }
-      } catch (error) {
-        console.error(chain.network, "coin error", coin, error);
-      }
-    }
+      }),
+    );
 
     return assetAmounts;
   }

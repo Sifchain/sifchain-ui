@@ -26,7 +26,7 @@ First of all you need is Keplr / Metamask installed. Generate a wallet for each 
 Run the yarn commands, pointed at devnet.
 
 ```
-export VUE_APP_DEPLOYMENT_TAG=devnet
+export VUE_APP_DEPLOYMENT=develop
 export VUE_APP_ETHEREUM_ASSET_TAG=ethereum.mainnet
 export VUE_APP_SIFCHAIN_ASSET_TAG=sifchain.mainnet
 

@@ -11,7 +11,6 @@ import {
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 
 export type ModalProps = {
-  teleportTo?: string;
   onClose: () => void;
   showClose?: boolean;
   class?: HTMLAttributes["class"];
@@ -23,10 +22,6 @@ export type ModalProps = {
 
 export default defineComponent({
   props: {
-    teleportTo: {
-      type: String as PropType<ModalProps["teleportTo"]>,
-      default: () => "#portal-target",
-    },
     onClose: {
       type: Function as PropType<ModalProps["onClose"]>,
       required: true,
@@ -70,11 +65,11 @@ export default defineComponent({
       document.body.removeEventListener("keydown", onKeypress);
     });
     return () => (
-      <Teleport to={props.teleportTo}>
+      <div class="fixed inset-0 z-20">
         <div class="overflow-hidden fixed h-screen bg-white bg-opacity-25 z-20 inset-0 animate-fade-in duration-300" />
         <div
           class={[
-            "overflow-y-scroll h-screen fixed left-sidebar inset-0 flex items-center shorter:items-start shorter:py-[4vh] justify-center z-20 animate-fade-in duration-500 animate-fade-in-up",
+            "overflow-y-scroll h-screen fixed left-sidebar sm:left-0 inset-0 flex items-center shorter:items-start shorter:py-[4vh] justify-center z-20 animate-fade-in duration-500 animate-fade-in-up",
           ]}
           onClick={() => props.onClose?.()}
         >
@@ -108,7 +103,7 @@ export default defineComponent({
             <div class="w-full">{context.slots.default?.()}</div>
           </div>
         </div>
-      </Teleport>
+      </div>
     );
   },
 });

@@ -13,13 +13,13 @@ import { useCore } from "@/hooks/useCore";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   lm: {
-    heading: ".39 Liquidity Mining",
+    heading: ".39 Liquidity Mining (closed)",
     icon: "navigation/pool" as IconName,
     description:
       "Earn additional rewards by providing liquidity to any of Sifchain's pools.",
   },
   vs: {
-    heading: ".39 Validator Subsidy",
+    heading: ".39 Validator Subsidy (closed)",
     icon: "interactive/lock" as IconName,
     description:
       "Earn additional rewards by staking a node or delegating to a staked node.",

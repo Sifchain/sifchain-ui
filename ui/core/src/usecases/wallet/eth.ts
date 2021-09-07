@@ -1,6 +1,6 @@
 import { effect, ReactiveEffect, stop } from "@vue/reactivity";
 import { UsecaseContext, Network } from "../..";
-import { Asset, IAsset } from "../../entities";
+import { Asset } from "../../entities";
 import B from "../../entities/utils/B";
 import { isSupportedEVMChain } from "../utils";
 

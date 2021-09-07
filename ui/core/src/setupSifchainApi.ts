@@ -26,7 +26,6 @@ export function setupSifchainApi(
   const api = createApi(usecases, services);
 
   const unsubscribers: (() => void)[] = [];
-  unsubscribers.push(usecases.clp.initClp());
   unsubscribers.push(usecases.wallet.sif.initSifWallet());
   unsubscribers.push(usecases.wallet.eth.initEthWallet());
 
