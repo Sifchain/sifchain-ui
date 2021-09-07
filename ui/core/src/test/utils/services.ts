@@ -29,6 +29,7 @@ export async function createTestEthService() {
   const eth = ethServiceInitializer({
     assets: getTestingTokens(["ATK", "BTK", "ETH", "EROWAN"]),
     getWeb3Provider,
+    peggyCompatibleCosmosBaseDenoms: new Set(["uphoton"]),
   });
   console.log("Connecting to eth service");
   await eth.connect();

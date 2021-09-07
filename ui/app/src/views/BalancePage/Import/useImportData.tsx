@@ -118,8 +118,11 @@ export const useImportData = () => {
   const oneTimeSifchainBalance = ref<IAssetAmount | undefined>();
   watch(
     [sifchainBalance],
-    () => {
-      if (sifchainBalance.value && !oneTimeSifchainBalance.value) {
+    (newVal, prevVal) => {
+      if (
+        newVal[0]?.symbol !== prevVal[0]?.symbol ||
+        (sifchainBalance.value && !oneTimeSifchainBalance.value)
+      ) {
         oneTimeSifchainBalance.value = sifchainBalance.value;
       }
     },

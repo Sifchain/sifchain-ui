@@ -24,6 +24,7 @@ import {
 import { TokenRegistryService } from "../../services/TokenRegistryService/TokenRegistryService";
 import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 import { memoize } from "../../utils/memoize";
+import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
@@ -73,7 +74,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     throw new Error("Keplr wallets cannot disconnect");
   }
 
-  async getSendingSigner(chain: Chain) {
+  async getSendingSigner(
+    chain: Chain,
+  ): Promise<OfflineSigner & OfflineDirectSigner> {
     const chainConfig = getIBCChainConfig(chain);
     const keplr = await getKeplrProvider();
     await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);

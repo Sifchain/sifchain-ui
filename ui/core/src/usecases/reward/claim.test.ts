@@ -53,7 +53,7 @@ claimTests.forEach(({ rewardType }) => {
     await claimFn({
       claimType: 2,
       fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
-      rewardProgramName: "IBC_REWARDS_V1",
+      rewardProgramName: "COSMOS_IBC_REWARDS_V1",
     });
   });
 
@@ -121,7 +121,7 @@ claimTests.forEach(({ rewardType }) => {
     await claimFn({
       claimType: 2,
       fromAddress: "sif1syavy2npfyt9tcncdtsdzf7kny9lh777yqc2na",
-      rewardProgramName: "IBC_REWARDS_V1",
+      rewardProgramName: "COSMOS_IBC_REWARDS_V1",
     });
   });
 });
