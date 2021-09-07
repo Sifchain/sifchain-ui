@@ -24,6 +24,7 @@ describe("EthereumService", () => {
     EthereumService = createEthereumService({
       getWeb3Provider,
       assets: [ATK, BTK, ETH],
+      peggyCompatibleCosmosBaseDenoms: new Set(),
     });
   });
 
