@@ -159,6 +159,9 @@ export async function getEtheriumBalance(web3: Web3, address: Address) {
 export async function suggestEthereumAsset(
   asset: IAsset,
   contractAddress: string,
+  loadTokenIconUrl: (
+    asset: Asset,
+  ) => Promise<string | undefined> | string | undefined,
 ) {
   const ethereum = await detectEthereumProvider();
   if (!ethereum) return false;
@@ -171,7 +174,7 @@ export async function suggestEthereumAsset(
         address: contractAddress,
         symbol: asset.displaySymbol.toUpperCase(),
         decimals: asset.decimals,
-        image: asset.imageUrl,
+        image: await loadTokenIconUrl(asset),
       },
     },
   });

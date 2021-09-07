@@ -10,7 +10,7 @@ import {
   isAminoMsgDelegate,
   AminoConverter,
 } from "@cosmjs/stargate";
-import { OfflineSigner } from "@cosmjs/proto-signing";
+import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import * as inflection from "inflection";
 
 import {
@@ -62,6 +62,7 @@ import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient"
 import { isAminoMsgTransfer } from "@cosmjs/stargate/build/aminomsgs";
 import { SifClient, SifUnSignedClient } from "../../services/utils/SifClient";
 import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
+import { Registry } from "generated/proto/sifnode/tokenregistry/v1/types";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -301,15 +302,20 @@ export class IBCService {
       gasPerBatch = undefined,
       loadOfflineSigner = async (
         chainId: string,
-      ): Promise<OfflineSigner | undefined> => {
+      ): Promise<OfflineSigner & OfflineAminoSigner> => {
         const keplr = await getKeplrProvider();
-        const signer = await keplr?.getOfflineSigner(chainId);
-        const keplrKey = await keplr?.getKey(chainId);
+        const signer = await keplr!.getOfflineSigner(chainId);
+        const keplrKey = await keplr!.getKey(chainId);
+        /* 
+          Stargate internally checks if there is a `.signDirect` property
+          on the signer to determine whether to use direct or amino signing
+        */
         // @ts-ignore
         signer.signDirect = undefined;
         console.log({ signer });
         // @ts-ignore
         if (keplrKey["isNanoLedger"] && signer) {
+          // This doesn't seem to make any difference
           // @ts-ignore
           // signer.signAmino = (...args) => keplr?.signAmino(chainId, ...args);
         }
@@ -354,6 +360,8 @@ export class IBCService {
       destinationChain.rpcUrl,
       recievingSigner,
       {
+        // we create amino additions, but these will not be used, because IBC types are already included & assigned
+        // on top of the amino additions by default
         aminoTypes: new AminoTypes({
           additions: createAminoAdditions(),
           prefix: undefined,
@@ -400,12 +408,12 @@ export class IBCService {
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
     const timeoutInMinutes = this.transferTimeoutMinutes;
-    // const timeoutTimestampInSeconds = Math.floor(
-    //   new Date().getTime() / 1000 + 60 * timeoutInMinutes,
-    // );
-    // const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
-    //   ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
-    //   : undefined;
+    const timeoutTimestampInSeconds = Math.floor(
+      new Date().getTime() / 1000 + 60 * timeoutInMinutes,
+    );
+    const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
+      ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
+      : undefined;
     const currentHeight = await receivingStargateCient.getHeight();
     const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const registry = await this.tokenRegistry.load();
@@ -438,11 +446,12 @@ export class IBCService {
           // denom: symbol,
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
-        timeoutHeight: {
-          // revisionHeight: timeoutHeight,
-          revisionHeight: timeoutHeight,
-        },
-        // timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
+        // timeoutHeight: {
+        //   revisionNumber: Long.fromInt(4),
+        //   // revisionHeight: timeoutHeight,
+        //   // revisionHeight: timeoutHeight,
+        // },
+        timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
       }),
     };
 
@@ -542,109 +551,127 @@ export class IBCService {
           additions: {},
           prefix: undefined,
         });
-        // const legacyBroadcastRes = await legacyClient.signAndBroadcast(
-        //   batch.map(aminoTypes.toAmino.bind(aminoTypes)),
-        //   {
-        //     ...sendingStargateClient.fees.transfer,
-        //   },
-        // );
-        // console.log({ legacyBroadcastRes });
-        const cosmosClient = new SigningCosmosClient(
-          sourceChain.restUrl,
-          fromAccount.address,
-          sendingSigner,
-        );
-        // const brdcstTxResLegacy = await cosmosClient.signAndBroadcast(
-        //   batch.map(aminoTypes.toAmino.bind(aminoTypes)),
-        //   sendingStargateClient.fees.transfer,
-        // );
-        // console.log({ brdcstTxResLegacy });
-        const signedMsg = await keplr?.signAmino(
-          await sendingStargateClient.getChainId(),
-          fromAccount.address,
-          {
-            msgs: batch.map(aminoTypes.toAmino.bind(aminoTypes)),
-            fee: sendingStargateClient.fees.transfer,
-            chain_id: sourceChain.chainId,
-            account_number: sequence.accountNumber.toString(),
-            sequence: sequence.sequence.toString(),
-            memo: "",
-          },
-        );
 
-        const brdcstTxResKeplr = await keplr?.sendTx(
-          await sendingStargateClient.getChainId(),
-          {
-            msg: signedMsg!.signed.msgs,
-            signatures: [signedMsg!.signature],
-            fee: {
-              ...sendingStargateClient.fees.transfer,
-              amount: [
-                ...sendingStargateClient.fees.transfer.amount.map((amt) => ({
-                  ...amt,
-                  denom: "uatom",
-                })),
-              ],
+        const keplrSignAndSend = async () => {
+          const signedMsg = await keplr?.signAmino(
+            await sendingStargateClient.getChainId(),
+            fromAccount.address,
+            {
+              msgs: batch.map(aminoTypes.toAmino.bind(aminoTypes)),
+              fee: sendingStargateClient.fees.transfer,
+              chain_id: sourceChain.chainId,
+              account_number: sequence.accountNumber.toString(),
+              sequence: sequence.sequence.toString(),
+              memo: "",
             },
-            memo: "",
-          },
-          BroadcastMode.Block,
-        );
-        console.log({ brdcstTxResKeplr });
-        const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
-          fromAccount.address,
-          batch,
-          {
-            ...sendingStargateClient.fees.transfer,
-            // amount: [
-            //   {
-            //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
-            //     amount:
-            //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
-            //       "",
-            //   },
-            // ],
-            // ...(externalGasPrices &&
-            // externalGasPrices[sourceChain.chainId || ""]
-            //   ? {
-            //       gas: externalGasPrices[sourceChain.chainId || ""],
-            //     }
-            //   : {}),
-            // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
-          },
-          // "",
-          // {
-          //   chainId,
-          //   accountNumber: sequence.accountNumber,
-          //   sequence: sequence.sequence,
-          // },
-        );
-        console.log({ brdcstTxRes });
-        // const decodedTx = TxBody.decode(sig.bodyBytes);
-        // const stdTx: StdTx = {
-        //   msg: decodedTx.messages.map(aminoTypes.toAmino.bind(aminoTypes)),
-        //   fee: sendingStargateClient.fees.transfer,
-        //   signatures: sig.signatures,
-        // };
-        // const broadcastTxRes = await keplr?.sendTx(
-        //   chainId,
-        //   sig,
-        //   BroadcastMode.Block,
-        // );
-        // console.log({ broadcastTxRes });
-        // const tx_data = Buffer.from(sig).toString("base64");
-        // console.log({ tx_data });
+          );
 
-        // const txRaw: TxRaw = TxRaw.fromPartial({
-        //   bodyBytes: sig.bodyBytes,
-        //   authInfoBytes: sig.authInfoBytes,
-        //   signatures: sig.signatures,
-        // });
-
-        // const enc = TxRaw.encode(txRaw);
-        // const dec = TxRaw.encode(TxRaw.decode(enc.finish())).finish();
-
-        responses.push(brdcstTxRes);
+          const brdcstTxResKeplr = await keplr?.sendTx(
+            await sendingStargateClient.getChainId(),
+            {
+              msg: signedMsg!.signed.msgs,
+              signatures: [signedMsg!.signature],
+              fee: {
+                ...sendingStargateClient.fees.transfer,
+                amount: [
+                  ...sendingStargateClient.fees.transfer.amount.map((amt) => ({
+                    ...amt,
+                    denom: "uatom",
+                  })),
+                ],
+              },
+              memo: "",
+            },
+            BroadcastMode.Block,
+          );
+          console.log({ brdcstTxResKeplr });
+        };
+        const stargateSignAndSend = async () => {
+          const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
+            fromAccount.address,
+            batch,
+            {
+              ...sendingStargateClient.fees.transfer,
+              // amount: [
+              //   {
+              //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
+              //     amount:
+              //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+              //       "",
+              //   },
+              // ],
+              // ...(externalGasPrices &&
+              // externalGasPrices[sourceChain.chainId || ""]
+              //   ? {
+              //       gas: externalGasPrices[sourceChain.chainId || ""],
+              //     }
+              //   : {}),
+              // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
+            },
+            // "",
+            // {
+            //   chainId,
+            //   accountNumber: sequence.accountNumber,
+            //   sequence: sequence.sequence,
+            // },
+          );
+          console.log({ brdcstTxRes });
+          responses.push(brdcstTxRes);
+        };
+        const launchpadSignAndSend = async () => {
+          const launchpad = new SigningCosmosClient(
+            sourceChain.restUrl,
+            fromAccount.address,
+            sendingSigner,
+          );
+          console.log({ sendingSigner });
+          const converter = new AminoTypes();
+          const res = await launchpad.signAndBroadcast(
+            batch.map(converter.toAmino.bind(converter)),
+            {
+              ...sendingStargateClient.fees.transfer,
+              // amount: [
+              //   {
+              //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
+              //     amount:
+              //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+              //       "",
+              //   },
+              // ],
+              // ...(externalGasPrices &&
+              // externalGasPrices[sourceChain.chainId || ""]
+              //   ? {
+              //       gas: externalGasPrices[sourceChain.chainId || ""],
+              //     }
+              //   : {}),
+              // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
+            },
+          );
+          console.log({ res });
+        };
+        const customSignAndSendAmino = async () => {
+          const t34 = await Tendermint34Client.connect(sourceChain.rpcUrl);
+          const client = new NativeSigningClient(t34, sendingSigner, {
+            registry: NativeDexClient!.getNativeRegistry(),
+          });
+          const sig = await client.signWMeta(
+            fromAccount.address,
+            batch,
+            sendingStargateClient.fees.transfer,
+            "",
+            {
+              chainId,
+              accountNumber: sequence.accountNumber,
+              sequence: sequence.sequence,
+            },
+          );
+          const res = await client.broadcastTx(sig);
+          console.log({ res });
+        };
+        // keplrSignAndSend();
+        // stargateSignAndSend();
+        // launchpadSignAndSend();
+        customSignAndSendAmino();
       } catch (e) {
         console.error(e);
         responses.push({
@@ -802,6 +829,7 @@ class NativeSigningClient
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: signedTxBody,
     };
+    console.log("this::", this);
     const signedTxBodyBytes = this.registry.encode(signedTxBodyEncodeObject);
     const signedGasLimit = Int53.fromString(signed.fee.gas).toNumber();
     const signedSequence = Int53.fromString(signed.sequence).toNumber();

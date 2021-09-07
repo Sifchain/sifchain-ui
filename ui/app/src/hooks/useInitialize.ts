@@ -55,8 +55,10 @@ export function useInitialize() {
   connectAll();
   connectAll = () => {};
   const { usecases, store, services } = useCore();
-
   // Initialize usecases / watches
+
+  services.ethbridge.addEthereumAddressToPeggyCompatibleCosmosAssets();
+
   usecases.wallet.eth.initEthWallet();
 
   // this is low pri... but we want it semi quick

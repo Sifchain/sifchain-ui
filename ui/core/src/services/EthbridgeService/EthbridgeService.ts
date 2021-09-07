@@ -30,6 +30,7 @@ export type EthbridgeServiceContext = {
   getWeb3Provider: () => Promise<provider>;
   sifUnsignedClient?: SifUnSignedClient;
   assets: IAsset[];
+  peggyCompatibleCosmosBaseDenoms: Set<string>;
 };
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -43,6 +44,7 @@ export default function createEthbridgeService({
   getWeb3Provider,
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
   assets,
+  peggyCompatibleCosmosBaseDenoms,
 }: EthbridgeServiceContext) {
   // Pull this out to a util?
   // How to handle context/dependency injection?
@@ -135,6 +137,21 @@ export default function createEthbridgeService({
   }
 
   return {
+    async addEthereumAddressToPeggyCompatibleCosmosAssets() {
+      /* 
+        Should be called on load. This is a hack to make cosmos assets peggy compatible 
+        while the SDK bridge abstraction is a WIP.
+      */
+      for (let asset of assets) {
+        try {
+          if (peggyCompatibleCosmosBaseDenoms.has(asset.symbol)) {
+            asset.address = await this.fetchTokenAddress(asset);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
     createPegTx,
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask
@@ -188,10 +205,9 @@ export default function createEthbridgeService({
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      const tokenAddress =
-        sifAsset.ibcDenom ||
-        (await this.fetchTokenAddress(sifAsset)) ||
-        ETH_ADDRESS;
+      let tokenAddress = await this.fetchTokenAddress(sifAsset);
+      tokenAddress = +tokenAddress ? tokenAddress : sifAsset.ibcDenom;
+      tokenAddress = tokenAddress || ETH_ADDRESS;
       console.log("burnToEthereum: start: ", tokenAddress);
 
       const txReceipt = await sifUnsignedClient.burn({
@@ -408,7 +424,7 @@ export default function createEthbridgeService({
     },
 
     async fetchTokenAddress(
-      // asset to fetch token for
+      // asset to fetch token address for
       asset: IAsset,
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
@@ -420,6 +436,8 @@ export default function createEthbridgeService({
       );
 
       const possibleSymbols = [
+        // IBC assets with dedicated decimal-precise contracts are uppercase
+        asset.displaySymbol.toUpperCase(),
         // remove c prefix
         asset.symbol.replace(/^c/, ""),
         // remove e prefix
@@ -427,8 +445,6 @@ export default function createEthbridgeService({
         // display symbol goes before ibc denom because the dedicated decimal-precise contracts
         // utilize the display symbol
         asset.displaySymbol,
-        // IBC assets with dedicated decimal-precise contracts are uppercase
-        asset.displaySymbol.toUpperCase(),
         asset.ibcDenom,
         asset.symbol,
         "e" + asset.symbol,
