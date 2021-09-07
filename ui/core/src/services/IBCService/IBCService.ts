@@ -303,7 +303,7 @@ export class IBCService {
         chainId: string,
       ): Promise<OfflineSigner | undefined> => {
         const keplr = await getKeplrProvider();
-        const signer = await keplr?.getOfflineSignerOnlyAmino(chainId);
+        const signer = await keplr?.getOfflineSigner(chainId);
         const keplrKey = await keplr?.getKey(chainId);
         // @ts-ignore
         signer.signDirect = undefined;
