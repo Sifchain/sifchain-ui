@@ -10,18 +10,18 @@ export class BalancesPage {
   }
 
   async navigate() {
-    await page.goto(`${DEX_TARGET}/#/balances`, {
+    await page.goto(`${DEX_TARGET}#/balances`, {
       waitUntil: "domcontentloaded",
     });
   }
 
-  async openTab(tab) {
-    if (tab.toLowerCase() === "native") {
-      await page.click("[data-handle='native-tab']");
-    } else {
-      await page.click("[data-handle='external-tab']");
-    }
-  }
+  // async openTab(tab) {
+  //   if (tab.toLowerCase() === "native") {
+  //     await page.click("[data-handle='native-tab']");
+  //   } else {
+  //     await page.click("[data-handle='external-tab']");
+  //   }
+  // }
 
   // TODO: handling popup to be done outside of this page method
   async export(asset, amount) {

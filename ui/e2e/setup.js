@@ -1,7 +1,7 @@
 // setup.js
 const { chromium } = require("playwright");
 const { extractExtensionPackage, preparePath } = require("./utils");
-const { MM_CONFIG, KEPLR_CONFIG } = require("./config.js");
+const { MM_CONFIG, KEPLR_CONFIG, DEX_TARGET } = require("./config.js");
 const path = require("path");
 const fs = require("fs");
 
@@ -31,6 +31,9 @@ beforeAll(async () => {
       path: `${await preparePath("./logs")}/har.json`,
     },
   });
+  context.addCookies([
+    { name: "_env", value: "devnet", domain: "localhost", path: "/" },
+  ]); // temporary, delete me
   // exposing "page" object globally
   [page] = await context.pages();
   global.context = context; // this is needed to generate screenshots inside custom environment. 'context' is not visible there

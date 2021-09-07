@@ -34,6 +34,10 @@ export class KeplrNotificationPopup {
   async reload() {
     await this.page.reload();
   }
+
+  async verifyNetworkName(name) {
+    await this.page.waitForSelector(`text=${name}`);
+  }
 }
 
 export const keplrNotificationPopup = new KeplrNotificationPopup();
