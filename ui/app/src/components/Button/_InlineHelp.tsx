@@ -18,7 +18,10 @@ export const _InlineHelp = defineComponent({
     return () => (
       <button
         {...props}
-        class={[`inline align-top hover:opacity-80 ml-[.25em]`, props.class]}
+        class={[
+          `inline align-top  text-accent-base hover:opacity-80 ml-[.25em]`,
+          props.class,
+        ]}
         style={
           mergeProps(
             { style: { transform: "translateY(-1px)" } },
@@ -35,7 +38,7 @@ export const _InlineHelp = defineComponent({
           content={<div>{ctx.slots?.default?.()}</div>}
         >
           <AssetIcon
-            class={["text-accent-base inline", props.iconClass]}
+            class={["flex-shrink-0 inline", props.iconClass]}
             size={props.size || 16}
             icon="interactive/circle-question"
           ></AssetIcon>

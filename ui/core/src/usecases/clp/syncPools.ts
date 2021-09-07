@@ -28,14 +28,16 @@ export function SyncPools(
   { sif, clp, chains, tokenRegistry }: SyncPoolsArgs,
   store: SyncPoolsStore,
 ) {
-  return async function syncPools() {
-    const state = sif.getState();
+  return {
+    syncPublicPools,
+    syncUserPools,
+  };
 
-    // UPdate pools
+  async function syncPublicPools() {
     const nativeAsset = chains.get(Network.SIFCHAIN).nativeAsset;
-    const rawPools = await clp.getRawPools();
     const registry = await tokenRegistry.load();
 
+    const rawPools = await clp.getRawPools();
     const pools = rawPools.pools
       .map((pool) => {
         const externalSymbol = pool.externalAsset?.symbol;
@@ -62,63 +64,62 @@ export function SyncPools(
       })
       .filter((val) => val != null) as Pool[];
 
-    // const pools = await clp.getPools();
     for (let pool of pools) {
       store.pools[pool.symbol()] = pool;
     }
+  }
 
-    // Update lp pools
-    if (state.address) {
-      const accountPoolSymbols = await clp.getPoolSymbolsByLiquidityProvider(
-        state.address,
-      );
+  async function syncUserPools(address: string) {
+    const registry = await tokenRegistry.load();
 
-      // This is a hot method when there are a heap of pools
-      // Ideally we would have a better rest endpoint design
-
-      const currentAccountPools: Record<string, AccountPool> = {};
-      if (!store.accountpools[state.address]) {
-        store.accountpools[state.address] = {};
-      }
-
-      await Promise.all(
-        accountPoolSymbols.map(async (symbol) => {
-          const entry = registry.find(
-            (item) => item.denom === symbol || item.baseDenom === symbol,
-          );
-          if (!entry) return null;
-
-          const asset = chains
-            .get(Network.SIFCHAIN)
-            .findAssetWithLikeSymbol(entry.baseDenom);
-
-          if (!asset) return;
-
-          const lp = await clp.getLiquidityProvider({
-            asset,
-            lpAddress: state.address,
-          });
-
-          if (!lp || !asset) return;
-
-          const pool = createPoolKey(
-            asset,
-            chains.get(Network.SIFCHAIN).nativeAsset,
-          );
-
-          currentAccountPools[pool] = { lp, pool };
-        }),
-      );
-
-      Object.keys(store.accountpools[state.address]).forEach((poolId) => {
-        // If pool is gone now, delete. Ie user remioved all liquidity
-        if (!currentAccountPools[poolId]) {
-          delete store.accountpools[state.address][poolId];
-        }
-      });
-      Object.keys(currentAccountPools).forEach((poolId) => {
-        store.accountpools[state.address][poolId] = currentAccountPools[poolId];
-      });
+    // This is a hot method when there are a heap of pools
+    // Ideally we would have a better rest endpoint design
+    const currentAccountPools: Record<string, AccountPool> = {};
+    if (!store.accountpools[address]) {
+      store.accountpools[address] = {};
     }
-  };
+
+    const accountPoolSymbols = await clp.getPoolSymbolsByLiquidityProvider(
+      address,
+    );
+
+    await Promise.all(
+      accountPoolSymbols.map(async (symbol) => {
+        const entry = registry.find(
+          (item) => item.denom === symbol || item.baseDenom === symbol,
+        );
+        if (!entry) return null;
+
+        const asset = chains
+          .get(Network.SIFCHAIN)
+          .findAssetWithLikeSymbol(entry.baseDenom);
+
+        if (!asset) return;
+
+        const lp = await clp.getLiquidityProvider({
+          asset,
+          lpAddress: address,
+        });
+
+        if (!lp || !asset) return;
+
+        const pool = createPoolKey(
+          asset,
+          chains.get(Network.SIFCHAIN).nativeAsset,
+        );
+
+        currentAccountPools[pool] = { lp, pool };
+      }),
+    );
+
+    Object.keys(store.accountpools[address]).forEach((poolId) => {
+      // If pool is gone now, delete. Ie user remioved all liquidity
+      if (!currentAccountPools[poolId]) {
+        delete store.accountpools[address][poolId];
+      }
+    });
+    Object.keys(currentAccountPools).forEach((poolId) => {
+      store.accountpools[address][poolId] = currentAccountPools[poolId];
+    });
+  }
 }

@@ -11,13 +11,14 @@ import { Button } from "@/components/Button/Button";
 import { defineComponent, PropType, computed } from "vue";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
+import { flagsStore } from "@/store/modules/flags";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   lm: {
-    heading: "Liquidity Mining",
+    heading: ".42 Liquidity Mining",
     icon: "navigation/pool" as IconName,
     description:
-      "Earn additional rewards by providing liquidity to any of Sifchain's IBC token pools.",
+      "Earn additional rewards by providing liquidity to any of Sifchain's Cosmos IBC token pools.",
   },
   vs: {
     heading: "Validator Subsidy",
@@ -60,11 +61,6 @@ export const RewardSection = defineComponent({
     const details = computed(() =>
       [
         {
-          name: "Claimable Amount",
-          amount:
-            props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
-        },
-        {
           hide: props.rewardType !== "vs",
           name: "Reserved Comission Rewards",
           tooltip:
@@ -100,16 +96,21 @@ export const RewardSection = defineComponent({
             {displayData.value.heading}
           </div>
 
-          <div class="font-mono w-[200px] text-right flex justify-end items-center">
-            {/* Claimable Amount */}
-            {props.data?.user?.currentAPYOnTickets
-              ? props.data?.user?.currentAPYOnTickets.toFixed(1) + "%"
-              : "0%"}
-          </div>
           <div class="text-right justify-end flex-1 font-mono flex items-center">
             {/* Full Amount */}
             {formatRowanNumber(
               props.data?.user?.totalCommissionsAndRewardsAtMaturity,
+            )}
+            <TokenIcon
+              assetValue={Asset.get("rowan")}
+              size={20}
+              class="ml-[10px]"
+            />
+          </div>
+          <div class="w-[300px] text-right justify-end font-mono flex items-center">
+            {/* Claimable Amount */}
+            {formatRowanNumber(
+              props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
             )}
             <TokenIcon
               assetValue={Asset.get("rowan")}
@@ -145,7 +146,7 @@ export const RewardSection = defineComponent({
 
           <div class="flex items-center justify-center">
             <div class="p-[6px] w-[140px] bg-black rounded-lg">
-              {/* <Button.Inline
+              <Button.Inline
                 class="w-full no-underline"
                 icon="interactive/circle-info"
                 href={props.infoLink}
@@ -153,15 +154,15 @@ export const RewardSection = defineComponent({
                 disabled={!sifConnected.value}
                 rel="noopener noreferrer"
               >
-                More Info 
-              </Button.Inline> mt-[6px]*/}
+                Learn More
+              </Button.Inline>{" "}
               <Button.Inline
                 onClick={() => props.onClaimIntent()}
-                class="w-full"
+                class="w-full mt-[6px]"
                 icon="navigation/rewards"
                 active
                 disabled={
-                  true ||
+                  !flagsStore.state.enableRewardsClaim ||
                   !props.data?.user
                     ?.totalClaimableCommissionsAndClaimableRewards ||
                   props.alreadyClaimed

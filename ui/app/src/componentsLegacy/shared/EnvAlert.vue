@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { defineComponent, useCssModule } from "vue";
+import { defineComponent, onMounted, useCssModule } from "vue";
 import { AppCookies, NetworkEnv, networkEnvsByIndex } from "@sifchain/sdk";
 
 // This is for internal testing & development only.
@@ -11,8 +11,6 @@ export default defineComponent({
     const appCookies = AppCookies();
     let env = appCookies.getEnv();
 
-    const NoCookie = () => null;
-
     if (typeof env === "undefined") {
       return () => null;
     }
@@ -22,48 +20,49 @@ export default defineComponent({
       networkEnv = networkEnvsByIndex[+env];
     }
 
-    const Cmp = () =>
-      ({
-        [NetworkEnv.MAINNET]: (
-          <div class={[styles.panel, styles.mainnet]}>MAINNET</div>
-        ),
-        [NetworkEnv.TESTNET]: (
-          <div class={[styles.panel, styles.testnet]}>TESTNET</div>
-        ),
-        [NetworkEnv.LOCALNET]: (
-          <div class={[styles.panel, styles.localnet]}>LOCALNET</div>
-        ),
-        [NetworkEnv.DEVNET]: (
-          <div class={[styles.panel, styles.devnet]}>DEVNET</div>
-        ),
-        [NetworkEnv.DEVNET_042]: (
-          <div class={[styles.panel, styles.devnet]}>DEVNET_042</div>
-        ),
-        [NetworkEnv.TESTNET_042_IBC]: (
-          <div class={[styles.panel, styles.devnet]}>TESTNET_042_IBC</div>
-        ),
-      }[networkEnv] || <NoCookie />);
+    const classesByNetworkEnv = {
+      [NetworkEnv.MAINNET]: styles.mainnet,
+      [NetworkEnv.LOCALNET]: styles.localnet,
+      [NetworkEnv.TESTNET]: styles.testnet,
+      [NetworkEnv.TESTNET_042_IBC]: styles.testnet,
+      [NetworkEnv.DEVNET]: styles.devnet,
+      [NetworkEnv.DEVNET_042]: styles.devnet,
+    };
+
+    const classNames = classesByNetworkEnv[networkEnv];
 
     return () => (
-      <>
-        <Cmp />
+      <div class="bottom-0 left-[240px] h-[30px] w-[150px] fixed rounded-t overflow-hidden">
+        {networkEnv && classNames ? (
+          <div class={[styles.panel, classNames]}>
+            {
+              Object.entries(NetworkEnv).find((e) =>
+                e[1] === networkEnv ? true : false,
+              )?.[0]
+            }
+          </div>
+        ) : null}
         <select
-          value={env}
+          value={networkEnv}
+          class={["absolute left-0 top-0 w-full h-full opacity-0"]}
           onInput={(e) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            appCookies.setEnv(NetworkEnv[e.target.value]);
+            appCookies.setEnv(e.target.value);
             window.location.reload();
           }}
-          class={[styles.panel, "w-full opacity-0"]}
         >
-          {Object.keys(NetworkEnv).map((key) => (
-            <option key={key} value={key}>
+          {Object.entries(NetworkEnv).map(([key, value]) => (
+            <option
+              selected={key === networkEnv.toLowerCase()}
+              key={key}
+              value={value}
+            >
               {key}
             </option>
           ))}
         </select>
-      </>
+      </div>
     );
   },
 });
@@ -71,13 +70,13 @@ export default defineComponent({
 <style lang="scss" module>
 .panel {
   z-index: 100;
-  position: fixed;
-  top: 0;
-  left: 0;
+  width: 100%;
+  height: 100%;
   background: white;
   font-family: "Inter", sans-serif;
-  padding: 3px 6px;
-  border-bottom-right-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .mainnet {
   background: rgba(255, 38, 0, 0.5);

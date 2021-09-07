@@ -46,6 +46,8 @@ export class IBCService {
 
   keplrProvider = KeplrWalletProvider.create(this.context);
 
+  public transferTimeoutMinutes = 45;
+
   constructor(private context: IBCServiceContext) {}
   static create(context: IBCServiceContext) {
     return new this(context);
@@ -149,39 +151,64 @@ export class IBCService {
     return queryClient;
   }
 
-  async logIBCNetworkMetadata(destinationNetwork: Network) {
+  async logIBCNetworkMetadata() {
+    const allClients = [];
+    const destinationNetwork = Network.SIFCHAIN;
+    let chainConfig: IBCChainConfig;
+    try {
+      // if (destinationNetwork === Network.REGEN) throw "";
+      chainConfig = this.loadChainConfigByNetwork(destinationNetwork);
+    } catch (e) {
+      // continue;
+    }
     await this.keplrProvider.connect(
       getChainsService().get(destinationNetwork),
     );
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
-
     const allChannels = await queryClient.ibc.channel.allChannels();
-    const clients = await Promise.all(
+    let clients = await Promise.all(
       allChannels.channels.map(async (channel) => {
-        const parsedClientState = await fetch(
-          `${
-            this.loadChainConfigByNetwork(destinationNetwork).restUrl
-          }/ibc/core/connection/v1beta1/connections/${
-            channel.connectionHops[0]
-          }/client_state`,
-        ).then((r) => r.json());
+        try {
+          const parsedClientState = await fetch(
+            `${chainConfig.restUrl}/ibc/core/connection/v1beta1/connections/${channel.connectionHops[0]}/client_state`,
+          ).then((r) => r.json());
 
-        // console.log(parsedClientState);
-        // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
-        //   channel.portId,
-        //   channel.channelId,
-        // );
+          // console.log(parsedClientState);
+          // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
+          //   channel.portId,
+          //   channel.channelId,
+          // );
+          const channelId = channel.channelId;
+          const counterpartyChannelId = channel.counterparty!.channelId;
+          const counterPartyChainId =
+            parsedClientState.identified_client_state.client_state.chain_id;
+          const counterpartyConfig = this.loadChainConfigByChainId(
+            counterPartyChainId,
+          );
+          const counterpartyQueryClient = await this.loadQueryClientByNetwork(
+            counterpartyConfig.network,
+          );
+          const counterpartyConnection = await counterpartyQueryClient.ibc.channel.channel(
+            "transfer",
+            counterpartyChannelId,
+          );
 
-        return {
-          chainId:
-            parsedClientState.identified_client_state.client_state.chain_id,
-          // ackCount: allAcks.acknowledgements.length,
-          connection: channel.connectionHops[0],
-          channelId: channel.channelId,
-          counterpartyChannelId: channel.counterparty?.channelId,
-        };
+          return {
+            srcChainId: chainConfig.chainId,
+            destChainId: counterPartyChainId,
+            // ackCount: allAcks.acknowledgements.length,
+            srcCxn: channel.connectionHops[0],
+            destCxn: counterpartyConnection.channel?.connectionHops[0],
+            srcChannel: channelId,
+            destChannel: counterpartyChannelId,
+          };
+        } catch (e) {
+          console.error(e);
+          return;
+        }
       }),
     );
+    allClients.push(...clients.filter((c) => c));
     console.log(destinationNetwork.toUpperCase());
     console.table(
       clients.filter((c) => {
@@ -198,6 +225,46 @@ export class IBCService {
       ),
     );
     console.log({ destinationNetwork, allChannels, allCxns, clients });
+
+    const tokenRegistryEntries = await this.tokenRegistry.load();
+    console.log("Sifchain Connections: ");
+    console.log(
+      JSON.stringify(
+        allClients.filter((clientA) => {
+          return tokenRegistryEntries.some(
+            (e) =>
+              e.ibcChannelId === clientA!.srcChannel &&
+              e.ibcCounterpartyChannelId === clientA!.destChannel,
+          );
+        }),
+        null,
+        2,
+      ),
+    );
+    // for (let clientA of allClients.filter((c) =>
+    //   c.chainId.includes("sifchain"),
+    // )) {
+    //   for (let clientB of allClients) {
+    //     if (
+    //       clientA.counterPartyChainId === clientB.chainId &&
+    //       clientA?.channelId === clientB.counterpartyChannelId &&
+    // tokenRegistryEntries.some(
+    //   (e) =>
+    //     e.ibcChannelId === clientA.channelId &&
+    //     e.ibcCounterpartyChannelId === clientA.counterpartyChannelId,
+    // )
+    //     ) {
+    //       connections.push({
+    //         srcChainId: clientA.chainId,
+    //         destChainId: clientB.chainId,
+    //         srcCxn: clientA.connection,
+    //         dstCxn: clientB.connection,
+    //         srcChannel: clientA.channelId,
+    //         destChannel: clientB.channelId,
+    //       });
+    //     }
+    //   }
+    // }
   }
 
   async transferIBCTokens(
@@ -289,8 +356,7 @@ export class IBCService {
 
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
-    // initially set low
-    const timeoutInMinutes = 5;
+    const timeoutInMinutes = this.transferTimeoutMinutes;
     const timeoutTimestampInSeconds = Math.floor(
       new Date().getTime() / 1000 + 60 * timeoutInMinutes,
     );

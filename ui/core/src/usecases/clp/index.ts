@@ -6,6 +6,9 @@ import { RemoveLiquidity } from "./removeLiquidity";
 import { SyncPools } from "./syncPools";
 import { Network } from "../../entities";
 
+const PUBLIC_POOLS_POLL_DELAY = 60 * 1000;
+const USER_POOLS_POLL_DELAY = 300 * 1000;
+
 export default ({
   services,
   store,
@@ -16,49 +19,43 @@ export default ({
   const syncPools = SyncPools(services, store);
 
   return {
-    initClp() {
-      const effects: ReactiveEffect<any>[] = [];
-
-      // Sync on load
-      syncPools().then(() => {
-        effects.push(
-          effect(() => {
-            if (Object.keys(store.pools).length === 0) {
-              services.bus.dispatch({
-                type: "NoLiquidityPoolsFoundEvent",
-                payload: {},
-              });
-            }
-          }),
-        );
-      });
-
-      // Then every transaction
-      let syncTimeoutId: NodeJS.Timeout;
-      const unsubscribe = () => clearTimeout(syncTimeoutId);
-      (async function poolsLoop() {
-        await syncPools();
-        syncTimeoutId = setTimeout(poolsLoop, 15 * 1000);
-      })();
-
-      effects.push(
-        effect(() => {
-          // When sif address changes syncPools
-          store.wallet.get(Network.SIFCHAIN).address;
-          syncPools();
-        }),
-      );
-
-      return () => {
-        for (let ef of effects) {
-          stop(ef);
-        }
-        unsubscribe();
-      };
-    },
     swap: Swap(services),
     addLiquidity: AddLiquidity(services, store),
     removeLiquidity: RemoveLiquidity(services),
     syncPools,
+    subscribeToPublicPools: () => {
+      let timeoutId: NodeJS.Timeout;
+
+      async function publicPoolsLoop() {
+        try {
+          await syncPools.syncPublicPools();
+        } catch (error) {
+          console.log("Sync pools error", error);
+        } finally {
+          timeoutId = setTimeout(publicPoolsLoop, PUBLIC_POOLS_POLL_DELAY);
+        }
+      }
+      return {
+        unsubscribe: () => clearTimeout(timeoutId),
+        initPromise: publicPoolsLoop(),
+      };
+    },
+    subscribeToUserPools: (address: string) => {
+      let timeoutId: NodeJS.Timeout;
+
+      async function userPoolsLoop() {
+        try {
+          await syncPools.syncUserPools(address);
+        } catch (error) {
+          console.log("Sync pools error", error);
+        } finally {
+          timeoutId = setTimeout(userPoolsLoop, USER_POOLS_POLL_DELAY);
+        }
+      }
+      return {
+        unsubscribe: () => clearTimeout(timeoutId),
+        initPromise: userPoolsLoop(),
+      };
+    },
   };
 };

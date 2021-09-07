@@ -18,6 +18,7 @@ import { findAttribute, parseRawLog, Log } from "@cosmjs/stargate/build/logs";
 import { createIteratorSubject } from "../../utils/iteratorSubject";
 
 import { IBCTransferSubscriber } from "./utils";
+import { parseTxFailure } from "../../services/SifService/parseTxFailure";
 
 export class CosmosSifchainInterchainApi
   implements InterchainApi<IBCInterchainTx> {
@@ -48,13 +49,10 @@ export class CosmosSifchainInterchainApi
             });
             emit({
               type: "tx_error",
-              tx: {
-                state: tx.rawLog?.includes("out of gas")
-                  ? "out_of_gas"
-                  : "failed",
-                memo: tx.rawLog || "",
-                hash: tx.transactionHash,
-              },
+              tx: parseTxFailure({
+                transactionHash: tx.transactionHash,
+                rawLog: tx.rawLog || "",
+              }),
             });
             return;
           } else {

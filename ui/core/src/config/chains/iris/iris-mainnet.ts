@@ -3,20 +3,20 @@ import { Network, IBCChainConfig } from "../../../entities";
 export const IRIS_MAINNET: IBCChainConfig = {
   network: Network.IRIS,
   chainType: "ibc",
-  displayName: "IRISNet",
+  displayName: "IRISnet",
   blockExplorerUrl: "https://irishub.iobscan.io/",
   nativeAssetSymbol: "uiris",
-  chainId: "nyancat-8",
+  chainId: "irishub-1",
   rpcUrl: "https://rpc-iris.keplr.app/",
   restUrl: "https://lcd-iris.keplr.app/",
   keplrChainInfo: {
     rpc: "https://rpc-iris.keplr.app/",
     rest: "https://lcd-iris.keplr.app/",
-    chainId: "nyancat-8",
-    chainName: "Iris Testnet",
+    chainId: "irishub-1",
+    chainName: "IRISnet",
     stakeCurrency: {
-      coinDenom: "NYAN",
-      coinMinimalDenom: "unyan",
+      coinDenom: "IRIS",
+      coinMinimalDenom: "uiris",
       coinDecimals: 6,
       coinGeckoId: "iris",
     },
@@ -35,16 +35,16 @@ export const IRIS_MAINNET: IBCChainConfig = {
     },
     currencies: [
       {
-        coinDenom: "NYAN",
-        coinMinimalDenom: "unyan",
+        coinDenom: "IRIS",
+        coinMinimalDenom: "uiris",
         coinDecimals: 6,
         coinGeckoId: "iris",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "NYAN",
-        coinMinimalDenom: "unyan",
+        coinDenom: "IRIS",
+        coinMinimalDenom: "uiris",
         coinDecimals: 6,
         coinGeckoId: "iris",
       },

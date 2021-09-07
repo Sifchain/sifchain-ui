@@ -9,6 +9,7 @@ export const setChainsService = (c: ChainsService) => (chainsService = c);
 
 export type BaseChainConfig = {
   network: Network;
+  hidden?: boolean;
   chainId: string;
   displayName: string;
   blockExplorerUrl: string;
@@ -16,6 +17,7 @@ export type BaseChainConfig = {
 };
 export type EthChainConfig = BaseChainConfig & {
   chainType: "eth";
+  blockExplorerApiUrl: string;
 };
 export type IBCChainConfig = BaseChainConfig & {
   chainType: "ibc";
@@ -34,8 +36,12 @@ export interface Chain {
   displayName: string;
   nativeAsset: IAsset;
   assets: IAsset[];
+  assetMap: Map<string, IAsset>;
 
   calculateTransferFeeToChain(transferAmount: IAssetAmount): IAssetAmount;
+
+  lookupAsset(symbol: string): IAsset | undefined;
+  lookupAssetOrThrow(symbol: string): IAsset;
 
   findAssetWithLikeSymbol(symbol: string): IAsset | undefined;
   findAssetWithLikeSymbolOrThrow(symbol: string): IAsset;

@@ -1,4 +1,4 @@
-import { useChains } from "@/hooks/useChains";
+import { useChains, useChainsList } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import {
   AppCookies,
@@ -14,6 +14,7 @@ import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { UnpegEvent } from "../../../../core/src/usecases/peg/unpeg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
+import { flagsStore } from "./flags";
 
 export type ExportDraft = {
   amount: string;
@@ -38,17 +39,20 @@ export const exportStore = Vuextra.createStore({
     },
   } as State,
   getters: (state) => ({
-    networks() {
-      const IBC_ETHEREUM_TRANSFERS_ENABLED = false;
+    chains() {
+      const IBC_ETHEREUM_ENABLED =
+        flagsStore.state.enableEthereumToCosmosImports;
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
+        flagsStore.state.enableNativeTokenIBCExports;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
       );
       return (
-        Object.values(Network)
-          .filter((network) => network !== Network.SIFCHAIN)
+        useChainsList()
+          .filter(
+            (c) => c.network !== Network.SIFCHAIN && !c.chainConfig.hidden,
+          )
           // Disallow IBC export of ethereum & sifchain-native tokens
           .filter((n) => {
             if (NATIVE_TOKEN_IBC_EXPORTS_ENABLED) {
@@ -61,7 +65,7 @@ export const exportStore = Vuextra.createStore({
                 !isExternalIBCAsset
               ) {
                 // only show ethereum network
-                return n === Network.ETHEREUM;
+                return n.network === Network.ETHEREUM;
               } else {
                 // let them export any IBC token to any IBC network
                 return true;
@@ -69,8 +73,8 @@ export const exportStore = Vuextra.createStore({
             }
           })
           .filter((n) => {
-            if (isExternalIBCAsset && !IBC_ETHEREUM_TRANSFERS_ENABLED) {
-              return n !== Network.ETHEREUM;
+            if (isExternalIBCAsset && !IBC_ETHEREUM_ENABLED) {
+              return n.network !== Network.ETHEREUM;
             }
             return true;
           })

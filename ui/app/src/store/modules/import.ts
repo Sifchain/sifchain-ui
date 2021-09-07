@@ -11,6 +11,7 @@ import {
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
+import { flagsStore } from "./flags";
 
 export type ImportDraft = {
   amount: string;
@@ -38,16 +39,19 @@ export const importStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
-      const IBC_ETHEREUM_TRANSFERS_ENABLED = false;
+      const IBC_ETHEREUM_ENABLED =
+        flagsStore.state.enableEthereumToCosmosImports;
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
+        flagsStore.state.enableNativeTokenIBCExports;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
       );
       return (
         useChainsList()
-          .filter((c) => c.network !== Network.SIFCHAIN)
+          .filter(
+            (c) => c.network !== Network.SIFCHAIN && !c.chainConfig.hidden,
+          )
           // Disallow IBC export of ethereum & sifchain-native tokens
           .filter((n) => {
             if (NATIVE_TOKEN_IBC_EXPORTS_ENABLED) {
@@ -68,7 +72,7 @@ export const importStore = Vuextra.createStore({
             }
           })
           .filter((n) => {
-            if (isExternalIBCAsset && !IBC_ETHEREUM_TRANSFERS_ENABLED) {
+            if (isExternalIBCAsset && !IBC_ETHEREUM_ENABLED) {
               return n.network !== Network.ETHEREUM;
             }
             return true;
@@ -88,7 +92,8 @@ export const importStore = Vuextra.createStore({
   }),
   actions: (ctx) => ({
     async runImport(payload: { assetAmount: IAssetAmount }) {
-      if (!payload.assetAmount) throw new Error("Please provide an amount");
+      if (!payload.assetAmount || !payload.assetAmount.greaterThan("0"))
+        throw new Error("Please provide an amount");
       self.setPegEvent(undefined);
 
       const interchain = useCore().usecases.interchain(

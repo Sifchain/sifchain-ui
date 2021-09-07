@@ -11,7 +11,7 @@ type BaseReq = {
 type IClaimParams = {
   base_req: BaseReq;
   claim_type: DistributionType;
-  signer: string;
+  claim_creator: string;
 };
 
 /*

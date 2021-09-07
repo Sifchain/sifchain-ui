@@ -98,12 +98,18 @@ export default function InterchainTxManager(
             payload,
           });
         } else if (ev.state === "completed") {
-          services.bus.dispatch({
-            type: isImport
-              ? "PegTransactionCompletedEvent"
-              : "UnpegTransactionCompletedEvent",
-            payload,
-          });
+          // First emit the event so UI can update balances...
+          interchainTxEmitter.emit("tx_complete", tx);
+
+          // Then wait a sec so the balance request finishes before notif appears...
+          setTimeout(() => {
+            services.bus.dispatch({
+              type: isImport
+                ? "PegTransactionCompletedEvent"
+                : "UnpegTransactionCompletedEvent",
+              payload,
+            });
+          }, 1000);
         } else if (ev.state === "failed") {
           services.bus.dispatch({
             type: isImport
@@ -116,7 +122,6 @@ export default function InterchainTxManager(
     } catch (error) {
       console.error("got error listening to transfer. stopping", error);
     }
-    interchainTxEmitter.emit("tx_complete", tx);
     delete store.tx.pendingTransfers[tx.hash];
     txList.remove(tx);
   };

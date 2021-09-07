@@ -1,4 +1,4 @@
-import { defineComponent, ref, useCssModule } from "vue";
+import { defineComponent, onMounted, ref, useCssModule } from "vue";
 import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
@@ -11,6 +11,10 @@ import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
+import { Button } from "@/components/Button/Button";
+import ChangelogModal, {
+  changelogViewedVersion,
+} from "@/components/ChangelogModal";
 
 export default defineComponent({
   props: {},
@@ -18,6 +22,25 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
 
     const moreMenuRef = ref();
+
+    const sidebarRef = ref();
+    const isOpenRef = ref(false);
+
+    const changelogOpenRef = ref(false);
+
+    onMounted(() => {
+      document.addEventListener("click", (ev) => {
+        setTimeout(() => {
+          const target = ev.target as HTMLElement;
+          const btn = document.getElementById("open-button");
+          if (!isOpenRef.value) return;
+          if (btn && btn.contains(target)) return;
+          if (sidebarRef.value.contains(target)) return;
+
+          isOpenRef.value = false;
+        }, 1);
+      });
+    });
 
     const poolStats = usePoolStats();
     const tvl = computed(() => {
@@ -35,186 +58,246 @@ export default defineComponent({
     const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
 
     return () => (
-      <div class="overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-gray-base text-white fixed left-0 top-0 bottom-0 portrait:hidden">
-        <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
-          <div class="top">
-            <div class="mt-[38px] flex justify-center">
-              <Logo class="w-[119px]" />
-            </div>
-            <div class="mt-[9.3vmin] sm:mt-[6vmin]">
-              <NavSidePanelItem
-                displayName="Dashboard"
-                icon="navigation/dashboard"
-                class="opacity-50 pointer-events-none"
-                action={
-                  <div class="py-[2px] px-[6px] text-sm text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
-                    Soon
-                  </div>
-                }
-              />
-              <NavSidePanelItem
-                displayName="Swap"
-                icon="navigation/swap"
-                href="/swap"
-              />
-              <NavSidePanelItem
-                displayName="Balances"
-                icon="navigation/balances"
-                href="/balances"
-              />
-              <NavSidePanelItem
-                displayName="Pool"
-                icon="navigation/pool"
-                href="/pool"
-              />
-              <NavSidePanelItem
-                displayName="Pool Stats"
-                icon="navigation/pool-stats"
-                href="/stats"
-              />
-              <NavSidePanelItem
-                displayName="Rewards"
-                icon="navigation/rewards"
-                href="/rewards"
-              />
-              <NavSidePanelItem
-                displayName="Stake"
-                icon="navigation/stake"
-                href="https://wallet.keplr.app/#/sifchain/stake"
-                class="group"
-                action={
-                  <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                    <AssetIcon
-                      icon="interactive/open-external"
-                      size={16}
-                      class="opacity-50"
-                    />
-                  </div>
-                }
-              />
-              <NavSidePanelItem
-                displayName="Documents"
-                icon="navigation/documents"
-                href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
-                class="group"
-                action={
-                  <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                    <AssetIcon
-                      icon="interactive/open-external"
-                      size={16}
-                      class="opacity-50"
-                    />
-                  </div>
-                }
-              />
-              {!accountStore.state.sifchain.connecting &&
-              !accountStore.state.sifchain.balances.find(
-                (b) =>
-                  b.asset.symbol.includes("rowan") && b.amount.greaterThan("0"),
-              ) ? (
+      <>
+        <Button.Inline
+          id="open-button"
+          class={[
+            "hidden sm:block fixed top-[8px] rounded-bl-none rounded-tl-none left-0 z-40 transition-all transform duration-500",
+            isOpenRef.value ? "translate-x-[-100%]" : "translate-x-none",
+            isOpenRef.value ? "ml-sidebar left-[-8px]" : "ml-0",
+            isOpenRef.value ? "!rounded-sm" : "",
+          ]}
+          onClick={() => (isOpenRef.value = !isOpenRef.value)}
+        >
+          <AssetIcon
+            icon="interactive/chevron-down"
+            size={20}
+            style={{
+              transform: `rotate(${isOpenRef.value ? 90 : -90}deg)`,
+            }}
+          />
+        </Button.Inline>
+        <div
+          ref={sidebarRef}
+          class={[
+            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-gray-base text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
+            isOpenRef.value && "!translate-x-0",
+          ]}
+        >
+          <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
+            <div class="top">
+              <div class="mt-[38px] flex justify-center">
+                <Logo class="w-[119px]" />
+              </div>
+              <div class="mt-[9.3vmin] sm:mt-[6vmin]">
                 <NavSidePanelItem
-                  displayName="Get Free Rowan"
-                  icon="navigation/rowan"
-                  href="/balances/get-rowan"
-                />
-              ) : null}
-              <Tooltip
-                trigger="click"
-                placement="bottom"
-                arrow={false}
-                interactive
-                animation={undefined}
-                ref={moreMenuRef}
-                offset={[0, -2]}
-                onShow={(instance: TooltipInstance) => {
-                  const content = instance.popper.querySelector(
-                    ".tippy-content",
-                  );
-                  if (content) {
-                    content.className +=
-                      " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
-                  }
-                }}
-                content={
-                  <MoreMenu onAction={() => moreMenuRef.value.tippy?.hide()} />
-                }
-              >
-                <NavSidePanelItem displayName="More" icon="navigation/more" />
-              </Tooltip>
-            </div>
-          </div>
-          <div class="bottom mt-[10px]">
-            <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
-              <span class="inline-flex items-center justify-center h-[26px] font-medium text-sm text-info-base px-[10px] border border-solid border-info-base rounded-full">
-                TVL: {tvl.value ? `$${prettyNumber(tvl.value)}` : "..."}
-              </span>
-              <div />
-              <span class="inline-flex items-center justify-center h-[26px] mt-[10px] font-medium text-sm text-accent-base pr-[10px] pl-[5px] border border-solid border-accent-base rounded-full">
-                <img
-                  class="w-[20px] h-[20px] mr-[4px]"
-                  alt="ROWAN price"
-                  src="/images/tokens/ROWAN.svg"
-                />
-                ROWAN:{" "}
-                {rowanPrice.value
-                  ? `$${(+rowanPrice.value).toFixed(5)}`
-                  : "..."}
-              </span>
-            </div>
-            <Tooltip
-              placement="top-start"
-              animation="scale"
-              arrow={false}
-              trigger="click"
-              interactive
-              offset={[20, 0]}
-              onShow={() => {
-                appWalletPicker.isOpen.value = true;
-              }}
-              onHide={() => {
-                appWalletPicker.isOpen.value = false;
-              }}
-              onMount={(instance: TooltipInstance) => {
-                instance.popper
-                  .querySelector(".tippy-box")
-                  ?.classList.add("!origin-bottom-left");
-              }}
-              appendTo={() => document.body}
-              content={<WalletPicker />}
-              ref={appWalletPicker.ref}
-            >
-              <NavSidePanelItem
-                icon="interactive/wallet"
-                data-handle="button-connect-wallets"
-                displayName={
-                  connectedNetworkCount.value === 0
-                    ? "Connect Wallets"
-                    : "Connected Wallets"
-                }
-                class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-200"]}
-                action={
-                  connectedNetworkCount.value === 0 ? (
-                    <AssetIcon
-                      icon="interactive/chevron-down"
-                      style={{
-                        transform: "rotate(-90deg)",
-                      }}
-                      class="w-[20px] h-[20px]"
-                    />
-                  ) : (
-                    <div class="w-[20px] h-[20px] ml-auto rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
-                      {connectedNetworkCount.value}
+                  displayName="Dashboard"
+                  icon="navigation/dashboard"
+                  class="opacity-50 pointer-events-none"
+                  action={
+                    <div class="py-[2px] px-[6px] text-sm text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
+                      Soon
                     </div>
-                  )
-                }
-              />
-            </Tooltip>
-            <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px]">
-              V.2.0.X © {new Date().getFullYear()} Sifchain
+                  }
+                />
+                <NavSidePanelItem
+                  displayName="Swap"
+                  icon="navigation/swap"
+                  href="/swap"
+                />
+                <NavSidePanelItem
+                  displayName="Balances"
+                  icon="navigation/balances"
+                  href="/balances"
+                />
+                <NavSidePanelItem
+                  displayName="Pool"
+                  icon="navigation/pool"
+                  href="/pool"
+                />
+                <NavSidePanelItem
+                  displayName="Pool Stats"
+                  icon="navigation/pool-stats"
+                  href="/stats"
+                />
+                <NavSidePanelItem
+                  displayName="Rewards"
+                  icon="navigation/rewards"
+                  href="/rewards"
+                />
+                <NavSidePanelItem
+                  displayName="Stake"
+                  icon="navigation/stake"
+                  href="https://wallet.keplr.app/#/sifchain/stake"
+                  class="group"
+                  action={
+                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                      <AssetIcon
+                        icon="interactive/open-external"
+                        size={16}
+                        class="opacity-50"
+                      />
+                    </div>
+                  }
+                />
+                <NavSidePanelItem
+                  displayName="Documents"
+                  icon="navigation/documents"
+                  href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
+                  class="group"
+                  action={
+                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                      <AssetIcon
+                        icon="interactive/open-external"
+                        size={16}
+                        class="opacity-50"
+                      />
+                    </div>
+                  }
+                />
+                <NavSidePanelItem
+                  icon="navigation/changelog"
+                  onClick={() => (changelogOpenRef.value = true)}
+                  displayName={<div class="flex items-center">Changelog</div>}
+                  action={
+                    changelogViewedVersion.isLatest() ? undefined : (
+                      <div class="flex flex-1 justify-end">
+                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
+                      </div>
+                    )
+                  }
+                />
+                {changelogOpenRef.value && (
+                  <ChangelogModal
+                    onClose={() => (changelogOpenRef.value = false)}
+                  />
+                )}
+                {/* Disable free rowan button until faucet is operational */}
+                {/* {!accountStore.state.sifchain.connecting &&
+                !accountStore.state.sifchain.balances.find(
+                  (b) =>
+                    b.asset.symbol.includes("rowan") &&
+                    b.amount.greaterThan("0"),
+                ) ? (
+                  <NavSidePanelItem
+                    displayName="Get Free Rowan"
+                    icon="navigation/rowan"
+                    href="/balances/get-rowan"
+                  />
+                ) : null} */}
+                <Tooltip
+                  trigger="click"
+                  placement="bottom"
+                  arrow={false}
+                  interactive
+                  animation={undefined}
+                  ref={moreMenuRef}
+                  offset={[0, -2]}
+                  onShow={(instance: TooltipInstance) => {
+                    const content = instance.popper.querySelector(
+                      ".tippy-content",
+                    );
+                    if (content) {
+                      content.className +=
+                        " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
+                    }
+                  }}
+                  content={
+                    <MoreMenu
+                      onAction={() => moreMenuRef.value.tippy?.hide()}
+                    />
+                  }
+                >
+                  <NavSidePanelItem displayName="More" icon="navigation/more" />
+                </Tooltip>
+              </div>
+            </div>
+            <div class="bottom mt-[10px]">
+              <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
+                <span class="inline-flex items-center justify-center h-[26px] font-medium text-sm text-info-base px-[10px] border border-solid border-info-base rounded-full">
+                  TVL: {tvl.value ? `$${prettyNumber(tvl.value)}` : "..."}
+                </span>
+                <div />
+                <span class="inline-flex items-center justify-center h-[26px] mt-[10px] font-medium text-sm text-accent-base pr-[10px] pl-[5px] border border-solid border-accent-base rounded-full">
+                  <img
+                    class="w-[20px] h-[20px] mr-[4px]"
+                    alt="ROWAN price"
+                    src="/images/tokens/ROWAN.svg"
+                  />
+                  ROWAN:{" "}
+                  {rowanPrice.value
+                    ? `$${(+rowanPrice.value).toFixed(5)}`
+                    : "..."}
+                </span>
+              </div>
+              <Tooltip
+                placement="top-start"
+                animation="scale"
+                arrow={false}
+                trigger="click"
+                interactive
+                offset={[20, 0]}
+                onShow={() => {
+                  appWalletPicker.isOpen.value = true;
+                }}
+                onHide={() => {
+                  appWalletPicker.isOpen.value = false;
+                }}
+                onMount={(instance: TooltipInstance) => {
+                  instance.popper
+                    .querySelector(".tippy-box")
+                    ?.classList.add("!origin-bottom-left");
+                }}
+                appendTo={() => document.body}
+                content={<WalletPicker />}
+                ref={appWalletPicker.ref}
+              >
+                <NavSidePanelItem
+                  icon="interactive/wallet"
+                  data-handle="button-connect-wallets"
+                  displayName={
+                    connectedNetworkCount.value === 0
+                      ? "Connect Wallets"
+                      : accountStore.getters.isConnecting
+                      ? "Connecting..."
+                      : "Connected Wallets"
+                  }
+                  class={[
+                    "mt-0",
+                    appWalletPicker.isOpen.value && "bg-gray-200",
+                  ]}
+                  action={
+                    connectedNetworkCount.value === 0 ? (
+                      <AssetIcon
+                        icon="interactive/chevron-down"
+                        style={{
+                          transform: "rotate(-90deg)",
+                        }}
+                        class="w-[20px] h-[20px]"
+                      />
+                    ) : accountStore.getters.isConnecting ? (
+                      <div class="flex flex-1 justify-end">
+                        <AssetIcon
+                          icon="interactive/anim-racetrack-spinner"
+                          size={20}
+                          class="flex-shrink-0"
+                        />
+                      </div>
+                    ) : (
+                      <div class="w-[20px] h-[20px] ml-auto rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
+                        {connectedNetworkCount.value}
+                      </div>
+                    )
+                  }
+                />
+              </Tooltip>
+              <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px]">
+                V.2.0.X © {new Date().getFullYear()} Sifchain
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   },
 });

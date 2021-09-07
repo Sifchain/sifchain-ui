@@ -1,4 +1,4 @@
-import { onMounted } from "@vue/runtime-core";
+import { onMounted } from "vue";
 import { ref, Ref, watch } from "vue";
 
 // Sets input to the value in the given ref whenever the ref changes.

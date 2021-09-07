@@ -39,6 +39,7 @@ describe("EthbridgeService", () => {
       bridgetokenContractAddress: EROWAN.address!,
       getWeb3Provider,
       assets: [],
+      peggyCompatibleCosmosBaseDenoms: new Set(),
     });
   });
 

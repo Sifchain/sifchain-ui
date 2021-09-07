@@ -1,5 +1,5 @@
 import { computed, ComputedRef, ref, Ref } from "@vue/reactivity";
-import { reactive, readonly, toRefs, watch, watchEffect } from "vue";
+import { onMounted, reactive, readonly, toRefs, watch, watchEffect } from "vue";
 const cache: Record<string, any> = {};
 
 export type AsyncDataState<F extends () => Promise<any>> = {
@@ -18,7 +18,7 @@ type Await<T> = T extends {
   : T;
 export const useAsyncData = <F extends () => Promise<any>>(
   fn: F,
-  shouldReload: ComputedRef<boolean> = computed(() => false),
+  deps: any[] = [],
 ) => {
   const publicState: AsyncDataState<F> = {
     data: ref(null),
@@ -48,8 +48,16 @@ export const useAsyncData = <F extends () => Promise<any>>(
     hasRun: ref(false),
   };
 
-  watchEffect(() => {
-    if (!privateState.hasRun.value || shouldReload.value) {
+  watch(
+    deps,
+    () => {
+      loadData();
+    },
+    { immediate: true },
+  );
+
+  onMounted(() => {
+    if (!privateState.hasRun.value) {
       privateState.hasRun.value = true;
       loadData();
     }

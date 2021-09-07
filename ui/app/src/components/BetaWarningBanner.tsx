@@ -9,14 +9,14 @@ export default defineComponent({
 
     return () => (
       <div
-        class="absolute top-0 left-[20px] transition-all z-20 drop-shadow-lg"
+        class="absolute top-0 w-[200px] right-[40px] transition-all z-20 drop-shadow-lg flex flex-col items-end"
         style={{
           transform: `translateY(${
             expandedRef.value ? 0 : "calc(-100% + 40px)"
           })`,
         }}
       >
-        <div class="p-[20px] bg-accent-gradient text-sm w-[90vw] max-w-[990px] rounded-br">
+        <div class="p-[20px] bg-accent-gradient text-sm w-[80vw] max-w-[990px] rounded-bl">
           Welcome to our BetaNet! Please be aware that while this has passed
           several public security audits, it is still in Beta. We encourage you
           to first understand how it works before transacting on it and exercise
@@ -29,7 +29,8 @@ export default defineComponent({
             Here's a list of security measures taken
           </a>
           , but please note that all transactions conducted are at your own
-          risk. This platform is not open to US users.
+          risk. <br />
+          <b class="text-md">This platform is not open to U.S. persons.</b>
         </div>
         <button
           class="bg-accent-accent_gradient_to h-[40px] px-[14px] flex items-center rounded-b"
