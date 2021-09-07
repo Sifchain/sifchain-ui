@@ -394,6 +394,7 @@ export default defineComponent({
               >
                 <NavSidePanelItem
                   icon="interactive/wallet"
+                  data-handle="button-connect-wallets"
                   displayName={
                     connectedNetworkCount.value === 0
                       ? "Connect Wallets"

@@ -1,6 +1,6 @@
 import { DEX_TARGET } from "../config";
 import { assertWaitedValue } from "../utils";
-import { tokenSelection } from "@/componentsLegacy/TokenSelection";
+import { tokenSelection } from "../pages/components/TokenSelection";
 
 export class PoolPage {
   constructor() {

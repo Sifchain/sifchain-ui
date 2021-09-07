@@ -7,7 +7,7 @@ const { keplrNotificationPopup } = require("./pages/KeplrNotificationPopup.js");
 const { useStack } = require("../test/stack");
 
 // helpers
-const { resetExtensionsConnection, setupExtensions } = require("./helpers.js");
+const { setupExtensions } = require("./helpers.js");
 
 // dex pages
 const { swapPage } = require("./pages/SwapPage.js");
@@ -19,11 +19,11 @@ beforeAll(async () => {
   await setupExtensions();
 });
 
-beforeEach(async () => {
-  await resetExtensionsConnection();
-});
+// beforeEach(async () => {
+//   await resetExtensionsConnection();
+// });
 
-describe("Swap", () => {
+describe.skip("Swap", () => {
   it("swaps", async () => {
     const tokenA = "cusdc";
     const tokenB = "rowan";
