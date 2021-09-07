@@ -22,5 +22,5 @@ export function memoize<
     memoized = fn;
     return fn(...args);
   };
-  return memoized;
+  return memoized as F;
 }

@@ -15,6 +15,7 @@ import {
   CryptoOrgChain,
   PersistenceChain,
   RegenChain,
+  OsmosisChain,
 } from "../../clients/chains";
 
 export * from "../../clients/chains";
@@ -44,6 +45,7 @@ const networkChainCtorLookup = {
   [Network.CRYPTO_ORG]: CryptoOrgChain,
   [Network.PERSISTENCE]: PersistenceChain,
   [Network.REGEN]: RegenChain,
+  [Network.OSMOSIS]: OsmosisChain,
 };
 
 export class ChainsService {

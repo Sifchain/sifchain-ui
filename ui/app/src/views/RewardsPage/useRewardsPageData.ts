@@ -69,7 +69,7 @@ export const useRewardsPageData = () => {
 
   const vsRes = useValidatorSubsidyData(address);
   const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);
-  QueryClaimsByTypeRequest;
+
   const isLoading = computed(() => {
     return (
       !accountStore.state.sifchain.address ||
@@ -95,8 +95,8 @@ export const useRewardsPageData = () => {
     address,
     isLoading,
     error,
-    lmData: computed(() => lmRes.data.value),
-    vsData: computed(() => vsRes.data.value),
+    lmData: computed(() => lmRes.value?.data.value),
+    vsData: computed(() => vsRes.value?.data.value),
     vsClaim: computed(() => claimsRes.data.value?.vs),
     lmClaim: computed(() => claimsRes.data.value?.lm),
     vsInfoLink,

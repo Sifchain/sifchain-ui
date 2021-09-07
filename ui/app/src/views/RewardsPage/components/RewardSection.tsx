@@ -11,6 +11,7 @@ import { Button } from "@/components/Button/Button";
 import { defineComponent, PropType, computed } from "vue";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
+import { flagsStore } from "@/store/modules/flags";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   lm: {
@@ -161,6 +162,7 @@ export const RewardSection = defineComponent({
                 icon="navigation/rewards"
                 active
                 disabled={
+                  !flagsStore.state.enableRewardsClaim ||
                   !props.data?.user
                     ?.totalClaimableCommissionsAndClaimableRewards ||
                   props.alreadyClaimed

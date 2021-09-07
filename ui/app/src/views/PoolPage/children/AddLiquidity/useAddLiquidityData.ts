@@ -234,6 +234,9 @@ export const useAddLiquidityData = () => {
     bPerARatioProjectedMessage,
     hasActiveSafetyLag,
     nextStepMessage: computed(() => {
+      if (!accountStore.state.sifchain.connected) {
+        return "Connect Sifchain Wallet";
+      }
       switch (state.value) {
         case PoolState.SELECT_TOKENS:
           return "Select Tokens";

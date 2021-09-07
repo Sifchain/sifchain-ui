@@ -59,7 +59,10 @@ export function createServices(context: ServiceContext) {
   const DispensationService = createDispensationService(context);
   const CryptoeconomicsService = cryptoeconomicsService(context);
   const StorageService = storageService(context);
-  const WalletService = createWalletService(context);
+  const WalletService = createWalletService({
+    ...context,
+    chains: ChainsService.list(),
+  });
   const TokenRegistryService = createTokenRegistry(context);
   /* 
 
@@ -69,8 +72,9 @@ export function createServices(context: ServiceContext) {
     - McCall
     
   */
+
   try {
-    if (!global.window) throw "";
+    if (!globalThis.window) throw "";
     if (localStorage.DO_NOT_SPAM) throw "";
     if (location.hostname !== "dex.sifchain.finance") {
       setTimeout(() => {
@@ -79,7 +83,6 @@ export function createServices(context: ServiceContext) {
       }, 8 * 1000);
     }
   } catch (e) {}
-
   return {
     chains: ChainsService,
     ibc: IBCService,

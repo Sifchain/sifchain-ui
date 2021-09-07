@@ -1,3 +1,5 @@
+import { Network } from "../../../entities";
+
 export default {
   assets: [
     {
@@ -653,6 +655,17 @@ export default {
       imageUrl:
         "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
       homeNetwork: "regen",
+    },
+    {
+      symbol: "uosmo",
+      displaySymbol: "osmo",
+      decimals: 6,
+      name: "osmo",
+      network: "sifchain",
+      label: "osmo",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/16724/small/osmosis.jpeg?1624849879",
+      homeNetwork: "osmosis",
     },
   ],
 };

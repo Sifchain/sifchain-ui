@@ -27,7 +27,7 @@ export default defineComponent({
   name: "ExportSelect",
   props: {},
   setup(props) {
-    const { store } = useCore();
+    const { store, services } = useCore();
     const exportData = useExportData();
     const walletPicker = useAppWalletPicker();
 
@@ -162,6 +162,11 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
+    const createChainSortParam = (network: Network) => {
+      // sort by type, then by network, so types are grouped together
+      // should probably have some grouping mechanism in the selection dropdown in the future
+      return services.chains.get(network).chainConfig.chainType + network;
+    };
     const optionsRef = computed<SelectDropdownOption[]>(
       () =>
         networksRef.value
@@ -169,7 +174,11 @@ export default defineComponent({
             content: useChains().get(network).displayName,
             value: network,
           }))
-          .sort((a, b) => a.content.localeCompare(b.content)) || [],
+          .sort((a, b) =>
+            createChainSortParam(a.value).localeCompare(
+              createChainSortParam(b.value),
+            ),
+          ) || [],
     );
     const networkOpenRef = ref(false);
     const targetAddressRef = accountStore.computed(

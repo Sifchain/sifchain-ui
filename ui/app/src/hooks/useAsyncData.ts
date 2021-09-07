@@ -48,9 +48,13 @@ export const useAsyncData = <F extends () => Promise<any>>(
     hasRun: ref(false),
   };
 
-  watch(deps, () => {
-    loadData();
-  });
+  watch(
+    deps,
+    () => {
+      loadData();
+    },
+    { immediate: true },
+  );
 
   onMounted(() => {
     if (!privateState.hasRun.value) {

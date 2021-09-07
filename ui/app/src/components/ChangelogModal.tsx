@@ -39,7 +39,7 @@ export const changelogViewedVersion = {
     return localStorage.getItem("changelogViewedVersion");
   },
   setLatest() {
-    localStorage.setItem("changelogViewedVersion", VITE_APP_VERSION);
+    localStorage.setItem("changelogViewedVersion", String(VITE_APP_VERSION));
   },
   isLatest() {
     return VITE_APP_VERSION === this.get();
@@ -68,7 +68,7 @@ export default defineComponent({
           onClose={props.onClose}
         >
           <div
-            class="css-unreset"
+            class="css-unreset text-left"
             innerHTML={res.data.value?.changelog || ""}
           />
           <div class="w-full h-[16px]" />

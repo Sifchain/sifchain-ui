@@ -13,20 +13,28 @@ export default function MetamaskActions(
   const { services, store } = context;
 
   return {
+    async loadIfConnected(network: Network) {
+      await new Promise((r) => setTimeout(r, 500));
+      if (services.eth.isConnected()) {
+        return this.load(network);
+      }
+      return {
+        connected: false,
+      };
+    },
     async load(network: Network) {
       // await new Promise<void>((resolve, reject) => {
       //   const validChainId = services.chains.get(Network.ETHEREUM).chainConfig
       //     .chainId;
-
       //   services.eth.onChainIdDetected(async (chainId) => {
       //     if (chainId !== validChainId) {
       //       services.bus.dispatch({
       //         type: "WalletConnectionErrorEvent",
       //         payload: {
       //           walletType: "eth",
-      //           message: `Metamask failed to connect. Please select ${chainIdName.get(
-      //             validChainId,
-      //           )}.`,
+      //           message: `Metamask failed to connect. Please select ${services.chains
+      //             .list()
+      //             .find((c) => c.chainConfig.chainId === validChainId)}.`,
       //         },
       //       });
       //       reject();

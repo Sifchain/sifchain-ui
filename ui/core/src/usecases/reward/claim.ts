@@ -14,7 +14,7 @@ export type ClaimArgs = {
   dispensation: PickDispensation;
   sif: PickSif;
 };
-type RewardProgramName = "IBC_REWARDS_V1";
+type RewardProgramName = "COSMOS_IBC_REWARDS_V1";
 
 export function Claim({ dispensation, sif }: ClaimArgs) {
   return async ({

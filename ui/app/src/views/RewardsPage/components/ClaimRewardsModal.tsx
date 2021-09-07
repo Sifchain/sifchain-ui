@@ -58,7 +58,7 @@ export default defineComponent({
             ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
             : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
         fromAddress: props.address,
-        rewardProgramName: "IBC_REWARDS_V1",
+        rewardProgramName: "COSMOS_IBC_REWARDS_V1",
       });
       transactionStatusRef.value = status;
     };

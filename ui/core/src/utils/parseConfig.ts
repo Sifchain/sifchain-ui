@@ -116,6 +116,7 @@ export function parseConfig(
   config: CoreConfig,
   assets: Asset[],
   chainConfigsByNetwork: NetworkChainConfigLookup,
+  peggyCompatibleCosmosBaseDenoms: Set<string>,
 ): ServiceContext {
   const nativeAsset = assets.find((a) => a.symbol === config.nativeAsset);
 
@@ -139,6 +140,8 @@ export function parseConfig(
     });
 
   return {
+    peggyCompatibleCosmosBaseDenoms,
+    chains: [],
     chainConfigsByNetwork: chainConfigsByNetwork,
     sifAddrPrefix: config.sifAddrPrefix,
     sifApiUrl: config.sifApiUrl,

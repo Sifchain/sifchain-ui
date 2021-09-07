@@ -1,33 +1,14 @@
 <template>
   <div class="main">
-    <!-- <Header>
-      <template v-slot:right>
-        <WithWallet>
-          <template v-slot:disconnected="{ requestDialog }">
-            <Pill
-              data-handle="button-connected"
-              color="danger"
-              @click="requestDialog"
-            >
-              Not connected
-            </Pill>
-          </template>
-          <template v-slot:connected="{ requestDialog }">
-            <Pill
-              data-handle="button-connected"
-              @click="requestDialog"
-              color="success"
-              class="connected-button"
-              >CONNECTED</Pill
-            >
-          </template>
-        </WithWallet>
-      </template>
-    </Header> -->
     <SideBar />
     <router-view />
+    <OnboardingModal
+      v-if="shouldShowOnboardingModal"
+      :onClose="onCloseOnboardingModal"
+    />
     <Notifications />
     <EnvAlert />
+    <Flags />
   </div>
 </template>
 
@@ -38,9 +19,30 @@ import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
 import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
 import Layout from "@/componentsLegacy/Layout/Layout";
+import { Flags } from "@/components/Flags/Flags";
 import { useRoute, useRouter } from "vue-router";
 import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
+import OnboardingModal from "@/components/OnboardingModal";
+
+// not currently working? - McCall
+const hideRedundantUselessMetamaskErrors = () => {
+  let hiddenCount = 0;
+  console.error = (...args: any[]) => {
+    if (++hiddenCount === 1) {
+      console.warn("Hiding redundant Metamask 'header not found' errors.");
+    }
+    if (
+      args[0] &&
+      typeof args[0] === "string" &&
+      args[0].includes("MetaMask - RPC Error: header not found")
+    ) {
+      return;
+    }
+    return console.error(...args);
+  };
+};
+hideRedundantUselessMetamaskErrors();
 
 const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
 
@@ -66,6 +68,7 @@ export default defineComponent({
     Notifications,
     EnvAlert,
     SideBar,
+    Flags,
   },
   computed: {
     key() {
@@ -108,16 +111,19 @@ export default defineComponent({
         !hasImportedAssets &&
         !hasShownOnboardingModal
       ) {
-        router.push({
-          name: "Welcome",
-        });
+        shouldShowOnboardingModal.value = true;
         hasShownOnboardingModal = true;
         localStorage.setItem("hasShownOnboardingModal", "true");
       }
     });
     /// Initialize app
     useInitialize();
-    return { shouldShowOnboardingModal };
+    return {
+      shouldShowOnboardingModal,
+      onCloseOnboardingModal: () => {
+        shouldShowOnboardingModal.value = false;
+      },
+    };
   },
 });
 </script>

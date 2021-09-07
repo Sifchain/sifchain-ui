@@ -48,7 +48,8 @@ export const COLUMNS: {
 ];
 
 // Only wait for load on first visit of the page
-let hasLoadedFirstTime = false;
+let userDataHasLoadedFirstTime = false;
+let poolsHasLoadedFirstTime = false;
 
 export const usePoolPageData = () => {
   const { store, usecases } = useCore();
@@ -57,12 +58,17 @@ export const usePoolPageData = () => {
 
   const stats = usePoolStats();
 
-  const isLoaded = ref(hasLoadedFirstTime);
+  const isUserDataLoaded = ref(userDataHasLoadedFirstTime);
+  const isPoolsDataLoaded = ref(poolsHasLoadedFirstTime);
   let unsubscribePublic: () => void;
   let unsubscribeUser: () => void;
 
-  onMounted(() => {
-    unsubscribePublic = usecases.clp.subscribeToPublicPools().unsubscribe;
+  onMounted(async () => {
+    const poolsRes = usecases.clp.subscribeToPublicPools();
+    unsubscribePublic = poolsRes.unsubscribe;
+
+    await poolsRes.initPromise;
+    poolsHasLoadedFirstTime = isPoolsDataLoaded.value = true;
   });
 
   watch(
@@ -72,7 +78,7 @@ export const usePoolPageData = () => {
         const userRes = usecases.clp.subscribeToUserPools(address);
         unsubscribePublic = userRes.unsubscribe;
         await userRes.initPromise;
-        hasLoadedFirstTime = isLoaded.value = true;
+        userDataHasLoadedFirstTime = isUserDataLoaded.value = true;
       }
     },
     { immediate: true },
@@ -103,7 +109,16 @@ export const usePoolPageData = () => {
   });
 
   return {
-    isLoading: computed(() => !isLoaded.value),
+    isLoaded: computed(() => {
+      const hasPotentialAccount =
+        accountStore.state.sifchain.connecting ||
+        accountStore.state.sifchain.connected;
+      // Show pools page as loaded if user is not connected and main data loads
+      return (
+        isPoolsDataLoaded.value &&
+        (!hasPotentialAccount || isUserDataLoaded.value)
+      );
+    }),
     accountPools,
     selectedPool,
     stats,

@@ -75,16 +75,19 @@ const createWalletConnection = (
   };
 };
 
+// Sif, then eth, then all others alphabetically
 export const walletConnections: WalletConnection[] = [
-  createWalletConnection("keplr", Network.SENTINEL),
-  createWalletConnection("keplr", Network.REGEN),
-  createWalletConnection("keplr", Network.PERSISTENCE),
-  createWalletConnection("keplr", Network.IRIS),
-  createWalletConnection("keplr", Network.CRYPTO_ORG),
-  createWalletConnection("keplr", Network.COSMOSHUB),
-  createWalletConnection("keplr", Network.AKASH),
-  createWalletConnection("metamask", Network.ETHEREUM),
   createWalletConnection("keplr", Network.SIFCHAIN),
-].filter((connection) => {
-  return !connection.getChain().chainConfig.hidden;
-});
+  createWalletConnection("metamask", Network.ETHEREUM),
+  ...Object.values(Network)
+    .filter((n) => n !== Network.SIFCHAIN && n !== Network.ETHEREUM)
+    .map((n) => createWalletConnection("keplr", n))
+    .sort((a, b) =>
+      a.getChain().displayName.localeCompare(b.getChain().displayName),
+    ),
+]
+  .filter((connection) => {
+    return !connection.getChain().chainConfig.hidden;
+  })
+  // UI displays these bottom to top
+  .reverse();

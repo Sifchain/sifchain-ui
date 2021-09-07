@@ -46,6 +46,8 @@ export class IBCService {
 
   keplrProvider = KeplrWalletProvider.create(this.context);
 
+  public transferTimeoutMinutes = 45;
+
   constructor(private context: IBCServiceContext) {}
   static create(context: IBCServiceContext) {
     return new this(context);
@@ -354,7 +356,7 @@ export class IBCService {
 
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
-    const timeoutInMinutes = 45;
+    const timeoutInMinutes = this.transferTimeoutMinutes;
     const timeoutTimestampInSeconds = Math.floor(
       new Date().getTime() / 1000 + 60 * timeoutInMinutes,
     );
