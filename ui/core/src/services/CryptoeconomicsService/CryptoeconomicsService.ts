@@ -1,4 +1,5 @@
 export type CryptoeconomicsUserData = null | {
+  timestamp: number;
   user?: {
     maturityDate: Date;
     dispensed: number;
@@ -10,6 +11,15 @@ export type CryptoeconomicsUserData = null | {
     claimableReward: number;
     totalRewardAtMaturity: number;
     currentAPYOnTickets: number;
+    totalDepositedAmount: number;
+    yearsToMaturity: number;
+
+    tickets: [
+      {
+        timestamp: string;
+        mul: number;
+      },
+    ];
   };
 };
 
@@ -26,6 +36,11 @@ export interface FetchDataProps {
   timestamp?: string;
   snapShotSource?: string;
 }
+
+export type CryptoeconomicsTimeseriesItem = {
+  timestamp: number;
+  userClaimableReward: number;
+};
 
 export default function createCryptoeconomicsService(
   config: CryptoeconomicsServiceContext,
@@ -44,7 +59,7 @@ export default function createCryptoeconomicsService(
       `${config.cryptoeconomicsUrl}/${props.rewardType}?${params.toString()}`,
     );
     if (!res.ok) {
-      return null;
+      throw new Error("Failed to fetch cryptoeconomics data");
     } else {
       const json = await res.json();
       if (json.user?.maturityDateISO) {
@@ -80,5 +95,13 @@ export default function createCryptoeconomicsService(
         ...options,
         rewardType: "lm",
       }),
+    fetchTimeseriesData: async (props: { address: string }) => {
+      const data = await fetchData({
+        address: props.address,
+        rewardType: "lm",
+        key: "userTimeSeriesData",
+      });
+      return (data as unknown) as CryptoeconomicsTimeseriesItem[];
+    },
   };
 }
