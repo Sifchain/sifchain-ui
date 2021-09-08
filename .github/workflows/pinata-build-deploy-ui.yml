@@ -6,8 +6,9 @@ on:
       - develop_pinata
       - develop
       - master
+  create:
     tags:
-      - *
+      - v*
 
 jobs:
   build_and_deploy:
