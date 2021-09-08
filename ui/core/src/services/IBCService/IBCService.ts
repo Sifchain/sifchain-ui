@@ -488,7 +488,7 @@ export class IBCService {
     const feeAmount = getChainsService()
       .get(params.destinationNetwork)
       .calculateTransferFeeToChain(params.assetAmountToTransfer);
-    if (feeAmount?.amount.greaterThan("0")) {
+    if (feeAmount?.amount.greaterThan("0") && false) {
       console.log("CHARGING FEE");
       const feeEntry = registry.find(
         (item) => item.baseDenom === feeAmount.asset.symbol,
@@ -576,7 +576,7 @@ export class IBCService {
                 amount: [
                   ...sendingStargateClient.fees.transfer.amount.map((amt) => ({
                     ...amt,
-                    denom: "uatom",
+                    denom: "uphoton",
                   })),
                 ],
               },
@@ -619,11 +619,22 @@ export class IBCService {
           responses.push(brdcstTxRes);
         };
         const launchpadSignAndSend = async () => {
-          const launchpad = new SigningCosmosClient(
+          const client = (window as any).services.sif.getClient as SifClient;
+          console.log({sifClient: client })
+
+          const signer = keplr?.getOfflineSigner(await sendingStargateClient.getChainId())
+          if (!signer) throw "NO"
+          const launchpad = new SifClient(
             sourceChain.restUrl,
             fromAccount.address,
-            sendingSigner,
-          );
+            signer,
+
+          // const launchpad = new SigningCosmosClient(
+          //   sourceChain.restUrl,
+          //   fromAccount.address,
+          //   // @ts-ignore
+          //   sendingSigner,
+          // );
           console.log({ sendingSigner });
           const converter = new AminoTypes();
           const res = await launchpad.signAndBroadcast(
@@ -654,24 +665,35 @@ export class IBCService {
           const client = new NativeSigningClient(t34, sendingSigner, {
             registry: NativeDexClient!.getNativeRegistry(),
           });
-          const sig = await client.signWMeta(
+          const txRaw = await client.sign(
             fromAccount.address,
             batch,
             sendingStargateClient.fees.transfer,
             "",
-            {
-              chainId,
-              accountNumber: sequence.accountNumber,
-              sequence: sequence.sequence,
-            },
           );
+          const sig = TxRaw.encode(txRaw).finish();
+
+          //           const sig = await client.signWMeta(
+          //             fromAccount.address,
+          //             batch,
+          //             sendingStargateClient.fees.transfer,
+          //             "",
+          //             {
+          //               chainId,
+          //               accountNumber: sequence.accountNumber,
+          //               sequence: sequence.sequence,
+          //             },
+          //           );
+          console.log("waiting...");
+          await new Promise((r) => setTimeout(r, 5 * 1000));
+          console.log("go!");
           const res = await client.broadcastTx(sig);
           console.log({ res });
         };
         // keplrSignAndSend();
         // stargateSignAndSend();
-        // launchpadSignAndSend();
-        customSignAndSendAmino();
+        launchpadSignAndSend();
+        // customSignAndSendAmino();
       } catch (e) {
         console.error(e);
         responses.push({

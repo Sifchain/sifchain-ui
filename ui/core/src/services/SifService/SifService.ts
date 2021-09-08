@@ -129,6 +129,9 @@ export default function createSifService({
   }, 100);
 
   const instance = {
+    getClient() {
+      return client;
+    },
     /**
      * getState returns the service's reactive state to be listened to by consuming clients.
      */
