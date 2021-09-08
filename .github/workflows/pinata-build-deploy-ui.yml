@@ -27,7 +27,7 @@ jobs:
       - name: Set env vars
         shell: bash
         run: |
-          BRANCH_NAME=$(git branch --show-current)
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "TAG_NAME=$(git tag --points-at HEAD)" >> $GITHUB_ENV
           echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
@@ -37,7 +37,7 @@ jobs:
           then
             echo "SUBDOMAIN=dex" >> $GITHUB_ENV
             echo "VITE_APP_DEPLOYMENT=production" >> $GITHUB_ENV
-          elif [[ $BRANCH_NAME == 'develop' ]] && [[ "$TAG_NAME" != '' ]]
+          elif [[ "$TAG_NAME" != '' ]]
           then
             echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
             echo "VITE_APP_DEPLOYMENT=staging" >> $GITHUB_ENV
