@@ -1,6 +1,5 @@
 import { flagsStore } from "@/store/modules/flags";
 import * as dat from "dat.gui";
-
 export const createGui = () => {
   const gui = new dat.GUI({
     load: {

@@ -174,10 +174,10 @@ export const RewardSection = defineComponent({
                 icon="navigation/rewards"
                 active
                 disabled={
-                  !flagsStore.state.enableRewardsClaim ||
+                  !flagsStore.state.rewardClaims ||
+                  props.alreadyClaimed ||
                   !props.data?.user
-                    ?.totalClaimableCommissionsAndClaimableRewards ||
-                  props.alreadyClaimed
+                    ?.totalClaimableCommissionsAndClaimableRewards
                 }
               >
                 {props.alreadyClaimed ? "Pending Claim" : "Claim Reward"}

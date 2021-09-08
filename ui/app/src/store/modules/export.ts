@@ -40,13 +40,14 @@ export const exportStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
-      const IBC_ETHEREUM_ENABLED =
-        flagsStore.state.enableEthereumToCosmosImports;
-      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        flagsStore.state.enableNativeTokenIBCExports;
+      const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
+      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
+      );
+      const isPeggyWhitelistedIBCAsset = useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(
+        asset.symbol,
       );
       return (
         useChainsList()
@@ -72,9 +73,10 @@ export const exportStore = Vuextra.createStore({
               }
             }
           })
-          .filter((n) => {
-            if (isExternalIBCAsset && !IBC_ETHEREUM_ENABLED) {
-              return n.network !== Network.ETHEREUM;
+          .filter((c) => {
+            if (isExternalIBCAsset && c.network === Network.ETHEREUM) {
+              // if it's a peggy-whitelisted IBC token and IBC ethereum is enabled
+              return isPeggyWhitelistedIBCAsset && IBC_ETHEREUM_ENABLED;
             }
             return true;
           })
