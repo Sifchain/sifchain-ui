@@ -28,7 +28,7 @@ const useValidatorSubsidyData = (address: ComputedRef<string>) => {
     return services.cryptoeconomics.fetchVsData({
       address: address.value,
     });
-  }, [address.value]);
+  }, [address]);
 };
 
 const useExistingClaimsData = (
@@ -70,10 +70,15 @@ export const useRewardsPageData = () => {
   const vsRes = useValidatorSubsidyData(address);
   const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);
 
+  const summaryAPYRes = useAsyncData(() =>
+    services.cryptoeconomics.fetchSummaryAPY(),
+  );
+
   const isLoading = computed(() => {
     return (
       !accountStore.state.sifchain.address ||
       lmRes.isLoading.value ||
+      summaryAPYRes.isLoading.value ||
       vsRes.isLoading.value ||
       claimsRes.isLoading.value
     );
@@ -95,10 +100,11 @@ export const useRewardsPageData = () => {
     address,
     isLoading,
     error,
-    lmData: computed(() => lmRes.value?.data.value),
-    vsData: computed(() => vsRes.value?.data.value),
+    lmData: computed(() => lmRes.data.value),
+    vsData: computed(() => vsRes.data.value),
     vsClaim: computed(() => claimsRes.data.value?.vs),
     lmClaim: computed(() => claimsRes.data.value?.lm),
+    summaryAPY: computed(() => summaryAPYRes.data.value),
     vsInfoLink,
     lmInfoLink,
   };
