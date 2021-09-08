@@ -28,8 +28,9 @@ jobs:
         shell: bash
         run: |
           BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          TAG_NAME=$(git tag --points-at HEAD)
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "TAG_NAME=$(git tag --points-at HEAD)" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
           echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
 
