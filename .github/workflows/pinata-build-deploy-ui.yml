@@ -3,6 +3,7 @@ name: Build then Deploy to Pinata
 on:
   push:
     branches:
+      - develop_pinata
       - develop
       - master
 
@@ -90,7 +91,7 @@ jobs:
           cid: ${{ steps.pinata.outputs.hash }}
 
       - name: Send custom JSON data to Slack workflow
-        if: ${{ env.SUBDOMAIN == 'testnet' || env.SUBDOMAIN == 'dex' }}
+        if: github.ref != 'refs/heads/develop' 
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
