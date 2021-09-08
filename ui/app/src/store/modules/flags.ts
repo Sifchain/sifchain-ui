@@ -9,10 +9,9 @@ export const flagsStore = Vuextra.createStore({
   },
   state: {
     ibcTransferTimeoutMinutes: 45,
-    enableRewardsClaim: true,
-    enableEthereumToCosmosImports: false,
-    enableNativeTokenIBCExports:
-      AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC,
+    rewardClaims: true,
+    peggyForCosmosTokens: false,
+    ibcForEthTokens: AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC,
   },
   getters: (state) => ({}),
   mutations: (state) => ({

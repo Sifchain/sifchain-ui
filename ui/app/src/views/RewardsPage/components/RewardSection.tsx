@@ -1,6 +1,6 @@
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { TokenIcon } from "@/components/TokenIcon";
-import { Asset, Amount } from "@sifchain/sdk";
+import { Asset, Amount, AppCookies, NetworkEnv } from "@sifchain/sdk";
 import { format } from "@sifchain/sdk/src/utils/format";
 import {
   CryptoeconomicsRewardType,
@@ -157,16 +157,27 @@ export const RewardSection = defineComponent({
                 Learn More
               </Button.Inline>{" "}
               <Button.Inline
-                onClick={() => props.onClaimIntent()}
+                onClick={() => {
+                  if (
+                    !import.meta.env.PROD &&
+                    AppCookies().getEnv() === NetworkEnv.MAINNET &&
+                    !window.confirm(
+                      "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
+                    )
+                  ) {
+                    alert("claim canceled.");
+                    return;
+                  }
+                  props.onClaimIntent();
+                }}
                 class="w-full mt-[6px]"
                 icon="navigation/rewards"
                 active
                 disabled={
-                  false &&
-                  (!flagsStore.state.enableRewardsClaim ||
-                    !props.data?.user
-                      ?.totalClaimableCommissionsAndClaimableRewards ||
-                    props.alreadyClaimed)
+                  !flagsStore.state.rewardClaims ||
+                  props.alreadyClaimed ||
+                  !props.data?.user
+                    ?.totalClaimableCommissionsAndClaimableRewards
                 }
               >
                 {props.alreadyClaimed ? "Pending Claim" : "Claim Reward"}
