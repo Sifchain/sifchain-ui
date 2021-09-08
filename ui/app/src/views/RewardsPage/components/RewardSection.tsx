@@ -159,7 +159,8 @@ export const RewardSection = defineComponent({
               <Button.Inline
                 onClick={() => {
                   if (
-                    !import.meta.env.PROD &&
+                    (import.meta.env.VITE_APP_DEPLOYMENT === "develop" ||
+                      window.location.origin.includes("localhost")) &&
                     AppCookies().getEnv() === NetworkEnv.MAINNET &&
                     !window.confirm(
                       "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
