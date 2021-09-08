@@ -122,10 +122,11 @@ export default defineComponent({
         const totalLessRowan = parseFloat(
           formatRowanNumber(
             Math.ceil(
-              (props.userData?.user.totalCommissionsAndRewardsAtMaturity || 0) -
+              (props.userData?.user?.totalCommissionsAndRewardsAtMaturity ||
+                0) -
                 rewardsAtMaturityAfterClaim.value -
                 (props.userData?.user
-                  .totalClaimableCommissionsAndClaimableRewards || 0),
+                  ?.totalClaimableCommissionsAndClaimableRewards || 0),
             ),
           ),
         ).toFixed(0);
@@ -135,7 +136,7 @@ export default defineComponent({
             <Button.InlineHelp>
               If you claim today, you will end up with approximately{" "}
               {totalLessRowan} less ROWAN on your maturity date of{" "}
-              {props.userData?.user.maturityDate.toLocaleDateString()}.
+              {props.userData?.user?.maturityDate.toLocaleDateString()}.
             </Button.InlineHelp>
           </span>,
           <span class="flex items-center font-mono border-b border-solid border-info-base border-opacity-80">

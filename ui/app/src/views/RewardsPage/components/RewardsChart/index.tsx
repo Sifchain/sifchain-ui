@@ -42,7 +42,6 @@ export const RewardsChart = defineComponent({
     const deps = useAsyncData(loadAllChartDeps);
 
     const chartRef = ref();
-    const containerRef = ref();
     const canvasRef = ref();
 
     effect(() => {
@@ -52,7 +51,6 @@ export const RewardsChart = defineComponent({
       if (chartRef.value) return;
       if (!props.userData) return;
 
-      w.value = containerRef.value.offsetWidth;
       // @ts-ignore
       chartRef.value = renderChart({
         canvasElement: canvasRef.value,
@@ -66,15 +64,17 @@ export const RewardsChart = defineComponent({
       chartRef.value?.destroy();
     });
 
-    const w = ref(300);
+    const width = 490;
+    const height = 245;
 
     return () => (
-      <div ref={containerRef} class="w-full">
+      <div class="w-full">
         <canvas
           onClick={() => chartRef.value?.resetZoom()}
           ref={canvasRef}
           id="myChart"
-          width={w.value}
+          width={width}
+          height={height}
         />
       </div>
     );
