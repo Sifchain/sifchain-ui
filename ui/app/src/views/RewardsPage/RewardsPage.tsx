@@ -29,7 +29,7 @@ export default defineComponent({
       address,
     } = data;
 
-    const isClaimModalOpened = ref(true);
+    const isClaimModalOpened = ref(false);
     const claimRewardType = ref<"vs" | "lm">("lm");
 
     return () => {
