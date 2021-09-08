@@ -7,7 +7,7 @@ export function vitePolyfills() {
   let addedPolyfills = false;
   return {
     name: "vite-polyfills",
-    transform(src, id) {
+    transform(src: string, id: string) {
       if (!addedPolyfills && /\.m?js$/.test(id)) {
         addedPolyfills = true;
         return {
