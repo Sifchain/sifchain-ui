@@ -33,16 +33,16 @@ jobs:
           if [[ $BRANCH_NAME == 'master' ]]
           then
             echo "SUBDOMAIN=dex" >> $GITHUB_ENV
-            echo "VITE_APP_DEPLOYMENT=production"
+            echo "VITE_APP_DEPLOYMENT=production" >> $GITHUB_ENV
           elif [[ $BRANCH_NAME == 'develop' ]] && [[ "$TAG_NAME" != '' ]]
           then
-            # because testnet is promoted to mainnet
             echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
-            echo "VITE_APP_DEPLOYMENT=staging"
+            echo "VITE_APP_DEPLOYMENT=staging" >> $GITHUB_ENV
           else
             echo "SUBDOMAIN=devnet" >> $GITHUB_ENV
-            echo "VITE_APP_DEPLOYMENT=develop"
+            echo "VITE_APP_DEPLOYMENT=develop" >> $GITHUB_ENV
           fi
+          echo $(cat $GITHUB_ENV)
 
       - name: Build App
         run: |
