@@ -37,7 +37,6 @@ export const useBalancePageData = (initialState: BalancePageState) => {
       reverse: state.reverse,
       network: Network.SIFCHAIN,
     });
-    debugger;
     return out;
   });
 
