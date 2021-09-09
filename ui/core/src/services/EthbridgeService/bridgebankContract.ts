@@ -20,3 +20,4 @@ export async function getBridgeBankContract(web3: Web3, address: string) {
   const abis = await fetchBridgebankContractAbis();
   return new web3.eth.Contract(abis as AbiItem[], address);
 }
+// bump
