@@ -129,7 +129,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   async tryConnectAll(...chains: Chain[]) {
     const keplr = await getKeplrProvider();
     const chainIds = chains
-      .filter((c) => c.chainConfig.chainType === "ibc")
+      .filter((c) => c.chainConfig.chainType === "ibc" && !c.chainConfig.hidden)
       .map((c) => c.chainConfig.chainId);
     // @ts-ignore
     return keplr?.enable(chainIds);
