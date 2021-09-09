@@ -663,18 +663,6 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
-      "decimals": 6,
-      "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
-      "name": "DVPN",
-      "network": "ethereum",
-      "homeNetwork": "sentinel",
-      "priceUsd": 0,
-      "symbol": "udvpn",
-      "displaySymbol": "dvpn",
-      "transferLimit": "99999999999999999999999"
-    },
-    {
       "symbol": "uiris",
       "decimals": 6,
       "name": "IRIS",
@@ -707,19 +695,6 @@
       "label": "regen",
       "imageUrl": "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
       "homeNetwork": "regen",
-      "transferLimit": "99999999999999999999999",
-      "address": ""
-    },
-    {
-      "symbol": "uosmo",
-      "displaySymbol": "osmo",
-      "decimals": 6,
-      "name": "osmo",
-      "network": "ethereum",
-      "label": "osmo",
-      "imageUrl": "https://assets.coingecko.com/coins/images/16724/small/osmosis.jpeg?1624849879",
-      "homeNetwork": "osmosis",
-      "decommissioned": true,
       "transferLimit": "99999999999999999999999",
       "address": ""
     }
