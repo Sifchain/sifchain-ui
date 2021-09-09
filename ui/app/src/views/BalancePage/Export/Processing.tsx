@@ -51,7 +51,7 @@ export default defineComponent({
       }
     };
 
-    setTimeout(handleSuggestAsset, 1000);
+    // setTimeout(handleSuggestAsset, 1000);
     return () => {
       return (
         <TransactionDetailsModal

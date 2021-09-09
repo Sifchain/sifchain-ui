@@ -15,30 +15,16 @@ import { fromHex } from "@cosmjs/encoding";
 import { Uint53 } from "@cosmjs/math";
 import { SifUnSignedClient } from "./SifUnsignedClient";
 
-export class SifClient extends SigningCosmosClient {
-  private wallet: OfflineSigner;
-  private unsignedClient: SifUnSignedClient;
-  rpcUrl: string;
+export class Compatible42SigningCosmosClient extends SigningCosmosClient {
   constructor(
     apiUrl: string,
     senderAddress: string,
     signer: OfflineSigner,
-    wsUrl: string,
-    rpcUrl: string,
     gasPrice?: GasPrice,
     gasLimits?: Partial<GasLimits<CosmosFeeTable>>,
-    broadcastMode: BroadcastMode = BroadcastMode.Block,
+    broadcastMode?: BroadcastMode,
   ) {
     super(apiUrl, senderAddress, signer, gasPrice, gasLimits, broadcastMode);
-    this.rpcUrl = rpcUrl;
-    this.wallet = signer;
-    this.unsignedClient = new SifUnSignedClient(
-      apiUrl,
-      wsUrl,
-      rpcUrl,
-      broadcastMode,
-    );
-
     // NOTE(ajoslin): in 0.42, the response format for /auth/accounts/:address changed.
     // It used to have `.result.type` equal to `cosmos-sdk/Account`, but now it is
     // `cosmos-sdk/BaseAccount`. We need to check for this new type and coerce
@@ -65,9 +51,6 @@ export class SifClient extends SigningCosmosClient {
     };
   }
 
-  getRpcUrl() {
-    return this.rpcUrl;
-  }
   // NOTE(59023g): in 0.42, the result.logs array items do not include `msg_index` and
   // `log` so we hardcode these values. It does assume logs array length is always 1
   async broadcastTx(tx: StdTx): Promise<BroadcastTxResult> {
@@ -96,6 +79,37 @@ export class SifClient extends SigningCosmosClient {
           transactionHash: result.txhash,
           data: result.data ? fromHex(result.data) : undefined,
         };
+  }
+}
+
+export class SifClient extends Compatible42SigningCosmosClient {
+  private wallet: OfflineSigner;
+  private unsignedClient: SifUnSignedClient;
+  rpcUrl: string;
+  constructor(
+    apiUrl: string,
+    senderAddress: string,
+    signer: OfflineSigner,
+    wsUrl: string,
+    rpcUrl: string,
+    gasPrice?: GasPrice,
+    gasLimits?: Partial<GasLimits<CosmosFeeTable>>,
+    broadcastMode: BroadcastMode = BroadcastMode.Block,
+  ) {
+    super(apiUrl, senderAddress, signer, gasPrice, gasLimits, broadcastMode);
+
+    this.rpcUrl = rpcUrl;
+    this.wallet = signer;
+    this.unsignedClient = new SifUnSignedClient(
+      apiUrl,
+      wsUrl,
+      rpcUrl,
+      broadcastMode,
+    );
+  }
+
+  getRpcUrl() {
+    return this.rpcUrl;
   }
 
   async getBankBalances(address: string): Promise<object[]> {

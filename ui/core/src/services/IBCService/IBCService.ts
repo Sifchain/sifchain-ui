@@ -13,6 +13,119 @@ import {
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import * as inflection from "inflection";
 
+class NativeAminoTypes extends AminoTypes {
+  constructor(options: {
+    additions?: Record<string, AminoConverter>;
+    prefix?: string;
+  }) {
+    super(options);
+
+    const ibcAddition =
+      options.additions?.["/ibc.applications.transfer.v1.MsgTransfer"];
+
+    if (ibcAddition) {
+      const originalToAmino = ibcAddition.toAmino;
+
+      // @ts-ignore
+      ibcAddition.toAmino = (value: any) => {
+        value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
+        value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
+        const converted = originalToAmino(value);
+        delete converted.timeout_timestamp;
+        console.log("After converted", JSON.stringify(converted, null, 2));
+        return converted;
+      };
+    }
+  }
+}
+
+const getTransferTimeoutData = async (
+  receivingStargateClient: StargateClient,
+  desiredTimeoutMinutes: number,
+) => {
+  const blockTimeMinutes = 7.25 / 60;
+
+  const timeoutBlockDelta = desiredTimeoutMinutes / blockTimeMinutes;
+
+  return {
+    revisionNumber: Long.fromNumber(
+      +ChainIdHelper.parse(
+        await receivingStargateClient.getChainId(),
+      ).version.toString() || 0,
+    ),
+    // Set the timeout height as the current height + 150.
+    revisionHeight: Long.fromNumber(
+      (await receivingStargateClient.getHeight()) + timeoutBlockDelta,
+    ),
+  };
+};
+
+// Ripped from KEPLR
+export class ChainIdHelper {
+  // VersionFormatRegExp checks if a chainID is in the format required for parsing versions
+  // The chainID should be in the form: `{identifier}-{version}`
+  static readonly VersionFormatRegExp = /(.+)-([\d]+)/;
+
+  static parse(
+    chainId: string,
+  ): {
+    identifier: string;
+    version: number;
+  } {
+    const split = chainId
+      .split(ChainIdHelper.VersionFormatRegExp)
+      .filter(Boolean);
+    if (split.length !== 2) {
+      return {
+        identifier: chainId,
+        version: 0,
+      };
+    } else {
+      return { identifier: split[0], version: parseInt(split[1]) };
+    }
+  }
+
+  static hasChainVersion(chainId: string): boolean {
+    const version = ChainIdHelper.parse(chainId);
+    return version.identifier !== chainId;
+  }
+}
+/*
+ * {
+  "chain_id": "sifchain-1",
+  "account_number": "9375",
+  "sequence": "0",
+  "fee": {
+    "gas": "120000",
+    "amount": [
+      {
+        "denom": "rowan",
+        "amount": "120000000000000000"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-0",
+        "token": {
+          "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          "amount": "10000"
+        },
+        "sender": "sif1cnfwkwccnt95zzngqlyqx94k6px2qh4v0ezxw4",
+        "receiver": "cosmos1shywxv2g8gvjcqknvkxu4p6lkqhfclwwhh0q4u",
+        "timeout_height": {
+          "revision_number": "4",
+          "revision_height": "7604931"
+        }
+      }
+    }
+  ],
+  "memo": ""
+}*/
+
 import {
   Asset,
   IAssetAmount,
@@ -60,7 +173,11 @@ import {
 } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 import { isAminoMsgTransfer } from "@cosmjs/stargate/build/aminomsgs";
-import { SifClient, SifUnSignedClient } from "../../services/utils/SifClient";
+import {
+  SifClient,
+  SifUnSignedClient,
+  Compatible42SigningCosmosClient,
+} from "../../services/utils/SifClient";
 import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
 import { Registry } from "generated/proto/sifnode/tokenregistry/v1/types";
 
@@ -362,7 +479,7 @@ export class IBCService {
       {
         // we create amino additions, but these will not be used, because IBC types are already included & assigned
         // on top of the amino additions by default
-        aminoTypes: new AminoTypes({
+        aminoTypes: new NativeAminoTypes({
           additions: createAminoAdditions(),
           prefix: undefined,
         }),
@@ -383,7 +500,7 @@ export class IBCService {
       sourceChain.rpcUrl,
       sendingSigner,
       {
-        aminoTypes: new AminoTypes({
+        aminoTypes: new NativeAminoTypes({
           additions: createAminoAdditions(),
           prefix: undefined,
         }),
@@ -415,9 +532,13 @@ export class IBCService {
       ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
       : undefined;
     const currentHeight = await receivingStargateCient.getHeight();
-    const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const registry = await this.tokenRegistry.load();
     const transferTokenEntry = registry.find((t) => t.baseDenom === symbol);
+
+    const timeoutHeight = await getTransferTimeoutData(
+      receivingStargateCient,
+      this.transferTimeoutMinutes,
+    );
 
     if (!transferTokenEntry) {
       throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
@@ -446,12 +567,7 @@ export class IBCService {
           // denom: symbol,
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
-        // timeoutHeight: {
-        //   revisionNumber: Long.fromInt(4),
-        //   // revisionHeight: timeoutHeight,
-        //   // revisionHeight: timeoutHeight,
-        // },
-        timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
+        timeoutHeight: timeoutHeight,
       }),
     };
 
@@ -619,15 +735,18 @@ export class IBCService {
           responses.push(brdcstTxRes);
         };
         const launchpadSignAndSend = async () => {
-          const client = (window as any).services.sif.getClient as SifClient;
-          console.log({sifClient: client })
+          console.log("launchpadSignAndSend");
+          const keplr = await getKeplrProvider();
+          const sendingSigner = keplr!.getOfflineSigner(
+            await sendingStargateClient.getChainId(),
+          );
 
-          const signer = keplr?.getOfflineSigner(await sendingStargateClient.getChainId())
-          if (!signer) throw "NO"
-          const launchpad = new SifClient(
+          const launchpad = new Compatible42SigningCosmosClient(
             sourceChain.restUrl,
             fromAccount.address,
-            signer,
+            // @ts-ignore
+            sendingSigner,
+          );
 
           // const launchpad = new SigningCosmosClient(
           //   sourceChain.restUrl,
@@ -637,27 +756,37 @@ export class IBCService {
           // );
           console.log({ sendingSigner });
           const converter = new AminoTypes();
-          const res = await launchpad.signAndBroadcast(
-            batch.map(converter.toAmino.bind(converter)),
-            {
-              ...sendingStargateClient.fees.transfer,
-              // amount: [
-              //   {
-              //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
-              //     amount:
-              //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
-              //       "",
-              //   },
-              // ],
-              // ...(externalGasPrices &&
-              // externalGasPrices[sourceChain.chainId || ""]
-              //   ? {
-              //       gas: externalGasPrices[sourceChain.chainId || ""],
-              //     }
-              //   : {}),
-              // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
-            },
-          );
+          const converted = batch.map(converter.toAmino.bind(converter));
+
+          // delete converted[0].value.timeout_timestamp;
+          converted[0].value.timeout_height = {
+            revision_number: ChainIdHelper.parse(
+              await receivingStargateCient.getChainId(),
+            ).version.toString() as string | undefined,
+            // Set the timeout height as the current height + 150.
+            revision_height: Long.fromNumber(
+              (await receivingStargateCient.getHeight()) + 150,
+            ).toString(),
+          };
+
+          const res = await launchpad.signAndBroadcast(converted, {
+            ...sendingStargateClient.fees.transfer,
+            // amount: [
+            //   {
+            //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
+            //     amount:
+            //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+            //       "",
+            //   },
+            // ],
+            // ...(externalGasPrices &&
+            // externalGasPrices[sourceChain.chainId || ""]
+            //   ? {
+            //       gas: externalGasPrices[sourceChain.chainId || ""],
+            //     }
+            //   : {}),
+            // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
+          });
           console.log({ res });
         };
         const customSignAndSendAmino = async () => {
@@ -691,8 +820,8 @@ export class IBCService {
           console.log({ res });
         };
         // keplrSignAndSend();
-        // stargateSignAndSend();
-        launchpadSignAndSend();
+        stargateSignAndSend();
+        // launchpadSignAndSend();
         // customSignAndSendAmino();
       } catch (e) {
         console.error(e);
@@ -718,7 +847,21 @@ export default function createIBCService(context: IBCServiceContext) {
 }
 
 const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
+  if (typeUrl.startsWith("/ibc")) {
+    return typeUrl
+      .split(".")
+      .filter(Boolean)
+      .filter((part) => {
+        return !/applications|v1|transfer/.test(part);
+      })
+      .map((part) => {
+        if (part === "/ibc") return "cosmos-sdk";
+        return part;
+      })
+      .join("/");
+  }
   const [_namespace, cosmosModule, _version, messageType] = typeUrl.split(".");
+
   return `${cosmosModule}/${messageType}`;
 };
 
@@ -773,7 +916,7 @@ const createAminoAdditions = (): Record<string, AminoConverter> => {
   const aminoAdditions: Record<string, AminoConverter> = {};
   const protogens = NativeDexClient.getGeneratedTypes();
   for (let [typeUrl, _genType] of protogens) {
-    if (!typeUrl.includes("sifnode")) continue;
+    // if (!typeUrl.includes("sifnode")) continue;
     aminoAdditions[typeUrl] = {
       aminoType: createAminoTypeNameFromProtoTypeUrl(typeUrl),
       toAmino: (value: any): AminoMsg => convertToSnakeCaseDeep(value),
@@ -818,6 +961,7 @@ class NativeSigningClient
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
+
     const aminoTypes = new AminoTypes({
       additions: {},
       prefix: undefined,
