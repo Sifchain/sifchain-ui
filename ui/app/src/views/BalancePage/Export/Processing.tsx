@@ -45,13 +45,18 @@ export default defineComponent({
         const imageUrl = getTokenIconUrl(asset, window.location.origin);
         // convert to data url to ensure image longevity & decrease metamask dependency on our asset path structure
         await suggestEthereumAsset(asset, address, (asset) =>
-          imageUrl ? convertImageUrlToDataUrl(imageUrl) : undefined,
+          imageUrl
+            ? convertImageUrlToDataUrl(imageUrl).catch((e) => {
+                console.error(e);
+                return undefined;
+              })
+            : undefined,
         );
         hasAddedToken.value = true;
       }
     };
 
-    setTimeout(handleSuggestAsset, 1000);
+    // setTimeout(handleSuggestAsset, 1000);
     return () => {
       return (
         <TransactionDetailsModal
