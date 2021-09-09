@@ -16,9 +16,9 @@ interface ChronologicalItem<
   exitStatus: ChronologicalItemExitStatus;
   errors: any[];
 }
-export class Chronological<CronItem extends ChronologicalItem<any>> {
-  private _items: Array<CronItem> = [];
-  constructor(private _currentItem: CronItem) {}
+export class Chronological<ChronItemType extends ChronologicalItem<any>> {
+  private _items: Array<ChronItemType> = [];
+  constructor(private _currentItem: ChronItemType) {}
   private _currentIndex: number = 0;
 
   public get currentItem(): ChronologicalItem<any> {
