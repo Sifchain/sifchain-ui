@@ -27,6 +27,7 @@ export default defineComponent({
       vsInfoLink,
       lmInfoLink,
       address,
+      reloadClaims,
     } = data;
 
     const isClaimModalOpened = ref(false);
@@ -65,7 +66,10 @@ export default defineComponent({
                 userData={
                   claimRewardType.value === "vs" ? vsData.value : lmData.value
                 }
-                onClose={() => (isClaimModalOpened.value = false)}
+                onClose={() => {
+                  isClaimModalOpened.value = false;
+                  reloadClaims();
+                }}
               />
             )}
             <p>
