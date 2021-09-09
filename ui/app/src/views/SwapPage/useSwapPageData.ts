@@ -8,6 +8,7 @@ import {
   TransactionStatus,
   useSwapCalculator,
   ServiceContext,
+  Asset,
 } from "@sifchain/sdk";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { getMaxAmount } from "../utils/getMaxAmount";
@@ -19,9 +20,22 @@ import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
+let defaultSymbol = "";
+const options = ["uatom", "uphoton", "uiris", "ceth"];
+while (defaultSymbol === "") {
+  const option = options.shift() || "";
+  try {
+    Asset(option);
+    defaultSymbol = option;
+    break;
+  } catch (e) {
+    null;
+  }
+}
+
 const currentSwapInput = {
-  fromSymbol: "cband",
-  toSymbol: "ceth",
+  fromSymbol: defaultSymbol,
+  toSymbol: "rowan",
   slippage: "1.0",
   toAmount: "0",
   fromAmount: "0",
@@ -79,7 +93,7 @@ export const useSwapPageData = () => {
   });
 
   if (fromSymbol.value === toSymbol.value) {
-    toSymbol.value = fromSymbol.value === "rowan" ? "cband" : "rowan";
+    toSymbol.value = fromSymbol.value === "rowan" ? defaultSymbol : "rowan";
   }
 
   watchEffect(() => {
