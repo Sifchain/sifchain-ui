@@ -62,6 +62,7 @@ export const TokenInputGroup = defineComponent({
       return (
         <form
           novalidate
+          onSubmit={(e) => e.preventDefault()}
           ref={selfRef}
           class={[
             "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
