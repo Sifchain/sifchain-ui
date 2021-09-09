@@ -15,6 +15,7 @@ import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { DistributionType } from "../../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
 import { RewardsChart } from "./RewardsChart";
 import AssetIcon from "@/components/AssetIcon";
+import { flagsStore } from "@/store/modules/flags";
 
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
@@ -105,7 +106,14 @@ export default defineComponent({
       ],
       [
         <span class="flex items-center">Projected Full Reward</span>,
-        <span class="flex items-center font-mono border-b border-solid border-accent-base border-opacity-80">
+        <span
+          class={[
+            `flex items-center font-mono`,
+            flagsStore.state.claimsGraph
+              ? "border-b border-solid border-accent-base border-opacity-80"
+              : "",
+          ]}
+        >
           {formatRowanNumber(
             props.userData?.user?.totalCommissionsAndRewardsAtMaturity,
           )}
@@ -139,7 +147,14 @@ export default defineComponent({
               {props.userData?.user?.maturityDate.toLocaleDateString()}.
             </Button.InlineHelp>
           </span>,
-          <span class="flex items-center font-mono border-b border-solid border-info-base border-opacity-80">
+          <span
+            class={[
+              `flex items-center font-mono`,
+              flagsStore.state.claimsGraph
+                ? "border-b border-solid border-info-base border-opacity-80"
+                : "",
+            ]}
+          >
             -{totalLessRowan}
             {
               <TokenIcon
@@ -193,12 +208,16 @@ export default defineComponent({
               click here
             </a>
             .
-            <div class="mt-[32px]">
-              <RewardsChart
-                rewardsAtMaturityAfterClaim={rewardsAtMaturityAfterClaim.value}
-                userData={props.userData}
-              />
-            </div>
+            {flagsStore.state.claimsGraph && (
+              <div class="mt-[32px]">
+                <RewardsChart
+                  rewardsAtMaturityAfterClaim={
+                    rewardsAtMaturityAfterClaim.value
+                  }
+                  userData={props.userData}
+                />
+              </div>
+            )}
             <Form.Details class="mt-[24px]" details={detailsRef.value} />
           </p>
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>

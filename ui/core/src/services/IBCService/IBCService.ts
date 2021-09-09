@@ -165,7 +165,6 @@ export class IBCService {
       getChainsService().get(destinationNetwork),
     );
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
-
     const allChannels = await queryClient.ibc.channel.allChannels();
     let clients = await Promise.all(
       allChannels.channels.map(async (channel) => {

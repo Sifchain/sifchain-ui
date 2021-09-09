@@ -104,6 +104,7 @@ export const useRewardsPageData = () => {
     vsData: computed(() => vsRes.data.value),
     vsClaim: computed(() => claimsRes.data.value?.vs),
     lmClaim: computed(() => claimsRes.data.value?.lm),
+    reloadClaims: () => claimsRes.reload.value(),
     summaryAPY: computed(() => summaryAPYRes.data.value),
     vsInfoLink,
     lmInfoLink,

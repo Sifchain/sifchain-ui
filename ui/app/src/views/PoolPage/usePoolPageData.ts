@@ -48,8 +48,6 @@ export const COLUMNS: {
 ];
 
 // Only wait for load on first visit of the page
-let userDataHasLoadedFirstTime = false;
-let poolsHasLoadedFirstTime = false;
 
 export const usePoolPageData = () => {
   const { store, usecases } = useCore();
@@ -58,30 +56,37 @@ export const usePoolPageData = () => {
 
   const stats = usePoolStats();
 
-  const isUserDataLoaded = ref(userDataHasLoadedFirstTime);
-  const isPoolsDataLoaded = ref(poolsHasLoadedFirstTime);
+  const isUserDataLoaded = ref(false);
+  const isPoolsDataLoaded = ref(false);
   let unsubscribePublic: () => void;
   let unsubscribeUser: () => void;
 
+  const subscribeUser = async () => {
+    const userRes = usecases.clp.subscribeToUserPools(
+      accountStore.state.sifchain.address,
+    );
+    unsubscribeUser = userRes.unsubscribe;
+    await userRes.initPromise;
+    isUserDataLoaded.value = true;
+  };
+
   onMounted(async () => {
+    subscribeUser();
     const poolsRes = usecases.clp.subscribeToPublicPools();
     unsubscribePublic = poolsRes.unsubscribe;
-
     await poolsRes.initPromise;
-    poolsHasLoadedFirstTime = isPoolsDataLoaded.value = true;
+    isPoolsDataLoaded.value = true;
   });
 
   watch(
-    accountStore.refs.sifchain.address.computed(),
-    async (address: string) => {
-      if (address) {
-        const userRes = usecases.clp.subscribeToUserPools(address);
-        unsubscribePublic = userRes.unsubscribe;
-        await userRes.initPromise;
-        userDataHasLoadedFirstTime = isUserDataLoaded.value = true;
-      }
+    accountStore.state.sifchain,
+    async (prev, curr) => {
+      unsubscribeUser?.();
+      subscribeUser();
     },
-    { immediate: true },
+    {
+      deep: true,
+    },
   );
 
   onUnmounted(() => {
@@ -91,11 +96,11 @@ export const usePoolPageData = () => {
 
   // TODO: Sort pools?
   const accountPools = computed(() => {
-    if (
-      !store.accountpools ||
-      !accountStore.state.sifchain.address ||
-      !store.accountpools[accountStore.state.sifchain.address]
-    ) {
+    const accountPools = store.accountpools;
+    const accountAddress = accountStore.state.sifchain.address;
+    const accountPoolsForAddress =
+      store.accountpools[accountStore.state.sifchain.address];
+    if (!accountPools || !accountAddress || !accountPoolsForAddress) {
       return [];
     }
     return Object.entries(
