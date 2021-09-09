@@ -45,6 +45,20 @@ export function getConfig(
   sifchainAssetTag: ChainNetwork = "sifchain.localnet",
   ethereumAssetTag: ChainNetwork = "ethereum.localnet",
 ): AppConfig {
+  const peggyCompatibleCosmosBaseDenoms = new Set([
+    "uiris",
+    "uatom",
+    "uxprt",
+    "uakt",
+    "hard",
+    "uregen",
+    "ukava",
+    "uosmo",
+    "uion",
+    // not sure if these contracts actually exist
+    "uphoton",
+    "unyan",
+  ]);
   const assetMap: Partial<AssetMap> = {
     "sifchain.localnet": parseAssets(
       assetsSifchainLocalnet.assets as AssetConfig[],
@@ -77,6 +91,7 @@ export function getConfig(
 
   let allAssets = [...sifchainAssets, ...ethereumAssets];
 
+  // const sifchainAssetSymbols = new Set(sifchainAssets.map(a => a.symbol))
   Object.values(Network)
     .filter((n) => n !== Network.ETHEREUM && n !== Network.SIFCHAIN)
     .forEach((n) => {
@@ -89,20 +104,7 @@ export function getConfig(
     });
 
   allAssets = allAssets.map(cacheAsset);
-  const peggyCompatibleCosmosBaseDenoms = new Set([
-    "uiris",
-    "uatom",
-    "uxprt",
-    "ukava",
-    "uakt",
-    "hard",
-    "uosmo",
-    "uregen",
-    "uion",
-    // not sure if these contracts actually exist
-    "uphoton",
-    "unyan",
-  ]);
+
   const configMap: ConfigMap = {
     localnet: parseConfig(
       localnetconfig as CoreConfig,

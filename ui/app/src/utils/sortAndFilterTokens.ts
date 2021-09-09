@@ -33,6 +33,9 @@ export function sortAndFilterTokens(props: {
 
   const array = props.tokens
     .filter((token) => {
+      if (token.asset.network !== props.network) {
+        return false;
+      }
       if (!props.searchQuery) return true;
       return (
         token.asset.displaySymbol
