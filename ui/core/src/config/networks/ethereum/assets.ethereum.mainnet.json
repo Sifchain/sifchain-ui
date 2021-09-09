@@ -663,26 +663,16 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
-      "decimals": 6,
-      "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
-      "name": "DVPN",
-      "network": "ethereum",
-      "homeNetwork": "sentinel",
-      "priceUsd": 0,
-      "symbol": "udvpn",
-      "displaySymbol": "dvpn",
-      "transferLimit": "99999999999999999999999"
-    },
-    {
       "symbol": "uiris",
       "decimals": 6,
       "name": "IRIS",
-      "network": "sifchain",
+      "network": "ethereum",
       "label": "IRIS",
       "imageUrl": "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
       "displaySymbol": "iris",
-      "homeNetwork": "iris"
+      "homeNetwork": "iris",
+      "transferLimit": "99999999999999999999999",
+      "address": ""
     },
     {
       "symbol": "uxprt",
@@ -692,7 +682,9 @@
       "network": "ethereum",
       "label": "xprt",
       "imageUrl": "https://persistence.one/favicon.png",
-      "homeNetwork": "persistence"
+      "homeNetwork": "persistence",
+      "transferLimit": "99999999999999999999999",
+      "address": ""
     },
     {
       "symbol": "uregen",
@@ -702,18 +694,9 @@
       "network": "ethereum",
       "label": "regen",
       "imageUrl": "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
-      "homeNetwork": "regen"
-    },
-    {
-      "symbol": "uosmo",
-      "displaySymbol": "osmo",
-      "decimals": 6,
-      "name": "osmo",
-      "network": "ethereum",
-      "label": "osmo",
-      "imageUrl": "https://assets.coingecko.com/coins/images/16724/small/osmosis.jpeg?1624849879",
-      "homeNetwork": "osmosis",
-      "decommissioned": true
+      "homeNetwork": "regen",
+      "transferLimit": "99999999999999999999999",
+      "address": ""
     }
   ]
 }

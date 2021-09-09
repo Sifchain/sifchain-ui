@@ -91,6 +91,7 @@ export function getConfig(
 
   let allAssets = [...sifchainAssets, ...ethereumAssets];
 
+  // const sifchainAssetSymbols = new Set(sifchainAssets.map(a => a.symbol))
   Object.values(Network)
     .filter((n) => n !== Network.ETHEREUM && n !== Network.SIFCHAIN)
     .forEach((n) => {
