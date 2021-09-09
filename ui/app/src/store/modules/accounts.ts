@@ -110,7 +110,7 @@ export const accountStore = Vuextra.createStore({
           const UPDATE_DELAY =
             network === Network.SIFCHAIN || network === Network.ETHEREUM
               ? 4.5 * 1000
-              : (15 + Math.random() * 10) * 1000; // Some drift on updates for other chains.
+              : (40 + Math.random() * 40) * 1000; // Some drift on updates for other chains.
 
           const timeoutId = setTimeout(async () => {
             await self.updateBalances(network);
