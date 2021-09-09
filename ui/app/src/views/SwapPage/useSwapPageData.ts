@@ -23,6 +23,8 @@ const currentSwapInput = {
   fromSymbol: "cband",
   toSymbol: "ceth",
   slippage: "1.0",
+  toAmount: "0",
+  fromAmount: "0",
 };
 
 const getRouteSymbol = (
@@ -58,10 +60,15 @@ export const useSwapPageData = () => {
       currentSwapInput.toSymbol,
     ),
   );
-  const fromAmount = ref("0");
-  const toAmount = ref("0");
+
+  const toAmount = ref(currentSwapInput.toAmount);
+  const fromAmount = ref(currentSwapInput.fromAmount);
   const slippage = ref<string>(currentSwapInput.slippage || "1.0");
 
+  watch([fromAmount, toAmount], () => {
+    currentSwapInput.fromAmount = fromAmount.value;
+    currentSwapInput.toAmount = toAmount.value;
+  });
   useBoundRoute({
     query: {
       from: fromSymbol,
