@@ -48,6 +48,8 @@ export class SifchainEthereumInterchainApi
         feeAmount,
       });
 
+      debugger;
+
       const txStatus = await this.context.services.sif.signAndBroadcast(
         tx.value.msg,
       );

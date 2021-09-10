@@ -452,7 +452,7 @@ export default function createEthbridgeService({
         asset.ibcDenom,
         asset.symbol,
         "e" + asset.symbol,
-      ];
+      ].filter(Boolean);
       for (let symbol of possibleSymbols) {
         // Fetch the token address from bridgebank
         let tokenAddress = await bridgeBankContract.methods
