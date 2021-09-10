@@ -211,8 +211,8 @@ export default function createEthbridgeService({
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      let tokenAddress = await this.fetchTokenAddress(sifAsset);
-      tokenAddress = +tokenAddress ? tokenAddress : sifAsset.ibcDenom;
+      let tokenAddress = (await this.fetchTokenAddress(sifAsset)) || "";
+      tokenAddress = +tokenAddress ? tokenAddress : sifAsset.ibcDenom || "";
       tokenAddress = tokenAddress || ETH_ADDRESS;
       console.log("burnToEthereum: start: ", tokenAddress);
 
@@ -434,7 +434,7 @@ export default function createEthbridgeService({
       asset: IAsset,
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
-    ) {
+    ): Promise<string | undefined> {
       // const web3 = new Web3(createWeb3WsProvider());
       const web3 = await loadWeb3Instance();
       const bridgeBankContract = await getBridgeBankContract(

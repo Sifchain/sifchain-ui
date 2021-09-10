@@ -7,8 +7,7 @@ const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
 
 let _hasHadBootDelay = false;
 
-const { VITE_APP_SHA = "develop" } = process.env;
-
+const VITE_APP_SHA = import.meta.env.VITE_APP_SHA || "develop";
 type InfoModalState = {
   hasShown: boolean;
   isOpen: boolean;
