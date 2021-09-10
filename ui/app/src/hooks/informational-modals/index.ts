@@ -23,7 +23,7 @@ type InfoModalDefinition = {
 };
 
 let changelogData: undefined | { version: string; changelogHtml: string };
-const getChangesData = async () => {
+export const loadChangesData = async () => {
   const res = await fetch(
     `https://sifchain-changes-server.vercel.app/api/changes/${VITE_APP_SHA}`,
   );
@@ -32,6 +32,7 @@ const getChangesData = async () => {
     version: json.version,
     changelogHtml: json.changelogHtml,
   };
+  return changelogData;
 };
 
 export const useInformationalModals = () => {

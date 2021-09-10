@@ -15,6 +15,8 @@ import { Button } from "@/components/Button/Button";
 import ChangelogModal, {
   changelogViewedVersion,
 } from "@/components/ChangelogModal";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { loadChangesData } from "@/hooks/informational-modals";
 
 export default defineComponent({
   props: {},
@@ -56,6 +58,8 @@ export default defineComponent({
     });
 
     const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
+
+    const changesData = useAsyncData(() => loadChangesData());
 
     return () => (
       <>
@@ -290,8 +294,11 @@ export default defineComponent({
                   }
                 />
               </Tooltip>
-              <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px]">
-                V.2.0.X © {new Date().getFullYear()} Sifchain
+              <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px] hover:opacity-100">
+                {/* V.2.0.X © {new Date().getFullYear()} Sifchain */}
+                {changesData.isSuccess.value &&
+                  "V." + changesData.data.value?.version?.toUpperCase()}{" "}
+                © {new Date().getFullYear()} Sifchain
               </div>
             </div>
           </div>

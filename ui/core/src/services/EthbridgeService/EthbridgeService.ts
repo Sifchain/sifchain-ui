@@ -20,6 +20,13 @@ import JSBI from "jsbi";
 
 // TODO: Do we break this service out to ethbridge and cosmos?
 
+let createWeb3WsProvider = () => {
+  let p = new Web3.providers.WebsocketProvider(
+    "wss://mainnet.infura.io/ws/v3/7fdb3fc4130742d3922495fea621e8d6",
+  );
+  createWeb3WsProvider = () => p;
+  return p;
+};
 export type EthbridgeServiceContext = {
   sifApiUrl: string;
   sifWsUrl: string;
@@ -429,11 +436,7 @@ export default function createEthbridgeService({
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
     ) {
-      const web3 = new Web3(
-        new Web3.providers.WebsocketProvider(
-          "wss://mainnet.infura.io/ws/v3/7fdb3fc4130742d3922495fea621e8d6",
-        ),
-      );
+      const web3 = new Web3(createWeb3WsProvider());
       const bridgeBankContract = await getBridgeBankContract(
         web3,
         bridgebankContractAddress,
