@@ -23,26 +23,6 @@ export default function MetamaskActions(
       };
     },
     async load(network: Network) {
-      // await new Promise<void>((resolve, reject) => {
-      //   const validChainId = services.chains.get(Network.ETHEREUM).chainConfig
-      //     .chainId;
-      //   services.eth.onChainIdDetected(async (chainId) => {
-      //     if (chainId !== validChainId) {
-      //       services.bus.dispatch({
-      //         type: "WalletConnectionErrorEvent",
-      //         payload: {
-      //           walletType: "eth",
-      //           message: `Metamask failed to connect. Please select ${services.chains
-      //             .list()
-      //             .find((c) => c.chainConfig.chainId === validChainId)}.`,
-      //         },
-      //       });
-      //       reject();
-      //     } else {
-      //       resolve();
-      //     }
-      //   });
-      // });
       await services.eth.connect();
 
       const state = services.eth.getState();
@@ -54,8 +34,11 @@ export default function MetamaskActions(
     },
 
     async getBalances(network: Network, address: string) {
+      if (!services.eth.isConnected) return [];
       // Eth service already does this on its own, updating its state..
-      return services.eth.getState().balances;
+      const balances = await services.eth.getBalance();
+      services.eth.getState().balances = balances;
+      return balances;
     },
 
     async disconnect(network: Network) {

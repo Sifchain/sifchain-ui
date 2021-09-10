@@ -1,4 +1,4 @@
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, watch } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -22,6 +22,7 @@ import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
+import { exportStore } from "@/store/modules/export";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -39,6 +40,7 @@ export default defineComponent({
       chainsRef,
       importDraft,
       exitImport,
+      networkBalances,
     } = useImportData();
 
     const inputRef = useManagedInputValueRef(
@@ -162,6 +164,13 @@ export default defineComponent({
       }
     };
     const boundAsset = computed(() => tokenRef.value?.asset);
+
+    const networkBalanceEntry = computed(() =>
+      networkBalances.data.value.find(
+        (v) => v.symbol === tokenRef.value?.asset.symbol,
+      ),
+    );
+
     return () => (
       <Modal
         heading="Import Token to Sifchain"
@@ -245,12 +254,21 @@ export default defineComponent({
           <div class="h-[40px] flex items-end justify-end">
             {!!tokenRef.value && (
               <span
-                class="text-base opacity-50 hover:text-accent-base cursor-pointer"
+                class="text-base opacity-50 hover:text-accent-base cursor-pointer flex items-center"
                 onClick={handleSetMax}
               >
                 Balance:{" "}
-                {(tokenRef.value && formatAssetAmount(tokenRef.value.amount)) ??
-                  "0"}
+                {!networkBalances.hasLoaded.value ? (
+                  <AssetIcon
+                    icon="interactive/anim-racetrack-spinner"
+                    class="ml-[4px] mt-[2px]"
+                    size={16}
+                  />
+                ) : networkBalanceEntry.value ? (
+                  formatAssetAmount(networkBalanceEntry.value)
+                ) : (
+                  "0"
+                )}
               </span>
             )}
           </div>

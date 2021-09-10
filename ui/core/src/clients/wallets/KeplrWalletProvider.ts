@@ -25,6 +25,7 @@ import { TokenRegistryService } from "../../services/TokenRegistryService/TokenR
 import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 import { memoize } from "../../utils/memoize";
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
+import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/transfer";
 
 const getIBCChainConfig = (chain: Chain) => {
   if (chain.chainConfig.chainType !== "ibc")
@@ -148,12 +149,11 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     if (!address) {
       throw new Error("No address to connect to");
     }
-    const balances = await this.fetchBalances(chain, address);
 
     return {
       chain,
       provider: this,
-      balances,
+      balances: [],
       address,
     };
   }
@@ -163,16 +163,29 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     Record<string, QueryDenomTraceResponse>
   > = {};
   async denomTrace(chain: Chain, denom: string) {
-    if (!this.denomTraceLookup[chain.chainConfig.chainId]) {
-      this.denomTraceLookup[chain.chainConfig.chainId] = {};
+    const chainId = chain.chainConfig.chainId;
+    if (!this.denomTraceLookup[chainId]) {
+      this.denomTraceLookup[chainId] = {};
     }
-    if (!this.denomTraceLookup[chain.chainConfig.chainId][denom]) {
+    if (!this.denomTraceLookup[chainId][denom]) {
       const queryClient = await this.getQueryClientCached(chain);
-      this.denomTraceLookup[chain.chainConfig.chainId][
-        denom
-      ] = await queryClient.ibc.transfer.denomTrace(denom);
+
+      let queryDenomTrace = async () => {
+        const value = await Promise.race([
+          queryClient.ibc.transfer.denomTrace(denom),
+          new Promise((r) => setTimeout(() => r("timeout"), 1500)),
+        ]);
+        // The keplr rpc apis often fail once for denomtrace once in awhile,
+        // but only once... so if it takes >1.5 seconds give it a quick retry.
+        if (value === "timeout") {
+          return queryClient.ibc.transfer.denomTrace(denom);
+        } else {
+          return value as QueryDenomTraceResponse;
+        }
+      };
+      this.denomTraceLookup[chainId][denom] = await queryDenomTrace();
     }
-    return this.denomTraceLookup[chain.chainConfig.chainId][denom];
+    return this.denomTraceLookup[chainId][denom];
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
