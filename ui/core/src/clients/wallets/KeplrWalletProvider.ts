@@ -137,16 +137,27 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return keplr?.enable(chainIds);
   }
   async connect(chain: Chain): Promise<WalletConnectionState> {
+    const chainConfig = getIBCChainConfig(chain);
     // try to get the address quietly
     const keplr = await getKeplrProvider();
-    const key = await keplr?.getKey(chain.chainConfig.chainId);
+    let key;
+    try {
+      key = await keplr?.getKey(chainConfig.chainId);
+    } catch (error) {
+      if (/no chain info/i.test(error.message)) {
+        await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
+        key = await keplr?.getKey(chainConfig.chainId);
+      } else {
+        throw error;
+      }
+    }
     let address = key?.bech32Address;
     // if quiet get fails, try to enable the wallet
     if (!address) {
       const sendingSigner = await this.getSendingSigner(chain);
       address = (await sendingSigner.getAccounts())[0]?.address;
     }
-    // if enabling & quiet get fails, throw.
+
     if (!address) {
       throw new Error("No address to connect to");
     }
@@ -168,6 +179,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     if (!this.denomTraceLookup[chainId]) {
       this.denomTraceLookup[chainId] = {};
     }
+
     if (!this.denomTraceLookup[chainId][denom]) {
       const queryClient = await this.getQueryClientCached(chain);
 
