@@ -11,7 +11,7 @@ export const flagsStore = Vuextra.createStore({
     ibcTransferTimeoutMinutes: 45,
     rewardClaims: true,
     claimsGraph: false,
-    peggyForCosmosTokens: true,
+    peggyForCosmosTokens: false,
     ibcForEthTokens: AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC,
   },
   getters: (state) => ({}),
