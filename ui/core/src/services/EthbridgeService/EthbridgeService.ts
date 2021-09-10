@@ -20,6 +20,13 @@ import JSBI from "jsbi";
 
 // TODO: Do we break this service out to ethbridge and cosmos?
 
+let createWeb3WsProvider = () => {
+  let p = new Web3.providers.WebsocketProvider(
+    "wss://mainnet.infura.io/ws/v3/7fdb3fc4130742d3922495fea621e8d6",
+  );
+  createWeb3WsProvider = () => p;
+  return p;
+};
 export type EthbridgeServiceContext = {
   sifApiUrl: string;
   sifWsUrl: string;
@@ -157,7 +164,6 @@ export default function createEthbridgeService({
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
       const tokenContract = await getTokenContract(web3, amount.asset.address!);
-      debugger;
 
       const sendArgs = {
         from: account,
@@ -205,8 +211,8 @@ export default function createEthbridgeService({
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      let tokenAddress = await this.fetchTokenAddress(sifAsset);
-      tokenAddress = +tokenAddress ? tokenAddress : sifAsset.ibcDenom;
+      let tokenAddress = (await this.fetchTokenAddress(sifAsset)) || "";
+      tokenAddress = +tokenAddress ? tokenAddress : sifAsset.ibcDenom || "";
       tokenAddress = tokenAddress || ETH_ADDRESS;
       console.log("burnToEthereum: start: ", tokenAddress);
 
@@ -428,12 +434,9 @@ export default function createEthbridgeService({
       asset: IAsset,
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
-    ) {
-      const web3 = new Web3(
-        new Web3.providers.WebsocketProvider(
-          "wss://mainnet.infura.io/ws/v3/7fdb3fc4130742d3922495fea621e8d6",
-        ),
-      );
+    ): Promise<string | undefined> {
+      // const web3 = new Web3(createWeb3WsProvider());
+      const web3 = await loadWeb3Instance();
       const bridgeBankContract = await getBridgeBankContract(
         web3,
         bridgebankContractAddress,

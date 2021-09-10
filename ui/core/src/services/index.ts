@@ -24,6 +24,7 @@ import createTokenRegistry, {
   TokenRegistryContext,
 } from "./TokenRegistryService";
 import { NativeDexClient } from "./utils/SifClient/NativeDexClient";
+import Web3 from "web3";
 
 export type Services = ReturnType<typeof createServices>;
 
@@ -64,6 +65,7 @@ export function createServices(context: ServiceContext) {
     chains: ChainsService.list(),
   });
   const TokenRegistryService = createTokenRegistry(context);
+
   /* 
 
     Let's leave the metadata logging in place at least until IBC is off the ground. 
@@ -84,6 +86,7 @@ export function createServices(context: ServiceContext) {
     }
   } catch (e) {}
   return {
+    Web3: Web3,
     chains: ChainsService,
     ibc: IBCService,
     clp: ClpService,

@@ -9,6 +9,7 @@ export interface IWalletServiceState {
   address: string;
   accounts: string[];
   connected: boolean;
+  hasLoadedBalancesOnce: boolean;
   balances: IAssetAmount[];
   connecting: boolean;
   log: string;
@@ -17,6 +18,7 @@ const initWalletState = (network: Network) => ({
   network,
   accounts: [],
   balances: [],
+  hasLoadedBalancesOnce: false,
   address: "",
   connected: false,
   connecting: false,
@@ -78,16 +80,16 @@ export const accountStore = Vuextra.createStore({
         )
       ) {
         state[payload.network].balances = payload.balances;
+        if (!state[payload.network].hasLoadedBalancesOnce) {
+          state[payload.network].hasLoadedBalancesOnce = true;
+        }
       }
     },
   }),
   actions: (context) => ({
     async loadIfConnected(network: Network) {
       const usecase = getUsecase(network);
-      const state = await usecase.loadIfConnected(network);
-      if (state.connected) {
-        this.load(network);
-      }
+      await usecase.loadIfConnected(network);
     },
     async load(network: Network) {
       const usecase = getUsecase(network);
@@ -101,28 +103,24 @@ export const accountStore = Vuextra.createStore({
         self.setConnected({ network, connected: state.connected });
         self.setBalances({ network, balances: state.balances });
         self.setAddress({ network, address: state.address });
-
-        if (!state.connected) return;
-        if (walletBalancePolls.has(network)) return;
-
-        (function scheduleUpdate() {
-          // NOTE(ajoslin): more formal fix coming later to lazyload non-sif/eth assets.
-          const UPDATE_DELAY =
-            network === Network.SIFCHAIN || network === Network.ETHEREUM
-              ? 4.5 * 1000
-              : (40 + Math.random() * 40) * 1000; // Some drift on updates for other chains.
-
-          const timeoutId = setTimeout(async () => {
-            await self.updateBalances(network);
-            scheduleUpdate();
-          }, UPDATE_DELAY);
-          walletBalancePolls.set(network, timeoutId);
-        })();
       } catch (error) {
         console.error(network, "wallet connect error", error);
       } finally {
         self.setConnecting({ network, connecting: false });
       }
+    },
+
+    async pollBalances(network: Network) {
+      if (!self.state[network].connected) return;
+      if (walletBalancePolls.has(network)) return;
+
+      (async function scheduleUpdate() {
+        const UPDATE_DELAY = 4.5 * 1000;
+        await self.updateBalances(network);
+
+        const timeoutId = setTimeout(scheduleUpdate, UPDATE_DELAY);
+        walletBalancePolls.set(network, timeoutId);
+      })();
     },
 
     async updateBalances(network: Network) {

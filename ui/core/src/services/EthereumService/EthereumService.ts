@@ -132,7 +132,7 @@ export class EthereumService implements IWalletService {
     this.state.connected = true;
     this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
     this.state.address = this.state.accounts[0];
-    this.state.balances = await this.getBalance();
+    this.state.balances = [];
   }, 100);
 
   getAddress(): Address {
@@ -163,7 +163,7 @@ export class EthereumService implements IWalletService {
       this.state.connected = true;
       this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
       this.state.address = this.state.accounts[0];
-      this.state.balances = await this.getBalance();
+      this.state.balances = [];
     } catch (err) {
       this.web3 = null;
       this.removeWeb3Subscription();

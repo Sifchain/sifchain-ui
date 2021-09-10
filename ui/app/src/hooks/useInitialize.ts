@@ -1,4 +1,4 @@
-import { Chain, Network } from "@sifchain/sdk";
+import { Asset, Chain, getMetamaskProvider, Network } from "@sifchain/sdk";
 import { computed } from "@vue/reactivity";
 import { useCore } from "./useCore";
 import { useSubscription } from "./useSubscrition";
@@ -9,6 +9,9 @@ import {
   InterchainTx,
   interchainTxEmitter,
 } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
+import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
+import { getTokenContract } from "../../../core/src/services/EthbridgeService/tokenContract";
+import { convertImageUrlToDataUrl } from "@/utils/convertImageUrlToDataUrl";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -54,10 +57,77 @@ let connectAll = () => {
 export function useInitialize() {
   connectAll();
   connectAll = () => {};
-  const { usecases, store, services } = useCore();
+  const { usecases, store, services, config } = useCore();
   // Initialize usecases / watches
 
-  services.ethbridge.addEthereumAddressToPeggyCompatibleCosmosAssets();
+  services.ethbridge
+    .addEthereumAddressToPeggyCompatibleCosmosAssets()
+    .then(() => {
+      async function generateUniswapWhitelist() {
+        const whitelist = {
+          name: "Sifchain",
+          logoURI: getTokenIconUrl(
+            Asset("rowan"),
+            `https://dex-sifchain-finance.ipns.dweb.link/`,
+          )?.replace("/public/", ""),
+          keywords: ["peggy", "pegged assets", "cosmos ecosystem"],
+          tags: {},
+          timestamp: new Date().toISOString(),
+          tokens: [
+            ...(
+              await Promise.all(
+                [...config.peggyCompatibleCosmosBaseDenoms].map(
+                  async (denom) => {
+                    const web3 = new services.Web3(await getMetamaskProvider());
+                    const asset = config.assets.find(
+                      (a) =>
+                        a.network === Network.ETHEREUM && a.symbol === denom,
+                    );
+                    if (!asset) return;
+                    const addressOfToken = await services.ethbridge.fetchTokenAddress(
+                      asset,
+                    );
+                    const tokenContract = new web3.eth.Contract(
+                      await fetch(
+                        `https://gist.githubusercontent.com/veox/8800debbf56e24718f9f483e1e40c35c/raw/f853187315486225002ba56e5283c1dba0556e6f/erc20.abi.json`,
+                      ).then((r) => r.json()),
+                      addressOfToken || "",
+                    );
+                    const symbol = await tokenContract.methods.symbol().call();
+                    const decimals = await tokenContract.methods
+                      .decimals()
+                      .call();
+                    const name = await tokenContract.methods.name().call();
+                    const imageUrl = getTokenIconUrl(
+                      asset,
+                      "https://dex-sifchain-finance.ipns.dweb.link/",
+                    )?.replace("/public/", "");
+                    if (!imageUrl) return;
+                    const item = {
+                      chainId: 1,
+                      address: addressOfToken,
+                      symbol,
+                      name,
+                      decimals: +decimals,
+                      tags: [],
+                      logoURI: imageUrl,
+                    };
+                    return item;
+                  },
+                ),
+              )
+            ).filter((a) => !!a),
+          ],
+          version: {
+            major: 1,
+            minor: 0,
+            patch: 0,
+          },
+        };
+        console.log(JSON.stringify(whitelist, null, 2));
+      }
+      // generateUniswapWhitelist();
+    });
 
   usecases.wallet.eth.initEthWallet();
 
@@ -68,7 +138,7 @@ export function useInitialize() {
 
   // Support legacy code that uses sif service getState().
   watch(
-    accountStore.refs.sifchain.computed(),
+    accountStore.state.sifchain,
     () => {
       const storeState = accountStore.state.sifchain;
       const state = services.sif.getState();
@@ -76,38 +146,36 @@ export function useInitialize() {
       state.address = storeState.address;
       state.connected = storeState.connected;
       state.accounts = [storeState.address];
-      mirrorToCore(Network.SIFCHAIN);
-      if (storeState.connected) {
-        persistConnected.set(Network.SIFCHAIN);
+
+      if (state.connected) {
+        accountStore.pollBalances(Network.SIFCHAIN);
       }
     },
     { deep: true },
   );
 
   // Connect to networks in sequence, starting with Sifchain.
-  (async () => {
-    for (const network of Object.values(Network)) {
-      accountStore.actions.loadIfConnected(network);
-      watch(
-        accountStore.refs[network].computed(),
-        (value) => {
-          if (value.connected) {
-            persistConnected.set(network);
-            mirrorToCore(network);
-          }
-        },
-        {
-          deep: true,
-        },
-      );
-      if (
-        persistConnected.get(network) &&
-        !accountStore.state[network].connected
-      ) {
-        accountStore.actions.load(network);
-      }
+  for (const network of Object.values(Network)) {
+    accountStore.actions.loadIfConnected(network);
+    watch(
+      accountStore.refs[network].computed(),
+      (value) => {
+        if (value.connected) {
+          persistConnected.set(network);
+          mirrorToCore(network);
+        }
+      },
+      {
+        deep: true,
+      },
+    );
+    if (
+      persistConnected.get(network) &&
+      !accountStore.state[network].connected
+    ) {
+      accountStore.actions.load(network);
     }
-  })();
+  }
 
   interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {
     accountStore.updateBalances(tx.toChain.network);

@@ -1,19 +1,22 @@
 import { RouteLocationRaw, useRouter } from "vue-router";
 import { computed, ref, Ref, watch } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
-import { useToken, useTokenList } from "@/hooks/useToken";
+import {
+  TokenListItem,
+  useNetworkBalances,
+  useToken,
+  useTokenList,
+} from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { Network, AssetAmount, toBaseUnits, IAssetAmount } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { usePegEventDetails } from "@/hooks/useTransactionDetails";
 import { ImportDraft } from "@/store/modules/import";
-import { accountStore } from "@/store/modules/accounts";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
-import { isLikeSymbol } from "@sifchain/sdk/src/utils/isLikeSymbol";
-import { effect } from "@vue/reactivity";
-import sif from "@sifchain/sdk/src/usecases/wallet/sif";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { accountStore } from "@/store/modules/accounts";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -90,6 +93,10 @@ export const useImportData = () => {
         tokenRef.value?.asset,
       ),
     );
+  });
+
+  const networkBalances = useNetworkBalances({
+    network: computed(() => importDraft.value.network),
   });
 
   const nativeToken = useToken({
@@ -220,5 +227,6 @@ export const useImportData = () => {
     exitImport: exitImport,
     detailsRef,
     pegEventDetails,
+    networkBalances,
   };
 };
