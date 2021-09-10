@@ -26,6 +26,7 @@
     "flip-toolkit": "^7.0.13",
     "load-script": "^1.0.0",
     "normalize-scss": "^7.0.1",
+    "p-limit": "^4.0.0",
     "p-props": "^5.0.0",
     "process": "^0.11.10",
     "style-loader": "^3.0.0",

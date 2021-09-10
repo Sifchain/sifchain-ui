@@ -6,6 +6,7 @@ import {
   setupIbcExtension,
   SigningStargateClient,
 } from "@cosmjs/stargate";
+import pLimit from "p-limit";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 import {
@@ -175,6 +176,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           queryClient.ibc.transfer.denomTrace(denom),
           new Promise((r) => setTimeout(() => r("timeout"), 1500)),
         ]);
+
         // The keplr rpc apis often fail once for denomtrace once in awhile,
         // but only once... so if it takes >1.5 seconds give it a quick retry.
         if (value === "timeout") {
@@ -197,54 +199,63 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const tokenRegistry = await this.tokenRegistry.load();
 
+    // Use pLimit to process balances concurrently but not overload external apis
+    const limit = pLimit(3);
+
     await Promise.all(
-      balances.map(async (coin: Coin) => {
-        try {
-          if (!coin.denom.startsWith("ibc/")) {
-            const asset = chain.assets.find(
-              (asset) =>
-                asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
-            );
-            assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
-          } else {
-            const denomTrace = await this.denomTrace(
-              chain,
-              coin.denom.split("/")[1],
-            );
-
-            const [, channelId] = (denomTrace.denomTrace?.path || "").split(
-              "/",
-            );
-
-            const isInvalidChannel =
-              channelId &&
-              !tokenRegistry.some(
-                (item) =>
-                  item.ibcChannelId === channelId ||
-                  item.ibcCounterpartyChannelId === channelId,
+      balances.map((coin) =>
+        limit(async () => {
+          try {
+            if (!coin.denom.startsWith("ibc/")) {
+              const asset = chain.assets.find(
+                (asset) =>
+                  asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
+              );
+              assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
+            } else {
+              const denomTrace = await this.denomTrace(
+                chain,
+                coin.denom.split("/")[1],
               );
 
-            if (isInvalidChannel) return;
+              const [, channelId] = (denomTrace.denomTrace?.path || "").split(
+                "/",
+              );
 
-            const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
+              const isInvalidChannel =
+                channelId &&
+                !tokenRegistry.some(
+                  (item) =>
+                    item.ibcChannelId === channelId ||
+                    item.ibcCounterpartyChannelId === channelId,
+                );
 
-            const asset = chain.assets.find(
-              (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
-            );
-            if (asset) {
-              asset.ibcDenom = coin.denom;
+              if (isInvalidChannel) return;
+
+              const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
+
+              const asset = chain.assets.find(
+                (asset) =>
+                  asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
+              );
+              if (asset) {
+                asset.ibcDenom = coin.denom;
+              }
+              try {
+                const assetAmount = AssetAmount(
+                  asset || baseDenom,
+                  coin.amount,
+                );
+                assetAmounts.push(assetAmount);
+              } catch (error) {
+                // ignore asset, doesnt exist in our list.
+              }
             }
-            try {
-              const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
-              assetAmounts.push(assetAmount);
-            } catch (error) {
-              // ignore asset, doesnt exist in our list.
-            }
+          } catch (error) {
+            console.error(chain.network, "coin error", coin, error);
           }
-        } catch (error) {
-          console.error(chain.network, "coin error", coin, error);
-        }
-      }),
+        }),
+      ),
     );
 
     return assetAmounts;
