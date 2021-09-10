@@ -68,7 +68,7 @@ export function useInitialize() {
 
   // Support legacy code that uses sif service getState().
   watch(
-    accountStore.refs.sifchain.computed(),
+    accountStore.state.sifchain,
     () => {
       const storeState = accountStore.state.sifchain;
       const state = services.sif.getState();
@@ -85,29 +85,27 @@ export function useInitialize() {
   );
 
   // Connect to networks in sequence, starting with Sifchain.
-  (async () => {
-    for (const network of Object.values(Network)) {
-      accountStore.actions.loadIfConnected(network);
-      watch(
-        accountStore.refs[network].computed(),
-        (value) => {
-          if (value.connected) {
-            persistConnected.set(network);
-            mirrorToCore(network);
-          }
-        },
-        {
-          deep: true,
-        },
-      );
-      if (
-        persistConnected.get(network) &&
-        !accountStore.state[network].connected
-      ) {
-        accountStore.actions.load(network);
-      }
+  for (const network of Object.values(Network)) {
+    accountStore.actions.loadIfConnected(network);
+    watch(
+      accountStore.refs[network].computed(),
+      (value) => {
+        if (value.connected) {
+          persistConnected.set(network);
+          mirrorToCore(network);
+        }
+      },
+      {
+        deep: true,
+      },
+    );
+    if (
+      persistConnected.get(network) &&
+      !accountStore.state[network].connected
+    ) {
+      accountStore.actions.load(network);
     }
-  })();
+  }
 
   interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {
     accountStore.updateBalances(tx.toChain.network);
