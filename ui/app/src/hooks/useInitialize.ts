@@ -66,64 +66,57 @@ export function useInitialize() {
       async function generateUniswapWhitelist() {
         const whitelist = {
           name: "Sifchain",
-          logoURI: await convertImageUrlToDataUrl(
-            getTokenIconUrl(Asset("rowan"), window.location.origin)!,
-          ),
+          logoURI: getTokenIconUrl(
+            Asset("rowan"),
+            `https://dex-sifchain-finance.ipns.dweb.link/`,
+          )?.replace("/public/", ""),
           keywords: ["peggy", "pegged assets", "cosmos ecosystem"],
-          tags: {
-            sifchain: {
-              name: "Sifchain",
-              description: "Tokens from the world's first omni-chain DEX",
-            },
-            peggy: {
-              name: "Peggy Bridge",
-              description:
-                "Tokens from Cosmos Ecosystem that have been pegged across Peggy bridge",
-            },
-            cosmos: {
-              name: "Cosmos Ecosystem",
-              description: "Tokens which utilize the Cosmos-SDK",
-            },
-          },
+          tags: {},
           timestamp: new Date().toISOString(),
           tokens: [
-            ...(await Promise.all(
-              [...config.peggyCompatibleCosmosBaseDenoms]
-                .map(async (denom) => {
-                  const web3 = new services.Web3(await getMetamaskProvider());
-                  const asset = config.assets.find(
-                    (a) => a.network === Network.ETHEREUM && a.symbol === denom,
-                  );
-                  if (!asset) return;
-                  const addressOfToken = await services.ethbridge.fetchTokenAddress(
-                    asset,
-                  );
-                  const tokenContract = new web3.eth.Contract(
-                    await fetch(
-                      `https://gist.githubusercontent.com/veox/8800debbf56e24718f9f483e1e40c35c/raw/f853187315486225002ba56e5283c1dba0556e6f/erc20.abi.json`,
-                    ).then((r) => r.json()),
-                    addressOfToken || "",
-                  );
-                  const symbol = await tokenContract.methods.symbol().call();
-                  const decimals = await tokenContract.methods
-                    .decimals()
-                    .call();
-                  const name = await tokenContract.methods.name().call();
-                  const imageUrl = getTokenIconUrl(asset);
-                  if (!imageUrl) return;
-                  const item = {
-                    chainId: 1,
-                    address: addressOfToken,
-                    symbol,
-                    name,
-                    decimals: +decimals,
-                    logoURI: await convertImageUrlToDataUrl(imageUrl),
-                    tags: ["sifchain", "peggy", "cosmos"],
-                  };
-                  return item;
-                })
-                .filter((a) => !!a),
-            )),
+            ...(
+              await Promise.all(
+                [...config.peggyCompatibleCosmosBaseDenoms].map(
+                  async (denom) => {
+                    const web3 = new services.Web3(await getMetamaskProvider());
+                    const asset = config.assets.find(
+                      (a) =>
+                        a.network === Network.ETHEREUM && a.symbol === denom,
+                    );
+                    if (!asset) return;
+                    const addressOfToken = await services.ethbridge.fetchTokenAddress(
+                      asset,
+                    );
+                    const tokenContract = new web3.eth.Contract(
+                      await fetch(
+                        `https://gist.githubusercontent.com/veox/8800debbf56e24718f9f483e1e40c35c/raw/f853187315486225002ba56e5283c1dba0556e6f/erc20.abi.json`,
+                      ).then((r) => r.json()),
+                      addressOfToken || "",
+                    );
+                    const symbol = await tokenContract.methods.symbol().call();
+                    const decimals = await tokenContract.methods
+                      .decimals()
+                      .call();
+                    const name = await tokenContract.methods.name().call();
+                    const imageUrl = getTokenIconUrl(
+                      asset,
+                      "https://dex-sifchain-finance.ipns.dweb.link/",
+                    )?.replace("/public/", "");
+                    if (!imageUrl) return;
+                    const item = {
+                      chainId: 1,
+                      address: addressOfToken,
+                      symbol,
+                      name,
+                      decimals: +decimals,
+                      tags: [],
+                      logoURI: imageUrl,
+                    };
+                    return item;
+                  },
+                ),
+              )
+            ).filter((a) => !!a),
           ],
           version: {
             major: 1,
@@ -133,7 +126,7 @@ export function useInitialize() {
         };
         console.log(JSON.stringify(whitelist, null, 2));
       }
-      // generateUniswapWhitelist();
+      generateUniswapWhitelist();
     });
 
   usecases.wallet.eth.initEthWallet();
