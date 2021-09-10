@@ -1,5 +1,6 @@
 ## Release 2021.09.09
 * Re-enabled LEASH imports
+* Fixed issue preventing certain Ethereum exports
 
 ## Release 2021.09.08
 
