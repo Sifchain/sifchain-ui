@@ -164,7 +164,6 @@ export default function createEthbridgeService({
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
       const tokenContract = await getTokenContract(web3, amount.asset.address!);
-      debugger;
 
       const sendArgs = {
         from: account,
@@ -436,7 +435,8 @@ export default function createEthbridgeService({
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
     ) {
-      const web3 = new Web3(createWeb3WsProvider());
+      // const web3 = new Web3(createWeb3WsProvider());
+      const web3 = await loadWeb3Instance();
       const bridgeBankContract = await getBridgeBankContract(
         web3,
         bridgebankContractAddress,
