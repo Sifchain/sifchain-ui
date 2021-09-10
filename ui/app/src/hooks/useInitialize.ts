@@ -76,9 +76,9 @@ export function useInitialize() {
       state.address = storeState.address;
       state.connected = storeState.connected;
       state.accounts = [storeState.address];
-      mirrorToCore(Network.SIFCHAIN);
-      if (storeState.connected) {
-        persistConnected.set(Network.SIFCHAIN);
+
+      if (state.connected) {
+        accountStore.pollBalances(Network.SIFCHAIN);
       }
     },
     { deep: true },

@@ -112,8 +112,6 @@ export const exportStore = Vuextra.createStore({
         console.log("setUnpegEvent", ev);
         self.setUnpegEvent(ev);
       }
-
-      const chainTx = await executable.awaitResult();
     },
   }),
 
