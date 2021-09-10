@@ -111,11 +111,8 @@ export const importStore = Vuextra.createStore({
       });
 
       for await (const ev of executable.generator()) {
-        console.log("setPegEvent", ev);
         self.setPegEvent(ev);
       }
-
-      const chainTx = await executable.awaitResult();
     },
   }),
 
