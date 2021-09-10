@@ -18,6 +18,7 @@ import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { useRoute, useRouter } from "vue-router";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
+import { useChains } from "@/hooks/useChains";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 let defaultSymbol = "";
@@ -25,7 +26,7 @@ const options = ["uatom", "uphoton", "uiris", "ceth"];
 while (defaultSymbol === "") {
   const option = options.shift() || "";
   try {
-    Asset(option);
+    useChains().get(Network.SIFCHAIN).lookupAssetOrThrow(option);
     defaultSymbol = option;
     break;
   } catch (e) {

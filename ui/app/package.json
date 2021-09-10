@@ -1,9 +1,10 @@
 {
   "name": "app",
-  "version": "2.1.33",
+  "version": "2.2.1",
   "private": true,
   "scripts": {
     "bump": "bump patch --tag --commit 'testnet release '",
+    "bump:minor": "bump minor --tag --commit 'testnet release '",
     "dev": "cd .. && yarn dev",
     "serve": "vite --port 8080",
     "build": "vite build",

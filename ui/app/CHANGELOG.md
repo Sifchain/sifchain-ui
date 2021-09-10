@@ -1,3 +1,7 @@
+## Release 2021.09.10
+* Enabled Cosmos to Ethereum exports for AKT, ATOM, XPRT, IRIS, and REGEN!
+* Cosmos Ethereum pools available on Uniswap and Sushiswap
+
 ## Release 2021.09.09
 * Re-enabled LEASH imports
 * Fixed issue preventing certain Ethereum exports
