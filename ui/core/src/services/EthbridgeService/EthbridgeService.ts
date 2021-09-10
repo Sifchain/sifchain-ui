@@ -429,7 +429,11 @@ export default function createEthbridgeService({
       // optional: pass in HTTP, or other provider (for testing)
       loadWeb3Instance: () => Promise<Web3> | Web3 = ensureWeb3,
     ) {
-      const web3 = await loadWeb3Instance();
+      const web3 = new Web3(
+        new Web3.providers.WebsocketProvider(
+          "wss://mainnet.infura.io/ws/v3/7fdb3fc4130742d3922495fea621e8d6",
+        ),
+      );
       const bridgeBankContract = await getBridgeBankContract(
         web3,
         bridgebankContractAddress,
@@ -448,7 +452,7 @@ export default function createEthbridgeService({
         asset.ibcDenom,
         asset.symbol,
         "e" + asset.symbol,
-      ];
+      ].filter(Boolean);
       for (let symbol of possibleSymbols) {
         // Fetch the token address from bridgebank
         let tokenAddress = await bridgeBankContract.methods
