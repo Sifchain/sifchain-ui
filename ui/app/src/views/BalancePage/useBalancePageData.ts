@@ -30,13 +30,14 @@ export const useBalancePageData = (initialState: BalancePageState) => {
   const displayedTokenList = computed<TokenListItem[]>(() => {
     if (!tokenList.value) return [];
 
-    return sortAndFilterTokens({
+    const out = sortAndFilterTokens({
       tokens: tokenList.value,
       searchQuery: state.searchQuery,
       sortBy: state.sortBy,
       reverse: state.reverse,
       network: Network.SIFCHAIN,
     });
+    return out;
   });
 
   return {

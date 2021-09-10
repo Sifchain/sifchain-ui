@@ -94,10 +94,11 @@ export class NativeDexClient {
     return types;
   }
 
+  static getNativeRegistry() {
+    return new Registry([...NativeDexClient.getGeneratedTypes()]);
+  }
   async createSigningClient(signer: OfflineSigner) {
-    const nativeRegistry = new Registry([
-      ...NativeDexClient.getGeneratedTypes(),
-    ]);
+    const nativeRegistry = NativeDexClient.getNativeRegistry();
 
     const client = await SigningStargateClient.connectWithSigner(
       this.rpcUrl,
