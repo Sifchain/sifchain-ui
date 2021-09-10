@@ -126,7 +126,7 @@ export function useInitialize() {
         };
         console.log(JSON.stringify(whitelist, null, 2));
       }
-      generateUniswapWhitelist();
+      // generateUniswapWhitelist();
     });
 
   usecases.wallet.eth.initEthWallet();
