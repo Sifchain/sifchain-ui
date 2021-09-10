@@ -1,3 +1,6 @@
+## Release 2021.09.09
+* Re-enabled LEASH imports
+
 ## Release 2021.09.08
 
 * Enabled the ability to claim your .42 liquidity mining rewards!
