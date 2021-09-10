@@ -1,7 +1,6 @@
 {
   "name": "app",
   "version": "2.1.26",
-  "version": "2.1.22",
   "private": true,
   "scripts": {
     "bump": "bump patch --tag --commit 'testnet release '",
