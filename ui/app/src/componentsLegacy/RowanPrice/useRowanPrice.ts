@@ -1,8 +1,9 @@
 import { useAsyncData } from "@/hooks/useAsyncData";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { watchEffect } from "vue";
 
 export const useRowanPrice = () => {
-  const price = useAsyncData(async () => {
+  const price = useAsyncDataCached("rowanPrice", async () => {
     function isNumeric(s: any) {
       return s - 0 == s && ("" + s).trim().length > 0;
     }
@@ -21,7 +22,7 @@ export const useRowanPrice = () => {
     let shouldBreak = false;
     while (!shouldBreak) {
       await price.reload.value();
-      await new Promise((r) => setTimeout(r, 10000));
+      await new Promise((r) => setTimeout(r, 300 * 1000));
     }
     onInvalidate(() => {
       shouldBreak = true;
