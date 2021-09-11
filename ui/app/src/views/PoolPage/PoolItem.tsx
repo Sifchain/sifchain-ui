@@ -10,7 +10,7 @@ import {
   IAssetAmount,
   Network,
 } from "@sifchain/sdk";
-import { computed, defineComponent, PropType } from "vue";
+import { computed, defineComponent, PropType, ref } from "vue";
 import { usePoolCalculator } from "@sifchain/sdk/src/usecases/clp/calculators/addLiquidityCalculator";
 import { COLUMNS_LOOKUP, PoolDataItem } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
@@ -36,6 +36,8 @@ export default defineComponent({
   data() {
     return {
       expanded: false,
+      animationPhase: "none" as "none" | "expand" | "collapse",
+      animationTimeout: undefined as NodeJS.Timeout | undefined,
     };
   },
   setup(props) {
@@ -46,7 +48,49 @@ export default defineComponent({
       rowanPrice: useRowanPrice(),
     };
   },
+  methods: {
+    toggleExpanded() {
+      const getElement = () =>
+        document.getElementById(`expandable-${this.pool.symbol()}`)!;
+
+      if (this.animationTimeout) clearTimeout(this.animationTimeout);
+
+      if (!this.expanded || this.animationPhase === "collapse") {
+        this.expanded = true;
+        this.animationTimeout = setTimeout(() => {
+          Object.assign(getElement().style, {
+            height: "193px",
+            marginTop: "10px",
+            paddingTop: "12px",
+            paddingBottom: "12px",
+            opacity: 1,
+          });
+          this.animationPhase = "expand";
+
+          this.animationTimeout = setTimeout(() => {
+            this.animationPhase = "none";
+          }, 200);
+        }, 17);
+      } else {
+        this.expanded = false;
+        this.animationPhase = "collapse";
+
+        Object.assign(getElement().style, {
+          height: "",
+          marginTop: "",
+          padding: "",
+          opacity: "",
+        });
+        this.animationTimeout = setTimeout(() => {
+          this.animationPhase = "none";
+        }, 200);
+      }
+    },
+  },
   computed: {
+    shouldRenderSection() {
+      return this.expanded || this.animationPhase === "collapse";
+    },
     myPoolValue(): string | undefined {
       if (!this.accountPool || !this.poolStat) return;
 
@@ -80,7 +124,7 @@ export default defineComponent({
       if (!this.$props.poolStat) return undefined;
     },
     details(): [string, JSX.Element][] {
-      if (!this.expanded) return []; // don't compute unless expanded
+      if (!this.shouldRenderSection) return []; // don't compute unless expanded
       return [
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
@@ -156,7 +200,7 @@ export default defineComponent({
     return (
       <div class="w-full py-[10px] border-dashed border-b border-white border-opacity-40 last:border-none group">
         <div
-          onClick={() => (this.expanded = !this.expanded)}
+          onClick={() => this.toggleExpanded()}
           class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] font-sans group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
@@ -232,12 +276,11 @@ export default defineComponent({
             </button>
           </div>
         </div>
-        {this.expanded && (
+        {this.shouldRenderSection && (
           <section
+            id={`expandable-${this.pool.symbol()}`}
             class={[
-              "flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden opacity-0 pointer-events-none p-0 h-0 mt-0 transition-all",
-              this.expanded &&
-                "h-[193px] opacity-100 pointer-events-auto !mt-[10px] p-[12px]",
+              "h-0 mt-0 py-0 px-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none transition-all pointer-events-auto duration-200",
             ]}
           >
             <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">
