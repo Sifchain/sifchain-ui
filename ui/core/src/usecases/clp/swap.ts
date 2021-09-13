@@ -31,7 +31,6 @@ export function Swap({ bus, sif, clp, ibc, tokenRegistry }: SwapArgs) {
     const state = sif.getState();
     if (!state.address) throw new Error("No from address provided for swap");
     const client = await sif.loadNativeDexClient();
-
     const tx = client.tx.clp.Swap(
       {
         sentAsset: {

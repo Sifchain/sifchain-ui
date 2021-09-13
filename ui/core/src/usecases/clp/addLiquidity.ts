@@ -13,10 +13,7 @@ import { NativeDexClient } from "services/utils/SifClient/NativeDexClient";
 import getKeplrProvider from "services/SifService/getKeplrProvider";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
-type PickSif = Pick<
-  Services["sif"],
-  "getState" | "signAndBroadcast" | "unSignedClient"
->;
+type PickSif = Services["sif"];
 type PickClp = Pick<Services["clp"], "addLiquidity" | "createPool">;
 
 function findPool(
@@ -33,23 +30,20 @@ type AddLiquidityServices = {
   clp: PickClp;
   ibc: Services["ibc"];
   tokenRegistry: Services["tokenRegistry"];
+  chains: Services["chains"];
 };
 
 type AddLiquidityStore = Pick<Store, "pools">;
 
 export function AddLiquidity(
-  { bus, clp, sif, ibc, tokenRegistry }: AddLiquidityServices,
+  { bus, clp, sif, ibc, tokenRegistry, chains }: AddLiquidityServices,
   store: AddLiquidityStore,
 ) {
   return async (
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
   ) => {
-    const client = await NativeDexClient.connect(
-      sif.unSignedClient.rpcUrl,
-      sif.unSignedClient.apiUrl,
-      await sif.unSignedClient.getChainId(),
-    );
+    const client = await sif.loadNativeDexClient();
     const keplr = await getKeplrProvider();
     const signer = await keplr!.getOfflineSigner(
       await sif.unSignedClient.getChainId(),
