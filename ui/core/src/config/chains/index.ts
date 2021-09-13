@@ -9,7 +9,7 @@ import persistence from "./persistence";
 import regen from "./regen";
 
 import { NetworkEnv } from "../getEnv";
-import { Network } from "../../entities";
+import { Network, ChainConfig } from "../../entities";
 import osmosis from "./osmosis";
 
 export const chainConfigByNetworkEnv = Object.fromEntries(
@@ -31,3 +31,13 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
     ];
   }),
 );
+
+export const chainConfigsByChainId: Record<string, ChainConfig> = {};
+
+Object.values(chainConfigByNetworkEnv).forEach((chainConfigsByNetwork) => {
+  Object.values(chainConfigsByNetwork).forEach((chainConfig) => {
+    if (chainConfig?.chainId) {
+      chainConfigsByChainId[chainConfig.chainId] = chainConfig;
+    }
+  });
+});

@@ -6,15 +6,13 @@ import testnet042ibcconfig from "./networks/sifchain/config.testnet-042-ibc.json
 import testnetconfig from "./networks/sifchain/config.testnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 
-import assetsEthereumLocalnet from "./networks/ethereum/assets.ethereum.localnet.json";
-import assetsEthereumDevnet from "./networks/ethereum/assets.ethereum.sifchain-devnet.json";
-import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.sifchain-testnet.json";
-import assetsEthereumTestnet042IBC from "./networks/ethereum/assets.ethereum.sifchain-testnet-042.json";
-import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.json";
+import assetsSifchainDevnet from "../generated/assets/assets-devnet.native.json";
+import assetsSifchainMainnet from "../generated/assets/assets-devnet.native.json";
 
-import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet";
-import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet";
-import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet";
+import assetsEthereumDevnet from "../generated/assets/assets-devnet.ethereum.json";
+import assetsEthereumTestnet from "../generated/assets/assets-testnet.ethereum.json";
+import assetsEthereumTestnet042 from "../generated/assets/assets-testnet-042-ibc.ethereum.json";
+import assetsEthereumMainnet from "../generated/assets/assets-mainnet.ethereum.json";
 
 import {
   parseConfig,
@@ -38,6 +36,15 @@ function cacheAsset(asset: Asset) {
   return Asset(asset);
 }
 
+export const configMapByNetworkEnv: Record<NetworkEnv, CoreConfig> = {
+  [NetworkEnv.LOCALNET]: localnetconfig,
+  [NetworkEnv.DEVNET]: devnetconfig,
+  [NetworkEnv.DEVNET_042]: devnet042config,
+  [NetworkEnv.TESTNET_042_IBC]: testnet042ibcconfig,
+  [NetworkEnv.TESTNET]: testnetconfig,
+  [NetworkEnv.MAINNET]: mainnnetconfig,
+};
+
 export type AppConfig = ServiceContext; // Will include other injectables
 
 export function getConfig(
@@ -60,30 +67,20 @@ export function getConfig(
     "unyan",
   ]);
   const assetMap: Partial<AssetMap> = {
-    "sifchain.localnet": parseAssets(
-      assetsSifchainLocalnet.assets as AssetConfig[],
-    ),
-    "sifchain.mainnet": parseAssets(
-      assetsSifchainMainnet.assets as AssetConfig[],
-    ),
-    "sifchain.devnet": parseAssets(
-      assetsSifchainDevnet.assets as AssetConfig[],
-    ),
-    "ethereum.localnet": parseAssets(
-      assetsEthereumLocalnet.assets as AssetConfig[],
-    ),
-    "ethereum.devnet": parseAssets(
-      assetsEthereumDevnet.assets as AssetConfig[],
-    ),
-    "ethereum.testnet": parseAssets(
-      assetsEthereumTestnet.assets as AssetConfig[],
-    ),
+    // "sifchain.localnet": parseAssets(
+    //   assetsSifchainLocalnet as AssetConfig[],
+    // ),
+    "sifchain.mainnet": parseAssets(assetsSifchainMainnet as AssetConfig[]),
+    "sifchain.devnet": parseAssets(assetsSifchainDevnet as AssetConfig[]),
+    // "ethereum.localnet": parseAssets(
+    //   assetsEthereumLocalnet as AssetConfig[],
+    // ),
+    "ethereum.devnet": parseAssets(assetsEthereumDevnet as AssetConfig[]),
+    "ethereum.testnet": parseAssets(assetsEthereumTestnet as AssetConfig[]),
     "ethereum.testnet_042_ibc": parseAssets(
-      assetsEthereumTestnet042IBC.assets as AssetConfig[],
+      assetsEthereumTestnet042 as AssetConfig[],
     ),
-    "ethereum.mainnet": parseAssets(
-      assetsEthereumMainnet.assets as AssetConfig[],
-    ),
+    "ethereum.mainnet": parseAssets(assetsEthereumMainnet as AssetConfig[]),
   };
 
   const sifchainAssets = assetMap[sifchainAssetTag] || [];
@@ -105,39 +102,41 @@ export function getConfig(
 
   allAssets = allAssets.map(cacheAsset);
 
+  const coreConfig = configMapByNetworkEnv[applicationNetworkEnv];
+
   const configMap: ConfigMap = {
     localnet: parseConfig(
-      localnetconfig as CoreConfig,
+      coreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.LOCALNET],
       peggyCompatibleCosmosBaseDenoms,
     ),
     devnet: parseConfig(
-      devnetconfig as CoreConfig,
+      coreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET],
       peggyCompatibleCosmosBaseDenoms,
     ),
     devnet_042: parseConfig(
-      devnet042config as CoreConfig,
+      coreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET_042],
       peggyCompatibleCosmosBaseDenoms,
     ),
     testnet: parseConfig(
-      testnetconfig as CoreConfig,
+      coreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET],
       peggyCompatibleCosmosBaseDenoms,
     ),
     mainnet: parseConfig(
-      mainnnetconfig as CoreConfig,
+      coreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.MAINNET],
       peggyCompatibleCosmosBaseDenoms,
     ),
     testnet_042_ibc: parseConfig(
-      testnet042ibcconfig as CoreConfig,
+      coreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET_042_IBC],
       peggyCompatibleCosmosBaseDenoms,

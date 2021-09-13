@@ -1,4 +1,4 @@
-FROM node:14.11.0 as builder
+FROM node:16.9.0 as builder
 
 RUN mkdir -p /ui/app
 RUN mkdir -p /ui/core

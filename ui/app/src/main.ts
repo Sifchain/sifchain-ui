@@ -4,6 +4,8 @@ import router from "./router";
 import "./scss/index.css";
 import { rootStore, vuexStore } from "./store/index";
 
+import "@sifchain/sdk/src/config/assets/loader";
+
 const app = createApp(App);
 
 // Vue spams us with prop-type warnings.. unnecessary

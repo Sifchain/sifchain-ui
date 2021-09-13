@@ -12,7 +12,12 @@
     "watch": "tsc -p ./tsconfig.compile.json -w",
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
-    "test": "./scripts/test.sh"
+    "test": "./scripts/test.sh",
+    "generate:assets": "yarn generate:assets:mainnet && yarn generate:assets:testnet && yarn generate:assets:devnet && yarn generate:assets:testnet_042_ibc",
+    "generate:assets:mainnet": "ts-node -e 'import load from \"./scripts/load-env-assets\"; load(\"MAINNET\")'",
+    "generate:assets:testnet": "ts-node -e 'import load from \"./scripts/load-env-assets\"; load(\"TESTNET\")'",
+    "generate:assets:testnet_042_ibc": "ts-node -e 'import load from \"./scripts/load-env-assets\"; load(\"TESTNET_042_IBC\")'",
+    "generate:assets:devnet": "ts-node -e 'import load from \"./scripts/load-env-assets\"; load(\"DEVNET\")'"
   },
   "files": [
     "lib/**/*"
@@ -29,6 +34,7 @@
     "@keplr-wallet/stores": "^0.9.0-alpha.9",
     "@keplr-wallet/types": "^0.8.11",
     "@metamask/detect-provider": "^1.2.0",
+    "@types/webcrypto": "^0.0.28",
     "big.js": "^6.0.1",
     "bip39": "^3.0.2",
     "coingecko-api": "^1.0.10",
@@ -36,6 +42,7 @@
     "decimal.js-light": "^2.5.1",
     "eventemitter2": "^6.4.3",
     "inflection": "^1.13.1",
+    "isomorphic-unfetch": "^3.1.0",
     "js-cookie": "^2.2.1",
     "jsbi": "^3.1.4",
     "numbro": "^2.3.2",
@@ -47,7 +54,8 @@
     "typed-emitter": "^1.3.1",
     "url-join-ts": "^1.0.5",
     "web3": "^1.3.0",
-    "web3-core": "^1.3.0"
+    "web3-core": "^1.3.0",
+    "webcrypto": "^0.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
@@ -67,6 +75,7 @@
     "concurrently": "^5.3.0",
     "jest": "^24.9.0",
     "jest-websocket-mock": "^2.2.0",
+    "recursive-diff": "^1.0.8",
     "tinyify": "^3.0.0",
     "ts-node": "^10.2.0",
     "ts-node-dev": "^1.1.8",
