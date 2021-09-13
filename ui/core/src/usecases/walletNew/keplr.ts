@@ -35,7 +35,12 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
     },
 
     async getBalances(network: Network, address: string) {
-      return keplrProvider.fetchBalances(chains.get(network), address);
+      try {
+        return keplrProvider.fetchBalances(chains.get(network), address);
+      } catch (error) {
+        // Give it ONE retry, sometimes the chain rpc apis fail once...
+        return keplrProvider.fetchBalances(chains.get(network), address);
+      }
     },
 
     async disconnect(network: Network) {
