@@ -164,6 +164,7 @@ export const useSwapPageData = () => {
     state,
     fromFieldAmount,
     toFieldAmount,
+    priceRatio,
     priceMessage,
     priceImpact,
     providerFee,
@@ -311,6 +312,7 @@ export const useSwapPageData = () => {
     }),
     toSymbol,
     priceMessage,
+    priceRatio,
     priceImpact,
     providerFee,
     handleFromMaxClicked() {

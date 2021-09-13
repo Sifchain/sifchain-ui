@@ -23,39 +23,40 @@ export default ({
     addLiquidity: AddLiquidity(services, store),
     removeLiquidity: RemoveLiquidity(services),
     syncPools,
-    subscribeToPublicPools: () => {
+    subscribeToPublicPools: (delay: number = PUBLIC_POOLS_POLL_DELAY) => {
       let timeoutId: NodeJS.Timeout;
-
-      async function publicPoolsLoop() {
-        try {
-          await syncPools.syncPublicPools();
-        } catch (error) {
-          console.log("Sync pools error", error);
-        } finally {
-          timeoutId = setTimeout(publicPoolsLoop, PUBLIC_POOLS_POLL_DELAY);
+      (async function publicPoolsLoop() {
+        timeoutId = setTimeout(run, delay);
+        async function run() {
+          try {
+            await syncPools.syncPublicPools();
+          } catch (error) {
+            console.log("Sync pools error", error);
+          } finally {
+            publicPoolsLoop();
+          }
         }
-      }
-      return {
-        unsubscribe: () => clearTimeout(timeoutId),
-        initPromise: publicPoolsLoop(),
-      };
+      })();
+      return () => clearTimeout(timeoutId);
     },
-    subscribeToUserPools: (address: string) => {
+    subscribeToUserPools: (
+      address: string,
+      delay: number = USER_POOLS_POLL_DELAY,
+    ) => {
       let timeoutId: NodeJS.Timeout;
-
-      async function userPoolsLoop() {
-        try {
-          await syncPools.syncUserPools(address);
-        } catch (error) {
-          console.log("Sync pools error", error);
-        } finally {
-          timeoutId = setTimeout(userPoolsLoop, USER_POOLS_POLL_DELAY);
+      (async function userPoolsLoop() {
+        timeoutId = setTimeout(run, delay);
+        async function run() {
+          try {
+            await syncPools.syncUserPools(address);
+          } catch (error) {
+            console.log("Sync pools error", error);
+          } finally {
+            userPoolsLoop();
+          }
         }
-      }
-      return {
-        unsubscribe: () => clearTimeout(timeoutId),
-        initPromise: userPoolsLoop(),
-      };
+      })();
+      return () => clearTimeout(timeoutId);
     },
   };
 };
