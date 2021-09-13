@@ -164,7 +164,7 @@ export default defineComponent({
               "N/A"
             ) : (
               <>
-                {Math.abs(+this.$props.poolStat?.arb).toFixed(3)}{" "}
+                {Math.abs(+this.$props.poolStat?.arb).toFixed(3)}%{" "}
                 <Button.InlineHelp class="!text-gray-600">
                   This is the arbitrage opportunity available based on a
                   differential between the price of this token on Sifchain and
