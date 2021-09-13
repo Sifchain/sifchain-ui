@@ -15,6 +15,7 @@ import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { RouterView, useRouter } from "vue-router";
+import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -32,6 +33,12 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
     const isInverted = ref(false);
+
+    // While swap page is open, ensure pools update
+    // pretty frequently so prices stay up to date...
+    usePublicPoolsSubscriber({
+      delay: ref(10 * 1000),
+    });
 
     onMounted(() => {
       data.fromAmount.value = data.toAmount.value = "0";

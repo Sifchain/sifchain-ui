@@ -8,6 +8,11 @@ import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
 import { AccountPool } from "@sifchain/sdk/src/store/pools";
 import { useChains } from "@/hooks/useChains";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+import {
+  useUserPoolsSubscriber,
+  usePublicPoolsSubscriber,
+} from "@/hooks/usePoolsSubscriber";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
@@ -73,65 +78,37 @@ export type PoolDataItem = {
 };
 
 export const usePoolPageData = () => {
-  const { store, usecases, poolFinder, accountPoolFinder } = useCore();
+  const statsRes = usePoolStats();
 
-  const selectedPool = ref<PoolPageAccountPool | null>(null);
+  useUserPoolsSubscriber({});
+  usePublicPoolsSubscriber({});
 
-  const stats = usePoolStats();
-
-  const isUserDataLoaded = ref(false);
-  const isPoolsDataLoaded = ref(false);
-  let unsubscribePublic: () => void;
-  let unsubscribeUser: () => void;
-
-  const subscribeUser = async () => {
-    const userRes = usecases.clp.subscribeToUserPools(
-      accountStore.state.sifchain.address,
-    );
-    unsubscribeUser = userRes.unsubscribe;
-    await userRes.initPromise;
-    isUserDataLoaded.value = true;
-  };
-
-  onMounted(async () => {
-    subscribeUser();
-    const poolsRes = usecases.clp.subscribeToPublicPools();
-    unsubscribePublic = poolsRes.unsubscribe;
-    await poolsRes.initPromise;
-    isPoolsDataLoaded.value = true;
-  });
-
-  watch(
-    accountStore.state.sifchain,
-    async (prev, curr) => {
-      unsubscribeUser?.();
-      subscribeUser();
+  const userPoolsRes = useAsyncDataCached(
+    "userPoolsData",
+    async () => {
+      const address = accountStore.state.sifchain.address;
+      if (!address) return;
+      return useCore().usecases.clp.syncPools.syncUserPools(address);
     },
-    {
-      deep: true,
-    },
+    [accountStore.refs.sifchain.connected.computed()],
   );
-
-  onUnmounted(() => {
-    unsubscribePublic?.();
-    unsubscribeUser?.();
-  });
 
   const allPoolsData = computed<PoolDataItem[]>(() => {
     const sifchainChain = useChains().get(Network.SIFCHAIN);
-    return (stats.data?.value?.poolData?.pools || []).map((poolStat) => {
+    return (statsRes.data?.value?.poolData?.pools || []).map((poolStat) => {
       const poolKey = createPoolKey(
         sifchainChain.lookupAssetOrThrow("rowan"),
         sifchainChain.lookupAssetOrThrow(poolStat.symbol),
       );
       let accountPool: AccountPool | undefined = undefined;
       if (accountStore.state.sifchain.address) {
-        accountPool =
-          store.accountpools[accountStore.state.sifchain.address][poolKey];
+        accountPool = useCore().store.accountpools[
+          accountStore.state.sifchain.address
+        ][poolKey];
       }
       const item = {
         poolStat,
-        pool: store.pools[poolKey],
+        pool: useCore().store.pools[poolKey],
         accountPool,
       };
       return item;
@@ -140,14 +117,11 @@ export const usePoolPageData = () => {
 
   return {
     isLoaded: computed(() => {
-      const hasPotentialAccount =
-        accountStore.state.sifchain.connecting ||
-        accountStore.state.sifchain.connected;
-      // Show pools page as loaded if user is not connected and main data loads
       return (
-        isPoolsDataLoaded.value &&
+        !statsRes.isLoading.value &&
+        !userPoolsRes.isLoading.value &&
         allPoolsData.value.length > 0 &&
-        (!hasPotentialAccount || isUserDataLoaded.value)
+        !accountStore.state.sifchain.connecting
       );
     }),
     allPoolsData,
