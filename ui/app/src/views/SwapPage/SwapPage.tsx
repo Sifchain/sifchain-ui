@@ -37,7 +37,7 @@ export default defineComponent({
     // While swap page is open, ensure pools update
     // pretty frequently so prices stay up to date...
     usePublicPoolsSubscriber({
-      delay: ref(10 * 1000),
+      delay: ref(60 * 1000),
     });
 
     onMounted(() => {
