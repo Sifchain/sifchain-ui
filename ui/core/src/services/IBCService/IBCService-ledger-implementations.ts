@@ -2,6 +2,7 @@ import {
   SigningStargateClient,
   StargateClient,
   MsgTransferEncodeObject,
+  BroadcastTxResponse,
   IndexedTx,
   MsgSendEncodeObject,
   AminoTypes,
@@ -10,6 +11,94 @@ import {
   AminoConverter,
 } from "@cosmjs/stargate";
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
+
+const getTransferTimeoutData = async (
+  receivingStargateClient: StargateClient,
+  desiredTimeoutMinutes: number,
+) => {
+  const blockTimeMinutes = 7.25 / 60;
+
+  const timeoutBlockDelta = desiredTimeoutMinutes / blockTimeMinutes;
+
+  return {
+    revisionNumber: Long.fromNumber(
+      +ChainIdHelper.parse(
+        await receivingStargateClient.getChainId(),
+      ).version.toString() || 0,
+    ),
+    // Set the timeout height as the current height + 150.
+    revisionHeight: Long.fromNumber(
+      (await receivingStargateClient.getHeight()) + timeoutBlockDelta,
+    ),
+  };
+};
+
+// Ripped from KEPLR
+export class ChainIdHelper {
+  // VersionFormatRegExp checks if a chainID is in the format required for parsing versions
+  // The chainID should be in the form: `{identifier}-{version}`
+  static readonly VersionFormatRegExp = /(.+)-([\d]+)/;
+
+  static parse(
+    chainId: string,
+  ): {
+    identifier: string;
+    version: number;
+  } {
+    const split = chainId
+      .split(ChainIdHelper.VersionFormatRegExp)
+      .filter(Boolean);
+    if (split.length !== 2) {
+      return {
+        identifier: chainId,
+        version: 0,
+      };
+    } else {
+      return { identifier: split[0], version: parseInt(split[1]) };
+    }
+  }
+
+  static hasChainVersion(chainId: string): boolean {
+    const version = ChainIdHelper.parse(chainId);
+    return version.identifier !== chainId;
+  }
+}
+/*
+ * {
+  "chain_id": "sifchain-1",
+  "account_number": "9375",
+  "sequence": "0",
+  "fee": {
+    "gas": "120000",
+    "amount": [
+      {
+        "denom": "rowan",
+        "amount": "120000000000000000"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-0",
+        "token": {
+          "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          "amount": "10000"
+        },
+        "sender": "sif1cnfwkwccnt95zzngqlyqx94k6px2qh4v0ezxw4",
+        "receiver": "cosmos1shywxv2g8gvjcqknvkxu4p6lkqhfclwwhh0q4u",
+        "timeout_height": {
+          "revision_number": "4",
+          "revision_height": "7604931"
+        }
+      }
+    }
+  ],
+  "memo": ""
+}*/
+
 import {
   Asset,
   IAssetAmount,
@@ -53,36 +142,14 @@ import {
   TxRaw,
   TxBody,
 } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
-import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
+import { NativeDexClient } from "../utils/SifClient/NativeDexClient";
 import {
   SifUnSignedClient,
   Compatible42SigningCosmosClient,
-} from "../../services/utils/SifClient";
+} from "../utils/SifClient";
 import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
-import { NativeAminoTypes } from "../../services/utils/SifClient/NativeAminoTypes";
+import { NativeAminoTypes } from "../utils/SifClient/NativeAminoTypes";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
-import { ChainIdHelper } from "./IBCService-ledger-implementations";
-
-const getTransferTimeoutData = async (
-  receivingStargateClient: StargateClient,
-  desiredTimeoutMinutes: number,
-) => {
-  const blockTimeMinutes = 7.25 / 60;
-
-  const timeoutBlockDelta = desiredTimeoutMinutes / blockTimeMinutes;
-
-  return {
-    revisionNumber: Long.fromNumber(
-      +ChainIdHelper.parse(
-        await receivingStargateClient.getChainId(),
-      ).version.toString() || 0,
-    ),
-    // Set the timeout height as the current height + 150.
-    revisionHeight: Long.fromNumber(
-      (await receivingStargateClient.getHeight()) + timeoutBlockDelta,
-    ),
-  };
-};
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -127,7 +194,7 @@ export class IBCService {
     return chainConfig;
   }
 
-  async extractTransferMetadataFromTx(tx: IndexedTx | BroadcastTxResult) {
+  async extractTransferMetadataFromTx(tx: IndexedTx | BroadcastTxResponse) {
     const logs = parseRawLog(tx.rawLog);
     const sequence = findAttribute(logs, "send_packet", "packet_sequence")
       .value;
@@ -150,7 +217,7 @@ export class IBCService {
   }
 
   async checkIfPacketReceivedByTx(
-    txOrTxHash: string | IndexedTx | BroadcastTxResult,
+    txOrTxHash: string | IndexedTx | BroadcastTxResponse,
     destinationNetwork: Network,
   ) {
     const sourceChain = this.loadChainConfigByNetwork(destinationNetwork);
@@ -400,6 +467,24 @@ export class IBCService {
       },
     );
 
+    const sendingStargateClient = await SigningStargateClient.connectWithSigner(
+      sourceChain.rpcUrl,
+      sendingSigner,
+      {
+        aminoTypes: new NativeAminoTypes(),
+        gasLimits: {
+          send: 80000,
+          transfer: 250000,
+          delegate: 250000,
+          undelegate: 250000,
+          redelegate: 250000,
+          // The gas multiplication per rewards.
+          withdrawRewards: 140000,
+          govVote: 250000,
+        },
+      },
+    );
+
     const { channelId } = await this.tokenRegistry.loadConnectionByNetworks({
       sourceNetwork: params.sourceNetwork,
       destinationNetwork: params.destinationNetwork,
@@ -407,6 +492,14 @@ export class IBCService {
 
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
+    const timeoutInMinutes = this.transferTimeoutMinutes;
+    const timeoutTimestampInSeconds = Math.floor(
+      new Date().getTime() / 1000 + 60 * timeoutInMinutes,
+    );
+    const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
+      ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
+      : undefined;
+    const currentHeight = await receivingStargateCient.getHeight();
     const registry = await this.tokenRegistry.load();
     const transferTokenEntry = registry.find((t) => t.baseDenom === symbol);
 
@@ -439,6 +532,7 @@ export class IBCService {
         receiver: toAccount.address,
         token: {
           denom: transferDenom,
+          // denom: symbol,
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
         timeoutHeight: timeoutHeight,
@@ -526,54 +620,199 @@ export class IBCService {
             .then((r) => r.json())
             .catch((e) => {});
         } catch (e) {}
-
-        const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
-        const client = await NativeDexClient.connect(
-          sifConfig.rpcUrl,
-          sifConfig.restUrl,
-          sifConfig.chainId,
-        );
-        const txDraft = client.tx.ibc.Transfer(
-          {
-            sender: fromAccount.address,
-            receiver: toAccount.address,
-            sourcePort: "transfer",
-            sourceChannel: channelId || "",
-            timeoutTimestamp: (undefined as unknown) as Long,
-            token: {
-              denom: transferDenom,
-              amount: params.assetAmountToTransfer.toBigInt().toString(),
-            },
-            timeoutHeight,
-          },
+        const chainId = await sendingStargateClient.getChainId();
+        const height = await sendingStargateClient.getHeight();
+        const sequence = await sendingStargateClient.getSequence(
           fromAccount.address,
         );
+        while (height === (await sendingStargateClient.getHeight())) {
+          await new Promise((r) => setTimeout(r, 1000));
+        }
+        this.context.sifUnsignedClient;
+        console.log("api url " + this.context.sifUnsignedClient?.apiUrl);
 
-        const signedTx = await client.sign(txDraft, sendingSigner, {
-          sendingChainRestUrl: sourceChain.restUrl,
-          sendingChainRpcUrl: sourceChain.rpcUrl,
-        });
-        const sentTx = await client.broadcast(signedTx, {
-          sendingChainRpcUrl: sourceChain.rpcUrl,
-          sendingChainRestUrl: sourceChain.restUrl,
-        });
-        responses.push(sentTx);
+        const aminoTypes = new NativeAminoTypes();
+
+        const keplrSignAndSend = async () => {
+          const signedMsg = await keplr?.signAmino(
+            await sendingStargateClient.getChainId(),
+            fromAccount.address,
+            {
+              msgs: batch.map(aminoTypes.toAmino.bind(aminoTypes)),
+              fee: sendingStargateClient.fees.transfer,
+              chain_id: sourceChain.chainId,
+              account_number: sequence.accountNumber.toString(),
+              sequence: sequence.sequence.toString(),
+              memo: "",
+            },
+          );
+
+          const brdcstTxResKeplr = await keplr?.sendTx(
+            await sendingStargateClient.getChainId(),
+            {
+              msg: signedMsg!.signed.msgs,
+              signatures: [signedMsg!.signature],
+              fee: {
+                ...sendingStargateClient.fees.transfer,
+                amount: [
+                  ...sendingStargateClient.fees.transfer.amount.map((amt) => ({
+                    ...amt,
+                    denom: "uphoton",
+                  })),
+                ],
+              },
+              memo: "",
+            },
+            BroadcastMode.Block,
+          );
+          console.log({ brdcstTxResKeplr });
+        };
+        const stargateSignAndSend = async () => {
+          const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
+            fromAccount.address,
+            batch,
+            {
+              ...sendingStargateClient.fees.transfer,
+              // amount: [
+              //   {
+              //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
+              //     amount:
+              //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+              //       "",
+              //   },
+              // ],
+              // ...(externalGasPrices &&
+              // externalGasPrices[sourceChain.chainId || ""]
+              //   ? {
+              //       gas: externalGasPrices[sourceChain.chainId || ""],
+              //     }
+              //   : {}),
+              // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
+            },
+            // "",
+            // {
+            //   chainId,
+            //   accountNumber: sequence.accountNumber,
+            //   sequence: sequence.sequence,
+            // },
+          );
+          console.log({ brdcstTxRes });
+          // responses.push(brdcstTxRes);
+        };
+        const launchpadSignAndSend = async () => {
+          console.log("launchpadSignAndSend");
+          const keplr = await getKeplrProvider();
+          const sendingSigner = keplr!.getOfflineSigner(
+            await sendingStargateClient.getChainId(),
+          );
+
+          const launchpad = new Compatible42SigningCosmosClient(
+            sourceChain.restUrl,
+            fromAccount.address,
+            // @ts-ignore
+            sendingSigner,
+          );
+
+          console.log({ sendingSigner });
+          const converter = new NativeAminoTypes();
+          const converted = batch.map(converter.toAmino.bind(converter));
+          console.log({ converted });
+          const res = await launchpad.signAndBroadcast(converted, {
+            ...sendingStargateClient.fees.transfer,
+          });
+          console.log({ res });
+        };
+        const customSignAndSendAmino = async () => {
+          const t34 = await Tendermint34Client.connect(sourceChain.rpcUrl);
+          const client = new NativeSigningClient(t34, sendingSigner, {
+            registry: NativeDexClient.getNativeRegistry(),
+          });
+          // const txRaw = await client.sign(
+          //   fromAccount.address,
+          //   batch,
+          //   sendingStargateClient.fees.transfer,
+          //   "",
+          // );
+          // const sig = TxRaw.encode(txRaw).finish();
+
+          const sig = await client.signWMeta(
+            fromAccount.address,
+            batch,
+            {
+              ...sendingStargateClient.fees.transfer,
+              amount: sendingStargateClient.fees.transfer.amount.map((amt) => ({
+                ...amt,
+                denom:
+                  sourceChain.keplrChainInfo.feeCurrencies[0].coinMinimalDenom,
+              })),
+            },
+            "",
+            {
+              chainId,
+              accountNumber: sequence.accountNumber,
+              sequence: sequence.sequence,
+            },
+          );
+          console.log("waiting...");
+          await new Promise((r) => setTimeout(r, 5 * 1000));
+          console.log("go!");
+          const res = await client.broadcastTx(sig);
+          console.log({ res });
+        };
+        const nativeDexClientSignAndSend = async () => {
+          const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
+          const client = await NativeDexClient.connect(
+            sifConfig.rpcUrl,
+            sifConfig.restUrl,
+            sifConfig.chainId,
+          );
+          const txDraft = client.tx.ibc.Transfer(
+            {
+              sender: fromAccount.address,
+              receiver: toAccount.address,
+              sourcePort: "transfer",
+              sourceChannel: channelId || "",
+              timeoutTimestamp: (undefined as unknown) as Long,
+              token: {
+                denom: transferDenom,
+                amount: params.assetAmountToTransfer.toBigInt().toString(),
+              },
+              timeoutHeight,
+            },
+            fromAccount.address,
+          );
+
+          const signedTx = await client.sign(txDraft, sendingSigner, {
+            sendingChainRestUrl: sourceChain.restUrl,
+            sendingChainRpcUrl: sourceChain.rpcUrl,
+          });
+          const sentTx = await client.broadcast(signedTx, {
+            sendingChainRpcUrl: sourceChain.rpcUrl,
+            sendingChainRestUrl: sourceChain.restUrl,
+          });
+          responses.push(sentTx);
+        };
+        await nativeDexClientSignAndSend();
+        // keplrSignAndSend();
+        // stargateSignAndSend();
+        // launchpadSignAndSend();
+        // customSignAndSendAmino();
       } catch (err) {
         console.error(err);
         const e = err as {
           message: string;
         };
-        responses.push({
-          code:
-            +(e?.message?.split("code ")?.pop()?.split(" ")?.[0] || "") ||
-            100000000000000000,
-          log: e.message,
-          rawLog: e.message,
-          transactionHash: "invalidtx",
-          hash: new Uint8Array(),
-          events: [],
-          height: -1,
-        } as BroadcastTxResult);
+        // responses.push({
+        //   code:
+        //     +(e?.message?.split("code ")?.pop()?.split(" ")?.[0] || "") ||
+        //     100000000000000000,
+        //   log: e.message,
+        //   rawLog: e.message,
+        //   transactionHash: "invalidtx",
+        //   hash: new Uint8Array(),
+        //   events: [],
+        //   height: -1,
+        // } as BroadcastTxResponse);
       }
     }
     console.log({ responses });
@@ -585,8 +824,6 @@ export default function createIBCService(context: IBCServiceContext) {
   return IBCService.create(context);
 }
 
-// @mccallofthewild - Will likely want to implement this pattern in the future,
-// as the launchpad /txs endpoint will eventually be deprecated.
 interface NativeSigning {
   sendingSigner: OfflineAminoSigner;
   signWMeta: (

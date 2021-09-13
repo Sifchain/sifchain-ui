@@ -27,7 +27,11 @@ export function Claim({ dispensation, sif }: ClaimArgs) {
   }): Promise<TransactionStatus> => {
     if (!params) throw "You forgot claimType and fromAddress";
     const memo = `program=${rewardProgramName}`;
-    const client = await NativeDexClient.connect(sif.unSignedClient.rpcUrl);
+    const client = await NativeDexClient.connect(
+      sif.unSignedClient.rpcUrl,
+      sif.unSignedClient.apiUrl,
+      await sif.unSignedClient.getChainId(),
+    );
     const keplrProvider = await getKeplrProvider();
     if (!keplrProvider) throw new Error("keplr not enabled");
     const signingClient = client.createSigningClient(

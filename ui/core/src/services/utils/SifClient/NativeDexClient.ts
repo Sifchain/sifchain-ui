@@ -10,7 +10,6 @@ import * as IBCTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/
 import * as CosmosBankV1Tx from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import {
-  coins,
   makeSignDoc as makeSignDocAmino,
   OfflineAminoSigner,
 } from "@cosmjs/amino";
@@ -26,11 +25,8 @@ import {
   isTsProtoGeneratedType,
   OfflineSigner as OfflineStargateSigner,
   EncodeObject,
-  OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
-
 import {
-  BroadcastTxResponse,
   createProtobufRpcClient,
   defaultRegistryTypes,
   QueryClient,
@@ -39,8 +35,6 @@ import {
   setupIbcExtension,
   SigningStargateClient,
 } from "@cosmjs/stargate";
-
-import { Compatible42SigningCosmosClient } from ".";
 import { NativeAminoTypes } from "./NativeAminoTypes";
 import {
   NativeDexSignedTransaction,
@@ -103,6 +97,13 @@ export class NativeDexClient {
     return instance;
   }
 
+  /**
+   *
+   * Composes arguments for type Registry
+   * @static
+   * @return {*}  {[string, GeneratedType][]}
+   * @memberof NativeDexClient
+   */
   static getGeneratedTypes(): [string, GeneratedType][] {
     return [
       ...defaultRegistryTypes,
@@ -112,6 +113,11 @@ export class NativeDexClient {
       ...this.createCustomTypesForModule(TokenRegistryV1Tx),
     ];
   }
+
+  /**
+   *
+   * Transforms custom sifnode protobuf modules into types for registry
+   */
   static createCustomTypesForModule(
     nativeModule: Record<string, GeneratedType | any> & {
       protobufPackage: string;
@@ -127,9 +133,17 @@ export class NativeDexClient {
     return types;
   }
 
+  /**
+   *
+   * Builds registry with custom generated protbuf types
+   */
   static getNativeRegistry(): Registry {
     return new Registry([...NativeDexClient.getGeneratedTypes()]);
   }
+
+  /**
+   * Creates a stargate signing client with custom type registry
+   */
   async createSigningClient(signer: OfflineSigner) {
     const nativeRegistry = NativeDexClient.getNativeRegistry();
 
@@ -144,6 +158,18 @@ export class NativeDexClient {
     return client;
   }
 
+  /**
+   *
+   * Signs a prepared `NativeDexTransaction`
+   * @param {NativeDexTransaction<EncodeObject>} tx
+   * @param {(OfflineSigner & OfflineAminoSigner)} signer
+   * @param {*} [{
+   *       sendingChainRestUrl = this.restUrl,
+   *       sendingChainRpcUrl = this.rpcUrl,
+   *     }={}]
+   * @return {*}
+   * @memberof NativeDexClient
+   */
   async sign(
     tx: NativeDexTransaction<EncodeObject>,
     signer: OfflineSigner & OfflineAminoSigner,
@@ -152,6 +178,7 @@ export class NativeDexClient {
       sendingChainRpcUrl = this.rpcUrl,
     } = {},
   ) {
+    this.createSigningClient(signer);
     const cosmosClient = await StargateClient.connect(sendingChainRpcUrl);
     const { accountNumber, sequence } = await cosmosClient.getSequence(
       tx.fromAddress,
@@ -182,11 +209,31 @@ export class NativeDexClient {
     console.log(signedTx);
     return new NativeDexSignedTransaction(tx, signedTx);
   }
+  /**
+   *
+   * Converts protobuf `EncodeObject`'s into amino-safe objects
+   * to ensure ledger hardware wallet compatibility
+   * @private
+   * @param {EncodeObject[]} encodeMsgs
+   * @return {*}
+   * @memberof NativeDexClient
+   */
   private convertEncodeMsgsToAminos(encodeMsgs: EncodeObject[]) {
     const converter = new NativeAminoTypes();
     const converted = encodeMsgs.map(converter.toAmino.bind(converter));
     return converted;
   }
+  /**
+   *
+   * Submits a `sign`ed `NativeDexSignedTransaction` to node
+   * @param {NativeDexSignedTransaction<EncodeObject>} tx
+   * @param {*} [{
+   *       sendingChainRestUrl = this.restUrl,
+   *       sendingChainRpcUrl = this.rpcUrl,
+   *     }={}]
+   * @return {*}  {Promise<BroadcastTxResult>}
+   * @memberof NativeDexClient
+   */
   async broadcast(
     tx: NativeDexSignedTransaction<EncodeObject>,
     {
@@ -199,7 +246,16 @@ export class NativeDexClient {
     console.log({ res });
     return res;
   }
+
+  /**
+   *
+   * Creates a type-safe amino-friendly transaction client API
+   * @static
+   * @return {*}
+   * @memberof NativeDexClient
+   */
   static createTxClient() {
+    // Takes msg client impl & keeps the first argument, then adds a couple more
     type ExtractMethodInvokationType<T> = T extends (...args: any[]) => any
       ? (
           arg: Parameters<T>[0],
@@ -212,21 +268,32 @@ export class NativeDexClient {
           }>
         >
       : null;
+
+    // "loops" through methods and applies types to each
     type ExtractMethodInvokationTypes<T> = T extends object
       ? {
           [K in keyof T]: ExtractMethodInvokationType<T[K]>;
         }
       : {};
-    const createSigningClientFromImpl = <T extends any>(txModule: {
+
+    /*
+    @mccallofthewild -
+     Turns protobuf module into a signing client in the same style asstargate query client.
+     The design choice of including sender address & gas fees was made in order to facilitate 
+     data integrity in the confirmation stage, for both UI's and bots.
+    */
+    const createTxClient = <T extends any>(txModule: {
       MsgClientImpl: Function;
       protobufPackage: string;
     }): ExtractMethodInvokationTypes<T> => {
       const protoMethods = txModule.MsgClientImpl.prototype as T;
-      const createSigMethod = (methodName: string) => (
+      // careful with edits here, as the implementation below is @ts-ignore'd
+      const createTxCompositionMethod = (methodName: string) => (
         msg: any,
         senderAddress: string,
         { gas, price }: NativeDexTransactionFee = {
           gas: this.feeTable.send.gas,
+          // @mccallofthewild - May want to change this to an `AssetAmount` at some point once the SDK structure is ready
           price: {
             denom: this.feeTable.send.amount[0].denom,
             amount: this.feeTable.send.amount[0].amount,
@@ -253,22 +320,18 @@ export class NativeDexClient {
       const signingClientMethods = {} as ExtractMethodInvokationTypes<T>;
       for (let method of Object.getOwnPropertyNames(protoMethods)) {
         // @ts-ignore
-        signingClientMethods[method] = createSigMethod(method);
+        signingClientMethods[method] = createTxCompositionMethod(method);
       }
       return signingClientMethods;
     };
 
     const txs = {
-      dispensation: createSigningClientFromImpl<DispensationV1Tx.Msg>(
-        DispensationV1Tx,
-      ),
-      ethbridge: createSigningClientFromImpl<EthbridgeV1Tx.Msg>(EthbridgeV1Tx),
-      clp: createSigningClientFromImpl<CLPV1Tx.Msg>(CLPV1Tx),
-      registry: createSigningClientFromImpl<TokenRegistryV1Tx.Msg>(
-        TokenRegistryV1Tx,
-      ),
-      ibc: createSigningClientFromImpl<IBCTransferV1Tx.Msg>(IBCTransferV1Tx),
-      bank: createSigningClientFromImpl<CosmosBankV1Tx.Msg>(CosmosBankV1Tx),
+      dispensation: createTxClient<DispensationV1Tx.Msg>(DispensationV1Tx),
+      ethbridge: createTxClient<EthbridgeV1Tx.Msg>(EthbridgeV1Tx),
+      clp: createTxClient<CLPV1Tx.Msg>(CLPV1Tx),
+      registry: createTxClient<TokenRegistryV1Tx.Msg>(TokenRegistryV1Tx),
+      ibc: createTxClient<IBCTransferV1Tx.Msg>(IBCTransferV1Tx),
+      bank: createTxClient<CosmosBankV1Tx.Msg>(CosmosBankV1Tx),
     };
     return txs;
   }
