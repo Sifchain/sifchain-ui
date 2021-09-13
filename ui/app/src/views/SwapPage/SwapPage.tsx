@@ -135,8 +135,9 @@ export default defineComponent({
             }}
           ></SlippageTolerance>
           <SwapDetails
-            asset={data.toAsset}
-            price={data.priceMessage.value?.replace("per", "/")}
+            fromAsset={data.fromAsset}
+            toAsset={data.toAsset}
+            priceRatio={data.priceRatio}
             priceImpact={(data.priceImpact.value ?? "") + "%"}
             liquidityProviderFee={data.providerFee.value ?? ""}
             minimumReceived={data.minimumReceived.value}
