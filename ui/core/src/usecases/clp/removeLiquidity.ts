@@ -17,8 +17,6 @@ type RemoveLiquidityServices = {
 
 export function RemoveLiquidity({ bus, sif, clp }: RemoveLiquidityServices) {
   return async (asset: IAsset, wBasisPoints: string, asymmetry: string) => {
-    const state = sif.getState();
-
     const client = await sif.loadNativeDexClient();
 
     const txDraft = await client.tx.clp.RemoveLiquidity(
