@@ -35,7 +35,6 @@ export class SifchainEthereumInterchainApi
     return new ExecutableTransaction(async (emit) => {
       const feeAmount = await this.estimateFees(params);
       emit({ type: "signing" });
-
       const web3 = await this.context.services.ethbridge.loadWeb3();
       const ethereumChainId = await web3.eth.net.getId();
       const client = await this.context.services.sif.loadNativeDexClient();
