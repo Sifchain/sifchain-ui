@@ -17,6 +17,7 @@ import { SifUnSignedClient } from "../utils/SifClient";
 import { parseTxFailure } from "./parseTxFailure";
 import { Contract } from "web3-eth-contract";
 import JSBI from "jsbi";
+import Long from "long";
 
 // TODO: Do we break this service out to ethbridge and cosmos?
 
@@ -152,6 +153,7 @@ export default function createEthbridgeService({
         }
       }
     },
+    loadWeb3: ensureWeb3,
     createPegTx,
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask

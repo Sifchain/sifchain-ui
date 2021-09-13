@@ -47,6 +47,9 @@ import {
   BroadcastTxResult,
   OfflineSigner as OfflineLaunchpadSigner,
 } from "@cosmjs/launchpad";
+import { parseTxFailure } from "services/SifService/parseTxFailure";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { TransactionStatus } from "index";
 
 type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;
 type TxGroup =
@@ -78,12 +81,12 @@ type DeepReadonly<T> = T extends object
 export class NativeDexClient {
   static feeTable = buildFeeTable(defaultGasPrice, defaultGasLimits, {});
   protected constructor(
-    readonly rpcUrl: string,
-    readonly restUrl: string,
-    readonly chainId: string,
-    protected t34: Tendermint34Client,
-    readonly query: ReturnType<typeof NativeDexClient.createQueryClient>,
-    readonly tx: ReturnType<typeof NativeDexClient.createTxClient>,
+    private readonly rpcUrl: string,
+    private readonly restUrl: string,
+    private readonly chainId: string,
+    private t34: Tendermint34Client,
+    public readonly query: ReturnType<typeof NativeDexClient.createQueryClient>,
+    public readonly tx: ReturnType<typeof NativeDexClient.createTxClient>,
   ) {}
   static async connect(
     rpcUrl: string,
@@ -112,6 +115,34 @@ export class NativeDexClient {
       ...this.createCustomTypesForModule(CLPV1Tx),
       ...this.createCustomTypesForModule(TokenRegistryV1Tx),
     ];
+  }
+
+  parseTxResult = NativeDexClient.parseTxResult.bind(NativeDexClient);
+  /**
+   *
+   * Parses `BroadcastTxResult` into DEXv1-compatible output.
+   * Will eventually be replaced with custom NativeDex result types
+   * @static
+   * @param {BroadcastTxResult} result
+   * @return {*}  {TransactionStatus}
+   * @memberof NativeDexClient
+   */
+  static parseTxResult(result: BroadcastTxResult): TransactionStatus {
+    try {
+      if (isBroadcastTxFailure(result)) {
+        /* istanbul ignore next */ // TODO: fix coverage
+        return parseTxFailure(result);
+      }
+      return {
+        hash: result.transactionHash,
+        memo: "",
+        state: "accepted",
+      };
+    } catch (err) {
+      const e = err as any;
+      console.log("signAndBroadcast ERROR", e);
+      return parseTxFailure({ transactionHash: "", rawLog: e?.message });
+    }
   }
 
   /**
@@ -172,7 +203,7 @@ export class NativeDexClient {
    */
   async sign(
     tx: NativeDexTransaction<EncodeObject>,
-    signer: OfflineSigner & OfflineAminoSigner,
+    signer: OfflineAminoSigner,
     {
       sendingChainRestUrl = this.restUrl,
       sendingChainRpcUrl = this.rpcUrl,
@@ -278,7 +309,7 @@ export class NativeDexClient {
 
     /*
     @mccallofthewild -
-     Turns protobuf module into a signing client in the same style asstargate query client.
+     Turns protobuf module into a signing client in the same style as stargate query client.
      The design choice of including sender address & gas fees was made in order to facilitate 
      data integrity in the confirmation stage, for both UI's and bots.
     */

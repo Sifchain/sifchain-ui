@@ -23,10 +23,12 @@ import getKeplrProvider from "./getKeplrProvider";
 import { KeplrChainConfig } from "../../utils/parseConfig";
 import { parseTxFailure } from "./parseTxFailure";
 import { debounce } from "../../utils/debounce";
+import { NativeDexClient } from "services/utils/SifClient/NativeDexClient";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;
   sifApiUrl: string;
+  sifChainId: string;
   sifWsUrl: string;
   sifRpcUrl: string;
   keplrChainConfig: KeplrChainConfig;
@@ -46,6 +48,7 @@ export default function createSifService({
   sifRpcUrl,
   keplrChainConfig,
   assets,
+  sifChainId,
 }: SifServiceContext) {
   const state: {
     connected: boolean;
@@ -127,8 +130,15 @@ export default function createSifService({
     //   }
     // }
   }, 100);
-
+  const nativeDexClientPromise = NativeDexClient.connect(
+    sifRpcUrl,
+    sifApiUrl,
+    sifChainId,
+  );
   const instance = {
+    async loadNativeDexClient() {
+      return nativeDexClientPromise;
+    },
     getClient() {
       return client;
     },
@@ -360,7 +370,8 @@ export default function createSifService({
           memo,
           state: "accepted",
         };
-      } catch (err) {
+      } catch (_err) {
+        const err = _err as any;
         console.log("signAndBroadcast ERROR", err);
         return parseTxFailure({ transactionHash: "", rawLog: err.message });
       }
