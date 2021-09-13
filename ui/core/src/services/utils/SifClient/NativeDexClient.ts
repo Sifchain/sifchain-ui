@@ -1,20 +1,33 @@
 import * as TokenRegistryV1Query from "../../../generated/proto/sifnode/tokenregistry/v1/query";
-import * as TokenRegistryV1Tx from "../../../generated/proto/sifnode/tokenregistry/v1/query";
+import * as TokenRegistryV1Tx from "../../../generated/proto/sifnode/tokenregistry/v1/tx";
 import * as CLPV1Query from "../../../generated/proto/sifnode/clp/v1/querier";
 import * as CLPV1Tx from "../../../generated/proto/sifnode/clp/v1/tx";
 import * as DispensationV1Query from "../../../generated/proto/sifnode/dispensation/v1/query";
 import * as DispensationV1Tx from "../../../generated/proto/sifnode/dispensation/v1/tx";
 import * as EthbridgeV1Query from "../../../generated/proto/sifnode/ethbridge/v1/query";
 import * as EthbridgeV1Tx from "../../../generated/proto/sifnode/ethbridge/v1/tx";
+import * as IBCTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
+import * as CosmosBankV1Tx from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { toHex } from "@cosmjs/encoding";
 import {
-  DirectSecp256k1HdWallet,
-  Registry,
+  coins,
+  makeSignDoc as makeSignDocAmino,
+  OfflineAminoSigner,
+} from "@cosmjs/amino";
+import {
+  buildFeeTable,
+  defaultGasLimits,
+  defaultGasPrice,
+  StargateClient,
+} from "@cosmjs/stargate";
+import { Registry } from "@cosmjs/stargate/node_modules/@cosmjs/proto-signing/build/registry";
+import {
   GeneratedType,
   isTsProtoGeneratedType,
-  OfflineSigner,
-} from "@cosmjs/stargate/node_modules/@cosmjs/proto-signing";
+  OfflineSigner as OfflineStargateSigner,
+  EncodeObject,
+  OfflineDirectSigner,
+} from "@cosmjs/proto-signing";
 
 import {
   BroadcastTxResponse,
@@ -25,14 +38,23 @@ import {
   setupBankExtension,
   setupIbcExtension,
   SigningStargateClient,
-  StargateClient,
-  StdFee,
-  TimeoutError,
 } from "@cosmjs/stargate";
-import { BroadcastTxCommitResponse } from "@cosmjs/tendermint-rpc/build/tendermint34";
-import { SimulationResponse } from "@cosmjs/stargate/build/codec/cosmos/base/abci/v1beta1/abci";
-import { sleep } from "../../../test/utils/sleep";
 
+import { Compatible42SigningCosmosClient } from ".";
+import { NativeAminoTypes } from "./NativeAminoTypes";
+import {
+  NativeDexSignedTransaction,
+  NativeDexTransaction,
+  NativeDexTransactionFee,
+} from "./NativeDexTransaction";
+import { makeStdTx } from "@cosmjs/launchpad";
+import { CosmosClient } from "@cosmjs/launchpad";
+import {
+  BroadcastTxResult,
+  OfflineSigner as OfflineLaunchpadSigner,
+} from "@cosmjs/launchpad";
+
+type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;
 type TxGroup =
   | typeof EthbridgeV1Tx
   | typeof DispensationV1Tx
@@ -56,21 +78,32 @@ type TxGroup =
 //     memo?: string | undefined,
 //   ) => Promise<BroadcastTxResponse>;
 // }
-
+type DeepReadonly<T> = T extends object
+  ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>
+  : Readonly<T>;
 export class NativeDexClient {
+  static feeTable = buildFeeTable(defaultGasPrice, defaultGasLimits, {});
   protected constructor(
     readonly rpcUrl: string,
+    readonly restUrl: string,
+    readonly chainId: string,
     protected t34: Tendermint34Client,
     readonly query: ReturnType<typeof NativeDexClient.createQueryClient>,
+    readonly tx: ReturnType<typeof NativeDexClient.createTxClient>,
   ) {}
-  static async connect(rpcUrl: string): Promise<NativeDexClient> {
+  static async connect(
+    rpcUrl: string,
+    restUrl: string,
+    chainId: string,
+  ): Promise<NativeDexClient> {
     const t34 = await Tendermint34Client.connect(rpcUrl);
     const query = this.createQueryClient(t34);
-    const instance = new this(rpcUrl, t34, query);
+    const tx = this.createTxClient();
+    const instance = new this(rpcUrl, restUrl, chainId, t34, query, tx);
     return instance;
   }
 
-  static getGeneratedTypes() {
+  static getGeneratedTypes(): [string, GeneratedType][] {
     return [
       ...defaultRegistryTypes,
       ...this.createCustomTypesForModule(EthbridgeV1Tx),
@@ -94,7 +127,7 @@ export class NativeDexClient {
     return types;
   }
 
-  static getNativeRegistry() {
+  static getNativeRegistry(): Registry {
     return new Registry([...NativeDexClient.getGeneratedTypes()]);
   }
   async createSigningClient(signer: OfflineSigner) {
@@ -102,18 +135,142 @@ export class NativeDexClient {
 
     const client = await SigningStargateClient.connectWithSigner(
       this.rpcUrl,
-      signer,
+      signer as OfflineStargateSigner,
       {
         registry: nativeRegistry,
-      } as const,
+      },
     );
 
     return client;
   }
-  createTxClient(t34: Tendermint34Client) {
-    return {
-      // dispensation: new DispensationV1Tx.MsgCreateClaimResponse
+
+  async sign(
+    tx: NativeDexTransaction<EncodeObject>,
+    signer: OfflineSigner & OfflineAminoSigner,
+    {
+      sendingChainRestUrl = this.restUrl,
+      sendingChainRpcUrl = this.rpcUrl,
+    } = {},
+  ) {
+    const cosmosClient = await StargateClient.connect(sendingChainRpcUrl);
+    const { accountNumber, sequence } = await cosmosClient.getSequence(
+      tx.fromAddress,
+    );
+    console.log(tx);
+    // debugger;
+    const msgs = this.convertEncodeMsgsToAminos(tx.msgs);
+    const chainId = await cosmosClient.getChainId();
+    const fee = {
+      amount: [tx.fee.price],
+      gas: tx.fee.gas,
     };
+    const signDoc = makeSignDocAmino(
+      msgs,
+      fee,
+      chainId,
+      tx.memo,
+      accountNumber,
+      sequence,
+    );
+
+    const { signed, signature } = await signer.signAmino(
+      tx.fromAddress,
+      signDoc,
+    );
+    console.log(signed, signature);
+    const signedTx = makeStdTx(signed, signature);
+    console.log(signedTx);
+    return new NativeDexSignedTransaction(tx, signedTx);
+  }
+  private convertEncodeMsgsToAminos(encodeMsgs: EncodeObject[]) {
+    const converter = new NativeAminoTypes();
+    const converted = encodeMsgs.map(converter.toAmino.bind(converter));
+    return converted;
+  }
+  async broadcast(
+    tx: NativeDexSignedTransaction<EncodeObject>,
+    {
+      sendingChainRestUrl = this.restUrl,
+      sendingChainRpcUrl = this.rpcUrl,
+    } = {},
+  ): Promise<BroadcastTxResult> {
+    const launchpad = new CosmosClient(sendingChainRestUrl);
+    const res = await launchpad.broadcastTx(tx.signed);
+    console.log({ res });
+    return res;
+  }
+  static createTxClient() {
+    type ExtractMethodInvokationType<T> = T extends (...args: any[]) => any
+      ? (
+          arg: Parameters<T>[0],
+          senderAddress: string,
+          fee?: NativeDexTransactionFee,
+        ) => DeepReadonly<
+          NativeDexTransaction<{
+            typeUrl: string;
+            value: Parameters<T>[0];
+          }>
+        >
+      : null;
+    type ExtractMethodInvokationTypes<T> = T extends object
+      ? {
+          [K in keyof T]: ExtractMethodInvokationType<T[K]>;
+        }
+      : {};
+    const createSigningClientFromImpl = <T extends any>(txModule: {
+      MsgClientImpl: Function;
+      protobufPackage: string;
+    }): ExtractMethodInvokationTypes<T> => {
+      const protoMethods = txModule.MsgClientImpl.prototype as T;
+      const createSigMethod = (methodName: string) => (
+        msg: any,
+        senderAddress: string,
+        { gas, price }: NativeDexTransactionFee = {
+          gas: this.feeTable.send.gas,
+          price: {
+            denom: this.feeTable.send.amount[0].denom,
+            amount: this.feeTable.send.amount[0].amount,
+          },
+        },
+      ): NativeDexTransaction<any> => {
+        const typeUrl = `/${txModule.protobufPackage}.Msg${methodName}`;
+        console.log({ typeUrl });
+        delete msg["timeoutTimestamp"];
+        return new NativeDexTransaction(
+          senderAddress,
+          [
+            {
+              typeUrl,
+              value: msg,
+            },
+          ],
+          {
+            gas,
+            price,
+          },
+        );
+      };
+      const signingClientMethods = {} as ExtractMethodInvokationTypes<T>;
+      for (let method of Object.getOwnPropertyNames(protoMethods)) {
+        // @ts-ignore
+        signingClientMethods[method] = createSigMethod(method);
+      }
+      return signingClientMethods;
+    };
+
+    const txs = {
+      dispensation: createSigningClientFromImpl<DispensationV1Tx.Msg>(
+        DispensationV1Tx,
+      ),
+      ethbridge: createSigningClientFromImpl<EthbridgeV1Tx.Msg>(EthbridgeV1Tx),
+      clp: createSigningClientFromImpl<CLPV1Tx.Msg>(CLPV1Tx),
+      registry: createSigningClientFromImpl<TokenRegistryV1Tx.Msg>(
+        TokenRegistryV1Tx,
+      ),
+      ibc: createSigningClientFromImpl<IBCTransferV1Tx.Msg>(IBCTransferV1Tx),
+      bank: createSigningClientFromImpl<CosmosBankV1Tx.Msg>(CosmosBankV1Tx),
+    };
+    return txs;
   }
   private static createQueryClient(t34: Tendermint34Client) {
     return QueryClient.withExtensions(

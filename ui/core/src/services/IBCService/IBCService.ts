@@ -11,33 +11,6 @@ import {
   AminoConverter,
 } from "@cosmjs/stargate";
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
-import * as inflection from "inflection";
-
-class NativeAminoTypes extends AminoTypes {
-  constructor(options: {
-    additions?: Record<string, AminoConverter>;
-    prefix?: string;
-  }) {
-    super(options);
-
-    const ibcAddition =
-      options.additions?.["/ibc.applications.transfer.v1.MsgTransfer"];
-
-    if (ibcAddition) {
-      const originalToAmino = ibcAddition.toAmino;
-
-      // @ts-ignore
-      ibcAddition.toAmino = (value: any) => {
-        value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
-        value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
-        const converted = originalToAmino(value);
-        delete converted.timeout_timestamp;
-        console.log("After converted", JSON.stringify(converted, null, 2));
-        return converted;
-      };
-    }
-  }
-}
 
 const getTransferTimeoutData = async (
   receivingStargateClient: StargateClient,
@@ -152,7 +125,6 @@ import { TokenRegistryService } from "../TokenRegistryService/TokenRegistryServi
 import { KeplrWalletProvider } from "../../clients/wallets";
 import { IBC_EXPORT_FEE_ADDRESS } from "../../utils/ibcExportFees";
 import {
-  AminoMsg,
   encodeSecp256k1Pubkey,
   makeSignDoc as makeSignDocAmino,
   OfflineAminoSigner,
@@ -166,20 +138,18 @@ import {
   makeAuthInfoBytes,
 } from "@cosmjs/proto-signing";
 import { SignMode } from "@cosmjs/proto-signing/build/codec/cosmos/tx/signing/v1beta1/signing";
-import { memoize } from "lodash";
 import {
   TxRaw,
   TxBody,
 } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
-import { isAminoMsgTransfer } from "@cosmjs/stargate/build/aminomsgs";
 import {
-  SifClient,
   SifUnSignedClient,
   Compatible42SigningCosmosClient,
 } from "../../services/utils/SifClient";
 import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
-import { Registry } from "generated/proto/sifnode/tokenregistry/v1/types";
+import { NativeAminoTypes } from "../../services/utils/SifClient/NativeAminoTypes";
+import { BroadcastTxResult } from "@cosmjs/launchpad";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -188,6 +158,8 @@ export interface IBCServiceContext {
   chainConfigsByNetwork: NetworkChainConfigLookup;
   sifUnsignedClient?: SifUnSignedClient;
 }
+
+type CustomOfflineSignerOutput = Promise<OfflineSigner & OfflineAminoSigner>;
 
 export class IBCService {
   tokenRegistry = TokenRegistryService(this.context);
@@ -419,7 +391,7 @@ export class IBCService {
       gasPerBatch = undefined,
       loadOfflineSigner = async (
         chainId: string,
-      ): Promise<OfflineSigner & OfflineAminoSigner> => {
+      ): CustomOfflineSignerOutput => {
         const keplr = await getKeplrProvider();
         const signer = await keplr!.getOfflineSigner(chainId);
         const keplrKey = await keplr!.getKey(chainId);
@@ -439,7 +411,7 @@ export class IBCService {
         return signer;
       },
     } = {},
-  ): Promise<BroadcastTxResponse[]> {
+  ): Promise<BroadcastTxResult[]> {
     const sourceChain = this.loadChainConfigByNetwork(params.sourceNetwork);
     const destinationChain = this.loadChainConfigByNetwork(
       params.destinationNetwork,
@@ -479,10 +451,7 @@ export class IBCService {
       {
         // we create amino additions, but these will not be used, because IBC types are already included & assigned
         // on top of the amino additions by default
-        aminoTypes: new NativeAminoTypes({
-          additions: createAminoAdditions(),
-          prefix: undefined,
-        }),
+        aminoTypes: new NativeAminoTypes(),
         gasLimits: {
           send: 80000,
           transfer: 250000,
@@ -500,10 +469,7 @@ export class IBCService {
       sourceChain.rpcUrl,
       sendingSigner,
       {
-        aminoTypes: new NativeAminoTypes({
-          additions: createAminoAdditions(),
-          prefix: undefined,
-        }),
+        aminoTypes: new NativeAminoTypes(),
         gasLimits: {
           send: 80000,
           transfer: 250000,
@@ -604,31 +570,31 @@ export class IBCService {
     const feeAmount = getChainsService()
       .get(params.destinationNetwork)
       .calculateTransferFeeToChain(params.assetAmountToTransfer);
-    if (feeAmount?.amount.greaterThan("0") && false) {
-      console.log("CHARGING FEE");
-      const feeEntry = registry.find(
-        (item) => item.baseDenom === feeAmount.asset.symbol,
-      );
-      if (!feeEntry) {
-        throw new Error(
-          "Failed to find whiteliste entry for fee symbol " +
-            feeAmount.asset.symbol,
-        );
-      }
-      const sendFeeMsg: MsgSendEncodeObject = {
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: {
-          fromAddress: fromAccount.address,
-          toAddress: IBC_EXPORT_FEE_ADDRESS,
-          amount: [
-            {
-              denom: feeEntry.denom,
-              amount: feeAmount.toBigInt().toString(),
-            },
-          ],
-        },
-      };
-      transferMsgs.unshift(sendFeeMsg);
+    if (false && feeAmount?.amount.greaterThan("0")) {
+      // console.log("CHARGING FEE");
+      // const feeEntry = registry.find(
+      //   (item) => item.baseDenom === feeAmount.asset.symbol,
+      // );
+      // if (!feeEntry) {
+      //   throw new Error(
+      //     "Failed to find whiteliste entry for fee symbol " +
+      //       feeAmount.asset.symbol,
+      //   );
+      // }
+      // const sendFeeMsg: MsgSendEncodeObject = {
+      //   typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+      //   value: {
+      //     fromAddress: fromAccount.address,
+      //     toAddress: IBC_EXPORT_FEE_ADDRESS,
+      //     amount: [
+      //       {
+      //         denom: feeEntry.denom,
+      //         amount: feeAmount.toBigInt().toString(),
+      //       },
+      //     ],
+      //   },
+      // };
+      // transferMsgs.unshift(sendFeeMsg);
     }
 
     const batches = [];
@@ -636,7 +602,7 @@ export class IBCService {
       batches.push(transferMsgs.splice(0, maxMsgsPerBatch));
     }
     console.log({ batches });
-    const responses: BroadcastTxResponse[] = [];
+    const responses: BroadcastTxResult[] = [];
     for (let batch of batches) {
       console.log("transfer msg count", batch.length);
 
@@ -663,10 +629,7 @@ export class IBCService {
         this.context.sifUnsignedClient;
         console.log("api url " + this.context.sifUnsignedClient?.apiUrl);
 
-        const aminoTypes = new AminoTypes({
-          additions: {},
-          prefix: undefined,
-        });
+        const aminoTypes = new NativeAminoTypes();
 
         const keplrSignAndSend = async () => {
           const signedMsg = await keplr?.signAmino(
@@ -732,7 +695,7 @@ export class IBCService {
             // },
           );
           console.log({ brdcstTxRes });
-          responses.push(brdcstTxRes);
+          // responses.push(brdcstTxRes);
         };
         const launchpadSignAndSend = async () => {
           console.log("launchpadSignAndSend");
@@ -748,93 +711,106 @@ export class IBCService {
             sendingSigner,
           );
 
-          // const launchpad = new SigningCosmosClient(
-          //   sourceChain.restUrl,
-          //   fromAccount.address,
-          //   // @ts-ignore
-          //   sendingSigner,
-          // );
           console.log({ sendingSigner });
-          const converter = new AminoTypes();
+          const converter = new NativeAminoTypes();
           const converted = batch.map(converter.toAmino.bind(converter));
-
-          // delete converted[0].value.timeout_timestamp;
-          converted[0].value.timeout_height = {
-            revision_number: ChainIdHelper.parse(
-              await receivingStargateCient.getChainId(),
-            ).version.toString() as string | undefined,
-            // Set the timeout height as the current height + 150.
-            revision_height: Long.fromNumber(
-              (await receivingStargateCient.getHeight()) + 150,
-            ).toString(),
-          };
-
+          console.log({ converted });
           const res = await launchpad.signAndBroadcast(converted, {
             ...sendingStargateClient.fees.transfer,
-            // amount: [
-            //   {
-            //     denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
-            //     amount:
-            //       sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
-            //       "",
-            //   },
-            // ],
-            // ...(externalGasPrices &&
-            // externalGasPrices[sourceChain.chainId || ""]
-            //   ? {
-            //       gas: externalGasPrices[sourceChain.chainId || ""],
-            //     }
-            //   : {}),
-            // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
           });
           console.log({ res });
         };
         const customSignAndSendAmino = async () => {
           const t34 = await Tendermint34Client.connect(sourceChain.rpcUrl);
           const client = new NativeSigningClient(t34, sendingSigner, {
-            registry: NativeDexClient!.getNativeRegistry(),
+            registry: NativeDexClient.getNativeRegistry(),
           });
-          const txRaw = await client.sign(
+          // const txRaw = await client.sign(
+          //   fromAccount.address,
+          //   batch,
+          //   sendingStargateClient.fees.transfer,
+          //   "",
+          // );
+          // const sig = TxRaw.encode(txRaw).finish();
+
+          const sig = await client.signWMeta(
             fromAccount.address,
             batch,
-            sendingStargateClient.fees.transfer,
+            {
+              ...sendingStargateClient.fees.transfer,
+              amount: sendingStargateClient.fees.transfer.amount.map((amt) => ({
+                ...amt,
+                denom:
+                  sourceChain.keplrChainInfo.feeCurrencies[0].coinMinimalDenom,
+              })),
+            },
             "",
+            {
+              chainId,
+              accountNumber: sequence.accountNumber,
+              sequence: sequence.sequence,
+            },
           );
-          const sig = TxRaw.encode(txRaw).finish();
-
-          //           const sig = await client.signWMeta(
-          //             fromAccount.address,
-          //             batch,
-          //             sendingStargateClient.fees.transfer,
-          //             "",
-          //             {
-          //               chainId,
-          //               accountNumber: sequence.accountNumber,
-          //               sequence: sequence.sequence,
-          //             },
-          //           );
           console.log("waiting...");
           await new Promise((r) => setTimeout(r, 5 * 1000));
           console.log("go!");
           const res = await client.broadcastTx(sig);
           console.log({ res });
         };
+        const nativeDexClientSignAndSend = async () => {
+          const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
+          const client = await NativeDexClient.connect(
+            sifConfig.rpcUrl,
+            sifConfig.restUrl,
+            sifConfig.chainId,
+          );
+          const txDraft = client.tx.ibc.Transfer(
+            {
+              sender: fromAccount.address,
+              receiver: toAccount.address,
+              sourcePort: "transfer",
+              sourceChannel: channelId || "",
+              timeoutTimestamp: (undefined as unknown) as Long,
+              token: {
+                denom: transferDenom,
+                amount: params.assetAmountToTransfer.toBigInt().toString(),
+              },
+              timeoutHeight,
+            },
+            fromAccount.address,
+          );
+
+          const signedTx = await client.sign(txDraft, sendingSigner, {
+            sendingChainRestUrl: sourceChain.restUrl,
+            sendingChainRpcUrl: sourceChain.rpcUrl,
+          });
+          const sentTx = await client.broadcast(signedTx, {
+            sendingChainRpcUrl: sourceChain.rpcUrl,
+            sendingChainRestUrl: sourceChain.restUrl,
+          });
+          responses.push(sentTx);
+        };
+        await nativeDexClientSignAndSend();
         // keplrSignAndSend();
-        stargateSignAndSend();
+        // stargateSignAndSend();
         // launchpadSignAndSend();
         // customSignAndSendAmino();
-      } catch (e) {
-        console.error(e);
-        responses.push({
-          code:
-            +e.message.split("code ").pop().split(" ")[0] || 100000000000000000,
-          log: e.message,
-          rawLog: e.message,
-          transactionHash: "invalidtx",
-          hash: new Uint8Array(),
-          events: [],
-          height: -1,
-        } as BroadcastTxResponse);
+      } catch (err) {
+        console.error(err);
+        const e = err as {
+          message: string;
+        };
+        // responses.push({
+        //   code:
+        //     +(e?.message?.split("code ")?.pop()?.split(" ")?.[0] || "") ||
+        //     100000000000000000,
+        //   log: e.message,
+        //   rawLog: e.message,
+        //   transactionHash: "invalidtx",
+        //   hash: new Uint8Array(),
+        //   events: [],
+        //   height: -1,
+        // } as BroadcastTxResponse);
       }
     }
     console.log({ responses });
@@ -845,87 +821,6 @@ export class IBCService {
 export default function createIBCService(context: IBCServiceContext) {
   return IBCService.create(context);
 }
-
-const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
-  if (typeUrl.startsWith("/ibc")) {
-    return typeUrl
-      .split(".")
-      .filter(Boolean)
-      .filter((part) => {
-        return !/applications|v1|transfer/.test(part);
-      })
-      .map((part) => {
-        if (part === "/ibc") return "cosmos-sdk";
-        return part;
-      })
-      .join("/");
-  }
-  const [_namespace, cosmosModule, _version, messageType] = typeUrl.split(".");
-
-  return `${cosmosModule}/${messageType}`;
-};
-
-const convertToSnakeCaseDeep = (obj: any): any => {
-  if (typeof obj !== "object") {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map((item) => convertToSnakeCaseDeep(item));
-  }
-  const newObj: any = {};
-  for (let prop in obj) {
-    newObj[inflection.underscore(prop)] = convertToSnakeCaseDeep(obj[prop]);
-  }
-  return newObj;
-};
-
-const convertToCamelCaseDeep = (obj: any): any => {
-  if (typeof obj !== "object") {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map((item) => convertToCamelCaseDeep(item));
-  }
-  const newObj: any = {};
-  for (let prop in obj) {
-    newObj[inflection.underscore(prop)] = convertToCamelCaseDeep(obj[prop]);
-  }
-  return newObj;
-};
-
-const createAminoAdditions = (): Record<string, AminoConverter> => {
-  /* 
-
-    export const liquidityTypes = {
-      '/tendermint.liquidity.v1beta1.MsgCreatePool': {
-        aminoType: 'liquidity/MsgCreatePool',
-        toAmino: ({ poolCreatorAddress, poolTypeId, depositCoins }: MsgCreatePool): AminoMsgCreatePool['value'] => ({
-          pool_creator_address: poolCreatorAddress,
-          pool_type_id: poolTypeId,
-          deposit_coins: [...depositCoins],
-        }),
-        fromAmino: ({ pool_creator_address, pool_type_id, deposit_coins }: AminoMsgCreatePool['value']): MsgCreatePool => ({
-          poolCreatorAddress: pool_creator_address,
-          poolTypeId: pool_type_id,
-          depositCoins: [...deposit_coins],
-        }),
-      }
-    };
-
-  */
-  const aminoAdditions: Record<string, AminoConverter> = {};
-  const protogens = NativeDexClient.getGeneratedTypes();
-  for (let [typeUrl, _genType] of protogens) {
-    // if (!typeUrl.includes("sifnode")) continue;
-    aminoAdditions[typeUrl] = {
-      aminoType: createAminoTypeNameFromProtoTypeUrl(typeUrl),
-      toAmino: (value: any): AminoMsg => convertToSnakeCaseDeep(value),
-      fromAmino: (value: AminoMsg): any => convertToCamelCaseDeep(value),
-    };
-  }
-  console.log({ aminoAdditions });
-  return aminoAdditions;
-};
 
 interface NativeSigning {
   sendingSigner: OfflineAminoSigner;
@@ -962,10 +857,7 @@ class NativeSigningClient
       throw new Error("Failed to retrieve account from signer");
     }
 
-    const aminoTypes = new AminoTypes({
-      additions: {},
-      prefix: undefined,
-    });
+    const aminoTypes = new NativeAminoTypes();
     // @ts-ignore
     console.log(aminoTypes.register);
     const pubkey = encodePubkey(
@@ -983,6 +875,7 @@ class NativeSigningClient
       accountNumber,
       sequence,
     );
+
     const { signature, signed } = await this.sendingSigner.signAmino(
       signerAddress,
       signDoc,

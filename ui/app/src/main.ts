@@ -3,8 +3,8 @@ import App from "./App.vue";
 import router from "./router";
 import "./scss/index.css";
 import { rootStore, vuexStore } from "./store/index";
-import * as Sentry from "@sentry/vue";
-import { Integrations } from "@sentry/tracing";
+// import * as Sentry from "@sentry/vue";
+// import { Integrations } from "@sentry/tracing";
 
 const app = createApp(App);
 

@@ -13,7 +13,7 @@ import {
   IBCInterchainTx,
 } from "./_InterchainApi";
 import { SifchainChain, CosmoshubChain } from "../../services/ChainsService";
-import { isBroadcastTxFailure } from "@cosmjs/stargate";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
 import { findAttribute, parseRawLog, Log } from "@cosmjs/stargate/build/logs";
 import { createIteratorSubject } from "../../utils/iteratorSubject";
 
