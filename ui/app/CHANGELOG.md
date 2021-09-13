@@ -1,8 +1,8 @@
 ## Release 2021.09.13
 * We added 'Your Pool Value' to the Pool page. This shows your the current value you have in that pool in USDT if you were to withdraw your liquidity in a 50/50 split among both assets in that pool.
 * Swap: We are now showing the price of the swap in both directions within the swap modal.
-* Prices are automatically updated in the Swap Modal every 10 seconds
-* Upgraded performance on the Pool page
+* Prices are automatically updated in the Swap Modal every 10 seconds.
+* Upgraded performance on the Pool page.
 * Fixed a bug where users would click on 'max' during add liqudity and they would get an insufficent funds message.
 
 ## Release 2021.09.10
