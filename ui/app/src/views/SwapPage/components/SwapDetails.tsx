@@ -38,7 +38,7 @@ export const SwapDetails = defineComponent({
           class={`
           h-[49px] w-full flex justify-center items-center box-border
           bg-gray-base border-gray-input_outline
-          border-[1px] border-b-[1px] border-solid rounded-[6px] rounded-br-none rounded-bl-none
+          border-[1px] border-b-[1px] border-t-0 border-solid 
         `}
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium">
