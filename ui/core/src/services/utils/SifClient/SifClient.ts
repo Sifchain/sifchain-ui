@@ -14,6 +14,44 @@ import {
 import { fromHex } from "@cosmjs/encoding";
 import { Uint53 } from "@cosmjs/math";
 import { SifUnSignedClient } from "./SifUnsignedClient";
+import { CosmosClient } from "@cosmjs/launchpad";
+
+export class Compatible42CosmosClient extends CosmosClient {
+  // NOTE(59023g): in 0.42, the result.logs array items do not include `msg_index` and
+  // `log` so we hardcode these values. It does assume logs array length is always 1
+  async broadcastTx(tx: StdTx): Promise<BroadcastTxResult> {
+    console.log({ tx });
+    const result: any = await this.lcdClient.post("/cosmos/tx/v1beta1/txs", {
+      tx_bytes: tx,
+      mode: 1,
+    });
+    console.log({ result });
+    if (!result.txhash?.match(/^([0-9A-F][0-9A-F])+$/)) {
+      console.error("INVALID TXHASH IN RESULT", result);
+      throw new Error(
+        "Received ill-formatted txhash. Must be non-empty upper-case hex",
+      );
+    }
+    result.logs = result.logs || [];
+    result.logs[0] = result.logs[0] || {};
+    result.logs[0].msg_index = 0;
+    result.logs[0].log = "";
+
+    return result.code !== undefined
+      ? {
+          height: Uint53.fromString(result.height).toNumber(),
+          transactionHash: result.txhash,
+          code: result.code,
+          rawLog: result.raw_log || "",
+        }
+      : {
+          logs: result.logs ? logs.parseLogs(result.logs) : [],
+          rawLog: result.raw_log || "",
+          transactionHash: result.txhash,
+          data: result.data ? fromHex(result.data) : undefined,
+        };
+  }
+}
 
 export class Compatible42SigningCosmosClient extends SigningCosmosClient {
   constructor(

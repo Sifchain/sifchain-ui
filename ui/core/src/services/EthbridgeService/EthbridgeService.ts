@@ -159,7 +159,6 @@ export default function createEthbridgeService({
       // This will popup an approval request in metamask
       const web3 = await ensureWeb3();
       const tokenContract = await getTokenContract(web3, amount.asset.address!);
-      debugger;
 
       const sendArgs = {
         from: account,

@@ -21,7 +21,9 @@ export class NativeAminoTypes extends AminoTypes {
         value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
         const converted = originalToAmino(value);
         delete converted.timeout_timestamp;
-        console.log("After converted", JSON.stringify(converted, null, 2));
+        if (converted.timeout_height.revision_number == "0") {
+          delete converted.timeout_height.revision_number;
+        }
         return converted;
       };
     }
@@ -42,9 +44,20 @@ const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
       })
       .join("/");
   }
+  if (typeUrl.includes("sifnode")) {
+    typeUrl = typeUrl.replace("Msg", "");
+  }
   const [_namespace, cosmosModule, _version, messageType] = typeUrl.split(".");
 
-  return `${cosmosModule}/${messageType}`;
+  const aminoTypeUrl = `${cosmosModule}/${messageType}`;
+  switch (aminoTypeUrl) {
+    case "dispensation/CreateUserClaim": {
+      return "dispensation/claim";
+    }
+    default: {
+      return aminoTypeUrl;
+    }
+  }
 };
 
 const convertToSnakeCaseDeep = (obj: any): any => {
@@ -105,6 +118,5 @@ const createAminoAdditions = (): Record<string, AminoConverter> => {
       fromAmino: (value: AminoMsg): any => convertToCamelCaseDeep(value),
     };
   }
-  console.log({ aminoAdditions });
   return aminoAdditions;
 };

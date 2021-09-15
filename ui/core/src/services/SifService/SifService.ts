@@ -23,7 +23,7 @@ import getKeplrProvider from "./getKeplrProvider";
 import { KeplrChainConfig } from "../../utils/parseConfig";
 import { parseTxFailure } from "./parseTxFailure";
 import { debounce } from "../../utils/debounce";
-import { NativeDexClient } from "services/utils/SifClient/NativeDexClient";
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;

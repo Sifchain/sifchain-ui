@@ -29,12 +29,20 @@ export function IBCTransferSubscriber(context: UsecaseContext) {
       "send_packet",
       "packet_timeout_timestamp",
     );
+    const timeoutHeight = findAttribute(
+      logs,
+      "send_packet",
+      "packet_timeout_timestamp",
+    );
+
     const timeoutTimestampMs =
-      BigInt(timeoutTimestampNanoseconds.value as string) / BigInt(1000000);
+      +(
+        BigInt(timeoutTimestampNanoseconds.value as string) / BigInt(1000000)
+      ).toString() || Date.now() + 60 * 60 * 1000;
 
     while (true) {
       await new Promise((r) => setTimeout(r, 2500 + Math.random() * 2500));
-      if (+timeoutTimestampMs.toString() < Date.now()) {
+      if (timeoutTimestampMs < Date.now()) {
         yield {
           state: "failed",
           hash: tx.hash,

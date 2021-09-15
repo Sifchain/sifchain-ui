@@ -8,6 +8,7 @@ import {
   SignerData,
   isAminoMsgDelegate,
   AminoConverter,
+  SigningStargateClientOptions,
 } from "@cosmjs/stargate";
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
@@ -41,7 +42,7 @@ import {
   OfflineAminoSigner,
   StdFee,
 } from "@cosmjs/amino";
-import { fromBase64 } from "@cosmjs/encoding";
+import { fromBase64, toBase64, toUtf8 } from "@cosmjs/encoding";
 import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
@@ -52,16 +53,19 @@ import { SignMode } from "@cosmjs/proto-signing/build/codec/cosmos/tx/signing/v1
 import {
   TxRaw,
   TxBody,
+  AuthInfo,
 } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 import {
   SifUnSignedClient,
   Compatible42SigningCosmosClient,
+  Compatible42CosmosClient,
 } from "../../services/utils/SifClient";
 import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
 import { NativeAminoTypes } from "../../services/utils/SifClient/NativeAminoTypes";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { ChainIdHelper } from "./IBCService-ledger-implementations";
+import { NativeDexTransaction } from "../../services/utils/SifClient/NativeDexTransaction";
 
 const getTransferTimeoutData = async (
   receivingStargateClient: StargateClient,
@@ -430,9 +434,16 @@ export class IBCService {
         params.assetAmountToTransfer.asset.ibcDenom || transferTokenEntry.denom;
     }
 
-    const transferMsg: MsgTransferEncodeObject = {
-      typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-      value: IbcTransferV1Tx.MsgTransfer.fromPartial({
+    const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
+    const client = await NativeDexClient.connect(
+      sifConfig.rpcUrl,
+      sifConfig.restUrl,
+      sifConfig.chainId,
+    );
+    if (!channelId) throw new Error("Channel id not found");
+
+    let encodeMsgs: EncodeObject[] = [
+      client.tx.ibc.Transfer.createRawEncodeObject({
         sourcePort: "transfer",
         sourceChannel: channelId,
         sender: fromAccount.address,
@@ -443,9 +454,8 @@ export class IBCService {
         },
         timeoutHeight: timeoutHeight,
       }),
-    };
+    ];
 
-    let encodeMsgs: MsgTransferEncodeObject[] = [transferMsg];
     while (
       shouldBatchTransfers &&
       JSBI.greaterThanOrEqual(
@@ -471,53 +481,43 @@ export class IBCService {
       });
     }
 
-    const transferMsgs: Array<MsgTransferEncodeObject | MsgSendEncodeObject> = [
-      ...encodeMsgs,
-    ];
-
     const feeAmount = getChainsService()
       .get(params.destinationNetwork)
       .calculateTransferFeeToChain(params.assetAmountToTransfer);
-    if (false && feeAmount?.amount.greaterThan("0")) {
-      // console.log("CHARGING FEE");
-      // const feeEntry = registry.find(
-      //   (item) => item.baseDenom === feeAmount.asset.symbol,
-      // );
-      // if (!feeEntry) {
-      //   throw new Error(
-      //     "Failed to find whiteliste entry for fee symbol " +
-      //       feeAmount.asset.symbol,
-      //   );
-      // }
-      // const sendFeeMsg: MsgSendEncodeObject = {
-      //   typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-      //   value: {
-      //     fromAddress: fromAccount.address,
-      //     toAddress: IBC_EXPORT_FEE_ADDRESS,
-      //     amount: [
-      //       {
-      //         denom: feeEntry.denom,
-      //         amount: feeAmount.toBigInt().toString(),
-      //       },
-      //     ],
-      //   },
-      // };
-      // transferMsgs.unshift(sendFeeMsg);
+
+    if (feeAmount?.amount.greaterThan("0")) {
+      console.log("CHARGING FEE");
+      const feeEntry = registry.find(
+        (item) => item.baseDenom === feeAmount.asset.symbol,
+      );
+      if (!feeEntry) {
+        throw new Error(
+          "Failed to find whiteliste entry for fee symbol " +
+            feeAmount.asset.symbol,
+        );
+      }
+      const sendFeeMsg = client.tx.bank.Send.createRawEncodeObject({
+        fromAddress: fromAccount.address,
+        toAddress: IBC_EXPORT_FEE_ADDRESS,
+        amount: [
+          {
+            denom: feeEntry.denom,
+            amount: feeAmount.toBigInt().toString(),
+          },
+        ],
+      });
+      // encodeMsgs.unshift(sendFeeMsg);
     }
 
     const batches = [];
-    while (transferMsgs.length) {
-      batches.push(transferMsgs.splice(0, maxMsgsPerBatch));
+    while (encodeMsgs.length) {
+      batches.push(encodeMsgs.splice(0, maxMsgsPerBatch));
     }
     console.log({ batches });
     const responses: BroadcastTxResult[] = [];
     for (let batch of batches) {
       console.log("transfer msg count", batch.length);
-
       try {
-        // const gasPerMessage = 39437;
-        // const gasPerMessage = 39437;
-        // console.log(JSON.(batch));
         let externalGasPrices: any = {};
         try {
           externalGasPrices = await fetch(
@@ -527,32 +527,58 @@ export class IBCService {
             .catch((e) => {});
         } catch (e) {}
 
-        const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
-        const client = await NativeDexClient.connect(
-          sifConfig.rpcUrl,
-          sifConfig.restUrl,
-          sifConfig.chainId,
-        );
-        const txDraft = client.tx.ibc.Transfer(
-          {
-            sender: fromAccount.address,
-            receiver: toAccount.address,
-            sourcePort: "transfer",
-            sourceChannel: channelId || "",
-            timeoutTimestamp: (undefined as unknown) as Long,
-            token: {
-              denom: transferDenom,
-              amount: params.assetAmountToTransfer.toBigInt().toString(),
-            },
-            timeoutHeight,
+        const txDraft = new NativeDexTransaction(fromAccount.address, batch, {
+          price: {
+            denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom,
+            amount:
+              sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+              NativeDexClient.feeTable.transfer.amount[0].amount,
           },
-          fromAccount.address,
-        );
+          gas:
+            externalGasPrices[sourceChain.chainId] ||
+            NativeDexClient.feeTable.transfer.gas,
+        });
 
         const signedTx = await client.sign(txDraft, sendingSigner, {
           sendingChainRestUrl: sourceChain.restUrl,
           sendingChainRpcUrl: sourceChain.rpcUrl,
         });
+
+        // const t34 = await Tendermint34Client.connect(sourceChain.rpcUrl);
+        // const nClient = new NativeSigningClient(t34, sendingSigner, {
+        //   registry: NativeDexClient.getNativeRegistry(),
+        // });
+
+        // const seq = await nClient.getSequence(fromAccount.address);
+        // const sig = await nClient.signWMeta(
+        //   fromAccount.address,
+        //   batch,
+        //   {
+        //     ...nClient.fees.transfer,
+        //     amount: nClient.fees.transfer.amount.map((amt) => ({
+        //       ...amt,
+        //       denom:
+        //         sourceChain.keplrChainInfo.feeCurrencies[0].coinMinimalDenom,
+        //     })),
+        //   },
+        //   "",
+        //   {
+        //     chainId: await nClient.getChainId(),
+        //     accountNumber: +seq.accountNumber,
+        //     sequence: +seq.sequence,
+        //   },
+        // );
+        console.log("waiting...");
+        // await new Promise((r) => setTimeout(r, 5 * 1000));
+        console.log("go!");
+
+        // const res1 = await new Compatible42CosmosClient(
+        //   sourceChain.restUrl,
+        // ).broadcastTx(Buffer.from(sig, "binary").toString("base64"));
+        // console.log({ res1 });
+        // const res = await nClient.broadcastTx(sig);
+        // console.log({ res });
+        console.log({ Network });
         const sentTx = await client.broadcast(signedTx, {
           sendingChainRpcUrl: sourceChain.rpcUrl,
           sendingChainRestUrl: sourceChain.restUrl,
@@ -602,9 +628,13 @@ class NativeSigningClient
   extends SigningStargateClient
   implements NativeSigning {
   sendingSigner: OfflineAminoSigner;
-  constructor(...args: any[]) {
-    super(args[0], args[1], args[2]);
-    this.sendingSigner = args[1];
+  constructor(
+    tmClient: Tendermint34Client | undefined,
+    signer: OfflineSigner,
+    options: SigningStargateClientOptions,
+  ) {
+    super(tmClient, signer, options);
+    this.sendingSigner = signer as OfflineAminoSigner;
   }
   async signWMeta(
     signerAddress: string,

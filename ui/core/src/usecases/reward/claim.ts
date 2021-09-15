@@ -7,16 +7,18 @@ import { coins, isBroadcastTxFailure } from "@cosmjs/stargate";
 import { parseTxFailure } from "../../services/SifService/parseTxFailure";
 import { MsgCreateUserClaim } from "../../generated/proto/sifnode/dispensation/v1/tx";
 import { TransactionStatus } from "../../entities/Transaction";
+import { Network } from "../../entities";
 type PickDispensation = Pick<Services["dispensation"], "claim">;
-type PickSif = Pick<Services["sif"], "signAndBroadcast" | "unSignedClient">;
+type PickSif = Services["sif"];
 
 export type ClaimArgs = {
   dispensation: PickDispensation;
   sif: PickSif;
+  chains: Services["chains"];
 };
 type RewardProgramName = "COSMOS_IBC_REWARDS_V1";
 
-export function Claim({ dispensation, sif }: ClaimArgs) {
+export function Claim({ dispensation, sif, chains }: ClaimArgs) {
   return async ({
     rewardProgramName,
     ...params
@@ -27,45 +29,24 @@ export function Claim({ dispensation, sif }: ClaimArgs) {
   }): Promise<TransactionStatus> => {
     if (!params) throw "You forgot claimType and fromAddress";
     const memo = `program=${rewardProgramName}`;
-    const client = await NativeDexClient.connect(
-      sif.unSignedClient.rpcUrl,
-      sif.unSignedClient.apiUrl,
-      await sif.unSignedClient.getChainId(),
-    );
     const keplrProvider = await getKeplrProvider();
     if (!keplrProvider) throw new Error("keplr not enabled");
-    const signingClient = client.createSigningClient(
-      keplrProvider.getOfflineSigner(await sif.unSignedClient.getChainId()),
-    );
-    // Blocked on internal error: https://api-testnet.sifchain.finance/cosmos/tx/v1beta1/txs/BE47BBEC27D55CE100E9E72A8EE361A41CA4628BBFE341691D3A3C5F78A34C37
-    const tx = await (await signingClient).signAndBroadcast(
-      params.fromAddress,
-      [
-        {
-          typeUrl: `/sifnode.dispensation.v1.MsgCreateUserClaim`,
-          value: {
-            userClaimAddress: params.fromAddress,
-            userClaimType: params.claimType,
-          } as MsgCreateUserClaim,
-        },
-      ],
+    const client = await sif.loadNativeDexClient();
+    const tx = client.tx.dispensation.CreateUserClaim(
       {
-        // Keplr overwrites this in app but for unit/integration tests where we
-        // dont connect to keplr we need to specify an amount of rowan to pay for the fee.
-        amount: coins(250000, "rowan"),
-        gas: "500000", // TODO - see if "auto" setting
+        userClaimAddress: params.fromAddress,
+        userClaimType: params.claimType,
       },
+      sif.getState().address,
+      undefined,
       memo,
     );
-    if (isBroadcastTxFailure(tx)) {
-      return parseTxFailure(tx);
-    }
-    return {
-      hash: tx.transactionHash,
-      state: "completed",
-    };
-    // const tx = await dispensation.claim(params);
-    // return await sif.signAndBroadcast(tx.value.msg);
-    // console.log(tx);
+    const signer = await keplrProvider.getOfflineSigner(
+      chains.get(Network.SIFCHAIN).chainConfig.chainId,
+    );
+    const signed = await client.sign(tx, signer);
+    const sent = await client.broadcast(signed);
+    const parsed = client.parseTxResult(sent);
+    return parsed;
   };
 }

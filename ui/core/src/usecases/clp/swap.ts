@@ -11,7 +11,7 @@ import {
 } from "../../entities";
 import { Services } from "../../services";
 import { ReportTransactionError } from "../utils";
-import getKeplrProvider from "services/SifService/getKeplrProvider";
+import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
 type PickSif = Pick<Services["sif"], "getState">;
@@ -31,6 +31,7 @@ export function Swap({ bus, sif, clp, ibc, tokenRegistry }: SwapArgs) {
     const state = sif.getState();
     if (!state.address) throw new Error("No from address provided for swap");
     const client = await sif.loadNativeDexClient();
+
     const tx = client.tx.clp.Swap(
       {
         sentAsset: {

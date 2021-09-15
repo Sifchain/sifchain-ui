@@ -9,11 +9,14 @@ import { Store } from "../../store";
 import { PoolStore } from "../../store/pools";
 import { ReportTransactionError } from "../utils";
 import { createPoolKey } from "../../utils";
-import { NativeDexClient } from "services/utils/SifClient/NativeDexClient";
-import getKeplrProvider from "services/SifService/getKeplrProvider";
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
+import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
-type PickSif = Services["sif"];
+type PickSif = Pick<
+  Services["sif"],
+  "getState" | "signAndBroadcast" | "unSignedClient"
+>;
 type PickClp = Pick<Services["clp"], "addLiquidity" | "createPool">;
 
 function findPool(
@@ -30,20 +33,23 @@ type AddLiquidityServices = {
   clp: PickClp;
   ibc: Services["ibc"];
   tokenRegistry: Services["tokenRegistry"];
-  chains: Services["chains"];
 };
 
 type AddLiquidityStore = Pick<Store, "pools">;
 
 export function AddLiquidity(
-  { bus, clp, sif, ibc, tokenRegistry, chains }: AddLiquidityServices,
+  { bus, clp, sif, ibc, tokenRegistry }: AddLiquidityServices,
   store: AddLiquidityStore,
 ) {
   return async (
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
   ) => {
-    const client = await sif.loadNativeDexClient();
+    const client = await NativeDexClient.connect(
+      sif.unSignedClient.rpcUrl,
+      sif.unSignedClient.apiUrl,
+      await sif.unSignedClient.getChainId(),
+    );
     const keplr = await getKeplrProvider();
     const signer = await keplr!.getOfflineSigner(
       await sif.unSignedClient.getChainId(),
@@ -52,16 +58,16 @@ export function AddLiquidity(
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
       externalAssetAmount.asset,
     );
-
-    const reportTransactionError = ReportTransactionError(bus);
-    const state = sif.getState();
-    if (!state.address) throw "No from address provided for swap";
     const hasPool = !!findPool(
       store.pools,
       nativeAssetAmount.asset.symbol,
       externalAssetAmount.asset.symbol,
     );
-    const txDraft = hasPool
+    const reportTransactionError = ReportTransactionError(bus);
+    const state = sif.getState();
+    if (!state.address) throw "No from address provided for swap";
+
+    const txDraft = (await hasPool)
       ? await client.tx.clp.AddLiquidity(
           {
             externalAsset: {
@@ -87,8 +93,7 @@ export function AddLiquidity(
 
     const signedTx = await client.sign(txDraft, signer);
     const sentTx = await client.broadcast(signedTx);
-    const txStatus = await NativeDexClient.parseTxResult(sentTx);
-
+    const txStatus = client.parseTxResult(sentTx);
     if (txStatus.state !== "accepted") {
       // Edge case where we have run out of native balance and need to represent that
       if (txStatus.code === ErrorCode.TX_FAILED_USER_NOT_ENOUGH_BALANCE) {

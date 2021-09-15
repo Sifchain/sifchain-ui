@@ -7,12 +7,14 @@ import * as DispensationV1Tx from "../../../generated/proto/sifnode/dispensation
 import * as EthbridgeV1Query from "../../../generated/proto/sifnode/ethbridge/v1/query";
 import * as EthbridgeV1Tx from "../../../generated/proto/sifnode/ethbridge/v1/tx";
 import * as IBCTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
+import * as CosmosBankV1Query from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/query";
 import * as CosmosBankV1Tx from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import {
   makeSignDoc as makeSignDocAmino,
   OfflineAminoSigner,
 } from "@cosmjs/amino";
+import { fromUtf8, toHex, fromHex } from "@cosmjs/encoding";
 import {
   buildFeeTable,
   defaultGasLimits,
@@ -41,15 +43,24 @@ import {
   NativeDexTransaction,
   NativeDexTransactionFee,
 } from "./NativeDexTransaction";
-import { makeStdTx } from "@cosmjs/launchpad";
+import {
+  makeStdTx,
+  isBroadcastTxSuccess,
+  isBroadcastTxFailure,
+} from "@cosmjs/launchpad";
 import { CosmosClient } from "@cosmjs/launchpad";
 import {
   BroadcastTxResult,
   OfflineSigner as OfflineLaunchpadSigner,
 } from "@cosmjs/launchpad";
-import { parseTxFailure } from "services/SifService/parseTxFailure";
-import { isBroadcastTxFailure } from "@cosmjs/launchpad";
-import { TransactionStatus } from "index";
+import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
+import { TransactionStatus } from "../../../";
+import { Compatible42CosmosClient, Compatible42SigningCosmosClient } from ".";
+import getKeplrProvider from "../../../services/SifService/getKeplrProvider";
+import { makeSignDoc } from "@cosmjs/launchpad";
+import { BroadcastMode } from "@cosmjs/launchpad";
+import { Uint53 } from "@cosmjs/math";
+import { parseLogs } from "@cosmjs/stargate/build/logs";
 
 type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;
 type TxGroup =
@@ -79,7 +90,20 @@ type DeepReadonly<T> = T extends object
   ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>
   : Readonly<T>;
 export class NativeDexClient {
-  static feeTable = buildFeeTable(defaultGasPrice, defaultGasLimits, {});
+  static feeTable = buildFeeTable(
+    defaultGasPrice,
+    {
+      send: 80000,
+      transfer: 250000,
+      delegate: 250000,
+      undelegate: 250000,
+      redelegate: 250000,
+      // The gas multiplication per rewards.
+      withdrawRewards: 140000,
+      govVote: 250000,
+    },
+    {},
+  );
   protected constructor(
     private readonly rpcUrl: string,
     private readonly restUrl: string,
@@ -114,6 +138,7 @@ export class NativeDexClient {
       ...this.createCustomTypesForModule(DispensationV1Tx),
       ...this.createCustomTypesForModule(CLPV1Tx),
       ...this.createCustomTypesForModule(TokenRegistryV1Tx),
+      ...this.createCustomTypesForModule(CosmosBankV1Tx),
     ];
   }
 
@@ -209,35 +234,42 @@ export class NativeDexClient {
       sendingChainRpcUrl = this.rpcUrl,
     } = {},
   ) {
-    this.createSigningClient(signer);
     const cosmosClient = await StargateClient.connect(sendingChainRpcUrl);
-    const { accountNumber, sequence } = await cosmosClient.getSequence(
-      tx.fromAddress,
-    );
-    console.log(tx);
     // debugger;
     const msgs = this.convertEncodeMsgsToAminos(tx.msgs);
+
     const chainId = await cosmosClient.getChainId();
     const fee = {
       amount: [tx.fee.price],
       gas: tx.fee.gas,
     };
-    const signDoc = makeSignDocAmino(
+    const account = await cosmosClient.getAccount(tx.fromAddress || "");
+    if (
+      typeof account?.accountNumber !== "number" &&
+      typeof account?.sequence === "number"
+    ) {
+      throw new Error(
+        `This account (${tx.fromAddress}) does not yet exist on-chain. Please send some funds to it before proceeding.`,
+      );
+    }
+    const keplr = await getKeplrProvider();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const signDoc = makeSignDoc(
       msgs,
       fee,
       chainId,
-      tx.memo,
-      accountNumber,
-      sequence,
+      tx.memo || "",
+      account?.accountNumber.toString() || "",
+      account?.sequence.toString() || "",
     );
-
-    const { signed, signature } = await signer.signAmino(
-      tx.fromAddress,
+    const key = await keplr?.getKey(chainId);
+    let bech32Address = key?.bech32Address;
+    const signResponse = await keplr!.signAmino(
+      chainId,
+      bech32Address || "",
       signDoc,
     );
-    console.log(signed, signature);
-    const signedTx = makeStdTx(signed, signature);
-    console.log(signedTx);
+    const signedTx = makeStdTx(signResponse.signed, signResponse.signature);
     return new NativeDexSignedTransaction(tx, signedTx);
   }
   /**
@@ -272,10 +304,49 @@ export class NativeDexClient {
       sendingChainRpcUrl = this.rpcUrl,
     } = {},
   ): Promise<BroadcastTxResult> {
-    const launchpad = new CosmosClient(sendingChainRestUrl);
-    const res = await launchpad.broadcastTx(tx.signed);
-    console.log({ res });
-    return res;
+    const stargate = await StargateClient.connect(sendingChainRpcUrl);
+    const keplr = await getKeplrProvider();
+    const chainId = await stargate.getChainId();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const txHashUInt8Array = await keplr!.sendTx(
+      chainId,
+      tx.signed,
+      BroadcastMode.Block,
+    );
+    const txHashHex = toHex(txHashUInt8Array).toUpperCase();
+    const resultRaw = await stargate.getTx(txHashHex);
+    if (!resultRaw || !resultRaw.hash?.match(/^([0-9A-F][0-9A-F])+$/)) {
+      console.error("INVALID TXHASH IN RESULT", resultRaw);
+      throw new Error(
+        "Received ill-formatted txhash. Must be non-empty upper-case hex",
+      );
+    }
+    const result: BroadcastTxResult = {
+      ...resultRaw,
+      logs: JSON.parse(resultRaw.rawLog),
+      height: resultRaw.height,
+      transactionHash: resultRaw.hash,
+    };
+    if (isBroadcastTxSuccess(result)) {
+      // @ts-ignore
+      result.logs[0].msg_index = 0;
+      // @ts-ignore
+      result.logs[0].log = "";
+    }
+
+    return isBroadcastTxFailure(result)
+      ? {
+          height: Uint53.fromString(result.height + "").toNumber(),
+          transactionHash: result.transactionHash,
+          code: result.code,
+          rawLog: result.rawLog || "",
+        }
+      : {
+          logs: result.logs ? parseLogs(result.logs) : [],
+          rawLog: result.rawLog || "",
+          transactionHash: result.transactionHash,
+          data: result.data,
+        };
   }
 
   /**
@@ -287,17 +358,28 @@ export class NativeDexClient {
    */
   static createTxClient() {
     // Takes msg client impl & keeps the first argument, then adds a couple more
+
+    // Including timeoutTimestamp during amino conversion is problematic
+    type RemoveTimeoutTimestamp<T> = Omit<T, "timeoutTimestamp">;
     type ExtractMethodInvokationType<T> = T extends (...args: any[]) => any
-      ? (
-          arg: Parameters<T>[0],
+      ? ((
+          arg: RemoveTimeoutTimestamp<Parameters<T>[0]>,
           senderAddress: string,
           fee?: NativeDexTransactionFee,
+          memo?: string,
         ) => DeepReadonly<
           NativeDexTransaction<{
             typeUrl: string;
-            value: Parameters<T>[0];
+            value: RemoveTimeoutTimestamp<Parameters<T>[0]>;
           }>
-        >
+        >) & {
+          createRawEncodeObject: (
+            arg: RemoveTimeoutTimestamp<Parameters<T>[0]>,
+          ) => {
+            typeUrl: string;
+            value: RemoveTimeoutTimestamp<Parameters<T>[0]>;
+          };
+        }
       : null;
 
     // "loops" through methods and applies types to each
@@ -319,34 +401,42 @@ export class NativeDexClient {
     }): ExtractMethodInvokationTypes<T> => {
       const protoMethods = txModule.MsgClientImpl.prototype as T;
       // careful with edits here, as the implementation below is @ts-ignore'd
-      const createTxCompositionMethod = (methodName: string) => (
-        msg: any,
-        senderAddress: string,
-        { gas, price }: NativeDexTransactionFee = {
-          gas: this.feeTable.send.gas,
-          // @mccallofthewild - May want to change this to an `AssetAmount` at some point once the SDK structure is ready
-          price: {
-            denom: this.feeTable.send.amount[0].denom,
-            amount: this.feeTable.send.amount[0].amount,
-          },
-        },
-      ): NativeDexTransaction<any> => {
+      const createTxCompositionMethod = (methodName: string) => {
         const typeUrl = `/${txModule.protobufPackage}.Msg${methodName}`;
-        console.log({ typeUrl });
-        delete msg["timeoutTimestamp"];
-        return new NativeDexTransaction(
-          senderAddress,
-          [
-            {
-              typeUrl,
-              value: msg,
+        const compositionMethod = (
+          msg: any,
+          senderAddress: string,
+          { gas, price }: NativeDexTransactionFee = {
+            gas: this.feeTable.transfer.gas,
+            // @mccallofthewild - May want to change this to an `AssetAmount` at some point once the SDK structure is ready
+            price: {
+              denom: this.feeTable.transfer.amount[0].denom,
+              amount: this.feeTable.transfer.amount[0].amount,
             },
-          ],
-          {
-            gas,
-            price,
           },
-        );
+          memo = "",
+        ): NativeDexTransaction<any> => {
+          delete msg["timeoutTimestamp"];
+          return new NativeDexTransaction(
+            senderAddress,
+            [
+              {
+                typeUrl,
+                value: msg,
+              },
+            ],
+            {
+              gas,
+              price,
+            },
+            memo,
+          );
+        };
+        compositionMethod.createRawEncodeObject = (msg: any) => ({
+          typeUrl,
+          value: msg,
+        });
+        return compositionMethod;
       };
       const signingClientMethods = {} as ExtractMethodInvokationTypes<T>;
       for (let method of Object.getOwnPropertyNames(protoMethods)) {

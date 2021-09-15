@@ -17,7 +17,7 @@ import { SubscribeToTx } from "../peg/utils/subscribeToTx";
 import { SifchainChain, EthereumChain } from "../../services/ChainsService";
 import { isOriginallySifchainNativeToken } from "../peg/utils/isOriginallySifchainNativeToken";
 import Long from "long";
-import getKeplrProvider from "services/SifService/getKeplrProvider";
+import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 
 export class SifchainEthereumInterchainApi
   implements InterchainApi<SifchainInterchainTx> {

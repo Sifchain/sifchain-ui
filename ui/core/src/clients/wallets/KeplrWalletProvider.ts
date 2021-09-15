@@ -131,12 +131,15 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const chainIds = chains
       .filter((c) => c.chainConfig.chainType === "ibc")
       .map((c) => c.chainConfig.chainId);
+
     // @ts-ignore
     return keplr?.enable(chainIds);
   }
   async connect(chain: Chain): Promise<WalletConnectionState> {
     // try to get the address quietly
     const keplr = await getKeplrProvider();
+    const chainConfig = getIBCChainConfig(chain);
+    await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
     const key = await keplr?.getKey(chain.chainConfig.chainId);
     let address = key?.bech32Address;
     // if quiet get fails, try to enable the wallet

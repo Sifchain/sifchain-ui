@@ -1,4 +1,4 @@
-import getKeplrProvider from "services/SifService/getKeplrProvider";
+import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 import { IAsset } from "../../entities";
 import { Services } from "../../services";
 
@@ -13,18 +13,24 @@ type RemoveLiquidityServices = {
   bus: PickBus;
   sif: PickSif;
   clp: PickClp;
+  tokenRegistry: Services["tokenRegistry"];
 };
 
-export function RemoveLiquidity({ bus, sif, clp }: RemoveLiquidityServices) {
+export function RemoveLiquidity({
+  bus,
+  sif,
+  clp,
+  tokenRegistry,
+}: RemoveLiquidityServices) {
   return async (asset: IAsset, wBasisPoints: string, asymmetry: string) => {
     const client = await sif.loadNativeDexClient();
-
+    const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(asset);
     const txDraft = await client.tx.clp.RemoveLiquidity(
       {
         asymmetry,
         wBasisPoints,
         externalAsset: {
-          symbol: asset.symbol,
+          symbol: externalAssetEntry.denom,
         },
         /*
          @mccallofthewild - This usecase (if we don't kill it altogether in lieu 
