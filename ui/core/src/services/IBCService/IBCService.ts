@@ -64,29 +64,8 @@ import {
 import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
 import { NativeAminoTypes } from "../../services/utils/SifClient/NativeAminoTypes";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
-import { ChainIdHelper } from "./IBCService-ledger-implementations";
+import { ChainIdHelper, getTransferTimeoutData } from "./utils";
 import { NativeDexTransaction } from "../../services/utils/SifClient/NativeDexTransaction";
-
-const getTransferTimeoutData = async (
-  receivingStargateClient: StargateClient,
-  desiredTimeoutMinutes: number,
-) => {
-  const blockTimeMinutes = 7.25 / 60;
-
-  const timeoutBlockDelta = desiredTimeoutMinutes / blockTimeMinutes;
-
-  return {
-    revisionNumber: Long.fromNumber(
-      +ChainIdHelper.parse(
-        await receivingStargateClient.getChainId(),
-      ).version.toString() || 0,
-    ),
-    // Set the timeout height as the current height + 150.
-    revisionHeight: Long.fromNumber(
-      (await receivingStargateClient.getHeight()) + timeoutBlockDelta,
-    ),
-  };
-};
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -487,7 +466,6 @@ export class IBCService {
       .calculateTransferFeeToChain(params.assetAmountToTransfer);
 
     if (feeAmount?.amount.greaterThan("0")) {
-      console.log("CHARGING FEE");
       const feeEntry = registry.find(
         (item) => item.baseDenom === feeAmount.asset.symbol,
       );
@@ -517,7 +495,6 @@ export class IBCService {
     console.log({ batches });
     const responses: BroadcastTxResult[] = [];
     for (let batch of batches) {
-      console.log("transfer msg count", batch.length);
       try {
         let externalGasPrices: any = {};
         try {
@@ -545,41 +522,6 @@ export class IBCService {
           sendingChainRpcUrl: sourceChain.rpcUrl,
         });
 
-        // const t34 = await Tendermint34Client.connect(sourceChain.rpcUrl);
-        // const nClient = new NativeSigningClient(t34, sendingSigner, {
-        //   registry: NativeDexClient.getNativeRegistry(),
-        // });
-
-        // const seq = await nClient.getSequence(fromAccount.address);
-        // const sig = await nClient.signWMeta(
-        //   fromAccount.address,
-        //   batch,
-        //   {
-        //     ...nClient.fees.transfer,
-        //     amount: nClient.fees.transfer.amount.map((amt) => ({
-        //       ...amt,
-        //       denom:
-        //         sourceChain.keplrChainInfo.feeCurrencies[0].coinMinimalDenom,
-        //     })),
-        //   },
-        //   "",
-        //   {
-        //     chainId: await nClient.getChainId(),
-        //     accountNumber: +seq.accountNumber,
-        //     sequence: +seq.sequence,
-        //   },
-        // );
-        console.log("waiting...");
-        // await new Promise((r) => setTimeout(r, 5 * 1000));
-        console.log("go!");
-
-        // const res1 = await new Compatible42CosmosClient(
-        //   sourceChain.restUrl,
-        // ).broadcastTx(Buffer.from(sig, "binary").toString("base64"));
-        // console.log({ res1 });
-        // const res = await nClient.broadcastTx(sig);
-        // console.log({ res });
-        console.log({ Network });
         const sentTx = await client.broadcast(signedTx, {
           sendingChainRpcUrl: sourceChain.rpcUrl,
           sendingChainRestUrl: sourceChain.restUrl,
