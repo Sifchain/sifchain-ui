@@ -37,7 +37,6 @@ export class BaseChain implements Chain {
     this.nativeAsset = this.assets.find(
       (a) => a.symbol === context.chainConfig.nativeAssetSymbol,
     ) as IAsset;
-    console.log(context.chainConfig, this.assets, this.nativeAsset);
   }
 
   calculateTransferFeeToChain(assetAmount: IAssetAmount) {
