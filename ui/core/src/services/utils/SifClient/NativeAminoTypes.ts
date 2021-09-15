@@ -86,6 +86,9 @@ const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
     case "dispensation/CreateUserClaim": {
       return "dispensation/claim";
     }
+    case "bank/MsgSend": {
+      return "cosmos-sdk/MsgSend";
+    }
     default: {
       return aminoTypeUrl;
     }

@@ -328,10 +328,12 @@ export class NativeDexClient {
       transactionHash: resultRaw.hash,
     };
     if (isBroadcastTxSuccess(result)) {
-      // @ts-ignore
-      result.logs[0].msg_index = 0;
-      // @ts-ignore
-      result.logs[0].log = "";
+      result.logs.forEach((log) => {
+        // @ts-ignore
+        log.msg_index = 0;
+        // @ts-ignore
+        log.log = "";
+      });
     }
 
     return isBroadcastTxFailure(result)

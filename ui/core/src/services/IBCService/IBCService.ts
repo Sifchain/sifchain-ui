@@ -485,7 +485,7 @@ export class IBCService {
           },
         ],
       });
-      // encodeMsgs.unshift(sendFeeMsg);
+      encodeMsgs.unshift(sendFeeMsg);
     }
 
     const batches = [];
