@@ -17,7 +17,7 @@ const getTransferTimeoutData = async (
   receivingStargateClient: StargateClient,
   desiredTimeoutMinutes: number,
 ) => {
-  const blockTimeMinutes = 7.25 / 60;
+  const blockTimeMinutes = 7 / 60;
 
   const timeoutBlockDelta = desiredTimeoutMinutes / blockTimeMinutes;
 
