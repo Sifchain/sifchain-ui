@@ -12,4 +12,14 @@ Generated assets are written to `./src/generated/assets/`, with files `assets-{e
 
 All non-Sifchain and non-Ethereum assets are currently dynamically generated at runtime from the native assets. They are just clones of the Sif assets so it seemed right to continue this practice.
 
+### Adding a new asset
+
+1. Ensure chain / network is added. Go to Network enum and then add the Chain object in clients/chains, then in Chain service.
+2. Ensure asset image is added to ./assetMetadata (this will allow asset to be added from the whitelist)
+3. If the asset is ethereum-compatible, add its contract address to ./assetAddresses.
+
+### Decommissioning an asset
+
+Just add decommissioned: true to ./assetMetadata.
+
 

@@ -13,12 +13,15 @@ import {
 } from "./utils";
 import { mapRegistryEntryToNativeAsset } from "./loadNativeAssets";
 import { symbolWithoutPrefix } from "./utils";
+import { NetworkEnv } from "../../config/getEnv";
+import { assetAddressesByNetworkEnv } from "./assetAddresses";
 
 export type EthereumAssetLoadParams = {
   sifRpcUrl: string;
   sifChainId: string;
   bridgebankContractAddress: string;
   getWeb3Provider: () => Promise<provider>;
+  networkEnv: NetworkEnv;
 };
 
 export const ethSymbolLookup: Record<string, string> = {
@@ -30,6 +33,7 @@ export const ethSymbolLookup: Record<string, string> = {
 export default async function loadEthereumAssets(
   params: EthereumAssetLoadParams,
 ) {
+  const assetAddressLookup = assetAddressesByNetworkEnv[params.networkEnv];
   const entries = await loadSanitizedRegistryEntries(params);
 
   const web3 = new Web3(await params.getWeb3Provider());
@@ -45,33 +49,37 @@ export default async function loadEthereumAssets(
     try {
       const nativeAsset = mapRegistryEntryToNativeAsset(entry);
 
+      // We can't actually reliably retrieve asset addresses from peggy for assets that have never been exported before...
+      // This means that we do need to record addresses per NetworkEnv.
       const ethSymbol =
         ethSymbolLookup[nativeAsset.symbol] ||
         symbolWithoutPrefix(nativeAsset.symbol).toUpperCase();
 
-      let lockAddress;
-      if (nativeAsset.homeNetwork === Network.ETHEREUM) {
-        lockAddress = await bridgeContract.methods
-          .getLockedTokenAddress(ethSymbol)
-          .call();
-      }
+      let address: string | undefined =
+        assetAddressLookup[ethSymbol.toLowerCase()];
 
-      let bridgeAddress;
-      if (!+lockAddress) {
-        bridgeAddress = await bridgeBankFetchTokenAddress(
-          web3,
-          params.bridgebankContractAddress,
-          params.sifChainId,
-          nativeAsset,
-        );
+      if (!address && ethSymbol !== "ETH") {
+        if (nativeAsset.homeNetwork === Network.ETHEREUM) {
+          address = await bridgeContract.methods
+            .getLockedTokenAddress(ethSymbol)
+            .call();
+        }
+        if (!address || !+address) {
+          address = await bridgeBankFetchTokenAddress(
+            web3,
+            params.bridgebankContractAddress,
+            params.sifChainId,
+            nativeAsset,
+          );
+        }
       }
 
       const ethAssetHomeNetwork =
         ethSymbol === "EROWAN" ? Network.ETHEREUM : nativeAsset.homeNetwork;
 
-      if (bridgeAddress || lockAddress) {
+      if (address && !!+address) {
         const ethAsset = {
-          address: lockAddress && !!+lockAddress ? lockAddress : bridgeAddress,
+          address: ethSymbol === "ETH" ? undefined : address,
           ...nativeAsset,
           ...assetMetadataLookup[ethSymbol.toLowerCase()],
           symbol: ethSymbol,
