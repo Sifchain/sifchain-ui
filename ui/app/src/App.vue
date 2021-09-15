@@ -28,7 +28,8 @@ import OnboardingModal from "@/components/OnboardingModal";
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
   let hiddenCount = 0;
-  const originalerror = console.error.bind(console);
+
+  const originalError = console.error.bind(console);
   console.error = (...args: any[]) => {
     if (++hiddenCount === 1) {
       console.warn("Hiding redundant Metamask 'header not found' errors.");
@@ -40,10 +41,10 @@ const hideRedundantUselessMetamaskErrors = () => {
     ) {
       return;
     }
-    return originalerror(...args);
+    return originalError(...args);
   };
 };
-// hideRedundantUselessMetamaskErrors();
+hideRedundantUselessMetamaskErrors();
 
 const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
 

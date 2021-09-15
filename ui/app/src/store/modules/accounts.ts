@@ -89,7 +89,10 @@ export const accountStore = Vuextra.createStore({
   actions: (context) => ({
     async loadIfConnected(network: Network) {
       const usecase = getUsecase(network);
-      await usecase.loadIfConnected(network);
+      const state = await usecase.loadIfConnected(network);
+      if (state.connected) {
+        this.load(network);
+      }
     },
     async load(network: Network) {
       const usecase = getUsecase(network);

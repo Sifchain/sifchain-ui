@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Asset, AssetAmount } from "../../entities";
 import { getTestingTokens } from "../../test/utils/getTestingToken";
 import { Swap, SwapArgs } from "./swap";
@@ -20,7 +21,7 @@ beforeEach(() => {
   dispatch = jest.fn();
   services = {
     bus: { dispatch },
-    sif: { getState, signAndBroadcast },
+    sif: { getState, signAndBroadcast, loadNativeDexClient: signAndBroadcast },
     clp: { swap },
     ibc: {
       loadChainConfigByNetwork: jest.fn(),

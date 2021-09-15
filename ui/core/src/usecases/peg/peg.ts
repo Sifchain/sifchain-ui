@@ -1,4 +1,4 @@
-import { isBroadcastTxFailure } from "@cosmjs/stargate";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
 import {
   findAttribute,
   Log,
