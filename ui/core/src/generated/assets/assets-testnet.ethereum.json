@@ -57,6 +57,16 @@
     "imageUrl": "https://assets.coingecko.com/coins/images/7598/thumb/wrapped_bitcoin_wbtc.png?1548822744"
   },
   {
+    "decimals": 18,
+    "symbol": "ETH",
+    "displaySymbol": "eth",
+    "name": "eth",
+    "label": "eth",
+    "network": "ethereum",
+    "homeNetwork": "ethereum",
+    "imageUrl": "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"
+  },
+  {
     "address": "0x902475D0Fd5A54CDA71CAc85fA67AbE41F13Ef11",
     "decimals": 18,
     "symbol": "DAI",

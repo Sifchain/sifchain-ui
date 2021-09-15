@@ -13,7 +13,7 @@
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
     "test": "./scripts/test.sh",
-    "generate:assets": "yarn generate:assets:mainnet && yarn generate:assets:testnet && yarn generate:assets:devnet && yarn generate:assets:testnet_042_ibc",
+    "generate:assets": "concurrently 'yarn generate:assets:mainnet' 'yarn generate:assets:testnet' 'yarn generate:assets:devnet' 'yarn generate:assets:testnet_042_ibc'",
     "generate:assets:mainnet": "ts-node -e 'import load from \"./scripts/load-env-assets\"; load(\"MAINNET\")'",
     "generate:assets:testnet": "ts-node -e 'import load from \"./scripts/load-env-assets\"; load(\"TESTNET\")'",
     "generate:assets:testnet_042_ibc": "ts-node -e 'import load from \"./scripts/load-env-assets\"; load(\"TESTNET_042_IBC\")'",

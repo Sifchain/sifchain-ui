@@ -77,7 +77,7 @@ export default async function loadEthereumAssets(
       const ethAssetHomeNetwork =
         ethSymbol === "EROWAN" ? Network.ETHEREUM : nativeAsset.homeNetwork;
 
-      if (address && !!+address) {
+      if (ethSymbol === "ETH" || (address && !!+address)) {
         const ethAsset = {
           address: ethSymbol === "ETH" ? undefined : address,
           ...nativeAsset,
