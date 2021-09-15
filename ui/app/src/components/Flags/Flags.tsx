@@ -4,7 +4,9 @@ import { defineComponent, watch } from "@vue/runtime-core";
 import { onMounted, ref } from "vue";
 import { Button } from "../Button/Button";
 
-const isProduction = import.meta.env.VITE_APP_DEPLOYMENT === "production";
+const isProduction =
+  import.meta.env.VITE_APP_DEPLOYMENT === "production" ||
+  location.hostname == "dex.sifchain.finance";
 
 console.log({ global });
 // TODO: figure out how to dynamic import this

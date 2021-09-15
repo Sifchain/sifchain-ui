@@ -144,15 +144,15 @@ export const useSifState = createStateHook<WalletStoreEntry>(
     address: store.wallet.get(Network.SIFCHAIN).address,
     balances: store.wallet.get(Network.SIFCHAIN).balances,
     isConnected: store.wallet.get(Network.SIFCHAIN).isConnected,
-    lmUserData: null,
-    vsUserData: null,
+    lmUserData: undefined,
+    vsUserData: undefined,
   }),
   {
     address: "",
     balances: [],
     isConnected: false,
-    lmUserData: null,
-    vsUserData: null,
+    lmUserData: undefined,
+    vsUserData: undefined,
   },
 );
 

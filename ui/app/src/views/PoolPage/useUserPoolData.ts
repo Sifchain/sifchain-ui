@@ -8,62 +8,12 @@ import {
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { Amount, getErrorMessage, IAsset, Network } from "@sifchain/sdk";
+import { useNativeChain } from "@/hooks/useChains";
 
 const DECIMALS = 5;
 
-const invalidRewards: Record<string, boolean> = {};
-async function getEarnedRewards(address: string, asset?: IAsset) {
-  const emptyRes = {
-    negative: false,
-    netChange: "0.00",
-  };
-  if (!asset) return emptyRes;
-
-  const registryEntry = await useCore().services.tokenRegistry.findAssetEntry(
-    asset,
-  );
-
-  if (!registryEntry) return emptyRes;
-  if (invalidRewards[registryEntry.denom]) return emptyRes;
-
-  const earnedRewardsUrl = getRewardEarningsUrl();
-  const res = await fetch(
-    `${earnedRewardsUrl}/${registryEntry.denom.replace(
-      "ibc/",
-      "ibc_",
-    )}/netChange/${address}`,
-  );
-  const parsedData = await res.json();
-
-  // NOTE(ajoslin): ibc not supported yet for this endpoint...
-  // to not spam the logs with invalid calls to this endpoint,
-  // after 1 error stop trying.
-  if (!res.ok) {
-    invalidRewards[registryEntry.denom] = true;
-    return emptyRes;
-  }
-
-  // TD - This should return Amount, method needs work
-  // Rudis recent work should refactor this call too into a testable service
-  return {
-    negative: Amount((parsedData.netChangeUSDT || "0").toString()).lessThan(
-      "0",
-    ),
-    netChange: format(
-      Amount(Math.abs(parsedData.netChangeUSDT || "0").toString()),
-      {
-        mantissa: 2,
-      },
-    ),
-  };
-}
-
 export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
   const { config, store, accountPoolFinder, poolFinder } = useCore();
-
-  const address = computed(() => store.wallet.get(Network.SIFCHAIN).address);
-  const earnedRewards = ref<string | null>(null);
-  const earnedRewardsNegative = ref<boolean>(false);
 
   const fromSymbol = ref("");
   const accountPool = computed(() => {
@@ -92,39 +42,11 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
     };
   });
 
-  // const USDTImage = useAssetItem('USDT').token.value?.imageUrl;
-  const USDTImage =
-    "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707";
-
   const fromAsset = computed(() => {
-    return useCore()
-      .services.chains.get(Network.SIFCHAIN)
-      .findAssetWithLikeSymbol(fromSymbol.value);
+    return useNativeChain().findAssetWithLikeSymbol(fromSymbol.value);
   });
   const toAsset = computed(() => {
-    return useCore()
-      .services.chains.get(Network.SIFCHAIN)
-      .findAssetWithLikeSymbol(toSymbol.value);
-  });
-
-  const calculateRewards = async (address: string, fromSymbol: string) => {
-    // TODO - needs a better pattern to handle this
-    if (!address || !fromSymbol) return;
-
-    const earnedRewardsObject = await getEarnedRewards(
-      address,
-      fromAsset.value,
-    );
-    earnedRewardsNegative.value = earnedRewardsObject.negative;
-    earnedRewards.value = earnedRewardsObject.netChange;
-  };
-
-  watch([address, fromSymbol], async (val, oldVal) => {
-    calculateRewards(address.value, fromSymbol.value);
-  });
-
-  onMounted(async () => {
-    calculateRewards(address.value, fromSymbol.value);
+    return useNativeChain().findAssetWithLikeSymbol(toSymbol.value);
   });
 
   const fromTotalValue = computed(() => {
@@ -176,8 +98,5 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
     myPoolShare,
     chainId: config.sifChainId,
     getBlockExplorerUrl,
-    earnedRewards,
-    earnedRewardsNegative,
-    USDTImage,
   };
 };

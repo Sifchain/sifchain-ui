@@ -16,6 +16,7 @@ export default defineComponent({
   name: "RewardsPage",
   props: {},
   setup(props) {
+    const data = useRewardsPageData();
     const {
       isLoading,
       error,
@@ -26,10 +27,11 @@ export default defineComponent({
       vsInfoLink,
       lmInfoLink,
       address,
-    } = useRewardsPageData();
+      reloadClaims,
+    } = data;
 
     const isClaimModalOpened = ref(false);
-    const claimRewardType = ref("vs");
+    const claimRewardType = ref<"vs" | "lm">("lm");
 
     return () => {
       if (isLoading.value) {
@@ -56,14 +58,18 @@ export default defineComponent({
             heading="Rewards"
             iconName="navigation/rewards"
           >
-            {isClaimModalOpened.value && (
+            {isClaimModalOpened.value && data.summaryAPY.value != null && (
               <ClaimRewardsModal
                 address={address.value}
                 rewardType={claimRewardType.value as CryptoeconomicsRewardType}
-                data={
+                summaryAPY={data.summaryAPY.value}
+                userData={
                   claimRewardType.value === "vs" ? vsData.value : lmData.value
                 }
-                onClose={() => (isClaimModalOpened.value = false)}
+                onClose={() => {
+                  isClaimModalOpened.value = false;
+                  reloadClaims();
+                }}
               />
             )}
             <p>

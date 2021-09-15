@@ -48,6 +48,9 @@ export const exportStore = Vuextra.createStore({
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
       );
+      const isPeggyWhitelistedIBCAsset = useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(
+        asset.symbol,
+      );
       return (
         useChainsList()
           .filter(
@@ -72,9 +75,10 @@ export const exportStore = Vuextra.createStore({
               }
             }
           })
-          .filter((n) => {
-            if (isExternalIBCAsset && !IBC_ETHEREUM_ENABLED) {
-              return n.network !== Network.ETHEREUM;
+          .filter((c) => {
+            if (isExternalIBCAsset && c.network === Network.ETHEREUM) {
+              // if it's a peggy-whitelisted IBC token and IBC ethereum is enabled
+              return isPeggyWhitelistedIBCAsset && IBC_ETHEREUM_ENABLED;
             }
             return true;
           })
@@ -110,8 +114,6 @@ export const exportStore = Vuextra.createStore({
         console.log("setUnpegEvent", ev);
         self.setUnpegEvent(ev);
       }
-
-      const chainTx = await executable.awaitResult();
     },
   }),
 

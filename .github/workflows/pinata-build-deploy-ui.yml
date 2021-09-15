@@ -3,8 +3,12 @@ name: Build then Deploy to Pinata
 on:
   push:
     branches:
+      - develop_pinata
       - develop
       - master
+  create:
+    tags:
+      - v*
 
 jobs:
   build_and_deploy:
@@ -23,25 +27,26 @@ jobs:
       - name: Set env vars
         shell: bash
         run: |
-          BRANCH_NAME=$(git branch --show-current)
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          TAG_NAME=$(git tag --points-at HEAD)
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "TAG_NAME=$(git tag --points-at HEAD)" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
           echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
 
           if [[ $BRANCH_NAME == 'master' ]]
           then
             echo "SUBDOMAIN=dex" >> $GITHUB_ENV
-            echo "VITE_APP_DEPLOYMENT=production"
-          elif [[ $BRANCH_NAME == 'develop' ]] && [[ "$TAG_NAME" != '' ]]
+            echo "VITE_APP_DEPLOYMENT=production" >> $GITHUB_ENV
+          elif [[ "$TAG_NAME" != '' ]]
           then
-            # because testnet is promoted to mainnet
             echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
-            echo "VITE_APP_DEPLOYMENT=staging"
+            echo "VITE_APP_DEPLOYMENT=staging" >> $GITHUB_ENV
           else
             echo "SUBDOMAIN=devnet" >> $GITHUB_ENV
-            echo "VITE_APP_DEPLOYMENT=develop"
+            echo "VITE_APP_DEPLOYMENT=develop" >> $GITHUB_ENV
           fi
+          echo $(cat $GITHUB_ENV)
 
       - name: Build App
         run: |
@@ -65,19 +70,19 @@ jobs:
           if [[ $SUBDOMAIN == 'devnet' ]]; then
             echo "Config set for DevNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.devnet" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.ipfs-devnet" >> $GITHUB_ENV
           fi
 
           if [[ $SUBDOMAIN == 'testnet' ]]; then
             echo "Config set for TestNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.ipfs-testnet" >> $GITHUB_ENV
           fi
 
           if [[ $SUBDOMAIN == 'dex' ]]; then
             echo "Config set for MainNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.dex" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.ipfs-dex" >> $GITHUB_ENV
           fi
 
       - name: Update cloudflare DNSLink
@@ -90,12 +95,11 @@ jobs:
           cid: ${{ steps.pinata.outputs.hash }}
 
       - name: Send custom JSON data to Slack workflow
-        if: ${{ env.SUBDOMAIN == 'testnet' || env.SUBDOMAIN == 'dex' }}
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
           payload: "{\"pinata_url\":\"https://sifchain.mypinata.cloud/ipfs/${{ steps.pinata.outputs.hash }}\",
-          \"branch\":\"${{env.SUBDOMAIN}}\",\"github_hash\": \"https://github.com/sifchain/sifchain-ui/commit/${{ github.sha }}\", 
+          \"branch\":\"${{env.SUBDOMAIN}}\",\"github_hash\": \"https://github.com/sifchain/sifchain-ui/commit/${{ github.sha }}\",
           \"sif_url\": \"https://${{env.SUBDOMAIN}}.sifchain.finance\" }"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

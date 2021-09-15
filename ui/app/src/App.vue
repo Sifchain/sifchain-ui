@@ -28,7 +28,8 @@ import OnboardingModal from "@/components/OnboardingModal";
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
   let hiddenCount = 0;
-  const originalError = console.error;
+
+  const originalError = console.error.bind(console);
   console.error = (...args: any[]) => {
     if (++hiddenCount === 1) {
       console.warn("Hiding redundant Metamask 'header not found' errors.");

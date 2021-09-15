@@ -214,6 +214,7 @@ export class IBCService {
     const allClients = [];
     const destinationNetwork = Network.SIFCHAIN;
     let chainConfig: IBCChainConfig;
+
     try {
       // if (destinationNetwork === Network.REGEN) throw "";
       chainConfig = this.loadChainConfigByNetwork(destinationNetwork);

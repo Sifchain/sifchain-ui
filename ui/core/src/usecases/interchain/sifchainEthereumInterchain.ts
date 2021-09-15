@@ -90,6 +90,7 @@ export class SifchainEthereumInterchainApi
             rawLog: txStatus.memo || "",
           }),
         });
+        return;
       } else {
         emit({ type: "sent", tx: txStatus });
       }

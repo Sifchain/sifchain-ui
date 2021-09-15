@@ -8,7 +8,6 @@ import {
   HTMLAttributes,
 } from "vue";
 import { IAsset } from "@sifchain/sdk";
-import SvgSpinnerIcon from "../assets/icons/interactive/anim-circle-spinner.svg";
 import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
 
 export const TokenIcon = defineComponent({
