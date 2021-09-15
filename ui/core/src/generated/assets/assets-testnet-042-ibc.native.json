@@ -1,0 +1,13 @@
+[
+  {
+    "decimals": 6,
+    "symbol": "uphoton",
+    "displaySymbol": "photon",
+    "name": "uPHOTON",
+    "label": "uPHOTON",
+    "network": "sifchain",
+    "homeNetwork": "cosmoshub",
+    "ibcDenom": "ibc/1690CAACCF73943D04A9BD36F8C09D066DA3A4C9914292B2813362D0FE9A34B5",
+    "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960"
+  }
+]

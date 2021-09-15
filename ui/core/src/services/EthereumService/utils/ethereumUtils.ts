@@ -165,7 +165,7 @@ export async function suggestEthereumAsset(
 ) {
   const ethereum = await detectEthereumProvider();
   if (!ethereum) return false;
-  const wasAdded = await ethereum.request({
+  const wasAdded = await (ethereum as any).request({
     method: "wallet_watchAsset",
     params: {
       // @ts-ignore

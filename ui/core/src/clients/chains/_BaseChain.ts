@@ -35,7 +35,9 @@ export class BaseChain implements Chain {
       this.assetMap.set(asset.symbol, asset);
     });
     this.nativeAsset = this.assets.find(
-      (a) => a.symbol === context.chainConfig.nativeAssetSymbol,
+      (a) =>
+        a.symbol.toLowerCase() ===
+        context.chainConfig.nativeAssetSymbol.toLowerCase(),
     ) as IAsset;
   }
 

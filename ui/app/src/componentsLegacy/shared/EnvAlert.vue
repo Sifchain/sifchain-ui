@@ -2,6 +2,10 @@
 import { defineComponent, onMounted, useCssModule } from "vue";
 import { AppCookies, NetworkEnv, networkEnvsByIndex } from "@sifchain/sdk";
 
+const isProduction =
+  import.meta.env.VITE_APP_DEPLOYMENT === "production" ||
+  location.hostname == "dex.sifchain.finance";
+
 // This is for internal testing & development only.
 // Once we release the ability to switch environments
 // as a feature we can refactor this to look nice.
@@ -11,7 +15,7 @@ export default defineComponent({
     const appCookies = AppCookies();
     let env = appCookies.getEnv();
 
-    if (typeof env === "undefined") {
+    if (typeof env === "undefined" && isProduction) {
       return () => null;
     }
 
