@@ -2,6 +2,7 @@ import { AminoConverter, AminoTypes } from "@cosmjs/stargate";
 import { NativeDexClient } from "./NativeDexClient";
 import * as inflection from "inflection";
 import { AminoMsg } from "@cosmjs/amino";
+
 export class NativeAminoTypes extends AminoTypes {
   constructor() {
     const options = {
@@ -9,14 +10,27 @@ export class NativeAminoTypes extends AminoTypes {
       prefix: undefined,
     };
     super(options);
-    const ibcAddition =
-      options.additions?.["/ibc.applications.transfer.v1.MsgTransfer"];
 
-    if (ibcAddition) {
-      const originalToAmino = ibcAddition.toAmino;
+    type ToAminoFn = (value: any) => any;
 
-      // @ts-ignore
-      ibcAddition.toAmino = (value: any) => {
+    const wrapAdditionToAminoFn = (
+      key: string,
+      wrapFn: (value: any, original: ToAminoFn) => any,
+    ) => {
+      const originalAddition = options.additions?.[key];
+      if (originalAddition) {
+        const originalToAmino = originalAddition.toAmino;
+
+        // @ts-ignore
+        originalAddition.toAmino = (value: any) => {
+          return wrapFn(value, originalToAmino);
+        };
+      }
+    };
+
+    wrapAdditionToAminoFn(
+      "/ibc.applications.transfer.v1.MsgTransfer",
+      (value: any, originalToAmino: ToAminoFn) => {
         value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
         value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
         const converted = originalToAmino(value);
@@ -25,8 +39,24 @@ export class NativeAminoTypes extends AminoTypes {
           delete converted.timeout_height.revision_number;
         }
         return converted;
-      };
-    }
+      },
+    );
+
+    wrapAdditionToAminoFn(
+      "/sifnode.ethbridge.v1.MsgBurn",
+      (value: any, originalToAmino: ToAminoFn) => {
+        value.ethereumChainId = value.ethereumChainId.toString();
+        return originalToAmino(value);
+      },
+    );
+
+    wrapAdditionToAminoFn(
+      "/sifnode.ethbridge.v1.MsgLock",
+      (value: any, originalToAmino: ToAminoFn) => {
+        value.ethereumChainId = value.ethereumChainId.toString();
+        return originalToAmino(value);
+      },
+    );
   }
 }
 
@@ -44,9 +74,11 @@ const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
       })
       .join("/");
   }
-  if (typeUrl.includes("sifnode")) {
+
+  if (typeUrl.includes("sifnode") && !/MsgBurn|MsgLock/.test(typeUrl)) {
     typeUrl = typeUrl.replace("Msg", "");
   }
+
   const [_namespace, cosmosModule, _version, messageType] = typeUrl.split(".");
 
   const aminoTypeUrl = `${cosmosModule}/${messageType}`;
