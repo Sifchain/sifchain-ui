@@ -20,6 +20,7 @@ coverage:
         paths:
           - "ui/"
           - "!ui/core/src/generated/proto/" # ignore protobuf generated bits
+          - "!dummy_change"
     changes: false
 
 comment:
