@@ -52,9 +52,6 @@ export function SyncPools(
           .get(Network.SIFCHAIN)
           .findAssetWithLikeSymbol(entry.baseDenom);
 
-        if (!asset) {
-          console.log(entry, externalSymbol);
-        }
         if (!asset) return null;
 
         return Pool(

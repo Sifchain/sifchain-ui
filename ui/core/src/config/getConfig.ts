@@ -7,7 +7,8 @@ import testnetconfig from "./networks/sifchain/config.testnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 
 import assetsSifchainDevnet from "../generated/assets/assets-devnet.native.json";
-import assetsSifchainMainnet from "../generated/assets/assets-devnet.native.json";
+import assetsSifchainTestnet from "../generated/assets/assets-testnet.native.json";
+import assetsSifchainMainnet from "../generated/assets/assets-mainnet.native.json";
 
 import assetsEthereumDevnet from "../generated/assets/assets-devnet.ethereum.json";
 import assetsEthereumTestnet from "../generated/assets/assets-testnet.ethereum.json";
@@ -72,6 +73,7 @@ export function getConfig(
     // ),
     "sifchain.mainnet": parseAssets(assetsSifchainMainnet as AssetConfig[]),
     "sifchain.devnet": parseAssets(assetsSifchainDevnet as AssetConfig[]),
+    "sifchain.testnet": parseAssets(assetsSifchainTestnet as AssetConfig[]),
     // "ethereum.localnet": parseAssets(
     //   assetsEthereumLocalnet as AssetConfig[],
     // ),

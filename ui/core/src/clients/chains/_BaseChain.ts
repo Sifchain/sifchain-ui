@@ -39,7 +39,6 @@ export class BaseChain implements Chain {
         a.symbol.toLowerCase() ===
         context.chainConfig.nativeAssetSymbol.toLowerCase(),
     ) as IAsset;
-    console.log(context.chainConfig, this.nativeAsset);
   }
 
   calculateTransferFeeToChain(assetAmount: IAssetAmount) {
