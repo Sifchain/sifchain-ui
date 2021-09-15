@@ -1,0 +1,34 @@
+#
+# This codecov.yml is the default configuration for
+# all repositories on Codecov. You may adjust the settings
+# below in your own codecov.yml in your repository.
+#
+coverage:
+  precision: 2
+  round: down
+  range: 70...100
+
+  status:
+    # Learn more at https://docs.codecov.io/docs/commit-status
+    default_rules:
+      flag_coverage_not_uploaded_behavior: exclude # don't send status checks that don't have flag coverage uploaded
+    patch: off
+    project:
+      default:
+        target: 50%
+        flags:
+        paths:
+          - "ui/"
+    changes: false
+
+comment:
+  layout: "reach, diff, files"
+  behavior: default # update if exists else create new
+  require_changes: true
+
+ignore:
+  - "docs"
+  - "node_modules"
+  - "smart-contracts"
+  - "test"
+  - "*.md"
