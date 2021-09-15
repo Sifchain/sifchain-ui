@@ -1,10 +1,13 @@
-import localethereumassets from "../../config/networks/ethereum/assets.ethereum.localnet.json";
-import localsifassets from "../../config/networks/sifchain/assets.sifchain.localnet";
+import localethereumassets from "../../generated/assets/assets-localnet.ethereum.json";
+import localsifassets from "../../generated/assets/assets-localnet.native.json";
 
 import { parseAssets } from "../../utils/parseConfig";
-import { Asset, IAssetAmount } from "../../entities";
+import { Asset, IAssetAmount, IAsset } from "../../entities";
 
-const assets = [...localethereumassets.assets, ...localsifassets.assets];
+const assets = [
+  ...(localethereumassets as IAsset[]),
+  ...(localsifassets as IAsset[]),
+];
 
 export function getTestingToken(tokenSymbol: string) {
   const supportedTokens = parseAssets(assets as any[]).map((asset) => {
