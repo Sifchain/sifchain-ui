@@ -57,8 +57,10 @@ let connectAll = () => {
 export function useInitialize() {
   connectAll();
   connectAll = () => {};
+
   const { usecases, store, services, config } = useCore();
-  // Initialize usecases / watches
+
+  services.ethbridge.addEthereumAddressToPeggyCompatibleCosmosAssets();
 
   services.ethbridge
     .addEthereumAddressToPeggyCompatibleCosmosAssets()
@@ -154,7 +156,6 @@ export function useInitialize() {
     { deep: true },
   );
 
-  // Connect to networks in sequence, starting with Sifchain.
   for (const network of Object.values(Network)) {
     accountStore.actions.loadIfConnected(network);
     watch(

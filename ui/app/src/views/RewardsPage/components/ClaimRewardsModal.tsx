@@ -82,91 +82,99 @@ export default defineComponent({
       tx: transactionStatusRef,
     });
 
-    const detailsRef = computed<[any, any][]>(() => [
-      [
-        "Claimable Rewards Today",
-        <span class="flex items-center font-mono">
-          {formatRowanNumber(
-            props.userData?.user?.totalClaimableCommissionsAndClaimableRewards,
-          )}
-          {
-            <TokenIcon
-              assetValue={Asset.get("rowan")}
-              size={16}
-              class="ml-[4px]"
-            />
-          }
-        </span>,
-      ],
-      [
-        "Maturity Date",
-        props.userData?.user?.maturityDate.toLocaleDateString() +
-          ", " +
-          props.userData?.user?.maturityDate.toLocaleTimeString(),
-      ],
-      [
-        <span class="flex items-center">Projected Full Reward</span>,
-        <span
-          class={[
-            `flex items-center font-mono`,
-            flagsStore.state.claimsGraph
-              ? "border-b border-solid border-accent-base border-opacity-80"
-              : "",
-          ]}
-        >
-          {formatRowanNumber(
-            props.userData?.user?.totalCommissionsAndRewardsAtMaturity,
-          )}
-          {
-            <TokenIcon
-              assetValue={Asset.get("rowan")}
-              size={16}
-              class="ml-[4px]"
-            />
-          }
-        </span>,
-      ],
-      (() => {
-        const totalLessRowan = parseFloat(
-          formatRowanNumber(
-            Math.ceil(
-              (props.userData?.user?.totalCommissionsAndRewardsAtMaturity ||
-                0) -
-                rewardsAtMaturityAfterClaim.value -
-                (props.userData?.user
-                  ?.totalClaimableCommissionsAndClaimableRewards || 0),
-            ),
-          ),
-        ).toFixed(0);
-        return [
-          <span class="flex items-center">
-            Projected Reward Difference if Claimed Today
-            <Button.InlineHelp>
-              If you claim today, you will end up with approximately{" "}
-              {totalLessRowan} less ROWAN on your maturity date of{" "}
-              {props.userData?.user?.maturityDate.toLocaleDateString()}.
-            </Button.InlineHelp>
-          </span>,
-          <span
-            class={[
-              `flex items-center font-mono`,
-              flagsStore.state.claimsGraph
-                ? "border-b border-solid border-info-base border-opacity-80"
-                : "",
-            ]}
-          >
-            -{totalLessRowan}
-            {
-              <TokenIcon
-                assetValue={Asset.get("rowan")}
-                size={16}
-                class="ml-[4px]"
-              />
-            }
-          </span>,
-        ] as [any, any];
-      })(),
-    ]);
+    const detailsRef = computed<[any, any][]>(
+      () =>
+        [
+          [
+            "Claimable Rewards Today",
+            <span class="flex items-center font-mono">
+              {formatRowanNumber(
+                props.userData?.user
+                  ?.totalClaimableCommissionsAndClaimableRewards,
+              )}
+              {
+                <TokenIcon
+                  assetValue={Asset.get("rowan")}
+                  size={16}
+                  class="ml-[4px]"
+                />
+              }
+            </span>,
+          ],
+          [
+            "Maturity Date",
+            props.userData?.user?.maturityDate.toLocaleDateString() +
+              ", " +
+              props.userData?.user?.maturityDate.toLocaleTimeString(),
+          ],
+          [
+            <span class="flex items-center">Projected Full Reward</span>,
+            <span
+              class={[
+                `flex items-center font-mono`,
+                flagsStore.state.claimsGraph
+                  ? "border-b border-solid border-accent-base border-opacity-80"
+                  : "",
+              ]}
+            >
+              {formatRowanNumber(
+                props.userData?.user?.totalCommissionsAndRewardsAtMaturity,
+              )}
+              {
+                <TokenIcon
+                  assetValue={Asset.get("rowan")}
+                  size={16}
+                  class="ml-[4px]"
+                />
+              }
+            </span>,
+          ],
+          (() => {
+            const totalLessRowan = parseFloat(
+              formatRowanNumber(
+                Math.ceil(
+                  (props.userData?.user
+                    ?.claimedCommissionsAndRewardsAwaitingDispensation || 0) +
+                    (props.userData?.user?.dispensed || 0) +
+                    (props.userData?.user
+                      ?.totalCommissionsAndRewardsAtMaturity || 0) -
+                    rewardsAtMaturityAfterClaim.value -
+                    (props.userData?.user
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0),
+                ),
+              ),
+            ).toFixed(0);
+            if (+totalLessRowan < 0) return;
+            return [
+              <span class="flex items-center">
+                Projected Reward Difference if Claimed Today
+                <Button.InlineHelp>
+                  If you claim today, you will end up with approximately{" "}
+                  {totalLessRowan} less ROWAN on your maturity date of{" "}
+                  {props.userData?.user?.maturityDate.toLocaleDateString()}.
+                </Button.InlineHelp>
+              </span>,
+              <span
+                class={[
+                  `flex items-center font-mono`,
+                  flagsStore.state.claimsGraph
+                    ? "border-b border-solid border-info-base border-opacity-80"
+                    : "",
+                ]}
+              >
+                -{totalLessRowan}
+                {
+                  <TokenIcon
+                    assetValue={Asset.get("rowan")}
+                    size={16}
+                    class="ml-[4px]"
+                  />
+                }
+              </span>,
+            ];
+          })(),
+        ].filter((item) => item != null) as [any, any],
+    );
 
     return () => {
       if (transactionStatusRef.value) {

@@ -159,8 +159,7 @@ export const RewardSection = defineComponent({
               <Button.Inline
                 onClick={() => {
                   if (
-                    (import.meta.env.VITE_APP_DEPLOYMENT === "develop" ||
-                      window.location.origin.includes("localhost")) &&
+                    window.location.hostname !== "dex.sifchain.finance" &&
                     AppCookies().getEnv() === NetworkEnv.MAINNET &&
                     !window.confirm(
                       "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
@@ -175,7 +174,7 @@ export const RewardSection = defineComponent({
                 icon="navigation/rewards"
                 active
                 disabled={
-                  !flagsStore.state.rewardClaims ||
+                  !flagsStore.state.enableRewardsClaim ||
                   props.alreadyClaimed ||
                   !props.data?.user
                     ?.totalClaimableCommissionsAndClaimableRewards

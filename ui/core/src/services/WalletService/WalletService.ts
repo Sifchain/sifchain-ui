@@ -3,6 +3,8 @@ import { KeplrWalletProvider } from "../../clients/wallets";
 
 export type WalletServiceContext = {
   sifRpcUrl: string;
+  sifApiUrl: string;
+  sifChainId: string;
   chains: Chain[];
 };
 

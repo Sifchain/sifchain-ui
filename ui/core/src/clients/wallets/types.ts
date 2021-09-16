@@ -5,6 +5,8 @@ import { KeplrWalletProvider } from "./KeplrWalletProvider";
 
 export type WalletProviderContext = {
   sifRpcUrl: string;
+  sifChainId: string;
+  sifApiUrl: string;
 };
 
 export type WalletConnectionState = {
