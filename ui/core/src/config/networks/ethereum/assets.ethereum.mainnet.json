@@ -876,8 +876,8 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/17495/small/tokemak-avatar-200px-black.png?1628131614",
       "name": "Tokemak",
       "symbol": "TOKE",
-      "decimals": 18,
-      "network": "ethereum"
+      "network": "ethereum",
+      "decimals": 18
     }
   ]
 }
