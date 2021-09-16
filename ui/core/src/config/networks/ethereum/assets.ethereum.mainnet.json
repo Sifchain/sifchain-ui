@@ -745,11 +745,13 @@
     },
     {
       "address": "0x217ddead61a42369a266f1fb754eb5d3ebadc88a",
-      "imageUrl": "https://assets.coingecko.com/coins/images/15482/small/donkey_logo.jpg?1621012824",
-      "name": "Donkey",
-      "symbol": "DON",
       "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/15482/small/donkey_logo.jpg?1621012824",
+      "name": "Don-key",
       "network": "ethereum",
+      "priceUsd": 1.00,
+      "symbol": "DON",
+      "transferLimit": "99999999999999999999999",
       "homeNetwork": "ethereum"
     },
     {
@@ -875,8 +877,7 @@
       "name": "Tokemak",
       "symbol": "TOKE",
       "decimals": 18,
-      "network": "ethereum",
-      "homeNetwork": "ethereum"
+      "network": "ethereum"
     }
   ]
 }
