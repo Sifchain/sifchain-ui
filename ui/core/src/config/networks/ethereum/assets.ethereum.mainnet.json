@@ -705,7 +705,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
       "name": "Terra USD",
       "network": "ethereum",
-      "priceUsd": 1.00,
+      "priceUsd": 1.0,
       "symbol": "UST",
       "transferLimit": "99999999999999999999999999999",
       "homeNetwork": "ethereum"
@@ -716,7 +716,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/13422/small/frax_logo.png?1608476506",
       "name": "Frax",
       "network": "ethereum",
-      "priceUsd": 1.00,
+      "priceUsd": 1.0,
       "symbol": "FRAX",
       "transferLimit": "99999999999999999999999999999",
       "homeNetwork": "ethereum"
@@ -727,7 +727,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/13423/small/frax_share.png?1608478989",
       "name": "Frax Share",
       "network": "ethereum",
-      "priceUsd": 1.00,
+      "priceUsd": 1.0,
       "symbol": "FXS",
       "transferLimit": "99999999999999999999999",
       "homeNetwork": "ethereum"
@@ -738,7 +738,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/14830/small/7xjpHaG.png?1618564961",
       "name": "Unizen",
       "network": "ethereum",
-      "priceUsd": 1.00,
+      "priceUsd": 1.0,
       "symbol": "ZCX",
       "transferLimit": "99999999999999999999999",
       "homeNetwork": "ethereum"
@@ -748,10 +748,10 @@
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/15482/small/donkey_logo.jpg?1621012824",
       "name": "Don-key",
-      "network": "ethereum",
-      "priceUsd": 1.00,
+      "priceUsd": 1.0,
       "symbol": "DON",
       "transferLimit": "99999999999999999999999",
+      "network": "ethereum",
       "homeNetwork": "ethereum"
     },
     {
@@ -877,6 +877,7 @@
       "name": "Tokemak",
       "symbol": "TOKE",
       "network": "ethereum",
+      "homeNetwork": "ethereum",
       "decimals": 18
     }
   ]
