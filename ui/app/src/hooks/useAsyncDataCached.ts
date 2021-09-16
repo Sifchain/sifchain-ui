@@ -13,9 +13,11 @@ export const useAsyncDataCached = <F extends () => Promise<any>>(
   }
   const state = cache.get(cacheKey) as AsyncDataState<F>;
 
-  watch(deps, () => {
-    state.reload.value();
-  });
+  if (deps.length > 0) {
+    watch(deps, () => {
+      state.reload.value();
+    });
+  }
 
   return state;
 };

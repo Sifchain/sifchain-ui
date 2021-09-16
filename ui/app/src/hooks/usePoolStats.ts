@@ -37,7 +37,7 @@ const hasLoggedError: Record<string, boolean> = {};
 export const usePoolStats = () => {
   const { store, services } = useCore();
 
-  const data = useAsyncDataCached("poolStats", async () => {
+  const poolStatsRes = useAsyncDataCached("poolStats", async () => {
     let cryptoeconSummaryAPY = await services.cryptoeconomics
       .fetchSummaryAPY()
       .catch((e) => console.error(e));
@@ -74,7 +74,7 @@ export const usePoolStats = () => {
   });
 
   const isLoading = computed(() => {
-    return data.isLoading.value || !Object.keys(store.pools).length;
+    return poolStatsRes.isLoading.value || !Object.keys(store.pools).length;
   });
 
   const pools = computed(() => {
@@ -90,7 +90,7 @@ export const usePoolStats = () => {
       });
 
     const poolStatLookup: Record<string, PoolStat> = {};
-    data.data.value?.poolData.pools.forEach((poolStat) => {
+    poolStatsRes.data.value?.poolData.pools.forEach((poolStat) => {
       const asset =
         noPrefixAssetLookup[poolStat.symbol.toLowerCase()] ||
         noPrefixAssetLookup[poolStat.symbol];
@@ -110,6 +110,9 @@ export const usePoolStats = () => {
       };
     });
 
+    // poolStats endpoint might not have data for EVERY pool that exists
+    // in store.pools. so use store.pools as source of truth for which pools
+    // exist, then if poolStats doesn't have data default to empty.
     const pools = Object.values(store.pools);
     return pools.map((pool) => {
       const [, externalAssetAmount] = pool.amounts;
@@ -126,12 +129,12 @@ export const usePoolStats = () => {
   });
 
   const wrappedData = computed(() => {
-    if (isLoading.value || !data.data.value) return null;
+    if (isLoading.value || !poolStatsRes.data.value) return null;
 
     return {
-      ...data.data.value,
+      ...poolStatsRes.data.value,
       poolData: {
-        ...data.data.value.poolData,
+        ...poolStatsRes.data.value.poolData,
         pools: pools.value,
       },
     };
@@ -140,6 +143,6 @@ export const usePoolStats = () => {
   return {
     isLoading,
     data: wrappedData,
-    isError: data.isError,
+    isError: poolStatsRes.isError,
   };
 };

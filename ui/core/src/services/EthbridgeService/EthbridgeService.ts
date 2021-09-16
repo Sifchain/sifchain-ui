@@ -159,6 +159,7 @@ export default function createEthbridgeService({
         }
       }
     },
+    loadWeb3: ensureWeb3,
     createPegTx,
     async approveBridgeBankSpend(account: string, amount: IAssetAmount) {
       // This will popup an approval request in metamask
@@ -211,8 +212,10 @@ export default function createEthbridgeService({
         ?.get(Network.SIFCHAIN)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
 
-      let tokenAddress = (await this.fetchTokenAddress(sifAsset)) || "";
-      tokenAddress = +tokenAddress ? tokenAddress : sifAsset.ibcDenom || "";
+      let tokenAddress = await this.fetchTokenAddress(sifAsset);
+      tokenAddress =
+        tokenAddress && +tokenAddress ? tokenAddress : sifAsset.ibcDenom;
+
       tokenAddress = tokenAddress || ETH_ADDRESS;
       console.log("burnToEthereum: start: ", tokenAddress);
 
@@ -456,6 +459,7 @@ export default function createEthbridgeService({
         asset.symbol,
         "e" + asset.symbol,
       ].filter(Boolean);
+
       for (let symbol of possibleSymbols) {
         // Fetch the token address from bridgebank
         let tokenAddress = await bridgeBankContract.methods

@@ -13,8 +13,8 @@ import {
   IBCInterchainTx,
 } from "./_InterchainApi";
 import { SifchainChain, CosmoshubChain } from "../../services/ChainsService";
-import { isBroadcastTxFailure } from "@cosmjs/stargate";
-import { findAttribute, parseRawLog, Log } from "@cosmjs/stargate/build/logs";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { findAttribute, parseLogs, Log } from "@cosmjs/launchpad/build/logs";
 import { createIteratorSubject } from "../../utils/iteratorSubject";
 
 import { IBCTransferSubscriber } from "./utils";
@@ -56,7 +56,7 @@ export class CosmosSifchainInterchainApi
             });
             return;
           } else {
-            const logs = parseRawLog(tx.rawLog);
+            const logs = parseLogs(tx.logs);
             emit({
               type: "sent",
               tx: { state: "completed", hash: tx.transactionHash },

@@ -5,6 +5,7 @@ import {
 } from "../../services/CryptoeconomicsService";
 import { Claim } from "./claim";
 import { Network } from "../../entities";
+import { Services } from "services";
 
 export const BLOCK_TIME_MS = 1000 * 60 * 200;
 
@@ -14,10 +15,7 @@ export const LM_STORAGE_KEY = "NOTIFIED_LM_STORAGE";
 export default function rewardActions({
   services,
   store,
-}: UsecaseContext<
-  "bus" | "cryptoeconomics" | "dispensation" | "sif" | "storage",
-  "wallet"
->) {
+}: UsecaseContext<keyof Services, "wallet">) {
   function hasUserReachedMaturity(userData: CryptoeconomicsUserData) {
     if (!userData) return false;
 

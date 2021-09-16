@@ -21,6 +21,8 @@ export enum PoolState {
   VALID_INPUT,
   NO_LIQUIDITY,
   ZERO_AMOUNTS_NEW_POOL,
+  INSUFFICIENT_FUNDS_FROM,
+  INSUFFICIENT_FUNDS_TO,
 }
 
 export function useReactivePoolCalculator(input: {
@@ -89,17 +91,12 @@ export function useReactivePoolCalculator(input: {
   });
 
   const fromBalanceOverdrawn = computed(() => {
-    return !tokenABalance.value?.greaterThanOrEqual(
-      tokenAField.fieldAmount.value || "0",
-    );
+    return tokenABalance.value?.lessThan(tokenAField.fieldAmount.value || "0");
   });
 
-  const toBalanceOverdrawn = computed(
-    () =>
-      !tokenBBalance.value?.greaterThanOrEqual(
-        tokenBField.fieldAmount.value || "0",
-      ),
-  );
+  const toBalanceOverdrawn = computed(() => {
+    return tokenBBalance.value?.lessThan(tokenBField.fieldAmount.value || "0");
+  });
 
   const liquidityPool = computed(() => {
     if (preExistingPool.value) {
@@ -355,10 +352,15 @@ export function useReactivePoolCalculator(input: {
 
     // Insufficient Funds
     if (fromBalanceOverdrawn.value || toBalanceOverdrawn.value) {
-      return PoolState.INSUFFICIENT_FUNDS;
+      if (fromBalanceOverdrawn.value && toBalanceOverdrawn.value) {
+        return PoolState.INSUFFICIENT_FUNDS;
+      } else if (fromBalanceOverdrawn.value) {
+        return PoolState.INSUFFICIENT_FUNDS_FROM;
+      } else {
+        return PoolState.INSUFFICIENT_FUNDS_TO;
+      }
     }
 
-    // Valid yay!
     return PoolState.VALID_INPUT;
   });
 

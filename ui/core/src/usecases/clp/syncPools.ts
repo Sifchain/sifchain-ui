@@ -4,6 +4,7 @@ import { Pool, AssetAmount, Amount, Network } from "../../entities";
 import { isIBCDenom } from "../../services/utils/IbcService";
 import { createPoolKey } from "../../utils";
 import { AccountPool } from "../../store/pools";
+import pLimit from "p-limit";
 
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<
@@ -83,33 +84,37 @@ export function SyncPools(
       address,
     );
 
+    const limit = pLimit(3);
+
     await Promise.all(
-      accountPoolSymbols.map(async (symbol) => {
-        const entry = registry.find(
-          (item) => item.denom === symbol || item.baseDenom === symbol,
-        );
-        if (!entry) return null;
+      accountPoolSymbols.map((symbol) =>
+        limit(async () => {
+          const entry = registry.find(
+            (item) => item.denom === symbol || item.baseDenom === symbol,
+          );
+          if (!entry) return null;
 
-        const asset = chains
-          .get(Network.SIFCHAIN)
-          .findAssetWithLikeSymbol(entry.baseDenom);
+          const asset = chains
+            .get(Network.SIFCHAIN)
+            .findAssetWithLikeSymbol(entry.baseDenom);
 
-        if (!asset) return;
+          if (!asset) return;
 
-        const lp = await clp.getLiquidityProvider({
-          asset,
-          lpAddress: address,
-        });
+          const lp = await clp.getLiquidityProvider({
+            asset,
+            lpAddress: address,
+          });
 
-        if (!lp || !asset) return;
+          if (!lp || !asset) return;
 
-        const pool = createPoolKey(
-          asset,
-          chains.get(Network.SIFCHAIN).nativeAsset,
-        );
+          const pool = createPoolKey(
+            asset,
+            chains.get(Network.SIFCHAIN).nativeAsset,
+          );
 
-        currentAccountPools[pool] = { lp, pool };
-      }),
+          currentAccountPools[pool] = { lp, pool };
+        }),
+      ),
     );
 
     Object.keys(store.accountpools[address]).forEach((poolId) => {
