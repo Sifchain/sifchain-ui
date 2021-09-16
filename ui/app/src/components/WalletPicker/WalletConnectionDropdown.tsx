@@ -56,15 +56,15 @@ export default defineComponent({
         },
       },
       // Some wallets have no disconnect..
-      {
-        hide: !props.connection.disconnect,
-        tag: "button",
-        name: "Disconnect",
-        icon: "interactive/link" as IconName,
-        props: {
-          onClick: props.connection.disconnect,
-        },
-      },
+      // {
+      //   hide: !props.connection.disconnect,
+      //   tag: "button",
+      //   name: "Disconnect",
+      //   icon: "interactive/link" as IconName,
+      //   props: {
+      //     onClick: props.connection.disconnect,
+      //   },
+      // },
       {
         tag: "a",
         name: "Block Explorer",
@@ -80,7 +80,7 @@ export default defineComponent({
     return () => (
       <div class="w-[124px]" onClick={() => props.onAction()}>
         {actionsRef.value.map((item) => {
-          if (item.hide) return null;
+          // if (item.hide) return null;
           const Cmp = item.tag as any;
           return (
             <Cmp

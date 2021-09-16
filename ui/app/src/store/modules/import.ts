@@ -11,6 +11,7 @@ import {
 import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
+import { flagsStore } from "./flags";
 
 export type ImportDraft = {
   amount: string;
@@ -38,12 +39,16 @@ export const importStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
-      const IBC_ETHEREUM_ENABLED = localStorage.IBC_ETHEREUM_ENABLED || false;
+      const IBC_ETHEREUM_ENABLED =
+        flagsStore.state.enableEthereumToCosmosImports;
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
+        flagsStore.state.enableNativeTokenIBCExports;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
+      );
+      const isPeggyWhitelistedIBCAsset = useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(
+        asset.symbol,
       );
       return (
         useChainsList()
@@ -69,9 +74,10 @@ export const importStore = Vuextra.createStore({
               }
             }
           })
-          .filter((n) => {
-            if (isExternalIBCAsset && !IBC_ETHEREUM_ENABLED) {
-              return n.network !== Network.ETHEREUM;
+          .filter((c) => {
+            if (isExternalIBCAsset && c.network === Network.ETHEREUM) {
+              // if it's a peggy-whitelisted IBC token and IBC ethereum is enabled
+              return isPeggyWhitelistedIBCAsset && IBC_ETHEREUM_ENABLED;
             }
             return true;
           })
@@ -90,7 +96,8 @@ export const importStore = Vuextra.createStore({
   }),
   actions: (ctx) => ({
     async runImport(payload: { assetAmount: IAssetAmount }) {
-      if (!payload.assetAmount) throw new Error("Please provide an amount");
+      if (!payload.assetAmount || !payload.assetAmount.greaterThan("0"))
+        throw new Error("Please provide an amount");
       self.setPegEvent(undefined);
 
       const interchain = useCore().usecases.interchain(
@@ -106,11 +113,8 @@ export const importStore = Vuextra.createStore({
       });
 
       for await (const ev of executable.generator()) {
-        console.log("setPegEvent", ev);
         self.setPegEvent(ev);
       }
-
-      const chainTx = await executable.awaitResult();
     },
   }),
 

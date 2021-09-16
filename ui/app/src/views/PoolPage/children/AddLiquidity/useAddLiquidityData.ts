@@ -234,6 +234,9 @@ export const useAddLiquidityData = () => {
     bPerARatioProjectedMessage,
     hasActiveSafetyLag,
     nextStepMessage: computed(() => {
+      if (!accountStore.state.sifchain.connected) {
+        return "Connect Sifchain Wallet";
+      }
       switch (state.value) {
         case PoolState.SELECT_TOKENS:
           return "Select Tokens";
@@ -243,6 +246,10 @@ export const useAddLiquidityData = () => {
           return "Both inputs required";
         case PoolState.INSUFFICIENT_FUNDS:
           return "Insufficient Funds";
+        case PoolState.INSUFFICIENT_FUNDS_FROM:
+          return `Insufficient ${fromAsset.value?.displaySymbol.toUpperCase()} Balance`;
+        case PoolState.INSUFFICIENT_FUNDS_TO:
+          return `Insufficient ${toAsset.value?.displaySymbol.toUpperCase()} Balance`;
         case PoolState.VALID_INPUT:
           return preExistingPool.value ? "Add liquidity" : "Create Pool";
       }

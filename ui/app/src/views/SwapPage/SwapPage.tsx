@@ -1,4 +1,10 @@
-import { ComponentPublicInstance, defineComponent, ref, watch } from "vue";
+import {
+  ComponentPublicInstance,
+  defineComponent,
+  onMounted,
+  ref,
+  watch,
+} from "vue";
 import PageCard from "@/components/PageCard";
 import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
@@ -9,6 +15,7 @@ import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { RouterView, useRouter } from "vue-router";
+import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -26,6 +33,16 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
     const isInverted = ref(false);
+
+    // While swap page is open, ensure pools update
+    // pretty frequently so prices stay up to date...
+    usePublicPoolsSubscriber({
+      delay: ref(60 * 1000),
+    });
+
+    onMounted(() => {
+      data.fromAmount.value = data.toAmount.value = "0";
+    });
 
     watch([data.pageState], () => {
       switch (data.pageState.value) {
@@ -118,26 +135,25 @@ export default defineComponent({
             }}
           ></SlippageTolerance>
           <SwapDetails
-            asset={data.toAsset}
-            price={data.priceMessage.value?.replace("per", "/")}
+            fromAsset={data.fromAsset}
+            toAsset={data.toAsset}
+            priceRatio={data.priceRatio}
             priceImpact={(data.priceImpact.value ?? "") + "%"}
             liquidityProviderFee={data.providerFee.value ?? ""}
             minimumReceived={data.minimumReceived.value}
           />
-          {
-            <Button.CallToAction
-              onClick={() => {
-                if (!data.nextStepAllowed.value) {
-                  return appWalletPicker.show();
-                }
-                data.handleNextStepClicked();
-              }}
-              disabled={!data.nextStepAllowed.value}
-              class="mt-[10px]"
-            >
-              {data.nextStepMessage.value}
-            </Button.CallToAction>
-          }
+          <Button.CallToAction
+            onClick={() => {
+              if (!data.nextStepAllowed.value) {
+                return appWalletPicker.show();
+              }
+              data.handleNextStepClicked();
+            }}
+            disabled={!data.nextStepAllowed.value}
+            class="mt-[10px]"
+          >
+            {data.nextStepMessage.value}
+          </Button.CallToAction>
           <RouterView></RouterView>
           <div class="pb-4" />
         </PageCard>

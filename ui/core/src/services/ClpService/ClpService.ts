@@ -70,9 +70,17 @@ export default function createClpService({
   sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
 }: ClpServiceContext): IClpService {
   const client = sifUnsignedClient;
-  const dexClientPromise = NativeDexClient.connect(sifRpcUrl);
+  const dexClientPromise = NativeDexClient.connect(
+    sifRpcUrl,
+    sifApiUrl,
+    sifChainId,
+  );
 
-  const tokenRegistry = TokenRegistryService({ sifRpcUrl });
+  const tokenRegistry = TokenRegistryService({
+    sifRpcUrl,
+    sifApiUrl,
+    sifChainId,
+  });
 
   const instance: IClpService = {
     async getRawPools() {

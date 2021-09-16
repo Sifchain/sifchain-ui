@@ -13,6 +13,9 @@ import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { DistributionType } from "../../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
+import { RewardsChart } from "./RewardsChart";
+import AssetIcon from "@/components/AssetIcon";
+import { flagsStore } from "@/store/modules/flags";
 
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
@@ -33,7 +36,11 @@ export default defineComponent({
   name: "ClaimRewardsModal",
   props: {
     address: { type: String, required: true },
-    data: { type: Object as PropType<CryptoeconomicsUserData>, required: true },
+    userData: {
+      type: Object as PropType<CryptoeconomicsUserData>,
+      required: true,
+    },
+    summaryAPY: { type: Number },
     rewardType: {
       type: Object as PropType<CryptoeconomicsRewardType>,
       required: true,
@@ -48,60 +55,126 @@ export default defineComponent({
         hash: "",
         state: "requested",
       };
-      // const status = await usecases.reward.claim({
-      //   // claimType: claimTypeMap[props.rewardType] as "2" | "3",
-      //   claimType:
-      //     props.rewardType === "lm"
-      //       ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
-      //       : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
-      //   fromAddress: props.address,
-      //   rewardProgramName: "IBC_REWARDS_V1",
-      // });
-      // transactionStatusRef.value = status;
+      const status = await usecases.reward.claim({
+        // claimType: (claimTypeMap[
+        //   props.rewardType
+        // ] as unknown) as DistributionType,
+        claimType:
+          props.rewardType === "lm"
+            ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
+            : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
+        fromAddress: props.address,
+        rewardProgramName: "COSMOS_IBC_REWARDS_V1",
+      });
+      transactionStatusRef.value = status;
     };
+
+    const rewardsAtMaturityAfterClaim = computed(() => {
+      return (
+        (props.summaryAPY || 0) *
+        0.01 *
+        (props.userData?.user?.yearsToMaturity || 0) *
+        (props.userData?.user?.totalDepositedAmount || 0)
+      );
+    });
 
     const transactionDetails = useTransactionDetails({
       tx: transactionStatusRef,
     });
 
-    const detailsRef = computed<[any, any][]>(() => [
-      [
-        "Claimable Rewards",
-        <span class="flex items-center font-mono">
-          {formatRowanNumber(
-            props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
-          )}
-          {
-            <TokenIcon
-              assetValue={Asset.get("rowan")}
-              size={16}
-              class="ml-[4px]"
-            />
-          }
-        </span>,
-      ],
-      [
-        "Projected Full Amount",
-        <span class="flex items-center font-mono">
-          {formatRowanNumber(
-            props.data?.user?.totalCommissionsAndRewardsAtMaturity,
-          )}
-          {
-            <TokenIcon
-              assetValue={Asset.get("rowan")}
-              size={16}
-              class="ml-[4px]"
-            />
-          }
-        </span>,
-      ],
-      [
-        "Maturity Date",
-        props.data?.user?.maturityDate.toLocaleDateString() +
-          ", " +
-          props.data?.user?.maturityDate.toLocaleTimeString(),
-      ],
-    ]);
+    const detailsRef = computed<[any, any][]>(
+      () =>
+        [
+          [
+            "Claimable Rewards Today",
+            <span class="flex items-center font-mono">
+              {formatRowanNumber(
+                props.userData?.user
+                  ?.totalClaimableCommissionsAndClaimableRewards,
+              )}
+              {
+                <TokenIcon
+                  assetValue={Asset.get("rowan")}
+                  size={16}
+                  class="ml-[4px]"
+                />
+              }
+            </span>,
+          ],
+          [
+            "Maturity Date",
+            props.userData?.user?.maturityDate.toLocaleDateString() +
+              ", " +
+              props.userData?.user?.maturityDate.toLocaleTimeString(),
+          ],
+          [
+            <span class="flex items-center">Projected Full Reward</span>,
+            <span
+              class={[
+                `flex items-center font-mono`,
+                flagsStore.state.claimsGraph
+                  ? "border-b border-solid border-accent-base border-opacity-80"
+                  : "",
+              ]}
+            >
+              {formatRowanNumber(
+                props.userData?.user?.totalCommissionsAndRewardsAtMaturity,
+              )}
+              {
+                <TokenIcon
+                  assetValue={Asset.get("rowan")}
+                  size={16}
+                  class="ml-[4px]"
+                />
+              }
+            </span>,
+          ],
+          (() => {
+            const totalLessRowan = parseFloat(
+              formatRowanNumber(
+                Math.ceil(
+                  (props.userData?.user
+                    ?.claimedCommissionsAndRewardsAwaitingDispensation || 0) +
+                    (props.userData?.user?.dispensed || 0) +
+                    (props.userData?.user
+                      ?.totalCommissionsAndRewardsAtMaturity || 0) -
+                    rewardsAtMaturityAfterClaim.value -
+                    (props.userData?.user
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0),
+                ),
+              ),
+            ).toFixed(0);
+            if (+totalLessRowan < 0) return;
+            return [
+              <span class="flex items-center">
+                Projected Reward Difference if Claimed Today
+                <Button.InlineHelp>
+                  If you claim today, you will end up with approximately{" "}
+                  {totalLessRowan} less ROWAN on your maturity date of{" "}
+                  {props.userData?.user?.maturityDate.toLocaleDateString()}.
+                </Button.InlineHelp>
+              </span>,
+              <span
+                class={[
+                  `flex items-center font-mono`,
+                  flagsStore.state.claimsGraph
+                    ? "border-b border-solid border-info-base border-opacity-80"
+                    : "",
+                ]}
+              >
+                -{totalLessRowan}
+                {
+                  <TokenIcon
+                    assetValue={Asset.get("rowan")}
+                    size={16}
+                    class="ml-[4px]"
+                  />
+                }
+              </span>,
+            ];
+          })(),
+        ].filter((item) => item != null) as [any, any],
+    );
 
     return () => {
       if (transactionStatusRef.value) {
@@ -125,41 +198,41 @@ export default defineComponent({
           icon="navigation/rewards"
           showClose
           onClose={props.onClose}
+          class="w-[610px]"
         >
           <p class="text-[22px]">
             Are you sure you want to claim your rewards?
           </p>
           <p class="mt-[10px]">
-            Claiming your rewards will restart all of your tickets at this very
-            moment.
-            <br />
-            <br />
-            Resetting your tickets will release your rewards based on its
-            current multiplier. Reset tickets then begin empty with a 25%
-            multiplier again and will continue to accumulate if within the
-            eligibility timeframe.
-            <br />
-            <br /> Unless you have reached full maturity, we recommend that you
-            do not claim so you can realize your full rewards. Please note that
-            the rewards will be dispensed at the end of the week.
-            <br />
-            <br />
-            Find out{" "}
+            If you claim your rewards now, you will accrue less rewards in total
+            on your currently pooled assets than if you wait to claim until your
+            Maturity Date. For more information about our rewards program,{" "}
             <a
               href="https://docs.sifchain.finance/resources/rewards-programs"
               rel="noopener noreferrer"
               target="_blank"
               class="underline"
             >
-              additional information here
+              click here
             </a>
             .
-            <Form.Details class="mt-[16px]" details={detailsRef.value} />
+            {flagsStore.state.claimsGraph && (
+              <div class="mt-[32px]">
+                <RewardsChart
+                  rewardsAtMaturityAfterClaim={
+                    rewardsAtMaturityAfterClaim.value
+                  }
+                  userData={props.userData}
+                />
+              </div>
+            )}
+            <Form.Details class="mt-[24px]" details={detailsRef.value} />
           </p>
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
             Claim{" "}
             {formatRowanNumber(
-              props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
+              props.userData?.user
+                ?.totalClaimableCommissionsAndClaimableRewards,
             )}{" "}
             Rowan
           </Button.CallToAction>

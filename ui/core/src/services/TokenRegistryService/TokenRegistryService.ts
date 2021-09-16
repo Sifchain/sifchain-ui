@@ -4,6 +4,8 @@ import { NativeDexClient } from "../utils/SifClient/NativeDexClient";
 
 export type TokenRegistryContext = {
   sifRpcUrl: string;
+  sifApiUrl: string;
+  sifChainId: string;
 };
 
 let tokenRegistryPromise: Promise<RegistryEntry[]>;
@@ -11,7 +13,11 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
   const loadTokenRegistry = async () => {
     if (!tokenRegistryPromise) {
       tokenRegistryPromise = (async () => {
-        const dex = await NativeDexClient.connect(context.sifRpcUrl);
+        const dex = await NativeDexClient.connect(
+          context.sifRpcUrl,
+          context.sifApiUrl,
+          context.sifChainId,
+        );
         const res = await dex.query?.tokenregistry.Entries({});
         const data = res?.registry?.entries;
         if (!data) throw new Error("Whitelist not found");

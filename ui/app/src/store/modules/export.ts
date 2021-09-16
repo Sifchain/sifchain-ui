@@ -14,6 +14,7 @@ import { PegEvent } from "../../../../core/src/usecases/peg/peg";
 import { UnpegEvent } from "../../../../core/src/usecases/peg/unpeg";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
+import { flagsStore } from "./flags";
 
 export type ExportDraft = {
   amount: string;
@@ -39,12 +40,16 @@ export const exportStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
-      const IBC_ETHEREUM_ENABLED = localStorage.IBC_ETHEREUM_ENABLED || false;
+      const IBC_ETHEREUM_ENABLED =
+        flagsStore.state.enableEthereumToCosmosImports;
       const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC;
+        flagsStore.state.enableNativeTokenIBCExports;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
+      );
+      const isPeggyWhitelistedIBCAsset = useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(
+        asset.symbol,
       );
       return (
         useChainsList()
@@ -70,9 +75,10 @@ export const exportStore = Vuextra.createStore({
               }
             }
           })
-          .filter((n) => {
-            if (isExternalIBCAsset && !IBC_ETHEREUM_ENABLED) {
-              return n.network !== Network.ETHEREUM;
+          .filter((c) => {
+            if (isExternalIBCAsset && c.network === Network.ETHEREUM) {
+              // if it's a peggy-whitelisted IBC token and IBC ethereum is enabled
+              return isPeggyWhitelistedIBCAsset && IBC_ETHEREUM_ENABLED;
             }
             return true;
           })
@@ -108,8 +114,6 @@ export const exportStore = Vuextra.createStore({
         console.log("setUnpegEvent", ev);
         self.setUnpegEvent(ev);
       }
-
-      const chainTx = await executable.awaitResult();
     },
   }),
 

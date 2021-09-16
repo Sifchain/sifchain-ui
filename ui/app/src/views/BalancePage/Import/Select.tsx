@@ -1,8 +1,8 @@
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, watch } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network } from "@sifchain/sdk";
+import { AssetAmount, Network } from "@sifchain/sdk";
 import {
   SelectDropdown,
   SelectDropdownOption,
@@ -22,12 +22,13 @@ import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
+import { exportStore } from "@/store/modules/export";
 
 export default defineComponent({
   name: "ImportSelect",
 
   setup() {
-    const { store } = useCore();
+    const { store, services } = useCore();
     const appWalletPicker = useAppWalletPicker();
     const selectIsOpen = ref(false);
     const router = useRouter();
@@ -39,6 +40,7 @@ export default defineComponent({
       chainsRef,
       importDraft,
       exitImport,
+      networkBalances,
     } = useImportData();
 
     const inputRef = useManagedInputValueRef(
@@ -119,6 +121,11 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
+    const createChainSortParam = (network: Network) => {
+      // sort by type, then by network, so types are grouped together
+      // should probably have some grouping mechanism in the selection dropdown in the future
+      return services.chains.get(network).chainConfig.chainType + network;
+    };
     const optionsRef = computed<SelectDropdownOption[]>(
       () =>
         networksRef.value
@@ -126,7 +133,11 @@ export default defineComponent({
             content: useChains().get(network).displayName,
             value: network,
           }))
-          .sort((a, b) => a.content.localeCompare(b.content)) || [],
+          .sort((a, b) =>
+            createChainSortParam(a.value).localeCompare(
+              createChainSortParam(b.value),
+            ),
+          ) || [],
     );
     const networkOpenRef = ref(false);
 
@@ -140,16 +151,26 @@ export default defineComponent({
           ref(tokenRef.value.asset.symbol),
           tokenRef.value.amount,
         );
+        const nextAssetAmount = AssetAmount(
+          tokenRef.value.asset,
+          afterMaxValue,
+        );
+        const nextAmount = afterMaxValue.lessThan("0")
+          ? "0.0"
+          : format(nextAssetAmount.amount, nextAssetAmount.asset);
         rootStore.import.setDraft({
-          amount: afterMaxValue.lessThan("0")
-            ? "0.0"
-            : format(afterMaxValue, tokenRef.value.asset, {
-                mantissa: decimals,
-              }),
+          amount: nextAmount,
         });
       }
     };
     const boundAsset = computed(() => tokenRef.value?.asset);
+
+    const networkBalanceEntry = computed(() =>
+      networkBalances.data.value.find(
+        (v) => v.symbol === tokenRef.value?.asset.symbol,
+      ),
+    );
+
     return () => (
       <Modal
         heading="Import Token to Sifchain"
@@ -233,12 +254,21 @@ export default defineComponent({
           <div class="h-[40px] flex items-end justify-end">
             {!!tokenRef.value && (
               <span
-                class="text-base opacity-50 hover:text-accent-base cursor-pointer"
+                class="text-base opacity-50 hover:text-accent-base cursor-pointer flex items-center"
                 onClick={handleSetMax}
               >
                 Balance:{" "}
-                {(tokenRef.value && formatAssetAmount(tokenRef.value.amount)) ??
-                  "0"}
+                {!networkBalances.hasLoaded.value ? (
+                  <AssetIcon
+                    icon="interactive/anim-racetrack-spinner"
+                    class="ml-[4px] mt-[2px]"
+                    size={16}
+                  />
+                ) : networkBalanceEntry.value ? (
+                  formatAssetAmount(networkBalanceEntry.value)
+                ) : (
+                  "0"
+                )}
               </span>
             )}
           </div>

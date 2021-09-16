@@ -636,11 +636,12 @@
       "network": "ethereum",
       "priceUsd": 0,
       "symbol": "LEASH",
-      "transferLimit": "99999999999999999999999"
+      "transferLimit": "99999999999999999999999",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "",
-      "decimals": 18,
+      "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       "name": "Atom",
       "network": "ethereum",
@@ -652,7 +653,7 @@
     },
     {
       "address": "",
-      "decimals": 18,
+      "decimals": 6,
       "imageUrl": "https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676",
       "name": "AKT",
       "network": "ethereum",
@@ -663,16 +664,40 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
-      "decimals": 18,
-      "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
-      "name": "DVPN",
+      "symbol": "uiris",
+      "decimals": 6,
+      "name": "IRIS",
       "network": "ethereum",
-      "homeNetwork": "sentinel",
-      "priceUsd": 0,
-      "symbol": "udvpn",
-      "displaySymbol": "dvpn",
-      "transferLimit": "99999999999999999999999"
+      "label": "IRIS",
+      "imageUrl": "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
+      "displaySymbol": "iris",
+      "homeNetwork": "iris",
+      "transferLimit": "99999999999999999999999",
+      "address": ""
+    },
+    {
+      "symbol": "uxprt",
+      "displaySymbol": "xprt",
+      "decimals": 6,
+      "name": "xprt",
+      "network": "ethereum",
+      "label": "xprt",
+      "imageUrl": "https://persistence.one/favicon.png",
+      "homeNetwork": "persistence",
+      "transferLimit": "99999999999999999999999",
+      "address": ""
+    },
+    {
+      "symbol": "uregen",
+      "displaySymbol": "regen",
+      "decimals": 6,
+      "name": "regen",
+      "network": "ethereum",
+      "label": "regen",
+      "imageUrl": "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
+      "homeNetwork": "regen",
+      "transferLimit": "99999999999999999999999",
+      "address": ""
     },
     {
       "address": "0xa47c8bf37f92abed4a126bda807a7b7498661acd",

@@ -1,52 +1,64 @@
-import { computed, ComputedRef, ref } from "vue";
+import { computed, ComputedRef, ref, watch } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { getExistingClaimsData } from "@/componentsLegacy/shared/utils";
 import { accountStore } from "@/store/modules/accounts";
+import { QueryClaimsByTypeRequest } from "../../../../core/src/generated/proto/sifnode/dispensation/v1/query";
+import { NativeDexClient } from "../../../../core/src/services/utils/SifClient/NativeDexClient";
+import { DistributionType } from "../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
 
 // TODO REACTIVE
 
 const useLiquidityMiningData = (address: ComputedRef<string>) => {
   const { services } = useCore();
-  const addressChanged = computed(() => !!address.value);
-  return computed(() => {
-    return useAsyncData(async () => {
-      // return null;
-      if (!address.value) return null;
-      return services.cryptoeconomics.fetchLmData({
-        address: address.value,
-      });
-    }, addressChanged);
-  });
+  return useAsyncData(async () => {
+    // return null;
+    if (!address.value) return null;
+    return services.cryptoeconomics.fetchLmData({
+      address: address.value,
+    });
+  }, [address]);
 };
 
 const useValidatorSubsidyData = (address: ComputedRef<string>) => {
   const { services } = useCore();
-  return computed(() => {
-    return useAsyncData(async () => {
-      return null;
-      if (!address.value) return null;
-      return services.cryptoeconomics.fetchVsData({
-        address: address.value,
-      });
+  return useAsyncData(async () => {
+    return null;
+    if (!address.value) return null;
+    return services.cryptoeconomics.fetchVsData({
+      address: address.value,
     });
-  });
+  }, [address]);
 };
 
 const useExistingClaimsData = (
   address: ComputedRef<string>,
-  sifApiUrl: string,
+  sifRpcUrl: string,
 ) => {
-  return computed(() => {
-    return useAsyncData(async () => {
-      return {
-        lm: false,
-        vs: false,
-      };
-      if (!address.value) return null;
-      return getExistingClaimsData(address, sifApiUrl);
+  const res = useAsyncData(async () => {
+    if (!address.value) return null;
+    const nativeDexClient = await NativeDexClient.connect(sifRpcUrl);
+    const claims = await nativeDexClient.query.dispensation.ClaimsByType({
+      userClaimType: DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING,
     });
-  });
+    const userClaims = claims.claims.filter(
+      (c) => c.userAddress === address.value,
+    );
+    const lm = userClaims.some(
+      (c) =>
+        c.userClaimType === DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING,
+    );
+    const vs = userClaims.some(
+      (c) =>
+        c.userClaimType ===
+        DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
+    );
+    return {
+      lm: lm,
+      vs: vs,
+    };
+  }, [address]);
+  return res;
 };
 
 export const useRewardsPageData = () => {
@@ -56,21 +68,23 @@ export const useRewardsPageData = () => {
   const lmRes = useLiquidityMiningData(address);
 
   const vsRes = useValidatorSubsidyData(address);
-  const claimsRes = useExistingClaimsData(address, config.sifApiUrl);
+  const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);
+
+  const summaryAPYRes = useAsyncData(() =>
+    services.cryptoeconomics.fetchSummaryAPY(),
+  );
 
   const isLoading = computed(() => {
     return (
-      lmRes.value.isLoading.value ||
-      vsRes.value.isLoading.value ||
-      claimsRes.value.isLoading.value
+      !accountStore.state.sifchain.address ||
+      lmRes.isLoading.value ||
+      summaryAPYRes.isLoading.value ||
+      vsRes.isLoading.value ||
+      claimsRes.isLoading.value
     );
   });
   const error = computed(() => {
-    return (
-      lmRes.value.error.value ||
-      vsRes.value.error.value ||
-      claimsRes.value.error.value
-    );
+    return lmRes.error.value || vsRes.error.value || claimsRes.error.value;
   });
 
   const vsInfoLink = computed(() =>
@@ -86,10 +100,12 @@ export const useRewardsPageData = () => {
     address,
     isLoading,
     error,
-    lmData: computed(() => lmRes.value.data.value),
-    vsData: computed(() => vsRes.value.data.value),
-    vsClaim: computed(() => claimsRes.value.data.value?.lm),
-    lmClaim: computed(() => claimsRes.value.data.value?.vs),
+    lmData: computed(() => lmRes.data.value),
+    vsData: computed(() => vsRes.data.value),
+    vsClaim: computed(() => claimsRes.data.value?.vs),
+    lmClaim: computed(() => claimsRes.data.value?.lm),
+    reloadClaims: () => claimsRes.reload.value(),
+    summaryAPY: computed(() => summaryAPYRes.data.value),
     vsInfoLink,
     lmInfoLink,
   };

@@ -81,14 +81,13 @@ export function useSwapCalculator(input: {
   const fromField = useField(input.fromAmount, input.fromSymbol);
   const toField = useField(input.toAmount, input.toSymbol);
 
-  // Create a price message eg. 10.123 ATK per BTK
-  const priceMessage = computed(() => {
+  const priceRatio = computed(() => {
     if (
       !fromField.fieldAmount.value ||
       fromField.fieldAmount.value.equalTo("0") ||
       !pool.value
     ) {
-      return "";
+      return "0.0";
     }
 
     const amount = fromField.fieldAmount.value;
@@ -109,10 +108,17 @@ export function useSwapCalculator(input: {
         throw error;
       }
     }
+    return formatted;
+  });
 
-    return `${formatted} ${
-      swapResult.asset.displaySymbol?.toUpperCase() || swapResult.label
-    } per ${amount.asset.displaySymbol?.toUpperCase() || amount.label}`;
+  const priceMessage = computed(() => {
+    if (!+priceRatio.value) return "";
+    return [
+      priceRatio.value,
+      fromField.asset.value?.displaySymbol.toUpperCase(),
+      "per",
+      toField.asset.value?.displaySymbol.toUpperCase(),
+    ].join(" ");
   });
 
   // Selected field changes when the user changes the field selection
@@ -279,7 +285,6 @@ export function useSwapCalculator(input: {
   });
 
   return {
-    priceMessage,
     state,
     fromFieldAmount: fromField.fieldAmount,
     toFieldAmount: toField.fieldAmount,
@@ -290,5 +295,7 @@ export function useSwapCalculator(input: {
     minimumReceived,
     swapResult,
     reverseSwapResult,
+    priceRatio,
+    priceMessage,
   };
 }

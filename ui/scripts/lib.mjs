@@ -186,18 +186,18 @@ We suggest you investigate over in the sifnode repo then try running this script
 }
 
 export async function extractABIs () {
-  const localBuildFolder = resolve(
-    __dirname,
-    "../../smart-contracts/build/contracts/",
-  );
+  // const localBuildFolder = resolve(
+  //   __dirname,
+  //   "../../smart-contracts/build/contracts/",
+  // );
 
-  const bridgeBankJson = resolve(
-    "/sif/smart-contracts/build/contracts/BridgeBank.json",
-  );
+  // const bridgeBankJson = resolve(
+  //   "/sif/smart-contracts/build/contracts/BridgeBank.json",
+  // );
 
-  await $`mkdir -p ${localBuildFolder}`;
+  // await $`mkdir -p ${localBuildFolder}`;
 
-  await $`docker cp sif-ui-stack:${bridgeBankJson} ${localBuildFolder}`;
+  // await $`docker cp sif-ui-stack:${bridgeBankJson} ${localBuildFolder}`;
 }
 
 // Note procs need to be ProcessPromises so you need to watch `async` and `await` wrapping these in normal promises

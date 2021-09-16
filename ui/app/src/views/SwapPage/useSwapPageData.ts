@@ -1,4 +1,4 @@
-import { watch, watchEffect } from "vue";
+import { onMounted, watch, watchEffect } from "vue";
 import { computed, effect, reactive, ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import {
@@ -8,6 +8,7 @@ import {
   TransactionStatus,
   useSwapCalculator,
   ServiceContext,
+  Asset,
 } from "@sifchain/sdk";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { getMaxAmount } from "../utils/getMaxAmount";
@@ -17,16 +18,28 @@ import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { useRoute, useRouter } from "vue-router";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
+import { useChains } from "@/hooks/useChains";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
-// NOTE(ajoslin): this is not optimal but I don't want to implement
-// vuex.
+let defaultSymbol = "";
+const options = ["uatom", "uphoton", "uiris", "ceth"];
+while (defaultSymbol === "") {
+  const option = options.shift() || "";
+  try {
+    useChains().get(Network.SIFCHAIN).lookupAssetOrThrow(option);
+    defaultSymbol = option;
+    break;
+  } catch (e) {
+    null;
+  }
+}
+
 const currentSwapInput = {
-  fromSymbol: "cband",
-  toSymbol: "ceth",
-  fromAmount: "0",
-  toAmount: "0",
+  fromSymbol: defaultSymbol,
+  toSymbol: "rowan",
   slippage: "1.0",
+  toAmount: "0",
+  fromAmount: "0",
 };
 
 const getRouteSymbol = (
@@ -62,22 +75,26 @@ export const useSwapPageData = () => {
       currentSwapInput.toSymbol,
     ),
   );
-  const fromAmount = ref(currentSwapInput.fromAmount || "0");
-  const toAmount = ref(currentSwapInput.toAmount || "0");
+
+  const toAmount = ref(currentSwapInput.toAmount);
+  const fromAmount = ref(currentSwapInput.fromAmount);
   const slippage = ref<string>(currentSwapInput.slippage || "1.0");
 
+  watch([fromAmount, toAmount], () => {
+    currentSwapInput.fromAmount = fromAmount.value;
+    currentSwapInput.toAmount = toAmount.value;
+  });
   useBoundRoute({
     query: {
       from: fromSymbol,
       to: toSymbol,
-      amount: fromAmount,
       slippage: slippage,
     },
     params: {},
   });
 
   if (fromSymbol.value === toSymbol.value) {
-    toSymbol.value = fromSymbol.value === "rowan" ? "cband" : "rowan";
+    toSymbol.value = fromSymbol.value === "rowan" ? defaultSymbol : "rowan";
   }
 
   watchEffect(() => {
@@ -147,6 +164,7 @@ export const useSwapPageData = () => {
     state,
     fromFieldAmount,
     toFieldAmount,
+    priceRatio,
     priceMessage,
     priceImpact,
     providerFee,
@@ -226,6 +244,9 @@ export const useSwapPageData = () => {
   return {
     connected,
     nextStepMessage: computed(() => {
+      if (!accountStore.state.sifchain.address) {
+        return "Connect Sifchain Wallet";
+      }
       switch (state.value) {
         case SwapState.ZERO_AMOUNTS:
           return "Please enter an amount";
@@ -291,6 +312,7 @@ export const useSwapPageData = () => {
     }),
     toSymbol,
     priceMessage,
+    priceRatio,
     priceImpact,
     providerFee,
     handleFromMaxClicked() {

@@ -20,3 +20,4 @@ stats.html
 nohup.out
 relayerdb
 smart-contracts/*
+node_modules

@@ -64,8 +64,9 @@ export const ConfirmSwap = defineComponent({
           <Form.FieldSet class="mt-[10px]">
             <Form.Label>Output is estimated</Form.Label>
             <SwapDetails
-              asset={data.toAsset}
-              price={data.priceMessage.value?.replace("per", "/")}
+              fromAsset={data.fromAsset}
+              toAsset={data.toAsset}
+              priceRatio={data.priceRatio}
               priceImpact={(data.priceImpact.value ?? "") + "%"}
               liquidityProviderFee={data.providerFee.value ?? ""}
               minimumReceived={data.minimumReceived.value}

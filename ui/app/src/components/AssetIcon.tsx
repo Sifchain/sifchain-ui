@@ -50,6 +50,7 @@ export type InteractiveIconName =
   | "tick"
   | "wallet"
   | "warning"
+  | "settings"
   | "picture";
 
 export type NavIconName =

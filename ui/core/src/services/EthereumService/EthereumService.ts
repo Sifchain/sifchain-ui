@@ -31,6 +31,7 @@ type PossibleProvider = provider | EIPProvider;
 export type EthereumServiceContext = {
   getWeb3Provider: () => Promise<provider>;
   assets: Asset[];
+  peggyCompatibleCosmosBaseDenoms: Set<string>;
 };
 
 const initState = {
@@ -62,9 +63,14 @@ export class EthereumService implements IWalletService {
   constructor(
     getWeb3Provider: () => Promise<PossibleProvider>,
     assets: Asset[],
+    peggyCompatibleCosmosBaseDenoms: Set<string>,
   ) {
     this.state = reactive({ ...initState });
-    this.supportedTokens = assets.filter((t) => t.network === Network.ETHEREUM);
+    this.supportedTokens = assets.filter(
+      (t) =>
+        t.network === Network.ETHEREUM ||
+        peggyCompatibleCosmosBaseDenoms.has(t.symbol),
+    );
     this.providerPromise = getWeb3Provider();
     this.providerPromise
       .then((provider) => {
@@ -126,7 +132,7 @@ export class EthereumService implements IWalletService {
     this.state.connected = true;
     this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
     this.state.address = this.state.accounts[0];
-    this.state.balances = await this.getBalance();
+    this.state.balances = [];
   }, 100);
 
   getAddress(): Address {
@@ -157,7 +163,7 @@ export class EthereumService implements IWalletService {
       this.state.connected = true;
       this.state.accounts = (await this.web3.eth.getAccounts()) ?? [];
       this.state.address = this.state.accounts[0];
-      this.state.balances = await this.getBalance();
+      this.state.balances = [];
     } catch (err) {
       this.web3 = null;
       this.removeWeb3Subscription();
@@ -215,6 +221,8 @@ export class EthereumService implements IWalletService {
         const ethBalance = await getEtheriumBalance(web3, addr);
         balances = [ethBalance];
       } else {
+        if (asset.homeNetwork !== Network.ETHEREUM) {
+        }
         // Asset must be ERC-20
         const tokenBalance = await getTokenBalance(web3, addr, asset);
         balances = [tokenBalance];
@@ -269,8 +277,13 @@ export class EthereumService implements IWalletService {
   static create({
     getWeb3Provider,
     assets,
+    peggyCompatibleCosmosBaseDenoms,
   }: EthereumServiceContext): IWalletService {
-    return new EthereumService(getWeb3Provider, assets);
+    return new EthereumService(
+      getWeb3Provider,
+      assets,
+      peggyCompatibleCosmosBaseDenoms,
+    );
   }
 }
 

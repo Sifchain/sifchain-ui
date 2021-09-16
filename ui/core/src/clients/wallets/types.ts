@@ -1,9 +1,12 @@
+import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import { Keplr } from "@keplr-wallet/types";
 import { Network, IAssetAmount, Chain } from "../../entities";
 import { KeplrWalletProvider } from "./KeplrWalletProvider";
 
 export type WalletProviderContext = {
   sifRpcUrl: string;
+  sifChainId: string;
+  sifApiUrl: string;
 };
 
 export type WalletConnectionState = {
@@ -36,5 +39,5 @@ export abstract class CosmosWalletProvider extends WalletProvider {
   // getting around it by referencing it directly this way.
   abstract getSendingSigner(
     chain: Chain,
-  ): Promise<ReturnType<Keplr["getOfflineSigner"]>>;
+  ): Promise<OfflineSigner & OfflineDirectSigner>;
 }

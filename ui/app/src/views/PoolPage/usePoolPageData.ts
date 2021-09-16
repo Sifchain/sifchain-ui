@@ -2,10 +2,17 @@ import { computed, toRefs } from "@vue/reactivity";
 import { onUnmounted, watch } from "vue";
 import { useCore } from "@/hooks/useCore";
 import { defineComponent, onMounted, ref } from "vue";
-import { LiquidityProvider, Pool } from "@sifchain/sdk";
+import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { usePoolStats } from "@/hooks/usePoolStats";
+import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
+import { AccountPool } from "@sifchain/sdk/src/store/pools";
+import { useChains } from "@/hooks/useChains";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+import {
+  useUserPoolsSubscriber,
+  usePublicPoolsSubscriber,
+} from "@/hooks/usePoolsSubscriber";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
@@ -14,18 +21,22 @@ export type PoolPageColumnId =
   | "token"
   | "apy"
   | "gainLoss"
-  | "share"
-  | "reward-apy";
-export const COLUMNS: {
+  | "rewardApy"
+  | "userShare"
+  | "userValue";
+
+export type PoolPageColumn = {
   id: PoolPageColumnId;
   name: string;
   class: string;
+  help?: string;
   sortable?: boolean;
-}[] = [
+};
+export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[233px] text-left justify-start",
+    class: "w-[230px] text-left justify-start",
     sortable: true,
   },
   {
@@ -35,77 +46,84 @@ export const COLUMNS: {
     sortable: true,
   },
   {
-    id: "reward-apy",
+    id: "rewardApy",
     name: "Reward APY",
     class: "w-[138px] text-right justify-end",
     sortable: true,
   },
   {
-    id: "share",
+    id: "userShare",
     name: "Your Pool Share",
-    class: "w-[152px] text-right justify-end",
+    class: "w-[138px] text-right justify-end",
+  },
+  {
+    id: "userValue",
+    name: "Your Pool Value",
+    help:
+      "This is your estimated pool value in USD assuming you remove your liquidity equally across both tokens. This number does not take into consideration any projected or earned rewards.",
+    class: "w-[168px] text-right justify-end",
   },
 ];
 
+export const COLUMNS_LOOKUP = COLUMNS.reduce((acc, col) => {
+  acc[col.id] = col;
+  return acc;
+}, {} as Record<PoolPageColumnId, PoolPageColumn>);
+
 // Only wait for load on first visit of the page
-let hasLoadedFirstTime = false;
+export type PoolDataItem = {
+  pool: Pool;
+  poolStat?: PoolStat;
+  accountPool?: AccountPool;
+};
 
 export const usePoolPageData = () => {
-  const { store, usecases } = useCore();
+  const statsRes = usePoolStats();
 
-  const selectedPool = ref<PoolPageAccountPool | null>(null);
+  useUserPoolsSubscriber({});
+  usePublicPoolsSubscriber({});
 
-  const stats = usePoolStats();
-
-  const isLoaded = ref(hasLoadedFirstTime);
-  let unsubscribePublic: () => void;
-  let unsubscribeUser: () => void;
-
-  onMounted(() => {
-    unsubscribePublic = usecases.clp.subscribeToPublicPools().unsubscribe;
-  });
-
-  watch(
-    accountStore.refs.sifchain.address.computed(),
-    async (address: string) => {
-      if (address) {
-        const userRes = usecases.clp.subscribeToUserPools(address);
-        unsubscribePublic = userRes.unsubscribe;
-        await userRes.initPromise;
-        hasLoadedFirstTime = isLoaded.value = true;
-      }
+  const userPoolsRes = useAsyncDataCached(
+    "userPoolsData",
+    async () => {
+      const address = accountStore.state.sifchain.address;
+      if (!address) return;
+      return useCore().usecases.clp.syncPools.syncUserPools(address);
     },
-    { immediate: true },
+    [accountStore.refs.sifchain.connected.computed()],
   );
 
-  onUnmounted(() => {
-    unsubscribePublic?.();
-    unsubscribeUser?.();
-  });
-
-  // TODO: Sort pools?
-  const accountPools = computed(() => {
-    if (
-      !store.accountpools ||
-      !accountStore.state.sifchain.address ||
-      !store.accountpools[accountStore.state.sifchain.address]
-    ) {
-      return [];
-    }
-    return Object.entries(
-      store.accountpools[accountStore.state.sifchain.address] ?? {},
-    ).map(([poolName, accountPool]) => {
-      return {
-        ...accountPool,
-        pool: store.pools[poolName],
-      } as PoolPageAccountPool;
+  const allPoolsData = computed<PoolDataItem[]>(() => {
+    const sifchainChain = useChains().get(Network.SIFCHAIN);
+    return (statsRes.data?.value?.poolData?.pools || []).map((poolStat) => {
+      const poolKey = createPoolKey(
+        sifchainChain.lookupAssetOrThrow("rowan"),
+        sifchainChain.lookupAssetOrThrow(poolStat.symbol),
+      );
+      let accountPool: AccountPool | undefined = undefined;
+      if (accountStore.state.sifchain.address) {
+        accountPool = useCore().store.accountpools[
+          accountStore.state.sifchain.address
+        ][poolKey];
+      }
+      const item = {
+        poolStat,
+        pool: useCore().store.pools[poolKey],
+        accountPool,
+      };
+      return item;
     });
   });
 
   return {
-    isLoading: computed(() => !isLoaded.value),
-    accountPools,
-    selectedPool,
-    stats,
+    isLoaded: computed(() => {
+      return (
+        !statsRes.isLoading.value &&
+        !userPoolsRes.isLoading.value &&
+        allPoolsData.value.length > 0 &&
+        !accountStore.state.sifchain.connecting
+      );
+    }),
+    allPoolsData,
   };
 };

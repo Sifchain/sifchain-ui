@@ -8,6 +8,7 @@ import { getTestingTokens } from "./getTestingToken";
 import { getWeb3Provider } from "./getWeb3Provider";
 
 export async function createTestSifService(account?: TestSifAccount) {
+  console.log("sifchain chain id may not be correct");
   const sif = sifServiceInitializer({
     sifApiUrl: "http://localhost:1317",
     sifAddrPrefix: "sif",
@@ -15,6 +16,7 @@ export async function createTestSifService(account?: TestSifAccount) {
     sifRpcUrl: "http://localhost:26657",
     assets: getTestingTokens(["CATK", "CBTK", "CETH", "ROWAN"]),
     keplrChainConfig: {} as KeplrChainConfig,
+    sifChainId: "sifchain-1",
   });
 
   if (account) {
@@ -29,6 +31,7 @@ export async function createTestEthService() {
   const eth = ethServiceInitializer({
     assets: getTestingTokens(["ATK", "BTK", "ETH", "EROWAN"]),
     getWeb3Provider,
+    peggyCompatibleCosmosBaseDenoms: new Set(["uphoton"]),
   });
   console.log("Connecting to eth service");
   await eth.connect();

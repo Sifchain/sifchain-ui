@@ -80,11 +80,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     } as SwapPageMeta,
     children: [
       {
-        path: "/welcome",
-        name: "Welcome",
-        component: OnboardingModal,
-      },
-      {
         path: "confirm",
         name: "ConfirmSwap",
         component: ConfirmSwap,

@@ -2,12 +2,15 @@ import {
   SigningStargateClient,
   StargateClient,
   MsgTransferEncodeObject,
-  BroadcastTxResponse,
   IndexedTx,
   MsgSendEncodeObject,
+  AminoTypes,
+  SignerData,
+  isAminoMsgDelegate,
+  AminoConverter,
+  SigningStargateClientOptions,
 } from "@cosmjs/stargate";
-import { OfflineSigner } from "@cosmjs/proto-signing";
-
+import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
   Asset,
   IAssetAmount,
@@ -33,18 +36,55 @@ import { calculateGasForIBCTransfer } from "./utils/calculateGasForIBCTransfer";
 import { TokenRegistryService } from "../TokenRegistryService/TokenRegistryService";
 import { KeplrWalletProvider } from "../../clients/wallets";
 import { IBC_EXPORT_FEE_ADDRESS } from "../../utils/ibcExportFees";
+import {
+  encodeSecp256k1Pubkey,
+  makeSignDoc as makeSignDocAmino,
+  OfflineAminoSigner,
+  StdFee,
+} from "@cosmjs/amino";
+import { fromBase64, toBase64, toUtf8 } from "@cosmjs/encoding";
+import { Int53 } from "@cosmjs/math";
+import {
+  EncodeObject,
+  encodePubkey,
+  makeAuthInfoBytes,
+} from "@cosmjs/proto-signing";
+import { SignMode } from "@cosmjs/proto-signing/build/codec/cosmos/tx/signing/v1beta1/signing";
+import {
+  TxRaw,
+  TxBody,
+  AuthInfo,
+} from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
+import {
+  SifUnSignedClient,
+  Compatible42SigningCosmosClient,
+  Compatible42CosmosClient,
+} from "../../services/utils/SifClient";
+import { BroadcastMode, SigningCosmosClient, StdTx } from "@cosmjs/launchpad";
+import { NativeAminoTypes } from "../../services/utils/SifClient/NativeAminoTypes";
+import { BroadcastTxResult } from "@cosmjs/launchpad";
+import { ChainIdHelper, getTransferTimeoutData } from "./utils";
+import { NativeDexTransaction } from "../../services/utils/SifClient/NativeDexTransaction";
 
 export interface IBCServiceContext {
   // applicationNetworkEnvironment: NetworkEnv;
   sifRpcUrl: string;
+  sifApiUrl: string;
+  sifChainId: string;
   assets: Asset[];
   chainConfigsByNetwork: NetworkChainConfigLookup;
+  sifUnsignedClient?: SifUnSignedClient;
 }
+
+type CustomOfflineSignerOutput = Promise<OfflineSigner & OfflineAminoSigner>;
 
 export class IBCService {
   tokenRegistry = TokenRegistryService(this.context);
 
   keplrProvider = KeplrWalletProvider.create(this.context);
+
+  public transferTimeoutMinutes = 45;
 
   constructor(private context: IBCServiceContext) {}
   static create(context: IBCServiceContext) {
@@ -70,7 +110,7 @@ export class IBCService {
     return chainConfig;
   }
 
-  async extractTransferMetadataFromTx(tx: IndexedTx | BroadcastTxResponse) {
+  async extractTransferMetadataFromTx(tx: IndexedTx | BroadcastTxResult) {
     const logs = parseRawLog(tx.rawLog);
     const sequence = findAttribute(logs, "send_packet", "packet_sequence")
       .value;
@@ -93,7 +133,7 @@ export class IBCService {
   }
 
   async checkIfPacketReceivedByTx(
-    txOrTxHash: string | IndexedTx | BroadcastTxResponse,
+    txOrTxHash: string | IndexedTx | BroadcastTxResult,
     destinationNetwork: Network,
   ) {
     const sourceChain = this.loadChainConfigByNetwork(destinationNetwork);
@@ -149,55 +189,111 @@ export class IBCService {
     return queryClient;
   }
 
-  async logIBCNetworkMetadata(destinationNetwork: Network) {
+  async logIBCNetworkMetadata() {
+    const allClients = [];
+    const destinationNetwork = Network.SIFCHAIN;
+    let chainConfig: IBCChainConfig;
+
+    try {
+      // if (destinationNetwork === Network.REGEN) throw "";
+      chainConfig = this.loadChainConfigByNetwork(destinationNetwork);
+    } catch (e) {
+      // continue;
+    }
     await this.keplrProvider.connect(
       getChainsService().get(destinationNetwork),
     );
     const queryClient = await this.loadQueryClientByNetwork(destinationNetwork);
-
     const allChannels = await queryClient.ibc.channel.allChannels();
-    const clients = await Promise.all(
+    let clients = await Promise.all(
       allChannels.channels.map(async (channel) => {
-        const parsedClientState = await fetch(
-          `${
-            this.loadChainConfigByNetwork(destinationNetwork).restUrl
-          }/ibc/core/connection/v1beta1/connections/${
-            channel.connectionHops[0]
-          }/client_state`,
-        ).then((r) => r.json());
+        try {
+          const parsedClientState = await fetch(
+            `${chainConfig.restUrl}/ibc/core/connection/v1beta1/connections/${channel.connectionHops[0]}/client_state`,
+          ).then((r) => r.json());
 
-        // console.log(parsedClientState);
-        // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
-        //   channel.portId,
-        //   channel.channelId,
-        // );
+          // console.log(parsedClientState);
+          // const allAcks = await queryClient.ibc.channel.allPacketAcknowledgements(
+          //   channel.portId,
+          //   channel.channelId,
+          // );
+          const channelId = channel.channelId;
+          const counterpartyChannelId = channel.counterparty!.channelId;
+          const counterPartyChainId =
+            parsedClientState.identified_client_state.client_state.chain_id;
+          const counterpartyConfig = this.loadChainConfigByChainId(
+            counterPartyChainId,
+          );
+          const counterpartyQueryClient = await this.loadQueryClientByNetwork(
+            counterpartyConfig.network,
+          );
+          const counterpartyConnection = await counterpartyQueryClient.ibc.channel.channel(
+            "transfer",
+            counterpartyChannelId,
+          );
 
-        return {
-          chainId:
-            parsedClientState.identified_client_state.client_state.chain_id,
-          // ackCount: allAcks.acknowledgements.length,
-          connection: channel.connectionHops[0],
-          channelId: channel.channelId,
-          counterpartyChannelId: channel.counterparty?.channelId,
-        };
+          return {
+            srcChainId: chainConfig.chainId,
+            destChainId: counterPartyChainId,
+            // ackCount: allAcks.acknowledgements.length,
+            srcCxn: channel.connectionHops[0],
+            destCxn: counterpartyConnection.channel?.connectionHops[0],
+            srcChannel: channelId,
+            destChannel: counterpartyChannelId,
+          };
+        } catch (e) {
+          console.error(e);
+          return;
+        }
       }),
     );
+    allClients.push(...clients.filter((c) => c));
     console.log(destinationNetwork.toUpperCase());
     console.table(
       clients.filter((c) => {
         return true;
       }),
     );
-    const allCxns = await Promise.all(
-      (await queryClient.ibc.connection.allConnections()).connections.map(
-        async (cxn) => {
-          return {
-            cxn,
-          };
-        },
+
+    const tokenRegistryEntries = await this.tokenRegistry.load();
+    console.log("Sifchain Connections: ");
+    console.log(
+      JSON.stringify(
+        allClients.filter((clientA) => {
+          return tokenRegistryEntries.some(
+            (e) =>
+              e.ibcChannelId === clientA!.srcChannel &&
+              e.ibcCounterpartyChannelId === clientA!.destChannel,
+          );
+        }),
+        null,
+        2,
       ),
     );
-    console.log({ destinationNetwork, allChannels, allCxns, clients });
+    // for (let clientA of allClients.filter((c) =>
+    //   c.chainId.includes("sifchain"),
+    // )) {
+    //   for (let clientB of allClients) {
+    //     if (
+    //       clientA.counterPartyChainId === clientB.chainId &&
+    //       clientA?.channelId === clientB.counterpartyChannelId &&
+    // tokenRegistryEntries.some(
+    //   (e) =>
+    //     e.ibcChannelId === clientA.channelId &&
+    //     e.ibcCounterpartyChannelId === clientA.counterpartyChannelId,
+    // )
+    //     ) {
+    //       connections.push({
+    //         srcChainId: clientA.chainId,
+    //         destChainId: clientB.chainId,
+    //         srcCxn: clientA.connection,
+    //         dstCxn: clientB.connection,
+    //         srcChannel: clientA.channelId,
+    //         destChannel: clientB.channelId,
+    //       });
+    //     }
+    //   }
+    // }
   }
 
   async transferIBCTokens(
@@ -212,12 +308,29 @@ export class IBCService {
       maxMsgsPerBatch = 800,
       maxAmountPerMsg = `9223372036854775807`,
       gasPerBatch = undefined,
-      loadOfflineSigner = (
+      loadOfflineSigner = async (
         chainId: string,
-      ): Promise<OfflineSigner | undefined> | undefined =>
-        getKeplrProvider().then((keplr) => keplr?.getOfflineSigner(chainId)),
+      ): CustomOfflineSignerOutput => {
+        const keplr = await getKeplrProvider();
+        const signer = await keplr!.getOfflineSigner(chainId);
+        const keplrKey = await keplr!.getKey(chainId);
+        /* 
+          Stargate internally checks if there is a `.signDirect` property
+          on the signer to determine whether to use direct or amino signing
+        */
+        // @ts-ignore
+        signer.signDirect = undefined;
+        console.log({ signer });
+        // @ts-ignore
+        if (keplrKey["isNanoLedger"] && signer) {
+          // This doesn't seem to make any difference
+          // @ts-ignore
+          // signer.signAmino = (...args) => keplr?.signAmino(chainId, ...args);
+        }
+        return signer;
+      },
     } = {},
-  ): Promise<BroadcastTxResponse[]> {
+  ): Promise<BroadcastTxResult[]> {
     const sourceChain = this.loadChainConfigByNetwork(params.sourceNetwork);
     const destinationChain = this.loadChainConfigByNetwork(
       params.destinationNetwork,
@@ -228,6 +341,7 @@ export class IBCService {
     await keplr?.experimentalSuggestChain(destinationChain.keplrChainInfo);
     await keplr?.enable(destinationChain.chainId);
     const recievingSigner = await loadOfflineSigner(destinationChain.chainId);
+
     if (!recievingSigner) throw new Error("No recieving signer");
     const [toAccount] = (await recievingSigner?.getAccounts()) || [];
     if (!toAccount) throw new Error("No account found for recieving signer");
@@ -243,7 +357,9 @@ export class IBCService {
         params.destinationNetwork
       }/${await recievingSigner.getAccounts().then(([a]) => a.address)}`,
     );
-    const [fromAccount] = (await sendingSigner?.getAccounts()) || [];
+    const accounts = (await sendingSigner?.getAccounts()) || [];
+    const [fromAccount] = accounts;
+    console.log(accounts);
     if (!fromAccount) {
       throw new Error("No account found for sending signer");
     }
@@ -252,23 +368,9 @@ export class IBCService {
       destinationChain.rpcUrl,
       recievingSigner,
       {
-        gasLimits: {
-          send: 80000,
-          transfer: 250000,
-          delegate: 250000,
-          undelegate: 250000,
-          redelegate: 250000,
-          // The gas multiplication per rewards.
-          withdrawRewards: 140000,
-          govVote: 250000,
-        },
-      },
-    );
-
-    const sendingStargateClient = await SigningStargateClient?.connectWithSigner(
-      sourceChain.rpcUrl,
-      sendingSigner,
-      {
+        // we create amino additions, but these will not be used, because IBC types are already included & assigned
+        // on top of the amino additions by default
+        aminoTypes: new NativeAminoTypes(),
         gasLimits: {
           send: 80000,
           transfer: 250000,
@@ -289,18 +391,13 @@ export class IBCService {
 
     const symbol = params.assetAmountToTransfer.asset.symbol;
 
-    // initially set low
-    const timeoutInMinutes = 5;
-    const timeoutTimestampInSeconds = Math.floor(
-      new Date().getTime() / 1000 + 60 * timeoutInMinutes,
-    );
-    const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
-      ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
-      : undefined;
-    const currentHeight = await receivingStargateCient.getHeight();
-    const timeoutHeight = Long.fromNumber(currentHeight + 150);
     const registry = await this.tokenRegistry.load();
     const transferTokenEntry = registry.find((t) => t.baseDenom === symbol);
+
+    const timeoutHeight = await getTransferTimeoutData(
+      receivingStargateCient,
+      this.transferTimeoutMinutes,
+    );
 
     if (!transferTokenEntry) {
       throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
@@ -317,27 +414,28 @@ export class IBCService {
         params.assetAmountToTransfer.asset.ibcDenom || transferTokenEntry.denom;
     }
 
-    const transferMsg: MsgTransferEncodeObject = {
-      typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-      value: IbcTransferV1Tx.MsgTransfer.fromPartial({
+    const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
+    const client = await NativeDexClient.connect(
+      sifConfig.rpcUrl,
+      sifConfig.restUrl,
+      sifConfig.chainId,
+    );
+    if (!channelId) throw new Error("Channel id not found");
+
+    let encodeMsgs: EncodeObject[] = [
+      client.tx.ibc.Transfer.createRawEncodeObject({
         sourcePort: "transfer",
         sourceChannel: channelId,
         sender: fromAccount.address,
         receiver: toAccount.address,
         token: {
           denom: transferDenom,
-          // denom: symbol,
           amount: params.assetAmountToTransfer.toBigInt().toString(),
         },
-        timeoutHeight: {
-          // revisionHeight: timeoutHeight,
-          // revisionHeight: timeoutHeight,
-        },
-        timeoutTimestamp: timeoutTimestampNanoseconds, // timeoutTimestampNanoseconds,
+        timeoutHeight: timeoutHeight,
       }),
-    };
+    ];
 
-    let encodeMsgs: MsgTransferEncodeObject[] = [transferMsg];
     while (
       shouldBatchTransfers &&
       JSBI.greaterThanOrEqual(
@@ -363,13 +461,10 @@ export class IBCService {
       });
     }
 
-    const transferMsgs: Array<MsgTransferEncodeObject | MsgSendEncodeObject> = [
-      ...encodeMsgs,
-    ];
-
     const feeAmount = getChainsService()
       .get(params.destinationNetwork)
       .calculateTransferFeeToChain(params.assetAmountToTransfer);
+
     if (feeAmount?.amount.greaterThan("0")) {
       const feeEntry = registry.find(
         (item) => item.baseDenom === feeAmount.asset.symbol,
@@ -380,35 +475,27 @@ export class IBCService {
             feeAmount.asset.symbol,
         );
       }
-      const sendFeeMsg: MsgSendEncodeObject = {
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: {
-          fromAddress: fromAccount.address,
-          toAddress: IBC_EXPORT_FEE_ADDRESS,
-          amount: [
-            {
-              denom: feeEntry.denom,
-              amount: feeAmount.toBigInt().toString(),
-            },
-          ],
-        },
-      };
-      transferMsgs.unshift(sendFeeMsg);
+      const sendFeeMsg = client.tx.bank.Send.createRawEncodeObject({
+        fromAddress: fromAccount.address,
+        toAddress: IBC_EXPORT_FEE_ADDRESS,
+        amount: [
+          {
+            denom: feeEntry.denom,
+            amount: feeAmount.toBigInt().toString(),
+          },
+        ],
+      });
+      encodeMsgs.unshift(sendFeeMsg);
     }
 
     const batches = [];
-    while (transferMsgs.length) {
-      batches.push(transferMsgs.splice(0, maxMsgsPerBatch));
+    while (encodeMsgs.length) {
+      batches.push(encodeMsgs.splice(0, maxMsgsPerBatch));
     }
     console.log({ batches });
-    const responses: BroadcastTxResponse[] = [];
+    const responses: BroadcastTxResult[] = [];
     for (let batch of batches) {
-      console.log("transfer msg count", batch.length);
-
       try {
-        // const gasPerMessage = 39437;
-        // const gasPerMessage = 39437;
-        // console.log(JSON.(batch));
         let externalGasPrices: any = {};
         try {
           externalGasPrices = await fetch(
@@ -417,42 +504,45 @@ export class IBCService {
             .then((r) => r.json())
             .catch((e) => {});
         } catch (e) {}
-        const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
-          fromAccount.address,
-          batch,
-          {
-            ...sendingStargateClient.fees.transfer,
-            amount: [
-              {
-                denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom.toLowerCase(),
-                amount:
-                  sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
-                  "",
-              },
-            ],
-            ...(externalGasPrices &&
-            externalGasPrices[sourceChain.chainId || ""]
-              ? {
-                  gas: externalGasPrices[sourceChain.chainId || ""],
-                }
-              : {}),
-            // gas: gasPerBatch || calculateGasForIBCTransfer(batch.length),
+
+        const txDraft = new NativeDexTransaction(fromAccount.address, batch, {
+          price: {
+            denom: sourceChain.keplrChainInfo.feeCurrencies[0].coinDenom,
+            amount:
+              sourceChain.keplrChainInfo.gasPriceStep?.average.toString() ||
+              NativeDexClient.feeTable.transfer.amount[0].amount,
           },
-        );
-        console.log({ brdcstTxRes });
-        responses.push(brdcstTxRes);
-      } catch (e) {
-        console.error(e);
+          gas:
+            externalGasPrices[sourceChain.chainId] ||
+            NativeDexClient.feeTable.transfer.gas,
+        });
+
+        const signedTx = await client.sign(txDraft, sendingSigner, {
+          sendingChainRestUrl: sourceChain.restUrl,
+          sendingChainRpcUrl: sourceChain.rpcUrl,
+        });
+
+        const sentTx = await client.broadcast(signedTx, {
+          sendingChainRpcUrl: sourceChain.rpcUrl,
+          sendingChainRestUrl: sourceChain.restUrl,
+        });
+        responses.push(sentTx);
+      } catch (err) {
+        console.error(err);
+        const e = err as {
+          message: string;
+        };
         responses.push({
           code:
-            +e.message.split("code ").pop().split(" ")[0] || 100000000000000000,
+            +(e?.message?.split("code ")?.pop()?.split(" ")?.[0] || "") ||
+            100000000000000000,
           log: e.message,
           rawLog: e.message,
           transactionHash: "invalidtx",
           hash: new Uint8Array(),
           events: [],
           height: -1,
-        } as BroadcastTxResponse);
+        } as BroadcastTxResult);
       }
     }
     console.log({ responses });
@@ -462,4 +552,99 @@ export class IBCService {
 
 export default function createIBCService(context: IBCServiceContext) {
   return IBCService.create(context);
+}
+
+// @mccallofthewild - Will likely want to implement this pattern in the future,
+// as the launchpad /txs endpoint will eventually be deprecated.
+interface NativeSigning {
+  sendingSigner: OfflineAminoSigner;
+  signWMeta: (
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee: StdFee,
+    memo: string,
+    signerData: SignerData,
+  ) => Promise<Uint8Array>;
+}
+
+class NativeSigningClient
+  extends SigningStargateClient
+  implements NativeSigning {
+  sendingSigner: OfflineAminoSigner;
+  constructor(
+    tmClient: Tendermint34Client | undefined,
+    signer: OfflineSigner,
+    options: SigningStargateClientOptions,
+  ) {
+    super(tmClient, signer, options);
+    this.sendingSigner = signer as OfflineAminoSigner;
+  }
+  async signWMeta(
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee: StdFee,
+    memo = "",
+    signerData: SignerData,
+  ): Promise<Uint8Array> {
+    console.log(arguments);
+    const { chainId, accountNumber, sequence } = signerData;
+    const accountFromSigner = (await this.sendingSigner.getAccounts()).find(
+      (account) => account.address === signerAddress,
+    );
+    if (!accountFromSigner) {
+      throw new Error("Failed to retrieve account from signer");
+    }
+
+    const aminoTypes = new NativeAminoTypes();
+    // @ts-ignore
+    console.log(aminoTypes.register);
+    const pubkey = encodePubkey(
+      encodeSecp256k1Pubkey(accountFromSigner.pubkey),
+    );
+
+    const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
+    const msgs = messages.map((msg) => aminoTypes.toAmino(msg));
+
+    const signDoc = makeSignDocAmino(
+      msgs,
+      fee,
+      chainId,
+      memo,
+      accountNumber,
+      sequence,
+    );
+
+    const { signature, signed } = await this.sendingSigner.signAmino(
+      signerAddress,
+      signDoc,
+    );
+    const signedTxBody = {
+      messages: signed.msgs.map((msg) => aminoTypes.fromAmino(msg)),
+      memo: signed.memo,
+    };
+    const signedTxBodyEncodeObject: EncodeObject = {
+      typeUrl: "/cosmos.tx.v1beta1.TxBody",
+      value: signedTxBody,
+    };
+    console.log("this::", this);
+    const signedTxBodyBytes = this.registry.encode(signedTxBodyEncodeObject);
+    const signedGasLimit = Int53.fromString(signed.fee.gas).toNumber();
+    const signedSequence = Int53.fromString(signed.sequence).toNumber();
+    const signedAuthInfoBytes = makeAuthInfoBytes(
+      [pubkey],
+      signed.fee.amount,
+      signedGasLimit,
+      signedSequence,
+      signMode,
+    );
+    const txRaw: TxRaw = TxRaw.fromPartial({
+      bodyBytes: signedTxBodyBytes,
+      authInfoBytes: signedAuthInfoBytes,
+      signatures: [fromBase64(signature.signature)],
+    });
+
+    const enc = TxRaw.encode(txRaw);
+    const dec = TxRaw.encode(TxRaw.decode(enc.finish())).finish();
+    return dec;
+  }
 }

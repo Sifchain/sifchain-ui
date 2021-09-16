@@ -35,16 +35,14 @@ export default defineComponent({
         <div class="p-4 bg-gray-base rounded-lg">
           <Form.Details details={detailsRef.value} />
         </div>
-        {computedImportAssetAmount.value?.asset.network ===
-          Network.ETHEREUM && (
+        {importDraft.value.network === Network.ETHEREUM && (
           <p class="mt-[10px] text-base">
             <div class="font-bold">Please Note *</div>
             Your funds will be available for use on Sifchain only after 50
             Ethereum block confirmations. This can take upwards of 20 minutes.
           </p>
         )}
-        {importData?.computedImportAssetAmount.value?.asset.network ===
-          Network.COSMOSHUB && (
+        {importDraft.value.network === Network.COSMOSHUB && (
           <p class="mt-[10px] text-base">
             <div class="font-bold">Please Note *</div>
             Your funds will be available for use on Sifchain after about 10

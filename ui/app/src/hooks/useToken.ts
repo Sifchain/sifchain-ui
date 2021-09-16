@@ -1,5 +1,5 @@
 import { useCore } from "./useCore";
-import { computed, Ref } from "vue";
+import { computed, ref, Ref, watch } from "vue";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
@@ -12,6 +12,7 @@ import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
 import { InterchainTx } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
+import { useAsyncData } from "./useAsyncData";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -109,4 +110,21 @@ export const useToken = (params: {
       );
     });
   });
+};
+
+export const useNetworkBalances = (params: { network: Ref<Network> }) => {
+  const res = useAsyncData(async () => {
+    if (!params.network.value) return;
+    return accountStore.updateBalances(params.network.value);
+  }, [params.network]);
+
+  const hasLoaded = computed(
+    () => accountStore.state[params.network.value]?.hasLoadedBalancesOnce,
+  );
+
+  return {
+    ...res,
+    hasLoaded,
+    data: computed(() => accountStore.state[params.network.value]?.balances),
+  };
 };

@@ -13,11 +13,12 @@ import {
   IBCInterchainTx,
 } from "./_InterchainApi";
 import { SifchainChain, CosmoshubChain } from "../../services/ChainsService";
-import { isBroadcastTxFailure } from "@cosmjs/stargate";
-import { findAttribute, parseRawLog, Log } from "@cosmjs/stargate/build/logs";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { findAttribute, parseLogs, Log } from "@cosmjs/launchpad/build/logs";
 import { createIteratorSubject } from "../../utils/iteratorSubject";
 
 import { IBCTransferSubscriber } from "./utils";
+import { parseTxFailure } from "../../services/SifService/parseTxFailure";
 
 export class CosmosSifchainInterchainApi
   implements InterchainApi<IBCInterchainTx> {
@@ -48,17 +49,14 @@ export class CosmosSifchainInterchainApi
             });
             emit({
               type: "tx_error",
-              tx: {
-                state: tx.rawLog?.includes("out of gas")
-                  ? "out_of_gas"
-                  : "failed",
-                memo: tx.rawLog || "",
-                hash: tx.transactionHash,
-              },
+              tx: parseTxFailure({
+                transactionHash: tx.transactionHash,
+                rawLog: tx.rawLog || "",
+              }),
             });
             return;
           } else {
-            const logs = parseRawLog(tx.rawLog);
+            const logs = parseLogs(tx.logs);
             emit({
               type: "sent",
               tx: { state: "completed", hash: tx.transactionHash },
