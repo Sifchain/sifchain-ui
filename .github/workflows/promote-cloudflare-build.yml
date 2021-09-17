@@ -56,8 +56,8 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
-          payload: "{ \"promoted_from\":\"${{github.event.inputs.source_dnslink | sed -i 's/.*-//'}}\",
-          \"promoted_to\":\"${{github.event.inputs.dest_dnslink | sed -i 's/.*-//'}}\",
+          payload: "{ \"promoted_from\":\"${{github.event.inputs.source_dnslink}}\",
+          \"promoted_to\":\"${{github.event.inputs.dest_dnslink}}\",
           \"record_value\":\"${{env.DNSLINK_RECORD}}\"}"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_BUILD_PROMOTED_WEBHOOK_URL }}
