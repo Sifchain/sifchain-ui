@@ -377,7 +377,7 @@ export class IBCService {
           delegate: 250000,
           undelegate: 250000,
           redelegate: 250000,
-          // The gas multiplication per rewards.
+          // The gas multiplication per rewards
           withdrawRewards: 140000,
           govVote: 250000,
         },
