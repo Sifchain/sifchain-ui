@@ -80,9 +80,9 @@ export const accountStore = Vuextra.createStore({
         )
       ) {
         state[payload.network].balances = payload.balances;
-        if (!state[payload.network].hasLoadedBalancesOnce) {
-          state[payload.network].hasLoadedBalancesOnce = true;
-        }
+      }
+      if (!state[payload.network].hasLoadedBalancesOnce) {
+        state[payload.network].hasLoadedBalancesOnce = true;
       }
     },
   }),
