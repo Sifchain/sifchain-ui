@@ -35,7 +35,7 @@ jobs:
 
           if [[ $BRANCH_NAME == 'master' ]]
           then
-            echo "SUBDOMAIN=dex" >> $GITHUB_ENV
+            echo "SUBDOMAIN=staging" >> $GITHUB_ENV
             echo "VITE_APP_DEPLOYMENT=production" >> $GITHUB_ENV
           elif [[ "$TAG_NAME" != '' ]]
           then
@@ -78,7 +78,7 @@ jobs:
             echo "RECORD_NAME=_dnslink.ipfs-testnet" >> $GITHUB_ENV
           fi
 
-          if [[ $SUBDOMAIN == 'dex' ]]; then
+          if [[ $SUBDOMAIN == 'staging' ]]; then
             echo "Config set for Staging deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
             echo "RECORD_NAME=_dnslink.ipfs-staging" >> $GITHUB_ENV

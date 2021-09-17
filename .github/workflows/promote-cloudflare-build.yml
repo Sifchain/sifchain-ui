@@ -39,7 +39,7 @@ jobs:
           DNSLINK_RECORD=$(jq -r  '.result[0].content' <<< "${response}" )
           echo "$DNSLINK_RECORD"
           echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-          echo "RECORD_NAME=${{github.events.inputs.dest_dnslink}}" >> $GITHUB_ENV
+          echo "RECORD_NAME=${{github.event.inputs.dest_dnslink}}" >> $GITHUB_ENV
           echo "DNSLINK_RECORD=$DNSLINK_RECORD" >> $GITHUB_ENV
           echo "env: $(cat $GITHUB_ENV)"
 
