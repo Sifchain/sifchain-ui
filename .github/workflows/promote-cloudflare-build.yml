@@ -9,7 +9,7 @@ on:
       dest_dnslink:
         description: 'to record ID'
         required: true
-        default: '_dnslink.dex'
+        default: '_dnslink.ipfs-dex'
 
 jobs:
   copy_dnslink:
