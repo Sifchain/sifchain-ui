@@ -179,10 +179,10 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     }
 
     // Go ahead and fetch this so it gets cached...
-    // setTimeout(
-    //   () => this.getIbcDenomTraceLookupCached(chain),
-    //   1000 + Math.random() * 3000,
-    // );
+    setTimeout(
+      () => this.getIbcDenomTraceLookupCached(chain),
+      1000 + Math.random() * 5000,
+    );
 
     return {
       chain,
