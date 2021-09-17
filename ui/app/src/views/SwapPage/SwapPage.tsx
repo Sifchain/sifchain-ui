@@ -16,6 +16,7 @@ import { Button } from "@/components/Button/Button";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { RouterView, useRouter } from "vue-router";
 import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
+import { useCore } from "@/hooks/useCore";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -41,6 +42,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      useCore().usecases.clp.syncPools.syncPublicPools();
       data.fromAmount.value = data.toAmount.value = "0";
     });
 
