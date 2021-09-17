@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get value of given dnslink and set to env.DNSLINK_RECORD
+      - name: Get value of given dnslink and set to env.IPFS_HASH
         env:
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
@@ -36,11 +36,12 @@ jobs:
             exit 1
           fi
 
-          DNSLINK_RECORD=$(jq -r  '.result[0].content' <<< "${response}" )
-          echo "$DNSLINK_RECORD"
+          # Remove the `dnslink=/ipfs/` from the start.
+          IPFS_HASH=$(jq -r  '.result[0].content' <<< "${response}" | sed 's/dnslink=\/ipfs\///')
+          echo "$IPFS_HASH"
           echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
           echo "RECORD_NAME=${{github.event.inputs.dest_dnslink}}" >> $GITHUB_ENV
-          echo "DNSLINK_RECORD=$DNSLINK_RECORD" >> $GITHUB_ENV
+          echo "IPFS_HASH=$IPFS_HASH" >> $GITHUB_ENV
           echo "env: $(cat $GITHUB_ENV)"
 
       - name: Update cloudflare DNSLink
@@ -50,7 +51,7 @@ jobs:
         id: dnslink
         uses: textileio/cloudflare-update-dnslink@master
         with:
-          cid: ${{ env.DNSLINK_RECORD }}
+          cid: ${{ env.IPFS_HASH }}
 
       - name: Send custom JSON data to Slack workflow
         id: slack
@@ -58,6 +59,6 @@ jobs:
         with:
           payload: "{ \"promoted_from\":\"${{github.event.inputs.source_dnslink}}\",
           \"promoted_to\":\"${{github.event.inputs.dest_dnslink}}\",
-          \"record_value\":\"${{env.DNSLINK_RECORD}}\"}"
+          \"record_value\":\"${{env.IPFS_HASH}}\"}"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_BUILD_PROMOTED_WEBHOOK_URL }}
