@@ -69,19 +69,19 @@ jobs:
           if [[ $SUBDOMAIN == 'devnet' ]]; then
             echo "Config set for DevNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.ipfs-devnet" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.devnet" >> $GITHUB_ENV
           fi
 
           if [[ $SUBDOMAIN == 'testnet' ]]; then
             echo "Config set for TestNet deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.ipfs-testnet" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
           fi
 
           if [[ $SUBDOMAIN == 'staging' ]]; then
             echo "Config set for Staging deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.ipfs-staging" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.staging" >> $GITHUB_ENV
           fi
 
       - name: Update cloudflare DNSLink

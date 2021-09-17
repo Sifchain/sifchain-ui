@@ -5,11 +5,11 @@ on:
       source_dnslink:
         description: 'Copy value from record ID'
         required: true
-        default: '_dnslink.ipfs-staging'
+        default: '_dnslink.staging'
       dest_dnslink:
         description: 'to record ID'
         required: true
-        default: '_dnslink.ipfs-dex'
+        default: '_dnslink.dex'
 
 jobs:
   copy_dnslink:
