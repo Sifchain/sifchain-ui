@@ -19,6 +19,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 let defaultSymbol = "";
@@ -223,6 +224,16 @@ export const useSwapPageData = () => {
         toFieldAmount.value.asset,
         minimumReceived.value,
       );
+      useCore().services.bus.dispatch({
+        type: "SuccessEvent",
+        payload: {
+          message: `Swapped ${formatAssetAmount(
+            fromFieldAmount.value,
+          )} ${fromFieldAmount.value.displaySymbol.toUpperCase()} for ${formatAssetAmount(
+            toFieldAmount.value,
+          )} ${toFieldAmount.value.displaySymbol.toUpperCase()}`,
+        },
+      });
       setTimeout(() => {
         accountStore.updateBalances(Network.SIFCHAIN);
       }, 1000);

@@ -201,6 +201,28 @@ export const useAddLiquidityData = () => {
       tokenBFieldAmount.value,
       tokenAFieldAmount.value,
     );
+
+    const pool = Pool(tokenAFieldAmount.value!, tokenBFieldAmount.value!);
+    useCore().services.bus.dispatch({
+      type: "SuccessEvent",
+      payload: {
+        message:
+          `Added ` +
+          [
+            tokenAFieldAmount.value.greaterThan("0") &&
+              `${formatAssetAmount(
+                tokenAFieldAmount.value,
+              )} ${tokenAFieldAmount.value?.displaySymbol.toUpperCase()}`,
+            tokenBFieldAmount.value.greaterThan("0") &&
+              `${formatAssetAmount(
+                tokenBFieldAmount.value,
+              )} ${tokenBFieldAmount.value?.displaySymbol.toUpperCase()}`,
+          ]
+            .filter(Boolean)
+            .join(" and ") +
+          ` to ${pool.nativeAmount?.displaySymbol.toUpperCase()} / ${pool.externalAmount?.displaySymbol.toUpperCase()} pool`,
+      },
+    });
     setTimeout(() => {
       usecases.clp.syncPools.syncUserPools(accountStore.state.sifchain.address);
       usecases.clp.syncPools.syncPublicPools();
