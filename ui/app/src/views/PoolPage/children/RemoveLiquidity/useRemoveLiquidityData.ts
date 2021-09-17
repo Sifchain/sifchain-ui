@@ -137,28 +137,30 @@ export function useRemoveLiquidityData() {
       );
 
       const percentRemoved = ((+wBasisPoints.value / 10000) * 100).toFixed(0);
-      useCore().services.bus.dispatch({
-        type: "SuccessEvent",
-        payload: {
-          message:
-            `Withdrew ${percentRemoved}% of your liquidity from ` +
-            `${nativeAssetSymbol.value.toUpperCase()} / ${externalAsset.value.displaySymbol.toUpperCase()} pool as ` +
-            [
-              withdrawNativeAssetAmount.value &&
-                +withdrawNativeAssetAmount.value > 0 &&
-                `${
-                  withdrawNativeAssetAmount.value
-                } ${nativeAsset.value?.displaySymbol.toUpperCase()}`,
-              withdrawExternalAssetAmount.value &&
-                +withdrawExternalAssetAmount.value > 0 &&
-                `${
-                  withdrawExternalAssetAmount.value
-                } ${externalAsset.value?.displaySymbol.toUpperCase()}`,
-            ]
-              .filter(Boolean)
-              .join(" and "),
-        },
-      });
+      if (transactionStatus.value.state === "accepted") {
+        useCore().services.bus.dispatch({
+          type: "SuccessEvent",
+          payload: {
+            message:
+              `Withdrew ${percentRemoved}% of your liquidity from ` +
+              `${nativeAssetSymbol.value.toUpperCase()} / ${externalAsset.value.displaySymbol.toUpperCase()} pool as ` +
+              [
+                withdrawNativeAssetAmount.value &&
+                  +withdrawNativeAssetAmount.value > 0 &&
+                  `${
+                    withdrawNativeAssetAmount.value
+                  } ${nativeAsset.value?.displaySymbol.toUpperCase()}`,
+                withdrawExternalAssetAmount.value &&
+                  +withdrawExternalAssetAmount.value > 0 &&
+                  `${
+                    withdrawExternalAssetAmount.value
+                  } ${externalAsset.value?.displaySymbol.toUpperCase()}`,
+              ]
+                .filter(Boolean)
+                .join(" and "),
+          },
+        });
+      }
       setTimeout(() => {
         usecases.clp.syncPools.syncUserPools(
           accountStore.state.sifchain.address,

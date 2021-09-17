@@ -224,16 +224,18 @@ export const useSwapPageData = () => {
         toFieldAmount.value.asset,
         minimumReceived.value,
       );
-      useCore().services.bus.dispatch({
-        type: "SuccessEvent",
-        payload: {
-          message: `Swapped ${formatAssetAmount(
-            fromFieldAmount.value,
-          )} ${fromFieldAmount.value.displaySymbol.toUpperCase()} for ${formatAssetAmount(
-            toFieldAmount.value,
-          )} ${toFieldAmount.value.displaySymbol.toUpperCase()}`,
-        },
-      });
+      if (txStatus.value.state === "accepted") {
+        useCore().services.bus.dispatch({
+          type: "SuccessEvent",
+          payload: {
+            message: `Swapped ${formatAssetAmount(
+              fromFieldAmount.value,
+            )} ${fromFieldAmount.value.displaySymbol.toUpperCase()} for ${formatAssetAmount(
+              toFieldAmount.value,
+            )} ${toFieldAmount.value.displaySymbol.toUpperCase()}`,
+          },
+        });
+      }
       setTimeout(() => {
         accountStore.updateBalances(Network.SIFCHAIN);
       }, 1000);
