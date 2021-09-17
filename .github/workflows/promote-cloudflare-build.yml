@@ -51,3 +51,13 @@ jobs:
         uses: textileio/cloudflare-update-dnslink@master
         with:
           cid: ${{ env.DNSLINK_RECORD }}
+
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.14.0
+        with:
+          payload: "{ \"promoted_from\":\"${{github.event.inputs.source_dnslink | sed -i 's/.*-//'}}\",
+          \"promoted_to\":\"${{github.event.inputs.dest_dnslink | sed -i 's/.*-//'}}\",
+          \"record_value\":\"${{env.DNSLINK_RECORD}}\"}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_BUILD_PROMOTED_WEBHOOK_URL }}
