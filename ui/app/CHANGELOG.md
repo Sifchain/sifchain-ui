@@ -1,3 +1,8 @@
+## Release 2021.09.17
+
+* Ledger Nano X and Ledger Nano S are now supported!
+* Added more notifications for successful actions throughout the DEX.
+
 ## Release 2021.09.16
 * Enabled 
   * UST - Terra USD
