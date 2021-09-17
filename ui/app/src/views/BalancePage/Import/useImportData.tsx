@@ -3,7 +3,7 @@ import { computed, ref, Ref, watch } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
 import {
   TokenListItem,
-  useNetworkBalances,
+  useAndPollNetworkBalances,
   useToken,
   useTokenList,
 } from "@/hooks/useToken";
@@ -95,7 +95,7 @@ export const useImportData = () => {
     );
   });
 
-  const networkBalances = useNetworkBalances({
+  const networkBalances = useAndPollNetworkBalances({
     network: computed(() => importDraft.value.network),
   });
 

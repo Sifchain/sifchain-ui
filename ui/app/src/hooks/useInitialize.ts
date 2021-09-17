@@ -12,6 +12,7 @@ import {
 import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
 import { getTokenContract } from "../../../core/src/services/EthbridgeService/tokenContract";
 import { convertImageUrlToDataUrl } from "@/utils/convertImageUrlToDataUrl";
+import { useChains } from "./useChains";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -141,22 +142,24 @@ export function useInitialize() {
   // Support legacy code that uses sif service getState().
   watch(
     accountStore.state.sifchain,
-    () => {
-      const storeState = accountStore.state.sifchain;
+    (storeState) => {
       const state = services.sif.getState();
+
+      if (storeState.connected && !state.connected) {
+        accountStore.updateBalances(Network.SIFCHAIN);
+        accountStore.pollBalances(Network.SIFCHAIN);
+      }
+
       state.balances = storeState.balances;
       state.address = storeState.address;
       state.connected = storeState.connected;
       state.accounts = [storeState.address];
-
-      if (state.connected) {
-        accountStore.pollBalances(Network.SIFCHAIN);
-      }
     },
     { deep: true },
   );
 
   for (const network of Object.values(Network)) {
+    if (useChains().get(network).chainConfig.hidden) continue;
     accountStore.actions.loadIfConnected(network);
     watch(
       accountStore.refs[network].computed(),

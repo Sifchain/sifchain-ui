@@ -63,7 +63,9 @@ interface VuextraOptions<
 
 type ActionsBase<State, Ctx> = (
   context: ActionContext<State, State>,
-) => Readonly<Record<string, (arg?: any) => Promise<void> | void>>;
+) => Readonly<
+  Record<string, (arg?: any) => Promise<void> | void | Promise<() => void>>
+>;
 
 type MutationsBase<State> = (
   state: State,

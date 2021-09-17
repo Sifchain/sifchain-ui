@@ -114,16 +114,21 @@ export const accountStore = Vuextra.createStore({
     },
 
     async pollBalances(network: Network) {
-      if (!self.state[network].connected) return;
-      if (walletBalancePolls.has(network)) return;
-
-      (async function scheduleUpdate() {
+      let timeoutId: NodeJS.Timeout;
+      if (self.state[network].connected) {
         const UPDATE_DELAY = 4.5 * 1000;
-        await self.updateBalances(network);
 
-        const timeoutId = setTimeout(scheduleUpdate, UPDATE_DELAY);
-        walletBalancePolls.set(network, timeoutId);
-      })();
+        (async function scheduleUpdate() {
+          timeoutId = setTimeout(run, UPDATE_DELAY);
+          walletBalancePolls.set(network, timeoutId);
+
+          async function run() {
+            await self.updateBalances(network);
+            scheduleUpdate();
+          }
+        })();
+      }
+      return () => clearTimeout(timeoutId);
     },
 
     async updateBalances(network: Network) {
