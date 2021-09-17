@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SifUnSignedClient } from "services/utils/SifClient";
 import { Claim, ClaimArgs } from "./claim";
 

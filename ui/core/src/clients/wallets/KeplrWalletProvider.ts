@@ -23,7 +23,10 @@ import {
   WalletProviderContext,
 } from "./types";
 import { TokenRegistryService } from "../../services/TokenRegistryService/TokenRegistryService";
-import { QueryDenomTraceResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
+import {
+  QueryDenomTraceResponse,
+  QueryDenomTracesResponse,
+} from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 import { memoize } from "../../utils/memoize";
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/transfer";
@@ -33,6 +36,21 @@ const getIBCChainConfig = (chain: Chain) => {
     throw new Error("Cannot connect to non-ibc chain " + chain.displayName);
   return chain.chainConfig as IBCChainConfig;
 };
+
+async function digestMessage(message: string) {
+  const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+
+  if (typeof crypto === "undefined") {
+    global.crypto = require("crypto").webcrypto; // Node.js support
+  }
+
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
+  return "ibc/" + hashHex.toUpperCase();
+}
 
 export class KeplrWalletProvider extends CosmosWalletProvider {
   symbolLookup: Record<string, { symbol: string; invalid: boolean }> = {};
@@ -131,27 +149,25 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   async tryConnectAll(...chains: Chain[]) {
     const keplr = await getKeplrProvider();
     const chainIds = chains
-      .filter((c) => c.chainConfig.chainType === "ibc" && !c.chainConfig.hidden)
+      .filter((c) => c.chainConfig.chainType === "ibc")
       .map((c) => c.chainConfig.chainId);
+
     // @ts-ignore
     return keplr?.enable(chainIds);
   }
   async connect(chain: Chain): Promise<WalletConnectionState> {
-    const chainConfig = getIBCChainConfig(chain);
     // try to get the address quietly
     const keplr = await getKeplrProvider();
-    let key;
-    try {
-      key = await keplr?.getKey(chainConfig.chainId);
-    } catch (error) {
-      if (/no chain info/i.test(error.message)) {
-        await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
-        key = await keplr?.getKey(chainConfig.chainId);
-      } else {
-        throw error;
-      }
-    }
+    const chainConfig = getIBCChainConfig(chain);
+    await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
+    const key = await keplr?.getKey(chain.chainConfig.chainId);
     let address = key?.bech32Address;
+    // if quiet get fails, try to enable the wallet
+    if (!address) {
+      const sendingSigner = await this.getSendingSigner(chain);
+      address = (await sendingSigner.getAccounts())[0]?.address;
+    }
+    // if enabling & quiet get fails, throw.
     // if quiet get fails, try to enable the wallet
     if (!address) {
       const sendingSigner = await this.getSendingSigner(chain);
@@ -162,6 +178,12 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       throw new Error("No address to connect to");
     }
 
+    // Go ahead and fetch this so it gets cached...
+    // setTimeout(
+    //   () => this.getIbcDenomTraceLookupCached(chain),
+    //   1000 + Math.random() * 3000,
+    // );
+
     return {
       chain,
       provider: this,
@@ -170,36 +192,61 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     };
   }
 
-  denomTraceLookup: Record<
-    string,
-    Record<string, QueryDenomTraceResponse>
-  > = {};
-  async denomTrace(chain: Chain, denom: string) {
-    const chainId = chain.chainConfig.chainId;
-    if (!this.denomTraceLookup[chainId]) {
-      this.denomTraceLookup[chainId] = {};
+  getIbcDenomTraceLookupCached = memoize(
+    this.getIbcDenomTraceLookup.bind(this),
+    (chain: Chain) => chain.chainConfig.chainId,
+  );
+  async getIbcDenomTraceLookup(
+    chain: Chain,
+  ): Promise<Record<string, DenomTrace>> {
+    const queryClient = await this.getQueryClientCached(chain);
+    const denomTraces = await queryClient.ibc.transfer.allDenomTraces();
+
+    console.log("getIbcDenomTraceLookup", chain.displayName);
+
+    let validTraces: DenomTrace[] = [];
+
+    if (chain.network === Network.SIFCHAIN) {
+      // For sifchain, check for tokens that come from ANY ibc entry
+
+      const ibcEntries = (await this.tokenRegistry.load()).filter(
+        (item) => !!item.ibcCounterpartyChannelId,
+      );
+      validTraces = denomTraces.denomTraces.filter((trace) => {
+        const lastChannelInPath = trace.path.split("/").pop();
+        return ibcEntries.some(
+          (entry) =>
+            entry.ibcChannelId === lastChannelInPath ||
+            entry.ibcCounterpartyChannelId === lastChannelInPath,
+        );
+      });
+    } else {
+      // For other networks, check for tokens that come from specific counterparty channel
+
+      const entry = await this.tokenRegistry.findAssetEntryOrThrow(
+        chain.nativeAsset,
+      );
+      const channelId = entry.ibcCounterpartyChannelId;
+      if (!channelId) {
+        throw new Error(
+          "Cannot trace denoms, not an IBC chain " + chain.displayName,
+        );
+      }
+      validTraces = denomTraces.denomTraces.filter((item) => {
+        return item.path.split("/").pop() === channelId;
+      });
     }
 
-    if (!this.denomTraceLookup[chainId][denom]) {
-      const queryClient = await this.getQueryClientCached(chain);
-
-      let queryDenomTrace = async () => {
-        const value = await Promise.race([
-          queryClient.ibc.transfer.denomTrace(denom),
-          new Promise((r) => setTimeout(() => r("timeout"), 1500)),
-        ]);
-
-        // The keplr rpc apis often fail once for denomtrace once in awhile,
-        // but only once... so if it takes >1.5 seconds give it a quick retry.
-        if (value === "timeout") {
-          return queryClient.ibc.transfer.denomTrace(denom);
-        } else {
-          return value as QueryDenomTraceResponse;
-        }
-      };
-      this.denomTraceLookup[chainId][denom] = await queryDenomTrace();
-    }
-    return this.denomTraceLookup[chainId][denom];
+    return Object.fromEntries(
+      await Promise.all(
+        validTraces.map(async (trace) => {
+          return [
+            await digestMessage(`${trace.path}/${trace.baseDenom}`),
+            trace,
+          ];
+        }),
+      ),
+    );
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
@@ -209,65 +256,40 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const assetAmounts: IAssetAmount[] = [];
 
-    const tokenRegistry = await this.tokenRegistry.load();
-
-    // Use pLimit to process balances concurrently but not overload external apis
-    const limit = pLimit(3);
+    const ibcDenomTraceLookup = await this.getIbcDenomTraceLookupCached(chain);
 
     await Promise.all(
-      balances.map((coin) =>
-        limit(async () => {
-          try {
-            if (!coin.denom.startsWith("ibc/")) {
-              const asset = chain.assets.find(
-                (asset) =>
-                  asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
-              );
-              assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
-            } else {
-              const denomTrace = await this.denomTrace(
-                chain,
-                coin.denom.split("/")[1],
-              );
+      balances.map(async (coin) => {
+        try {
+          if (!coin.denom.startsWith("ibc/")) {
+            const asset = chain.assets.find(
+              (asset) =>
+                asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
+            );
+            assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
+          } else {
+            const denomTrace = ibcDenomTraceLookup[coin.denom];
+            if (!denomTrace) return;
 
-              const [, channelId] = (denomTrace.denomTrace?.path || "").split(
-                "/",
-              );
+            const baseDenom = denomTrace.baseDenom;
 
-              const isInvalidChannel =
-                channelId &&
-                !tokenRegistry.some(
-                  (item) =>
-                    item.ibcChannelId === channelId ||
-                    item.ibcCounterpartyChannelId === channelId,
-                );
-
-              if (isInvalidChannel) return;
-
-              const baseDenom = denomTrace.denomTrace?.baseDenom ?? coin.denom;
-
-              const asset = chain.assets.find(
-                (asset) =>
-                  asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
-              );
-              if (asset) {
-                asset.ibcDenom = coin.denom;
-              }
-              try {
-                const assetAmount = AssetAmount(
-                  asset || baseDenom,
-                  coin.amount,
-                );
-                assetAmounts.push(assetAmount);
-              } catch (error) {
-                // ignore asset, doesnt exist in our list.
-              }
+            const asset = chain.assets.find(
+              (asset) => asset.symbol.toLowerCase() === baseDenom.toLowerCase(),
+            );
+            if (asset) {
+              asset.ibcDenom = coin.denom;
             }
-          } catch (error) {
-            console.error(chain.network, "coin error", coin, error);
+            try {
+              const assetAmount = AssetAmount(asset || baseDenom, coin.amount);
+              assetAmounts.push(assetAmount);
+            } catch (error) {
+              // ignore asset, doesnt exist in our list.
+            }
           }
-        }),
-      ),
+        } catch (error) {
+          console.error(chain.network, "coin error", coin, error);
+        }
+      }),
     );
 
     return assetAmounts;

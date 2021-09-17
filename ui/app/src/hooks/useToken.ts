@@ -1,5 +1,5 @@
 import { useCore } from "./useCore";
-import { computed, ref, Ref, watch } from "vue";
+import { computed, onUnmounted, ref, Ref, watch } from "vue";
 import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
 import {
   AssetAmount,
@@ -112,11 +112,27 @@ export const useToken = (params: {
   });
 };
 
-export const useNetworkBalances = (params: { network: Ref<Network> }) => {
+export const useAndPollNetworkBalances = (params: {
+  network: Ref<Network>;
+}) => {
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
     return accountStore.updateBalances(params.network.value);
   }, [params.network]);
+
+  let stopPollingRef = ref<Promise<() => void> | undefined>();
+  watch(
+    params.network,
+    async (network) => {
+      if (stopPollingRef.value) stopPollingRef.value.then((fn) => fn());
+      if (network === Network.SIFCHAIN) return;
+      stopPollingRef.value = accountStore.pollBalances(network);
+    },
+    { immediate: true },
+  );
+  onUnmounted(() => {
+    if (stopPollingRef.value) stopPollingRef.value.then((fn) => fn());
+  });
 
   const hasLoaded = computed(
     () => accountStore.state[params.network.value]?.hasLoadedBalancesOnce,

@@ -5,10 +5,11 @@ import { setupSifchainApi } from "../setupSifchainApi";
 import { NetworkEnv } from "../config/getEnv";
 import { Amount, Asset, AssetAmount, Network } from "../entities";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
+import { OfflineAminoSigner } from "@cosmjs/amino";
 import { makeCosmoshubPath } from "@cosmjs/amino";
 import { stringToPath, slip10CurveFromString } from "@cosmjs/crypto";
 
-import { isBroadcastTxFailure } from "@cosmjs/stargate";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
 const [filename] = process.argv.slice(2);
 const content = fs.readFileSync(path.join(process.cwd(), filename)).toString();
 console.log({ content });
@@ -61,13 +62,17 @@ const {
       shouldBatchTransfers: true,
       maxAmountPerMsg: maxAmountPerMsg,
       maxMsgsPerBatch: maxMsgsPerBatch,
-      loadOfflineSigner: (chainId: string) =>
-        DirectSecp256k1HdWallet.fromMnemonic(
+      loadOfflineSigner: async (chainId: string) => {
+        const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
           mnemonic,
           undefined,
           api.services.ibc.loadChainConfigByChainId(chainId).keplrChainInfo
             .bech32Config.bech32PrefixAccAddr,
-        ),
+        );
+        // this probably doesn't work. NativeDexClient needs to be updated to use SignDirect
+        // with the amino in `TxBody` as a protobuf message
+        return (wallet as unknown) as OfflineAminoSigner;
+      },
     },
   );
   const prettyLog = (txt: any) => console.log(JSON.stringify(txt, null, 2));

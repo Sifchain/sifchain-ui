@@ -16,6 +16,7 @@ import { Button } from "@/components/Button/Button";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { RouterView, useRouter } from "vue-router";
 import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
+import { useCore } from "@/hooks/useCore";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -37,10 +38,11 @@ export default defineComponent({
     // While swap page is open, ensure pools update
     // pretty frequently so prices stay up to date...
     usePublicPoolsSubscriber({
-      delay: ref(60 * 1000),
+      delay: ref(10 * 1000),
     });
 
     onMounted(() => {
+      useCore().usecases.clp.syncPools.syncPublicPools();
       data.fromAmount.value = data.toAmount.value = "0";
     });
 

@@ -3,11 +3,14 @@
 As follows is our branching model:
 
 - Push to `develop` builds to `https://devnet.sifchain.finance`
-- Push a tag name to `develop` builds to `https://testnet.sifchain.finance`
-  - Recommended: run `yarn bump:app` from `ui/` folder or `yarn bump` from `ui/app` folder, it will create the commit&tag for you.
-  - Remember to `git push --tags` to get the tag to push.
-  - Run `yarn bump --push` to have it push for you!
-- Merge to `master` builds to `https://dex.sifchain.finance`
+- Push a tag name `v*` to `develop` builds to `https://testnet.sifchain.finance`
+  - Recommended: run `yarn bump` from `ui/` or `ui/app` folder, it will create the commit&tag for you.
+    - Run `yarn bump --push` to have it push the tags for you.
+- Merge to `master` builds to `https://staging.sifchain.finance`
+
+**Production Release**
+
+Go to https://github.com/sifchain/sifchain-ui/actions, select `Promote Cloudflare Build` action, and promote staging to dex.
 
 # Releases and showing a changelog
 

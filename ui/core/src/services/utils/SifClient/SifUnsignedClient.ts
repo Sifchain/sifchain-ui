@@ -5,6 +5,7 @@ import {
   LcdClient,
   setupAuthExtension,
 } from "@cosmjs/launchpad";
+import { NativeDexClient } from "./NativeDexClient";
 
 import {
   createTendermintSocketPoll,
@@ -49,6 +50,7 @@ export class SifUnSignedClient
   private subscriber: TendermintSocketPoll | undefined;
   rpcUrl: string;
   apiUrl: string;
+  private nativeDexClientPromise: Promise<NativeDexClient>;
   constructor(
     apiUrl: string,
     wsUrl = "ws://localhost:26657/websocket",
@@ -71,6 +73,15 @@ export class SifUnSignedClient
     this.lock = this.lcdClient.ethbridge.lock;
     this.claim = this.lcdClient.dispensation.claim;
     this.subscriber = createTendermintSocketPoll(rpcUrl);
+    this.nativeDexClientPromise = (async () => {
+      const chainId = await this.getChainId();
+      const cxn = NativeDexClient.connect(rpcUrl, apiUrl, chainId);
+      return cxn;
+    })();
+  }
+
+  loadNativeDexClient() {
+    return this.nativeDexClientPromise;
   }
 
   // Clp Extension
