@@ -141,7 +141,7 @@ export function useRemoveLiquidityData() {
         type: "SuccessEvent",
         payload: {
           message:
-            `Withdrew ${percentRemoved}% from ` +
+            `Withdrew ${percentRemoved}% of your liquidity from ` +
             `${nativeAssetSymbol.value.toUpperCase()} / ${externalAsset.value.displaySymbol.toUpperCase()} pool as ` +
             [
               withdrawNativeAssetAmount.value &&
