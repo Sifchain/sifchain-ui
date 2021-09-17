@@ -120,20 +120,18 @@ export const useAndPollNetworkBalances = (params: {
     return accountStore.updateBalances(params.network.value);
   }, [params.network]);
 
-  let stopPollingRef = ref<() => void | undefined>();
+  let stopPollingRef = ref<Promise<() => void> | undefined>();
   watch(
     params.network,
     async (network) => {
-      console.log("spr", stopPollingRef.value);
-
-      if (stopPollingRef.value) stopPollingRef.value();
+      if (stopPollingRef.value) stopPollingRef.value.then((fn) => fn());
       if (network === Network.SIFCHAIN) return;
-      stopPollingRef.value = await accountStore.pollBalances(network);
+      stopPollingRef.value = accountStore.pollBalances(network);
     },
     { immediate: true },
   );
   onUnmounted(() => {
-    if (stopPollingRef.value) stopPollingRef.value();
+    if (stopPollingRef.value) stopPollingRef.value.then((fn) => fn());
   });
 
   const hasLoaded = computed(
