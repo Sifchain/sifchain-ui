@@ -104,7 +104,6 @@ export const accountStore = Vuextra.createStore({
           return;
         }
         self.setConnected({ network, connected: state.connected });
-        self.setBalances({ network, balances: state.balances });
         self.setAddress({ network, address: state.address });
       } catch (error) {
         console.error(network, "wallet connect error", error);
