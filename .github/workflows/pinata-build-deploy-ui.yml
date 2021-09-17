@@ -79,9 +79,9 @@ jobs:
           fi
 
           if [[ $SUBDOMAIN == 'dex' ]]; then
-            echo "Config set for MainNet deployment"
+            echo "Config set for Staging deployment"
             echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.ipfs-dex" >> $GITHUB_ENV
+            echo "RECORD_NAME=_dnslink.ipfs-staging" >> $GITHUB_ENV
           fi
 
       - name: Update cloudflare DNSLink

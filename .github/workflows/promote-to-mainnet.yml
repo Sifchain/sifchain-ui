@@ -1,0 +1,45 @@
+name: Promote build to mainnet
+on:
+  workflow_dispatch:
+    inputs:
+      dnslink:
+        description: 'Record ID on Cloudflare to point dex.sifchain.finance to'
+        required: true
+        default: '_dnslink.ipfs-staging'
+
+jobs:
+  flip_to_mainnet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get value of given dnslink
+        shell: bash
+        run: |
+          response=$(curl \
+            -H "Authorization: Bearer $CLOUDFLARE_TOKEN" \
+            -H "Content-Type: application/json" \
+            -s "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records?name=$RECORD_NAME.$RECORD_DOMAIN")
+
+          success=$(jq -r  '.success' <<< "${response}" )
+
+          if [ $success != "true" ]; then
+            echo "Pages Update: Failed to read record ${{ github.event.inputs.dnslink }}!"
+            errors=$(jq -r  '.errors' <<< "${response}")
+            echo "Errors: $errors"
+            exit 1
+          fi
+
+          DNSLINK_RECORD=$(jq -r  '.result[0].content' <<< "${response}" )
+          echo "DNSLINK_RECORD=$DNSLINK_RECORD" >> $GITHUB_ENV
+          echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
+          echo "RECORD_NAME=_dnslink.ipfs-devnet" >> $GITHUB_ENV
+          echo "env: $(cat $GITHUB_ENV)"
+
+      - name: Update cloudflare DNSLink
+        env:
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
+        id: dnslink
+        uses: textileio/cloudflare-update-dnslink@master
+        with:
+          cid: ${{ env.DNSLINK_RECORD }}
