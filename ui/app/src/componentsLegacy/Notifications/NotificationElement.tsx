@@ -58,7 +58,7 @@ export const NotificationElement = defineComponent({
       if (!props.notification.manualClose) {
         autoCloseTimeoutId = setTimeout(() => {
           removeRef.value();
-        }, 10 * 1000);
+        }, 15 * 1000);
       }
 
       transitionTimeoutId = setTimeout(() => {
