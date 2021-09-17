@@ -1,12 +1,11 @@
 name: Build then Deploy to Pinata
-# run on merge
+#max-h-[70vw] overflow-y-scroll run on merge
 on:
   push:
     branches:
       - develop_pinata
       - develop
       - master
-  create:
     tags:
       - v*
 
