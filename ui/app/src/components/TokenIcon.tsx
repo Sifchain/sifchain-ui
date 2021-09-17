@@ -26,6 +26,7 @@ export const TokenIcon = defineComponent({
       type: [String, Object, Array] as HTMLAttributes["class"],
     },
   },
+
   setup(props) {
     const core = useCore();
     const url = ref<string | void>();
@@ -41,19 +42,27 @@ export const TokenIcon = defineComponent({
         immediate: true,
       },
     );
-    return () => (
+    return {
+      url,
+    };
+  },
+  render() {
+    return (
       <div
         style={{
-          height: props.size + "px",
-          width: props.size + "px",
-          backgroundImage: `url('${url.value}')`,
+          height: this.size + "px",
+          width: this.size + "px",
+          backgroundImage: `url('${this.url}')`,
           // set to the size of the icon
           // backgroundSize: `${props.size}px ${props.size}px`,
           backgroundPosition: "center center",
           backgroundSize: `contain`,
           backgroundRepeat: "no-repeat",
+          filter: this.asset?.value?.hasDarkIcon
+            ? "invert(100%) hue-rotate(-180deg)"
+            : "",
         }}
-        class={[`transition-all duration-100`, props.class]}
+        class={[`transition-all duration-100`, this.class]}
       />
     );
   },
