@@ -618,6 +618,7 @@ class NativeSigningClient
       signerAddress,
       signDoc,
     );
+
     const signedTxBody = {
       messages: signed.msgs.map((msg) => aminoTypes.fromAmino(msg)),
       memo: signed.memo,

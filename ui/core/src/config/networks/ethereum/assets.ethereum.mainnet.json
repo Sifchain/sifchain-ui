@@ -149,6 +149,7 @@
       "network": "ethereum",
       "priceUsd": 0.568633,
       "symbol": "OCEAN",
+      "hasDarkIcon": true,
       "transferLimit": "8793017640551988592640",
       "homeNetwork": "ethereum"
     },
@@ -502,6 +503,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/12782/small/logocircle.png?1611944557",
       "name": "DAOfi",
       "network": "ethereum",
+      "hasDarkIcon": true,
       "priceUsd": 1.05,
       "symbol": "daofi",
       "transferLimit": "99999999999999999999999",
@@ -715,6 +717,7 @@
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/13422/small/frax_logo.png?1608476506",
       "name": "Frax",
+      "hasDarkIcon": true,
       "network": "ethereum",
       "priceUsd": 1.0,
       "symbol": "FRAX",
@@ -764,33 +767,6 @@
       "homeNetwork": "ethereum"
     },
     {
-      "address": "0xc52c326331e9ce41f04484d3b5e5648158028804",
-      "imageUrl": "https://assets.coingecko.com/coins/images/14830/small/7xjpHaG.png?1618564961",
-      "name": "ZEN Exchange Token",
-      "symbol": "ZCX",
-      "decimals": 18,
-      "network": "ethereum",
-      "homeNetwork": "ethereum"
-    },
-    {
-      "address": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
-      "imageUrl": "https://assets.coingecko.com/coins/images/13423/small/frax_share.png?1608478989",
-      "name": "Frax Share",
-      "symbol": "FXS",
-      "decimals": 18,
-      "network": "ethereum",
-      "homeNetwork": "ethereum"
-    },
-    {
-      "address": "0x853d955acef822db058eb8505911ed77f175b99e",
-      "imageUrl": "https://assets.coingecko.com/coins/images/13422/small/frax_logo.png?1608476506",
-      "name": "Frax",
-      "symbol": "FRAX",
-      "decimals": 18,
-      "network": "ethereum",
-      "homeNetwork": "ethereum"
-    },
-    {
       "address": "0xEF53462838000184F35f7D991452e5f25110b207",
       "imageUrl": "https://assets.coingecko.com/coins/images/15632/small/knit.jpg?1621396114",
       "name": "Knit Finance",
@@ -804,6 +780,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/4934/small/0_Black-svg.png?1600757954",
       "name": "0chain",
       "symbol": "ZCN",
+      "hasDarkIcon": true,
       "decimals": 10,
       "network": "ethereum",
       "homeNetwork": "ethereum"
