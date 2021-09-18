@@ -111,6 +111,7 @@ export class EthereumSifchainInterchainApi
           hash: hash,
         } as SifchainInterchainTx;
       } catch (transactionStatus) {
+        console.log("catch", transactionStatus);
         emit({
           type: "tx_error",
           tx: parseEthereumTxFailure(transactionStatus),

@@ -57,4 +57,5 @@ export type TxEventPrepopulated<T extends TxEvent = TxEvent> = Omit<
   "txHash"
 > & {
   txHash?: string;
+  rawLog?: string;
 };
