@@ -507,6 +507,8 @@ export class IBCService {
         } catch (e) {
           externalGasPrices = {};
         }
+        externalGasPrices =
+          typeof externalGasPrices === "object" ? externalGasPrices : {};
 
         const txDraft = new NativeDexTransaction(fromAccount.address, batch, {
           price: {
