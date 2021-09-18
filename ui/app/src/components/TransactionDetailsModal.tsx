@@ -81,7 +81,42 @@ export default defineComponent({
                 size={20}
               />
             )}
-            {props.transactionDetails.value?.description}
+            {props.transactionDetails.value?.description ===
+            "ledger_smart_contracts_not_approved" ? (
+              <div class="white-space-pre-wrap text-left css-unreset my-[16px]">
+                It looks like you may have a MetaMask + Ledger configuration
+                issue. If you are using a new version of Ledger, you must select
+                the Ethereum app and enable contract data.
+                <br />
+                <br />
+                To enable contract data:
+                <br />
+                <ul>
+                  <li>Connect and unlock your Ledger device. </li>
+                  <li>Open the Ethereum application. </li>
+                  <li>Press the right button to navigate to Settings. </li>
+                  <li>Then press both buttons to validate. </li>
+                  <li>
+                    In the Contract data settings, press both buttons to allow
+                    contract data in transactions.{" "}
+                  </li>
+                  <li>The device displays Allowed.</li>
+                </ul>
+                <a
+                  class="underline"
+                  href="https://teckers.co/uniswap-ledger/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Here is a visual guide.
+                </a>
+                <br />
+                <br />
+                Once you've done this, try again.
+              </div>
+            ) : (
+              props.transactionDetails.value?.description
+            )}
           </p>
           {!isLoading &&
             (props.completedCta?.value != null ? (

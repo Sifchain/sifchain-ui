@@ -70,7 +70,7 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
       return {
         heading: "Transaction Rejected",
         isError: true,
-        description: "", // User rejected, say nothing?
+        description: pegEvent.tx?.memo || "",
       };
     }
     case "tx_error": {
