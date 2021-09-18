@@ -80,16 +80,19 @@ export const accountStore = Vuextra.createStore({
         )
       ) {
         state[payload.network].balances = payload.balances;
-        if (!state[payload.network].hasLoadedBalancesOnce) {
-          state[payload.network].hasLoadedBalancesOnce = true;
-        }
+      }
+      if (!state[payload.network].hasLoadedBalancesOnce) {
+        state[payload.network].hasLoadedBalancesOnce = true;
       }
     },
   }),
   actions: (context) => ({
     async loadIfConnected(network: Network) {
       const usecase = getUsecase(network);
-      await usecase.loadIfConnected(network);
+      const state = await usecase.loadIfConnected(network);
+      if (state.connected) {
+        this.load(network);
+      }
     },
     async load(network: Network) {
       const usecase = getUsecase(network);
@@ -101,7 +104,6 @@ export const accountStore = Vuextra.createStore({
           return;
         }
         self.setConnected({ network, connected: state.connected });
-        self.setBalances({ network, balances: state.balances });
         self.setAddress({ network, address: state.address });
       } catch (error) {
         console.error(network, "wallet connect error", error);
@@ -111,16 +113,21 @@ export const accountStore = Vuextra.createStore({
     },
 
     async pollBalances(network: Network) {
-      if (!self.state[network].connected) return;
-      if (walletBalancePolls.has(network)) return;
-
-      (async function scheduleUpdate() {
+      let timeoutId: NodeJS.Timeout;
+      if (self.state[network].connected) {
         const UPDATE_DELAY = 4.5 * 1000;
-        await self.updateBalances(network);
 
-        const timeoutId = setTimeout(scheduleUpdate, UPDATE_DELAY);
-        walletBalancePolls.set(network, timeoutId);
-      })();
+        (async function scheduleUpdate() {
+          timeoutId = setTimeout(run, UPDATE_DELAY);
+          walletBalancePolls.set(network, timeoutId);
+
+          async function run() {
+            await self.updateBalances(network);
+            scheduleUpdate();
+          }
+        })();
+      }
+      return () => clearTimeout(timeoutId);
     },
 
     async updateBalances(network: Network) {

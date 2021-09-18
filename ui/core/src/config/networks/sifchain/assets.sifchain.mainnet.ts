@@ -1,4 +1,11 @@
-export default {
+import { IAsset, Network } from "index";
+
+const assets: {
+  assets: (Omit<IAsset, "homeNetwork" | "network"> & {
+    network: "sifchain";
+    homeNetwork: string;
+  })[];
+} = {
   assets: [
     {
       symbol: "rowan",
@@ -136,6 +143,7 @@ export default {
       name: "Ocean Protocol",
       network: "sifchain",
       symbol: "cocean",
+      hasDarkIcon: true,
       displaySymbol: "ocean",
       homeNetwork: "ethereum",
     },
@@ -458,6 +466,7 @@ export default {
         "https://assets.coingecko.com/coins/images/12782/small/logocircle.png?1611944557",
       name: "DAOfi",
       network: "sifchain",
+      hasDarkIcon: true,
       symbol: "cdaofi",
       displaySymbol: "daofi",
       homeNetwork: "ethereum",
@@ -666,5 +675,202 @@ export default {
       homeNetwork: "osmosis",
       decommissioned: true, // not ready for mainnet
     },
+    {
+      address: "0xa47c8bf37f92abed4a126bda807a7b7498661acd",
+      decimals: 18,
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
+      name: "Terra USD",
+      label: "Terra USD",
+      network: "sifchain",
+      displaySymbol: "UST",
+      symbol: "cust",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x853d955acef822db058eb8505911ed77f175b99e",
+      decimals: 18,
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/13422/small/frax_logo.png?1608476506",
+      name: "Frax",
+      label: "Frax",
+      network: "sifchain",
+      displaySymbol: "FRAX",
+      hasDarkIcon: true,
+      symbol: "cfrax",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0xc52c326331e9ce41f04484d3b5e5648158028804",
+      decimals: 18,
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/14830/small/7xjpHaG.png?1618564961",
+      name: "Unizen",
+      label: "Unizen",
+      network: "sifchain",
+      displaySymbol: "ZCX",
+      symbol: "czcx",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x217ddead61a42369a266f1fb754eb5d3ebadc88a",
+      decimals: 18,
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15482/small/donkey_logo.jpg?1621012824",
+      name: "Don-key",
+      label: "Don-key",
+      displaySymbol: "DON",
+      symbol: "cdon",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15595/small/metis.PNG?1621298076",
+      name: "Metis Token",
+      label: "Metis Token",
+      displaySymbol: "Metis",
+      symbol: "cmetis",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/13423/small/frax_share.png?1608478989",
+      name: "Frax Share",
+      label: "Frax Share",
+      displaySymbol: "FXS",
+      symbol: "cfxs",
+      hasDarkIcon: true,
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0xEF53462838000184F35f7D991452e5f25110b207",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15632/small/knit.jpg?1621396114",
+      name: "Knit Finance",
+      label: "Knit Finance",
+      displaySymbol: "KFT",
+      symbol: "ckft",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0xb9ef770b6a5e12e45983c5d80545258aa38f3b78",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/4934/small/0_Black-svg.png?1600757954",
+      name: "0chain",
+      label: "0chain",
+      displaySymbol: "ZCN",
+      symbol: "czcn",
+      hasDarkIcon: true,
+      decimals: 10,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0xFa14Fa6958401314851A17d6C5360cA29f74B57B",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/14750/small/SAITO.png?1626857406",
+      name: "SAITO",
+      label: "SAITO",
+      displaySymbol: "SAITO",
+      symbol: "csaito",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x9695e0114e12c0d3a3636fab5a18e6b737529023",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15368/small/SgqhfWz4_400x400_%281%29.jpg?1620666919",
+      name: "DFYN Token",
+      label: "DFYN Token",
+      displaySymbol: "DFYN",
+      symbol: "cdfyn",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x20a8cec5fffea65be7122bcab2ffe32ed4ebf03a",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/17321/small/asset_icon_dnxc_200.png?1627292452",
+      name: "DinoX Coin",
+      label: "DinoX Coin",
+      displaySymbol: "DNXC",
+      symbol: "cdnxc",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0xbbc2ae13b23d715c30720f079fcd9b4a74093505",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/14238/small/ethernity_logo.png?1615189750",
+      name: "@EthernityChain $ERN Token",
+      label: "@EthernityChain $ERN Token",
+      displaySymbol: "ERN",
+      symbol: "cern",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x83e6f1e41cdd28eaceb20cb649155049fac3d5aa",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12648/small/polkastarter.png?1609813702",
+      name: "PolkastarterToken",
+      label: "PolkastarterToken",
+      displaySymbol: "POLS",
+      symbol: "cpols",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0xbb0e17ef65f82ab018d8edd776e8dd940327b28b",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/13029/small/axie_infinity_logo.png?1604471082",
+      name: "Axie Infinity Shard",
+      label: "Axie Infinity Shard",
+      displaySymbol: "AXS",
+      symbol: "caxs",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png?1624446912",
+      name: "Matic Token",
+      label: "Matic Token",
+      displaySymbol: "MATIC",
+      symbol: "cmatic",
+      decimals: 18,
+      network: "sifchain",
+      homeNetwork: "ethereum",
+    },
+    {
+      address: "0x2e9d63788249371f1dfc918a52f8d799f4a38c94",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/17495/small/tokemak-avatar-200px-black.png?1628131614",
+      name: "Tokemak",
+      label: "Tokemak",
+      displaySymbol: "TOKE",
+      symbol: "ctoke",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
   ],
 };
+
+export default assets;

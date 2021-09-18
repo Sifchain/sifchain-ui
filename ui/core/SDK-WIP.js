@@ -65,3 +65,7 @@ const sifchain = new Sif.Chain({
   environment: "testnet",
   rpc: "http://localhost:8545",
 });
+
+import { NativeDexClient } from "@sifchain/sdk";
+
+const client = await NativeDexClient.connect();

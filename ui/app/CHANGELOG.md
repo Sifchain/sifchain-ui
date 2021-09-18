@@ -1,3 +1,27 @@
+## Release 2021.09.17
+
+* Ledger Nano X and Ledger Nano S are now supported!
+* Added more notifications for successful actions throughout the DEX.
+
+## Release 2021.09.16
+* Enabled 
+  * UST - Terra USD
+  * FRAX - Frax
+  * FXS - Frax Share
+  * ZCX - Unizen
+  * DON - Don-key
+  * METIS - Metis Token
+  * KFT - Knit Finance
+  * ZCN - 0chain
+  * SAITO - SAITO
+  * DFYN - DFYN Token
+  * DNXC - DinoX Coin
+  * ERN - @EthernityChain $ERN Token
+  * POLS - PolkastarterToken
+  * AXS - Axie Infinity Shard
+  * MATIC - Matic Token
+  * TOKE - Tokemak
+
 ## Release 2021.09.13
 
 * We added 'Your Pool Value' to the Pool page. This shows your current value in that pool in USD if you were to withdraw your liquidity in a 50/50 split among both assets in that pool.

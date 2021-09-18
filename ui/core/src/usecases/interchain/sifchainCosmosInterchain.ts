@@ -14,7 +14,7 @@ import {
 } from "./_InterchainApi";
 import { parseTxFailure } from "../../services/SifService/parseTxFailure";
 import { SifchainChain, CosmoshubChain } from "../../services/ChainsService";
-import { isBroadcastTxFailure } from "@cosmjs/stargate";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
 import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
 import { IBCTransferSubscriber } from "./utils";
 

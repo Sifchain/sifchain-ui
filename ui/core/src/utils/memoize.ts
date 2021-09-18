@@ -8,15 +8,15 @@ export function memoize<
   ) {
     throw new TypeError("Invalid memo");
   }
+  const cache = new Map<any, ReturnType<F>>();
   let memoized = (...args: Parameters<F>) => {
-    const cache = new Map<any, ReturnType<F>>();
     let fn = (...args: Parameters<F>) => {
       const key = resolver ? resolver(...args) : args[0];
-      if (cache?.has(key)) {
+      if (cache.has(key)) {
         return cache.get(key);
       }
       const result = func(...args);
-      cache?.set(key, result);
+      cache.set(key, result);
       return result;
     };
     memoized = fn;

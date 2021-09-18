@@ -36,8 +36,6 @@ export default defineComponent({
   data() {
     return {
       expanded: false,
-      animationPhase: "none" as "none" | "expand" | "collapse",
-      animationTimeout: undefined as NodeJS.Timeout | undefined,
     };
   },
   setup(props) {
@@ -50,47 +48,10 @@ export default defineComponent({
   },
   methods: {
     toggleExpanded() {
-      const getElement = () =>
-        document.getElementById(`expandable-${this.pool.symbol()}`)!;
-
-      if (this.animationTimeout) clearTimeout(this.animationTimeout);
-
-      if (!this.expanded || this.animationPhase === "collapse") {
-        this.expanded = true;
-        this.animationTimeout = setTimeout(() => {
-          Object.assign(getElement().style, {
-            height: "193px",
-            marginTop: "10px",
-            paddingTop: "12px",
-            paddingBottom: "12px",
-            opacity: 1,
-          });
-          this.animationPhase = "expand";
-
-          this.animationTimeout = setTimeout(() => {
-            this.animationPhase = "none";
-          }, 200);
-        }, 17);
-      } else {
-        this.expanded = false;
-        this.animationPhase = "collapse";
-
-        Object.assign(getElement().style, {
-          height: "",
-          marginTop: "",
-          padding: "",
-          opacity: "",
-        });
-        this.animationTimeout = setTimeout(() => {
-          this.animationPhase = "none";
-        }, 200);
-      }
+      this.expanded = !this.expanded;
     },
   },
   computed: {
-    shouldRenderSection() {
-      return this.expanded || this.animationPhase === "collapse";
-    },
     myPoolValue(): string | undefined {
       if (!this.accountPool || !this.poolStat) return;
 
@@ -124,7 +85,7 @@ export default defineComponent({
       if (!this.$props.poolStat) return undefined;
     },
     details(): [string, JSX.Element][] {
-      if (!this.shouldRenderSection) return []; // don't compute unless expanded
+      if (!this.expanded) return []; // don't compute unless expanded
       return [
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
@@ -276,11 +237,11 @@ export default defineComponent({
             </button>
           </div>
         </div>
-        {this.shouldRenderSection && (
+        {this.expanded && (
           <section
             id={`expandable-${this.pool.symbol()}`}
             class={[
-              "h-0 mt-0 py-0 px-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none transition-all pointer-events-auto duration-200",
+              "h-[193px] mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
             ]}
           >
             <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">

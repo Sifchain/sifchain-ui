@@ -1,29 +1,53 @@
+import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 import { IAsset } from "../../entities";
 import { Services } from "../../services";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
-type PickSif = Pick<Services["sif"], "getState" | "signAndBroadcast">;
+type PickSif = Pick<
+  Services["sif"],
+  "getState" | "signAndBroadcast" | "loadNativeDexClient" | "unSignedClient"
+>;
 type PickClp = Pick<Services["clp"], "removeLiquidity">;
 
 type RemoveLiquidityServices = {
   bus: PickBus;
   sif: PickSif;
   clp: PickClp;
+  tokenRegistry: Services["tokenRegistry"];
 };
 
-export function RemoveLiquidity({ bus, sif, clp }: RemoveLiquidityServices) {
+export function RemoveLiquidity({
+  bus,
+  sif,
+  clp,
+  tokenRegistry,
+}: RemoveLiquidityServices) {
   return async (asset: IAsset, wBasisPoints: string, asymmetry: string) => {
-    const state = sif.getState();
-
-    const tx = await clp.removeLiquidity({
-      fromAddress: state.address,
-      asset,
-      asymmetry,
-      wBasisPoints,
-    });
-
-    const txStatus = await sif.signAndBroadcast(tx.value.msg);
-
+    const client = await sif.loadNativeDexClient();
+    const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(asset);
+    const txDraft = await client.tx.clp.RemoveLiquidity(
+      {
+        asymmetry,
+        wBasisPoints,
+        externalAsset: {
+          symbol: externalAssetEntry.denom,
+        },
+        /*
+         @mccallofthewild - This usecase (if we don't kill it altogether in lieu 
+         of an all-powerful `NativeDexClient`) should really take in an address argument instead
+         of reading state here. Leaving it now to speed up ledger implementation
+        */
+        signer: sif.getState().address,
+      },
+      sif.getState().address,
+    );
+    const keplr = await getKeplrProvider();
+    const signer = await keplr!.getOfflineSigner(
+      await sif.unSignedClient.getChainId(),
+    );
+    const signedTx = await client.sign(txDraft, signer);
+    const sentTx = await client.broadcast(signedTx);
+    const txStatus = client.parseTxResult(sentTx);
     if (txStatus.state !== "accepted") {
       bus.dispatch({
         type: "TransactionErrorEvent",

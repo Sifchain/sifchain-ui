@@ -11,7 +11,7 @@ import {
 import { useCore } from "@/hooks/useCore";
 import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";
-import { getLMData } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount, getLMData } from "@/componentsLegacy/shared/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { debounce } from "@/views/utils/debounce";
 import { accountStore } from "@/store/modules/accounts";
@@ -39,6 +39,11 @@ export function useRemoveLiquidityData() {
   const address = accountStore.refs.sifchain.address.computed();
   const state = ref(0);
 
+  const nativeAsset = computed(() =>
+    services.chains
+      .get(Network.SIFCHAIN)
+      .findAssetWithLikeSymbol(nativeAssetSymbol.value || ""),
+  );
   const externalAsset = computed(() =>
     services.chains
       .get(Network.SIFCHAIN)
@@ -82,9 +87,9 @@ export function useRemoveLiquidityData() {
 
   return {
     connected,
+    nativeAsset,
+    externalAsset,
     state,
-    nativeAsset: useAssetBySymbol(nativeAssetSymbol),
-    externalAsset: useAssetBySymbol(externalAssetSymbol),
     nextStepMessage: computed(() => {
       switch (state.value) {
         case PoolState.SELECT_TOKENS:
@@ -130,6 +135,32 @@ export function useRemoveLiquidityData() {
         wBasisPoints.value,
         asymmetry.value,
       );
+
+      const percentRemoved = ((+wBasisPoints.value / 10000) * 100).toFixed(0);
+      if (transactionStatus.value.state === "accepted") {
+        useCore().services.bus.dispatch({
+          type: "SuccessEvent",
+          payload: {
+            message:
+              `Withdrew ${percentRemoved}% of your liquidity from ` +
+              `${nativeAssetSymbol.value.toUpperCase()} / ${externalAsset.value.displaySymbol.toUpperCase()} pool as ` +
+              [
+                withdrawNativeAssetAmount.value &&
+                  +withdrawNativeAssetAmount.value > 0 &&
+                  `${
+                    withdrawNativeAssetAmount.value
+                  } ${nativeAsset.value?.displaySymbol.toUpperCase()}`,
+                withdrawExternalAssetAmount.value &&
+                  +withdrawExternalAssetAmount.value > 0 &&
+                  `${
+                    withdrawExternalAssetAmount.value
+                  } ${externalAsset.value?.displaySymbol.toUpperCase()}`,
+              ]
+                .filter(Boolean)
+                .join(" and "),
+          },
+        });
+      }
       setTimeout(() => {
         usecases.clp.syncPools.syncUserPools(
           accountStore.state.sifchain.address,

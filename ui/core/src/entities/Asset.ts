@@ -9,7 +9,8 @@ export type IAsset = {
   symbol: string;
   ibcDenom?: string;
   displaySymbol: string;
-  label: string;
+  label?: string;
+  hasDarkIcon?: boolean;
   homeNetwork: Network;
   decommissioned?: true;
   decommissionReason?: string;

@@ -49,8 +49,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { config } = useCore();
-
     const expandedRef = computed(
       () => props.expandedSymbol === props.tokenItem.asset.symbol,
     );
@@ -169,7 +167,7 @@ export default defineComponent({
         </td>
         <td class="text-right align-middle min-w-[160px]">
           <div class="inline-flex items-center relative">
-            <span class="group-hover:opacity-80">
+            <span class="group-hover:opacity-80 group-hover:delay-75">
               {isNoBalanceRef.value
                 ? props.tokenItem.pendingImports.length ||
                   props.tokenItem.pendingExports.length
