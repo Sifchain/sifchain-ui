@@ -2,6 +2,31 @@ import { BroadcastTxFailure } from "@cosmjs/launchpad";
 import { TransactionStatus } from "../../entities";
 import { ErrorCode, getErrorMessage } from "../../entities/Errors";
 
+export function parseEthereumTxFailure(txFailure: {
+  transactionHash: string;
+  rawLog?: string;
+}): TransactionStatus {
+  if (txFailure.rawLog?.includes("LEDGER_")) {
+    return {
+      code: ErrorCode.UNKNOWN_FAILURE,
+      hash: txFailure.transactionHash,
+      memo: txFailure.rawLog,
+      state: "failed",
+    };
+  }
+
+  if (txFailure.rawLog?.toLowerCase().includes("error: [object object]")) {
+    return {
+      code: ErrorCode.UNKNOWN_FAILURE,
+      hash: txFailure.transactionHash,
+      state: "failed",
+      memo: "ledger_smart_contracts_not_approved",
+    };
+  }
+
+  return parseTxFailure(txFailure);
+}
+
 export function parseTxFailure(txFailure: {
   transactionHash: string;
   rawLog?: string;
