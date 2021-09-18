@@ -29,7 +29,7 @@ export type PegApproveStartedEvent = { type: "approve_started" };
 export type PegApprovedEvent = { type: "approved" };
 export type PegSentEvent = { type: "sent"; tx: TransactionStatus };
 export type PegTxError = { type: "tx_error"; tx: TransactionStatus };
-export type PegApproveError = { type: "approve_error" };
+export type PegApproveError = { type: "approve_error"; tx?: TransactionStatus };
 export type PegSigningEvent = { type: "signing" };
 export type PegEvent =
   | PegApproveStartedEvent
