@@ -498,12 +498,17 @@ export class IBCService {
       try {
         let externalGasPrices: any = {};
         try {
-          externalGasPrices = await fetch(
+          const prices = await fetch(
             "https://gas-meter.vercel.app/gas-v1.json",
-          )
-            .then((r) => r.json())
-            .catch((e) => {});
-        } catch (e) {}
+          ).then((r) => {
+            return r.json();
+          });
+          externalGasPrices = prices;
+        } catch (e) {
+          externalGasPrices = {};
+        }
+        externalGasPrices =
+          typeof externalGasPrices === "object" ? externalGasPrices : {};
 
         const txDraft = new NativeDexTransaction(fromAccount.address, batch, {
           price: {
