@@ -478,12 +478,15 @@ export class IBCService {
         // console.log(JSON.(batch));
         let externalGasPrices: any = {};
         try {
-          externalGasPrices = await fetch(
+          const prices = await fetch(
             "https://gas-meter.vercel.app/gas-v1.json",
-          )
-            .then((r) => r.json())
-            .catch((e) => {});
-        } catch (e) {}
+          ).then((r) => {
+            return r.json();
+          });
+          externalGasPrices = prices;
+        } catch (e) {
+          externalGasPrices = {};
+        }
         const brdcstTxRes = await sendingStargateClient.signAndBroadcast(
           fromAccount.address,
           batch,
