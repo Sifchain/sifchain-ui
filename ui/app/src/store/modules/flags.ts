@@ -1,5 +1,3 @@
-import { AppCookies, NetworkEnv } from "@sifchain/sdk";
-import { defineComponent } from "@vue/runtime-core";
 import { Vuextra } from "../Vuextra";
 
 export const flagsStore = Vuextra.createStore({
@@ -9,10 +7,10 @@ export const flagsStore = Vuextra.createStore({
   },
   state: {
     ibcTransferTimeoutMinutes: 45,
-    enableRewardsClaim: true,
-    enableEthereumToCosmosImports: false,
-    enableNativeTokenIBCExports:
-      AppCookies().getEnv() === NetworkEnv.TESTNET_042_IBC,
+    rewardClaims: true,
+    peggyForCosmosTokens: true,
+    ibcForEthTokens: false,
+    claimsGraph: false,
   },
   getters: (state) => ({}),
   mutations: (state) => ({
