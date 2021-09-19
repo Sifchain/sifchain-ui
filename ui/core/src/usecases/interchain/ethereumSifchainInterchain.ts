@@ -16,6 +16,7 @@ import { SifchainChain, EthereumChain } from "../../services/ChainsService";
 import { isSupportedEVMChain } from "../utils";
 import { isOriginallySifchainNativeToken } from "../peg/utils/isOriginallySifchainNativeToken";
 import { createIteratorSubject } from "../../utils/iteratorSubject";
+import { parseEthereumTxFailure } from "../../services/SifService/parseTxFailure";
 
 const ETH_CONFIRMATIONS = 50;
 
@@ -63,7 +64,13 @@ export class EthereumSifchainInterchainApi
             params.assetAmount,
           );
         } catch (error) {
-          emit({ type: "approve_error" });
+          emit({
+            type: "approve_error",
+            tx: parseEthereumTxFailure({
+              transactionHash: "",
+              rawLog: error.message,
+            }),
+          });
           return;
         }
         emit({ type: "approved" });
@@ -104,7 +111,11 @@ export class EthereumSifchainInterchainApi
           hash: hash,
         } as SifchainInterchainTx;
       } catch (transactionStatus) {
-        emit({ type: "tx_error", tx: transactionStatus });
+        console.log("catch", transactionStatus);
+        emit({
+          type: "tx_error",
+          tx: parseEthereumTxFailure(transactionStatus),
+        });
       }
     });
   }

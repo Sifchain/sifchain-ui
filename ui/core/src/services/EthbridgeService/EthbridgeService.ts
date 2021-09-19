@@ -248,7 +248,10 @@ export default function createEthbridgeService({
         console.log("lockToSifchain: handleError: ", err);
         pegTx.emit({
           type: "Error",
-          payload: parseTxFailure({ hash: "", log: err.message.toString() }),
+          payload: {
+            hash: "",
+            rawLog: err.message.toString(),
+          },
         });
       }
 
@@ -383,7 +386,10 @@ export default function createEthbridgeService({
         console.log("burnToSifchain: handleError ERROR", err);
         pegTx.emit({
           type: "Error",
-          payload: parseTxFailure({ hash: "", log: err }),
+          payload: {
+            hash: "",
+            rawLog: err.message.toString(),
+          },
         });
       }
 
