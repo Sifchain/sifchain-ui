@@ -2,6 +2,7 @@ export const convertImageUrlToDataUrl = (
   src: string,
   outputFormat: "image/png" | "image/jpeg" | "image/webp" = "image/png",
 ): Promise<string> => {
+  // resolves when image data url is created in format "data:image/type;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
