@@ -27,7 +27,7 @@ import {
   QueryDenomTraceResponse,
   QueryDenomTracesResponse,
 } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
-import { memoize } from "../../utils/memoize";
+import { memoizeSuccessfulPromise } from "../../utils/memoize";
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/transfer";
 
@@ -109,7 +109,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return sendingSigner;
   }
 
-  getStargateClientCached = memoize(this.getStargateClient.bind(this));
+  getStargateClientCached = memoizeSuccessfulPromise(
+    this.getStargateClient.bind(this),
+  );
   async getStargateClient(chain: Chain) {
     const chainConfig = getIBCChainConfig(chain);
     const sendingSigner = await this.getSendingSigner(chain);
@@ -132,7 +134,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     );
   }
 
-  getQueryClientCached = memoize(this.getQueryClient.bind(this));
+  getQueryClientCached = memoizeSuccessfulPromise(
+    this.getQueryClient.bind(this),
+  );
   async getQueryClient(chain: Chain) {
     const chainConfig = getIBCChainConfig(chain);
     const tendermintClient = await Tendermint34Client.connect(
@@ -178,11 +182,11 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       throw new Error("No address to connect to");
     }
 
-    // Go ahead and fetch this so it gets cached...
-    setTimeout(
-      () => this.getIbcDenomTraceLookupCached(chain),
-      1000 + Math.random() * 5000,
-    );
+    // Cache ahead of time (only necessary if these are super slow)
+    // setTimeout(
+    //   () => this.getIbcDenomTraceLookupCached(chain),
+    //   1000 + Math.random() * 5000,
+    // );
 
     return {
       chain,
@@ -192,17 +196,26 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     };
   }
 
-  getIbcDenomTraceLookupCached = memoize(
+  getIbcDenomTraceLookupCached = memoizeSuccessfulPromise(
     this.getIbcDenomTraceLookup.bind(this),
     (chain: Chain) => chain.chainConfig.chainId,
   );
   async getIbcDenomTraceLookup(
     chain: Chain,
   ): Promise<Record<string, DenomTrace>> {
-    const queryClient = await this.getQueryClientCached(chain);
-    const denomTraces = await queryClient.ibc.transfer.allDenomTraces();
-
-    console.log("getIbcDenomTraceLookup", chain.displayName);
+    const chainConfig = getIBCChainConfig(chain);
+    const denomTracesRes = await fetch(
+      `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
+    );
+    if (!denomTracesRes.ok)
+      throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
+    const denomTracesJson = await denomTracesRes.json();
+    const denomTraces: DenomTrace[] = denomTracesJson.denom_traces.map(
+      (data: { path: string; base_denom: string }) => ({
+        path: data.path,
+        baseDenom: data.base_denom,
+      }),
+    );
 
     let validTraces: DenomTrace[] = [];
 
@@ -212,7 +225,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       const ibcEntries = (await this.tokenRegistry.load()).filter(
         (item) => !!item.ibcCounterpartyChannelId,
       );
-      validTraces = denomTraces.denomTraces.filter((trace) => {
+      validTraces = denomTraces.filter((trace) => {
         const lastChannelInPath = trace.path.split("/").pop();
         return ibcEntries.some(
           (entry) =>
@@ -232,7 +245,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           "Cannot trace denoms, not an IBC chain " + chain.displayName,
         );
       }
-      validTraces = denomTraces.denomTraces.filter((item) => {
+      validTraces = denomTraces.filter((item) => {
         return item.path.split("/").pop() === channelId;
       });
     }
