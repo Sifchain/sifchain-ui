@@ -8,6 +8,8 @@ import {
 } from "../../entities";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 
+// NOTE(ajoslin): this is deprecated, most functionality is moved to IBCBridge
+// debug functions only left here or functions with old signatures
 export class IBCService extends IBCBridge {
   static create(context: IBCServiceContext) {
     return new IBCService(context);
@@ -29,13 +31,21 @@ export class IBCService extends IBCBridge {
   ): Promise<BroadcastTxResult[]> {
     const fromChain = getChainsService().get(params.sourceNetwork);
     const toChain = getChainsService().get(params.destinationNetwork);
-    return this.bridgeTokens({
-      assetAmount: params.assetAmountToTransfer,
-      fromAddress: await this.context.cosmosWalletProvider.connect(fromChain),
-      toAddress: await this.context.cosmosWalletProvider.connect(toChain),
-      fromChain,
-      toChain,
-    });
+    return this.bridgeTokens(
+      {
+        assetAmount: params.assetAmountToTransfer,
+        fromAddress: await this.context.cosmosWalletProvider.connect(fromChain),
+        toAddress: await this.context.cosmosWalletProvider.connect(toChain),
+        fromChain,
+        toChain,
+      },
+      {
+        shouldBatchTransfers,
+        maxMsgsPerBatch,
+        maxAmountPerMsg,
+        gasPerBatch,
+      },
+    );
   }
 
   async logIBCNetworkMetadata() {

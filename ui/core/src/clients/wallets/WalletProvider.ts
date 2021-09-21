@@ -1,23 +1,8 @@
-import { Keplr } from "@keplr-wallet/types";
-import {
-  Network,
-  IAssetAmount,
-  Chain,
-  IBCChainConfig,
-  AssetAmount,
-} from "../../entities";
-import { KeplrWalletProvider } from "./KeplrWalletProvider";
-import {
-  SigningStargateClient,
-  QueryClient,
-  setupIbcExtension,
-  setupBankExtension,
-  setupAuthExtension,
-} from "@cosmjs/stargate";
-import { OfflineAminoSigner } from "@cosmjs/amino";
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import TokenRegistryService from "../../services/TokenRegistryService";
-import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/transfer";
+import { IAssetAmount, Chain } from "../../entities";
+// import {
+//   NativeDexSignedTransaction,
+//   NativeDexTransaction,
+// } from "../../services/utils/SifClient/NativeDexTransaction";
 
 export type WalletProviderContext = {
   sifRpcUrl: string;
@@ -25,7 +10,7 @@ export type WalletProviderContext = {
   sifApiUrl: string;
 };
 
-export abstract class WalletProvider {
+export abstract class WalletProvider<T> {
   abstract context: WalletProviderContext;
 
   abstract isChainSupported(chain: Chain): boolean;
