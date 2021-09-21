@@ -44,21 +44,18 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
       destinationNetwork: Network;
     }) {
       return this.loadConnection({
-        sourceChain: getChainsService().get(params.sourceNetwork),
-        destinationChain: getChainsService().get(params.destinationNetwork),
+        fromChain: getChainsService().get(params.sourceNetwork),
+        toChain: getChainsService().get(params.destinationNetwork),
       });
     },
-    async loadConnection(params: {
-      sourceChain: Chain;
-      destinationChain: Chain;
-    }) {
+    async loadConnection(params: { fromChain: Chain; toChain: Chain }) {
       const items = await loadTokenRegistry();
 
-      const sourceIsNative = params.sourceChain.network === Network.SIFCHAIN;
+      const sourceIsNative = params.fromChain.network === Network.SIFCHAIN;
 
       const counterpartyChain = sourceIsNative
-        ? params.destinationChain
-        : params.sourceChain;
+        ? params.toChain
+        : params.fromChain;
 
       const item = items
         .reverse()

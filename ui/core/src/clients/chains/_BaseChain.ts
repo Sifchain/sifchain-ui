@@ -10,6 +10,8 @@ import {
 import { isLikeSymbol } from "../../utils/isLikeSymbol";
 import { urlJoin } from "url-join-ts";
 
+export type ChainContext = { assets: IAsset[]; chainConfig: ChainConfig };
+
 export class BaseChain implements Chain {
   get network() {
     return this.chainConfig.network;
@@ -23,7 +25,7 @@ export class BaseChain implements Chain {
   assetMap: Map<string, IAsset>;
   nativeAsset: IAsset;
 
-  constructor(public context: { assets: IAsset[]; chainConfig: ChainConfig }) {
+  constructor(public context: ChainContext) {
     this.chainConfig = context.chainConfig;
 
     this.assets = context.assets.filter(

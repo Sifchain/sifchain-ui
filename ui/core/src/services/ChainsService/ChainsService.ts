@@ -35,7 +35,7 @@ export type ChainsServiceContext = {
   chainConfigsByNetwork: NetworkChainConfigLookup;
 };
 
-const networkChainCtorLookup = {
+export const networkChainCtorLookup = {
   [Network.SIFCHAIN]: SifchainChain,
   [Network.ETHEREUM]: EthereumChain,
   [Network.COSMOSHUB]: CosmoshubChain,
@@ -102,6 +102,10 @@ export class ChainsService {
     const chain = this.map.get(network);
     if (!chain) throw new Error("Chain not found for " + network);
     return chain;
+  }
+
+  get nativeChain() {
+    return this.get(Network.SIFCHAIN);
   }
 }
 

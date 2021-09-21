@@ -1,6 +1,7 @@
 import { StdTx } from "@cosmjs/launchpad";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { IAssetAmount } from "../../../entities";
+import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 
 export interface NativeDexTransactionFee {
   gas: string;
@@ -19,5 +20,8 @@ export class NativeDexTransaction<EncodeMsg extends Readonly<EncodeObject>> {
 }
 
 export class NativeDexSignedTransaction<T extends EncodeObject> {
-  constructor(readonly raw: NativeDexTransaction<T>, readonly signed: StdTx) {}
+  constructor(
+    readonly raw: NativeDexTransaction<T>,
+    readonly signed: StdTx | TxRaw,
+  ) {}
 }

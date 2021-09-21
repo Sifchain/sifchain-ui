@@ -13,24 +13,29 @@ import { Services } from "../../services";
 import { ReportTransactionError } from "../utils";
 import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 
-type PickBus = Pick<Services["bus"], "dispatch">;
-type PickSif = Pick<Services["sif"], "getState">;
-type PickClp = Pick<Services["clp"], "swap">;
-
 export type SwapArgs = Pick<
   Services,
-  "bus" | "sif" | "clp" | "ibc" | "tokenRegistry"
+  "bus" | "sif" | "clp" | "ibc" | "tokenRegistry" | "wallet" | "chains"
 >;
-export function Swap({ bus, sif, clp, ibc, tokenRegistry }: SwapArgs) {
+export function Swap({
+  bus,
+  sif,
+  clp,
+  ibc,
+  tokenRegistry,
+  wallet,
+  chains,
+}: SwapArgs) {
   return async (
     sentAmount: IAssetAmount,
     receivedAsset: IAsset,
     minimumReceived: IAssetAmount,
   ) => {
     const reportTransactionError = ReportTransactionError(bus);
-    const state = sif.getState();
-    if (!state.address) throw new Error("No from address provided for swap");
     const client = await sif.loadNativeDexClient();
+
+    const address = await wallet.keplrProvider.connect(chains.nativeChain);
+    if (!address) throw new Error("No from address provided for swap");
 
     const tx = client.tx.clp.Swap(
       {
@@ -42,18 +47,18 @@ export function Swap({ bus, sif, clp, ibc, tokenRegistry }: SwapArgs) {
           symbol: (await tokenRegistry.findAssetEntryOrThrow(receivedAsset))
             .denom,
         },
-        signer: sif.getState().address,
+        signer: address,
         sentAmount: sentAmount.toBigInt().toString(),
         minReceivingAmount: minimumReceived.toBigInt().toString(),
       },
-      sif.getState().address,
+      address,
     );
-    const keplr = await getKeplrProvider();
-    const signer = await keplr!.getOfflineSigner(
-      await sif.unSignedClient.getChainId(),
+
+    const signed = await wallet.keplrProvider.sign(tx, chains.nativeChain);
+    const sent = await wallet.keplrProvider.broadcast(
+      signed,
+      chains.nativeChain,
     );
-    const signed = await client.sign(tx, signer);
-    const sent = await client.broadcast(signed);
     const txStatus = client.parseTxResult(sent);
 
     if (txStatus.state !== "accepted") {

@@ -1,5 +1,10 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, Chain, Network } from "../../entities";
+import {
+  IAssetAmount,
+  Chain,
+  Network,
+  TransactionStatus,
+} from "../../entities";
 import {
   EthereumChain,
   SifchainChain,
@@ -13,23 +18,45 @@ import { SifchainCosmosInterchainApi } from "./sifchainCosmosInterchain";
 import { EthereumSifchainInterchainApi } from "./ethereumSifchainInterchain";
 import { CosmosSifchainInterchainApi } from "./cosmosSifchainInterchain";
 import { SifchainEthereumInterchainApi } from "./sifchainEthereumInterchain";
+import { BridgeTx, BridgeParams } from "../../clients/bridges/_BaseBridge";
+import { interchainTxEmitter } from "./_InterchainApi";
 
 export default function InterchainUsecase(context: UsecaseContext) {
   const sifchainEthereum = new SifchainEthereumInterchainApi(context);
-  const sifchainCosmos = new SifchainCosmosInterchainApi(context);
   const ethereumSifchain = new EthereumSifchainInterchainApi(context);
-  const cosmosSifchain = new CosmosSifchainInterchainApi(context);
+
+  const ibcBridge = {
+    async estimateFees(params: BridgeParams) {
+      return context.services.ibc.estimateFees(params);
+    },
+    transfer(params: BridgeParams) {
+      const executable = context.services.ibc.transfer(params);
+      executable.awaitResult().then((tx) => {
+        if (tx) interchainTxEmitter.emit("tx_sent", tx);
+      });
+      executable.execute();
+      return executable;
+    },
+    async *subscribeToTransfer(
+      tx: BridgeTx,
+    ): AsyncGenerator<TransactionStatus> {
+      for await (const ev of context.services.ibc.subscribeToTransfer(tx)) {
+        yield ev;
+      }
+      interchainTxEmitter.emit("tx_complete", tx);
+    },
+  };
 
   const interchain = (from: Chain, to: Chain) => {
     if (from instanceof SifchainChain) {
       if (to.chainConfig.chainType === "ibc") {
-        return sifchainCosmos;
+        return ibcBridge;
       } else if (to.chainConfig.chainType === "eth") {
         return sifchainEthereum;
       }
     } else if (to instanceof SifchainChain) {
       if (from.chainConfig.chainType === "ibc") {
-        return cosmosSifchain;
+        return ibcBridge;
       } else if (from.chainConfig.chainType === "eth") {
         return ethereumSifchain;
       }

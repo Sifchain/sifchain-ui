@@ -68,12 +68,12 @@ export class SifchainEthereumInterchainApi
             },
             params.fromAddress,
           );
-      const keplr = await getKeplrProvider();
-      const signer = await keplr!.getOfflineSigner(
-        await this.context.services.sif.unSignedClient.getChainId(),
-      );
-      const signed = await client.sign(tx, signer);
-      const sent = await client.broadcast(signed);
+
+      const provider = this.context.services.wallet.keplrProvider;
+      const nativeChain = this.context.services.chains.nativeChain;
+
+      const signed = await provider.sign(tx, nativeChain);
+      const sent = await provider.broadcast(signed, nativeChain);
       const txStatus = await client.parseTxResult(sent);
       if (txStatus.state !== "accepted") {
         this.context.services.bus.dispatch({

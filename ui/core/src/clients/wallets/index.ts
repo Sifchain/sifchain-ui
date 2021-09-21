@@ -1,2 +1,3 @@
-export * from "./KeplrWalletProvider";
-export * from "./types";
+export * from "./cosmos";
+export * from "./ethereum";
+export * from "./WalletProvider";
