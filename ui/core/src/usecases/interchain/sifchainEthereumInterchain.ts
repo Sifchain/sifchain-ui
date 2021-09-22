@@ -38,18 +38,20 @@ export class SifchainEthereumInterchainApi
       const web3 = await this.context.services.ethbridge.loadWeb3();
       const ethereumChainId = await web3.eth.net.getId();
       const client = await this.context.services.sif.loadNativeDexClient();
-      const sifAsset = this.context.services.chains
-        ?.get(Network.SIFCHAIN)
+
+      const ethAsset = this.context.services.chains
+        ?.get(Network.ETHEREUM)
         .findAssetWithLikeSymbolOrThrow(params.assetAmount.asset.symbol);
+
+      console.log({ ethAsset });
+
       const tx = isOriginallySifchainNativeToken(params.assetAmount.asset)
         ? client.tx.ethbridge.Lock(
             {
               ethereumReceiver: params.toAddress,
 
               amount: params.assetAmount.toBigInt().toString(),
-              symbol:
-                params.assetAmount.asset.ibcDenom ||
-                params.assetAmount.asset.symbol,
+              symbol: ethAsset.symbol,
               cosmosSender: params.fromAddress,
               ethereumChainId: Long.fromString(`${ethereumChainId}`),
               // ethereumReceiver: tokenAddress,
@@ -62,9 +64,7 @@ export class SifchainEthereumInterchainApi
               ethereumReceiver: params.toAddress,
 
               amount: params.assetAmount.toBigInt().toString(),
-              symbol:
-                params.assetAmount.asset.ibcDenom ||
-                params.assetAmount.asset.symbol,
+              symbol: ethAsset.symbol,
               cosmosSender: params.fromAddress,
               ethereumChainId: Long.fromString(`${ethereumChainId}`),
               // ethereumReceiver: tokenAddress,
