@@ -10,7 +10,7 @@ export type WalletProviderContext = {
   sifApiUrl: string;
 };
 
-export abstract class WalletProvider<T> {
+export abstract class WalletProvider {
   abstract context: WalletProviderContext;
 
   abstract isChainSupported(chain: Chain): boolean;
