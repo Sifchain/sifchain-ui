@@ -638,6 +638,17 @@
       "transferLimit": "99999999999999999999999"
     },
     {
+      "address": "0x79065740cf6e3b0c3a903a45ec9fc1c3a088de3f",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      "name": "Photon",
+      "network": "ethereum",
+      "homeNetwork": "cosmoshub",
+      "priceUsd": 0,
+      "symbol": "uphoton",
+      "transferLimit": "99999999999999999999999"
+    },
+    {
       "address": "",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
@@ -645,7 +656,7 @@
       "network": "ethereum",
       "homeNetwork": "cosmoshub",
       "priceUsd": 0,
-      "symbol": "PHOTON",
+      "symbol": "uphoton",
       "displaySymbol": "photon",
       "transferLimit": "99999999999999999999999"
     },
@@ -657,7 +668,7 @@
       "network": "ethereum",
       "homeNetwork": "akash",
       "priceUsd": 0,
-      "symbol": "AKT",
+      "symbol": "uakt",
       "displaySymbol": "akt",
       "transferLimit": "99999999999999999999999"
     },
@@ -669,7 +680,7 @@
       "network": "ethereum",
       "homeNetwork": "sentinel",
       "priceUsd": 0,
-      "symbol": "DVPN",
+      "symbol": "udvpn",
       "displaySymbol": "dvpn",
       "transferLimit": "99999999999999999999999"
     }

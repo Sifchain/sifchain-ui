@@ -649,7 +649,7 @@
       "network": "ethereum",
       "homeNetwork": "cosmoshub",
       "priceUsd": 0,
-      "symbol": "ATOM",
+      "symbol": "uatom",
       "displaySymbol": "atom",
       "transferLimit": "99999999999999999999999"
     },
@@ -661,12 +661,12 @@
       "network": "ethereum",
       "homeNetwork": "akash",
       "priceUsd": 0,
-      "symbol": "AKT",
+      "symbol": "uakt",
       "displaySymbol": "akt",
       "transferLimit": "99999999999999999999999"
     },
     {
-      "symbol": "IRIS",
+      "symbol": "uiris",
       "decimals": 6,
       "name": "IRIS",
       "network": "ethereum",
@@ -678,7 +678,7 @@
       "address": ""
     },
     {
-      "symbol": "XPRT",
+      "symbol": "uxprt",
       "displaySymbol": "xprt",
       "decimals": 6,
       "name": "xprt",
@@ -690,7 +690,7 @@
       "address": ""
     },
     {
-      "symbol": "REGEN",
+      "symbol": "uregen",
       "displaySymbol": "regen",
       "decimals": 6,
       "name": "regen",
