@@ -27,7 +27,7 @@ import { ServiceContext } from "../services";
 import { NetworkEnv } from "./getEnv";
 import { chainConfigByNetworkEnv } from "./chains";
 import { KeplrWalletProvider, WalletProviderContext } from "../clients/wallets";
-import { CosmosWalletProvider } from "../clients/wallets/CosmosWalletProvider";
+import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";
 
 type ConfigMap = Record<NetworkEnv, ServiceContext>;
 

@@ -1,28 +1,11 @@
-import { createUsecases, Network, Chain, Wallet } from ".";
-import { createApi } from "./api";
+import { Network, Chain } from "./entities";
 import { getConfig } from "./config/getConfig";
 import { NetworkEnv, profileLookup } from "./config/getEnv";
-import {
-  WalletProviderContext,
-  KeplrWalletProvider,
-  DirectSecp256k1HdWalletProvider,
-  DirectSecp256k1HdWalletProviderOptions,
-} from "./clients/wallets";
-import { CosmosWalletProvider } from "./clients/wallets/CosmosWalletProvider";
-import { ChainContext } from "./clients/chains";
+import { WalletProviderContext } from "./clients/wallets";
+import { CosmosWalletProvider } from "./clients/wallets/cosmos";
 import { IBCBridge } from "./clients/bridges/IBCBridge/IBCBridge";
-import { noConflict } from "js-cookie";
-import { ServiceContext } from "./services";
 import { networkChainCtorLookup } from "./services/ChainsService";
-import { CoreConfig } from "./utils/parseConfig";
 
-// export type SifchainEnv =
-//   | "mainnet"
-//   | "testnet"
-//   | "devnet"
-//   | "localnet"
-//   | "devnet_042";
-//
 type WalletsOption = {
   cosmos: (context: Partial<WalletProviderContext>) => CosmosWalletProvider;
 };
@@ -35,12 +18,7 @@ export const getSdkConfig = (params: {
   if (typeof tag == "undefined")
     throw new Error("environment " + params.environment + " not found");
 
-  return getConfig(
-    tag,
-    sifAssetTag,
-    ethAssetTag,
-    (context: WalletProviderContext) => params.wallets.cosmos(context),
-  );
+  return getConfig(tag, sifAssetTag, ethAssetTag, params.wallets.cosmos);
 };
 
 export function createSdk(options: {

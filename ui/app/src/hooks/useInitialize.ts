@@ -5,14 +5,14 @@ import { useSubscription } from "./useSubscrition";
 import { rootStore } from "@/store";
 import { watch } from "vue";
 import { accountStore } from "@/store/modules/accounts";
-import {
-  InterchainTx,
-  interchainTxEmitter,
-} from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
 import { getTokenContract } from "../../../core/src/services/EthbridgeService/tokenContract";
 import { convertImageUrlToDataUrl } from "@/utils/convertImageUrlToDataUrl";
 import { useChains } from "./useChains";
+import {
+  BridgeTx,
+  bridgeTxEmitter,
+} from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -181,11 +181,11 @@ export function useInitialize() {
     }
   }
 
-  interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {
+  bridgeTxEmitter.on("tx_sent", (tx: BridgeTx) => {
     accountStore.updateBalances(tx.toChain.network);
     accountStore.updateBalances(tx.fromChain.network);
   });
-  interchainTxEmitter.on("tx_complete", (tx: InterchainTx) => {
+  bridgeTxEmitter.on("tx_complete", (tx: BridgeTx) => {
     accountStore.updateBalances(tx.toChain.network);
     accountStore.updateBalances(tx.fromChain.network);
   });

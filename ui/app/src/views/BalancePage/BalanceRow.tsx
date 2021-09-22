@@ -196,28 +196,25 @@ export default defineComponent({
                         minutes.
                       </p>
                       <ul class="list-disc list-inside">
-                        {props.tokenItem.pendingImports.map(
-                          ({ interchainTx }) => (
-                            <li>
-                              Import{" "}
-                              {formatAssetAmount(interchainTx.assetAmount)}{" "}
-                              {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
-                              from {interchainTx.fromChain.displayName} (
-                              <a
-                                class="font-normal text-accent-base hover:text-underline"
-                                href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
-                                  interchainTx.hash,
-                                )}
-                                title={interchainTx.hash}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {shortenHash(interchainTx.hash)}
-                              </a>
-                              )
-                            </li>
-                          ),
-                        )}
+                        {props.tokenItem.pendingImports.map(({ bridgeTx }) => (
+                          <li>
+                            Import {formatAssetAmount(bridgeTx.assetAmount)}{" "}
+                            {bridgeTx.assetAmount.displaySymbol.toUpperCase()}{" "}
+                            from {bridgeTx.fromChain.displayName} (
+                            <a
+                              class="font-normal text-accent-base hover:text-underline"
+                              href={bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
+                                bridgeTx.hash,
+                              )}
+                              title={bridgeTx.hash}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {shortenHash(bridgeTx.hash)}
+                            </a>
+                            )
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   }
@@ -250,28 +247,25 @@ export default defineComponent({
                         of 60 minutes.
                       </p>
                       <ul class="list-disc list-inside">
-                        {props.tokenItem.pendingExports.map(
-                          ({ interchainTx }) => (
-                            <li>
-                              Export{" "}
-                              {formatAssetAmount(interchainTx.assetAmount)}{" "}
-                              {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
-                              to {interchainTx.toChain.displayName} (
-                              <a
-                                class="font-normal text-accent-base hover:text-underline"
-                                href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
-                                  interchainTx.hash,
-                                )}
-                                title={interchainTx.hash}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {shortenHash(interchainTx.hash)}
-                              </a>
-                              )
-                            </li>
-                          ),
-                        )}
+                        {props.tokenItem.pendingExports.map(({ bridgeTx }) => (
+                          <li>
+                            Export {formatAssetAmount(bridgeTx.assetAmount)}{" "}
+                            {bridgeTx.assetAmount.displaySymbol.toUpperCase()}{" "}
+                            to {bridgeTx.toChain.displayName} (
+                            <a
+                              class="font-normal text-accent-base hover:text-underline"
+                              href={bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
+                                bridgeTx.hash,
+                              )}
+                              title={bridgeTx.hash}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {shortenHash(bridgeTx.hash)}
+                            </a>
+                            )
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   }

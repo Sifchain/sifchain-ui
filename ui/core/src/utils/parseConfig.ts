@@ -7,8 +7,8 @@ import {
 } from "../entities";
 import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
 import { NetEnvChainConfigLookup } from "../config/chains/NetEnvChainConfigLookup";
-import { CosmosWalletProvider } from "../clients/wallets/CosmosWalletProvider";
 import { WalletProviderContext } from "../clients/wallets";
+import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";
 
 type TokenConfig = {
   symbol: string;

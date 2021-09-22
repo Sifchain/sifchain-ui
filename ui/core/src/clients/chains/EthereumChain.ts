@@ -17,15 +17,5 @@ export class EthereumChain extends BaseChain implements Chain {
     return urlJoin(this.chainConfig.blockExplorerUrl, "address", address);
   }
 
-  calculateTransferFeeToChain(transferAmount: IAssetAmount) {
-    const ceth = getChainsService()
-      .get(Network.SIFCHAIN)
-      .findAssetWithLikeSymbolOrThrow("ceth");
-
-    const feeNumber = isOriginallySifchainNativeToken(transferAmount.asset)
-      ? "35370000000000000"
-      : "35370000000000000";
-
-    return AssetAmount(ceth, feeNumber);
-  }
+  calculateTransferFeeToChain(transferAmount: IAssetAmount) {}
 }

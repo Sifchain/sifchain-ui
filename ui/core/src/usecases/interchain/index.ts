@@ -14,17 +14,13 @@ import {
   SentinelChain,
 } from "../../clients/chains";
 import InterchainTxManager from "./txManager";
-import { SifchainCosmosInterchainApi } from "./sifchainCosmosInterchain";
-import { EthereumSifchainInterchainApi } from "./ethereumSifchainInterchain";
-import { CosmosSifchainInterchainApi } from "./cosmosSifchainInterchain";
-import { SifchainEthereumInterchainApi } from "./sifchainEthereumInterchain";
-import { BridgeTx, BridgeParams } from "../../clients/bridges/_BaseBridge";
-import { interchainTxEmitter } from "./_InterchainApi";
+import {
+  BridgeTx,
+  BridgeParams,
+  bridgeTxEmitter,
+} from "../../clients/bridges/BaseBridge";
 
 export default function InterchainUsecase(context: UsecaseContext) {
-  const sifchainEthereum = new SifchainEthereumInterchainApi(context);
-  const ethereumSifchain = new EthereumSifchainInterchainApi(context);
-
   const ibcBridge = {
     async estimateFees(params: BridgeParams) {
       return context.services.ibc.estimateFees(params);
@@ -32,7 +28,7 @@ export default function InterchainUsecase(context: UsecaseContext) {
     transfer(params: BridgeParams) {
       const executable = context.services.ibc.transfer(params);
       executable.awaitResult().then((tx) => {
-        if (tx) interchainTxEmitter.emit("tx_sent", tx);
+        if (tx) bridgeTxEmitter.emit("tx_sent", tx);
       });
       executable.execute();
       return executable;
@@ -43,7 +39,30 @@ export default function InterchainUsecase(context: UsecaseContext) {
       for await (const ev of context.services.ibc.subscribeToTransfer(tx)) {
         yield ev;
       }
-      interchainTxEmitter.emit("tx_complete", tx);
+    },
+  };
+
+  const ethBridge = {
+    async estimateFees(params: BridgeParams) {
+      return context.services.ethbridge.estimateFees(params);
+    },
+    transfer(params: BridgeParams) {
+      const executable = context.services.ethbridge.transfer(params);
+      executable.awaitResult().then((tx) => {
+        if (tx) bridgeTxEmitter.emit("tx_sent", tx);
+      });
+      executable.execute();
+      return executable;
+    },
+    async *subscribeToTransfer(
+      tx: BridgeTx,
+    ): AsyncGenerator<TransactionStatus> {
+      for await (const ev of context.services.ethbridge.subscribeToTransfer(
+        tx,
+      )) {
+        console.log("ev", ev);
+        yield ev;
+      }
     },
   };
 
@@ -52,13 +71,13 @@ export default function InterchainUsecase(context: UsecaseContext) {
       if (to.chainConfig.chainType === "ibc") {
         return ibcBridge;
       } else if (to.chainConfig.chainType === "eth") {
-        return sifchainEthereum;
+        return ethBridge;
       }
     } else if (to instanceof SifchainChain) {
       if (from.chainConfig.chainType === "ibc") {
         return ibcBridge;
       } else if (from.chainConfig.chainType === "eth") {
-        return ethereumSifchain;
+        return ethBridge;
       }
     }
     throw new Error(

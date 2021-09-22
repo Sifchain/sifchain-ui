@@ -1,11 +1,11 @@
 import { reactive } from "@vue/reactivity";
 
 import { TransactionStatus } from "../entities";
-import { InterchainTx } from "../usecases/interchain/_InterchainApi";
+import { BridgeTx } from "../clients/bridges/BaseBridge";
 
 export type PendingTransferItem = {
   transactionStatus: TransactionStatus;
-  interchainTx: InterchainTx;
+  bridgeTx: BridgeTx;
 };
 
 // Store for reporting on current tx status

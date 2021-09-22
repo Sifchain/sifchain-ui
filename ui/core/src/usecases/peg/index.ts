@@ -1,7 +1,5 @@
 import { UsecaseContext } from "..";
 import { SubscribeToUnconfirmedPegTxs } from "./subscribeToUnconfirmedPegTxs";
-import { Unpeg } from "./unpeg";
-import { Peg } from "./peg";
 
 /**
  * Shared peg config for use throughout the peg feature
@@ -25,8 +23,6 @@ export default ({ services, store }: UsecaseContext) => {
     }),
     getSifTokens: () => services.sif.getSupportedTokens(),
     getEthTokens: () => services.eth.getSupportedTokens(),
-    unpeg: Unpeg(services, store),
-    peg: Peg(services, store, config),
   };
 
   return actions;

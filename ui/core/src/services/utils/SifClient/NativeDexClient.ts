@@ -51,7 +51,7 @@ import {
 import { CosmosClient } from "@cosmjs/launchpad";
 import { OfflineSigner as OfflineLaunchpadSigner } from "@cosmjs/launchpad";
 import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
-import { TransactionStatus } from "../../../";
+import { TransactionStatus, Chain, IBCChainConfig } from "../../../";
 import { Compatible42CosmosClient, Compatible42SigningCosmosClient } from ".";
 import { makeSignDoc } from "@cosmjs/launchpad";
 import { BroadcastMode } from "@cosmjs/launchpad";
@@ -103,6 +103,15 @@ export class NativeDexClient {
     const tx = this.createTxClient();
     const instance = new this(rpcUrl, restUrl, chainId, t34, query, tx);
     return instance;
+  }
+
+  static async connectByChain(chain: Chain): Promise<NativeDexClient> {
+    const config = chain.chainConfig as IBCChainConfig;
+    return NativeDexClient.connect(
+      config.rpcUrl,
+      config.restUrl,
+      config.chainId,
+    );
   }
 
   /**

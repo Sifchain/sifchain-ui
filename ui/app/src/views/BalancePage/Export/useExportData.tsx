@@ -96,10 +96,19 @@ export const useExportData = () => {
 
   const feeAmountRef = computed(() => {
     if (!computedExportAssetAmount.value || !exportTokenRef.value) return null;
-    const fee = useChains()
-      .get(exportStore.state.draft.network)
-      .calculateTransferFeeToChain(computedExportAssetAmount.value);
-    return fee;
+
+    const transferParams = {
+      fromChain: useChains().get(Network.SIFCHAIN),
+      toChain: useChains().get(exportStore.state.draft.network),
+      assetAmount: computedExportAssetAmount.value,
+      fromAddress: accountStore.state[Network.SIFCHAIN].address,
+      toAddress: accountStore.state[exportStore.state.draft.network].address,
+    };
+    if (exportStore.state.draft.network === Network.ETHEREUM) {
+      return useCore().services.ethbridge.estimateFees(transferParams);
+    } else {
+      return useCore().services.ibc.estimateFees(transferParams);
+    }
   });
 
   const feeAssetBalanceRef = computed(() => {

@@ -117,24 +117,6 @@ export type Api = {
   getEthTokens: Usecases["peg"]["getEthTokens"];
 
   /**
-   * Import an external token to sifchain.
-   * @returns An async iterator of PegEvents.
-   *
-   * ```typescript
-   * for await (let event of sifchain.import(AssetAmount("eth", "100"))) {
-   *   // match against events
-   * }
-   * ```
-   */
-  import: Usecases["peg"]["peg"];
-
-  /**
-   * Export a token from sifchain.
-   * @returns Promise<TransactionStatus>
-   */
-  export: Usecases["peg"]["unpeg"];
-
-  /**
    * Swap sif asset amount for the given asset expecting to receive the minimum received amount.
    * @param sentAmount: IAssetAmount
    * @param receivedAsset: IAsset,
@@ -165,13 +147,10 @@ export type Api = {
 };
 
 export function createApi(usecases: Usecases, services: Services): Api {
-  const { peg, unpeg, ...otherPegUsecases } = usecases.peg;
   return {
     ...usecases.clp,
-    import: peg,
-    export: unpeg,
     ...usecases.interchain,
-    ...otherPegUsecases,
+    ...usecases.peg,
     ...usecases.reward,
     ...usecases.wallet.eth,
     ...usecases.wallet.sif,

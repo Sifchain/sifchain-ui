@@ -41,15 +41,6 @@ export class BaseChain implements Chain {
     ) as IAsset;
   }
 
-  calculateTransferFeeToChain(assetAmount: IAssetAmount) {
-    const rowan = getChainsService()
-      .get(Network.SIFCHAIN)
-      .findAssetWithLikeSymbolOrThrow("rowan");
-
-    // Default 0 fee
-    return AssetAmount(rowan, "0");
-  }
-
   lookupAsset(symbol: string) {
     return this.assetMap.get(symbol);
   }

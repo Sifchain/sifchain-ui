@@ -37,14 +37,14 @@ import {
   calculateIBCExportFee,
   IBC_EXPORT_FEE_ADDRESS,
 } from "../../../utils/ibcExportFees";
-import { CosmosWalletProvider } from "../../wallets/CosmosWalletProvider";
+import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import {
   BaseBridge,
   BridgeParams,
   ExecutableTx,
   IBCBridgeTx,
   BridgeTx,
-} from "../_BaseBridge";
+} from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";
 import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
 
@@ -260,7 +260,6 @@ export class IBCBridge extends BaseBridge {
       }),
     ];
 
-    // TODO estimateFees()
     const feeAmount = await this.estimateFees(params);
 
     if (feeAmount?.amount.greaterThan("0")) {
@@ -350,7 +349,7 @@ export class IBCBridge extends BaseBridge {
     return responses;
   }
 
-  async estimateFees(params: BridgeParams) {
+  estimateFees(params: BridgeParams) {
     if (params.toChain.network !== Network.SIFCHAIN) {
       return calculateIBCExportFee(params.assetAmount);
     } else {
@@ -393,9 +392,9 @@ export class IBCBridge extends BaseBridge {
   }
 
   async *subscribeToTransfer(tx: BridgeTx): AsyncGenerator<TransactionStatus> {
-    tx = tx as IBCBridgeTx;
+    const ibcTx = tx as IBCBridgeTx;
     // Filter out non-ibc tx from logs like fee transfers
-    const logs = tx.meta?.logs?.filter((item) =>
+    const logs = ibcTx.meta?.logs?.filter((item) =>
       item.events.some((ev) => ev.type === "ibc_transfer"),
     );
     if (!logs) return;

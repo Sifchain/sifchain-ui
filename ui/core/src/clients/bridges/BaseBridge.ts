@@ -48,15 +48,12 @@ export interface BaseBridgeTx {
 }
 
 export type IBCBridgeTx = BaseBridgeTx & {
-  type: "ibc";
   meta?: {
     logs?: Log[];
   };
 };
 
-export type EthBridgeTx = BaseBridgeTx & {
-  type: "eth";
-};
+export type EthBridgeTx = BaseBridgeTx;
 
 export type BridgeTx = IBCBridgeTx | EthBridgeTx;
 
@@ -67,9 +64,7 @@ export interface BridgeTxEvents {
 export const bridgeTxEmitter = new EventEmitter() as TypedEmitter<BridgeTxEvents>;
 
 export abstract class BaseBridge {
-  abstract estimateFees(
-    params: BridgeParams,
-  ): Promise<IAssetAmount | undefined>;
+  abstract estimateFees(params: BridgeParams): IAssetAmount | undefined;
 
   abstract transfer(params: BridgeParams): ExecutableTx;
 
@@ -80,20 +75,16 @@ export abstract class BaseBridge {
 
 export class ExecutableTx extends ExecutableEmitter<BridgeEvent, BridgeTx> {
   execute() {
-    this.awaitResult()
-      .then((tx: BridgeTx | undefined) => {
-        if (tx) interchainTxEmitter.emit("tx_sent", tx);
-      })
-      .catch((error: Error) => {
-        this.emit({
-          type: "tx_error",
-          tx: {
-            state: "failed",
-            hash: "",
-            memo: error.message,
-          },
-        });
+    this.awaitResult().catch((error: Error) => {
+      this.emit({
+        type: "tx_error",
+        tx: {
+          state: "failed",
+          hash: "",
+          memo: error.message,
+        },
       });
+    });
     super.execute();
   }
 }
