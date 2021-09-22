@@ -40,10 +40,8 @@ export const exportStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
-      const IBC_ETHEREUM_ENABLED =
-        flagsStore.state.enableEthereumToCosmosImports;
-      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED =
-        flagsStore.state.enableNativeTokenIBCExports;
+      const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
+      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
