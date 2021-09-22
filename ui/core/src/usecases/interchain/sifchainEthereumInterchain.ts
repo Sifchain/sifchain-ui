@@ -47,7 +47,9 @@ export class SifchainEthereumInterchainApi
               ethereumReceiver: params.toAddress,
 
               amount: params.assetAmount.toBigInt().toString(),
-              symbol: params.assetAmount.asset.symbol,
+              symbol:
+                params.assetAmount.asset.ibcDenom ||
+                params.assetAmount.asset.symbol,
               cosmosSender: params.fromAddress,
               ethereumChainId: Long.fromString(`${ethereumChainId}`),
               // ethereumReceiver: tokenAddress,
@@ -60,7 +62,9 @@ export class SifchainEthereumInterchainApi
               ethereumReceiver: params.toAddress,
 
               amount: params.assetAmount.toBigInt().toString(),
-              symbol: params.assetAmount.asset.symbol,
+              symbol:
+                params.assetAmount.asset.ibcDenom ||
+                params.assetAmount.asset.symbol,
               cosmosSender: params.fromAddress,
               ethereumChainId: Long.fromString(`${ethereumChainId}`),
               // ethereumReceiver: tokenAddress,

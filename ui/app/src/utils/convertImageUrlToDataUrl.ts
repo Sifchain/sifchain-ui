@@ -2,12 +2,13 @@ export const convertImageUrlToDataUrl = (
   src: string,
   outputFormat: "image/png" | "image/jpeg" | "image/webp" = "image/png",
 ): Promise<string> => {
+  // resolves when image data url is created in format "data:image/type;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
     img.onload = function () {
       const IMAGE_HEIGHT = 300;
-      const PADDING_RATIO = 0.1;
+      const PADDING_RATIO = 0.2;
       const PADDING = IMAGE_HEIGHT * PADDING_RATIO;
       const canvas: HTMLCanvasElement = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
