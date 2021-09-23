@@ -3,7 +3,6 @@ import { useExportData } from "./useExportData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { Asset, Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
-import { suggestEthereumAsset } from "@sifchain/sdk/src/services/EthereumService/utils/ethereumUtils";
 import { useCore } from "@/hooks/useCore";
 import { exportStore } from "@/store/modules/export";
 import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
@@ -42,15 +41,22 @@ export default defineComponent({
           (await useCore().services.ethbridge.fetchSymbolAddress(
             exportStore.state.draft.symbol,
           )) || "0x0000000000000000000000000000000000000000";
+
         const imageUrl = getTokenIconUrl(asset, window.location.origin);
         // convert to data url to ensure image longevity & decrease metamask dependency on our asset path structure
-        await suggestEthereumAsset(asset, address, (asset) =>
-          imageUrl
+        const getImageUrl = () => {
+          return imageUrl
             ? convertImageUrlToDataUrl(imageUrl).catch((e) => {
                 console.error(e);
                 return undefined;
               })
-            : undefined,
+            : undefined;
+        };
+
+        await useCore().services.wallet.metamaskProvider.suggestEthereumAsset(
+          asset,
+          getImageUrl,
+          address,
         );
         hasAddedToken.value = true;
       }

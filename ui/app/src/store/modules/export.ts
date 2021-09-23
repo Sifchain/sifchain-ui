@@ -1,4 +1,4 @@
-import { useChains, useChainsList } from "@/hooks/useChains";
+import { useChains, useChainsList, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import {
   AppCookies,
@@ -10,17 +10,17 @@ import {
   Network,
   NetworkEnv,
 } from "@sifchain/sdk";
-import { PegEvent } from "../../../../core/src/usecases/peg/peg";
-import { UnpegEvent } from "../../../../core/src/usecases/peg/unpeg";
+import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
 import { flagsStore } from "./flags";
+import { runTransfer } from "./import";
 
 export type ExportDraft = {
   amount: string;
   network: Network;
   symbol: string;
-  unpegEvent: UnpegEvent | undefined;
+  unpegEvent: BridgeEvent | undefined;
 };
 type State = {
   draft: ExportDraft;
@@ -87,31 +87,24 @@ export const exportStore = Vuextra.createStore({
     setDraft(nextDraft: Partial<ExportDraft>) {
       Object.assign(state.draft, nextDraft);
     },
-    setUnpegEvent(unpegEvent: UnpegEvent | undefined) {
+    setUnpegEvent(unpegEvent: BridgeEvent | undefined) {
       state.draft.unpegEvent = unpegEvent;
     },
   }),
   actions: (ctx) => ({
     async runExport(payload: { assetAmount: IAssetAmount }) {
-      if (!payload.assetAmount) throw new Error("Please provide an amount");
-      self.setUnpegEvent(undefined);
-
-      const interchain = useCore().usecases.interchain(
-        useChains().get(Network.SIFCHAIN),
-        useChains().get(ctx.state.draft.network),
+      if (!payload.assetAmount.amount.greaterThan("0")) return;
+      runTransfer(
+        {
+          fromChain: useChains().get(self.state.draft.network),
+          toChain: useNativeChain(),
+          assetAmount: payload.assetAmount,
+          fromAddress:
+            accountStore.state[self.state.draft.network as Network].address,
+          toAddress: accountStore.state.sifchain.address,
+        },
+        self.setUnpegEvent,
       );
-      const executable = interchain.transfer({
-        assetAmount: payload.assetAmount,
-        fromAddress: accountStore.state.sifchain.address,
-        toAddress: accountStore.state[ctx.state.draft.network].address,
-        fromChain: useChains().get(Network.SIFCHAIN),
-        toChain: useChains().get(ctx.state.draft.network),
-      });
-
-      for await (const ev of executable.generator()) {
-        console.log("setUnpegEvent", ev);
-        self.setUnpegEvent(ev);
-      }
     },
   }),
 

@@ -20,16 +20,6 @@ import {
 
 export * from "../../clients/chains";
 
-// Commented out to prevent usage for time being, as this likely needs to be implementation/config
-// level rather than sdk-level
-// export type AnyChain =
-//   | SifchainChain
-//   | EthereumChain
-//   | CosmoshubChain
-//   | IrisChain
-//   | AkashChain
-//   | SentinelChain;
-
 export type ChainsServiceContext = {
   assets: IAsset[];
   chainConfigsByNetwork: NetworkChainConfigLookup;

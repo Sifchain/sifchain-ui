@@ -11,7 +11,7 @@ import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { Network, AssetAmount, toBaseUnits, IAssetAmount } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
-import { usePegEventDetails } from "@/hooks/useTransactionDetails";
+import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
 import { ImportDraft } from "@/store/modules/import";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
@@ -112,8 +112,8 @@ export const useImportData = () => {
 
   const pegEventRef = importStore.refs.draft.pegEvent.computed();
 
-  const pegEventDetails = usePegEventDetails({
-    pegEvent: pegEventRef as Ref<PegEvent>,
+  const pegEventDetails = useBridgeEventDetails({
+    bridgeEvent: pegEventRef as Ref<PegEvent>,
   });
 
   const sifchainBalance = computed(() => nativeToken.value?.amount);

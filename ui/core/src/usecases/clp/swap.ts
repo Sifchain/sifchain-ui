@@ -54,12 +54,12 @@ export function Swap({
       address,
     );
 
-    const signed = await wallet.keplrProvider.sign(tx, chains.nativeChain);
+    const signed = await wallet.keplrProvider.sign(chains.nativeChain, tx);
     const sent = await wallet.keplrProvider.broadcast(
-      signed,
       chains.nativeChain,
+      signed,
     );
-    const txStatus = client.parseTxResult(sent);
+    const txStatus = wallet.keplrProvider.parseTxResultToStatus(sent);
 
     if (txStatus.state !== "accepted") {
       // Edge case where we have run out of native balance and need to represent that

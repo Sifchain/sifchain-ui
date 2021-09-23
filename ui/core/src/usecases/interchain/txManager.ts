@@ -1,5 +1,5 @@
 import { UsecaseContext } from "..";
-import { AssetAmount, Network } from "../../entities";
+import { AssetAmount, Network, TransactionStatus } from "../../entities";
 import InterchainUsecase from ".";
 import { BridgeTx, bridgeTxEmitter } from "../../clients/bridges/BaseBridge";
 
@@ -80,45 +80,60 @@ export default function BridgeTxManager(
 
     const isImport = tx.toChain.network === Network.SIFCHAIN;
 
+    const payload = {
+      bridgeTx: tx,
+      transactionStatus: {
+        state: "accepted",
+        hash: tx.hash,
+      } as TransactionStatus,
+    };
+    store.tx.pendingTransfers[tx.hash] = payload;
+
+    services.bus.dispatch({
+      type: isImport
+        ? "PegTransactionPendingEvent"
+        : "UnpegTransactionPendingEvent",
+      payload,
+    });
+
     try {
-      for await (const ev of bridge.subscribeToTransfer(tx)) {
-        const payload = {
-          bridgeTx: tx,
-          transactionStatus: ev,
-        };
-        store.tx.pendingTransfers[tx.hash] = payload;
+      const didComplete = await bridge.awaitTransferCompletion(tx);
+      if (!didComplete) {
+        // Silent failure... for one reason or another, we're just done.
+      } else {
+        // First emit the event so UI can update balances...
+        bridgeTxEmitter.emit("tx_complete", tx);
 
-        if (ev.state === "accepted") {
+        // Then wait a sec so the balance request finishes before notif appears...
+        setTimeout(() => {
           services.bus.dispatch({
             type: isImport
-              ? "PegTransactionPendingEvent"
-              : "UnpegTransactionPendingEvent",
-            payload,
+              ? "PegTransactionCompletedEvent"
+              : "UnpegTransactionCompletedEvent",
+            payload: {
+              bridgeTx: tx,
+              transactionStatus: {
+                state: "completed",
+                hash: tx.hash,
+              },
+            },
           });
-        } else if (ev.state === "completed") {
-          // First emit the event so UI can update balances...
-          bridgeTxEmitter.emit("tx_complete", tx);
-
-          // Then wait a sec so the balance request finishes before notif appears...
-          setTimeout(() => {
-            services.bus.dispatch({
-              type: isImport
-                ? "PegTransactionCompletedEvent"
-                : "UnpegTransactionCompletedEvent",
-              payload,
-            });
-          }, 1000);
-        } else if (ev.state === "failed") {
-          services.bus.dispatch({
-            type: isImport
-              ? "PegTransactionErrorEvent"
-              : "UnpegTransactionErrorEvent",
-            payload,
-          });
-        }
+        }, 750);
       }
     } catch (error) {
-      console.error("got error listening to transfer. stopping", error);
+      services.bus.dispatch({
+        type: isImport
+          ? "PegTransactionErrorEvent"
+          : "UnpegTransactionErrorEvent",
+        payload: {
+          bridgeTx: tx,
+          transactionStatus: {
+            state: "failed",
+            hash: tx.hash,
+            memo: error.message,
+          },
+        },
+      });
     }
     delete store.tx.pendingTransfers[tx.hash];
     txList.remove(tx);

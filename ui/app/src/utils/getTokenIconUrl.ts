@@ -1,21 +1,12 @@
 import { useCore } from "@/hooks/useCore";
 import { Asset } from "@sifchain/sdk";
 
-// Load all SVG icons with glob so that they get included as assets
-// This will just give us their src string.
-// Our SVG loader has a rule: when it comes to items from /public, do not inline them. only return src.
-const globResult = import.meta.globEager("./../../public/images/tokens/*");
-
-const tokenSrcMap = Object.keys(globResult).reduce((map, key) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// All token svg icons are passed in as a <symbol, path> lookup via vite.config.ts.
+// We don't use import.meta.glob because it gives warnings about the public dir, where these are stored...
+const tokenSrcMap = new Map<string, string>(
   // @ts-ignore
-  const symbol = key
-    .split("/")
-    .pop()
-    .replace(/\.svg$/i, "");
-  map.set(symbol, globResult[key].default);
-  return map;
-}, new Map<string, string>());
+  Object.entries(TOKEN_SVG_PATH_LOOKUP),
+);
 
 export const getTokenIconUrl = (
   asset: Asset,

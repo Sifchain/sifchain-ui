@@ -18,8 +18,7 @@
     "lib/**/*"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./react": "./src/sdk-react/index.ts"
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "@cosmjs/launchpad": "^0.23.0",

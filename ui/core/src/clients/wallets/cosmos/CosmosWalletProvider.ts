@@ -6,6 +6,7 @@ import {
   Network,
   IAssetAmount,
   AssetAmount,
+  IAsset,
 } from "../../../entities";
 import fetch from "cross-fetch";
 import {
@@ -25,13 +26,13 @@ import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transf
 import {
   NativeDexTransaction,
   NativeDexSignedTransaction,
-} from "services/utils/SifClient/NativeDexTransaction";
-import { BroadcastTxResult } from "@cosmjs/launchpad/build/cosmosclient";
-import { DirectSecp256k1HdWalletProvider } from "./DirectSecp256k1HdWalletProvider";
+} from "../../../services/utils/SifClient/NativeDexTransaction";
+import { BroadcastTxResult } from "@cosmjs/launchpad";
+import { NativeDexClient } from "../../../services/utils/SifClient/NativeDexClient";
 
 type IBCHashDenomTraceLookup = Record<string, DenomTrace>;
 
-export abstract class CosmosWalletProvider extends WalletProvider {
+export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> {
   tokenRegistry: ReturnType<typeof TokenRegistryService>;
 
   constructor(public context: WalletProviderContext) {
@@ -43,19 +44,28 @@ export abstract class CosmosWalletProvider extends WalletProvider {
     return chain.chainConfig.chainType === "ibc";
   }
 
+  parseTxResultToStatus(txResult: BroadcastTxResult) {
+    return NativeDexClient.parseTxResult(txResult);
+  }
+
   abstract getSendingSigner(
     chain: Chain,
   ): Promise<OfflineSigner & OfflineDirectSigner>;
 
-  abstract sign(
+  async getRequiredApprovalAmount(
+    chain: Chain,
     tx: NativeDexTransaction<EncodeObject>,
-    sendingChain: Chain,
-  ): Promise<NativeDexSignedTransaction<EncodeObject>>;
-
-  abstract broadcast(
-    tx: NativeDexSignedTransaction<EncodeObject>,
-    sendingChain: Chain,
-  ): Promise<BroadcastTxResult>;
+    amount: IAssetAmount,
+  ) {
+    return AssetAmount(amount.asset, "0");
+  }
+  async approve(
+    chain: Chain,
+    tx: NativeDexTransaction<EncodeObject>,
+    amount: IAssetAmount,
+  ) {
+    throw "not implemented";
+  }
 
   getIBCChainConfig(chain: Chain) {
     if (chain.chainConfig.chainType !== "ibc")

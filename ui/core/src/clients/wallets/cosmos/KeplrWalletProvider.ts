@@ -43,11 +43,12 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
   constructor(public context: WalletProviderContext) {
     super(context);
-    // TODO(ajoslin): handle account switches gracefully
+  }
+
+  onAccountChanged(callback: () => void) {
     try {
-      window?.addEventListener("keplr_keystorechange", () =>
-        window.location.reload(),
-      );
+      window.addEventListener("keplr_keystorechange", callback);
+      return () => window.removeEventListener("keplr_keystorechange", callback);
     } catch (e) {}
   }
 
@@ -125,8 +126,8 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return address;
   }
 
-  async sign(tx: NativeDexTransaction<EncodeObject>, sendingChain: Chain) {
-    const chainConfig = this.getIBCChainConfig(sendingChain);
+  async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+    const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
 
     const converter = new NativeAminoTypes();
@@ -167,15 +168,12 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return new NativeDexSignedTransaction(tx, signedTx);
   }
 
-  async broadcast(
-    tx: NativeDexSignedTransaction<EncodeObject>,
-    sendingChain: Chain,
-  ) {
+  async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
     const signed = tx.signed as StdTx;
     if (!signed.msg)
       throw new Error("Invalid signedTx, possibly it was not amino signed.");
 
-    const chainConfig = this.getIBCChainConfig(sendingChain);
+    const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
     const keplr = await getKeplrProvider();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

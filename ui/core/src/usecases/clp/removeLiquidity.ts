@@ -47,12 +47,12 @@ export function RemoveLiquidity({
     );
 
     const signedTx = await wallet.keplrProvider.sign(
-      txDraft,
       chains.nativeChain,
+      txDraft,
     );
     const sentTx = await wallet.keplrProvider.broadcast(
-      signedTx,
       chains.nativeChain,
+      signedTx,
     );
     const txStatus = client.parseTxResult(sentTx);
     if (txStatus.state !== "accepted") {

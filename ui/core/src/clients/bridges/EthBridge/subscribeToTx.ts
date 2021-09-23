@@ -1,5 +1,5 @@
 import { reactive } from "@vue/reactivity";
-import { UsecaseContext } from "../..";
+import { UsecaseContext } from "../../../usecases";
 import { PegTxEventEmitter } from "../../../services/EthbridgeService/PegTxEventEmitter";
 import { TransactionStatus, Network } from "../../../entities";
 import { Services } from "../../../services";

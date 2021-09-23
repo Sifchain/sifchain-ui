@@ -45,10 +45,10 @@ export function Claim({ dispensation, sif, chains, wallet }: ClaimArgs) {
       undefined,
       memo,
     );
-    const signed = await wallet.keplrProvider.sign(tx, chains.nativeChain);
+    const signed = await wallet.keplrProvider.sign(chains.nativeChain, tx);
     const sent = await wallet.keplrProvider.broadcast(
-      signed,
       chains.nativeChain,
+      signed,
     );
     return client.parseTxResult(sent);
   };

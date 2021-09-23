@@ -32,6 +32,7 @@ export class IBCService extends IBCBridge {
     const fromChain = getChainsService().get(params.sourceNetwork);
     const toChain = getChainsService().get(params.destinationNetwork);
     return this.bridgeTokens(
+      this.context.cosmosWalletProvider,
       {
         assetAmount: params.assetAmountToTransfer,
         fromAddress: await this.context.cosmosWalletProvider.connect(fromChain),

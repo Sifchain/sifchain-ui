@@ -13,7 +13,7 @@ import {
   NativeDexTransaction,
   NativeDexSignedTransaction,
 } from "../../../services/utils/SifClient/NativeDexTransaction";
-import { SigningStargateClient, isBroadcastTxSuccess } from "@cosmjs/stargate";
+import { SigningStargateClient } from "@cosmjs/stargate";
 import {
   TxRaw,
   TxBody,
@@ -85,9 +85,9 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
     return account.address;
   }
 
-  async sign(tx: NativeDexTransaction<EncodeObject>, sendingChain: Chain) {
-    const chainConfig = this.getIBCChainConfig(sendingChain);
-    const signer = await this.getSendingSigner(sendingChain);
+  async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+    const chainConfig = this.getIBCChainConfig(chain);
+    const signer = await this.getSendingSigner(chain);
 
     const stargate = await SigningStargateClient.connectWithSigner(
       chainConfig.rpcUrl,
@@ -106,16 +106,13 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
     return new NativeDexSignedTransaction(tx, signed);
   }
 
-  async broadcast(
-    tx: NativeDexSignedTransaction<EncodeObject>,
-    sendingChain: Chain,
-  ) {
+  async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
     const signed = tx.signed as TxRaw;
     if (signed.bodyBytes == null)
       throw new Error("Invalid signedTx, possibly it was not proto signed.");
 
-    const chainConfig = this.getIBCChainConfig(sendingChain);
-    const signer = await this.getSendingSigner(sendingChain);
+    const chainConfig = this.getIBCChainConfig(chain);
+    const signer = await this.getSendingSigner(chain);
 
     const stargate = await SigningStargateClient.connectWithSigner(
       chainConfig.rpcUrl,

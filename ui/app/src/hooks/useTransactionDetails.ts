@@ -1,21 +1,13 @@
 import { computed } from "vue";
 import { TransactionStatus } from "@sifchain/sdk";
 import { Ref, ComputedRef } from "vue";
-import { PegEvent } from "@sifchain/sdk/src/usecases/peg/peg";
-import { UnpegEvent } from "../../../core/src/usecases/peg/unpeg";
+import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 
-export function useUnpegEventDetails(props: {
-  unpegEvent: Ref<UnpegEvent>;
+export function useBridgeEventDetails(props: {
+  bridgeEvent: Ref<BridgeEvent>;
 }): ComputedRef<TransactionDetails> {
   return computed(() => {
-    return getUnpegEventDetails(props.unpegEvent.value);
-  });
-}
-export function usePegEventDetails(props: {
-  pegEvent: Ref<PegEvent>;
-}): ComputedRef<TransactionDetails> {
-  return computed(() => {
-    return getPegEventDetails(props.pegEvent.value);
+    return getBridgeEventDetails(props.bridgeEvent.value);
   });
 }
 
@@ -37,13 +29,15 @@ export type TransactionDetails = null | {
 
 // For peg transactions, they will transition into using the
 // full getTransactionDetails below
-export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
-  const type = pegEvent?.type || null;
-  switch (pegEvent?.type) {
+export function getBridgeEventDetails(
+  bridgeEvent: BridgeEvent,
+): TransactionDetails {
+  const type = bridgeEvent?.type || null;
+  switch (bridgeEvent?.type) {
     case "sent": {
       return {
         heading: "Transaction Completed",
-        description: "Successfully initiated import",
+        description: "Successfully initiated transfer",
         isComplete: true,
       };
     }
@@ -70,53 +64,11 @@ export function getPegEventDetails(pegEvent: PegEvent): TransactionDetails {
       return {
         heading: "Transaction Rejected",
         isError: true,
-        description: pegEvent.tx?.memo || "",
+        description: bridgeEvent.tx?.memo || "",
       };
     }
     case "tx_error": {
-      return getTransactionDetails(pegEvent.tx);
-    }
-    default: {
-      return null;
-    }
-  }
-}
-
-// For peg transactions, they will transition into using the
-// full getTransactionDetails below
-export function getUnpegEventDetails(pegEvent: UnpegEvent): TransactionDetails {
-  const type = pegEvent?.type || null;
-  switch (pegEvent?.type) {
-    case "sent":
-    case "approved": {
-      return {
-        heading: "Approved",
-        description: "Transaction approved",
-        isComplete: true,
-      };
-    }
-    case "approve_started": {
-      return {
-        heading: "Waiting for Approval",
-        description: "Approving this transaction in your wallet...",
-      };
-    }
-    // case 'approved': {} What do with this???
-    case "signing": {
-      return {
-        heading: "Waiting for Confirmation",
-        description: "Confirming this transaction in your wallet...",
-      };
-    }
-    case "approve_error": {
-      return {
-        heading: "Transaction Rejected",
-        isError: true,
-        description: "", // User rejected, say nothing?
-      };
-    }
-    case "tx_error": {
-      return getTransactionDetails(pegEvent.tx);
+      return getTransactionDetails(bridgeEvent.tx);
     }
     default: {
       return null;

@@ -1,4 +1,10 @@
-import { IAssetAmount, Chain } from "../../entities";
+import { IAssetAmount, Chain, TransactionStatus, IAsset } from "../../entities";
+import {
+  NativeDexTransaction,
+  NativeDexSignedTransaction,
+  NativeDexTransactionResult,
+} from "../../services/utils/SifClient/NativeDexTransaction";
+import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 // import {
 //   NativeDexSignedTransaction,
 //   NativeDexTransaction,
@@ -10,7 +16,7 @@ export type WalletProviderContext = {
   sifApiUrl: string;
 };
 
-export abstract class WalletProvider {
+export abstract class WalletProvider<TxType> {
   abstract context: WalletProviderContext;
 
   abstract isChainSupported(chain: Chain): boolean;
@@ -26,4 +32,29 @@ export abstract class WalletProvider {
     chain: Chain,
     address: string,
   ): Promise<IAssetAmount[]>;
+
+  abstract getRequiredApprovalAmount(
+    chain: Chain,
+    tx: NativeDexTransaction<TxType>,
+    amount: IAssetAmount,
+  ): Promise<IAssetAmount>;
+  abstract approve(
+    chain: Chain,
+    tx: NativeDexTransaction<TxType>,
+    amount: IAssetAmount,
+  ): Promise<void | undefined>;
+
+  abstract sign(
+    chain: Chain,
+    tx: NativeDexTransaction<TxType>,
+  ): Promise<NativeDexSignedTransaction<TxType>>;
+  abstract broadcast(
+    chain: Chain,
+    tx: NativeDexSignedTransaction<TxType>,
+  ): Promise<NativeDexTransactionResult>;
+
+  // Parse to dex-v1 compatible output
+  parseTxResultToStatus(result: NativeDexTransactionResult): TransactionStatus {
+    return NativeDexClient.parseTxResult(result);
+  }
 }

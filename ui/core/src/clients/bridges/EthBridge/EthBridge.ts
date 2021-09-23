@@ -1,10 +1,4 @@
-import {
-  BaseBridge,
-  BridgeParams,
-  ExecutableTx,
-  BridgeTx,
-  EthBridgeTx,
-} from "../BaseBridge";
+import { BaseBridge, BridgeTx, EthBridgeTx, BridgeParams } from "../BaseBridge";
 import {
   IAsset,
   IAssetAmount,
@@ -25,18 +19,18 @@ import { Contract } from "web3-eth-contract";
 import { erc20TokenAbi } from "../../wallets/ethereum/erc20TokenAbi";
 import JSBI from "jsbi";
 import { getBridgeBankContract } from "../../../services/EthbridgeService/bridgebankContract";
-import { isOriginallySifchainNativeToken } from "../../../usecases/peg/utils/isOriginallySifchainNativeToken";
+import { isOriginallySifchainNativeToken } from "./isOriginallySifchainNativeToken";
 import { NativeDexClient } from "../../../services/utils/SifClient/NativeDexClient";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import Long from "long";
-import { BroadcastTxResult } from "@cosmjs/launchpad";
 import {
   parseTxFailure,
   parseEthereumTxFailure,
 } from "../../../services/SifService/parseTxFailure";
 import { isBroadcastTxFailure } from "@cosmjs/launchpad";
-import { SubscribeToTx } from "../../../usecases/peg/utils/subscribeToTx";
-import { createIteratorSubject } from "../../../utils/iteratorSubject";
+import TokenRegistryService from "../../../services/TokenRegistryService";
+import { Web3WalletProvider, Web3Transaction } from "../../wallets";
+import { NativeDexTransaction } from "../../../services/utils/SifClient/NativeDexTransaction";
 
 export type EthBridgeContext = {
   sifApiUrl: string;
@@ -55,13 +49,46 @@ export const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export const ETH_CONFIRMATIONS = 50;
 
-export class EthBridge extends BaseBridge {
+export class EthBridge extends BaseBridge<
+  CosmosWalletProvider | Web3WalletProvider
+> {
   constructor(public context: EthBridgeContext) {
     super();
   }
   static create(context: EthBridgeContext) {
     return new EthBridge(context);
   }
+
+  assertValidBridgeParams(
+    wallet: CosmosWalletProvider | Web3WalletProvider,
+    params: BridgeParams,
+  ) {
+    if (
+      params.toChain.network === Network.SIFCHAIN &&
+      params.fromChain.network === Network.ETHEREUM
+    ) {
+      if (!(wallet instanceof Web3WalletProvider)) {
+        throw new Error(
+          "EthBridge must be called with a Web3WalletProvider when transfering from Ethereum to Sifchain",
+        );
+      }
+    } else if (
+      params.toChain.network === Network.ETHEREUM &&
+      params.fromChain.network === Network.SIFCHAIN
+    ) {
+      if (!(wallet instanceof Web3WalletProvider)) {
+        throw new Error(
+          "EthBridge must be called with a CosmosWalletProvider when transfering from Sifchain to Ethereum",
+        );
+      }
+    } else {
+      throw new Error(
+        "EthBridge can only broker transfers between Sifchain and Ethereum",
+      );
+    }
+  }
+
+  tokenRegistry = TokenRegistryService(this.context);
 
   // Pull this out to a util?
   // How to handle context/dependency injection?
@@ -73,7 +100,10 @@ export class EthBridge extends BaseBridge {
     return this.web3;
   };
 
-  estimateFees(params: BridgeParams): IAssetAmount | undefined {
+  estimateFees(
+    provider: CosmosWalletProvider | Web3WalletProvider,
+    params: BridgeParams,
+  ): IAssetAmount | undefined {
     if (params.toChain.network === Network.ETHEREUM) {
       const ceth = getChainsService()
         .get(Network.SIFCHAIN)
@@ -87,13 +117,77 @@ export class EthBridge extends BaseBridge {
     }
   }
 
-  private async transferToEth(params: BridgeParams) {
-    const feeAmount = await this.estimateFees(params);
+  async approveTransfer(
+    wallet: Web3WalletProvider | CosmosWalletProvider,
+    params: BridgeParams,
+  ) {
+    this.assertValidBridgeParams(wallet, params);
+
+    if (wallet instanceof Web3WalletProvider) {
+      return wallet.approve(
+        params.fromChain,
+        new NativeDexTransaction(params.fromAddress, [
+          new Web3Transaction(this.context.bridgebankContractAddress),
+        ]),
+        params.assetAmount,
+      );
+    }
+  }
+
+  async transfer(
+    wallet: CosmosWalletProvider | Web3WalletProvider,
+    params: BridgeParams,
+  ) {
+    this.assertValidBridgeParams(wallet, params);
+
+    if (wallet instanceof CosmosWalletProvider) {
+      const tx = await this.exportToEth(wallet, params);
+
+      if (isBroadcastTxFailure(tx)) {
+        throw new Error(parseTxFailure(tx).memo);
+      }
+
+      return {
+        ...params,
+        hash: tx.transactionHash,
+        fromChain: params.fromChain,
+        toChain: params.toChain,
+      } as EthBridgeTx;
+    } else {
+      const pegTx = await this.importFromEth(wallet, params);
+
+      try {
+        const hash = await new Promise<string>((resolve, reject) => {
+          pegTx.onError((error) => reject(error.payload));
+          pegTx.onTxHash((hash) => resolve(hash.txHash));
+        });
+
+        return {
+          ...params,
+          fromChain: params.fromChain,
+          toChain: params.toChain,
+          hash: hash,
+        } as EthBridgeTx;
+      } catch (transactionStatus) {
+        throw new Error(parseEthereumTxFailure(transactionStatus).memo);
+      }
+    }
+  }
+
+  private async exportToEth(
+    provider: CosmosWalletProvider,
+    params: BridgeParams,
+  ) {
+    const feeAmount = await this.estimateFees(provider, params);
     const nativeChain = params.fromChain;
 
-    const web3 = await this.ensureWeb3();
-    const ethereumChainId = await web3.eth.net.getId();
     const client = await NativeDexClient.connectByChain(nativeChain);
+
+    const sifAsset = nativeChain.findAssetWithLikeSymbolOrThrow(
+      params.assetAmount.asset.symbol,
+    );
+
+    const entry = await this.tokenRegistry.findAssetEntryOrThrow(sifAsset);
 
     const tx = isOriginallySifchainNativeToken(params.assetAmount.asset)
       ? client.tx.ethbridge.Lock(
@@ -101,11 +195,11 @@ export class EthBridge extends BaseBridge {
             ethereumReceiver: params.toAddress,
 
             amount: params.assetAmount.toBigInt().toString(),
-            symbol:
-              params.assetAmount.asset.ibcDenom ||
-              params.assetAmount.asset.symbol,
+            symbol: entry.denom,
             cosmosSender: params.fromAddress,
-            ethereumChainId: Long.fromString(`${ethereumChainId}`),
+            ethereumChainId: Long.fromString(
+              `${params.toChain.chainConfig.chainId}`,
+            ),
             // ethereumReceiver: tokenAddress,
             cethAmount: feeAmount!.toBigInt().toString(),
           },
@@ -116,55 +210,27 @@ export class EthBridge extends BaseBridge {
             ethereumReceiver: params.toAddress,
 
             amount: params.assetAmount.toBigInt().toString(),
-            symbol:
-              params.assetAmount.asset.ibcDenom ||
-              params.assetAmount.asset.symbol,
+            symbol: entry.denom,
             cosmosSender: params.fromAddress,
-            ethereumChainId: Long.fromString(`${ethereumChainId}`),
+            ethereumChainId: Long.fromString(
+              `${params.toChain.chainConfig.chainId}`,
+            ),
             // ethereumReceiver: tokenAddress,
             cethAmount: feeAmount!.toBigInt().toString(),
           },
           params.fromAddress,
         );
 
-    const provider = this.context.cosmosWalletProvider;
-
-    const signed = await provider.sign(tx, nativeChain);
-    const sent = await provider.broadcast(signed, nativeChain);
+    const signed = await provider.sign(nativeChain, tx);
+    const sent = await provider.broadcast(nativeChain, signed);
 
     return sent;
   }
 
-  async getRequiredApprovalAmount(params: BridgeParams) {
-    if (
-      params.fromChain.network === Network.ETHEREUM &&
-      params.assetAmount.asset.symbol.toLowerCase() === "eth"
-    ) {
-      if (
-        !(await this.hasApprovedBridgeBankSpend(
-          params.fromAddress,
-          params.assetAmount,
-        ))
-      ) {
-        return params.assetAmount;
-      }
-    }
-    return undefined;
-  }
-
-  async approveTransfer(params: BridgeParams) {
-    if (
-      params.fromChain.network === Network.ETHEREUM &&
-      params.assetAmount.asset.symbol.toLowerCase() === "eth"
-    ) {
-      return this.approveBridgeBankSpend(
-        params.fromAddress,
-        params.assetAmount,
-      );
-    }
-  }
-
-  private async transferFromEth(params: BridgeParams) {
+  private async importFromEth(
+    provider: Web3WalletProvider,
+    params: BridgeParams,
+  ) {
     const chainConfig = params.fromChain.chainConfig as EthChainConfig;
     const web3 = await this.ensureWeb3();
     const web3ChainId = await web3.eth.getChainId();
@@ -191,117 +257,24 @@ export class EthBridge extends BaseBridge {
     return pegTx;
   }
 
-  transfer(params: BridgeParams): ExecutableTx {
-    return new ExecutableTx(async (emit) => {
-      const isImport = params.toChain.network === Network.SIFCHAIN;
-
-      const doThrow = () => {
-        throw new Error(
-          `Cannot use ethbridge for transfer: ${params.fromChain.displayName} => ${params.toChain.displayName}`,
-        );
-      };
-      if (isImport && params.fromChain.chainConfig.chainType !== "eth") {
-        doThrow();
-      } else if (!isImport && params.toChain.chainConfig.chainType !== "eth") {
-        doThrow();
-      }
-
-      emit({ type: "signing" });
-
-      if (isImport) {
-        const approvalAmount = await this.getRequiredApprovalAmount(params);
-        if (approvalAmount) {
-          try {
-            emit({ type: "approve_started" });
-            await this.approveBridgeBankSpend(
-              params.fromAddress,
-              params.assetAmount,
-            );
-            emit({ type: "approved" });
-          } catch (error) {
-            emit({
-              type: "approve_error",
-              tx: parseEthereumTxFailure({
-                transactionHash: "",
-                rawLog: error.message,
-              }),
-            });
-            return;
-          }
-        }
-
-        emit({ type: "signing" });
-        const pegTx = await this.transferFromEth(params);
-
-        try {
-          const hash = await new Promise<string>((resolve, reject) => {
-            pegTx.onError((error) => reject(error.payload));
-            pegTx.onTxHash((hash) => resolve(hash.txHash));
-          });
-
-          emit({ type: "sent", tx: { state: "completed", hash } });
-
-          return {
-            ...params,
-            fromChain: params.fromChain,
-            toChain: params.toChain,
-            hash: hash,
-          } as EthBridgeTx;
-        } catch (transactionStatus) {
-          console.log("catch", transactionStatus);
-          emit({
-            type: "tx_error",
-            tx: parseEthereumTxFailure(transactionStatus),
-          });
-        }
-      } else {
-        try {
-          const tx = await this.transferToEth(params);
-          const result = await NativeDexClient.parseTxResult(tx);
-
-          if (isBroadcastTxFailure(tx)) {
-            emit({ type: "tx_error", tx: result });
-            return;
-          }
-
-          emit({ type: "sent", tx: result });
-
-          return {
-            ...params,
-            hash: result.hash,
-            fromChain: params.fromChain,
-            toChain: params.toChain,
-          } as EthBridgeTx;
-        } catch (error) {
-          emit({
-            type: "tx_error",
-            tx: parseTxFailure({
-              transactionHash: "",
-              rawLog: error.message.toString(),
-            }),
-          });
-        }
-      }
-    });
-  }
-
-  async *subscribeToTransfer(
-    transferTx: BridgeTx,
-  ): AsyncGenerator<TransactionStatus> {
-    const pegTx = this.createPegTx(
-      ETH_CONFIRMATIONS,
-      transferTx.assetAmount.asset.ibcDenom ||
-        transferTx.assetAmount.asset.symbol,
-      transferTx.hash,
-    );
-    const { iterator, feed, end } = createIteratorSubject<TransactionStatus>();
-    this.subscribeToTx(pegTx, (tx: TransactionStatus) => {
-      feed(tx);
-      if (tx.state === "completed" || tx.state === "failed") end();
-    });
-    for await (const ev of iterator) {
-      yield ev;
+  async awaitTransferCompletion(provider: Web3WalletProvider, tx: BridgeTx) {
+    if (tx.toChain.network === Network.ETHEREUM) {
+      return false;
     }
+    return new Promise<boolean>((resolve, reject) => {
+      const pegTx = this.createPegTx(
+        ETH_CONFIRMATIONS,
+        tx.assetAmount.asset.ibcDenom || tx.assetAmount.asset.symbol,
+        tx.hash,
+      );
+      this.subscribeToTx(pegTx, (tx: TransactionStatus) => {
+        if (tx.state === "completed") {
+          resolve(true);
+        } else if (tx.state === "failed") {
+          reject(new Error("Transaction failed"));
+        }
+      });
+    });
   }
 
   /**

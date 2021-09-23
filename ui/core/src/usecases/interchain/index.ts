@@ -22,47 +22,59 @@ import {
 
 export default function InterchainUsecase(context: UsecaseContext) {
   const ibcBridge = {
-    async estimateFees(params: BridgeParams) {
-      return context.services.ibc.estimateFees(params);
+    estimateFees(params: BridgeParams) {
+      return context.services.ibc.estimateFees(
+        context.services.wallet.keplrProvider,
+        params,
+      );
     },
-    transfer(params: BridgeParams) {
-      const executable = context.services.ibc.transfer(params);
-      executable.awaitResult().then((tx) => {
-        if (tx) bridgeTxEmitter.emit("tx_sent", tx);
-      });
-      executable.execute();
-      return executable;
+    async approveTransfer(params: BridgeParams) {},
+    async transfer(params: BridgeParams) {
+      const result = await context.services.ibc.transfer(
+        context.services.wallet.keplrProvider,
+        params,
+      );
+      bridgeTxEmitter.emit("tx_sent", result);
+      return result;
     },
-    async *subscribeToTransfer(
-      tx: BridgeTx,
-    ): AsyncGenerator<TransactionStatus> {
-      for await (const ev of context.services.ibc.subscribeToTransfer(tx)) {
-        yield ev;
-      }
+    async awaitTransferCompletion(tx: BridgeTx) {
+      return context.services.ibc.awaitTransferCompletion(
+        context.services.wallet.keplrProvider,
+        tx,
+      );
     },
   };
 
   const ethBridge = {
-    async estimateFees(params: BridgeParams) {
-      return context.services.ethbridge.estimateFees(params);
+    estimateFees(params: BridgeParams) {
+      return context.services.ethbridge.estimateFees(
+        context.services.wallet.metamaskProvider,
+        params,
+      );
     },
-    transfer(params: BridgeParams) {
-      const executable = context.services.ethbridge.transfer(params);
-      executable.awaitResult().then((tx) => {
-        if (tx) bridgeTxEmitter.emit("tx_sent", tx);
-      });
-      executable.execute();
-      return executable;
-    },
-    async *subscribeToTransfer(
-      tx: BridgeTx,
-    ): AsyncGenerator<TransactionStatus> {
-      for await (const ev of context.services.ethbridge.subscribeToTransfer(
-        tx,
-      )) {
-        console.log("ev", ev);
-        yield ev;
+    async approveTransfer(params: BridgeParams) {
+      if (params.fromChain.network === Network.ETHEREUM) {
+        await context.services.ethbridge.approveTransfer(
+          context.services.wallet.metamaskProvider,
+          params,
+        );
       }
+    },
+    async transfer(params: BridgeParams) {
+      const result = await context.services.ethbridge.transfer(
+        params.fromChain.network === Network.SIFCHAIN
+          ? context.services.wallet.keplrProvider
+          : context.services.wallet.metamaskProvider,
+        params,
+      );
+      bridgeTxEmitter.emit("tx_sent", result);
+      return result;
+    },
+    async awaitTransferCompletion(tx: BridgeTx) {
+      return context.services.ethbridge.awaitTransferCompletion(
+        context.services.wallet.metamaskProvider,
+        tx,
+      );
     },
   };
 

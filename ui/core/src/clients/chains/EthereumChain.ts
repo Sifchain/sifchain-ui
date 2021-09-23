@@ -7,7 +7,7 @@ import {
 } from "../../entities";
 import { BaseChain } from "./_BaseChain";
 import { urlJoin } from "url-join-ts";
-import { isOriginallySifchainNativeToken } from "../../usecases/peg/utils/isOriginallySifchainNativeToken";
+import { isOriginallySifchainNativeToken } from "../bridges/EthBridge/isOriginallySifchainNativeToken";
 
 export class EthereumChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {

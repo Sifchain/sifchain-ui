@@ -38,13 +38,7 @@ import {
   IBC_EXPORT_FEE_ADDRESS,
 } from "../../../utils/ibcExportFees";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
-import {
-  BaseBridge,
-  BridgeParams,
-  ExecutableTx,
-  IBCBridgeTx,
-  BridgeTx,
-} from "../BaseBridge";
+import { BaseBridge, BridgeParams, IBCBridgeTx, BridgeTx } from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";
 import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
 
@@ -59,7 +53,7 @@ export type IBCBridgeContext = {
   cosmosWalletProvider: CosmosWalletProvider;
 };
 
-export class IBCBridge extends BaseBridge {
+export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
   tokenRegistry = TokenRegistryService(this.context);
 
   public transferTimeoutMinutes = 45;
@@ -170,6 +164,7 @@ export class IBCBridge extends BaseBridge {
   }
 
   async bridgeTokens(
+    provider: CosmosWalletProvider,
     params: BridgeParams,
     // Load testing options
     {
@@ -179,10 +174,6 @@ export class IBCBridge extends BaseBridge {
       gasPerBatch = undefined,
     } = {},
   ): Promise<BroadcastTxResult[]> {
-    console.log("transferIBCTokens", params);
-
-    const provider = this.context.cosmosWalletProvider;
-
     const toChainConfig = provider.getIBCChainConfig(params.toChain);
     const fromChainConfig = provider.getIBCChainConfig(params.fromChain);
     const receivingSigner = await provider.getSendingSigner(params.toChain);
@@ -260,7 +251,7 @@ export class IBCBridge extends BaseBridge {
       }),
     ];
 
-    const feeAmount = await this.estimateFees(params);
+    const feeAmount = await this.estimateFees(provider, params);
 
     if (feeAmount?.amount.greaterThan("0")) {
       const feeEntry = registry.find(
@@ -322,9 +313,9 @@ export class IBCBridge extends BaseBridge {
         });
         console.log("txDraft", require("util").inspect(txDraft));
 
-        const signedTx = await provider.sign(txDraft, params.fromChain);
+        const signedTx = await provider.sign(params.fromChain, txDraft);
 
-        const sentTx = await provider.broadcast(signedTx, params.fromChain);
+        const sentTx = await provider.broadcast(params.fromChain, signedTx);
 
         responses.push(sentTx);
       } catch (err) {
@@ -349,7 +340,7 @@ export class IBCBridge extends BaseBridge {
     return responses;
   }
 
-  estimateFees(params: BridgeParams) {
+  estimateFees(wallet: CosmosWalletProvider, params: BridgeParams) {
     if (params.toChain.network !== Network.SIFCHAIN) {
       return calculateIBCExportFee(params.assetAmount);
     } else {
@@ -357,52 +348,46 @@ export class IBCBridge extends BaseBridge {
     }
   }
 
-  transfer(params: BridgeParams) {
-    return new ExecutableTx(async (emit) => {
-      emit({ type: "signing" });
-      const responses = await this.bridgeTokens(params);
+  // No approvals needed for IBC transfers.
+  async approveTransfer(provider: CosmosWalletProvider, params: BridgeParams) {}
 
-      for (let tx of responses) {
-        if (isBroadcastTxFailure(tx)) {
-          emit({
-            type: "tx_error",
-            tx: parseTxFailure({
-              transactionHash: tx.transactionHash,
-              rawLog: tx.rawLog || "",
-            }),
-          });
-          return;
-        } else {
-          const logs = parseRawLog(tx.rawLog);
-          emit({
-            type: "sent",
-            tx: { state: "completed", hash: tx.transactionHash },
-          });
+  async transfer(provider: CosmosWalletProvider, params: BridgeParams) {
+    const responses = await this.bridgeTokens(provider, params);
 
-          return {
-            ...params,
-            fromChain: params.fromChain,
-            toChain: params.toChain,
-            hash: tx.transactionHash,
-            meta: { logs },
-          } as IBCBridgeTx;
-        }
+    // Get the last of the batched tx first.
+    for (let txResult of responses.reverse()) {
+      if (isBroadcastTxFailure(txResult)) {
+        throw new Error(parseTxFailure(txResult).memo);
       }
-    });
+      const logs = parseRawLog(txResult.rawLog);
+
+      // Abort if not IBC transfer tx receipt (eg a fee payment)
+      if (
+        !logs.some((item) =>
+          item.events.some((ev) => ev.type === "ibc_transfer"),
+        )
+      ) {
+        continue;
+      }
+
+      return {
+        ...params,
+        hash: txResult.transactionHash,
+        meta: {
+          logs,
+        },
+      } as IBCBridgeTx;
+    }
+    throw new Error("No transactions sent");
   }
 
-  async *subscribeToTransfer(tx: BridgeTx): AsyncGenerator<TransactionStatus> {
+  async awaitTransferCompletion(provider: CosmosWalletProvider, tx: BridgeTx) {
     const ibcTx = tx as IBCBridgeTx;
     // Filter out non-ibc tx from logs like fee transfers
     const logs = ibcTx.meta?.logs?.filter((item) =>
       item.events.some((ev) => ev.type === "ibc_transfer"),
     );
-    if (!logs) return;
-
-    yield {
-      state: "accepted",
-      hash: tx.hash,
-    };
+    if (!logs) return false;
 
     const sequence = findAttribute(logs, "send_packet", "packet_sequence");
     const dstChannel = findAttribute(logs, "send_packet", "packet_dst_channel");
@@ -422,7 +407,7 @@ export class IBCBridge extends BaseBridge {
     const config = tx.toChain.chainConfig as IBCChainConfig;
     const client = await SigningStargateClient?.connectWithSigner(
       config.rpcUrl,
-      await this.context.cosmosWalletProvider.getSendingSigner(tx.toChain),
+      await provider.getSendingSigner(tx.toChain),
     );
 
     while (true) {
@@ -430,12 +415,7 @@ export class IBCBridge extends BaseBridge {
 
       const blockHeight = await client.getHeight();
       if (blockHeight >= timeoutHeightValue) {
-        yield {
-          state: "failed",
-          hash: tx.hash,
-          memo: "Timed out waiting for packet receipt",
-        };
-        break;
+        throw new Error("Timed out waiting for packet receipt");
       }
       try {
         const received = await this.checkIfPacketReceived(
@@ -445,11 +425,7 @@ export class IBCBridge extends BaseBridge {
           sequence.value,
         );
         if (received) {
-          yield {
-            state: "completed",
-            hash: tx.hash,
-          };
-          return;
+          return true;
         }
       } catch (e) {}
     }

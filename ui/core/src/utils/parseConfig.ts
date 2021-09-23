@@ -5,7 +5,7 @@ import {
   ChainConfig,
   NetworkChainConfigLookup,
 } from "../entities";
-import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
+import { getMetamaskProvider } from "../clients/wallets/ethereum/getMetamaskProvider";
 import { NetEnvChainConfigLookup } from "../config/chains/NetEnvChainConfigLookup";
 import { WalletProviderContext } from "../clients/wallets";
 import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";

@@ -1,15 +1,6 @@
-import {
-  IAssetAmount,
-  TransactionStatus,
-  Chain,
-  AssetAmount,
-  Network,
-  WalletConnection,
-} from "../../entities";
-import { ExecutableEmitter } from "./ExecutableEmitter";
+import { IAssetAmount, TransactionStatus, Chain } from "../../entities";
 import { EventEmitter } from "events";
 import TypedEmitter from "typed-emitter";
-import { defer } from "../../utils/defer";
 import { Log } from "@cosmjs/stargate/build/logs";
 import { WalletProvider } from "../wallets";
 
@@ -63,28 +54,24 @@ export interface BridgeTxEvents {
 }
 export const bridgeTxEmitter = new EventEmitter() as TypedEmitter<BridgeTxEvents>;
 
-export abstract class BaseBridge {
-  abstract estimateFees(params: BridgeParams): IAssetAmount | undefined;
+export abstract class BaseBridge<WalletProviderType> {
+  abstract estimateFees(
+    wallet: WalletProviderType,
+    params: BridgeParams,
+  ): IAssetAmount | undefined;
 
-  abstract transfer(params: BridgeParams): ExecutableTx;
+  abstract approveTransfer(
+    wallet: WalletProviderType,
+    params: BridgeParams,
+  ): Promise<undefined | void>;
 
-  abstract subscribeToTransfer(
+  abstract transfer(
+    wallet: WalletProviderType,
+    params: BridgeParams,
+  ): Promise<BridgeTx>;
+
+  abstract awaitTransferCompletion(
+    wallet: WalletProviderType,
     transferTx: BridgeTx,
-  ): AsyncGenerator<TransactionStatus>;
-}
-
-export class ExecutableTx extends ExecutableEmitter<BridgeEvent, BridgeTx> {
-  execute() {
-    this.awaitResult().catch((error: Error) => {
-      this.emit({
-        type: "tx_error",
-        tx: {
-          state: "failed",
-          hash: "",
-          memo: error.message,
-        },
-      });
-    });
-    super.execute();
-  }
+  ): Promise<boolean>;
 }

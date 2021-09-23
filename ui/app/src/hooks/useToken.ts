@@ -10,7 +10,6 @@ import {
 } from "@sifchain/sdk";
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
-import { InterchainTx } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 import { useAsyncData } from "./useAsyncData";
 
