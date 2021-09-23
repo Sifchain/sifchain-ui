@@ -27,6 +27,8 @@ import invariant from "tiny-invariant";
 import JSBI from "jsbi";
 import _Decimal from "decimal.js-light";
 import _Big from "big.js";
+
+// @ts-ignore
 import toFormat from "toformat";
 
 export type BigintIsh = JSBI | bigint | string;

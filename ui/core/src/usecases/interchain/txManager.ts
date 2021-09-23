@@ -1,9 +1,9 @@
 import { UsecaseContext } from "..";
-import { interchainTxEmitter, InterchainTx } from "./_InterchainApi";
-import { AssetAmount, Network } from "../../entities";
+import { AssetAmount, Network, TransactionStatus } from "../../entities";
 import InterchainUsecase from ".";
+import { BridgeTx, bridgeTxEmitter } from "../../clients/bridges/BaseBridge";
 
-type SerializedTx = InterchainTx & {
+type SerializedTx = BridgeTx & {
   $fromChainNetwork: Network;
   $toChainNetwork: Network;
   $symbol: string;
@@ -13,7 +13,7 @@ type SerializedTx = InterchainTx & {
 const PersistentTxList = (context: UsecaseContext) => {
   const key = "transfer_txs";
 
-  const serialize = (tx: InterchainTx) => {
+  const serialize = (tx: BridgeTx) => {
     const { assetAmount, fromChain, toChain, ...rest } = tx;
     return {
       $symbol: assetAmount.symbol,
@@ -23,7 +23,7 @@ const PersistentTxList = (context: UsecaseContext) => {
       ...rest,
     } as SerializedTx;
   };
-  const deserialize = (serializedTx: SerializedTx): InterchainTx => {
+  const deserialize = (serializedTx: SerializedTx): BridgeTx => {
     const {
       $amount,
       $symbol,
@@ -53,95 +53,120 @@ const PersistentTxList = (context: UsecaseContext) => {
     context.services.storage.setItem(key, JSON.stringify(list));
   };
 
-  const interchainTxs: InterchainTx[] = getRawList().map((item) =>
-    deserialize(item),
-  );
+  const bridgeTxs: BridgeTx[] = getRawList().map((item) => deserialize(item));
 
   return {
-    add: (tx: InterchainTx) => {
-      interchainTxs.push(tx);
-      setRawList(interchainTxs.map((tx) => serialize(tx)));
+    add: (tx: BridgeTx) => {
+      bridgeTxs.push(tx);
+      setRawList(bridgeTxs.map((tx) => serialize(tx)));
     },
-    remove: (tx: InterchainTx) => {
-      interchainTxs.splice(interchainTxs.indexOf(tx), 1);
-      setRawList(interchainTxs.map((tx) => serialize(tx)));
+    remove: (tx: BridgeTx) => {
+      bridgeTxs.splice(bridgeTxs.indexOf(tx), 1);
+      setRawList(bridgeTxs.map((tx) => serialize(tx)));
     },
-    get: () => interchainTxs,
+    get: () => bridgeTxs,
+    save: () => setRawList(bridgeTxs.map((tx) => serialize(tx))),
   };
 };
 
-export default function InterchainTxManager(
+export default function BridgeTxManager(
   context: UsecaseContext,
   interchain: ReturnType<typeof InterchainUsecase>,
 ) {
   const { services, store } = context;
   const txList = PersistentTxList(context);
 
-  const subscribeToInterchainTx = async (tx: InterchainTx) => {
-    const api = interchain(tx.fromChain, tx.toChain);
+  const subscribeToBridgeTx = async (bridgeTx: BridgeTx) => {
+    const bridge = interchain(bridgeTx.fromChain, bridgeTx.toChain);
 
-    const isImport = tx.toChain.network === Network.SIFCHAIN;
+    const isImport = bridgeTx.toChain.network === Network.SIFCHAIN;
+
+    const payload = {
+      bridgeTx: bridgeTx,
+      transactionStatus: {
+        state: "accepted",
+        hash: bridgeTx.hash,
+      } as TransactionStatus,
+    };
+    store.tx.pendingTransfers[bridgeTx.hash] = payload;
+
+    services.bus.dispatch({
+      type: isImport
+        ? "PegTransactionPendingEvent"
+        : "UnpegTransactionPendingEvent",
+      payload,
+    });
 
     try {
-      for await (const ev of api.subscribeToTransfer(tx)) {
-        const payload = {
-          interchainTx: tx,
-          transactionStatus: ev,
-        };
-        store.tx.pendingTransfers[tx.hash] = payload;
+      const didComplete = await bridge.waitForTransferComplete(
+        bridgeTx,
+        function onUpdateBridgeTx(update: Partial<BridgeTx>) {
+          console.log("onUpdateBridgeTx", update);
+          Object.assign(bridgeTx, update);
+          store.tx.pendingTransfers[bridgeTx.hash] = {
+            ...payload,
+            bridgeTx: { ...bridgeTx },
+          };
+          txList.save();
+        },
+      );
+      if (!didComplete) {
+        // Silent failure... for one reason or another, we're just done.
+      } else {
+        // First emit the event so UI can update balances...
+        bridgeTxEmitter.emit("tx_complete", bridgeTx);
 
-        if (ev.state === "accepted") {
+        // Then wait a sec so the balance request finishes before notif appears...
+        setTimeout(() => {
           services.bus.dispatch({
             type: isImport
-              ? "PegTransactionPendingEvent"
-              : "UnpegTransactionPendingEvent",
-            payload,
+              ? "PegTransactionCompletedEvent"
+              : "UnpegTransactionCompletedEvent",
+            payload: {
+              bridgeTx: bridgeTx,
+              transactionStatus: {
+                state: "completed",
+                hash: bridgeTx.hash,
+              },
+            },
           });
-        } else if (ev.state === "completed") {
-          // First emit the event so UI can update balances...
-          interchainTxEmitter.emit("tx_complete", tx);
-
-          // Then wait a sec so the balance request finishes before notif appears...
-          setTimeout(() => {
-            services.bus.dispatch({
-              type: isImport
-                ? "PegTransactionCompletedEvent"
-                : "UnpegTransactionCompletedEvent",
-              payload,
-            });
-          }, 1000);
-        } else if (ev.state === "failed") {
-          services.bus.dispatch({
-            type: isImport
-              ? "PegTransactionErrorEvent"
-              : "UnpegTransactionErrorEvent",
-            payload,
-          });
-        }
+        }, 750);
       }
     } catch (error) {
-      console.error("got error listening to transfer. stopping", error);
+      services.bus.dispatch({
+        type: isImport
+          ? "PegTransactionErrorEvent"
+          : "UnpegTransactionErrorEvent",
+        payload: {
+          bridgeTx: bridgeTx,
+          transactionStatus: {
+            state: "failed",
+            hash: bridgeTx.hash,
+            memo: error.message,
+          },
+        },
+      });
     }
-    delete store.tx.pendingTransfers[tx.hash];
-    txList.remove(tx);
+    delete store.tx.pendingTransfers[bridgeTx.hash];
+    txList.remove(bridgeTx);
   };
 
-  const onTxSent = (tx: InterchainTx) => {
+  const onTxSent = (tx: BridgeTx) => {
     console.log("===onTxSent", tx);
     txList.add(tx);
-    subscribeToInterchainTx(tx);
+    subscribeToBridgeTx(tx);
   };
 
   return {
     listenForSentTransfers: () => {
-      interchainTxEmitter.on("tx_sent", onTxSent);
-      return () => interchainTxEmitter.off("tx_sent", onTxSent);
+      bridgeTxEmitter.on("tx_sent", onTxSent);
+      return () => bridgeTxEmitter.off("tx_sent", onTxSent);
     },
     loadSavedTransferList() {
       // Load from storage and subscribe on bootup
       txList.get().forEach((tx) => {
         console.log("listening to saved tx", tx);
-        subscribeToInterchainTx(tx);
+        subscribeToBridgeTx(tx);
       });
     },
   };

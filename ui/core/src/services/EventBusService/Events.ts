@@ -1,5 +1,5 @@
 import { TransactionStatus } from "../../entities";
-import { InterchainTx } from "../../usecases/interchain/_InterchainApi";
+import { BridgeTx } from "../../clients/bridges/BaseBridge";
 
 // Add more wallet types here as they come up
 type WalletType = "sif" | "eth" | "cosmoshub";
@@ -63,7 +63,7 @@ type WalletConnectionErrorEvent = {
 type PegTransactionPendingEvent = {
   type: "PegTransactionPendingEvent";
   payload: {
-    interchainTx: InterchainTx;
+    bridgeTx: BridgeTx;
     transactionStatus: TransactionStatus;
   };
 };
@@ -71,7 +71,7 @@ type PegTransactionPendingEvent = {
 type PegTransactionCompletedEvent = {
   type: "PegTransactionCompletedEvent";
   payload: {
-    interchainTx: InterchainTx;
+    bridgeTx: BridgeTx;
     transactionStatus: TransactionStatus;
   };
 };
@@ -79,7 +79,7 @@ type PegTransactionCompletedEvent = {
 type PegTransactionErrorEvent = {
   type: "PegTransactionErrorEvent";
   payload: {
-    interchainTx: InterchainTx;
+    bridgeTx: BridgeTx;
     transactionStatus: TransactionStatus;
   };
 };
@@ -87,7 +87,7 @@ type PegTransactionErrorEvent = {
 type UnpegTransactionPendingEvent = {
   type: "UnpegTransactionPendingEvent";
   payload: {
-    interchainTx: InterchainTx;
+    bridgeTx: BridgeTx;
     transactionStatus: TransactionStatus;
   };
 };
@@ -95,7 +95,7 @@ type UnpegTransactionPendingEvent = {
 type UnpegTransactionCompletedEvent = {
   type: "UnpegTransactionCompletedEvent";
   payload: {
-    interchainTx: InterchainTx;
+    bridgeTx: BridgeTx;
     transactionStatus: TransactionStatus;
   };
 };
@@ -103,7 +103,7 @@ type UnpegTransactionCompletedEvent = {
 type UnpegTransactionErrorEvent = {
   type: "UnpegTransactionErrorEvent";
   payload: {
-    interchainTx: InterchainTx;
+    bridgeTx: BridgeTx;
     transactionStatus: TransactionStatus;
   };
 };

@@ -1,4 +1,4 @@
-import { IAsset, Network } from "index";
+import { IAsset, Network } from "../../../entities";
 
 const assets: {
   assets: (Omit<IAsset, "homeNetwork" | "network"> & {

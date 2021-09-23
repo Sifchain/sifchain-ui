@@ -32,22 +32,22 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
     event.type === "PegTransactionCompletedEvent"
   ) {
     const title = `${formatAssetAmount(
-      event.payload.interchainTx.assetAmount,
-    )} ${event.payload.interchainTx.assetAmount.displaySymbol.toUpperCase()} from ${
-      event.payload.interchainTx.fromChain.displayName
+      event.payload.bridgeTx.assetAmount,
+    )} ${event.payload.bridgeTx.assetAmount.displaySymbol.toUpperCase()} from ${
+      event.payload.bridgeTx.fromChain.displayName
     }`;
 
     const action = () => {
       window.open(
-        event.payload.interchainTx.fromChain.getBlockExplorerUrlForTxHash(
-          event.payload.interchainTx.hash,
+        event.payload.bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
+          event.payload.bridgeTx.hash,
         ),
       );
     };
 
     if (event.type === "PegTransactionPendingEvent") {
       return {
-        id: event.payload.interchainTx.hash,
+        id: event.payload.bridgeTx.hash,
         type: "info",
         message: `Import Pending: ${title}`,
         loader: true,
@@ -55,7 +55,7 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
       };
     } else if (event.type === "PegTransactionErrorEvent") {
       return {
-        id: event.payload.interchainTx.hash,
+        id: event.payload.bridgeTx.hash,
         type: "error",
         message: ["Import Error", event.payload.transactionStatus.memo || ""]
           .filter((i) => i !== "")
@@ -65,7 +65,7 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
       };
     } else if (event.type === "PegTransactionCompletedEvent") {
       return {
-        id: event.payload.interchainTx.hash,
+        id: event.payload.bridgeTx.hash,
         type: "success",
         message: `Import Complete! ${title}`,
         onAction: action,
@@ -80,22 +80,22 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
     event.type === "UnpegTransactionCompletedEvent"
   ) {
     const title = `${formatAssetAmount(
-      event.payload.interchainTx.assetAmount,
-    )} ${event.payload.interchainTx.assetAmount.displaySymbol.toUpperCase()} to ${
-      event.payload.interchainTx.toChain.displayName
+      event.payload.bridgeTx.assetAmount,
+    )} ${event.payload.bridgeTx.assetAmount.displaySymbol.toUpperCase()} to ${
+      event.payload.bridgeTx.toChain.displayName
     }`;
 
     const action = () => {
       window.open(
-        event.payload.interchainTx.fromChain.getBlockExplorerUrlForTxHash(
-          event.payload.interchainTx.hash,
+        event.payload.bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
+          event.payload.bridgeTx.hash,
         ),
       );
     };
 
     if (event.type === "UnpegTransactionPendingEvent") {
       return {
-        id: event.payload.interchainTx.hash,
+        id: event.payload.bridgeTx.hash,
         type: "info",
         message: `Export Pending: ${title}`,
         loader: true,
@@ -103,7 +103,7 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
       };
     } else if (event.type === "UnpegTransactionErrorEvent") {
       return {
-        id: event.payload.interchainTx.hash,
+        id: event.payload.bridgeTx.hash,
         type: "error",
         message: ["Export Error", event.payload.transactionStatus.memo || ""]
           .filter((i) => i !== "")
@@ -113,7 +113,7 @@ function parseEventToNotifications(event: AppEvent): INotification | null {
       };
     } else if (event.type === "UnpegTransactionCompletedEvent") {
       return {
-        id: event.payload.interchainTx.hash,
+        id: event.payload.bridgeTx.hash,
         type: "success",
         message: `Export Complete! ${title}`,
         onAction: action,

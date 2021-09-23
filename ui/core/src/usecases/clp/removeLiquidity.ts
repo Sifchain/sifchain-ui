@@ -14,6 +14,8 @@ type RemoveLiquidityServices = {
   sif: PickSif;
   clp: PickClp;
   tokenRegistry: Services["tokenRegistry"];
+  wallet: Services["wallet"];
+  chains: Services["chains"];
 };
 
 export function RemoveLiquidity({
@@ -21,11 +23,13 @@ export function RemoveLiquidity({
   sif,
   clp,
   tokenRegistry,
+  wallet,
+  chains,
 }: RemoveLiquidityServices) {
   return async (asset: IAsset, wBasisPoints: string, asymmetry: string) => {
     const client = await sif.loadNativeDexClient();
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(asset);
-    const txDraft = await client.tx.clp.RemoveLiquidity(
+    const txDraft = client.tx.clp.RemoveLiquidity(
       {
         asymmetry,
         wBasisPoints,
@@ -41,12 +45,15 @@ export function RemoveLiquidity({
       },
       sif.getState().address,
     );
-    const keplr = await getKeplrProvider();
-    const signer = await keplr!.getOfflineSigner(
-      await sif.unSignedClient.getChainId(),
+
+    const signedTx = await wallet.keplrProvider.sign(
+      chains.nativeChain,
+      txDraft,
     );
-    const signedTx = await client.sign(txDraft, signer);
-    const sentTx = await client.broadcast(signedTx);
+    const sentTx = await wallet.keplrProvider.broadcast(
+      chains.nativeChain,
+      signedTx,
+    );
     const txStatus = client.parseTxResult(sentTx);
     if (txStatus.state !== "accepted") {
       bus.dispatch({

@@ -1,6 +1,6 @@
 import { defineComponent, PropType, computed, Ref, watchEffect } from "vue";
 import { useImportData } from "./useImportData";
-import { usePegEventDetails } from "@/hooks/useTransactionDetails";
+import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useRouter } from "vue-router";

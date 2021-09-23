@@ -7,7 +7,7 @@ import {
 } from "../../entities";
 import { BaseChain } from "./_BaseChain";
 import { urlJoin } from "url-join-ts";
-import { isOriginallySifchainNativeToken } from "../../usecases/peg/utils/isOriginallySifchainNativeToken";
+import { isOriginallySifchainNativeToken } from "../bridges/EthBridge/isOriginallySifchainNativeToken";
 
 export class EthereumChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {
@@ -17,15 +17,5 @@ export class EthereumChain extends BaseChain implements Chain {
     return urlJoin(this.chainConfig.blockExplorerUrl, "address", address);
   }
 
-  calculateTransferFeeToChain(transferAmount: IAssetAmount) {
-    const ceth = getChainsService()
-      .get(Network.SIFCHAIN)
-      .findAssetWithLikeSymbolOrThrow("ceth");
-
-    const feeNumber = isOriginallySifchainNativeToken(transferAmount.asset)
-      ? "35370000000000000"
-      : "35370000000000000";
-
-    return AssetAmount(ceth, feeNumber);
-  }
+  calculateTransferFeeToChain(transferAmount: IAssetAmount) {}
 }

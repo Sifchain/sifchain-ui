@@ -1,5 +1,6 @@
-import { defineConfig } from "vite";
+import fs from "fs";
 import path from "path";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { Plugin } from "vite";
@@ -31,6 +32,18 @@ export default defineConfig({
     viteSingleFile(),
     minifyHtml(),
   ].filter(Boolean),
+
+  define: {
+    TOKEN_SVG_PATH_LOOKUP: fs
+      .readdirSync(path.resolve(__dirname, "./public/images/tokens"))
+      .reduce((acc, svgFilename) => {
+        acc[
+          svgFilename.replace(/\.svg$/i, "")
+        ] = `/images/tokens/${svgFilename}`;
+        return acc;
+      }, {}),
+  },
+
   optimizeDeps: {
     include: ["buffer", "process"],
   },

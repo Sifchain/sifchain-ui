@@ -1,7 +1,7 @@
 // Consolodated place where we can setup testing services
 
 import sifServiceInitializer from "../../services/SifService";
-import ethServiceInitializer from "../../services/EthereumService";
+// import ethServiceInitializer from "../../services/EthereumService";
 import { KeplrChainConfig } from "../../utils/parseConfig";
 import { TestSifAccount, TestEthAccount } from "./accounts";
 import { getTestingTokens } from "./getTestingToken";
@@ -27,14 +27,14 @@ export async function createTestSifService(account?: TestSifAccount) {
   return sif;
 }
 
-export async function createTestEthService() {
-  const eth = ethServiceInitializer({
-    assets: getTestingTokens(["ATK", "BTK", "ETH", "EROWAN"]),
-    getWeb3Provider,
-    peggyCompatibleCosmosBaseDenoms: new Set(["uphoton"]),
-  });
-  console.log("Connecting to eth service");
-  await eth.connect();
-  console.log("Finished connecting to eth service");
-  return eth;
-}
+// export async function createTestEthService() {
+//   const eth = ethServiceInitializer({
+//     assets: getTestingTokens(["ATK", "BTK", "ETH", "EROWAN"]),
+//     getWeb3Provider,
+//     peggyCompatibleCosmosBaseDenoms: new Set(["uphoton"]),
+//   });
+//   console.log("Connecting to eth service");
+//   await eth.connect();
+//   console.log("Finished connecting to eth service");
+//   return eth;
+// }

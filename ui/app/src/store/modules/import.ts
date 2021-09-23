@@ -1,4 +1,4 @@
-import { useChainsList, useChains } from "@/hooks/useChains";
+import { useChainsList, useChains, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import {
   AppCookies,
@@ -8,7 +8,10 @@ import {
   Network,
   NetworkEnv,
 } from "@sifchain/sdk";
-import { PegEvent } from "../../../../core/src/usecases/peg/peg";
+import {
+  BridgeEvent,
+  BridgeParams,
+} from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
 import { flagsStore } from "./flags";
@@ -17,12 +20,12 @@ export type ImportDraft = {
   amount: string;
   network: Network;
   symbol: string;
-  pegEvent: PegEvent | undefined;
+  pegEvent: BridgeEvent | undefined;
 };
 
 type State = {
   draft: ImportDraft;
-  pendingPegEvents: [string, PegEvent][];
+  pendingPegEvents: [string, BridgeEvent][];
 };
 export const importStore = Vuextra.createStore({
   name: "import",
@@ -88,31 +91,24 @@ export const importStore = Vuextra.createStore({
         nextDraft.network = nextDraft.network || Network.ETHEREUM;
       Object.assign(state.draft, nextDraft);
     },
-    setPegEvent(pegEvent: PegEvent | undefined) {
+    setPegEvent(pegEvent: BridgeEvent | undefined) {
       state.draft.pegEvent = pegEvent;
     },
   }),
   actions: (ctx) => ({
     async runImport(payload: { assetAmount: IAssetAmount }) {
-      if (!payload.assetAmount || !payload.assetAmount.greaterThan("0"))
-        throw new Error("Please provide an amount");
-      self.setPegEvent(undefined);
-
-      const interchain = useCore().usecases.interchain(
-        useChains().get(ctx.state.draft.network),
-        useChains().get(Network.SIFCHAIN),
+      if (!payload.assetAmount.amount.greaterThan("0")) return;
+      runTransfer(
+        {
+          fromChain: useChains().get(self.state.draft.network),
+          fromAddress:
+            accountStore.state[self.state.draft.network as Network].address,
+          toChain: useNativeChain(),
+          toAddress: accountStore.state.sifchain.address,
+          assetAmount: payload.assetAmount,
+        },
+        self.setPegEvent,
       );
-      const executable = interchain.transfer({
-        assetAmount: payload.assetAmount,
-        fromAddress: accountStore.state[ctx.state.draft.network].address,
-        toAddress: accountStore.state.sifchain.address,
-        fromChain: useChains().get(ctx.state.draft.network),
-        toChain: useChains().get(Network.SIFCHAIN),
-      });
-
-      for await (const ev of executable.generator()) {
-        self.setPegEvent(ev);
-      }
     },
   }),
 
@@ -120,3 +116,51 @@ export const importStore = Vuextra.createStore({
 });
 
 const self = importStore;
+
+export const runTransfer = async (
+  params: BridgeParams,
+  onBridgeEvent: (ev: BridgeEvent) => void,
+) => {
+  if (!params.assetAmount || !params.assetAmount.greaterThan("0")) {
+    throw new Error("Please provide an amount");
+  }
+
+  const bridge = useCore().usecases.interchain(
+    params.fromChain,
+    params.toChain,
+  );
+  onBridgeEvent({ type: "approve_started" });
+  try {
+    await bridge.approveTransfer(params);
+    onBridgeEvent({ type: "approve_started" });
+  } catch (error) {
+    onBridgeEvent({
+      type: "approve_error",
+      tx: {
+        state: "failed",
+        hash: "",
+        memo: error.message,
+      },
+    });
+  }
+  onBridgeEvent({ type: "signing" });
+  try {
+    const tx = await bridge.transfer(params);
+    onBridgeEvent({
+      type: "sent",
+      tx: {
+        hash: tx.hash,
+        state: "accepted",
+      },
+    });
+  } catch (error) {
+    onBridgeEvent({
+      type: "tx_error",
+      tx: {
+        hash: "",
+        state: "failed",
+        memo: error.message,
+      },
+    });
+  }
+};

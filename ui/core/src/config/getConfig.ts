@@ -26,6 +26,8 @@ import { Asset, Network } from "../entities";
 import { ServiceContext } from "../services";
 import { NetworkEnv } from "./getEnv";
 import { chainConfigByNetworkEnv } from "./chains";
+import { KeplrWalletProvider, WalletProviderContext } from "../clients/wallets";
+import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";
 
 type ConfigMap = Record<NetworkEnv, ServiceContext>;
 
@@ -44,6 +46,9 @@ export function getConfig(
   applicationNetworkEnv: NetworkEnv = NetworkEnv.LOCALNET,
   sifchainAssetTag: ChainNetwork = "sifchain.localnet",
   ethereumAssetTag: ChainNetwork = "ethereum.localnet",
+  createCosmosWalletProvider: (
+    context: WalletProviderContext,
+  ) => CosmosWalletProvider = (context) => new KeplrWalletProvider(context),
 ): AppConfig {
   const assetMap: Partial<AssetMap> = {
     "sifchain.localnet": parseAssets(
@@ -109,40 +114,46 @@ export function getConfig(
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.LOCALNET],
       peggyCompatibleCosmosBaseDenoms,
+      createCosmosWalletProvider,
     ),
     devnet: parseConfig(
       devnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET],
       peggyCompatibleCosmosBaseDenoms,
+      createCosmosWalletProvider,
     ),
     devnet_042: parseConfig(
       devnet042config as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET_042],
       peggyCompatibleCosmosBaseDenoms,
+      createCosmosWalletProvider,
     ),
     testnet: parseConfig(
       testnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET],
       peggyCompatibleCosmosBaseDenoms,
+      createCosmosWalletProvider,
     ),
     mainnet: parseConfig(
       mainnnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.MAINNET],
       peggyCompatibleCosmosBaseDenoms,
+      createCosmosWalletProvider,
     ),
     testnet_042_ibc: parseConfig(
       testnet042ibcconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET_042_IBC],
       peggyCompatibleCosmosBaseDenoms,
+      createCosmosWalletProvider,
     ),
   };
 
   const currConfig = configMap[applicationNetworkEnv];
-  console.log({ currConfig });
+
   return currConfig;
 }

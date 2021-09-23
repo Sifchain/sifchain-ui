@@ -12,9 +12,10 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
       const chain = chains.get(network);
       const hasConnected = await keplrProvider.hasConnected(chain);
       if (hasConnected) {
-        const state = await keplrProvider.connect(chain);
+        const address = await keplrProvider.connect(chain);
         return {
-          ...state,
+          address,
+          balances: [],
           connected: true,
         };
       }
@@ -23,13 +24,14 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
       };
     },
     async load(network: Network) {
-      const state = await keplrProvider.connect(chains.get(network));
+      const address = await keplrProvider.connect(chains.get(network));
       if (network === Network.SIFCHAIN) {
         // For legacy code to work
         context.services.sif.connect();
       }
       return {
-        ...state,
+        address,
+        balances: [],
         connected: true,
       };
     },
