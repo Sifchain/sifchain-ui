@@ -196,10 +196,27 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     };
   }
 
-  getIbcDenomTraceLookupCached = memoizeSuccessfulPromise(
-    this.getIbcDenomTraceLookup.bind(this),
-    (chain: Chain) => chain.chainConfig.chainId,
-  );
+  private denomTraceLookupByChain: Record<
+    string,
+    Promise<Record<string, DenomTrace>>
+  > = {};
+  async getIbcDenomTraceLookupCached(chain: Chain) {
+    const chainId = chain.chainConfig.chainId;
+    if (!this.denomTraceLookupByChain[chainId]) {
+      const promise = this.getIbcDenomTraceLookup(chain);
+      this.denomTraceLookupByChain[chainId] = promise;
+      promise.catch((error) => {
+        delete this.denomTraceLookupByChain[chainId];
+        throw error;
+      });
+    }
+    return this.denomTraceLookupByChain[chainId];
+  }
+  async refreshDenomTraces(chain: Chain) {
+    this.denomTraceLookupByChain[
+      chain.chainConfig.chainId
+    ] = this.getIbcDenomTraceLookup(chain);
+  }
   async getIbcDenomTraceLookup(
     chain: Chain,
   ): Promise<Record<string, DenomTrace>> {
@@ -235,7 +252,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       });
     } else {
       // For other networks, check for tokens that come from specific counterparty channel
-
       const entry = await this.tokenRegistry.findAssetEntryOrThrow(
         chain.nativeAsset,
       );
@@ -246,7 +262,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         );
       }
       validTraces = denomTraces.filter((item) => {
-        return item.path.split("/").pop() === channelId;
+        return item.path.startsWith(`transfer/${channelId}`);
       });
     }
 

@@ -13,6 +13,7 @@ import { accountStore } from "@/store/modules/accounts";
 import { InterchainTx } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 import { useAsyncData } from "./useAsyncData";
+import { useChains } from "./useChains";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -115,9 +116,15 @@ export const useToken = (params: {
 export const useAndPollNetworkBalances = (params: {
   network: Ref<Network>;
 }) => {
+  let lastNetwork = ref();
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
-    return accountStore.updateBalances(params.network.value);
+    const changed = lastNetwork.value !== params.network.value;
+    lastNetwork.value = params.network.value;
+
+    if (changed) {
+      await accountStore.forceUpdateBalances(params.network.value);
+    }
   }, [params.network]);
 
   let stopPollingRef = ref<Promise<() => void> | undefined>();
