@@ -117,9 +117,12 @@ export const useAndPollNetworkBalances = (params: {
 }) => {
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
-    useCore().services.wallet.keplrProvider.refreshDenomTraces(
-      useChains().get(params.network.value),
-    );
+
+    const chain = useChains().get(params.network.value);
+    if (chain.chainConfig.chainType === "ibc") {
+      useCore().services.wallet.keplrProvider.refreshDenomTraces(chain);
+    }
+
     return accountStore.updateBalances(params.network.value);
   }, [params.network]);
 
