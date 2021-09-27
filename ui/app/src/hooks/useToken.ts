@@ -12,6 +12,7 @@ import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
 import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 import { useAsyncData } from "./useAsyncData";
+import { useChains } from "./useChains";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -116,6 +117,9 @@ export const useAndPollNetworkBalances = (params: {
 }) => {
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
+    useCore().services.wallet.keplrProvider.refreshDenomTraces(
+      useChains().get(params.network.value),
+    );
     return accountStore.updateBalances(params.network.value);
   }, [params.network]);
 

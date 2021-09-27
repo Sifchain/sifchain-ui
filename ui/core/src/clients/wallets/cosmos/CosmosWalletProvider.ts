@@ -139,6 +139,12 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     }
     return this.denomTraceLookupByChain[chainId];
   }
+  async refreshDenomTraces(chain: Chain) {
+    this.denomTraceLookupByChain[
+      chain.chainConfig.chainId
+    ] = this.getIBCDenomTraceLookup(chain);
+  }
+
   async getIBCDenomTraceLookup(chain: Chain): Promise<IBCHashDenomTraceLookup> {
     const chainConfig = this.getIBCChainConfig(chain);
     const denomTracesRes = await fetch(
@@ -181,7 +187,7 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
         );
       }
       validTraces = denomTraces.filter((item) => {
-        return item.path.split("/").pop() === channelId;
+        return item.path.startsWith(`transfer/${channelId}`);
       });
     }
 
