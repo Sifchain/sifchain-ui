@@ -130,16 +130,20 @@ export const accountStore = Vuextra.createStore({
       return () => clearTimeout(timeoutId);
     },
 
-    async updateBalances(network: Network) {
+    async updateBalances(network: Network, forceUpdate?: boolean) {
       if (!self.state[network].connected) return;
 
       const usecase = getUsecase(network);
       const balances = await usecase.getBalances(
         network,
         self.state[network].address,
+        forceUpdate,
       );
 
       self.setBalances({ network, balances });
+    },
+    async forceUpdateBalances(network: Network) {
+      return self.updateBalances(network, true);
     },
 
     async disconnect(network: Network) {

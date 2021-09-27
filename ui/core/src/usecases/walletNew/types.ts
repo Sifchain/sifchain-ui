@@ -5,6 +5,10 @@ export interface WalletActions {
   loadIfConnected(
     network: Network,
   ): Promise<WalletConnection | { connected: false }>;
-  getBalances(network: Network, address: string): Promise<IAssetAmount[]>;
+  getBalances(
+    network: Network,
+    address: string,
+    forceUpdate?: boolean,
+  ): Promise<IAssetAmount[]>;
   disconnect(network: Network): Promise<void>;
 }
