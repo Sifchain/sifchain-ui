@@ -281,8 +281,8 @@ export class EthBridge extends BaseBridge<
     const ethTx = tx as EthBridgeTx;
     const web3 = await provider.getWeb3();
     if (ethTx.toChain.network === Network.SIFCHAIN) {
+      let done = false;
       return new Promise<boolean>((resolve, reject) => {
-        let done = false;
         const pegTx = this.createPegTx(
           ETH_CONFIRMATIONS,
           ethTx.assetAmount.asset.ibcDenom || ethTx.assetAmount.asset.symbol,
@@ -290,16 +290,15 @@ export class EthBridge extends BaseBridge<
         );
         this.subscribeToTx(pegTx, (ethTx: TransactionStatus) => {
           if (ethTx.state === "completed") {
-            done = true;
             resolve(true);
           } else if (ethTx.state === "failed") {
-            done = true;
             reject(new Error("Transaction failed"));
           }
         });
 
         (async () => {
           let confirmCount = ethTx.confirmCount;
+          const blockHeight = await web3.eth.getBlockNumber();
           while (!done) {
             const newCount = await getConfirmations(web3, ethTx.hash);
             if (newCount && newCount !== confirmCount) {
@@ -307,9 +306,20 @@ export class EthBridge extends BaseBridge<
               confirmCount = newCount;
             }
             await new Promise((resolve) => setTimeout(resolve, 5000));
+
+            if (blockHeight > ethTx.startingHeight + ETH_CONFIRMATIONS * 1.1) {
+              // In the cases a tx was sped up or canceled in metamask before
+              // it took off, we don't have an API to find out.
+              // https://github.com/ChainSafe/web3.js/issues/3723
+              // In this case, our transaction will timeout. Just quietly cancel
+              // our UI-side listen for the import after a grace period of expected
+              // confirmations + 10%.
+              resolve(false);
+              break;
+            }
           }
         })();
-      });
+      }).finally(() => (done = true));
     } else {
       const contract = new web3.eth.Contract(
         erc20TokenAbi,
@@ -432,54 +442,6 @@ export class EthBridge extends BaseBridge<
         console.error(e);
       }
     }
-  }
-
-  async hasApprovedBridgeBankSpend(address: string, amount: IAssetAmount) {
-    // This will popup an approval request in metamask
-    const web3 = await this.ensureWeb3();
-    const tokenContract = new web3.eth.Contract(
-      erc20TokenAbi,
-      amount.asset.address!,
-    );
-
-    // TODO - give interface option to approve unlimited spend via web3.utils.toTwosComplement(-1);
-    // NOTE - We may want to move this out into its own separate function.
-    // Although I couldn't think of a situation we'd call allowance separately from approve
-    const hasAlreadyApprovedSpend = await tokenContract.methods
-      .allowance(address, this.context.bridgebankContractAddress)
-      .call();
-    if (
-      JSBI.lessThanOrEqual(
-        amount.toBigInt(),
-        JSBI.BigInt(hasAlreadyApprovedSpend),
-      )
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  async approveBridgeBankSpend(address: string, amount: IAssetAmount) {
-    // This will popup an approval request in metamask
-    const web3 = await this.ensureWeb3();
-    const tokenContract = new web3.eth.Contract(
-      erc20TokenAbi,
-      amount.asset.address!,
-    );
-
-    const sendArgs = {
-      from: address,
-      value: 0,
-      gas: 100000,
-    };
-    const res = await tokenContract.methods
-      .approve(
-        this.context.bridgebankContractAddress,
-        amount.toBigInt().toString(),
-      )
-      .send(sendArgs);
-    console.log("approveBridgeBankSpend:", res);
-    return res;
   }
 
   async lockToSifchain(
@@ -689,35 +651,6 @@ export class EthBridge extends BaseBridge<
         return tokenAddress;
       }
     }
-  }
-
-  async fetchAllTokenAddresses(
-    // optional: pass in HTTP, or other provider (for testing)
-    loadWeb3Instance: () => Promise<Web3> | Web3 = this.ensureWeb3,
-  ) {
-    // await new Promise((r) => setTimeout(r, 8000));
-    // console.log("loading tokens for ", bridgebankContractAddress);
-    // try {
-    //   const tokens: Record<string, string> = {};
-    //   for (let asset of assets.filter(
-    //     (a) => a.network === Network.SIFCHAIN,
-    //   )) {
-    //     if (tokens[asset.displaySymbol] || !asset.symbol) continue;
-    //     try {
-    //       tokens[asset.symbol] = await this.fetchTokenAddress(
-    //         asset,
-    //         loadWeb3Instance,
-    //       );
-    //     } catch (error) {
-    //       console.error("Error fetching eth data for", asset.symbol, error);
-    //     }
-    //   }
-    //   console.log("\n\n\n\n\n\n\n");
-    //   console.log(tokens);
-    //   return tokens;
-    // } catch (e) {
-    //   console.error(e);
-    // }
   }
 
   subscribeToTx(

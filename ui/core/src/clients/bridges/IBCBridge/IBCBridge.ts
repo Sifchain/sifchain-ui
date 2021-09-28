@@ -325,7 +325,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         }
         externalGasPrices =
           typeof externalGasPrices === "object" ? externalGasPrices : {};
-        debugger;
+
         const txDraft = new NativeDexTransaction(params.fromAddress, batch, {
           price: {
             denom: params.fromChain.nativeAsset.symbol,
