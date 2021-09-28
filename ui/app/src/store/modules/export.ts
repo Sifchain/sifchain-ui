@@ -61,11 +61,6 @@ export const exportStore = Vuextra.createStore({
       );
 
       const registryEntry = registry.find((e) => e.baseDenom === asset.symbol);
-      const counterpartyEntry =
-        registryEntry &&
-        registry.find(
-          (e) => e.baseDenom === registryEntry.ibcCounterpartyDenom,
-        );
 
       return (
         useChainsList()
@@ -80,12 +75,10 @@ export const exportStore = Vuextra.createStore({
             // Yep, you can export to eth (unless the next .filter below catches you).
             if (n.network === Network.ETHEREUM) return true;
 
-            // Otherwise, only allow exporting to all networks if the token has
-            // permission and counterparty asset exists
+            // Otherwise, only allow exporting to all networks token has permission.
             return (
               NATIVE_TOKEN_IBC_EXPORTS_ENABLED &&
-              registryEntry?.permissions.includes(Permission.IBCEXPORT) &&
-              counterpartyEntry != null
+              registryEntry?.permissions.includes(Permission.IBCEXPORT)
             );
           })
           .filter((c) => {

@@ -212,20 +212,19 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
         try {
           if (coin.denom.startsWith("ibc/")) {
             const denomTrace = ibcDenomTraceLookup[coin.denom];
-
             if (!denomTrace) return;
 
-            const registryEntry = await this.tokenRegistry.load();
-            const entry = registryEntry.find((e) => {
-              return e.denom === denomTrace.baseDenom;
-            })!;
+            const registry = await this.tokenRegistry.load();
+            const entry = registry.find((e) => {
+              return e.baseDenom === denomTrace.baseDenom;
+            });
             if (!entry) return;
 
             const nativeAsset =
-              entry.unitDenom && entry.denom !== entry.unitDenom
-                ? Asset(entry.unitDenom)
-                : Asset(entry.baseDenom);
-            const baseDenom = denomTrace.baseDenom;
+              entry.unitDenom && entry.baseDenom !== entry.unitDenom
+                ? chain.lookupAssetOrThrow(entry.unitDenom)
+                : chain.lookupAssetOrThrow(entry.baseDenom);
+
             let asset = chain.assets.find(
               (asset) =>
                 asset.symbol.toLowerCase() === nativeAsset.symbol.toLowerCase(),
@@ -234,14 +233,10 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
               asset.ibcDenom = coin.denom;
             }
             try {
-              console.log({ asset });
               const counterpartyAsset = await this.tokenRegistry.loadCounterpartyAsset(
                 nativeAsset,
               );
               const assetAmount = AssetAmount(counterpartyAsset, coin.amount);
-              console.log({ assetAmount });
-              if (denomTrace.baseDenom === "xrowan") {
-              }
               assetAmounts.push(
                 await this.tokenRegistry.loadNativeAssetAmount(assetAmount),
               );
