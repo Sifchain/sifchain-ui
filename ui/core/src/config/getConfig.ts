@@ -28,6 +28,7 @@ import { NetworkEnv } from "./getEnv";
 import { chainConfigByNetworkEnv } from "./chains";
 import { KeplrWalletProvider, WalletProviderContext } from "../clients/wallets";
 import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";
+import { NativeDexClient } from "../services/utils/SifClient/NativeDexClient";
 
 type ConfigMap = Record<NetworkEnv, ServiceContext>;
 
@@ -154,6 +155,51 @@ export function getConfig(
   };
 
   const currConfig = configMap[applicationNetworkEnv];
+
+  const loadTokenRegistry = async () => {
+    const dex = await NativeDexClient.connect(
+      currConfig.sifRpcUrl,
+      currConfig.sifApiUrl,
+      currConfig.sifChainId,
+    );
+    const res = await dex.query.tokenregistry.Entries({});
+    const data = currConfig.assets.forEach((asset, index) => {
+      if (asset.network === Network.SIFCHAIN) return;
+      const parentRegistryItem = res.registry?.entries.find(
+        (tr) => tr.denom === asset.symbol,
+      );
+      if (
+        !parentRegistryItem?.ibcCounterpartyDenom ||
+        parentRegistryItem.ibcCounterpartyDenom === parentRegistryItem.denom
+      ) {
+        return;
+      }
+      const registryItem = res.registry?.entries.find(
+        (e) => e.denom === parentRegistryItem.ibcCounterpartyDenom,
+      );
+      // try {
+      //   Asset(registryItem!.denom);
+      //   // asset has already been created
+      //   return;
+      // } catch (e) {}
+      if (
+        registryItem &&
+        registryItem.unitDenom &&
+        registryItem.denom !== registryItem.unitDenom
+      ) {
+        const parentAsset = Asset(parentRegistryItem!.denom);
+        asset = {
+          ...parentAsset,
+          symbol: registryItem.denom,
+          decimals: registryItem.decimals.toNumber(),
+          network: asset.network,
+          unitDenom: parentAsset.symbol,
+        };
+        currConfig.assets[index] = asset;
+      }
+    });
+  };
+  loadTokenRegistry();
 
   return currConfig;
 }

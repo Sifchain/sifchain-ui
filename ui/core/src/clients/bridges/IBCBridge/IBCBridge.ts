@@ -41,6 +41,7 @@ import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider"
 import { BaseBridge, BridgeParams, IBCBridgeTx, BridgeTx } from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";
 import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
+import { fromBaseUnits, toBaseUnits } from "utils";
 
 export type IBCBridgeContext = {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -163,9 +164,24 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     return queryClient;
   }
 
+  private async resolveBridgeParamsForImport(
+    params: BridgeParams,
+  ): Promise<BridgeParams> {
+    const { ...paramsCopy } = params;
+    if (
+      params.toChain.network === Network.SIFCHAIN &&
+      params.fromChain.chainConfig.chainType === "ibc"
+    ) {
+      paramsCopy.assetAmount = await this.tokenRegistry.loadCounterpartyAssetAmount(
+        params.assetAmount,
+      );
+    }
+    return paramsCopy;
+  }
+
   async bridgeTokens(
     provider: CosmosWalletProvider,
-    params: BridgeParams,
+    _params: BridgeParams,
     // Load testing options
     {
       shouldBatchTransfers = false,
@@ -174,6 +190,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       gasPerBatch = undefined,
     } = {},
   ): Promise<BroadcastTxResult[]> {
+    const params = await this.resolveBridgeParamsForImport(_params);
     const toChainConfig = provider.getIBCChainConfig(params.toChain);
     const fromChainConfig = provider.getIBCChainConfig(params.fromChain);
     const receivingSigner = await provider.getSendingSigner(params.toChain);
@@ -187,7 +204,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         aminoTypes: new NativeAminoTypes(),
         gasLimits: {
           send: 80000,
-          transfer: 250000,
+          transfer: 300000,
           delegate: 250000,
           undelegate: 250000,
           redelegate: 250000,
@@ -216,17 +233,26 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
     }
 
+    const totalSupply = await (
+      await provider.getQueryClient(params.fromChain)
+    ).bank.totalSupply();
+
     let transferDenom: string;
     if (
-      params.fromChain.chainConfig.nativeAssetSymbol ===
-      transferTokenEntry.baseDenom
+      totalSupply.some((coin) => coin.denom === transferTokenEntry.baseDenom)
     ) {
       // transfering FROM token entry's token's chain: use baseDenom
       transferDenom = transferTokenEntry.baseDenom;
     } else {
+      const ibcDenom = transferTokenEntry.denom.startsWith("ibc/")
+        ? transferTokenEntry.denom
+        : await provider.createIBCHash(
+            "transfer",
+            channelId!,
+            transferTokenEntry.denom,
+          );
       // transfering this entry's token elsewhere: use ibc hash
-      transferDenom =
-        params.assetAmount.asset.ibcDenom || transferTokenEntry.denom;
+      transferDenom = params.assetAmount.asset.ibcDenom || ibcDenom;
     }
 
     const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
@@ -299,17 +325,21 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         }
         externalGasPrices =
           typeof externalGasPrices === "object" ? externalGasPrices : {};
-
+        debugger;
         const txDraft = new NativeDexTransaction(params.fromAddress, batch, {
           price: {
             denom: params.fromChain.nativeAsset.symbol,
             amount:
-              fromChainConfig.keplrChainInfo.gasPriceStep?.average.toString() ||
+              fromChainConfig.keplrChainInfo.gasPriceStep?.high.toString() ||
               NativeDexClient.feeTable.transfer.amount[0].amount,
           },
           gas:
-            externalGasPrices[fromChainConfig.chainId] ||
-            NativeDexClient.feeTable.transfer.gas,
+            // crank the gas when a decimal conversion is occuring on sifnode
+            transferTokenEntry.ibcCounterpartyDenom &&
+            transferTokenEntry.ibcCounterpartyDenom !== transferTokenEntry.denom
+              ? 500000
+              : externalGasPrices[fromChainConfig.chainId] ||
+                NativeDexClient.feeTable.transfer.gas,
         });
 
         const signedTx = await provider.sign(params.fromChain, txDraft);

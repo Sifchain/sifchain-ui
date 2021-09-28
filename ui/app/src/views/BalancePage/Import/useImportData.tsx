@@ -8,7 +8,13 @@ import {
   useTokenList,
 } from "@/hooks/useToken";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Network, AssetAmount, toBaseUnits, IAssetAmount } from "@sifchain/sdk";
+import {
+  Network,
+  AssetAmount,
+  toBaseUnits,
+  IAssetAmount,
+  Asset,
+} from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
@@ -101,7 +107,11 @@ export const useImportData = () => {
 
   const nativeToken = useToken({
     network: ref(Network.SIFCHAIN),
-    symbol: computed(() => importDraft.value.symbol),
+    symbol: computed(() => {
+      const selectedSymbol = importDraft.value.symbol;
+      const actualSymbol = Asset(selectedSymbol).unitDenom || selectedSymbol;
+      return actualSymbol;
+    }),
   });
 
   const pickableTokensRef = computed(() => {
@@ -192,7 +202,10 @@ export const useImportData = () => {
               AssetAmount(
                 oneTimeSifchainBalance.value.asset,
                 oneTimeSifchainBalance.value.add(
-                  computedImportAssetAmount.value.amount,
+                  toBaseUnits(
+                    formatAssetAmount(computedImportAssetAmount.value),
+                    oneTimeSifchainBalance.value.asset,
+                  ),
                 ),
               ),
             )}{" "}

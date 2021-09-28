@@ -159,11 +159,19 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     );
     const key = await keplr?.getKey(chainConfig.chainId);
     let bech32Address = key?.bech32Address;
+    const defaultKeplrOpts = keplr!.defaultOptions;
+    keplr!.defaultOptions = {
+      sign: {
+        preferNoSetFee: false,
+        preferNoSetMemo: true,
+      },
+    };
     const signResponse = await keplr!.signAmino(
       chainConfig.chainId,
       bech32Address || "",
       signDoc,
     );
+    keplr!.defaultOptions = defaultKeplrOpts;
     const signedTx = makeStdTx(signResponse.signed, signResponse.signature);
     return new NativeDexSignedTransaction(tx, signedTx);
   }
