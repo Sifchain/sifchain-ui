@@ -1,4 +1,4 @@
-import { fromBaseUnits, toBaseUnits } from "utils";
+import { fromBaseUnits, toBaseUnits } from "../../utils";
 import {
   Chain,
   Network,
@@ -58,7 +58,7 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
       }
       const items = await loadTokenRegistry();
       const counterpartyEntry = items.find(
-        (item) => entry.ibcCounterpartyDenom === entry.denom,
+        (item) => entry.ibcCounterpartyDenom === item.denom,
       )!;
       return Asset({
         ...nativeAsset,
@@ -68,20 +68,15 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
     },
     async loadNativeAsset(counterpartyAsset: IAsset) {
       const entry = await this.findAssetEntryOrThrow(counterpartyAsset);
-      if (
-        !entry.ibcCounterpartyDenom ||
-        entry.ibcCounterpartyDenom === entry.denom
-      ) {
+      if (!entry.unitDenom || entry.unitDenom === entry.denom) {
         return counterpartyAsset;
       }
       const items = await loadTokenRegistry();
-      const counterpartyEntry = items.find(
-        (item) => entry.ibcCounterpartyDenom === item.denom,
-      )!;
+      const nativeEntry = items.find((item) => entry.unitDenom === item.denom)!;
       return Asset({
         ...counterpartyAsset,
-        symbol: counterpartyEntry.denom,
-        decimals: +counterpartyEntry.decimals,
+        symbol: nativeEntry.denom,
+        decimals: +nativeEntry.decimals,
       });
     },
     loadCounterpartyAssetAmount: async (
@@ -102,15 +97,13 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
       assetAmount: IAssetAmount,
     ): Promise<IAssetAmount> => {
       await self.load();
-      const counterpartyAsset = await self.loadCounterpartyAsset(
-        assetAmount.asset,
-      );
+      const nativeAsset = await self.loadNativeAsset(assetAmount.asset);
       const decimalAmount = fromBaseUnits(
         assetAmount.amount.toString(),
         assetAmount.asset,
       );
-      const convertedIntAmount = toBaseUnits(decimalAmount, counterpartyAsset);
-      return AssetAmount(counterpartyAsset, convertedIntAmount);
+      const convertedIntAmount = toBaseUnits(decimalAmount, nativeAsset);
+      return AssetAmount(nativeAsset, convertedIntAmount);
     },
     async loadConnectionByNetworks(params: {
       sourceNetwork: Network;

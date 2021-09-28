@@ -17,16 +17,6 @@ const assets: {
       homeNetwork: "sifchain",
     },
     {
-      symbol: "xrowan",
-      decimals: 10,
-      name: "Rowan",
-      imageUrl: "./images/siflogo.png",
-      network: "sifchain",
-      displaySymbol: "rowan",
-      unitDenom: "rowan",
-      homeNetwork: "sifchain",
-    },
-    {
       decimals: 6,
       imageUrl:
         "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707",
