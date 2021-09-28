@@ -48,6 +48,17 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
         throw new Error("TokenRegistry entry not found for " + asset.symbol);
       return entry;
     },
+    async loadCounterpartyEntry(nativeAsset: IAsset) {
+      const entry = await this.findAssetEntryOrThrow(nativeAsset);
+      if (
+        !entry.ibcCounterpartyDenom ||
+        entry.ibcCounterpartyDenom === entry.denom
+      ) {
+        return entry;
+      }
+      const items = await loadTokenRegistry();
+      return items.find((item) => entry.ibcCounterpartyDenom === item.denom);
+    },
     async loadCounterpartyAsset(nativeAsset: IAsset) {
       const entry = await this.findAssetEntryOrThrow(nativeAsset);
       if (

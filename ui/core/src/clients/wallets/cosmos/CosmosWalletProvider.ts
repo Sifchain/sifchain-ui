@@ -140,12 +140,15 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     const denomTracesRes = await fetch(
       `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
     );
-    const query = await this.getQueryClient(chain);
-    const { denomTraces } = await query.ibc.transfer
-      .allDenomTraces()
-      .catch((e) => {
-        throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
-      });
+    if (!denomTracesRes.ok)
+      throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
+    const denomTracesJson = await denomTracesRes.json();
+    const denomTraces: DenomTrace[] = denomTracesJson.denom_traces.map(
+      (data: { path: string; base_denom: string }) => ({
+        path: data.path,
+        baseDenom: data.base_denom,
+      }),
+    );
 
     const hashToTraceMapping: Record<string, DenomTrace> = {};
     for (let denomTrace of denomTraces) {
@@ -201,7 +204,7 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     const assetAmounts: IAssetAmount[] = [];
 
     const ibcDenomTraceLookup = await this.getIBCDenomTraceLookupCached(chain);
-    console.log(JSON.stringify({ ibcDenomTraceLookup }, null, 2));
+    // console.log(JSON.stringify({ ibcDenomTraceLookup }, null, 2));
 
     await Promise.all(
       balances.map(async (coin) => {
@@ -209,15 +212,15 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
         try {
           if (coin.denom.startsWith("ibc/")) {
             const denomTrace = ibcDenomTraceLookup[coin.denom];
-            console.log({ denomTrace, coin }, chain.network);
-            if (!denomTrace) {
-              console.log("no tenemos un denom trace para " + coin.denom);
-              return;
-            }
+
+            if (!denomTrace) return;
+
             const registryEntry = await this.tokenRegistry.load();
             const entry = registryEntry.find((e) => {
               return e.denom === denomTrace.baseDenom;
             })!;
+            if (!entry) return;
+
             const nativeAsset =
               entry.unitDenom && entry.denom !== entry.unitDenom
                 ? Asset(entry.unitDenom)
