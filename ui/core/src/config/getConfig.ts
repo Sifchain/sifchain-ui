@@ -28,6 +28,7 @@ import { NetworkEnv } from "./getEnv";
 import { chainConfigByNetworkEnv } from "./chains";
 import { KeplrWalletProvider, WalletProviderContext } from "../clients/wallets";
 import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";
+import { NativeDexClient } from "../services/utils/SifClient/NativeDexClient";
 
 type ConfigMap = Record<NetworkEnv, ServiceContext>;
 

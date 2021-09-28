@@ -1,4 +1,13 @@
-import { Chain, Network, getChainsService, IAsset } from "../../entities";
+import { fromBaseUnits, toBaseUnits } from "../../utils";
+import {
+  Chain,
+  Network,
+  getChainsService,
+  IAsset,
+  Asset,
+  IAssetAmount,
+  AssetAmount,
+} from "../../entities";
 import { RegistryEntry } from "../../generated/proto/sifnode/tokenregistry/v1/types";
 import { NativeDexClient } from "../utils/SifClient/NativeDexClient";
 
@@ -38,6 +47,63 @@ export const TokenRegistryService = (context: TokenRegistryContext) => {
       if (!entry)
         throw new Error("TokenRegistry entry not found for " + asset.symbol);
       return entry;
+    },
+    async loadCounterpartyAsset(nativeAsset: IAsset) {
+      const entry = await this.findAssetEntryOrThrow(nativeAsset);
+      if (
+        !entry.ibcCounterpartyDenom ||
+        entry.ibcCounterpartyDenom === entry.denom
+      ) {
+        return nativeAsset;
+      }
+      const items = await loadTokenRegistry();
+      const counterpartyEntry = items.find(
+        (item) => entry.ibcCounterpartyDenom === item.denom,
+      )!;
+      return Asset({
+        ...nativeAsset,
+        symbol: counterpartyEntry.denom,
+        decimals: +counterpartyEntry.decimals,
+      });
+    },
+    async loadNativeAsset(counterpartyAsset: IAsset) {
+      const entry = await this.findAssetEntryOrThrow(counterpartyAsset);
+      if (!entry.unitDenom || entry.unitDenom === entry.denom) {
+        return counterpartyAsset;
+      }
+      const items = await loadTokenRegistry();
+      const nativeEntry = items.find((item) => entry.unitDenom === item.denom)!;
+      return Asset({
+        ...counterpartyAsset,
+        symbol: nativeEntry.denom,
+        decimals: +nativeEntry.decimals,
+      });
+    },
+    loadCounterpartyAssetAmount: async (
+      nativeAssetAmount: IAssetAmount,
+    ): Promise<IAssetAmount> => {
+      await self.load();
+      const counterpartyAsset = await self.loadCounterpartyAsset(
+        nativeAssetAmount.asset,
+      );
+      const decimalAmount = fromBaseUnits(
+        nativeAssetAmount.amount.toString(),
+        nativeAssetAmount.asset,
+      );
+      const convertedIntAmount = toBaseUnits(decimalAmount, counterpartyAsset);
+      return AssetAmount(counterpartyAsset, convertedIntAmount);
+    },
+    loadNativeAssetAmount: async (
+      assetAmount: IAssetAmount,
+    ): Promise<IAssetAmount> => {
+      await self.load();
+      const nativeAsset = await self.loadNativeAsset(assetAmount.asset);
+      const decimalAmount = fromBaseUnits(
+        assetAmount.amount.toString(),
+        assetAmount.asset,
+      );
+      const convertedIntAmount = toBaseUnits(decimalAmount, nativeAsset);
+      return AssetAmount(nativeAsset, convertedIntAmount);
     },
     async loadConnectionByNetworks(params: {
       sourceNetwork: Network;

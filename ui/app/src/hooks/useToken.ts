@@ -54,7 +54,11 @@ export const useTokenList = (params: TokenListParams) => {
         const pendingExports: PendingTransferItem[] = [];
         pendingTransfers.forEach((transfer) => {
           if (
-            isLikeSymbol(transfer.bridgeTx.assetAmount.symbol, asset.symbol)
+            isLikeSymbol(transfer.bridgeTx.assetAmount.symbol, asset.symbol) ||
+            isLikeSymbol(
+              transfer.bridgeTx.assetAmount.unitDenom || "",
+              asset.symbol,
+            )
           ) {
             const array =
               transfer.bridgeTx.toChain.network === asset.network
