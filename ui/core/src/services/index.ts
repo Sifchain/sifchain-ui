@@ -76,7 +76,6 @@ export function createServices(context: ServiceContext) {
     if (location.hostname !== "dex.sifchain.finance") {
       setTimeout(() => {
         IBCService.logIBCNetworkMetadata();
-        EthbridgeService?.fetchAllTokenAddresses();
       }, 8 * 1000);
     }
   } catch (e) {}
