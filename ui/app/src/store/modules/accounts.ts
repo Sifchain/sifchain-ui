@@ -141,6 +141,18 @@ export const accountStore = Vuextra.createStore({
 
       self.setBalances({ network, balances });
     },
+    async forceUpdateBalances(network: Network) {
+      if (!self.state[network].connected) return;
+
+      const usecase = getUsecase(network);
+      const balances = await usecase.getBalances(
+        network,
+        self.state[network].address,
+        true,
+      );
+
+      self.setBalances({ network, balances });
+    },
 
     async disconnect(network: Network) {
       const usecase = getUsecase(network);

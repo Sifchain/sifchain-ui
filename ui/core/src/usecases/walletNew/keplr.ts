@@ -36,12 +36,21 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
       };
     },
 
-    async getBalances(network: Network, address: string) {
+    async getBalances(
+      network: Network,
+      address: string,
+      forceUpdate?: boolean,
+    ) {
+      const chain = chains.get(network);
+      if (forceUpdate) {
+        keplrProvider.refreshDenomTraces(chain);
+      }
+
       try {
-        return keplrProvider.fetchBalances(chains.get(network), address);
+        return keplrProvider.fetchBalances(chain, address);
       } catch (error) {
         // Give it ONE retry, sometimes the chain rpc apis fail once...
-        return keplrProvider.fetchBalances(chains.get(network), address);
+        return keplrProvider.fetchBalances(chain, address);
       }
     },
 

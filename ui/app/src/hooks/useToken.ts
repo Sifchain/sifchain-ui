@@ -119,15 +119,15 @@ export const useToken = (params: {
 export const useAndPollNetworkBalances = (params: {
   network: Ref<Network>;
 }) => {
+  let lastNetwork = ref();
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
+    const changed = lastNetwork.value !== params.network.value;
+    lastNetwork.value = params.network.value;
 
-    const chain = useChains().get(params.network.value);
-    if (chain.chainConfig.chainType === "ibc") {
-      useCore().services.wallet.keplrProvider.refreshDenomTraces(chain);
+    if (changed) {
+      await accountStore.forceUpdateBalances(params.network.value);
     }
-
-    return accountStore.updateBalances(params.network.value);
   }, [params.network]);
 
   let stopPollingRef = ref<Promise<() => void> | undefined>();
