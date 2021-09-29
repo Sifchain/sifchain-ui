@@ -19,7 +19,6 @@ coverage:
         flags:
         paths:
           - "ui/"
-          - "!ui/core/src/generated/proto/" # ignore protobuf generated bits
     changes: false
 
 comment:
