@@ -14,6 +14,12 @@ import { accountStore } from "@/store/modules/accounts";
 import { flagsStore } from "@/store/modules/flags";
 
 const REWARD_TYPE_DISPLAY_DATA = {
+  lm_harvest: {
+    heading: "Sif's Harvest",
+    icon: "navigation/pool" as IconName,
+    description:
+      "Immediately earn and claim rewards of mythological proportions by providing liquidity to any of Sifchain's token pools.",
+  },
   lm: {
     heading: ".42 Liquidity Mining",
     icon: "navigation/pool" as IconName,
@@ -156,7 +162,7 @@ export const RewardSection = defineComponent({
               >
                 Learn More
               </Button.Inline>{" "}
-              <Button.Inline
+              {/* <Button.Inline
                 onClick={() => {
                   if (
                     window.location.hostname !== "dex.sifchain.finance" &&
@@ -181,7 +187,7 @@ export const RewardSection = defineComponent({
                 }
               >
                 {props.alreadyClaimed ? "Pending Claim" : "Claim Reward"}
-              </Button.Inline>
+              </Button.Inline> */}
             </div>
           </div>
         </div>

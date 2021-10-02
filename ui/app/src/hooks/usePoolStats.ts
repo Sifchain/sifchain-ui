@@ -1,3 +1,4 @@
+import { flagsStore } from "@/store/modules/flags";
 import { symbolWithoutPrefix } from "@/utils/symbol";
 import { getChainsService, IAsset, Network } from "@sifchain/sdk";
 import { computed } from "vue";
@@ -39,7 +40,9 @@ export const usePoolStats = () => {
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
     let cryptoeconSummaryAPY = await services.cryptoeconomics
-      .fetchSummaryAPY()
+      .fetchSummaryAPY({
+        devnet: flagsStore.state.devnetCryptoecon,
+      })
       .catch((e) => console.error(e));
     cryptoeconSummaryAPY = cryptoeconSummaryAPY || 0;
     const res = await fetch(

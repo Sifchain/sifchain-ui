@@ -10,6 +10,8 @@ import Layout from "@/componentsLegacy/Layout/Layout";
 import { accountStore } from "@/store/modules/accounts";
 import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
+import { AppCookies, NetworkEnv } from "@sifchain/sdk";
+import { flagsStore } from "@/store/modules/flags";
 
 // This one is for the chads
 export default defineComponent({
@@ -22,6 +24,7 @@ export default defineComponent({
       error,
       vsData,
       lmData,
+      lmHarvestData,
       vsClaim,
       lmClaim,
       vsInfoLink,
@@ -57,6 +60,37 @@ export default defineComponent({
             class="w-[790px]"
             heading="Rewards"
             iconName="navigation/rewards"
+            headerAction={
+              <Button.Inline
+                onClick={() => {
+                  if (
+                    window.location.hostname !== "dex.sifchain.finance" &&
+                    AppCookies().getEnv() === NetworkEnv.MAINNET &&
+                    !window.confirm(
+                      "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
+                    )
+                  ) {
+                    alert("claim canceled.");
+                    return;
+                  }
+                }}
+                class={["!h-[40px] px-[17px] text-md"]}
+                icon="navigation/rewards"
+                active
+                disabled={
+                  !flagsStore.state.rewardClaims ||
+                  !!lmClaim.value ||
+                  !(
+                    (lmData.value?.user
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0) +
+                    (lmHarvestData.value?.user
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                  )
+                }
+              >
+                {!!lmClaim.value ? "Pending Claim" : "Claim Reward"}
+              </Button.Inline>
+            }
           >
             {isClaimModalOpened.value && data.summaryAPY.value != null && (
               <ClaimRewardsModal
@@ -119,6 +153,17 @@ export default defineComponent({
               </div>
             </div>
             <RewardSection
+              rewardType="lm_harvest"
+              data={lmData.value}
+              alreadyClaimed={!!lmClaim.value}
+              infoLink={lmInfoLink.value}
+              onClaimIntent={() => {
+                claimRewardType.value = "lm";
+                isClaimModalOpened.value = true;
+              }}
+            />
+            <div class="my-[16px] border border-dashed border-white opacity-40" />
+            <RewardSection
               rewardType="lm"
               data={lmData.value}
               alreadyClaimed={!!lmClaim.value}
@@ -128,6 +173,7 @@ export default defineComponent({
                 isClaimModalOpened.value = true;
               }}
             />
+            {/* 
             <div class="my-[16px] border border-dashed border-white opacity-40" />
             <SunsetRewardSection
               rewardType="lm"
@@ -149,7 +195,7 @@ export default defineComponent({
                 claimRewardType.value = "vs";
                 isClaimModalOpened.value = true;
               }}
-            />
+            /> */}
 
             <div class="h-4" />
           </PageCard>
