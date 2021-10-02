@@ -64,7 +64,7 @@ export default defineComponent({
             ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
             : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
         fromAddress: props.address,
-        rewardProgramName: "COSMOS_IBC_REWARDS_V1",
+        rewardProgramName: "harvest",
       });
       if (status.state === "accepted") {
         useCore().services.bus.dispatch({

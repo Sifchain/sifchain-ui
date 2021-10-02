@@ -100,7 +100,9 @@ export default defineComponent({
                 rewardType={claimRewardType.value as CryptoeconomicsRewardType}
                 summaryAPY={data.summaryAPY.value}
                 userData={
-                  claimRewardType.value === "vs" ? vsData.value : lmData.value
+                  claimRewardType.value === "vs"
+                    ? vsData.value
+                    : lmHarvestData.value
                 }
                 onClose={() => {
                   isClaimModalOpened.value = false;
