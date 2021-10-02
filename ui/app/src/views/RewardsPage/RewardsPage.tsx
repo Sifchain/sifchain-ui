@@ -1,4 +1,4 @@
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import PageCard from "@/components/PageCard";
 import { useRewardsPageData } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
@@ -22,20 +22,14 @@ export default defineComponent({
     const {
       isLoading,
       error,
-      vsData,
-      lmData,
-      lmHarvestData,
-      vsClaim,
+      rewardProgramResponse,
       lmClaim,
-      vsInfoLink,
-      lmInfoLink,
       address,
       reloadClaims,
     } = data;
 
     const isClaimModalOpened = ref(false);
     const claimRewardType = ref<"vs" | "lm">("lm");
-
     return () => {
       if (isLoading.value) {
         return (
@@ -54,6 +48,14 @@ export default defineComponent({
       if (error.value) {
         return <div>Error! {error.value.message}</div>;
       }
+      const summaryApyRef = computed(() => {
+        return rewardProgramResponse.data.value?.rewardPrograms.reduce(
+          (prev, curr) => {
+            return prev + curr.summaryAPY;
+          },
+          0,
+        );
+      });
       return (
         <Layout>
           <PageCard
@@ -82,11 +84,10 @@ export default defineComponent({
                 disabled={
                   !flagsStore.state.rewardClaims ||
                   !!lmClaim.value ||
-                  !(
-                    (lmData.value?.user
-                      ?.totalClaimableCommissionsAndClaimableRewards || 0) +
-                    (lmHarvestData.value?.user
-                      ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                  !rewardProgramResponse.data.value?.rewardPrograms.some(
+                    (p) =>
+                      p.participant
+                        ?.totalClaimableCommissionsAndClaimableRewards,
                   )
                 }
               >
@@ -94,22 +95,27 @@ export default defineComponent({
               </Button.Inline>
             }
           >
-            {isClaimModalOpened.value && data.summaryAPY.value != null && (
-              <ClaimRewardsModal
-                address={address.value}
-                rewardType={claimRewardType.value as CryptoeconomicsRewardType}
-                summaryAPY={data.summaryAPY.value}
-                userData={
-                  claimRewardType.value === "vs"
-                    ? vsData.value
-                    : lmHarvestData.value
-                }
-                onClose={() => {
-                  isClaimModalOpened.value = false;
-                  reloadClaims();
-                }}
-              />
-            )}
+            {isClaimModalOpened.value &&
+              rewardProgramResponse.data.value?.rewardPrograms.some(
+                (p) => p.summaryAPY !== null,
+              ) && (
+                <ClaimRewardsModal
+                  address={address.value}
+                  rewardType={
+                    claimRewardType.value as CryptoeconomicsRewardType
+                  }
+                  summaryAPY={summaryApyRef.value}
+                  userData={
+                    rewardProgramResponse.data.value.rewardPrograms.find(
+                      (p) => !!p.participant,
+                    )!.participant!
+                  }
+                  onClose={() => {
+                    isClaimModalOpened.value = false;
+                    reloadClaims();
+                  }}
+                />
+              )}
             <p>
               Earn rewards by participating in any of our rewards-earning
               programs. Please see additional information of our{" "}
@@ -124,59 +130,77 @@ export default defineComponent({
               and how to become eligible.
             </p>
 
-            <div class="mt-[21px] text-md opacity-50 flex">
-              <div class="w-[150px] text-left">Reward Program</div>
-              <div class="w-[100px] flex-1 text-right">
-                Projected Full Amount
-                <Tooltip
-                  content={
-                    <>
-                      You will earn this if you leave all of your deposits
-                      pooled for at least 6 weeks.
-                    </>
-                  }
-                >
-                  <Button.InlineHelp></Button.InlineHelp>
-                </Tooltip>
-              </div>
-              <div class="w-[300px] text-right">
-                Claimable Amount
-                <Tooltip
-                  content={
-                    <>
-                      These are rewards that you can claim now, but by doing so,
-                      you will forfeit the remainder in your Projected Full
-                      Amount
-                      <div></div>
-                      <br></br>
-                    </>
-                  }
-                >
-                  <Button.InlineHelp></Button.InlineHelp>
-                </Tooltip>
-              </div>
-            </div>
-            <RewardSection
-              rewardType="lm_harvest"
-              data={lmHarvestData.value}
-              alreadyClaimed={!!lmClaim.value}
-              infoLink={lmInfoLink.value}
-              onClaimIntent={() => {
-                claimRewardType.value = "lm";
-                isClaimModalOpened.value = true;
-              }}
-            />
-            <div class="my-[16px] border border-dashed border-white opacity-40" />
-            <RewardSection
-              rewardType="lm"
-              data={lmData.value}
-              alreadyClaimed={!!lmClaim.value}
-              infoLink={lmInfoLink.value}
-              onClaimIntent={() => {
-                claimRewardType.value = "lm";
-                isClaimModalOpened.value = true;
-              }}
-            />
+            {rewardProgramResponse.data.value?.rewardPrograms.map(
+              (program, index, items) => {
+                return (
+                  <>
+                    <div class="mt-[21px] text-md opacity-50 flex">
+                      <div class="w-[150px] text-left">Reward Program</div>
+                      <div class="w-[100px] flex-1 text-right">
+                        {program.distributionPattern === "GEYSER" ? (
+                          <>
+                            Projected Full Amount
+                            <Tooltip
+                              content={
+                                <>
+                                  You will earn this if you leave all of your
+                                  deposits pooled for at least 6 weeks.
+                                </>
+                              }
+                            >
+                              <Button.InlineHelp></Button.InlineHelp>
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <>
+                            Program APY
+                            <Tooltip
+                              content={
+                                <div class="mb-2">
+                                  Current overall program summary APY. This is
+                                  also displayed in Pools and Pool Stats.
+                                </div>
+                              }
+                            >
+                              <Button.InlineHelp></Button.InlineHelp>
+                            </Tooltip>
+                          </>
+                        )}
+                      </div>
+                      <div class="w-[300px] text-right">
+                        Claimable Amount
+                        <Tooltip
+                          content={
+                            <>
+                              These are rewards that you can claim now, but by
+                              doing so, you will forfeit the remainder in your
+                              Projected Full Amount
+                              <div></div>
+                              <br></br>
+                            </>
+                          }
+                        >
+                          <Button.InlineHelp></Button.InlineHelp>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <RewardSection
+                      key={program.rewardProgramName}
+                      rewardProgram={program}
+                      alreadyClaimed={!!lmClaim.value}
+                      onClaimIntent={() => {
+                        claimRewardType.value = "lm";
+                        isClaimModalOpened.value = true;
+                      }}
+                    />
+                    {items.length - 1 === index ? null : (
+                      <div class="my-[16px] border border-dashed border-white opacity-40" />
+                    )}
+                  </>
+                );
+              },
+            )}
+
             {/* 
             <div class="my-[16px] border border-dashed border-white opacity-40" />
             <SunsetRewardSection

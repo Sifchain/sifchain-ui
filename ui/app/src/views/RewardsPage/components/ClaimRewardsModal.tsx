@@ -16,6 +16,7 @@ import { DistributionType } from "../../../../../core/src/generated/proto/sifnod
 import { RewardsChart } from "./RewardsChart";
 import AssetIcon from "@/components/AssetIcon";
 import { flagsStore } from "@/store/modules/flags";
+import { RewardProgramParticipant } from "../useRewardsPageData";
 
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
@@ -37,7 +38,7 @@ export default defineComponent({
   props: {
     address: { type: String, required: true },
     userData: {
-      type: Object as PropType<CryptoeconomicsUserData>,
+      type: Object as PropType<RewardProgramParticipant>,
       required: true,
     },
     summaryAPY: { type: Number },
@@ -71,8 +72,7 @@ export default defineComponent({
           type: "SuccessEvent",
           payload: {
             message: `Claimed ${formatRowanNumber(
-              props.userData?.user
-                ?.totalClaimableCommissionsAndClaimableRewards,
+              props.userData?.totalClaimableCommissionsAndClaimableRewards,
             )} ROWAN of rewards`,
           },
         });
@@ -84,8 +84,8 @@ export default defineComponent({
       return (
         (props.summaryAPY || 0) *
         0.01 *
-        (props.userData?.user?.yearsToMaturity || 0) *
-        (props.userData?.user?.totalDepositedAmount || 0)
+        (props.userData?.yearsToMaturity || 0) *
+        (props.userData?.totalDepositedAmount || 0)
       );
     });
 
@@ -100,8 +100,7 @@ export default defineComponent({
             "Claimable Rewards Today",
             <span class="flex items-center font-mono">
               {formatRowanNumber(
-                props.userData?.user
-                  ?.totalClaimableCommissionsAndClaimableRewards,
+                props.userData?.totalClaimableCommissionsAndClaimableRewards,
               )}
               {
                 <TokenIcon
@@ -114,9 +113,9 @@ export default defineComponent({
           ],
           [
             "Maturity Date",
-            props.userData?.user?.maturityDate.toLocaleDateString() +
+            new Date(props.userData?.maturityDate).toLocaleDateString() +
               ", " +
-              props.userData?.user?.maturityDate.toLocaleTimeString(),
+              new Date(props.userData?.maturityDate).toLocaleTimeString(),
           ],
           // [
           //   <span class="flex items-center">Projected Full Reward</span>,
@@ -227,7 +226,7 @@ export default defineComponent({
               click here
             </a>
             .
-            {flagsStore.state.claimsGraph && (
+            {/* {flagsStore.state.claimsGraph && (
               <div class="mt-[32px]">
                 <RewardsChart
                   rewardsAtMaturityAfterClaim={
@@ -236,14 +235,13 @@ export default defineComponent({
                   userData={props.userData}
                 />
               </div>
-            )}
+            )} */}
             <Form.Details class="mt-[24px]" details={detailsRef.value} />
           </p>
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
             Claim{" "}
             {formatRowanNumber(
-              props.userData?.user
-                ?.totalClaimableCommissionsAndClaimableRewards,
+              props.userData?.totalClaimableCommissionsAndClaimableRewards,
             )}{" "}
             Rowan
           </Button.CallToAction>
