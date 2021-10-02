@@ -1,3 +1,13 @@
+## Release 2021.10.01
+* Enabled
+  * BTSG - BitSong
+  * QUICK - QuickSwap
+  * LDO - Lido DAO
+  * RAIL - Railgun
+  * POND - Marlin 
+  * DINO - DinoSwap
+  * UFO - UFO Gaming
+
 ## Release 2021.09.17
 
 * Ledger Nano X and Ledger Nano S are now supported!
