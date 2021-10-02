@@ -128,6 +128,28 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     );
   }
 
+  async checkIfPacketAcknowledged(
+    network: Network,
+    sendingChannelId: string,
+    sendingPort: string,
+    sequence: string | number,
+  ) {
+    const res: {
+      acknowledgement: string;
+      proof: null | string;
+      proof_height: {
+        revision_number: string;
+        revision_height: string;
+      };
+    } = await fetch(
+      `${
+        this.loadChainConfigByNetwork(network).restUrl
+      }/ibc/core/channel/v1beta1/channels/${sendingChannelId}/ports/${sendingPort}/packet_acks/${sequence}`,
+    ).then((r) => r.json());
+
+    return res.acknowledgement;
+  }
+
   async checkIfPacketReceived(
     network: Network,
     receivingChannelId: string,
@@ -424,6 +446,8 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     if (!logs) return false;
 
     const sequence = findAttribute(logs, "send_packet", "packet_sequence");
+    const srcChannel = findAttribute(logs, "send_packet", "packet_src_channel");
+    const srcPort = findAttribute(logs, "send_packet", "packet_src_port");
     const dstChannel = findAttribute(logs, "send_packet", "packet_dst_channel");
     const dstPort = findAttribute(logs, "send_packet", "packet_dst_port");
     const timeoutHeight = findAttribute(
@@ -459,6 +483,13 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
           sequence.value,
         );
         if (received) {
+          const acknowledgement = await this.checkIfPacketAcknowledged(
+            tx.fromChain.network,
+            srcChannel.value,
+            srcPort.value,
+            sequence.value,
+          );
+          console.log("acknowledgement", acknowledgement);
           return true;
         }
       } catch (e) {}
