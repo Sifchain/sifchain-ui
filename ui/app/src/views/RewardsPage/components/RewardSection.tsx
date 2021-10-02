@@ -16,7 +16,7 @@ import { flagsStore } from "@/store/modules/flags";
 const REWARD_TYPE_DISPLAY_DATA = {
   lm_harvest: {
     heading: "Sif's Harvest",
-    icon: "navigation/pool" as IconName,
+    icon: "navigation/harvest" as IconName,
     description:
       "Immediately earn and claim rewards of mythological proportions by providing liquidity to any of Sifchain's token pools.",
   },

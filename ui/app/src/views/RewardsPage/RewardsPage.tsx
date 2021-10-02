@@ -73,6 +73,8 @@ export default defineComponent({
                     alert("claim canceled.");
                     return;
                   }
+                  claimRewardType.value = "lm";
+                  isClaimModalOpened.value = true;
                 }}
                 class={["!h-[40px] px-[17px] text-md"]}
                 icon="navigation/rewards"
@@ -154,7 +156,7 @@ export default defineComponent({
             </div>
             <RewardSection
               rewardType="lm_harvest"
-              data={lmData.value}
+              data={lmHarvestData.value}
               alreadyClaimed={!!lmClaim.value}
               infoLink={lmInfoLink.value}
               onClaimIntent={() => {
