@@ -186,9 +186,8 @@ export default defineComponent({
                         <Tooltip
                           content={
                             <>
-                              These are rewards that you can claim now, but by
-                              doing so, you will forfeit the remainder in your
-                              Projected Full Amount
+                              These are rewards that you can claim now and
+                              receive in full at the end of the week!
                               <div></div>
                               <br></br>
                             </>
