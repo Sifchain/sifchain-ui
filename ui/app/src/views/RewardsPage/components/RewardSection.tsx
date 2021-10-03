@@ -55,6 +55,7 @@ export const RewardSection = defineComponent({
     }[] {
       return [
         {
+          hide: this.rewardProgram.rewardProgramType !== "vs",
           name: "Reserved Comission Rewards",
           tooltip:
             "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
@@ -73,7 +74,7 @@ export const RewardSection = defineComponent({
           tooltip: "Rewards that have already been dispensed.",
           amount: this.rewardProgram.participant?.dispensed,
         },
-      ];
+      ].filter((item) => !item.hide);
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
       return REWARD_TYPE_DISPLAY_DATA[
@@ -136,12 +137,11 @@ export const RewardSection = defineComponent({
             />
           </div>
         </div>
-        <div class="mt-[10px] flex justify-between text-[16px] bg-gray-base py-2 px-3">
+        <div class="mt-[10px] flex justify-between text-sm bg-gray-base py-2 px-3">
           <div class="flex flex-col justify-between">
-            <div class="opacity-50 mb-[20px]">
+            <div class="opacity-50 text-[14px] mb-[20px]">
               {this.displayData.description}
-              <br />
-              <div
+              {/* <div
                 style={{
                   fontVariantCaps: "small-caps",
                 }}
@@ -152,7 +152,7 @@ export const RewardSection = defineComponent({
                       return poolSymbol;
                     })
                     .join(", ")}
-              </div>
+              </div> */}
             </div>
             <div></div>
             {/* Claimable Amount */}

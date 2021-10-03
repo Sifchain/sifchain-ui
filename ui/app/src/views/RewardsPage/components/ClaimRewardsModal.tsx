@@ -214,6 +214,19 @@ export default defineComponent({
             Are you sure you want to claim your rewards?
           </p>
           <p class="mt-[10px]">
+            Claims are paid out on Friday of each week. Once your funds are
+            dispensed, you may be interested in staking or delegating your
+            earnings with{" "}
+            <a
+              class="underline font-semibold"
+              href="https://docs.sifchain.finance/resources/rewards-programs#block-rewards"
+            >
+              Sifchain's block rewards program
+            </a>
+            .
+            <br />
+          </p>
+          {/* <p class="mt-[10px]">
             If you claim your rewards now, you will accrue less rewards in total
             on your currently pooled assets than if you wait to claim until your
             Maturity Date. For more information about our rewards program,{" "}
@@ -224,9 +237,9 @@ export default defineComponent({
               class="underline"
             >
               click here
-            </a>
-            .
-            {/* {flagsStore.state.claimsGraph && (
+            </a> */}
+          {/* . */}
+          {/* {flagsStore.state.claimsGraph && (
               <div class="mt-[32px]">
                 <RewardsChart
                   rewardsAtMaturityAfterClaim={
@@ -236,8 +249,8 @@ export default defineComponent({
                 />
               </div>
             )} */}
-            <Form.Details class="mt-[24px]" details={detailsRef.value} />
-          </p>
+          {/* <Form.Details class="mt-[24px]" details={detailsRef.value} />
+          </p> */}
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
             Claim{" "}
             {formatRowanNumber(

@@ -56,6 +56,18 @@ export default defineComponent({
           0,
         );
       });
+      const totalClaimableRef = computed(() => {
+        return rewardProgramResponse.data.value?.rewardPrograms.reduce(
+          (prev, curr) => {
+            return (
+              prev +
+              (curr.participant?.totalClaimableCommissionsAndClaimableRewards ||
+                0)
+            );
+          },
+          0,
+        );
+      });
       return (
         <Layout>
           <PageCard
@@ -91,7 +103,9 @@ export default defineComponent({
                   )
                 }
               >
-                {!!lmClaim.value ? "Pending Claim" : "Claim Reward"}
+                {!!lmClaim.value
+                  ? "Pending Claim"
+                  : `Claim ${totalClaimableRef.value?.toFixed(0)} Rowan`}
               </Button.Inline>
             }
           >
