@@ -72,7 +72,7 @@ const useExistingClaimsData = (
 export type RewardProgramParticipant = {
   currentAPYOnTickets: number;
   totalClaimableCommissionsAndClaimableRewards: number;
-  maturityDate: string;
+  maturityDateMs: string;
   yearsToMaturity: number;
   totalDepositedAmount: number;
   currentTotalCommissionsOnClaimableDelegatorRewards: number;
@@ -110,7 +110,7 @@ export const useRewardsPageData = () => {
               currentAPYOnTickets
               totalClaimableCommissionsAndClaimableRewards
               currentTotalCommissionsOnClaimableDelegatorRewards
-              maturityDate
+              maturityDateMs
               yearsToMaturity
               totalDepositedAmount
               claimedCommissionsAndRewardsAwaitingDispensation

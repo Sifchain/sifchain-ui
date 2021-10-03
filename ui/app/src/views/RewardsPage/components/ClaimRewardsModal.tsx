@@ -111,12 +111,14 @@ export default defineComponent({
               }
             </span>,
           ],
-          [
-            "Maturity Date",
-            new Date(props.userData?.maturityDate).toLocaleDateString() +
-              ", " +
-              new Date(props.userData?.maturityDate).toLocaleTimeString(),
-          ],
+          props.userData?.maturityDateMs
+            ? [
+                "Maturity Date",
+                new Date(props.userData?.maturityDateMs).toLocaleDateString() +
+                  ", " +
+                  new Date(props.userData?.maturityDateMs).toLocaleTimeString(),
+              ]
+            : null,
           // [
           //   <span class="flex items-center">Projected Full Reward</span>,
           //   <span
