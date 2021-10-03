@@ -218,9 +218,16 @@ export class IBCService {
           //   channel.channelId,
           // );
           const channelId = channel.channelId;
+          if (
+            channel.connectionHops.includes("connection-39") ||
+            channel.connectionHops.includes("connection-5")
+          ) {
+            console.log(JSON.stringify(channel, null, 2));
+          }
           const counterpartyChannelId = channel.counterparty!.channelId;
           const counterPartyChainId =
             parsedClientState.identified_client_state.client_state.chain_id;
+          console.log(counterPartyChainId);
           const counterpartyConfig = this.loadChainConfigByChainId(
             counterPartyChainId,
           );
