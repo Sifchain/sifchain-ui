@@ -105,7 +105,7 @@ export default defineComponent({
               >
                 {!!lmClaim.value
                   ? "Pending Claim"
-                  : `Claim ${totalClaimableRef.value?.toFixed(0)} Rowan`}
+                  : `Claim ${totalClaimableRef.value?.toFixed(0) || ""} Rowan`}
               </Button.Inline>
             }
           >
