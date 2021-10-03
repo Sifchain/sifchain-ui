@@ -223,7 +223,12 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const chainConfig = getIBCChainConfig(chain);
     const denomTracesRes = await fetch(
       `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
-    );
+    ).catch((e) => ({
+      ok: true,
+      json: () => ({
+        denom_traces: [],
+      }),
+    }));
     if (!denomTracesRes.ok)
       throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
     const denomTracesJson = await denomTracesRes.json();
@@ -283,6 +288,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const queryClient = await this.getQueryClientCached(chain);
     const balances = await queryClient?.bank.allBalances(address);
 
+    if (chain.network === Network.JUNO) {
+      console.log({ balances });
+    }
     const assetAmounts: IAssetAmount[] = [];
 
     const ibcDenomTraceLookup = await this.getIbcDenomTraceLookupCached(chain);

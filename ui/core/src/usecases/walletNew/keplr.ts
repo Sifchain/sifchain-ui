@@ -47,6 +47,7 @@ export default function KeplrActions(context: UsecaseContext): WalletActions {
       try {
         return keplrProvider.fetchBalances(chain, address);
       } catch (error) {
+        console.log("Retrying. Errored checking balances for " + network);
         // Give it ONE retry, sometimes the chain rpc apis fail once...
         return keplrProvider.fetchBalances(chain, address);
       }
