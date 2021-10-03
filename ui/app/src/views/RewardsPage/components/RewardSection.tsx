@@ -84,15 +84,20 @@ export const RewardSection = defineComponent({
     },
   },
   setup() {
+    const sifConnected = accountStore.refs.sifchain.connected.computed();
     return {
+      sifConnected,
       core: useCore(),
     };
   },
   render() {
     const { store } = useCore();
+    const sifConnected = this.sifConnected;
 
-    const sifConnected = accountStore.refs.sifchain.connected.computed();
-
+    const isEarning =
+      !this.rewardProgram?.participant
+        ?.totalClaimableCommissionsAndClaimableRewards &&
+      this.rewardProgram?.participant?.totalCommissionsAndRewardsAtMaturity;
     return (
       <>
         <div class="mt-[10px] text-lg flex">
@@ -126,10 +131,12 @@ export const RewardSection = defineComponent({
           </div>
           <div class="w-[300px] text-right justify-end font-mono flex items-center">
             {/* Claimable Amount */}
-            {formatRowanNumber(
-              this.rewardProgram?.participant
-                ?.totalClaimableCommissionsAndClaimableRewards,
-            )}
+            {isEarning
+              ? "Earning..."
+              : formatRowanNumber(
+                  this.rewardProgram?.participant
+                    ?.totalClaimableCommissionsAndClaimableRewards,
+                )}
             <TokenIcon
               assetValue={Asset.get("rowan")}
               size={20}
@@ -182,7 +189,7 @@ export const RewardSection = defineComponent({
                 icon="interactive/circle-info"
                 href={this.rewardProgram.documentationURL}
                 target="_blank"
-                disabled={!sifConnected.value}
+                disabled={!sifConnected}
                 rel="noopener noreferrer"
               >
                 Learn More
