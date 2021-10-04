@@ -11,6 +11,7 @@ export const flagsStore = Vuextra.createStore({
     peggyForCosmosTokens: true,
     ibcForEthTokens: false,
     claimsGraph: false,
+    devnetCryptoecon: false,
   },
   getters: (state) => ({}),
   mutations: (state) => ({

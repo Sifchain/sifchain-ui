@@ -1,3 +1,5 @@
+import { flagsStore } from "@/store/modules/flags";
+import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { symbolWithoutPrefix } from "@/utils/symbol";
 import { getChainsService, IAsset, Network } from "@sifchain/sdk";
 import { computed } from "vue";
@@ -39,12 +41,25 @@ export const usePoolStats = () => {
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
     let cryptoeconSummaryAPY = await services.cryptoeconomics
-      .fetchSummaryAPY()
+      .fetchSummaryAPY({
+        devnet: flagsStore.state.devnetCryptoecon,
+      })
       .catch((e) => console.error(e));
     cryptoeconSummaryAPY = cryptoeconSummaryAPY || 0;
     const res = await fetch(
       "https://data.sifchain.finance/beta/asset/tokenStats",
     );
+    const cegql = createCryptoeconGqlClient();
+
+    const { rewardPrograms } = await cegql/* GraphQL */ `
+      {
+        rewardPrograms {
+          isUniversal
+          incentivizedPoolSymbols
+          summaryAPY
+        }
+      }
+    `;
     const json: PoolStatsResponseData = await res.json();
     const poolData = json.body;
     return {
@@ -54,11 +69,16 @@ export const usePoolStats = () => {
           const poolAPY =
             (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
             100;
-          const rewardAPY = /(akt|vpn|atom|iris|xprt|basecro|regen)/gim.test(
-            p.symbol,
-          )
-            ? cryptoeconSummaryAPY || 0
-            : 0;
+
+          let rewardAPY = 0;
+          rewardPrograms.forEach((program: any) => {
+            const isIndividuallyIncentivized = program.incentivizedPoolSymbols?.includes(
+              p.symbol,
+            );
+            if (program.isUniversal || isIndividuallyIncentivized) {
+              rewardAPY += program.summaryAPY;
+            }
+          });
           return {
             ...p,
             poolAPY: poolAPY.toFixed(1),

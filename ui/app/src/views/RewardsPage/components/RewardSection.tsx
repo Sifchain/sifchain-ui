@@ -1,6 +1,6 @@
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { TokenIcon } from "@/components/TokenIcon";
-import { Asset, Amount, AppCookies, NetworkEnv } from "@sifchain/sdk";
+import { Asset, Amount, AppCookies, NetworkEnv, Network } from "@sifchain/sdk";
 import { format } from "@sifchain/sdk/src/utils/format";
 import {
   CryptoeconomicsRewardType,
@@ -12,19 +12,20 @@ import { defineComponent, PropType, computed } from "vue";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
 import { flagsStore } from "@/store/modules/flags";
+import { RewardProgram } from "../useRewardsPageData";
 
 const REWARD_TYPE_DISPLAY_DATA = {
-  lm: {
+  harvest: {
+    heading: "Sif's Harvest",
+    icon: "navigation/harvest" as IconName,
+    description:
+      "Immediately earn and claim rewards of mythological proportions by providing liquidity to any of Sifchain's token pools.",
+  },
+  COSMOS_IBC_REWARDS_V1: {
     heading: ".42 Liquidity Mining",
     icon: "navigation/pool" as IconName,
     description:
       "Earn additional rewards by providing liquidity to any of Sifchain's Cosmos IBC token pools.",
-  },
-  vs: {
-    heading: "Validator Subsidy",
-    icon: "interactive/lock" as IconName,
-    description:
-      "Earn additional rewards by staking a node or delegating to a staked node.",
   },
 };
 
@@ -41,77 +42,101 @@ const formatRowanNumber = (n?: number) => {
 export const RewardSection = defineComponent({
   name: "RewardSection",
   props: {
-    rewardType: {
-      type: String as PropType<CryptoeconomicsRewardType>,
-      required: true,
-    },
-    data: { type: Object as PropType<CryptoeconomicsUserData>, required: true },
+    rewardProgram: { type: Object as PropType<RewardProgram>, required: true },
     alreadyClaimed: { type: Boolean, required: true },
-    infoLink: { type: String, required: true },
     onClaimIntent: { type: Function as PropType<() => void>, required: true },
   },
-  setup(props) {
-    const { store } = useCore();
-    const displayData = computed(
-      () => REWARD_TYPE_DISPLAY_DATA[props.rewardType],
-    );
-
-    const sifConnected = accountStore.refs.sifchain.connected.computed();
-
-    const details = computed(() =>
-      [
+  computed: {
+    details(): {
+      hide?: boolean;
+      name: string;
+      tooltip?: string;
+      amount?: number;
+    }[] {
+      return [
         {
-          hide: props.rewardType !== "vs",
+          hide: this.rewardProgram.rewardProgramType !== "vs",
           name: "Reserved Comission Rewards",
           tooltip:
             "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
-          amount:
-            props.data?.user
-              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
+          amount: this.rewardProgram.participant
+            ?.currentTotalCommissionsOnClaimableDelegatorRewards,
         },
         {
           name: "Pending Dispensation",
           tooltip:
             "This is the amount that will be dispensed on Friday. Any new claimable amounts will need to be claimed after the next dispensation.",
-          amount:
-            props.data?.user?.claimedCommissionsAndRewardsAwaitingDispensation,
+          amount: this.rewardProgram.participant
+            ?.claimedCommissionsAndRewardsAwaitingDispensation,
         },
         {
           name: "Dispensed Rewards",
           tooltip: "Rewards that have already been dispensed.",
-          amount: props.data?.user?.dispensed,
+          amount: this.rewardProgram.participant?.dispensed,
         },
-      ].filter((item) => !item.hide),
-    );
+      ].filter((item) => !item.hide);
+    },
+    displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
+      return REWARD_TYPE_DISPLAY_DATA[
+        this.rewardProgram
+          .rewardProgramName as keyof typeof REWARD_TYPE_DISPLAY_DATA
+      ];
+    },
+  },
+  setup() {
+    const sifConnected = accountStore.refs.sifchain.connected.computed();
+    return {
+      sifConnected,
+      core: useCore(),
+    };
+  },
+  render() {
+    const { store } = useCore();
+    const sifConnected = this.sifConnected;
 
-    return () => (
+    const isEarning =
+      !this.rewardProgram?.participant
+        ?.totalClaimableCommissionsAndClaimableRewards &&
+      this.rewardProgram?.participant?.totalCommissionsAndRewardsAtMaturity;
+    return (
       <>
         <div class="mt-[10px] text-lg flex">
           <div class="text-left w-[250px] flex items-center">
             <AssetIcon
-              icon={displayData.value.icon}
+              icon={this.displayData.icon}
               size={20}
               class="mr-[10px]"
             />
-            {displayData.value.heading}
+            {this.displayData.heading}
           </div>
 
           <div class="text-right justify-end flex-1 font-mono flex items-center">
             {/* Full Amount */}
-            {formatRowanNumber(
-              props.data?.user?.totalCommissionsAndRewardsAtMaturity,
+            {this.rewardProgram.distributionPattern === "GEYSER" ? (
+              <>
+                {" "}
+                {formatRowanNumber(
+                  this.rewardProgram.participant
+                    ?.totalCommissionsAndRewardsAtMaturity,
+                )}{" "}
+                <TokenIcon
+                  assetValue={Asset.get("rowan")}
+                  size={20}
+                  class="ml-[10px]"
+                />
+              </>
+            ) : (
+              <>{this.rewardProgram.summaryAPY.toFixed(4)} %</>
             )}
-            <TokenIcon
-              assetValue={Asset.get("rowan")}
-              size={20}
-              class="ml-[10px]"
-            />
           </div>
           <div class="w-[300px] text-right justify-end font-mono flex items-center">
             {/* Claimable Amount */}
-            {formatRowanNumber(
-              props.data?.user?.totalClaimableCommissionsAndClaimableRewards,
-            )}
+            {isEarning
+              ? "Earning..."
+              : formatRowanNumber(
+                  this.rewardProgram?.participant
+                    ?.totalClaimableCommissionsAndClaimableRewards,
+                )}
             <TokenIcon
               assetValue={Asset.get("rowan")}
               size={20}
@@ -121,12 +146,25 @@ export const RewardSection = defineComponent({
         </div>
         <div class="mt-[10px] flex justify-between text-sm bg-gray-base py-2 px-3">
           <div class="flex flex-col justify-between">
-            <div class="opacity-50 mb-[20px]">
-              {displayData.value.description}
+            <div class="opacity-50 text-[14px] mb-[20px]">
+              {this.displayData.description}
+              {/* <div
+                style={{
+                  fontVariantCaps: "small-caps",
+                }}
+              >
+                {!this.rewardProgram.isUniversal &&
+                  this.rewardProgram.incentivizedPoolSymbols
+                    .map((poolSymbol) => {
+                      return poolSymbol;
+                    })
+                    .join(", ")}
+              </div> */}
             </div>
+            <div></div>
             {/* Claimable Amount */}
 
-            {details.value.map((detail, index) => (
+            {this.details.map((detail, index) => (
               <div
                 key={index}
                 class="mt-[6px] first:mt-0 flex w-[400px] justify-between"
@@ -149,14 +187,14 @@ export const RewardSection = defineComponent({
               <Button.Inline
                 class="w-full no-underline"
                 icon="interactive/circle-info"
-                href={props.infoLink}
+                href={this.rewardProgram.documentationURL}
                 target="_blank"
-                disabled={!sifConnected.value}
+                disabled={!sifConnected}
                 rel="noopener noreferrer"
               >
                 Learn More
               </Button.Inline>{" "}
-              <Button.Inline
+              {/* <Button.Inline
                 onClick={() => {
                   if (
                     window.location.hostname !== "dex.sifchain.finance" &&
@@ -181,7 +219,7 @@ export const RewardSection = defineComponent({
                 }
               >
                 {props.alreadyClaimed ? "Pending Claim" : "Claim Reward"}
-              </Button.Inline>
+              </Button.Inline> */}
             </div>
           </div>
         </div>

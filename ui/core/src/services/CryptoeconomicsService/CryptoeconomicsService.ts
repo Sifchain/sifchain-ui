@@ -27,14 +27,16 @@ export type CryptoeconomicsServiceContext = {
   cryptoeconomicsUrl: string;
 };
 
-export type CryptoeconomicsRewardType = "vs" | "lm";
+export type CryptoeconomicsRewardType = "vs" | "lm" | "lm_harvest";
 
 export interface FetchDataProps {
   rewardType?: CryptoeconomicsRewardType;
+  rewardProgram?: "harvest";
   address: string;
   key?: string;
   timestamp?: string;
   snapShotSource?: string;
+  devnet: boolean;
 }
 
 export type CryptoeconomicsTimeseriesItem = {
@@ -52,11 +54,16 @@ export default function createCryptoeconomicsService(
     params.set("address", props.address);
     params.set("key", props.key || "userData");
     params.set("timestamp", props.timestamp || "now");
+    if (props.rewardProgram) {
+      params.set("program", props.rewardProgram);
+    }
     props.snapShotSource
       ? params.set("snapshot-source", props.snapShotSource)
       : null;
     const res = await fetch(
-      `${config.cryptoeconomicsUrl}/${props.rewardType}?${params.toString()}`,
+      `https://api-cryptoeconomics${
+        props.devnet ? "-devnet" : ""
+      }.sifchain.finance/api/${props.rewardType}?${params.toString()}`,
     );
     if (!res.ok) {
       throw new Error("Failed to fetch cryptoeconomics data");
@@ -77,9 +84,19 @@ export default function createCryptoeconomicsService(
     ) => {
       return `https://cryptoeconomics.sifchain.finance/#${address}&type=${rewardType}`;
     },
-    async fetchSummaryAPY() {
+    async fetchSummaryAPY({
+      rewardProgram,
+      devnet = false,
+    }: {
+      rewardProgram?: "harvest";
+      devnet?: boolean;
+    }) {
       const summaryAPY: number = await fetch(
-        `https://api-cryptoeconomics.sifchain.finance/api/lm?key=apy-summary`,
+        `https://api-cryptoeconomics${
+          devnet ? "-devnet" : ""
+        }.sifchain.finance/api/lm?key=apy-summary&program=${
+          rewardProgram || ""
+        }`,
       )
         .then((r) => r.json())
         .then((r) => r.summaryAPY);
@@ -95,11 +112,15 @@ export default function createCryptoeconomicsService(
         ...options,
         rewardType: "lm",
       }),
-    fetchTimeseriesData: async (props: { address: string }) => {
+    fetchTimeseriesData: async (props: {
+      address: string;
+      devnet: boolean;
+    }) => {
       const data = await fetchData({
         address: props.address,
         rewardType: "lm",
         key: "userTimeSeriesData",
+        devnet: props.devnet,
       });
       return (data as unknown) as CryptoeconomicsTimeseriesItem[];
     },
