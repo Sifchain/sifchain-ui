@@ -28,6 +28,9 @@ import ImportProcessing from "@/views/BalancePage/Import/Processing";
 import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
+import TransferSelect from "@/views/BalancePage/Transfer/Select";
+import TransferConfirm from "@/views/BalancePage/Transfer/Confirm";
+import TransferProcessing from "@/views/BalancePage/Transfer/Processing";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
@@ -190,6 +193,21 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         name: "ProcessingExport",
         path: "export/:symbol/processing",
         component: ExportProcessing,
+      },
+      {
+        name: "Transfer",
+        path: "transfer/:symbol/select",
+        component: TransferSelect,
+      },
+      {
+        name: "ConfirmTransfer",
+        path: "transfer/:symbol/confirm",
+        component: TransferConfirm,
+      },
+      {
+        name: "ProcessingTransfer",
+        path: "transfer/:symbol/processing",
+        component: TransferProcessing,
       },
       // {
       //   name: "Export",
