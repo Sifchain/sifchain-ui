@@ -870,6 +870,83 @@ const assets: {
       homeNetwork: "ethereum",
       decimals: 18,
     },
+    {
+      address: "0x05079687d35b93538cbd59fe5596380cae9054a9",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/5041/large/logo_-_2021-01-10T210801.390.png?1610284134",
+      name: "BitSong",
+      displaySymbol: "BTSG",
+      symbol: "cbtsg",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
+    {
+      address: "0x6c28aef8977c9b773996d0e8376d2ee379446f2f",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/13970/small/1_pOU6pBMEmiL-ZJVb0CYRjQ.png?1613386659",
+      name: "QuickSwap",
+      displaySymbol: "QUICK",
+      symbol: "cquick",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
+    {
+      address: "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/13573/small/Lido_DAO.png?1609873644",
+      name: "Lido DAO",
+      displaySymbol: "LDO",
+      symbol: "cldo",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
+    {
+      address: "0xe76c6c83af64e4c60245d8c7de953df673a7a33d",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/16840/small/railgun.jpeg?1625322775",
+      name: "Railgun",
+      symbol: "crail",
+      displaySymbol: "RAIL",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
+    {
+      address: "0x57b946008913b82e4df85f501cbaed910e58d26c",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/8903/small/POND_200x200.png?1622515451",
+      name: "Marlin",
+      displaySymbol: "POND",
+      symbol: "cpond",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
+    {
+      address: "0x2701E1D67219a49F5691C92468Fe8D8ADc03e609",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/17103/small/DINO.png?1626244014",
+      name: "DinoSwap",
+      displaySymbol: "DINO",
+      symbol: "cdino",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
+    {
+      address: "0x249e38ea4102d0cf8264d3701f1a0e39c4f2dc3b",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/16801/small/ufo_logo.jpg?1630078847",
+      name: "UFO Gaming",
+      displaySymbol: "UFO",
+      symbol: "cufo",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
   ],
 };
 

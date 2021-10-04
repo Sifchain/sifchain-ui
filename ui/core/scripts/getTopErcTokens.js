@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const Web3 = require("web3");
-
+const fetch = require("cross-fetch").fetch;
 const ABI = [
   {
     constant: true,
@@ -227,18 +227,24 @@ const ABI = [
 
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
-    "https://mainnet.infura.io/v3/93cd052103fd44bd9cf855654e5804ac"
-  )
+    "https://mainnet.infura.io/v3/93cd052103fd44bd9cf855654e5804ac",
+  ),
 );
 
 async function updateCoins() {
   const CoinGecko = require("coingecko-api");
   const CoinGeckoClient = new CoinGecko();
-  let data = await CoinGeckoClient.coins.all({
-    page: 1,
-    order: "market_cap_desc",
-    per_page: 100,
-  });
+  let data = {
+    data: [],
+  };
+  for (let i = 0; i < 10; i++) {
+    const coins = await CoinGeckoClient.coins.all({
+      page: i + 1,
+      order: "market_cap_desc",
+      per_page: 100,
+    });
+    data.data = [...data.data, ...coins.data];
+  }
 
   const assets = data.data.map(
     ({ id, symbol, name, image, market_data: { market_cap_rank } }) => ({
@@ -247,12 +253,20 @@ async function updateCoins() {
       name,
       image,
       market_cap_rank,
-    })
+    }),
   );
-
+  const registry = await fetch(
+    "https://api.sifchain.finance/tokenregistry/entries",
+  )
+    .then((r) => r.json())
+    .then((r) => r.result.registry.entries);
   const coins = [];
-  for (let asset of assets) {
-    coin = await CoinGeckoClient.coins.fetch(asset.id);
+  for (let entry of registry.reverse().slice(0, 10)) {
+    console.log({ entry });
+    if (!entry.denom.startsWith("c")) continue;
+    const asset = assets.find((a) => a.symbol === entry.denom.replace("c", ""));
+    if (!asset) continue;
+    let coin = await CoinGeckoClient.coins.fetch(asset.id);
 
     // Avoid rate limiting
     await new Promise((res) => setTimeout(res, 2000));
@@ -261,7 +275,9 @@ async function updateCoins() {
     coins.push(coin.data);
   }
 
-  fs.writeFileSync("data/coins.json", JSON.stringify(coins, null, 2));
+  console.log(JSON.stringify(coins, null, 2));
+
+  // fs.writeFileSync("data/coins.json", JSON.stringify(coins, null, 2));
 
   const erc20Tokens = coins.filter((coin) => {
     return coin.contract_address && coin.asset_platform_id === "ethereum";
@@ -284,10 +300,10 @@ async function updateCoins() {
       contract_address,
       asset_platform_id,
       market_cap_rank,
-    })
+    }),
   );
 
-  fs.writeFileSync("data/erc20.json", JSON.stringify(erc20, null, 2));
+  // fs.writeFileSync("data/erc20.json", JSON.stringify(erc20, null, 2));
 }
 
 async function enrichERC() {
@@ -301,5 +317,5 @@ async function enrichERC() {
   fs.writeFileSync("data/topErc20Tokens.json", JSON.stringify(erc20, null, 2));
 }
 
-// updateCoins();
-enrichERC();
+updateCoins();
+// enrichERC();
