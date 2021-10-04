@@ -17,16 +17,7 @@ import { RewardsChart } from "./RewardsChart";
 import AssetIcon from "@/components/AssetIcon";
 import { flagsStore } from "@/store/modules/flags";
 import { RewardProgram, RewardProgramParticipant } from "../useRewardsPageData";
-
-const formatRowanNumber = (n?: number) => {
-  if (n == null) return "0";
-  return (
-    format(Amount(String(n.toFixed(18))), {
-      mantissa: 4,
-      zeroFormat: "0",
-    }) || "0"
-  );
-};
+import { getClaimableAmountString } from "../getClaimableAmountString";
 
 const claimTypeMap = {
   lm: "2",
@@ -71,7 +62,7 @@ export default defineComponent({
         useCore().services.bus.dispatch({
           type: "SuccessEvent",
           payload: {
-            message: `Claimed ${formatRowanNumber(
+            message: `Claimed ${getClaimableAmountString(
               props.rewardPrograms.reduce((prev, curr) => {
                 return (
                   prev +
@@ -109,7 +100,7 @@ export default defineComponent({
           [
             "Claimable Rewards Today",
             <span class="flex items-center font-mono">
-              {formatRowanNumber(
+              {getClaimableAmountString(
                 props.rewardPrograms.reduce((prev, curr) => {
                   return (
                     prev +
@@ -152,7 +143,7 @@ export default defineComponent({
           //         : "",
           //     ]}
           //   >
-          //     {formatRowanNumber(
+          //     {getClaimableAmountString(
           //       props.userData?.user?.totalCommissionsAndRewardsAtMaturity,
           //     )}
           //     {
@@ -166,7 +157,7 @@ export default defineComponent({
           // ],
           // (() => {
           //   const totalLessRowan = parseFloat(
-          //     formatRowanNumber(
+          //     getClaimableAmountString(
           //       Math.ceil(
           //         (props.userData?.user
           //           ?.claimedCommissionsAndRewardsAwaitingDispensation || 0) +
@@ -277,8 +268,7 @@ export default defineComponent({
           {/* <Form.Details class="mt-[24px]" details={detailsRef.value} />
           </p> */}
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
-            Claim{" "}
-            {formatRowanNumber(
+            {getClaimableAmountString(
               props.rewardPrograms.reduce((prev, curr) => {
                 return (
                   prev +
