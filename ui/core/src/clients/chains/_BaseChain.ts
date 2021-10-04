@@ -34,7 +34,7 @@ export class BaseChain implements Chain {
 
     this.assetMap = new Map();
     this.assets.forEach((asset) => {
-      this.assetMap.set(asset.symbol, asset);
+      this.assetMap.set(asset.symbol.toLowerCase(), asset);
     });
     this.nativeAsset = this.assets.find(
       (a) => a.symbol === context.chainConfig.nativeAssetSymbol,
@@ -42,7 +42,7 @@ export class BaseChain implements Chain {
   }
 
   lookupAsset(symbol: string) {
-    return this.assetMap.get(symbol);
+    return this.assetMap.get(symbol.toLowerCase());
   }
   lookupAssetOrThrow(symbol: string) {
     const asset = this.lookupAsset(symbol);

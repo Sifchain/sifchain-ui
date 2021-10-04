@@ -22,6 +22,7 @@ import {
   setupBankExtension,
   setupAuthExtension,
 } from "@cosmjs/stargate";
+import pLimit from "p-limit";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/transfer";
 import {
@@ -113,66 +114,49 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     );
   }
 
-  private denomTraceLookupByChain: Record<
+  private denomTraceLookup: Record<
     string,
-    Promise<IBCHashDenomTraceLookup>
+    Promise<DenomTrace | undefined>
   > = {};
-  async getIBCDenomTraceLookupCached(chain: Chain) {
-    const chainId = chain.chainConfig.chainId;
-    if (!this.denomTraceLookupByChain[chainId]) {
-      const promise = this.getIBCDenomTraceLookup(chain);
-      this.denomTraceLookupByChain[chainId] = promise;
-      promise.catch((error) => {
-        delete this.denomTraceLookupByChain[chainId];
-        throw error;
-      });
-    }
-    return this.denomTraceLookupByChain[chainId];
-  }
-  async refreshDenomTraces(chain: Chain) {
-    this.denomTraceLookupByChain[
-      chain.chainConfig.chainId
-    ] = this.getIBCDenomTraceLookup(chain);
-  }
+  async getDenomTraceCached(chain: Chain, hash: string) {
+    hash = hash.replace("ibc/", "");
 
-  async getIBCDenomTraceLookup(chain: Chain): Promise<IBCHashDenomTraceLookup> {
-    const chainConfig = this.getIBCChainConfig(chain);
-    const denomTracesRes = await fetch(
-      `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
-    );
-    if (!denomTracesRes.ok)
-      throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
-    const denomTracesJson = await denomTracesRes.json();
-    const denomTraces: DenomTrace[] = denomTracesJson.denom_traces.map(
-      (data: { path: string; base_denom: string }) => ({
-        path: data.path,
-        baseDenom: data.base_denom,
-      }),
-    );
-
-    const hashToTraceMapping: Record<string, DenomTrace> = {};
-    for (let denomTrace of denomTraces) {
-      const [port, ...channelIds] = denomTrace.path.split("/");
-      const hash = await createIBCHash(
-        port,
-        channelIds[0],
-        denomTrace.baseDenom,
+    const key = chain.chainConfig.chainId + "_" + hash;
+    if (!this.denomTraceLookup[key]) {
+      this.denomTraceLookup[key] = this.getDenomTrace(chain, hash).catch(
+        (error) => {
+          delete this.denomTraceLookup[key];
+          return Promise.reject(error);
+        },
       );
-      hashToTraceMapping[hash] = denomTrace;
     }
+    return this.denomTraceLookup[key];
+  }
+
+  async getDenomTrace(
+    chain: Chain,
+    hash: string,
+  ): Promise<DenomTrace | undefined> {
+    const queryClient = await this.getQueryClient(chain);
+
+    const { denomTrace } = await queryClient.ibc.transfer.denomTrace(hash);
+    if (!denomTrace) {
+      return;
+    }
+
     if (chain.network === Network.SIFCHAIN) {
-      // For sifchain, check for tokens that come from ANY ibc entry
+      // For sifchain, check if the token came from ANY counterparty network
       const ibcEntries = (await this.tokenRegistry.load()).filter(
         (item) => !!item.ibcCounterpartyChannelId,
       );
-      for (let [hash, trace] of Object.entries(hashToTraceMapping)) {
-        const isValid = ibcEntries.some(
-          (entry) =>
-            trace.path.startsWith(
-              "transfer/" + entry.ibcCounterpartyChannelId,
-            ) || trace.path.startsWith("transfer/" + entry.ibcChannelId),
-        );
-        if (!isValid) delete hashToTraceMapping[hash];
+      const isValid = ibcEntries.some(
+        (entry) =>
+          denomTrace.path.startsWith(
+            "transfer/" + entry.ibcCounterpartyChannelId,
+          ) || denomTrace.path.startsWith("transfer/" + entry.ibcChannelId),
+      );
+      if (!isValid) {
+        return;
       }
     } else {
       // For other networks, check for tokens that come from specific counterparty channel
@@ -180,21 +164,11 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
         chain.nativeAsset,
       );
       const channelId = entry.ibcCounterpartyChannelId;
-      if (!channelId) {
-        throw new Error(
-          "Cannot trace denoms, not an IBC chain " + chain.displayName,
-        );
-      }
-      for (let hash in hashToTraceMapping) {
-        if (
-          !hashToTraceMapping[hash].path.startsWith(`transfer/${channelId}`)
-        ) {
-          delete hashToTraceMapping[hash];
-        }
+      if (!denomTrace.path.startsWith(`transfer/${channelId}`)) {
+        return;
       }
     }
-
-    return hashToTraceMapping;
+    return denomTrace;
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
@@ -203,16 +177,29 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
 
     const assetAmounts: IAssetAmount[] = [];
 
-    const ibcDenomTraceLookup = await this.getIBCDenomTraceLookupCached(chain);
-    // console.log(JSON.stringify({ ibcDenomTraceLookup }, null, 2));
+    const limit = pLimit(3);
 
     await Promise.all(
-      balances.map(async (coin) => {
-        if (!+coin.amount) return;
-        try {
-          if (coin.denom.startsWith("ibc/")) {
-            const denomTrace = ibcDenomTraceLookup[coin.denom];
-            if (!denomTrace) return;
+      balances.map((coin) =>
+        limit(async () => {
+          if (!+coin.amount) return;
+
+          if (!coin.denom.startsWith("ibc/")) {
+            const asset = chain.lookupAsset(coin.denom);
+
+            // create asset it doesn't exist and is a precision-adjusted counterparty asset
+            const assetAmount = await this.tokenRegistry.loadNativeAssetAmount(
+              AssetAmount(asset || coin.denom, coin.amount),
+            );
+            assetAmounts.push(assetAmount);
+          } else {
+            const denomTrace = await this.getDenomTraceCached(
+              chain,
+              coin.denom,
+            );
+            if (!denomTrace) {
+              return; // Ignore, it's an invalid coin from invalid chain
+            }
 
             const registry = await this.tokenRegistry.load();
             const entry = registry.find((e) => {
@@ -220,19 +207,20 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
             });
             if (!entry) return;
 
-            const nativeAsset =
-              entry.unitDenom && entry.baseDenom !== entry.unitDenom
-                ? chain.lookupAssetOrThrow(entry.unitDenom)
-                : chain.lookupAssetOrThrow(entry.baseDenom);
-
-            let asset = chain.assets.find(
-              (asset) =>
-                asset.symbol.toLowerCase() === nativeAsset.symbol.toLowerCase(),
-            );
-            if (asset) {
-              asset.ibcDenom = coin.denom;
-            }
             try {
+              const nativeAsset =
+                entry.unitDenom && entry.baseDenom !== entry.unitDenom
+                  ? chain.lookupAssetOrThrow(entry.unitDenom)
+                  : chain.lookupAssetOrThrow(entry.baseDenom);
+
+              let asset = chain.assets.find(
+                (asset) =>
+                  asset.symbol.toLowerCase() ===
+                  nativeAsset.symbol.toLowerCase(),
+              );
+              if (asset) {
+                asset.ibcDenom = coin.denom;
+              }
               const counterpartyAsset = await this.tokenRegistry.loadCounterpartyAsset(
                 nativeAsset,
               );
@@ -243,21 +231,9 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
             } catch (error) {
               // ignore asset, doesnt exist in our list.
             }
-          } else {
-            let asset = chain.assets.find(
-              (asset) =>
-                asset.symbol.toLowerCase() === coin.denom.toLowerCase(),
-            )!;
-            // create asset it doesn't exist and is a precision-adjusted counterparty asset
-            const assetAmount = await this.tokenRegistry.loadNativeAssetAmount(
-              AssetAmount(asset || coin.denom, coin.amount),
-            );
-            assetAmounts.push(assetAmount);
           }
-        } catch (error) {
-          console.error(chain.network, "coin error", coin, error);
-        }
-      }),
+        }),
+      ),
     );
 
     return assetAmounts;
