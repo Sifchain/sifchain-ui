@@ -33,7 +33,10 @@ import { NativeDexClient } from "../../../services/utils/SifClient/NativeDexClie
 import { Coin } from "generated/proto/cosmos/base/coin";
 import { createIBCHash } from "../../../utils/createIBCHash";
 
-type IBCHashDenomTraceLookup = Record<string, DenomTrace>;
+type IBCHashDenomTraceLookup = Record<
+  string,
+  { isValid: boolean; denomTrace: DenomTrace }
+>;
 
 export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> {
   tokenRegistry: ReturnType<typeof TokenRegistryService>;
@@ -113,7 +116,86 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     );
   }
 
-  private denomTraceLookup: Record<
+  private denomTracesCache: Record<
+    string,
+    Promise<IBCHashDenomTraceLookup>
+  > = {};
+  async getIBCDenomTracesLookupCached(chain: Chain) {
+    const chainId = chain.chainConfig.chainId;
+    if (!this.denomTracesCache[chainId]) {
+      const promise = this.getIBCDenomTracesLookup(chain);
+      this.denomTracesCache[chainId] = promise;
+      promise.catch((error) => {
+        delete this.denomTracesCache[chainId];
+        throw error;
+      });
+    }
+    return this.denomTracesCache[chainId];
+  }
+
+  async getIBCDenomTracesLookup(
+    chain: Chain,
+  ): Promise<IBCHashDenomTraceLookup> {
+    const chainConfig = this.getIBCChainConfig(chain);
+    const denomTracesRes = await fetch(
+      `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
+    );
+    if (!denomTracesRes.ok)
+      throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
+    const denomTracesJson = await denomTracesRes.json();
+    const denomTraces: DenomTrace[] = denomTracesJson.denom_traces.map(
+      (data: { path: string; base_denom: string }) => ({
+        path: data.path,
+        baseDenom: data.base_denom,
+      }),
+    );
+
+    const hashToTraceMapping: IBCHashDenomTraceLookup = {};
+    for (let denomTrace of denomTraces) {
+      const [port, ...channelIds] = denomTrace.path.split("/");
+      const hash = await createIBCHash(
+        port,
+        channelIds[0],
+        denomTrace.baseDenom,
+      );
+      hashToTraceMapping[hash] = { isValid: false, denomTrace };
+    }
+    if (chain.network === Network.SIFCHAIN) {
+      // For sifchain, check for tokens that come from ANY ibc entry
+      const ibcEntries = (await this.tokenRegistry.load()).filter(
+        (item) => !!item.ibcCounterpartyChannelId,
+      );
+      for (let [hash, item] of Object.entries(hashToTraceMapping)) {
+        hashToTraceMapping[hash].isValid = ibcEntries.some(
+          (entry) =>
+            item.denomTrace.path.startsWith(
+              "transfer/" + entry.ibcCounterpartyChannelId,
+            ) ||
+            item.denomTrace.path.startsWith("transfer/" + entry.ibcChannelId),
+        );
+      }
+    } else {
+      // For other networks, check for tokens that come from specific counterparty channel
+      const entry = await this.tokenRegistry.findAssetEntryOrThrow(
+        chain.nativeAsset,
+      );
+      const channelId = entry.ibcCounterpartyChannelId;
+      if (!channelId) {
+        throw new Error(
+          "Cannot trace denoms, not an IBC chain " + chain.displayName,
+        );
+      }
+      for (let [hash, item] of Object.entries(hashToTraceMapping)) {
+        hashToTraceMapping[hash].isValid = item.denomTrace.path.startsWith(
+          `transfer/${channelId}`,
+        );
+      }
+    }
+
+    return hashToTraceMapping;
+  }
+
+  private individualDenomTraceCache: Record<
     string,
     Promise<DenomTrace | undefined>
   > = {};
@@ -121,15 +203,16 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     hash = hash.replace("ibc/", "");
 
     const key = chain.chainConfig.chainId + "_" + hash;
-    if (!this.denomTraceLookup[key]) {
-      this.denomTraceLookup[key] = this.getDenomTrace(chain, hash).catch(
-        (error) => {
-          delete this.denomTraceLookup[key];
-          return Promise.reject(error);
-        },
-      );
+    if (!this.individualDenomTraceCache[key]) {
+      this.individualDenomTraceCache[key] = this.getDenomTrace(
+        chain,
+        hash,
+      ).catch((error) => {
+        delete this.individualDenomTraceCache[key];
+        return Promise.reject(error);
+      });
     }
-    return this.denomTraceLookup[key];
+    return this.individualDenomTraceCache[key];
   }
 
   async getDenomTrace(
@@ -174,6 +257,8 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     const queryClient = await this.getQueryClient(chain);
     const balances = await queryClient?.bank.allBalances(address);
 
+    const denomTracesLookup = await this.getIBCDenomTracesLookupCached(chain);
+
     const assetAmounts: IAssetAmount[] = [];
 
     for (let coin of balances) {
@@ -188,7 +273,17 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
         );
         assetAmounts.push(assetAmount);
       } else {
-        const denomTrace = await this.getDenomTraceCached(chain, coin.denom);
+        let lookupData = denomTracesLookup[coin.denom];
+        let denomTrace = lookupData?.denomTrace;
+        if (lookupData && !lookupData.isValid) {
+          continue;
+        } else if (!lookupData) {
+          // If it's not in the master list of all denom traces, that list may just be outdated...
+          // Newly minted tokens aren't added to the master list immediately.
+          // @ts-ignore
+          denomTrace = await this.getDenomTraceCached(chain, coin.denom);
+        }
+
         if (!denomTrace) {
           continue; // Ignore, it's an invalid coin from invalid chain
         }
