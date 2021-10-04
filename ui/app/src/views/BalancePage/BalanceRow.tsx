@@ -28,6 +28,7 @@ import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
 import { Asset, Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
+import { getTransferLocation } from "./Transfer/useTransferData";
 
 export const SYMBOL_COLUMN_WIDTH = 130;
 
@@ -103,6 +104,22 @@ export default defineComponent({
               }),
             },
           },
+      {
+        tag: RouterLink,
+        icon: "interactive/open-external",
+        name: "Transfer",
+        visible: expandedRef.value,
+        props: {
+          replace: false,
+          to: getTransferLocation("setup", {
+            symbol: props.tokenItem.asset.symbol,
+            network:
+              props.tokenItem.asset.homeNetwork === Network.SIFCHAIN
+                ? Network.ETHEREUM
+                : props.tokenItem.asset.homeNetwork,
+          }),
+        },
+      },
       {
         icon: "navigation/pool",
         name: "Pool",
