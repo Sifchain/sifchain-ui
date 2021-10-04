@@ -1,3 +1,6 @@
+## Release 2021.10.03
+* Began Sif's Harvest Liquidity Mining Program 
+
 ## Release 2021.10.01
 * Enabled
   * BTSG - BitSong
