@@ -22,7 +22,6 @@ import {
   setupBankExtension,
   setupAuthExtension,
 } from "@cosmjs/stargate";
-import pLimit from "p-limit";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/transfer";
 import {
@@ -177,64 +176,54 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
 
     const assetAmounts: IAssetAmount[] = [];
 
-    const limit = pLimit(3);
+    for (let coin of balances) {
+      if (!+coin.amount) continue;
 
-    await Promise.all(
-      balances.map((coin) =>
-        limit(async () => {
-          if (!+coin.amount) return;
+      if (!coin.denom.startsWith("ibc/")) {
+        const asset = chain.lookupAsset(coin.denom);
 
-          if (!coin.denom.startsWith("ibc/")) {
-            const asset = chain.lookupAsset(coin.denom);
+        // create asset it doesn't exist and is a precision-adjusted counterparty asset
+        const assetAmount = await this.tokenRegistry.loadNativeAssetAmount(
+          AssetAmount(asset || coin.denom, coin.amount),
+        );
+        assetAmounts.push(assetAmount);
+      } else {
+        const denomTrace = await this.getDenomTraceCached(chain, coin.denom);
+        if (!denomTrace) {
+          continue; // Ignore, it's an invalid coin from invalid chain
+        }
 
-            // create asset it doesn't exist and is a precision-adjusted counterparty asset
-            const assetAmount = await this.tokenRegistry.loadNativeAssetAmount(
-              AssetAmount(asset || coin.denom, coin.amount),
-            );
-            assetAmounts.push(assetAmount);
-          } else {
-            const denomTrace = await this.getDenomTraceCached(
-              chain,
-              coin.denom,
-            );
-            if (!denomTrace) {
-              return; // Ignore, it's an invalid coin from invalid chain
-            }
+        const registry = await this.tokenRegistry.load();
+        const entry = registry.find((e) => {
+          return e.baseDenom === denomTrace.baseDenom;
+        });
+        if (!entry) continue;
 
-            const registry = await this.tokenRegistry.load();
-            const entry = registry.find((e) => {
-              return e.baseDenom === denomTrace.baseDenom;
-            });
-            if (!entry) return;
+        try {
+          const nativeAsset =
+            entry.unitDenom && entry.baseDenom !== entry.unitDenom
+              ? chain.lookupAssetOrThrow(entry.unitDenom)
+              : chain.lookupAssetOrThrow(entry.baseDenom);
 
-            try {
-              const nativeAsset =
-                entry.unitDenom && entry.baseDenom !== entry.unitDenom
-                  ? chain.lookupAssetOrThrow(entry.unitDenom)
-                  : chain.lookupAssetOrThrow(entry.baseDenom);
-
-              let asset = chain.assets.find(
-                (asset) =>
-                  asset.symbol.toLowerCase() ===
-                  nativeAsset.symbol.toLowerCase(),
-              );
-              if (asset) {
-                asset.ibcDenom = coin.denom;
-              }
-              const counterpartyAsset = await this.tokenRegistry.loadCounterpartyAsset(
-                nativeAsset,
-              );
-              const assetAmount = AssetAmount(counterpartyAsset, coin.amount);
-              assetAmounts.push(
-                await this.tokenRegistry.loadNativeAssetAmount(assetAmount),
-              );
-            } catch (error) {
-              // ignore asset, doesnt exist in our list.
-            }
+          let asset = chain.assets.find(
+            (asset) =>
+              asset.symbol.toLowerCase() === nativeAsset.symbol.toLowerCase(),
+          );
+          if (asset) {
+            asset.ibcDenom = coin.denom;
           }
-        }),
-      ),
-    );
+          const counterpartyAsset = await this.tokenRegistry.loadCounterpartyAsset(
+            nativeAsset,
+          );
+          const assetAmount = AssetAmount(counterpartyAsset, coin.amount);
+          assetAmounts.push(
+            await this.tokenRegistry.loadNativeAssetAmount(assetAmount),
+          );
+        } catch (error) {
+          // ignore asset, doesnt exist in our list.
+        }
+      }
+    }
 
     return assetAmounts;
   }
