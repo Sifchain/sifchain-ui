@@ -16,12 +16,12 @@ import { DistributionType } from "../../../../../core/src/generated/proto/sifnod
 import { RewardsChart } from "./RewardsChart";
 import AssetIcon from "@/components/AssetIcon";
 import { flagsStore } from "@/store/modules/flags";
-import { RewardProgramParticipant } from "../useRewardsPageData";
+import { RewardProgram, RewardProgramParticipant } from "../useRewardsPageData";
 
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
   return (
-    format(Amount(String(n)), {
+    format(Amount(String(n.toFixed(18))), {
       mantissa: 4,
       zeroFormat: "0",
     }) || "0"
@@ -37,8 +37,8 @@ export default defineComponent({
   name: "ClaimRewardsModal",
   props: {
     address: { type: String, required: true },
-    userData: {
-      type: Object as PropType<RewardProgramParticipant>,
+    rewardPrograms: {
+      type: Array as PropType<RewardProgram[]>,
       required: true,
     },
     summaryAPY: { type: Number },
@@ -72,7 +72,13 @@ export default defineComponent({
           type: "SuccessEvent",
           payload: {
             message: `Claimed ${formatRowanNumber(
-              props.userData?.totalClaimableCommissionsAndClaimableRewards,
+              props.rewardPrograms.reduce((prev, curr) => {
+                return (
+                  prev +
+                  (curr.participant
+                    ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                );
+              }, 0),
             )} ROWAN of rewards`,
           },
         });
@@ -84,8 +90,12 @@ export default defineComponent({
       return (
         (props.summaryAPY || 0) *
         0.01 *
-        (props.userData?.yearsToMaturity || 0) *
-        (props.userData?.totalDepositedAmount || 0)
+        (props.rewardPrograms.reduce((prev, curr) => {
+          return Math.max(prev, curr.participant?.yearsToMaturity || 0);
+        }, 0) || 0) *
+        (props.rewardPrograms.reduce((prev, curr) => {
+          return prev + (curr.participant?.totalDepositedAmount || 0);
+        }, 0) || 0)
       );
     });
 
@@ -100,7 +110,13 @@ export default defineComponent({
             "Claimable Rewards Today",
             <span class="flex items-center font-mono">
               {formatRowanNumber(
-                props.userData?.totalClaimableCommissionsAndClaimableRewards,
+                props.rewardPrograms.reduce((prev, curr) => {
+                  return (
+                    prev +
+                    (curr.participant
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                  );
+                }, 0),
               )}
               {
                 <TokenIcon
@@ -111,12 +127,19 @@ export default defineComponent({
               }
             </span>,
           ],
-          props.userData?.maturityDateMs
+          props.rewardPrograms.reduce((prev, curr) => {
+            return Math.max(prev, +(curr.participant?.maturityDateMs || 0));
+          }, 0)
             ? [
                 "Maturity Date",
-                new Date(props.userData?.maturityDateMs).toLocaleDateString() +
-                  ", " +
-                  new Date(props.userData?.maturityDateMs).toLocaleTimeString(),
+                new Date(
+                  props.rewardPrograms.reduce((prev, curr) => {
+                    return Math.max(
+                      prev,
+                      +(curr.participant?.maturityDateMs || 0),
+                    );
+                  }, 0),
+                ).toLocaleDateString(),
               ]
             : null,
           // [
@@ -256,7 +279,13 @@ export default defineComponent({
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
             Claim{" "}
             {formatRowanNumber(
-              props.userData?.totalClaimableCommissionsAndClaimableRewards,
+              props.rewardPrograms.reduce((prev, curr) => {
+                return (
+                  prev +
+                  (curr.participant
+                    ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                );
+              }, 0),
             )}{" "}
             Rowan
           </Button.CallToAction>
