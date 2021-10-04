@@ -13,6 +13,7 @@ import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
 import { flagsStore } from "@/store/modules/flags";
 import { RewardProgram } from "../useRewardsPageData";
+import { getClaimableAmountString } from "../getClaimableAmountString";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   harvest: {
@@ -27,16 +28,6 @@ const REWARD_TYPE_DISPLAY_DATA = {
     description:
       "Earn additional rewards by providing liquidity to any of Sifchain's Cosmos IBC token pools.",
   },
-};
-
-const formatRowanNumber = (n?: number) => {
-  if (n == null) return "0";
-  return (
-    format(Amount(String(n.toFixed(18))), {
-      mantissa: 4,
-      zeroFormat: "0",
-    }) || "0"
-  );
 };
 
 export const RewardSection = defineComponent({
@@ -56,7 +47,7 @@ export const RewardSection = defineComponent({
       return [
         {
           hide: this.rewardProgram.rewardProgramType !== "vs",
-          name: "Reserved Comission Rewards",
+          name: "Reserved Commission Rewards",
           tooltip:
             "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
           amount: this.rewardProgram.participant
@@ -115,7 +106,7 @@ export const RewardSection = defineComponent({
             {this.rewardProgram.distributionPattern === "GEYSER" ? (
               <>
                 {" "}
-                {formatRowanNumber(
+                {getClaimableAmountString(
                   this.rewardProgram.participant
                     ?.totalCommissionsAndRewardsAtMaturity,
                 )}{" "}
@@ -133,7 +124,7 @@ export const RewardSection = defineComponent({
             {/* Claimable Amount */}
             {isEarning
               ? "Earning..."
-              : formatRowanNumber(
+              : getClaimableAmountString(
                   this.rewardProgram?.participant
                     ?.totalClaimableCommissionsAndClaimableRewards,
                 )}
@@ -176,7 +167,7 @@ export const RewardSection = defineComponent({
                   )}
                 </span>
                 <span class="w-[250px] text-right">
-                  {formatRowanNumber(detail.amount)}
+                  {getClaimableAmountString(detail.amount)}
                 </span>
               </div>
             ))}

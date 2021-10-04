@@ -12,6 +12,7 @@ import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
 import { AppCookies, NetworkEnv } from "@sifchain/sdk";
 import { flagsStore } from "@/store/modules/flags";
+import { getClaimableAmountString } from "./getClaimableAmountString";
 
 // This one is for the chads
 export default defineComponent({
@@ -105,9 +106,9 @@ export default defineComponent({
               >
                 {!!lmClaim.value
                   ? "Pending Claim"
-                  : `Claim ${
-                      Math.floor(totalClaimableRef.value || 0) || ""
-                    } Rowan`}
+                  : `Claim ${getClaimableAmountString(
+                      totalClaimableRef.value,
+                    )} Rowan`}
               </Button.Inline>
             }
           >
