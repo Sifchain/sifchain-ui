@@ -105,7 +105,9 @@ export default defineComponent({
               >
                 {!!lmClaim.value
                   ? "Pending Claim"
-                  : `Claim ${totalClaimableRef.value?.toFixed(0) || ""} Rowan`}
+                  : `Claim ${
+                      Math.floor(totalClaimableRef.value || 0) || ""
+                    } Rowan`}
               </Button.Inline>
             }
           >
@@ -119,10 +121,8 @@ export default defineComponent({
                     claimRewardType.value as CryptoeconomicsRewardType
                   }
                   summaryAPY={summaryApyRef.value}
-                  userData={
-                    rewardProgramResponse.data.value.rewardPrograms.find(
-                      (p) => !!p.participant,
-                    )!.participant!
+                  rewardPrograms={
+                    rewardProgramResponse.data.value.rewardPrograms
                   }
                   onClose={() => {
                     isClaimModalOpened.value = false;
