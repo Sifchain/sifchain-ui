@@ -223,12 +223,23 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const chainConfig = getIBCChainConfig(chain);
     const denomTracesRes = await fetch(
       `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
-    ).catch((e) => ({
-      ok: true,
-      json: () => ({
-        denom_traces: [],
-      }),
-    }));
+    )
+      .catch(async (e) => {
+        const queryclient = await this.getQueryClient(chain);
+        const { denomTraces } = await queryclient.ibc.transfer.allDenomTraces();
+        return {
+          ok: true,
+          json: () => ({
+            denom_traces: denomTraces,
+          }),
+        };
+      })
+      .catch((e) => ({
+        ok: true,
+        json: () => ({
+          denom_traces: [],
+        }),
+      }));
     if (!denomTracesRes.ok)
       throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
     const denomTracesJson = await denomTracesRes.json();
@@ -293,8 +304,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     }
     const assetAmounts: IAssetAmount[] = [];
 
-    const ibcDenomTraceLookup = await this.getIbcDenomTraceLookupCached(chain);
-
     await Promise.all(
       balances.map(async (coin) => {
         try {
@@ -305,6 +314,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
             );
             assetAmounts.push(AssetAmount(asset || coin.denom, coin.amount));
           } else {
+            const ibcDenomTraceLookup = await this.getIbcDenomTraceLookupCached(
+              chain,
+            );
             const denomTrace = ibcDenomTraceLookup[coin.denom];
             if (!denomTrace) return;
 
