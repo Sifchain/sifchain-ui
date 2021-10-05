@@ -230,7 +230,6 @@ export class IBCService {
           const counterpartyChannelId = channel.counterparty!.channelId;
           const counterPartyChainId =
             parsedClientState.identified_client_state.client_state.chain_id;
-          console.log(counterPartyChainId);
           const counterpartyConfig = this.loadChainConfigByChainId(
             counterPartyChainId,
           );
