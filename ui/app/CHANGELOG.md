@@ -1,3 +1,6 @@
+## Release 2021.10.05
+* Enabled JUNØ!
+
 ## Release 2021.10.03
 * Welcomed the Sif's Harvest Liquidity Mining Program 
   * All pools. 
