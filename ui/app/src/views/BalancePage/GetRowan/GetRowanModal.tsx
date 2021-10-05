@@ -73,7 +73,8 @@ export default defineComponent({
             </>
           ) : (
             <>
-              <p class="text-[22px]">Begin your journey with Sifchain</p>
+              {" "}
+              <p class="text-[22px]">Begin your journey with Sifchain</p>{" "}
               <p class="mt-[10px]">
                 Rowan is the functional token of Sifchain used for settlement,
                 staking, and transaction fees. So you'll need some before you go
@@ -99,6 +100,7 @@ export default defineComponent({
               </p>
               <a
                 rel="noreferrer"
+                class="block"
                 target="_blank"
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                   `${
@@ -117,7 +119,7 @@ export default defineComponent({
               )}
               <Button.CallToActionSecondary
                 disabled={isLoading.value}
-                class="mt-[8px]"
+                class="mt-[6px]"
                 onClick={handleTryFunding}
               >
                 {isLoading.value
