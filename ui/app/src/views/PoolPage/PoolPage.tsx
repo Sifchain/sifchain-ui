@@ -19,7 +19,7 @@ export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      sortBy: "token" as PoolPageColumnId,
+      sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
     };
   },
