@@ -45,7 +45,12 @@ const useExistingClaimsData = (
 ) => {
   const res = useAsyncData(async () => {
     if (!address.value) return null;
-    const nativeDexClient = await NativeDexClient.connect(sifRpcUrl);
+    const config = useCore().config;
+    const nativeDexClient = await NativeDexClient.connect(
+      config.sifRpcUrl,
+      config.sifApiUrl,
+      config.sifChainId,
+    );
     const claims = await nativeDexClient.query.dispensation.ClaimsByType({
       userClaimType: DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING,
     });
@@ -91,6 +96,8 @@ export type RewardProgram = {
   endDateTimeISO: string;
   distributionPattern: string;
   documentationURL: string;
+  displayName: string;
+  description: string;
 };
 export const useRewardsPageData = () => {
   const { config, services } = useCore();
@@ -116,6 +123,11 @@ export const useRewardsPageData = () => {
               claimedCommissionsAndRewardsAwaitingDispensation
               dispensed
             }
+<<<<<<< HEAD
+=======
+            displayName
+            description
+>>>>>>> feature/juno-rewards
             documentationURL
             incentivizedPoolSymbols
             isUniversal

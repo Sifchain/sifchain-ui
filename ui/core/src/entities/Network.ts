@@ -6,6 +6,7 @@ export enum Network {
   COSMOSHUB = "cosmoshub",
   CRYPTO_ORG = "crypto-org",
   IRIS = "iris",
+  JUNO = "juno",
   OSMOSIS = "osmosis",
   PERSISTENCE = "persistence",
   REGEN = "regen",
