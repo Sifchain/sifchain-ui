@@ -1,5 +1,5 @@
 import balancesAreDifferent from "@sifchain/sdk/src/usecases/walletNew/utils/balancesAreDifferent";
-import { IAssetAmount, Network } from "../../../../core/src";
+import { IAssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "../../hooks/useCore";
 import { Vuextra } from "../Vuextra";
 
