@@ -97,6 +97,7 @@ export class ChainsService {
     setChainsService(this);
   }
 
+  // returns array of chains
   list() {
     return this._list;
   }
