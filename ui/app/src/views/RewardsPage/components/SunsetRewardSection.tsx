@@ -12,6 +12,12 @@ import { defineComponent, PropType, computed } from "vue";
 import { useCore } from "@/hooks/useCore";
 
 const REWARD_TYPE_DISPLAY_DATA = {
+  lm_harvest: {
+    heading: "Sif's Harvest (closed)",
+    icon: "navigation/pool" as IconName,
+    description:
+      "Earn additional rewards by providing liquidity to any of Sifchain's pools.",
+  },
   lm: {
     heading: ".39 Liquidity Mining (closed)",
     icon: "navigation/pool" as IconName,
@@ -29,7 +35,7 @@ const REWARD_TYPE_DISPLAY_DATA = {
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
   return (
-    format(Amount(String(n)), {
+    format(Amount(String(n.toFixed(18))), {
       mantissa: 4,
       zeroFormat: "0",
     }) || "0"

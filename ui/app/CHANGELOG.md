@@ -1,3 +1,9 @@
+## Release 2021.10.03
+* Welcomed the Sif's Harvest Liquidity Mining Program 
+  * All pools. 
+  * 6 weeks
+  * 40 Million Rowan in Rewards
+
 ## Release 2021.10.01
 * Enabled
   * BTSG - BitSong

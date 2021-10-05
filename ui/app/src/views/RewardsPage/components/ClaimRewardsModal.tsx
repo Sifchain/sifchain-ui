@@ -16,16 +16,8 @@ import { DistributionType } from "../../../../../core/src/generated/proto/sifnod
 import { RewardsChart } from "./RewardsChart";
 import AssetIcon from "@/components/AssetIcon";
 import { flagsStore } from "@/store/modules/flags";
-
-const formatRowanNumber = (n?: number) => {
-  if (n == null) return "0";
-  return (
-    format(Amount(String(n)), {
-      mantissa: 4,
-      zeroFormat: "0",
-    }) || "0"
-  );
-};
+import { RewardProgram, RewardProgramParticipant } from "../useRewardsPageData";
+import { getClaimableAmountString } from "../getClaimableAmountString";
 
 const claimTypeMap = {
   lm: "2",
@@ -36,8 +28,8 @@ export default defineComponent({
   name: "ClaimRewardsModal",
   props: {
     address: { type: String, required: true },
-    userData: {
-      type: Object as PropType<CryptoeconomicsUserData>,
+    rewardPrograms: {
+      type: Array as PropType<RewardProgram[]>,
       required: true,
     },
     summaryAPY: { type: Number },
@@ -64,15 +56,20 @@ export default defineComponent({
             ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
             : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
         fromAddress: props.address,
-        rewardProgramName: "COSMOS_IBC_REWARDS_V1",
+        rewardProgramName: "harvest",
       });
       if (status.state === "accepted") {
         useCore().services.bus.dispatch({
           type: "SuccessEvent",
           payload: {
-            message: `Claimed ${formatRowanNumber(
-              props.userData?.user
-                ?.totalClaimableCommissionsAndClaimableRewards,
+            message: `Claimed ${getClaimableAmountString(
+              props.rewardPrograms.reduce((prev, curr) => {
+                return (
+                  prev +
+                  (curr.participant
+                    ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                );
+              }, 0),
             )} ROWAN of rewards`,
           },
         });
@@ -84,8 +81,12 @@ export default defineComponent({
       return (
         (props.summaryAPY || 0) *
         0.01 *
-        (props.userData?.user?.yearsToMaturity || 0) *
-        (props.userData?.user?.totalDepositedAmount || 0)
+        (props.rewardPrograms.reduce((prev, curr) => {
+          return Math.max(prev, curr.participant?.yearsToMaturity || 0);
+        }, 0) || 0) *
+        (props.rewardPrograms.reduce((prev, curr) => {
+          return prev + (curr.participant?.totalDepositedAmount || 0);
+        }, 0) || 0)
       );
     });
 
@@ -99,9 +100,14 @@ export default defineComponent({
           [
             "Claimable Rewards Today",
             <span class="flex items-center font-mono">
-              {formatRowanNumber(
-                props.userData?.user
-                  ?.totalClaimableCommissionsAndClaimableRewards,
+              {getClaimableAmountString(
+                props.rewardPrograms.reduce((prev, curr) => {
+                  return (
+                    prev +
+                    (curr.participant
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                  );
+                }, 0),
               )}
               {
                 <TokenIcon
@@ -112,12 +118,21 @@ export default defineComponent({
               }
             </span>,
           ],
-          [
-            "Maturity Date",
-            props.userData?.user?.maturityDate.toLocaleDateString() +
-              ", " +
-              props.userData?.user?.maturityDate.toLocaleTimeString(),
-          ],
+          props.rewardPrograms.reduce((prev, curr) => {
+            return Math.max(prev, +(curr.participant?.maturityDateMs || 0));
+          }, 0)
+            ? [
+                "Maturity Date",
+                new Date(
+                  props.rewardPrograms.reduce((prev, curr) => {
+                    return Math.max(
+                      prev,
+                      +(curr.participant?.maturityDateMs || 0),
+                    );
+                  }, 0),
+                ).toLocaleDateString(),
+              ]
+            : null,
           // [
           //   <span class="flex items-center">Projected Full Reward</span>,
           //   <span
@@ -128,7 +143,7 @@ export default defineComponent({
           //         : "",
           //     ]}
           //   >
-          //     {formatRowanNumber(
+          //     {getClaimableAmountString(
           //       props.userData?.user?.totalCommissionsAndRewardsAtMaturity,
           //     )}
           //     {
@@ -142,7 +157,7 @@ export default defineComponent({
           // ],
           // (() => {
           //   const totalLessRowan = parseFloat(
-          //     formatRowanNumber(
+          //     getClaimableAmountString(
           //       Math.ceil(
           //         (props.userData?.user
           //           ?.claimedCommissionsAndRewardsAwaitingDispensation || 0) +
@@ -215,6 +230,19 @@ export default defineComponent({
             Are you sure you want to claim your rewards?
           </p>
           <p class="mt-[10px]">
+            Claims are paid out on Friday of each week. Once your funds are
+            dispensed, you may be interested in staking or delegating your
+            earnings with{" "}
+            <a
+              class="underline font-semibold"
+              href="https://docs.sifchain.finance/resources/rewards-programs#block-rewards"
+            >
+              Sifchain's block rewards program
+            </a>
+            .
+            <br />
+          </p>
+          {/* <p class="mt-[10px]">
             If you claim your rewards now, you will accrue less rewards in total
             on your currently pooled assets than if you wait to claim until your
             Maturity Date. For more information about our rewards program,{" "}
@@ -225,9 +253,9 @@ export default defineComponent({
               class="underline"
             >
               click here
-            </a>
-            .
-            {flagsStore.state.claimsGraph && (
+            </a> */}
+          {/* . */}
+          {/* {flagsStore.state.claimsGraph && (
               <div class="mt-[32px]">
                 <RewardsChart
                   rewardsAtMaturityAfterClaim={
@@ -236,14 +264,18 @@ export default defineComponent({
                   userData={props.userData}
                 />
               </div>
-            )}
-            <Form.Details class="mt-[24px]" details={detailsRef.value} />
-          </p>
+            )} */}
+          {/* <Form.Details class="mt-[24px]" details={detailsRef.value} />
+          </p> */}
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
-            Claim{" "}
-            {formatRowanNumber(
-              props.userData?.user
-                ?.totalClaimableCommissionsAndClaimableRewards,
+            {getClaimableAmountString(
+              props.rewardPrograms.reduce((prev, curr) => {
+                return (
+                  prev +
+                  (curr.participant
+                    ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                );
+              }, 0),
             )}{" "}
             Rowan
           </Button.CallToAction>

@@ -7,6 +7,7 @@ import { QueryClaimsByTypeRequest } from "../../../../core/src/generated/proto/s
 import { NativeDexClient } from "../../../../core/src/services/utils/SifClient/NativeDexClient";
 import { DistributionType } from "../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
 import { flagsStore } from "@/store/modules/flags";
+import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 
 // TODO REACTIVE
 
@@ -68,62 +69,83 @@ const useExistingClaimsData = (
   return res;
 };
 
+export type RewardProgramParticipant = {
+  currentAPYOnTickets: number;
+  totalClaimableCommissionsAndClaimableRewards: number;
+  maturityDateMs: string;
+  yearsToMaturity: number;
+  totalDepositedAmount: number;
+  currentTotalCommissionsOnClaimableDelegatorRewards: number;
+  claimedCommissionsAndRewardsAwaitingDispensation: number;
+  dispensed: number;
+  totalCommissionsAndRewardsAtMaturity: number;
+};
+export type RewardProgram = {
+  participant?: RewardProgramParticipant;
+  incentivizedPoolSymbols: string[];
+  isUniversal: boolean;
+  summaryAPY: number;
+  rewardProgramName: string;
+  rewardProgramType: string;
+  startDateTimeISO: string;
+  endDateTimeISO: string;
+  distributionPattern: string;
+  documentationURL: string;
+};
 export const useRewardsPageData = () => {
   const { config, services } = useCore();
   const address = accountStore.refs.sifchain.address.computed();
 
-  const lmRes = useLiquidityMiningData(address);
-  const lmHarvestRes = useLiquidityMiningData(address, "harvest");
+  const gql = createCryptoeconGqlClient();
 
-  const vsRes = useValidatorSubsidyData(address);
+  const rewardProgramResponse = useAsyncData(
+    (): Promise<{
+      rewardPrograms: RewardProgram[];
+    }> =>
+      gql`
+        query($participantAddress: String!) {
+          rewardPrograms {
+            participant(address: $participantAddress) {
+              totalCommissionsAndRewardsAtMaturity
+              currentAPYOnTickets
+              totalClaimableCommissionsAndClaimableRewards
+              currentTotalCommissionsOnClaimableDelegatorRewards
+              maturityDateMs
+              yearsToMaturity
+              totalDepositedAmount
+              claimedCommissionsAndRewardsAwaitingDispensation
+              dispensed
+            }
+            documentationURL
+            incentivizedPoolSymbols
+            isUniversal
+            summaryAPY
+            rewardProgramName
+            rewardProgramType
+            startDateTimeISO
+            endDateTimeISO
+            distributionPattern
+          }
+        }
+      `({ participantAddress: address.value }),
+    [address],
+  );
+
   const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);
 
-  const summaryAPYRes = useAsyncData(
-    async () =>
-      (await services.cryptoeconomics.fetchSummaryAPY({
-        rewardProgram: "harvest",
-        devnet: flagsStore.state.devnetCryptoecon,
-      })) +
-      (await services.cryptoeconomics.fetchSummaryAPY({
-        devnet: flagsStore.state.devnetCryptoecon,
-      })),
-  );
-
   const isLoading = computed(() => {
-    return (
-      !accountStore.state.sifchain.address ||
-      lmRes.isLoading.value ||
-      lmHarvestRes.isLoading.value ||
-      summaryAPYRes.isLoading.value ||
-      vsRes.isLoading.value ||
-      claimsRes.isLoading.value
-    );
+    return !accountStore.state.sifchain.address || claimsRes.isLoading.value;
   });
   const error = computed(() => {
-    return lmRes.error.value || vsRes.error.value || claimsRes.error.value;
+    return rewardProgramResponse.error.value || claimsRes.error.value;
   });
-
-  const vsInfoLink = computed(() =>
-    services.cryptoeconomics.getAddressLink(address.value, "vs"),
-  );
-  const lmInfoLink = computed(
-    () =>
-      "https://docs.sifchain.finance/resources/rewards-programs#ibc-cosmos-assets-liquidity-mining-program",
-    // services.cryptoeconomics.getAddressLink(address.value, "lm"),
-  );
 
   return {
     address,
     isLoading,
+    rewardProgramResponse,
     error,
-    lmData: computed(() => lmRes.data.value),
-    lmHarvestData: computed(() => lmHarvestRes.data.value),
-    vsData: computed(() => vsRes.data.value),
-    vsClaim: computed(() => claimsRes.data.value?.vs),
     lmClaim: computed(() => claimsRes.data.value?.lm),
     reloadClaims: () => claimsRes.reload.value(),
-    summaryAPY: computed(() => summaryAPYRes.data.value),
-    vsInfoLink,
-    lmInfoLink,
   };
 };
