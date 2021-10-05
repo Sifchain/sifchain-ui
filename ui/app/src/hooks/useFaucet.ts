@@ -121,18 +121,18 @@ export const tryFundingAccount = async () => {
   }
 
   const faucetGql = createFaucetGraphqlClient();
-  const res = await faucetGql`
-  mutation fundAccount(
-    $signature: String!
-    $contentRaw: String!
-    $networkEnv: NetworkEnv
-  ) {
-    fundAccount(
-      signature: $signature,
-      contentRaw: $contentRaw,
-      networkEnv: $networkEnv
-    ) 
-  }
+  const res = await faucetGql/* GraphQL */ `
+    mutation fundAccount(
+      $signature: String!
+      $contentRaw: String!
+      $networkEnv: NetworkEnv
+    ) {
+      fundAccount(
+        signature: $signature
+        contentRaw: $contentRaw
+        networkEnv: $networkEnv
+      )
+    }
   `({
     signature: envelope.signature,
     contentRaw: envelope.contentRaw,
