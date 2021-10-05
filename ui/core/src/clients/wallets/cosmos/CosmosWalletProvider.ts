@@ -137,21 +137,29 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     chain: Chain,
   ): Promise<IBCHashDenomTraceLookup> {
     const chainConfig = this.getIBCChainConfig(chain);
-    const denomTracesRes = await fetch(
-      `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
-    );
-    if (!denomTracesRes.ok)
-      throw new Error(`Failed to fetch denomTraces for ${chain.displayName}`);
-    const denomTracesJson = await denomTracesRes.json();
-    const denomTraces: DenomTrace[] = denomTracesJson.denom_traces.map(
-      (data: { path: string; base_denom: string }) => ({
-        path: data.path,
-        baseDenom: data.base_denom,
-      }),
-    );
+    const denomTraces = await (await this.getQueryClient(chain)).ibc.transfer
+      .allDenomTraces()
+      .catch(async (e) => {
+        const denomTracesRes = await fetch(
+          `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
+        );
+        if (!denomTracesRes.ok)
+          throw new Error(
+            `Failed to fetch denomTraces for ${chain.displayName}`,
+          );
+        const denomTracesJson = await denomTracesRes.json();
+        return denomTracesJson.denom_traces.map(
+          (denomTrace: any): DenomTrace => {
+            return {
+              path: denomTrace.path,
+              baseDenom: denomTrace.base_denom,
+            };
+          },
+        );
+      });
 
     const hashToTraceMapping: IBCHashDenomTraceLookup = {};
-    for (let denomTrace of denomTraces) {
+    for (let denomTrace of denomTraces.denomTraces) {
       const [port, ...channelIds] = denomTrace.path.split("/");
       const hash = await createIBCHash(
         port,
