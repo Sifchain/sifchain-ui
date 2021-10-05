@@ -46,7 +46,7 @@ const hideRedundantUselessMetamaskErrors = () => {
 };
 hideRedundantUselessMetamaskErrors();
 
-const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
+const ROWAN_GAS_FEE = Amount("400000000000000000"); // 0.4 ROWAN
 
 let hasShownGetRowanModal = (() => {
   try {
