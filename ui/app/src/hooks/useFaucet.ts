@@ -84,22 +84,6 @@ export const useFaucet = () => {
     },
     { immediate: true, deep: true },
   );
-
-  bridgeTxEmitter.on("tx_complete", onTxComplete);
-  onUnmounted(() => bridgeTxEmitter.off("tx_complete", onTxComplete));
-
-  async function onTxComplete(tx: BridgeTx) {
-    if (
-      tx.toChain.network === Network.SIFCHAIN &&
-      envelopeRef.value?.content.status === "InsufficientGasTokenBalance" &&
-      !accountStore.state.sifchain.balances
-        .find((b) => b.symbol.toLowerCase() === "rowan")
-        ?.greaterThan("0")
-    ) {
-      console.log("tryFundingAccount");
-      await tryFundingAccount();
-    }
-  }
 };
 
 export const tryFundingAccount = async () => {
