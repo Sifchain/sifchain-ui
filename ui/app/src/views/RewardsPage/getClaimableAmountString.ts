@@ -1,7 +1,7 @@
 import { Amount, format } from "@sifchain/sdk";
 
 export const getClaimableAmountString = (amount?: number) => {
-  if (amount == null) return "0";
+  if (!amount) return "0";
   if (amount < 0.0001) return "<0.0001";
   return (
     format(Amount((amount || 0).toFixed(18)), {
