@@ -46,7 +46,7 @@ const hideRedundantUselessMetamaskErrors = () => {
 };
 hideRedundantUselessMetamaskErrors();
 
-const ROWAN_GAS_FEE = Amount("500000000000000000"); // 0.5 ROWAN
+const ROWAN_GAS_FEE = Amount("400000000000000000"); // 0.4 ROWAN
 
 let hasShownGetRowanModal = (() => {
   try {
@@ -71,6 +71,7 @@ export default defineComponent({
     EnvAlert,
     SideBar,
     Flags,
+    OnboardingModal,
   },
   computed: {
     key() {
@@ -99,7 +100,8 @@ export default defineComponent({
           b.asset.symbol.toLowerCase() !== "rowan" && b.amount.greaterThan("0"),
       );
       const shouldPossiblyShowOnboardingModal =
-        hasHadValidChanceToLoadBalances.value;
+        hasHadValidChanceToLoadBalances.value &&
+        accountStore.state.sifchain.hasLoadedBalancesOnce;
       if (
         !hasSufficientRowanToTrade &&
         hasImportedAssets &&

@@ -30,6 +30,7 @@ import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
+import KeplrModal from "@/components/KeplrModal/KeplrModal";
 
 type SwapPageMeta = {
   title: string;
@@ -153,6 +154,11 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         name: "GetRowan",
         path: "get-rowan",
         component: GetRowanModal,
+      },
+      {
+        name: "KeplrInfo",
+        path: "keplr",
+        component: KeplrModal,
       },
       {
         name: "Import",
