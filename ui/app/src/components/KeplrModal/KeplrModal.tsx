@@ -1,20 +1,19 @@
 import { defineComponent, PropType } from "vue";
 import Modal from "@/components/Modal";
 import { Button } from "@/components/Button/Button";
+import router from "@/router";
 
 export default defineComponent({
   name: "KeplrModal",
-  props: {
-    onClose: { type: Function as PropType<() => void>, required: true },
-  },
   setup(props) {
+    const onClose = () => router.push({ name: "Balances" });
     return () => {
       return (
         <Modal
           heading={"Download Keplr Wallet"}
           icon="interactive/wallet"
           showClose
-          onClose={props.onClose}
+          onClose={onClose}
         >
           <p class="mt-[10px]">
             Sifchain uses the Keplr wallet extension to connect to the Cosmos
@@ -34,12 +33,9 @@ export default defineComponent({
             <br />
             Once installed, refresh your browser and connect to Sifchain.
           </p>
-          <Button.CallToAction
-            onClick={() => window.location.reload()}
-            class="mt-[10px]"
-          >
-            Refresh
-          </Button.CallToAction>
+          <a href="/#/balances">
+            <Button.CallToAction class="mt-[10px]">Refresh</Button.CallToAction>
+          </a>
         </Modal>
       );
     };

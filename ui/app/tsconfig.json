@@ -25,6 +25,6 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "src/components/GlobalModals", "src/components/GlobalModals"  ],
+  ],
   "exclude": ["node_modules"]
 }

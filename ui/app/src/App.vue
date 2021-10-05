@@ -9,7 +9,6 @@
     <Notifications />
     <EnvAlert />
     <Flags />
-    <GlobalModals />
   </div>
 </template>
 
@@ -25,7 +24,6 @@ import { useRoute, useRouter } from "vue-router";
 import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
 import OnboardingModal from "@/components/OnboardingModal";
-import { GlobalModals } from "@/components/GlobalModals/GlobalModals";
 
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
@@ -74,7 +72,6 @@ export default defineComponent({
     SideBar,
     Flags,
     OnboardingModal,
-    GlobalModals,
   },
   computed: {
     key() {
