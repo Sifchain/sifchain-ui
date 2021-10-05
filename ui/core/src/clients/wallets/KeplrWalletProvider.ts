@@ -298,10 +298,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     // permissionless query to get all balances
     const queryClient = await this.getQueryClientCached(chain);
     const balances = await queryClient?.bank.allBalances(address);
-
-    if (chain.network === Network.JUNO) {
-      console.log({ balances });
-    }
     const assetAmounts: IAssetAmount[] = [];
 
     await Promise.all(
