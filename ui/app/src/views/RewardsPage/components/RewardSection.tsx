@@ -1,6 +1,14 @@
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { TokenIcon } from "@/components/TokenIcon";
-import { Asset, Amount, AppCookies, NetworkEnv, Network } from "@sifchain/sdk";
+import {
+  Asset,
+  Amount,
+  AppCookies,
+  NetworkEnv,
+  Network,
+  getChainsService,
+  IAsset,
+} from "@sifchain/sdk";
 import { format } from "@sifchain/sdk/src/utils/format";
 import {
   CryptoeconomicsRewardType,
@@ -14,19 +22,14 @@ import { accountStore } from "@/store/modules/accounts";
 import { flagsStore } from "@/store/modules/flags";
 import { RewardProgram } from "../useRewardsPageData";
 import { getClaimableAmountString } from "../getClaimableAmountString";
+import { symbolWithoutPrefix } from "@/utils/symbol";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   harvest: {
-    heading: "Sif's Harvest",
     icon: "navigation/harvest" as IconName,
-    description:
-      "Immediately earn and claim rewards of mythological proportions by providing liquidity to any of Sifchain's token pools.",
   },
-  COSMOS_IBC_REWARDS_V1: {
-    heading: ".42 Liquidity Mining",
+  default: {
     icon: "navigation/pool" as IconName,
-    description:
-      "Earn additional rewards by providing liquidity to any of Sifchain's Cosmos IBC token pools.",
   },
 };
 
@@ -38,6 +41,14 @@ export const RewardSection = defineComponent({
     onClaimIntent: { type: Function as PropType<() => void>, required: true },
   },
   computed: {
+    poolAssets() {
+      return getChainsService()
+        .get(Network.SIFCHAIN)
+        .assets.reduce((prev, asset) => {
+          prev[symbolWithoutPrefix(asset.symbol).toLowerCase()] = asset;
+          return prev;
+        }, {} as Record<string, IAsset>);
+    },
     details(): {
       hide?: boolean;
       name: string;
@@ -68,10 +79,12 @@ export const RewardSection = defineComponent({
       ].filter((item) => !item.hide);
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
-      return REWARD_TYPE_DISPLAY_DATA[
-        this.rewardProgram
-          .rewardProgramName as keyof typeof REWARD_TYPE_DISPLAY_DATA
-      ];
+      return (
+        REWARD_TYPE_DISPLAY_DATA[
+          this.rewardProgram
+            .rewardProgramName as keyof typeof REWARD_TYPE_DISPLAY_DATA
+        ] || REWARD_TYPE_DISPLAY_DATA["default"]
+      );
     },
   },
   setup() {
@@ -98,7 +111,7 @@ export const RewardSection = defineComponent({
               size={20}
               class="mr-[10px]"
             />
-            {this.displayData.heading}
+            {this.rewardProgram.displayName}
           </div>
 
           <div class="text-right justify-end flex-1 font-mono flex items-center">
@@ -138,19 +151,21 @@ export const RewardSection = defineComponent({
         <div class="mt-[10px] flex justify-between text-sm bg-gray-base py-2 px-3">
           <div class="flex flex-col justify-between">
             <div class="opacity-50 text-[14px] mb-[20px]">
-              {this.displayData.description}
-              {/* <div
-                style={{
-                  fontVariantCaps: "small-caps",
-                }}
-              >
+              <div>{this.rewardProgram.description}</div>
+              <div class={[`w-full`, `flex flex-row`]}>
                 {!this.rewardProgram.isUniversal &&
-                  this.rewardProgram.incentivizedPoolSymbols
-                    .map((poolSymbol) => {
-                      return poolSymbol;
-                    })
-                    .join(", ")}
-              </div> */}
+                  this.rewardProgram.incentivizedPoolSymbols.map(
+                    (poolSymbol) => {
+                      return (
+                        <div class={`p-[4px] pt-[16px] `}>
+                          <TokenIcon
+                            assetValue={this.poolAssets[poolSymbol]}
+                          ></TokenIcon>
+                        </div>
+                      );
+                    },
+                  )}
+              </div>
             </div>
             <div></div>
             {/* Claimable Amount */}

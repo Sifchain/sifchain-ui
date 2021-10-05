@@ -91,6 +91,8 @@ export type RewardProgram = {
   endDateTimeISO: string;
   distributionPattern: string;
   documentationURL: string;
+  displayName: string;
+  description: string;
 };
 export const useRewardsPageData = () => {
   const { config, services } = useCore();
@@ -116,6 +118,8 @@ export const useRewardsPageData = () => {
               claimedCommissionsAndRewardsAwaitingDispensation
               dispensed
             }
+            displayName
+            description
             documentationURL
             incentivizedPoolSymbols
             isUniversal
