@@ -29,7 +29,7 @@ const app = resolve(__dirname, "../app");
 //   await setupStack(tagName);
 // }
 await Promise.all([
- lint(),
+ // lint(),
  $`cd ${core} && yarn build`,
  $`cd ${app} && yarn build`
 ])
