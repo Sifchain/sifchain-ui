@@ -53,6 +53,8 @@ const createWalletConnection = (
     connect: async () => {
       if (chain.chainConfig.chainType === "ibc") {
         if (!(window as any).keplr) {
+          // A low-budget way to give the KeplrModal power to redirect user back to where they were.
+          (window as any).keplrModalReferrer = window.location.href;
           router.push({ name: "KeplrInfo" });
           return;
         }

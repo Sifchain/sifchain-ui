@@ -33,9 +33,17 @@ export default defineComponent({
             <br />
             Once installed, refresh your browser and connect to Sifchain.
           </p>
-          <a href="/#/balances">
-            <Button.CallToAction class="mt-[10px]">Refresh</Button.CallToAction>
-          </a>
+          {/* A low-budget way to redirect user back to where they were.*/}
+          <Button.CallToAction
+            class="mt-[10px]"
+            onClick={() => {
+              window.location.href =
+                (window as any).keplrModalReferrer || "/#/balances";
+              window.location.reload();
+            }}
+          >
+            Refresh
+          </Button.CallToAction>
         </Modal>
       );
     };
