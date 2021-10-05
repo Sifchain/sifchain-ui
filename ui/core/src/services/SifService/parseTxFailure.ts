@@ -2,6 +2,7 @@ import { BroadcastTxFailure } from "@cosmjs/launchpad";
 import { TransactionStatus } from "../../entities";
 import { ErrorCode, getErrorMessage } from "../../entities/Errors";
 
+// returns contextual inflrmation based on ethereum tx failure
 export function parseEthereumTxFailure(txFailure: {
   transactionHash: string;
   rawLog?: string;
