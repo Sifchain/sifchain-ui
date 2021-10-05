@@ -162,33 +162,41 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     }
     if (chain.network === Network.SIFCHAIN) {
       // For sifchain, check for tokens that come from ANY ibc entry
-      const ibcEntries = (await this.tokenRegistry.load()).filter(
-        (item) => !!item.ibcCounterpartyChannelId,
-      );
-      for (let [hash, item] of Object.entries(hashToTraceMapping)) {
-        hashToTraceMapping[hash].isValid = ibcEntries.some(
-          (entry) =>
-            item.denomTrace.path.startsWith(
-              "transfer/" + entry.ibcCounterpartyChannelId,
-            ) ||
-            item.denomTrace.path.startsWith("transfer/" + entry.ibcChannelId),
+      try {
+        const ibcEntries = (await this.tokenRegistry.load()).filter(
+          (item) => !!item.ibcCounterpartyChannelId,
         );
+        for (let [hash, item] of Object.entries(hashToTraceMapping)) {
+          hashToTraceMapping[hash].isValid = ibcEntries.some(
+            (entry) =>
+              item.denomTrace.path.startsWith(
+                "transfer/" + entry.ibcCounterpartyChannelId,
+              ) ||
+              item.denomTrace.path.startsWith("transfer/" + entry.ibcChannelId),
+          );
+        }
+      } catch (error) {
+        // invalid token we don't support anymore, ignore
       }
     } else {
-      // For other networks, check for tokens that come from specific counterparty channel
-      const entry = await this.tokenRegistry.findAssetEntryOrThrow(
-        chain.nativeAsset,
-      );
-      const channelId = entry.ibcCounterpartyChannelId;
-      if (!channelId) {
-        throw new Error(
-          "Cannot trace denoms, not an IBC chain " + chain.displayName,
+      try {
+        // For other networks, check for tokens that come from specific counterparty channel
+        const entry = await this.tokenRegistry.findAssetEntryOrThrow(
+          chain.nativeAsset,
         );
-      }
-      for (let [hash, item] of Object.entries(hashToTraceMapping)) {
-        hashToTraceMapping[hash].isValid = item.denomTrace.path.startsWith(
-          `transfer/${channelId}`,
-        );
+        const channelId = entry.ibcCounterpartyChannelId;
+        if (!channelId) {
+          throw new Error(
+            "Cannot trace denoms, not an IBC chain " + chain.displayName,
+          );
+        }
+        for (let [hash, item] of Object.entries(hashToTraceMapping)) {
+          hashToTraceMapping[hash].isValid = item.denomTrace.path.startsWith(
+            `transfer/${channelId}`,
+          );
+        }
+      } catch (error) {
+        // invalid token we don't support anymore, ignore
       }
     }
 
