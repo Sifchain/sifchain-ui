@@ -275,11 +275,15 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
       if (!coin.denom.startsWith("ibc/")) {
         const asset = chain.lookupAsset(coin.denom);
 
-        // create asset it doesn't exist and is a precision-adjusted counterparty asset
-        const assetAmount = await this.tokenRegistry.loadNativeAssetAmount(
-          AssetAmount(asset || coin.denom, coin.amount),
-        );
-        assetAmounts.push(assetAmount);
+        try {
+          // create asset it doesn't exist and is a precision-adjusted counterparty asset
+          const assetAmount = await this.tokenRegistry.loadNativeAssetAmount(
+            AssetAmount(asset || coin.denom, coin.amount),
+          );
+          assetAmounts.push(assetAmount);
+        } catch (error) {
+          // invalid token, ignore
+        }
       } else {
         let lookupData = denomTracesLookup[coin.denom];
         let denomTrace = lookupData?.denomTrace;
