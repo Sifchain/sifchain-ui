@@ -100,7 +100,8 @@ export default defineComponent({
           b.asset.symbol.toLowerCase() !== "rowan" && b.amount.greaterThan("0"),
       );
       const shouldPossiblyShowOnboardingModal =
-        hasHadValidChanceToLoadBalances.value;
+        hasHadValidChanceToLoadBalances.value &&
+        accountStore.state.sifchain.hasLoadedBalancesOnce;
       if (
         !hasSufficientRowanToTrade &&
         hasImportedAssets &&

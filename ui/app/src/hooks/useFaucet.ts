@@ -52,7 +52,6 @@ export const useFaucet = () => {
       ) {
         return;
       }
-      console.log("wait what?");
 
       const res = await faucetGql/* GraphQL */ `
         mutation createAccountBalanceProof(
