@@ -9,8 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET_042]: JUNO_MAINNET,
   [NetworkEnv.DEVNET]: JUNO_MAINNET,
   [NetworkEnv.TESTNET]: JUNO_MAINNET,
-  [NetworkEnv.MAINNET]: {
-    ...JUNO_MAINNET,
-    hidden: true, // not ready for mainnet
-  },
+  [NetworkEnv.MAINNET]: JUNO_MAINNET,
 };
