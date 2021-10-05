@@ -14,6 +14,7 @@ import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProv
 
 import metamaskSrc from "@/assets/metamask.png";
 import keplrSrc from "@/assets/keplr.jpg";
+import { modalsStore } from "@/store/modules/modals";
 
 export type WalletConnection = {
   walletName: string;
@@ -51,6 +52,10 @@ const createWalletConnection = (
     getChain: () => chain,
     connect: async () => {
       if (chain.chainConfig.chainType === "ibc") {
+        if (!(window as any).keplr) {
+          modalsStore.setKeplrTutorial(true);
+          return;
+        }
         const keplr = await getKeplrProvider();
         if (
           keplr &&

@@ -7,6 +7,7 @@ export const COSMOSHUB_TESTNET: IBCChainConfig = {
   blockExplorerUrl: "https://mintscan.io/cosmos",
   nativeAssetSymbol: "uphoton",
   chainId: "cosmoshub-testnet",
+  // rpcUrl: "https://rpc.testnet.cosmos.network",
   rpcUrl: "https://sifchain-proxies.vercel.app/api/cosmoshub-testnet/rpc",
   restUrl: "https://sifchain-proxies.vercel.app/api/cosmoshub-testnet/rest",
   keplrChainInfo: {

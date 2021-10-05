@@ -177,8 +177,14 @@ export default defineComponent({
                   />
                 )}
                 {/* Disable free rowan button until faucet is operational */}
-                {/* {!accountStore.state.sifchain.connecting &&
-                !accountStore.state.sifchain.balances.find(
+                {!accountStore.state.sifchain.connecting &&
+                accountStore.state.sifchain.hasLoadedBalancesOnce &&
+                accountStore.state.sifchain.balances.some(
+                  // has imported
+                  (b) => b.amount.greaterThan("0"),
+                ) &&
+                !accountStore.state.sifchain.balances.some(
+                  // does not have rowan
                   (b) =>
                     b.asset.symbol.includes("rowan") &&
                     b.amount.greaterThan("0"),
@@ -188,7 +194,7 @@ export default defineComponent({
                     icon="navigation/rowan"
                     href="/balances/get-rowan"
                   />
-                ) : null} */}
+                ) : null}
                 <Tooltip
                   trigger="click"
                   placement="bottom"

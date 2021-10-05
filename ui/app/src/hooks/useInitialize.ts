@@ -13,6 +13,7 @@ import {
   BridgeTx,
   bridgeTxEmitter,
 } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
+import { useFaucet } from "./useFaucet";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -58,6 +59,8 @@ let connectAll = () => {
 export function useInitialize() {
   connectAll();
   connectAll = () => {};
+
+  useFaucet();
 
   const { usecases, store, services, config } = useCore();
 
