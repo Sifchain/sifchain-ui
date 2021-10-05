@@ -947,6 +947,16 @@ const assets: {
       homeNetwork: "ethereum",
       decimals: 18,
     },
+    {
+      symbol: "ujuno",
+      displaySymbol: "juno",
+      decimals: 6,
+      name: "juno",
+      network: "sifchain",
+      label: "juno",
+      imageUrl: "https://junoscan.com/icons/safari-pinned-tab.svg",
+      homeNetwork: "juno",
+    },
   ],
 };
 

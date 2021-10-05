@@ -159,19 +159,28 @@ export class IBCService {
     receivingPort: string,
     sequence: string | number,
   ) {
-    const res: {
-      received: boolean;
-      proof: null | string;
-      proof_height: {
-        revision_number: string;
-        revision_height: string;
-      };
-    } = await fetch(
-      `${
-        this.loadChainConfigByNetwork(network).restUrl
-      }/ibc/core/channel/v1beta1/channels/${receivingChannelId}/ports/${receivingPort}/packet_receipts/${sequence}`,
-    ).then((r) => r.json());
-    return res.received;
+    const didReceive = Promise.resolve()
+      .then(async (e) => {
+        const queryClient = await this.loadQueryClientByNetwork(network);
+        const receipt = await queryClient.ibc.channel.packetReceipt(
+          receivingPort,
+          receivingChannelId,
+          +sequence,
+        );
+        return receipt.received;
+      })
+      .catch((e) => {
+        return fetch(
+          `${
+            this.loadChainConfigByNetwork(network).restUrl
+          }/ibc/core/channel/v1beta1/channels/${receivingChannelId}/ports/${receivingPort}/packet_receipts/${sequence}`,
+        ).then((r) =>
+          r.json().then((res) => {
+            return res.received;
+          }),
+        );
+      });
+    return didReceive;
   }
 
   async loadQueryClientByNetwork(network: Network) {
@@ -492,7 +501,6 @@ export class IBCService {
     while (encodeMsgs.length) {
       batches.push(encodeMsgs.splice(0, maxMsgsPerBatch));
     }
-    console.log({ batches });
     const responses: BroadcastTxResult[] = [];
     for (let batch of batches) {
       try {
@@ -550,7 +558,6 @@ export class IBCService {
         } as BroadcastTxResult);
       }
     }
-    console.log({ responses });
     return responses;
   }
 }

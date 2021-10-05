@@ -667,5 +667,15 @@ export default {
         "https://assets.coingecko.com/coins/images/16724/small/osmosis.jpeg?1624849879",
       homeNetwork: "osmosis",
     },
+    {
+      symbol: "ujuno",
+      displaySymbol: "juno",
+      decimals: 6,
+      name: "juno",
+      network: "sifchain",
+      label: "juno",
+      imageUrl: "https://junoscan.com/icons/safari-pinned-tab.svg",
+      homeNetwork: "juno",
+    },
   ],
 };
