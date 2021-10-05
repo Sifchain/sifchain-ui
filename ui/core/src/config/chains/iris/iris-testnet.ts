@@ -7,11 +7,11 @@ export const IRIS_TESTNET: IBCChainConfig = {
   nativeAssetSymbol: "unyan",
   network: Network.IRIS,
   chainId: "nyancat-8",
-  rpcUrl: "https://sifchain-proxies.vercel.app/api/nyancat-8/rpc",
-  restUrl: "https://sifchain-proxies.vercel.app/api/nyancat-8/rest",
+  rpcUrl: "https://proxies.sifchain.finance/api/nyancat-8/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/nyancat-8/rest",
   keplrChainInfo: {
-    rpc: "https://sifchain-proxies.vercel.app/api/nyancat-8/rpc",
-    rest: "https://sifchain-proxies.vercel.app/api/nyancat-8/rest",
+    rpc: "https://proxies.sifchain.finance/api/nyancat-8/rpc",
+    rest: "https://proxies.sifchain.finance/api/nyancat-8/rest",
     chainId: "nyancat-8",
     chainName: "Iris Testnet",
     stakeCurrency: {

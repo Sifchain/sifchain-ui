@@ -65,7 +65,6 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
   static create(context: IBCBridgeContext) {
     return new this(context);
   }
-
   public loadChainConfigByChainId(chainId: string): IBCChainConfig {
     // @ts-ignore
     const chainConfig = Object.values(this.context.chainConfigsByNetwork).find(
@@ -134,21 +133,29 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     receivingPort: string,
     sequence: string | number,
   ) {
-    const res: {
-      received: boolean;
-      proof: null | string;
-      proof_height: {
-        revision_number: string;
-        revision_height: string;
-      };
-    } = await fetch(
-      `${
-        this.loadChainConfigByNetwork(network).restUrl
-      }/ibc/core/channel/v1beta1/channels/${receivingChannelId}/ports/${receivingPort}/packet_receipts/${sequence}`,
-    ).then((r) => r.json());
-    return res.received;
+    const didReceive = Promise.resolve()
+      .then(async (e) => {
+        const queryClient = await this.loadQueryClientByNetwork(network);
+        const receipt = await queryClient.ibc.channel.packetReceipt(
+          receivingPort,
+          receivingChannelId,
+          +sequence,
+        );
+        return receipt.received;
+      })
+      .catch((e) => {
+        return fetch(
+          `${
+            this.loadChainConfigByNetwork(network).restUrl
+          }/ibc/core/channel/v1beta1/channels/${receivingChannelId}/ports/${receivingPort}/packet_receipts/${sequence}`,
+        ).then((r) =>
+          r.json().then((res) => {
+            return res.received;
+          }),
+        );
+      });
+    return didReceive;
   }
-
   async loadQueryClientByNetwork(network: Network) {
     const destChainConfig = this.loadChainConfigByNetwork(network);
     const tendermintClient = await Tendermint34Client.connect(
@@ -204,7 +211,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         aminoTypes: new NativeAminoTypes(),
         gasLimits: {
           send: 80000,
-          transfer: 300000,
+          transfer: 360000,
           delegate: 250000,
           undelegate: 250000,
           redelegate: 250000,

@@ -19,7 +19,7 @@ import { getImportLocation } from "@/views/BalancePage/Import/useImportData";
 const formatRowanNumber = (n?: number) => {
   if (n == null) return "0";
   return (
-    format(Amount(String(n)), {
+    format(Amount(String(n.toFixed(18))), {
       mantissa: 4,
       zeroFormat: "0",
     }) || "0"

@@ -8,10 +8,10 @@ export const REGEN_MAINNET: IBCChainConfig = {
   nativeAssetSymbol: "uregen",
   chainId: "regen-1",
   rpcUrl: "https://regen.stakesystems.io:2053",
-  restUrl: "https://sifchain-proxies.vercel.app/api/regen-1/rest",
+  restUrl: "https://proxies.sifchain.finance/api/regen-1/rest",
   keplrChainInfo: {
     rpc: "https://regen.stakesystems.io:2053",
-    rest: "https://sifchain-proxies.vercel.app/api/regen-1/rest",
+    rest: "https://proxies.sifchain.finance/api/regen-1/rest",
     chainId: "regen-1",
     chainName: "Regen",
     stakeCurrency: {

@@ -7,11 +7,11 @@ export const SENTINEL_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://explorer.sentinel.co/",
   nativeAssetSymbol: "udvpn",
   chainId: "sentinelhub-2",
-  rpcUrl: "https://sifchain-proxies.vercel.app/api/sentinelhub-2/rpc",
-  restUrl: "https://sifchain-proxies.vercel.app/api/sentinelhub-2/rest",
+  rpcUrl: "https://proxies.sifchain.finance/api/sentinelhub-2/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/sentinelhub-2/rest",
   keplrChainInfo: {
-    rpc: "https://sifchain-proxies.vercel.app/api/sentinelhub-2/rpc",
-    rest: "https://sifchain-proxies.vercel.app/api/sentinelhub-2/rest",
+    rpc: "https://proxies.sifchain.finance/api/sentinelhub-2/rpc",
+    rest: "https://proxies.sifchain.finance/api/sentinelhub-2/rest",
     chainId: "sentinelhub-2",
     chainName: "Sentinel",
     stakeCurrency: {
