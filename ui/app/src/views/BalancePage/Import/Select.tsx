@@ -2,7 +2,7 @@ import { defineComponent, ref, computed, watch } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { AssetAmount, Network } from "@sifchain/sdk";
+import { AssetAmount, Network, toBaseUnits } from "@sifchain/sdk";
 import {
   SelectDropdown,
   SelectDropdownOption,
@@ -144,21 +144,27 @@ export default defineComponent({
     const amountValue = rootStore.import.refs.draft.amount.computed();
 
     const handleSetMax = async () => {
+      if (!tokenRef.value) return;
       const chain = useChains().get(networkValue.value);
       if (chain.chainConfig.chainType === "ibc") {
-        const gasAssetAmount = await services.ibc.fetchTransferGasFee(chain);
-        if (
-          tokenRef.value &&
-          tokenRef.value.asset.symbol === chain.nativeAsset.symbol
-        ) {
+        const gasAssetAmount = AssetAmount(
+          chain.nativeAsset,
+          toBaseUnits("0.1", chain.nativeAsset),
+        );
+        if (tokenRef.value.asset.symbol === chain.nativeAsset.symbol) {
           const amount = tokenRef.value.amount.subtract(gasAssetAmount);
+          console.log({
+            amount: amount.toString(),
+            balance: tokenRef.value.amount.toString(),
+            fee: gasAssetAmount.toString(),
+          });
           rootStore.import.setDraft({
             amount: amount.lessThan("0")
               ? "0.0"
               : format(amount, tokenRef.value.asset),
           });
         }
-      } else if (tokenRef.value) {
+      } else {
         rootStore.import.setDraft({
           amount: format(
             getMaxAmount(
