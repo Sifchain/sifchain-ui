@@ -44,7 +44,6 @@ import { BaseBridge, BridgeParams, IBCBridgeTx, BridgeTx } from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";
 import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
 import { fromBaseUnits, toBaseUnits } from "utils";
-import { fetchIBCGasFee } from "../../../utils/fetchGasFees";
 
 export type IBCBridgeContext = {
   // applicationNetworkEnvironment: NetworkEnv;

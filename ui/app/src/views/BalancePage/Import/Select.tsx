@@ -22,8 +22,6 @@ import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
-import { exportStore } from "@/store/modules/export";
-import { fetchIBCGasFee } from "@sifchain/sdk/src/utils/fetchGasFees";
 
 export default defineComponent({
   name: "ImportSelect",
