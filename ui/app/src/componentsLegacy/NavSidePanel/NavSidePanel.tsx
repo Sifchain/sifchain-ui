@@ -185,6 +185,7 @@ export default defineComponent({
                   (b) => b.amount.greaterThan("0"),
                 ) &&
                 !accountStore.state.sifchain.balances.some(
+                  // comment
                   // does not have rowan
                   (b) =>
                     b.asset.symbol.includes("rowan") &&
