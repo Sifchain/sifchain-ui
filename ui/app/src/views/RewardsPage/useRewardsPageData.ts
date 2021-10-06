@@ -110,8 +110,11 @@ export const useRewardsPageData = () => {
       rewardPrograms: RewardProgram[];
     }> =>
       gql`
-        query($participantAddress: String!) {
+        query ${address.value ? `($participantAddress: String!)` : ``} {
           rewardPrograms {
+            ${
+              address.value
+                ? `
             participant(address: $participantAddress) {
               totalCommissionsAndRewardsAtMaturity
               currentAPYOnTickets
@@ -122,6 +125,8 @@ export const useRewardsPageData = () => {
               totalDepositedAmount
               claimedCommissionsAndRewardsAwaitingDispensation
               dispensed
+            }`
+                : ``
             }
             displayName
             description
