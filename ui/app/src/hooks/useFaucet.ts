@@ -1,4 +1,5 @@
 import { accountStore, IWalletServiceState } from "@/store/modules/accounts";
+import { flagsStore } from "@/store/modules/flags";
 import { createFaucetGraphqlClient } from "@/utils/createFaucetGraphqlClient";
 import { AppCookies, getNetworkEnv, Network } from "@sifchain/sdk";
 import {
@@ -46,6 +47,7 @@ export const useFaucet = () => {
       if (envelopeRef.value?.content?.address === state.address) return;
 
       if (
+        !flagsStore.state.faucetEnabled ||
         state.balances
           .find((b) => b.symbol.toLowerCase() === "rowan")
           ?.greaterThan("0")

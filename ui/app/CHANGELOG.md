@@ -1,12 +1,10 @@
 ## Release 2021.10.05
-* Enabled JUNØ!
-* Launched Sif's Bonus Pool
-  * 1M Rowan. 2 weeks. 3 steps.
-    * Import JUNØ
-    * Pool JUNØ
-    * Earn Rowan
-* Introduced official Rowan betanet faucet
-
+* Enabled JUNØ
+* Sif's Bonus Pool - 1M Rowan. 2 weeks. 3 steps.
+  * Import JUNØ
+  * Pool JUNØ
+  * Earn Rowan
+  
 ## Release 2021.10.03
 * Welcomed the Sif's Harvest Liquidity Mining Program 
   * All pools. 

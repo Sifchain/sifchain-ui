@@ -19,7 +19,7 @@ export type ClaimArgs = {
 };
 type RewardProgramName = "COSMOS_IBC_REWARDS_V1" | "harvest";
 
-export function Claim({ dispensation, sif, chains, wallet }: ClaimArgs) {
+export function Claim({ dispensation, wallet, sif, chains }: ClaimArgs) {
   return async ({
     rewardProgramName,
     ...params
