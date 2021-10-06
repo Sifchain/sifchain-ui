@@ -17,6 +17,7 @@ import ChangelogModal, {
 } from "@/components/ChangelogModal";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { loadChangesData } from "@/hooks/informational-modals";
+import { flagsStore } from "@/store/modules/flags";
 
 export default defineComponent({
   props: {},
@@ -188,7 +189,8 @@ export default defineComponent({
                   (b) =>
                     b.asset.symbol.includes("rowan") &&
                     b.amount.greaterThan("0"),
-                ) ? (
+                ) &&
+                flagsStore.state.faucetEnabled ? (
                   <NavSidePanelItem
                     displayName="Get Free Rowan"
                     icon="navigation/rowan"
