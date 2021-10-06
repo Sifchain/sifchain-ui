@@ -23,6 +23,7 @@ import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
 import { exportStore } from "@/store/modules/export";
+import { fetchIBCGasFee } from "@sifchain/sdk/src/utils/fetchGasFees";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -144,22 +145,30 @@ export default defineComponent({
     const networkValue = rootStore.import.refs.draft.network.computed();
     const amountValue = rootStore.import.refs.draft.amount.computed();
 
-    const handleSetMax = () => {
-      if (tokenRef.value && tokenRef.value?.amount) {
-        const decimals = tokenRef.value.asset.decimals;
-        const afterMaxValue = getMaxAmount(
-          ref(tokenRef.value.asset.symbol),
-          tokenRef.value.amount,
-        );
-        const nextAssetAmount = AssetAmount(
-          tokenRef.value.asset,
-          afterMaxValue,
-        );
-        const nextAmount = afterMaxValue.lessThan("0")
-          ? "0.0"
-          : format(nextAssetAmount.amount, nextAssetAmount.asset);
+    const handleSetMax = async () => {
+      const chain = useChains().get(networkValue.value);
+      if (chain.chainConfig.chainType === "ibc") {
+        const gasAssetAmount = await services.ibc.fetchTransferGasFee(chain);
+        if (
+          tokenRef.value &&
+          tokenRef.value.asset.symbol === chain.nativeAsset.symbol
+        ) {
+          const amount = tokenRef.value.amount.subtract(gasAssetAmount);
+          rootStore.import.setDraft({
+            amount: amount.lessThan("0")
+              ? "0.0"
+              : format(amount, tokenRef.value.asset),
+          });
+        }
+      } else if (tokenRef.value) {
         rootStore.import.setDraft({
-          amount: nextAmount,
+          amount: format(
+            getMaxAmount(
+              ref(tokenRef.value.asset.symbol),
+              tokenRef.value.amount,
+            ),
+            tokenRef.value.asset,
+          ),
         });
       }
     };
