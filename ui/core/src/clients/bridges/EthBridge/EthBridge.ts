@@ -146,29 +146,24 @@ export class EthBridge extends BaseBridge<
     const web3 = new Web3(await this.context.getWeb3Provider());
 
     if (wallet instanceof CosmosWalletProvider) {
-      try {
-        const tx = await this.exportToEth(wallet, params);
+      const tx = await this.exportToEth(wallet, params);
 
-        if (isBroadcastTxFailure(tx)) {
-          throw new Error(parseTxFailure(tx).memo);
-        }
-
-        const startingHeight = await web3.eth.getBlockNumber();
-
-        return {
-          type: "eth",
-          startingHeight,
-          confirmCount: 0,
-          completionConfirmCount: 0,
-          ...params,
-          hash: tx.transactionHash,
-          fromChain: params.fromChain,
-          toChain: params.toChain,
-        } as EthBridgeTx;
-      } catch (error) {
-        console.error(error);
-        throw error;
+      if (isBroadcastTxFailure(tx)) {
+        throw new Error(parseTxFailure(tx).memo);
       }
+
+      const startingHeight = await web3.eth.getBlockNumber();
+
+      return {
+        type: "eth",
+        startingHeight,
+        confirmCount: 0,
+        completionConfirmCount: 0,
+        ...params,
+        hash: tx.transactionHash,
+        fromChain: params.fromChain,
+        toChain: params.toChain,
+      } as EthBridgeTx;
     } else {
       const pegTx = await this.importFromEth(wallet, params);
       const startingHeight = await web3.eth.getBlockNumber();
@@ -210,47 +205,42 @@ export class EthBridge extends BaseBridge<
 
     const entry = await this.tokenRegistry.findAssetEntryOrThrow(sifAsset);
 
-    try {
-      const tx = isOriginallySifchainNativeToken(params.assetAmount.asset)
-        ? client.tx.ethbridge.Lock(
-            {
-              ethereumReceiver: params.toAddress,
+    const tx = isOriginallySifchainNativeToken(params.assetAmount.asset)
+      ? client.tx.ethbridge.Lock(
+          {
+            ethereumReceiver: params.toAddress,
 
-              amount: params.assetAmount.toBigInt().toString(),
-              symbol: entry.denom,
-              cosmosSender: params.fromAddress,
-              ethereumChainId: Long.fromString(
-                `${parseInt(params.toChain.chainConfig.chainId)}`,
-              ),
-              // ethereumReceiver: tokenAddress,
-              cethAmount: feeAmount!.toBigInt().toString(),
-            },
-            params.fromAddress,
-          )
-        : client.tx.ethbridge.Burn(
-            {
-              ethereumReceiver: params.toAddress,
+            amount: params.assetAmount.toBigInt().toString(),
+            symbol: entry.denom,
+            cosmosSender: params.fromAddress,
+            ethereumChainId: Long.fromString(
+              `${parseInt(params.toChain.chainConfig.chainId)}`,
+            ),
+            // ethereumReceiver: tokenAddress,
+            cethAmount: feeAmount!.toBigInt().toString(),
+          },
+          params.fromAddress,
+        )
+      : client.tx.ethbridge.Burn(
+          {
+            ethereumReceiver: params.toAddress,
 
-              amount: params.assetAmount.toBigInt().toString(),
-              symbol: entry.denom,
-              cosmosSender: params.fromAddress,
-              ethereumChainId: Long.fromString(
-                `${parseInt(params.toChain.chainConfig.chainId)}`,
-              ),
-              // ethereumReceiver: tokenAddress,
-              cethAmount: feeAmount!.toBigInt().toString(),
-            },
-            params.fromAddress,
-          );
+            amount: params.assetAmount.toBigInt().toString(),
+            symbol: entry.denom,
+            cosmosSender: params.fromAddress,
+            ethereumChainId: Long.fromString(
+              `${parseInt(params.toChain.chainConfig.chainId)}`,
+            ),
+            // ethereumReceiver: tokenAddress,
+            cethAmount: feeAmount!.toBigInt().toString(),
+          },
+          params.fromAddress,
+        );
 
-      const signed = await provider.sign(nativeChain, tx);
-      const sent = await provider.broadcast(nativeChain, signed);
+    const signed = await provider.sign(nativeChain, tx);
+    const sent = await provider.broadcast(nativeChain, signed);
 
-      return sent;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    return sent;
   }
 
   private async importFromEth(
@@ -581,7 +571,7 @@ export class EthBridge extends BaseBridge<
         this.context.bridgebankContractAddress,
       );
       const accounts = await web3.eth.getAccounts();
-      const coinDenom = assetAmount.asset.address || ETH_ADDRESS;
+      const coinDenom = assetAmount.asset.address;
       const amount = assetAmount.toBigInt().toString();
       const fromAddress = address || accounts[0];
 
