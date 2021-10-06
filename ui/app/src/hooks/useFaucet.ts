@@ -42,7 +42,6 @@ const setEnvelopeValue = (value: FaucetSignatureEnvelope) => {
 export const shouldAllowFaucetFunding = () => {
   return (
     envelopeRef.value?.content.status === "InsufficientGasTokenBalance" &&
-    flagsStore.state.faucetEnabled &&
     !accountStore.state.sifchain.connecting &&
     // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
     accountStore.state.sifchain.hasLoadedBalancesOnce &&
@@ -69,7 +68,6 @@ export const useFaucet = () => {
       if (envelopeRef.value?.content?.address === state.address) return;
 
       if (
-        !flagsStore.state.faucetEnabled ||
         state.balances
           .find((b) => b.symbol.toLowerCase() === "rowan")
           ?.greaterThan("0")
