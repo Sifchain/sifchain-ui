@@ -123,11 +123,8 @@ export const useRewardsPageData = () => {
               claimedCommissionsAndRewardsAwaitingDispensation
               dispensed
             }
-<<<<<<< HEAD
-=======
             displayName
             description
->>>>>>> feature/juno-rewards
             documentationURL
             incentivizedPoolSymbols
             isUniversal
