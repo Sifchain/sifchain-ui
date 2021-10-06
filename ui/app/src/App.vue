@@ -35,9 +35,10 @@ const hideRedundantUselessMetamaskErrors = () => {
       console.warn("Hiding redundant Metamask 'header not found' errors.");
     }
     if (
-      args[0] &&
+      !args ||
+      (args[0] &&
       typeof args[0] === "string" &&
-      args[0].includes("MetaMask - RPC Error: header not found")
+      args[0].includes("MetaMask - RPC Error: header not found"))
     ) {
       return;
     }
