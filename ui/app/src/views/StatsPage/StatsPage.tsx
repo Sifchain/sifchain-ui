@@ -14,7 +14,7 @@ export default defineComponent({
   setup() {
     const { res, statsRef, state } = useStatsPageData({
       sortBy: "rewardApy",
-      sortDirection: "asc",
+      sortDirection: "desc",
     } as StatsPageState);
 
     const columns: Array<{
