@@ -179,6 +179,7 @@ export default defineComponent({
                 )}
                 {/* Disable free rowan button until faucet is operational */}
                 {!accountStore.state.sifchain.connecting &&
+                // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
                 accountStore.state.sifchain.hasLoadedBalancesOnce &&
                 accountStore.state.sifchain.balances.some(
                   // has imported
