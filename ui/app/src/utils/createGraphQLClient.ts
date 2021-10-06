@@ -21,9 +21,9 @@ export const createGraphQLClient = (url: string) =>
       })
         .then((r) => r.json())
         .then((r) => {
-          if (r.errors) {
+          if (r.data == null) {
             console.error("GraphQL error", r);
-            throw new Error(r.errors?.[0]?.message);
+            throw new Error(r.errors?.[0]?.message || "Unknown Error Occurred");
           }
           return r.data;
         });
