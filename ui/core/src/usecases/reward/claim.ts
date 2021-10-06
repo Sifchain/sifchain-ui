@@ -30,26 +30,26 @@ export function Claim({ dispensation, wallet, sif, chains }: ClaimArgs) {
   }): Promise<TransactionStatus> => {
     if (!params) throw "You forgot claimType and fromAddress";
     const memo = `program=${rewardProgramName}`;
-    const keplrProvider = await getKeplrProvider();
-    if (!keplrProvider) throw new Error("keplr not enabled");
+
+    const address = await wallet.keplrProvider.connect(chains.nativeChain);
+    if (!address) throw new Error("Not connected to Sifchain wallet");
+
     const client = await sif.loadNativeDexClient();
+
     const tx = client.tx.dispensation.CreateUserClaim(
       {
         userClaimAddress: params.fromAddress,
         userClaimType: params.claimType,
       },
-      sif.getState().address,
+      address,
       undefined,
       memo,
     );
-    const chain = chains.get(Network.SIFCHAIN);
-    const signer = await keplrProvider.getOfflineSigner(
-      chain.chainConfig.chainId,
+    const signed = await wallet.keplrProvider.sign(chains.nativeChain, tx);
+    const sent = await wallet.keplrProvider.broadcast(
+      chains.nativeChain,
+      signed,
     );
-
-    const signed = await wallet.keplrProvider.sign(chain, tx);
-    const sent = await wallet.keplrProvider.broadcast(chain, signed);
-    const parsed = client.parseTxResult(sent);
-    return parsed;
+    return client.parseTxResult(sent);
   };
 }
