@@ -323,9 +323,8 @@ export class EthBridge extends BaseBridge<
     } else {
       const contract = new web3.eth.Contract(
         erc20TokenAbi,
-        ethTx.toChain.findAssetWithLikeSymbolOrThrow(
-          ethTx.assetAmount.symbol,
-        ).address,
+        ethTx.toChain.findAssetWithLikeSymbolOrThrow(ethTx.assetAmount.symbol)
+          .address || ETH_ADDRESS,
       );
 
       let startingHeight = ethTx.startingHeight;
@@ -594,6 +593,7 @@ export class EthBridge extends BaseBridge<
           handleError(err);
         });
     } catch (err) {
+      console.error(err);
       handleError(err);
     }
 
