@@ -176,48 +176,65 @@ export default defineComponent({
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
 
-            <div class="absolute top-50% left-[100%] ml-[4px] flex items-center">
+            <div
+              class="absolute top-50% left-[100%] ml-[4px] flex items-center"
+              key={JSON.stringify(props.tokenItem.pendingImports)}
+            >
               {props.tokenItem.pendingImports.length > 0 && (
                 <Tooltip
                   arrow
                   interactive
-                  key={JSON.stringify(props.tokenItem.pendingImports)}
                   placement="top"
                   appendTo={() =>
                     document.querySelector("#portal-target") as Element
                   }
                   maxWidth={"none"}
                   content={
-                    <div class="text-left w-[400px]">
+                    <div class="text-left w-[450px]">
                       <p class="mb-1">
-                        You have the following pending import transactions. The
-                        imported tokens will usually be available for use on
-                        Sifchain within 20 minutes, sometimes upwards of 60
-                        minutes.
+                        You have the following pending import transactions.
+                        {props.tokenItem.pendingImports.some(
+                          (item) => item.bridgeTx.type === "eth",
+                        ) && (
+                          <>
+                            <br />
+                            Imports from Ethereum will be available after 50
+                            block confirmations.
+                          </>
+                        )}
+                        {props.tokenItem.pendingImports.some(
+                          (item) => item.bridgeTx.type === "ibc",
+                        ) && (
+                          <>
+                            <br />
+                            IBC imports will be usually be available within 5
+                            minutes, sometimes upwards of 45 minutes.
+                          </>
+                        )}
                       </p>
                       <ul class="list-disc list-inside">
-                        {props.tokenItem.pendingImports.map(
-                          ({ interchainTx }) => (
-                            <li>
-                              Import{" "}
-                              {formatAssetAmount(interchainTx.assetAmount)}{" "}
-                              {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
-                              from {interchainTx.fromChain.displayName} (
-                              <a
-                                class="font-normal text-accent-base hover:text-underline"
-                                href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
-                                  interchainTx.hash,
-                                )}
-                                title={interchainTx.hash}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {shortenHash(interchainTx.hash)}
-                              </a>
-                              )
-                            </li>
-                          ),
-                        )}
+                        {props.tokenItem.pendingImports.map(({ bridgeTx }) => (
+                          <li>
+                            Import {formatAssetAmount(bridgeTx.assetAmount)}{" "}
+                            {bridgeTx.assetAmount.displaySymbol.toUpperCase()}{" "}
+                            from {bridgeTx.fromChain.displayName}
+                            {bridgeTx.type === "eth" &&
+                              ` (${bridgeTx.confirmCount} / ${bridgeTx.completionConfirmCount})`}{" "}
+                            (
+                            <a
+                              class="font-normal text-accent-base hover:text-underline"
+                              href={bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
+                                bridgeTx.hash,
+                              )}
+                              title={bridgeTx.hash}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {shortenHash(bridgeTx.hash)}
+                            </a>
+                            )
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   }
@@ -250,28 +267,25 @@ export default defineComponent({
                         of 60 minutes.
                       </p>
                       <ul class="list-disc list-inside">
-                        {props.tokenItem.pendingExports.map(
-                          ({ interchainTx }) => (
-                            <li>
-                              Export{" "}
-                              {formatAssetAmount(interchainTx.assetAmount)}{" "}
-                              {interchainTx.assetAmount.displaySymbol.toUpperCase()}{" "}
-                              to {interchainTx.toChain.displayName} (
-                              <a
-                                class="font-normal text-accent-base hover:text-underline"
-                                href={interchainTx.fromChain.getBlockExplorerUrlForTxHash(
-                                  interchainTx.hash,
-                                )}
-                                title={interchainTx.hash}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {shortenHash(interchainTx.hash)}
-                              </a>
-                              )
-                            </li>
-                          ),
-                        )}
+                        {props.tokenItem.pendingExports.map(({ bridgeTx }) => (
+                          <li>
+                            Export {formatAssetAmount(bridgeTx.assetAmount)}{" "}
+                            {bridgeTx.assetAmount.displaySymbol.toUpperCase()}{" "}
+                            to {bridgeTx.toChain.displayName} (
+                            <a
+                              class="font-normal text-accent-base hover:text-underline"
+                              href={bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
+                                bridgeTx.hash,
+                              )}
+                              title={bridgeTx.hash}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {shortenHash(bridgeTx.hash)}
+                            </a>
+                            )
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   }

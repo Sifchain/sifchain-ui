@@ -26,7 +26,7 @@ export function sortAndFilterTokens(props: {
   const getTokenPendingImportTotal = (token: TokenListItem) => {
     let total = 0;
     token.pendingImports.forEach((data) => {
-      total += parseFloat(data.interchainTx.assetAmount.amount.toString());
+      total += parseFloat(data.bridgeTx.assetAmount.amount.toString());
     });
     return total;
   };
@@ -39,9 +39,6 @@ export function sortAndFilterTokens(props: {
       if (!props.searchQuery) return true;
       return (
         token.asset.displaySymbol
-          .toLowerCase()
-          .indexOf(props.searchQuery.toLowerCase()) !== -1 ||
-        token.asset.label
           .toLowerCase()
           .indexOf(props.searchQuery.toLowerCase()) !== -1
       );

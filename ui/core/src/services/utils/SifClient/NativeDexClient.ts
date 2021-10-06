@@ -49,18 +49,15 @@ import {
   isBroadcastTxFailure,
 } from "@cosmjs/launchpad";
 import { CosmosClient } from "@cosmjs/launchpad";
-import {
-  BroadcastTxResult,
-  OfflineSigner as OfflineLaunchpadSigner,
-} from "@cosmjs/launchpad";
+import { OfflineSigner as OfflineLaunchpadSigner } from "@cosmjs/launchpad";
 import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
-import { TransactionStatus } from "../../../";
+import { TransactionStatus, Chain, IBCChainConfig } from "../../../";
 import { Compatible42CosmosClient, Compatible42SigningCosmosClient } from ".";
-import getKeplrProvider from "../../../services/SifService/getKeplrProvider";
 import { makeSignDoc } from "@cosmjs/launchpad";
 import { BroadcastMode } from "@cosmjs/launchpad";
 import { Uint53 } from "@cosmjs/math";
 import { parseLogs } from "@cosmjs/stargate/build/logs";
+import { BroadcastTxResult } from "@cosmjs/launchpad/build/cosmosclient";
 
 type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;
 type TxGroup =
@@ -69,26 +66,10 @@ type TxGroup =
   | typeof CLPV1Tx
   | typeof TokenRegistryV1Tx;
 
-// type StringsOnly<T> = T extends string ? T : string;
-// type ValueOf<T> = T[keyof T];
-// type CustomEncodeObject<ParentModule extends TxGroup> = {
-//   typeUrl: `/${ParentModule["protobufPackage"]}.${StringsOnly<
-//     keyof ParentModule
-//   >}`;
-//   value: ValueOf<ParentModule>;
-// };
-
-// interface CustomSigningClient extends SigningStargateClient {
-//   signAndBroadcast: <TxParentModule extends TxGroup>(
-//     signerAddress: string,
-//     messages: CustomEncodeObject<TxParentModule>[],
-//     fee: StdFee,
-//     memo?: string | undefined,
-//   ) => Promise<BroadcastTxResponse>;
-// }
 type DeepReadonly<T> = T extends object
   ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>
   : Readonly<T>;
+
 export class NativeDexClient {
   static feeTable = buildFeeTable(
     defaultGasPrice,
@@ -122,6 +103,15 @@ export class NativeDexClient {
     const tx = this.createTxClient();
     const instance = new this(rpcUrl, restUrl, chainId, t34, query, tx);
     return instance;
+  }
+
+  static async connectByChain(chain: Chain): Promise<NativeDexClient> {
+    const config = chain.chainConfig as IBCChainConfig;
+    return NativeDexClient.connect(
+      config.rpcUrl,
+      config.restUrl,
+      config.chainId,
+    );
   }
 
   /**
@@ -212,143 +202,6 @@ export class NativeDexClient {
     );
 
     return client;
-  }
-
-  /**
-   *
-   * Signs a prepared `NativeDexTransaction`
-   * @param {NativeDexTransaction<EncodeObject>} tx
-   * @param {(OfflineSigner & OfflineAminoSigner)} signer
-   * @param {*} [{
-   *       sendingChainRestUrl = this.restUrl,
-   *       sendingChainRpcUrl = this.rpcUrl,
-   *     }={}]
-   * @return {*}
-   * @memberof NativeDexClient
-   */
-  async sign(
-    tx: NativeDexTransaction<EncodeObject>,
-    signer: OfflineAminoSigner,
-    {
-      sendingChainRestUrl = this.restUrl,
-      sendingChainRpcUrl = this.rpcUrl,
-    } = {},
-  ) {
-    const cosmosClient = await StargateClient.connect(sendingChainRpcUrl);
-    // debugger;
-    const msgs = this.convertEncodeMsgsToAminos(tx.msgs);
-
-    const chainId = await cosmosClient.getChainId();
-    const fee = {
-      amount: [tx.fee.price],
-      gas: tx.fee.gas,
-    };
-    const account = await cosmosClient.getAccount(tx.fromAddress || "");
-    if (
-      typeof account?.accountNumber !== "number" &&
-      typeof account?.sequence === "number"
-    ) {
-      throw new Error(
-        `This account (${tx.fromAddress}) does not yet exist on-chain. Please send some funds to it before proceeding.`,
-      );
-    }
-    const keplr = await getKeplrProvider();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const signDoc = makeSignDoc(
-      msgs,
-      fee,
-      chainId,
-      tx.memo || "",
-      account?.accountNumber.toString() || "",
-      account?.sequence.toString() || "",
-    );
-    const key = await keplr?.getKey(chainId);
-    let bech32Address = key?.bech32Address;
-    const signResponse = await keplr!.signAmino(
-      chainId,
-      bech32Address || "",
-      signDoc,
-    );
-    const signedTx = makeStdTx(signResponse.signed, signResponse.signature);
-    return new NativeDexSignedTransaction(tx, signedTx);
-  }
-  /**
-   *
-   * Converts protobuf `EncodeObject`'s into amino-safe objects
-   * to ensure ledger hardware wallet compatibility
-   * @private
-   * @param {EncodeObject[]} encodeMsgs
-   * @return {*}
-   * @memberof NativeDexClient
-   */
-  private convertEncodeMsgsToAminos(encodeMsgs: EncodeObject[]) {
-    const converter = new NativeAminoTypes();
-    const converted = encodeMsgs.map(converter.toAmino.bind(converter));
-    return converted;
-  }
-  /**
-   *
-   * Submits a `sign`ed `NativeDexSignedTransaction` to node
-   * @param {NativeDexSignedTransaction<EncodeObject>} tx
-   * @param {*} [{
-   *       sendingChainRestUrl = this.restUrl,
-   *       sendingChainRpcUrl = this.rpcUrl,
-   *     }={}]
-   * @return {*}  {Promise<BroadcastTxResult>}
-   * @memberof NativeDexClient
-   */
-  async broadcast(
-    tx: NativeDexSignedTransaction<EncodeObject>,
-    {
-      sendingChainRestUrl = this.restUrl,
-      sendingChainRpcUrl = this.rpcUrl,
-    } = {},
-  ): Promise<BroadcastTxResult> {
-    const stargate = await StargateClient.connect(sendingChainRpcUrl);
-    const keplr = await getKeplrProvider();
-    const chainId = await stargate.getChainId();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const txHashUInt8Array = await keplr!.sendTx(
-      chainId,
-      tx.signed,
-      BroadcastMode.Block,
-    );
-    const txHashHex = toHex(txHashUInt8Array).toUpperCase();
-    const resultRaw = await stargate.getTx(txHashHex);
-    if (!resultRaw || !resultRaw.hash?.match(/^([0-9A-F][0-9A-F])+$/)) {
-      console.error("INVALID TXHASH IN RESULT", resultRaw);
-      throw new Error(
-        "Received ill-formatted txhash. Must be non-empty upper-case hex",
-      );
-    }
-    const result: BroadcastTxResult = {
-      ...resultRaw,
-      logs: JSON.parse(resultRaw.rawLog),
-      height: resultRaw.height,
-      transactionHash: resultRaw.hash,
-    };
-    if (isBroadcastTxSuccess(result)) {
-      result.logs.forEach((log) => {
-        // @ts-ignore
-        log.msg_index = 0;
-        // @ts-ignore
-        log.log = "";
-      });
-    }
-
-    return isBroadcastTxFailure(result)
-      ? {
-          height: Uint53.fromString(result.height + "").toNumber(),
-          transactionHash: result.transactionHash,
-          code: result.code,
-          rawLog: result.rawLog || "",
-        }
-      : {
-          logs: result.logs ? parseLogs(result.logs) : [],
-          rawLog: result.rawLog || "",
-          transactionHash: result.transactionHash,
-          data: result.data,
-        };
   }
 
   /**

@@ -1,18 +1,19 @@
-import { Asset, Chain, getMetamaskProvider, Network } from "@sifchain/sdk";
+import { Asset, Network } from "@sifchain/sdk";
 import { computed } from "@vue/reactivity";
 import { useCore } from "./useCore";
 import { useSubscription } from "./useSubscrition";
 import { rootStore } from "@/store";
 import { watch } from "vue";
 import { accountStore } from "@/store/modules/accounts";
-import {
-  InterchainTx,
-  interchainTxEmitter,
-} from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
 import { getTokenContract } from "../../../core/src/services/EthbridgeService/tokenContract";
 import { convertImageUrlToDataUrl } from "@/utils/convertImageUrlToDataUrl";
 import { useChains } from "./useChains";
+import {
+  BridgeTx,
+  bridgeTxEmitter,
+} from "@sifchain/sdk/src/clients/bridges/BaseBridge";
+import { useFaucet } from "./useFaucet";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -59,9 +60,24 @@ export function useInitialize() {
   connectAll();
   connectAll = () => {};
 
+  useFaucet();
+
   const { usecases, store, services, config } = useCore();
 
-  services.ethbridge.addEthereumAddressToPeggyCompatibleCosmosAssets();
+  services.wallet.metamaskProvider.onChainChanged(() =>
+    window.location.reload(),
+  );
+  services.wallet.metamaskProvider.onAccountChanged(() =>
+    window.location.reload(),
+  );
+  services.wallet.keplrProvider.onAccountChanged(() =>
+    window.location.reload(),
+  );
+
+  // this is low pri... but we want it semi quick
+  setTimeout(() => {
+    usecases.clp.syncPools.syncPublicPools();
+  }, 500);
 
   services.ethbridge
     .addEthereumAddressToPeggyCompatibleCosmosAssets()
@@ -81,7 +97,7 @@ export function useInitialize() {
               await Promise.all(
                 [...config.peggyCompatibleCosmosBaseDenoms].map(
                   async (denom) => {
-                    const web3 = new services.Web3(await getMetamaskProvider());
+                    const web3 = await services.wallet.metamaskProvider.getWeb3();
                     const asset = config.assets.find(
                       (a) =>
                         a.network === Network.ETHEREUM && a.symbol === denom,
@@ -132,13 +148,6 @@ export function useInitialize() {
       // generateUniswapWhitelist();
     });
 
-  usecases.wallet.eth.initEthWallet();
-
-  // this is low pri... but we want it semi quick
-  setTimeout(() => {
-    usecases.clp.syncPools.syncPublicPools();
-  }, 500);
-
   // Support legacy code that uses sif service getState().
   watch(
     accountStore.state.sifchain,
@@ -181,11 +190,11 @@ export function useInitialize() {
     }
   }
 
-  interchainTxEmitter.on("tx_sent", (tx: InterchainTx) => {
+  bridgeTxEmitter.on("tx_sent", (tx: BridgeTx) => {
     accountStore.updateBalances(tx.toChain.network);
     accountStore.updateBalances(tx.fromChain.network);
   });
-  interchainTxEmitter.on("tx_complete", (tx: InterchainTx) => {
+  bridgeTxEmitter.on("tx_complete", (tx: BridgeTx) => {
     accountStore.updateBalances(tx.toChain.network);
     accountStore.updateBalances(tx.fromChain.network);
   });

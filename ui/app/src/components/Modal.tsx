@@ -18,6 +18,7 @@ export type ModalProps = {
   icon?: IconName;
   escapeToClose?: boolean;
   headingAction?: any;
+  backdropClickToClose?: boolean;
 };
 
 export default defineComponent({
@@ -48,6 +49,10 @@ export default defineComponent({
       type: Boolean as PropType<ModalProps["escapeToClose"]>,
       default: () => true,
     },
+    backdropClickToClose: {
+      type: Boolean as PropType<ModalProps["backdropClickToClose"]>,
+      default: () => true,
+    },
   },
   name: "Modal",
   setup(props, context: SetupContext) {
@@ -71,7 +76,9 @@ export default defineComponent({
           class={[
             "overflow-y-scroll h-screen fixed left-sidebar sm:left-0 inset-0 flex items-center shorter:items-start shorter:py-[4vh] justify-center z-20 animate-fade-in duration-500 animate-fade-in-up",
           ]}
-          onClick={() => props.onClose?.()}
+          onClick={() => {
+            if (props.backdropClickToClose) props.onClose?.();
+          }}
         >
           <div
             class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${

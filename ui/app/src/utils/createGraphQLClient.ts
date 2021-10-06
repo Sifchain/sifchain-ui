@@ -20,7 +20,13 @@ export const createGraphQLClient = (url: string) =>
         }),
       })
         .then((r) => r.json())
-        .then((r) => r.data);
+        .then((r) => {
+          if (r.errors) {
+            console.error("GraphQL error", r);
+            throw new Error(r.errors?.[0]?.message);
+          }
+          return r.data;
+        });
     return createInvocablePromise<any>(
       (vars: any) => {
         variables = vars;

@@ -5,8 +5,10 @@ import {
   ChainConfig,
   NetworkChainConfigLookup,
 } from "../entities";
-import { getMetamaskProvider } from "../services/EthereumService/utils/getMetamaskProvider";
+import { getMetamaskProvider } from "../clients/wallets/ethereum/getMetamaskProvider";
 import { NetEnvChainConfigLookup } from "../config/chains/NetEnvChainConfigLookup";
+import { WalletProviderContext } from "../clients/wallets";
+import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";
 
 type TokenConfig = {
   symbol: string;
@@ -117,6 +119,9 @@ export function parseConfig(
   assets: Asset[],
   chainConfigsByNetwork: NetworkChainConfigLookup,
   peggyCompatibleCosmosBaseDenoms: Set<string>,
+  createCosmosWalletProvider: (
+    context: WalletProviderContext,
+  ) => CosmosWalletProvider,
 ): ServiceContext {
   const nativeAsset = assets.find((a) => a.symbol === config.nativeAsset);
 
@@ -165,5 +170,6 @@ export function parseConfig(
       chainId: config.sifChainId,
       currencies: sifAssets,
     },
+    cosmosWalletProvider: createCosmosWalletProvider(config),
   };
 }

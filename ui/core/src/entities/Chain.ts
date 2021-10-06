@@ -38,8 +38,6 @@ export interface Chain {
   assets: IAsset[];
   assetMap: Map<string, IAsset>;
 
-  calculateTransferFeeToChain(transferAmount: IAssetAmount): IAssetAmount;
-
   lookupAsset(symbol: string): IAsset | undefined;
   lookupAssetOrThrow(symbol: string): IAsset;
 

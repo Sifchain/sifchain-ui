@@ -1,5 +1,10 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, Chain, Network } from "../../entities";
+import {
+  IAssetAmount,
+  Chain,
+  Network,
+  TransactionStatus,
+} from "../../entities";
 import {
   EthereumChain,
   SifchainChain,
@@ -9,29 +14,90 @@ import {
   SentinelChain,
 } from "../../clients/chains";
 import InterchainTxManager from "./txManager";
-import { SifchainCosmosInterchainApi } from "./sifchainCosmosInterchain";
-import { EthereumSifchainInterchainApi } from "./ethereumSifchainInterchain";
-import { CosmosSifchainInterchainApi } from "./cosmosSifchainInterchain";
-import { SifchainEthereumInterchainApi } from "./sifchainEthereumInterchain";
+import {
+  BridgeTx,
+  BridgeParams,
+  bridgeTxEmitter,
+} from "../../clients/bridges/BaseBridge";
 
 export default function InterchainUsecase(context: UsecaseContext) {
-  const sifchainEthereum = new SifchainEthereumInterchainApi(context);
-  const sifchainCosmos = new SifchainCosmosInterchainApi(context);
-  const ethereumSifchain = new EthereumSifchainInterchainApi(context);
-  const cosmosSifchain = new CosmosSifchainInterchainApi(context);
+  const ibcBridge = {
+    estimateFees(params: BridgeParams) {
+      return context.services.ibc.estimateFees(
+        context.services.wallet.keplrProvider,
+        params,
+      );
+    },
+    async approveTransfer(params: BridgeParams) {},
+    async transfer(params: BridgeParams) {
+      const result = await context.services.ibc.transfer(
+        context.services.wallet.keplrProvider,
+        params,
+      );
+      bridgeTxEmitter.emit("tx_sent", result);
+      return result;
+    },
+    async waitForTransferComplete(
+      tx: BridgeTx,
+      onUpdate?: (update: Partial<BridgeTx>) => void,
+    ) {
+      return context.services.ibc.waitForTransferComplete(
+        context.services.wallet.keplrProvider,
+        tx,
+        onUpdate,
+      );
+    },
+  };
+
+  const ethBridge = {
+    estimateFees(params: BridgeParams) {
+      return context.services.ethbridge.estimateFees(
+        context.services.wallet.metamaskProvider,
+        params,
+      );
+    },
+    async approveTransfer(params: BridgeParams) {
+      if (params.fromChain.network === Network.ETHEREUM) {
+        await context.services.ethbridge.approveTransfer(
+          context.services.wallet.metamaskProvider,
+          params,
+        );
+      }
+    },
+    async transfer(params: BridgeParams) {
+      const result = await context.services.ethbridge.transfer(
+        params.fromChain.network === Network.SIFCHAIN
+          ? context.services.wallet.keplrProvider
+          : context.services.wallet.metamaskProvider,
+        params,
+      );
+      bridgeTxEmitter.emit("tx_sent", result);
+      return result;
+    },
+    async waitForTransferComplete(
+      tx: BridgeTx,
+      onUpdate?: (update: Partial<BridgeTx>) => void,
+    ) {
+      return context.services.ethbridge.waitForTransferComplete(
+        context.services.wallet.metamaskProvider,
+        tx,
+        onUpdate,
+      );
+    },
+  };
 
   const interchain = (from: Chain, to: Chain) => {
     if (from instanceof SifchainChain) {
       if (to.chainConfig.chainType === "ibc") {
-        return sifchainCosmos;
+        return ibcBridge;
       } else if (to.chainConfig.chainType === "eth") {
-        return sifchainEthereum;
+        return ethBridge;
       }
     } else if (to instanceof SifchainChain) {
       if (from.chainConfig.chainType === "ibc") {
-        return cosmosSifchain;
+        return ibcBridge;
       } else if (from.chainConfig.chainType === "eth") {
-        return ethereumSifchain;
+        return ethBridge;
       }
     }
     throw new Error(

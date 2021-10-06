@@ -15,7 +15,7 @@ import getKeplrProvider from "../../services/SifService/getKeplrProvider";
 type PickBus = Pick<Services["bus"], "dispatch">;
 type PickSif = Pick<
   Services["sif"],
-  "getState" | "signAndBroadcast" | "unSignedClient"
+  "getState" | "signAndBroadcast" | "unSignedClient" | "loadNativeDexClient"
 >;
 type PickClp = Pick<Services["clp"], "addLiquidity" | "createPool">;
 
@@ -32,29 +32,23 @@ type AddLiquidityServices = {
   sif: PickSif;
   clp: PickClp;
   ibc: Services["ibc"];
+  wallet: Services["wallet"];
   tokenRegistry: Services["tokenRegistry"];
+  chains: Services["chains"];
 };
 
 type AddLiquidityStore = Pick<Store, "pools">;
 
 export function AddLiquidity(
-  { bus, clp, sif, ibc, tokenRegistry }: AddLiquidityServices,
+  { bus, clp, sif, ibc, tokenRegistry, wallet, chains }: AddLiquidityServices,
   store: AddLiquidityStore,
 ) {
   return async (
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
   ) => {
-    const client = await NativeDexClient.connect(
-      sif.unSignedClient.rpcUrl,
-      sif.unSignedClient.apiUrl,
-      await sif.unSignedClient.getChainId(),
-    );
-    const keplr = await getKeplrProvider();
-    const signer = await keplr!.getOfflineSigner(
-      await sif.unSignedClient.getChainId(),
-    );
-    const [account] = (await signer?.getAccounts()) || [];
+    const client = await sif.loadNativeDexClient();
+    const address = await wallet.keplrProvider.connect(chains.nativeChain);
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
       externalAssetAmount.asset,
     );
@@ -67,32 +61,38 @@ export function AddLiquidity(
     const state = sif.getState();
     if (!state.address) throw "No from address provided for swap";
 
-    const txDraft = (await hasPool)
-      ? await client.tx.clp.AddLiquidity(
+    const txDraft = hasPool
+      ? client.tx.clp.AddLiquidity(
           {
             externalAsset: {
               symbol: externalAssetEntry.denom,
             },
             externalAssetAmount: externalAssetAmount.toBigInt().toString(),
             nativeAssetAmount: nativeAssetAmount.toBigInt().toString(),
-            signer: account.address,
+            signer: address,
           },
-          account.address,
+          address,
         )
-      : await client.tx.clp.CreatePool(
+      : client.tx.clp.CreatePool(
           {
             externalAsset: {
               symbol: externalAssetEntry.denom,
             },
             externalAssetAmount: externalAssetAmount.toBigInt().toString(),
             nativeAssetAmount: nativeAssetAmount.toBigInt().toString(),
-            signer: account.address,
+            signer: address,
           },
-          account.address,
+          address,
         );
 
-    const signedTx = await client.sign(txDraft, signer);
-    const sentTx = await client.broadcast(signedTx);
+    const signedTx = await wallet.keplrProvider.sign(
+      chains.nativeChain,
+      txDraft,
+    );
+    const sentTx = await wallet.keplrProvider.broadcast(
+      chains.nativeChain,
+      signedTx,
+    );
     const txStatus = client.parseTxResult(sentTx);
     if (txStatus.state !== "accepted") {
       // Edge case where we have run out of native balance and need to represent that

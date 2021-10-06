@@ -1,10 +1,7 @@
 import { CoreConfig } from "./../utils/parseConfig";
 import { IAsset, Chain, Network } from "../entities";
-// Everything here represents services that are effectively remote data storage
-export * from "./EthereumService/utils/getMetamaskProvider";
 
 import createIBCService, { IBCServiceContext } from "./IBCService/IBCService";
-import ethereumService, { EthereumServiceContext } from "./EthereumService";
 import ethbridgeService, { EthbridgeServiceContext } from "./EthbridgeService";
 import sifService, { SifServiceContext } from "./SifService";
 import clpService, { ClpServiceContext } from "./ClpService";
@@ -35,8 +32,7 @@ export type WithService<T extends keyof Services = keyof Services> = {
 export type ServiceContext = {
   blockExplorerUrl: string;
   assets: IAsset[];
-} & EthereumServiceContext &
-  SifServiceContext &
+} & SifServiceContext &
   ClpServiceContext &
   EthbridgeServiceContext &
   ClpServiceContext &
@@ -52,7 +48,6 @@ export type ServiceContext = {
 export function createServices(context: ServiceContext) {
   const ChainsService = createChainsService(context);
   const IBCService = createIBCService(context);
-  const EthereumService = ethereumService(context);
   const EthbridgeService = ethbridgeService(context);
   const SifService = sifService(context);
   const ClpService = clpService(context);
@@ -81,7 +76,6 @@ export function createServices(context: ServiceContext) {
     if (location.hostname !== "dex.sifchain.finance") {
       setTimeout(() => {
         IBCService.logIBCNetworkMetadata();
-        EthbridgeService?.fetchAllTokenAddresses();
       }, 8 * 1000);
     }
   } catch (e) {}
@@ -90,7 +84,6 @@ export function createServices(context: ServiceContext) {
     chains: ChainsService,
     ibc: IBCService,
     clp: ClpService,
-    eth: EthereumService,
     sif: SifService,
     ethbridge: EthbridgeService,
     bus: EventBusService,

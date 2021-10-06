@@ -10,12 +10,13 @@ import { WalletActions } from "./types";
 export default function MetamaskActions(
   context: UsecaseContext,
 ): WalletActions {
-  const { services, store } = context;
+  const { services } = context;
+  const { wallet, chains } = services;
 
   return {
     async loadIfConnected(network: Network) {
       await new Promise((r) => setTimeout(r, 500));
-      if (services.eth.isConnected()) {
+      if (await wallet.metamaskProvider.hasConnected(chains.get(network))) {
         return this.load(network);
       }
       return {
@@ -23,26 +24,24 @@ export default function MetamaskActions(
       };
     },
     async load(network: Network) {
-      await services.eth.connect();
-
-      const state = services.eth.getState();
+      const address = await wallet.metamaskProvider.connect(
+        chains.get(network),
+      );
       return {
-        connected: state.connected,
-        address: state.address,
-        balances: state.balances,
+        address,
+        balances: [],
+        connected: true,
       };
     },
-
     async getBalances(network: Network, address: string) {
-      if (!services.eth.isConnected) return [];
-      // Eth service already does this on its own, updating its state..
-      const balances = await services.eth.getBalance();
-      services.eth.getState().balances = balances;
-      return balances;
+      const bal = await wallet.metamaskProvider.fetchBalances(
+        chains.get(network),
+        address,
+      );
+      return bal;
     },
-
     async disconnect(network: Network) {
-      await services.eth.disconnect();
+      await wallet.metamaskProvider.disconnect(chains.get(network));
     },
   };
 }

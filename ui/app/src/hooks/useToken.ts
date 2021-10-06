@@ -10,7 +10,6 @@ import {
 } from "@sifchain/sdk";
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
-import { InterchainTx } from "@sifchain/sdk/src/usecases/interchain/_InterchainApi";
 import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 import { useAsyncData } from "./useAsyncData";
 import { useChains } from "./useChains";
@@ -55,12 +54,16 @@ export const useTokenList = (params: TokenListParams) => {
         const pendingExports: PendingTransferItem[] = [];
         pendingTransfers.forEach((transfer) => {
           if (
-            isLikeSymbol(transfer.interchainTx.assetAmount.symbol, asset.symbol)
+            isLikeSymbol(transfer.bridgeTx.assetAmount.symbol, asset.symbol) ||
+            isLikeSymbol(
+              transfer.bridgeTx.assetAmount.unitDenom || "",
+              asset.symbol,
+            )
           ) {
             const array =
-              transfer.interchainTx.toChain.network === asset.network
+              transfer.bridgeTx.toChain.network === asset.network
                 ? pendingImports
-                : transfer.interchainTx.fromChain.network === asset.network
+                : transfer.bridgeTx.fromChain.network === asset.network
                 ? pendingExports
                 : null;
             if (array) array.push(transfer);
@@ -116,15 +119,9 @@ export const useToken = (params: {
 export const useAndPollNetworkBalances = (params: {
   network: Ref<Network>;
 }) => {
-  let lastNetwork = ref();
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
-    const changed = lastNetwork.value !== params.network.value;
-    lastNetwork.value = params.network.value;
-
-    if (changed) {
-      await accountStore.forceUpdateBalances(params.network.value);
-    }
+    await accountStore.updateBalances(params.network.value);
   }, [params.network]);
 
   let stopPollingRef = ref<Promise<() => void> | undefined>();

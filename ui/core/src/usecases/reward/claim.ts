@@ -15,10 +15,11 @@ export type ClaimArgs = {
   dispensation: PickDispensation;
   sif: PickSif;
   chains: Services["chains"];
+  wallet: Services["wallet"];
 };
 type RewardProgramName = "COSMOS_IBC_REWARDS_V1" | "harvest";
 
-export function Claim({ dispensation, sif, chains }: ClaimArgs) {
+export function Claim({ dispensation, sif, chains, wallet }: ClaimArgs) {
   return async ({
     rewardProgramName,
     ...params
@@ -29,24 +30,26 @@ export function Claim({ dispensation, sif, chains }: ClaimArgs) {
   }): Promise<TransactionStatus> => {
     if (!params) throw "You forgot claimType and fromAddress";
     const memo = `program=${rewardProgramName}`;
-    const keplrProvider = await getKeplrProvider();
-    if (!keplrProvider) throw new Error("keplr not enabled");
+
+    const address = await wallet.keplrProvider.connect(chains.nativeChain);
+    if (!address) throw new Error("Not connected to Sifchain wallet");
+
     const client = await sif.loadNativeDexClient();
+
     const tx = client.tx.dispensation.CreateUserClaim(
       {
         userClaimAddress: params.fromAddress,
         userClaimType: params.claimType,
       },
-      sif.getState().address,
+      address,
       undefined,
       memo,
     );
-    const signer = await keplrProvider.getOfflineSigner(
-      chains.get(Network.SIFCHAIN).chainConfig.chainId,
+    const signed = await wallet.keplrProvider.sign(chains.nativeChain, tx);
+    const sent = await wallet.keplrProvider.broadcast(
+      chains.nativeChain,
+      signed,
     );
-    const signed = await client.sign(tx, signer);
-    const sent = await client.broadcast(signed);
-    const parsed = client.parseTxResult(sent);
-    return parsed;
+    return client.parseTxResult(sent);
   };
 }

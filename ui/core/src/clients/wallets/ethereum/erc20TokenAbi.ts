@@ -224,4 +224,4 @@ const ABI: AbiItem[] = [
   },
 ];
 
-export default ABI;
+export const erc20TokenAbi = ABI;

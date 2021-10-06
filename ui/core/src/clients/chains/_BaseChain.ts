@@ -10,6 +10,8 @@ import {
 import { isLikeSymbol } from "../../utils/isLikeSymbol";
 import { urlJoin } from "url-join-ts";
 
+export type ChainContext = { assets: IAsset[]; chainConfig: ChainConfig };
+
 export class BaseChain implements Chain {
   get network() {
     return this.chainConfig.network;
@@ -23,7 +25,7 @@ export class BaseChain implements Chain {
   assetMap: Map<string, IAsset>;
   nativeAsset: IAsset;
 
-  constructor(public context: { assets: IAsset[]; chainConfig: ChainConfig }) {
+  constructor(public context: ChainContext) {
     this.chainConfig = context.chainConfig;
 
     this.assets = context.assets.filter(
@@ -32,24 +34,15 @@ export class BaseChain implements Chain {
 
     this.assetMap = new Map();
     this.assets.forEach((asset) => {
-      this.assetMap.set(asset.symbol, asset);
+      this.assetMap.set(asset.symbol.toLowerCase(), asset);
     });
     this.nativeAsset = this.assets.find(
       (a) => a.symbol === context.chainConfig.nativeAssetSymbol,
     ) as IAsset;
   }
 
-  calculateTransferFeeToChain(assetAmount: IAssetAmount) {
-    const rowan = getChainsService()
-      .get(Network.SIFCHAIN)
-      .findAssetWithLikeSymbolOrThrow("rowan");
-
-    // Default 0 fee
-    return AssetAmount(rowan, "0");
-  }
-
   lookupAsset(symbol: string) {
-    return this.assetMap.get(symbol);
+    return this.assetMap.get(symbol.toLowerCase());
   }
   lookupAssetOrThrow(symbol: string) {
     const asset = this.lookupAsset(symbol);

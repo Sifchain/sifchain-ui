@@ -14,6 +14,7 @@ import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProv
 
 import metamaskSrc from "@/assets/metamask.png";
 import keplrSrc from "@/assets/keplr.jpg";
+import router from "@/router";
 
 export type WalletConnection = {
   walletName: string;
@@ -51,6 +52,12 @@ const createWalletConnection = (
     getChain: () => chain,
     connect: async () => {
       if (chain.chainConfig.chainType === "ibc") {
+        if (!(window as any).keplr) {
+          // A low-budget way to give the KeplrModal power to redirect user back to where they were.
+          (window as any).keplrModalReferrer = window.location.href;
+          router.push({ name: "KeplrInfo" });
+          return;
+        }
         const keplr = await getKeplrProvider();
         if (
           keplr &&

@@ -12,7 +12,7 @@ import { useCore } from "@/hooks/useCore";
 import { toBaseUnits, Network, AssetAmount } from "@sifchain/sdk";
 import { exportStore, ExportDraft } from "@/store/modules/export";
 import { UnpegEvent } from "../../../../../core/src/usecases/peg/unpeg";
-import { useUnpegEventDetails } from "@/hooks/useTransactionDetails";
+import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
 import { rootStore } from "@/store";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { useChains } from "@/hooks/useChains";
@@ -96,10 +96,17 @@ export const useExportData = () => {
 
   const feeAmountRef = computed(() => {
     if (!computedExportAssetAmount.value || !exportTokenRef.value) return null;
-    const fee = useChains()
-      .get(exportStore.state.draft.network)
-      .calculateTransferFeeToChain(computedExportAssetAmount.value);
-    return fee;
+
+    const transferParams = {
+      fromChain: useChains().get(Network.SIFCHAIN),
+      toChain: useChains().get(exportStore.state.draft.network),
+      assetAmount: computedExportAssetAmount.value,
+      fromAddress: accountStore.state[Network.SIFCHAIN].address,
+      toAddress: accountStore.state[exportStore.state.draft.network].address,
+    };
+    return useCore()
+      .usecases.interchain(transferParams.fromChain, transferParams.toChain)
+      .estimateFees(transferParams);
   });
 
   const feeAssetBalanceRef = computed(() => {
@@ -138,8 +145,8 @@ export const useExportData = () => {
   });
 
   const unpegEventRef = exportStore.refs.draft.unpegEvent.computed();
-  const unpegEventDetails = useUnpegEventDetails({
-    unpegEvent: unpegEventRef as Ref<UnpegEvent>,
+  const unpegEventDetails = useBridgeEventDetails({
+    bridgeEvent: unpegEventRef as Ref<UnpegEvent>,
   });
 
   // underscored to signify that it is not to be used across the app.
