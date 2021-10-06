@@ -23,6 +23,7 @@ import { Flags } from "@/components/Flags/Flags";
 import { useRoute, useRouter } from "vue-router";
 import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
+import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import OnboardingModal from "@/components/OnboardingModal";
 
 // not currently working? - McCall
@@ -105,6 +106,7 @@ export default defineComponent({
       if (
         !hasSufficientRowanToTrade &&
         hasImportedAssets &&
+        shouldAllowFaucetFunding() &&
         !hasShownGetRowanModal
       ) {
         hasShownGetRowanModal = true;

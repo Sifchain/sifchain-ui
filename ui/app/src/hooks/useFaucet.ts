@@ -31,12 +31,34 @@ const getGraphqlNetworkEnv = () => {
     : undefined;
 };
 
+const envelopeRef = ref(
+  useCore().services.storage.getJSONItem<FaucetSignatureEnvelope>(key),
+);
+const setEnvelopeValue = (value: FaucetSignatureEnvelope) => {
+  envelopeRef.value = value;
+  useCore().services.storage.setJSONItem<FaucetSignatureEnvelope>(key, value);
+};
+
+export const shouldAllowFaucetFunding = () => {
+  return (
+    envelopeRef.value?.content.status === "InsufficientGasTokenBalance" &&
+    flagsStore.state.faucetEnabled &&
+    !accountStore.state.sifchain.connecting &&
+    // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+    accountStore.state.sifchain.hasLoadedBalancesOnce &&
+    accountStore.state.sifchain.balances.some(
+      // has imported
+      (b) => b.amount.greaterThan("0"),
+    ) &&
+    !accountStore.state.sifchain.balances.some(
+      // does not have rowan
+      (b) => b.asset.symbol.includes("rowan") && b.amount.greaterThan("0"),
+    )
+  );
+};
+
 export const useFaucet = () => {
   const { services } = useCore();
-  const envelopeRef = ref(
-    services.storage.getJSONItem<FaucetSignatureEnvelope>(key),
-  );
-
   const faucetGql = createFaucetGraphqlClient();
   const graphqlNetworkEnv = getGraphqlNetworkEnv();
 
@@ -79,21 +101,18 @@ export const useFaucet = () => {
         console.log(res.errors);
         return;
       }
-      const envelope = res.createAccountBalanceProof as FaucetSignatureEnvelope;
-      envelopeRef.value = envelope;
-      services.storage.setJSONItem<FaucetSignatureEnvelope>(key, envelope);
+      setEnvelopeValue(
+        res.createAccountBalanceProof as FaucetSignatureEnvelope,
+      );
     },
     { immediate: true, deep: true },
   );
 };
 
 export const tryFundingAccount = async () => {
-  const envelope = useCore().services.storage.getJSONItem<FaucetSignatureEnvelope>(
-    key,
-  );
-  if (!envelope) throw new Error("No signature found!");
+  if (!envelopeRef.value) throw new Error("No signature found!");
 
-  if (envelope.content.status === "SufficientGasTokenBalance") {
+  if (envelopeRef.value.content.status === "SufficientGasTokenBalance") {
     throw new Error("You already have sufficient Rowan balance.");
   }
 
@@ -119,15 +138,17 @@ export const tryFundingAccount = async () => {
       )
     }
   `({
-    signature: envelope.signature,
-    contentRaw: envelope.contentRaw,
+    signature: envelopeRef.value.signature,
+    contentRaw: envelopeRef.value.contentRaw,
     networkEnv: getGraphqlNetworkEnv(),
   });
-  envelope.content.status = "SufficientGasTokenBalance";
-  useCore().services.storage.setJSONItem<FaucetSignatureEnvelope>(
-    key,
-    envelope,
-  );
+  setEnvelopeValue({
+    ...envelopeRef.value,
+    content: {
+      ...envelopeRef.value.content,
+      status: "SufficientGasTokenBalance",
+    },
+  });
 
   return res;
 };

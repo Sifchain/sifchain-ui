@@ -18,6 +18,7 @@ import ChangelogModal, {
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
+import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 
 export default defineComponent({
   props: {},
@@ -178,27 +179,13 @@ export default defineComponent({
                   />
                 )}
                 {/* Disable free rowan button until faucet is operational */}
-                {!accountStore.state.sifchain.connecting &&
-                // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
-                accountStore.state.sifchain.hasLoadedBalancesOnce &&
-                accountStore.state.sifchain.balances.some(
-                  // has imported
-                  (b) => b.amount.greaterThan("0"),
-                ) &&
-                !accountStore.state.sifchain.balances.some(
-                  // comment
-                  // does not have rowan
-                  (b) =>
-                    b.asset.symbol.includes("rowan") &&
-                    b.amount.greaterThan("0"),
-                ) &&
-                flagsStore.state.faucetEnabled ? (
+                {shouldAllowFaucetFunding() && (
                   <NavSidePanelItem
                     displayName="Get Free Rowan"
                     icon="navigation/rowan"
                     href="/balances/get-rowan"
                   />
-                ) : null}
+                )}
                 <Tooltip
                   trigger="click"
                   placement="bottom"
