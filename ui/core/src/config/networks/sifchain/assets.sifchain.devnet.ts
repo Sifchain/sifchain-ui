@@ -677,5 +677,15 @@ export default {
       imageUrl: "https://junoscan.com/icons/safari-pinned-tab.svg",
       homeNetwork: "juno",
     },
+    {
+      symbol: "uixo",
+      displaySymbol: "ixo",
+      decimals: 6,
+      name: "ixo",
+      network: "sifchain",
+      label: "ixo",
+      imageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
+      homeNetwork: "ixo",
+    },
   ],
 };
