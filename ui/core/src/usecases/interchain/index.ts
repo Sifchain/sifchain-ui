@@ -107,7 +107,8 @@ export default function InterchainUsecase(context: UsecaseContext) {
 
   const txManager = InterchainTxManager(context, interchain);
   txManager.listenForSentTransfers();
-  txManager.loadSavedTransferList();
+
+  interchain.txManager = txManager;
 
   return interchain;
 }
