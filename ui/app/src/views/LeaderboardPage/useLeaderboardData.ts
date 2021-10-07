@@ -112,20 +112,30 @@ export const useLeaderboardData = () => {
     [accountStore.refs.sifchain.address.computed()],
   );
 
-  let timeoutId: NodeJS.Timeout;
-  onMounted(() => {
-    (async function loop() {
-      // Re-fetch on a loop, and immediately if cached
-      [transactionRes, volumeRes, accountRes].forEach((res) => {
-        if (!res.isLoading.value) res.reload.value();
-      });
+  let fetchTimeoutId: NodeJS.Timeout;
+  async function fetchLoop() {
+    // Re-fetch on a loop, and immediately if cached
+    [transactionRes, volumeRes, accountRes].forEach((res) => {
+      if (!res.isLoading.value) res.reload.value();
+    });
 
-      // Refetch every 2 mins if mounted
-      timeoutId = setTimeout(loop, 1 * 60 * 1000);
-    })();
+    // If user has tab open in background, don't refetch until they come back.
+    if (document.visibilityState !== "visible") {
+      document.addEventListener("visibilitychange", onVisibilityChange);
+    } else {
+      fetchTimeoutId = setTimeout(fetchLoop, 1 * 60 * 1000);
+    }
+  }
+  function onVisibilityChange() {
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+    fetchLoop();
+  }
+
+  onMounted(() => {
+    fetchLoop();
   });
   onUnmounted(() => {
-    clearTimeout(timeoutId);
+    clearTimeout(fetchTimeoutId);
   });
 
   return {
