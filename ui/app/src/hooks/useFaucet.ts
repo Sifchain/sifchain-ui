@@ -1,12 +1,7 @@
 import { accountStore, IWalletServiceState } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
 import { createFaucetGraphqlClient } from "@/utils/createFaucetGraphqlClient";
-import { AppCookies, getNetworkEnv, Network } from "@sifchain/sdk";
-import {
-  BridgeTx,
-  bridgeTxEmitter,
-} from "@sifchain/sdk/src/clients/bridges/BaseBridge";
-import { onUnmounted, watch } from "@vue/runtime-core";
+import { AppCookies, getNetworkEnv } from "@sifchain/sdk";
+import { watch } from "@vue/runtime-core";
 import { ref } from "vue";
 import { useCore } from "./useCore";
 
