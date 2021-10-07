@@ -9,7 +9,6 @@ import persistence from "./persistence";
 import regen from "./regen";
 import juno from "./juno";
 import ixo from "./ixo";
-
 import { NetworkEnv } from "../getEnv";
 import { Network } from "../../entities";
 import osmosis from "./osmosis";
