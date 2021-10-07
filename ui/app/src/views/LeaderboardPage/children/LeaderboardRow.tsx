@@ -38,7 +38,7 @@ export function LeaderboardRow(props: {
     >
       <section
         style={{
-          // Width of the maximumRank's char width or 3 chars
+          // Width of the maximumRank's char width (if self is rank 5000, ensure all placements are offset to fit 5000)
           width: prettyNumber(props.maximumRank, 0).length + "ch",
         }}
         class="transition-all font-mono"

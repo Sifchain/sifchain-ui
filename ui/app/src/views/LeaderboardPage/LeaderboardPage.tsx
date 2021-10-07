@@ -132,18 +132,22 @@ export default defineComponent({
                 </div>
               )}
               <div class="mt-[45px]" />
-              {this.accountItem &&
-                this.items &&
-                this.accountItem?.rank >
-                  this.items[this.items.length - 1].rank && (
-                  <LeaderboardRow
-                    item={this.accountItem}
-                    type={this.currentType}
-                    maximumRank={this.maximumRank}
-                    class="mb-[30px]"
-                    isMyself
-                  />
-                )}
+              {
+                /* Show self-item if you're in top 3 or below top 15 */
+                this.accountItem &&
+                  this.items &&
+                  (this.accountItem.rank >
+                    this.items[this.items.length - 1].rank ||
+                    this.accountItem.rank <= 3) && (
+                    <LeaderboardRow
+                      item={this.accountItem}
+                      type={this.currentType}
+                      maximumRank={this.maximumRank}
+                      class="mb-[30px]"
+                      isMyself
+                    />
+                  )
+              }
               <TransitionGroup name="flip-list">
                 {this.items.slice(3).map((item) => {
                   return (
