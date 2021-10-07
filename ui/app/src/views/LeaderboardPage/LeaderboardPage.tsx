@@ -118,13 +118,17 @@ export default defineComponent({
             <>
               {this.items.length >= 3 && (
                 <div class="flex items-end justify-around">
-                  {[this.items[1], this.items[0], this.items[2]].map((item) => (
-                    <LeaderboardPodium
-                      key={item.name}
-                      item={item}
-                      type={this.currentType}
-                    />
-                  ))}
+                  <TransitionGroup name="flip-list">
+                    {[this.items[1], this.items[0], this.items[2]].map(
+                      (item) => (
+                        <LeaderboardPodium
+                          key={item.name}
+                          item={item}
+                          type={this.currentType}
+                        />
+                      ),
+                    )}
+                  </TransitionGroup>
                 </div>
               )}
               <div class="mt-[45px]" />
