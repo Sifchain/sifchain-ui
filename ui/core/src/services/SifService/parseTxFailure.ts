@@ -107,12 +107,15 @@ export function parseTxFailure(txFailure: {
     };
   }
 
-  if (txFailure.rawLog?.toLowerCase().includes("status code 500")) {
+  if (
+    txFailure.rawLog?.toLowerCase().includes("status code 500") ||
+    txFailure.rawLog?.toLowerCase().includes("network error")
+  ) {
     return {
       code: ErrorCode.UNKNOWN_FAILURE,
       hash: txFailure.transactionHash,
       memo:
-        "There was an processing the transaction in Keplr. Please press close and try again.",
+        "There was a network error when signing the transaction in your wallet. Please try again.",
       state: "failed",
     };
   }
