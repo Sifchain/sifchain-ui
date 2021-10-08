@@ -67,7 +67,8 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
       this.web3Promise = (async () => {
         const provider = await this.options.getWeb3Provider();
         if (!provider) throw new Error("Web3 provider not found!");
-        return new Web3(provider);
+        //@ts-ignore
+        return (window.w3 = new Web3(provider));
       })();
     }
     return this.web3Promise;

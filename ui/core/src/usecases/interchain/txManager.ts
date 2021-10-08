@@ -163,7 +163,6 @@ export default function BridgeTxManager(
     },
     loadSavedTransferList(userSifAddress: string) {
       // Load from storage and subscribe on bootup
-      console.log("loadSavedTransferList", userSifAddress);
       txList.get().forEach((tx) => {
         // When user switches accounts in keplr, only track saved
         // transfers matching current address.

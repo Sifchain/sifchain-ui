@@ -321,24 +321,40 @@ export class EthBridge extends BaseBridge<
         })();
       }).finally(() => (done = true));
     } else {
+      // For ethereum exports, we can't listen for completion...
+      // just assume completion if it's sent.
+      if (/eth$/.test(ethTx.assetAmount.symbol.toLowerCase())) {
+        await new Promise((r) => setTimeout(r, 15_000));
+        return true;
+      }
+
       const contract = new web3.eth.Contract(
         erc20TokenAbi,
-        ethTx.toChain.findAssetWithLikeSymbolOrThrow(ethTx.assetAmount.symbol)
-          .address || ETH_ADDRESS,
+        ethTx.toChain.findAssetWithLikeSymbolOrThrow(
+          ethTx.assetAmount.symbol,
+        ).address,
       );
 
       let startingHeight = ethTx.startingHeight;
-      return new Promise<boolean>((resolve, reject) => {
+      const transferOptions = {
+        fromBlock: startingHeight,
+        filter: {
+          _to: ethTx.toAddress,
+          _value: ethTx.assetAmount.amount.toString(),
+        },
+      };
+
+      const pastEvents = await contract.getPastEvents("Transfer", {
+        ...transferOptions,
+        toBlock: "latest",
+      });
+      if (pastEvents.length) return true;
+
+      return new Promise<boolean>(async (resolve, reject) => {
         // wait for the money on this token to hit
         contract.events.Transfer(
-          {
-            filter: {
-              _to: ethTx.toAddress,
-              _value: ethTx.assetAmount.amount.toString(),
-            },
-            fromBlock: startingHeight,
-          },
-          (error: Error) => {
+          transferOptions,
+          (error: Error, value: any) => {
             if (error) reject(error);
             else resolve(true);
           },
