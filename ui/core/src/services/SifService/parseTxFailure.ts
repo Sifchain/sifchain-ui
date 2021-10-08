@@ -107,6 +107,16 @@ export function parseTxFailure(txFailure: {
     };
   }
 
+  if (txFailure.rawLog?.toLowerCase().includes("status code 500")) {
+    return {
+      code: ErrorCode.UNKNOWN_FAILURE,
+      hash: txFailure.transactionHash,
+      memo:
+        "There was an processing the transaction in Keplr. Please press close and try again.",
+      state: "failed",
+    };
+  }
+
   return {
     code: ErrorCode.UNKNOWN_FAILURE,
     hash: txFailure.transactionHash,
