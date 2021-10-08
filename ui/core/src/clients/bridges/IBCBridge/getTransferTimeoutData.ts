@@ -1,24 +1,24 @@
-import { StargateClient, QueryClient } from "@cosmjs/stargate";
+import { StargateClient } from "@cosmjs/stargate";
 import Long from "long";
 import { ChainIdHelper } from "../../wallets/cosmos/ChainIdHelper";
 
 export const getTransferTimeoutData = async (
-  sendingStargateClient: StargateClient,
+  receivingStargateClient: StargateClient,
   desiredTimeoutMinutes: number,
 ) => {
-  const blockTimeMinutes = 7 / 60;
+  const blockTimeMinutes = 7.25 / 60;
 
-  const timeoutBlockDelta = Math.ceil(desiredTimeoutMinutes / blockTimeMinutes);
+  const timeoutBlockDelta = desiredTimeoutMinutes / blockTimeMinutes;
 
   return {
     revisionNumber: Long.fromNumber(
       +ChainIdHelper.parse(
-        await sendingStargateClient.getChainId(),
+        await receivingStargateClient.getChainId(),
       ).version.toString() || 0,
     ),
     // Set the timeout height as the current height + 150.
     revisionHeight: Long.fromNumber(
-      (await sendingStargateClient.getHeight()) + timeoutBlockDelta,
+      (await receivingStargateClient.getHeight()) + timeoutBlockDelta,
     ),
   };
 };
