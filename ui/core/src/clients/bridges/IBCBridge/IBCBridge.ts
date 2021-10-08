@@ -227,12 +227,16 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       toChain: params.toChain,
     });
 
+    const sendingQueryClient = await StargateClient?.connect(
+      fromChainConfig.rpcUrl,
+    );
+
     const symbol = params.assetAmount.asset.symbol;
     const registry = await this.tokenRegistry.load();
     const transferTokenEntry = registry.find((t) => t.baseDenom === symbol);
 
     const timeoutHeight = await getTransferTimeoutData(
-      receivingStargateCient,
+      sendingQueryClient,
       this.transferTimeoutMinutes,
     );
 
