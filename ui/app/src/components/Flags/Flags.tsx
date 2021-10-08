@@ -60,8 +60,12 @@ export const Flags = defineComponent({
       },
       deep: true,
     },
-    timeoutMinutes(timeout) {
-      useCore().services.ibc.transferTimeoutMinutes = timeout;
+    timeoutMinutes: {
+      handler(timeout) {
+        useCore().services.ibc.transferTimeoutMinutes =
+          timeout?.computed?.()?.value ?? timeout;
+      },
+      immediate: true,
     },
   },
   render() {
