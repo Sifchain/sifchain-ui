@@ -76,6 +76,13 @@ export const RewardSection = defineComponent({
           tooltip: "Rewards that have already been dispensed.",
           amount: this.rewardProgram.participant?.dispensed,
         },
+        {
+          name: "Program Duration",
+          value: [
+            new Date(this.rewardProgram.startDateTimeISO).toLocaleDateString(),
+            new Date(this.rewardProgram.endDateTimeISO).toLocaleDateString(),
+          ].join(" - "),
+        },
       ].filter((item) => !item.hide);
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
@@ -182,7 +189,9 @@ export const RewardSection = defineComponent({
                   )}
                 </span>
                 <span class="w-[250px] text-right">
-                  {getClaimableAmountString(detail.amount)}
+                  {detail.amount != null
+                    ? getClaimableAmountString(detail.amount)
+                    : detail.value}
                 </span>
               </div>
             ))}
