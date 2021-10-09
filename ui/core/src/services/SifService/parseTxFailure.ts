@@ -107,18 +107,18 @@ export function parseTxFailure(txFailure: {
     };
   }
 
-  if (
-    txFailure.rawLog?.toLowerCase().includes("status code 500") ||
-    txFailure.rawLog?.toLowerCase().includes("network error")
-  ) {
-    return {
-      code: ErrorCode.UNKNOWN_FAILURE,
-      hash: txFailure.transactionHash,
-      memo:
-        "There was a network error when signing the transaction in your wallet. Please try again.",
-      state: "failed",
-    };
-  }
+  // if (
+  //   txFailure.rawLog?.toLowerCase().includes("status code 500") ||
+  //   txFailure.rawLog?.toLowerCase().includes("network error")
+  // ) {
+  //   return {
+  //     code: ErrorCode.UNKNOWN_FAILURE,
+  //     hash: txFailure.transactionHash,
+  //     memo:
+  //       "There was a network error when signing the transaction in your wallet. Please try again.",
+  //     state: "failed",
+  //   };
+  // }
 
   return {
     code: ErrorCode.UNKNOWN_FAILURE,
