@@ -9,6 +9,7 @@ export function _Inline(
       to?: RouteLocationRaw;
       replace?: boolean;
       icon?: IconName;
+      iconClass?: string;
     },
   ctx: SetupContext,
 ) {
@@ -28,7 +29,11 @@ export function _Inline(
       {!!props.icon && (
         <AssetIcon
           icon={props.icon}
-          class={["w-[20px] h-[20px]", !!content && "mr-[4px]"]}
+          class={[
+            "w-[20px] h-[20px]",
+            !!content && "mr-[4px]",
+            props.iconClass,
+          ]}
           disabled={props.disabled}
         />
       )}

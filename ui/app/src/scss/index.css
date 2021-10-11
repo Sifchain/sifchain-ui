@@ -275,3 +275,7 @@ input[type="range"]::-moz-range-track {
   transform: scale(0.5);
   opacity: 0;
 }
+
+.flip-list-move {
+  transition: transform 0.8s ease;
+}

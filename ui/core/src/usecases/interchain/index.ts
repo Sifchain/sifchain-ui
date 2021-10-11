@@ -106,8 +106,13 @@ export default function InterchainUsecase(context: UsecaseContext) {
   };
 
   const txManager = InterchainTxManager(context, interchain);
-  txManager.listenForSentTransfers();
-  txManager.loadSavedTransferList();
+
+  // @mccallofthewild - wait for assets to be loaded & cached before running
+  setTimeout(() => {
+    txManager.listenForSentTransfers();
+  }, 500);
+
+  interchain.txManager = txManager;
 
   return interchain;
 }

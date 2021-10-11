@@ -157,6 +157,8 @@ export function useInitialize() {
       if (storeState.connected && !state.connected) {
         accountStore.updateBalances(Network.SIFCHAIN);
         accountStore.pollBalances(Network.SIFCHAIN);
+
+        usecases.interchain.txManager.loadSavedTransferList(storeState.address);
       }
 
       state.balances = storeState.balances;

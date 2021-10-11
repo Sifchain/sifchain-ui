@@ -152,7 +152,6 @@ export default function BridgeTxManager(
   };
 
   const onTxSent = (tx: BridgeTx) => {
-    console.log("===onTxSent", tx);
     txList.add(tx);
     subscribeToBridgeTx(tx);
   };
@@ -162,11 +161,17 @@ export default function BridgeTxManager(
       bridgeTxEmitter.on("tx_sent", onTxSent);
       return () => bridgeTxEmitter.off("tx_sent", onTxSent);
     },
-    loadSavedTransferList() {
+    loadSavedTransferList(userSifAddress: string) {
       // Load from storage and subscribe on bootup
       txList.get().forEach((tx) => {
-        console.log("listening to saved tx", tx);
-        subscribeToBridgeTx(tx);
+        // When user switches accounts in keplr, only track saved
+        // transfers matching current address.
+        if (
+          tx.fromAddress === userSifAddress ||
+          tx.toAddress === userSifAddress
+        ) {
+          subscribeToBridgeTx(tx);
+        }
       });
     },
   };

@@ -8,7 +8,7 @@ import cryptoOrg from "./crypto-org";
 import persistence from "./persistence";
 import regen from "./regen";
 import juno from "./juno";
-
+import ixo from "./ixo";
 import { NetworkEnv } from "../getEnv";
 import { Network } from "../../entities";
 import osmosis from "./osmosis";
@@ -29,6 +29,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.PERSISTENCE]: persistence[env],
         [Network.REGEN]: regen[env],
         [Network.JUNO]: juno[env],
+        [Network.IXO]: ixo[env],
       },
     ];
   }),

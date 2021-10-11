@@ -10,3 +10,4 @@ export * from "./RegenChain";
 export * from "./OsmosisChain";
 export * from "./_BaseChain";
 export * from "./JunoChain";
+export * from "./IxoChain";

@@ -17,8 +17,7 @@ export function getMaxAmount(
     return accountBalance;
   } else {
     if (accountBalance.greaterThan(ROWAN_GAS_FEE)) {
-      const fee = 5 * Math.pow(10, accountBalance.decimals - 1);
-      return accountBalance.subtract(Amount(fee.toString()));
+      return accountBalance.subtract(ROWAN_GAS_FEE);
     } else {
       return Amount("0");
     }

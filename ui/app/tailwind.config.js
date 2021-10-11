@@ -15,7 +15,7 @@ module.exports = {
       },
       screens: {
         sm: { raw: "(max-width: 1000px)" },
-        shorter: { raw: "(max-height: 800px)" },
+        shorter: { raw: "(max-height: 900px)" },
         // => @media (orientation: portrait) { ... }
       },
       fontFamily: {
@@ -28,6 +28,7 @@ module.exports = {
           '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New"',
           "monospace",
         ],
+        noatan: ["Noatan"],
       },
       spacing: {
         1: "8px",
@@ -51,7 +52,9 @@ module.exports = {
           // Tacha Gold
           base: "#D4B553",
           accent_gradient_to: "#C1A04F",
+          muted: "#A98929",
           dark: "#C1A04F",
+          light: "#FFE8A0",
         },
         info: {
           // Bright Boston Blue
@@ -76,6 +79,7 @@ module.exports = {
           input: "#232323",
 
           ring: "#272727",
+          250: "#2B2B2B",
 
           300: "#353535",
           input_outline: "#353535",
@@ -86,6 +90,8 @@ module.exports = {
           600: "#636363",
 
           800: "#808080",
+
+          825: "#969696",
 
           850: "#AFAFAF",
 
@@ -104,6 +110,7 @@ module.exports = {
         "3xl": "26px",
       },
       borderRadius: {
+        xs: "2px",
         sm: "4px",
         DEFAULT: "6px",
         lg: "10px",
