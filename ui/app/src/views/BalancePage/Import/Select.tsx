@@ -163,6 +163,10 @@ export default defineComponent({
               ? "0.0"
               : format(amount, tokenRef.value.asset),
           });
+        } else {
+          rootStore.import.setDraft({
+            amount: format(tokenRef.value.amount.amount, tokenRef.value.asset),
+          });
         }
       } else {
         rootStore.import.setDraft({
