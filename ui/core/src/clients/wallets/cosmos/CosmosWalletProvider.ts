@@ -137,9 +137,9 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     chain: Chain,
   ): Promise<IBCHashDenomTraceLookup> {
     const chainConfig = this.getIBCChainConfig(chain);
-    const denomTraces = await (await this.getQueryClient(chain)).ibc.transfer
-      .allDenomTraces()
-      .catch(async (e) => {
+
+    const denomTraces = await Promise.race([
+      (async () => {
         const denomTracesRes = await fetch(
           `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
         );
@@ -148,15 +148,19 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
             `Failed to fetch denomTraces for ${chain.displayName}`,
           );
         const denomTracesJson = await denomTracesRes.json();
-        return denomTracesJson.denom_traces.map(
-          (denomTrace: any): DenomTrace => {
-            return {
-              path: denomTrace.path,
-              baseDenom: denomTrace.base_denom,
-            };
-          },
-        );
-      });
+        return {
+          denomTraces: denomTracesJson.denom_traces.map(
+            (denomTrace: any): DenomTrace => {
+              return {
+                path: denomTrace.path,
+                baseDenom: denomTrace.base_denom,
+              };
+            },
+          ),
+        };
+      })(),
+      (await this.getQueryClient(chain)).ibc.transfer.allDenomTraces(),
+    ]);
 
     const hashToTraceMapping: IBCHashDenomTraceLookup = {};
     for (let denomTrace of denomTraces.denomTraces) {
