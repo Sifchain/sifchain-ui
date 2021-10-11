@@ -268,6 +268,7 @@ export default defineComponent({
           {/* <Form.Details class="mt-[24px]" details={detailsRef.value} />
           </p> */}
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
+            Claim{" "}
             {getClaimableAmountString(
               props.rewardPrograms.reduce((prev, curr) => {
                 return (
