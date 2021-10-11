@@ -59,7 +59,7 @@ export default defineComponent({
             this.currentType === "txn" ? "Tx" : "Volume"
           } Leaderboard`}
           iconName="interactive/check"
-          class="max-w-none w-[850px] rounded-tr-none"
+          class="max-w-none w-[900px] rounded-tr-none"
           headerAction={
             <div class="flex items-center">
               <div class="mr-[84px] flex items-center">

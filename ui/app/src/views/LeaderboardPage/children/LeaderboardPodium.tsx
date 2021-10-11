@@ -84,7 +84,10 @@ export const LeaderboardPodium = defineComponent({
           </div>
         </section>
 
-        <div class="mt-[10px] text-accent-base">{this.item.name}</div>
+        <div class="mt-[10px] text-accent-base text-center">
+          {this.item.name.split(", ")[0]},
+          <div class="capitalize">{this.item.name.split(", ")[1]}</div>
+        </div>
         <div class="mt-[4px] text-sm font-mono">
           {this.type === "vol" ? "Volume $" : "Tx "}
           {prettyNumber(this.item.value, 0)}
