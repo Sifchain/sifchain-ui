@@ -1,3 +1,11 @@
+## Release 2021.10.11
+* Enabled IXO
+* Sif's Bonus Pool - IXO:
+  * Import IXO
+  * Pool IXO
+  * Earn Rowan
+
+
 ## Release 2021.10.05
 * Enabled JUNØ
 * Sif's Bonus Pool - 1M Rowan. 2 weeks. 3 steps.
