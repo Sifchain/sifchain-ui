@@ -330,9 +330,8 @@ export class EthBridge extends BaseBridge<
 
       const contract = new web3.eth.Contract(
         erc20TokenAbi,
-        ethTx.toChain.findAssetWithLikeSymbolOrThrow(
-          ethTx.assetAmount.symbol,
-        ).address,
+        ethTx.toChain.findAssetWithLikeSymbolOrThrow(ethTx.assetAmount.symbol)
+          .address || ETH_ADDRESS,
       );
 
       let startingHeight = ethTx.startingHeight;
