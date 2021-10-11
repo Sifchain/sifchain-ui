@@ -50,6 +50,7 @@ export function Claim({ dispensation, wallet, sif, chains }: ClaimArgs) {
       chains.nativeChain,
       signed,
     );
+
     return client.parseTxResult(sent);
   };
 }

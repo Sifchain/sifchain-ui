@@ -11,6 +11,24 @@ import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 
 // TODO REACTIVE
 
+export const rewardColumnsLookup = {
+  rewardProgram: {
+    class: "w-[175px] text-left flex-shrink-0",
+  },
+  apy: {
+    class: "w-[175px] text-right",
+  },
+  claimableAmount: {
+    class: "w-[200px] text-right flex-shrink-0",
+  },
+  duration: {
+    class: "w-[150px] text-right flex-shrink-0",
+  },
+  expand: {
+    class: "flex-1 flex items-center justify-end flex-shrink-0",
+  },
+};
+
 const useLiquidityMiningData = (
   address: ComputedRef<string>,
   rewardProgram?: "harvest",
