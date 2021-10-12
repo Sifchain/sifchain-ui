@@ -47,34 +47,43 @@ export default defineComponent({
         hash: "",
         state: "requested",
       };
-      const status = await usecases.reward.claim({
-        // claimType: (claimTypeMap[
-        //   props.rewardType
-        // ] as unknown) as DistributionType,
-        claimType:
-          props.rewardType === "lm"
-            ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
-            : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
-        fromAddress: props.address,
-        rewardProgramName: "harvest",
-      });
-      if (status.state === "accepted") {
-        useCore().services.bus.dispatch({
-          type: "SuccessEvent",
-          payload: {
-            message: `Claimed ${getClaimableAmountString(
-              props.rewardPrograms.reduce((prev, curr) => {
-                return (
-                  prev +
-                  (curr.participant
-                    ?.totalClaimableCommissionsAndClaimableRewards || 0)
-                );
-              }, 0),
-            )} ROWAN of rewards`,
-          },
+      try {
+        const status = await usecases.reward.claim({
+          // claimType: (claimTypeMap[
+          //   props.rewardType
+          // ] as unknown) as DistributionType,
+          claimType:
+            props.rewardType === "lm"
+              ? DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING
+              : DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
+          fromAddress: props.address,
+          rewardProgramName: "harvest",
         });
+        if (status.state === "accepted") {
+          useCore().services.bus.dispatch({
+            type: "SuccessEvent",
+            payload: {
+              message: `Claimed ${getClaimableAmountString(
+                props.rewardPrograms.reduce((prev, curr) => {
+                  return (
+                    prev +
+                    (curr.participant
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0)
+                  );
+                }, 0),
+              )} ROWAN of rewards`,
+            },
+          });
+        }
+        transactionStatusRef.value = status;
+      } catch (error) {
+        const rejected = /rejected/i.test(error.message || "");
+        transactionStatusRef.value = {
+          hash: "",
+          state: rejected ? "rejected" : "failed",
+          memo: rejected ? "Transaction rejected" : "Unknown error",
+        };
       }
-      transactionStatusRef.value = status;
     };
 
     const rewardsAtMaturityAfterClaim = computed(() => {
@@ -268,6 +277,7 @@ export default defineComponent({
           {/* <Form.Details class="mt-[24px]" details={detailsRef.value} />
           </p> */}
           <Button.CallToAction class="mt-[10px]" onClick={handleClaimRewards}>
+            Claim{" "}
             {getClaimableAmountString(
               props.rewardPrograms.reduce((prev, curr) => {
                 return (

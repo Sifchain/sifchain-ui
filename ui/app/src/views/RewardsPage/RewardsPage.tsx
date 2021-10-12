@@ -1,6 +1,6 @@
 import { defineComponent, ref, computed } from "vue";
 import PageCard from "@/components/PageCard";
-import { useRewardsPageData } from "./useRewardsPageData";
+import { rewardColumnsLookup, useRewardsPageData } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
 import { SunsetRewardSection } from "./components/SunsetRewardSection";
@@ -111,6 +111,56 @@ export default defineComponent({
                     )} Rowan`}
               </Button.Inline>
             }
+            headerContent={
+              <>
+                <p>
+                  Earn rewards by participating in any of our rewards-earning
+                  programs. Please see additional information of our{" "}
+                  <a
+                    href="https://docs.sifchain.finance/resources/rewards-programs"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    class="underline"
+                  >
+                    current rewards program
+                  </a>{" "}
+                  and how to become eligible.
+                </p>
+                <div class="w-full pb-[5px] mt-[12px] mb-[-5px] w-full flex items-center justify-start opacity-50 text-md">
+                  <div class={rewardColumnsLookup.rewardProgram.class}>
+                    Reward Program
+                  </div>
+                  <div class={rewardColumnsLookup.duration.class}>Duration</div>
+                  <div class={rewardColumnsLookup.apy.class}>
+                    Program APY
+                    <Tooltip
+                      content={
+                        <div class="mb-2">
+                          Current overall program summary APY. This is also
+                          displayed in Pools and Pool Stats.
+                        </div>
+                      }
+                    >
+                      <Button.InlineHelp></Button.InlineHelp>
+                    </Tooltip>
+                  </div>
+                  <div class={rewardColumnsLookup.claimableAmount.class}>
+                    Claimable Amount
+                    <Tooltip
+                      content={
+                        <div class="mb-2">
+                          Current overall program summary APY. This is also
+                          displayed in Pools and Pool Stats.
+                        </div>
+                      }
+                    >
+                      <Button.InlineHelp></Button.InlineHelp>
+                    </Tooltip>
+                  </div>
+                  <div class={rewardColumnsLookup.expand.class} />
+                </div>
+              </>
+            }
           >
             {isClaimModalOpened.value &&
               rewardProgramResponse.data.value?.rewardPrograms.some(
@@ -131,73 +181,11 @@ export default defineComponent({
                   }}
                 />
               )}
-            <p>
-              Earn rewards by participating in any of our rewards-earning
-              programs. Please see additional information of our{" "}
-              <a
-                href="https://docs.sifchain.finance/resources/rewards-programs"
-                rel="noopener noreferrer"
-                target="_blank"
-                class="underline"
-              >
-                current rewards program
-              </a>{" "}
-              and how to become eligible.
-            </p>
 
-            {rewardProgramResponse.data.value?.rewardPrograms.map(
-              (program, index, items) => {
-                return (
-                  <>
-                    <div class="mt-[21px] text-md opacity-50 flex">
-                      <div class="w-[150px] text-left">Reward Program</div>
-                      <div class="w-[100px] flex-1 text-right">
-                        {program.distributionPattern === "GEYSER" ? (
-                          <>
-                            Projected Full Amount
-                            <Tooltip
-                              content={
-                                <>
-                                  You will earn this if you leave all of your
-                                  deposits pooled for at least 6 weeks.
-                                </>
-                              }
-                            >
-                              <Button.InlineHelp></Button.InlineHelp>
-                            </Tooltip>
-                          </>
-                        ) : (
-                          <>
-                            Program APY
-                            <Tooltip
-                              content={
-                                <div class="mb-2">
-                                  Current overall program summary APY. This is
-                                  also displayed in Pools and Pool Stats.
-                                </div>
-                              }
-                            >
-                              <Button.InlineHelp></Button.InlineHelp>
-                            </Tooltip>
-                          </>
-                        )}
-                      </div>
-                      <div class="w-[300px] text-right">
-                        Claimable Amount
-                        <Tooltip
-                          content={
-                            <>
-                              These are rewards that you can claim now and
-                              receive in full at the end of the week!
-                              <div></div>
-                              <br></br>
-                            </>
-                          }
-                        >
-                          <Button.InlineHelp></Button.InlineHelp>
-                        </Tooltip>
-                      </div>
-                    </div>
+            <div>
+              {rewardProgramResponse.data.value?.rewardPrograms.map(
+                (program, index, items) => {
+                  return (
                     <RewardSection
                       key={program.rewardProgramName}
                       rewardProgram={program}
@@ -207,13 +195,10 @@ export default defineComponent({
                         isClaimModalOpened.value = true;
                       }}
                     />
-                    {items.length - 1 === index ? null : (
-                      <div class="my-[16px] border border-dashed border-white opacity-40" />
-                    )}
-                  </>
-                );
-              },
-            )}
+                  );
+                },
+              )}
+            </div>
 
             {/* 
             <div class="my-[16px] border border-dashed border-white opacity-40" />
@@ -239,7 +224,7 @@ export default defineComponent({
               }}
             /> */}
 
-            <div class="h-4" />
+            <div class="h-1" />
           </PageCard>
         </Layout>
       );

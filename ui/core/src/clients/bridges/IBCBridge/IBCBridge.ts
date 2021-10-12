@@ -27,6 +27,8 @@ import {
   Network,
   NetworkChainConfigLookup,
   TransactionStatus,
+  AssetAmount,
+  Chain,
 } from "../../../entities";
 import { TokenRegistryService } from "../../../services/TokenRegistryService/TokenRegistryService";
 import { SifUnSignedClient } from "../../../services/utils/SifClient";
@@ -186,6 +188,28 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     return paramsCopy;
   }
 
+  private gasPrices: Record<string, string> = {};
+  private lastFetchedGasPricesAt = 0;
+  async fetchTransferGasFee(fromChain: Chain) {
+    if (Date.now() - this.lastFetchedGasPricesAt > 5 * 60 * 1000) {
+      try {
+        this.gasPrices = await fetch(
+          "https://gas-meter.vercel.app/gas-v1.json",
+        ).then((r) => {
+          return r.json();
+        });
+        this.lastFetchedGasPricesAt = Date.now();
+      } catch (error) {
+        this.gasPrices = {};
+      }
+    }
+    return AssetAmount(
+      fromChain.nativeAsset,
+      this.gasPrices[fromChain.chainConfig.chainId] ||
+        NativeDexClient.feeTable.transfer.gas,
+    );
+  }
+
   async bridgeTokens(
     provider: CosmosWalletProvider,
     _params: BridgeParams,
@@ -319,19 +343,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
 
     for (let batch of batches) {
       try {
-        let externalGasPrices: any = {};
-        try {
-          const prices = await fetch(
-            "https://gas-meter.vercel.app/gas-v1.json",
-          ).then((r) => {
-            return r.json();
-          });
-          externalGasPrices = prices;
-        } catch (e) {
-          externalGasPrices = {};
-        }
-        externalGasPrices =
-          typeof externalGasPrices === "object" ? externalGasPrices : {};
+        const gasAssetAmount = await this.fetchTransferGasFee(params.fromChain);
 
         const txDraft = new NativeDexTransaction(params.fromAddress, batch, {
           price: {
@@ -344,9 +356,8 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
             // crank the gas when a decimal conversion is occuring on sifnode
             transferTokenEntry.ibcCounterpartyDenom &&
             transferTokenEntry.ibcCounterpartyDenom !== transferTokenEntry.denom
-              ? 500000
-              : externalGasPrices[fromChainConfig.chainId] ||
-                NativeDexClient.feeTable.transfer.gas,
+              ? "500000"
+              : gasAssetAmount.toBigInt().toString(),
         });
 
         const signedTx = await provider.sign(params.fromChain, txDraft);

@@ -2,7 +2,7 @@ import { defineComponent, ref, computed, watch } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { AssetAmount, Network } from "@sifchain/sdk";
+import { AssetAmount, Network, toBaseUnits } from "@sifchain/sdk";
 import {
   SelectDropdown,
   SelectDropdownOption,
@@ -22,7 +22,6 @@ import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
-import { exportStore } from "@/store/modules/export";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -144,22 +143,40 @@ export default defineComponent({
     const networkValue = rootStore.import.refs.draft.network.computed();
     const amountValue = rootStore.import.refs.draft.amount.computed();
 
-    const handleSetMax = () => {
-      if (tokenRef.value && tokenRef.value?.amount) {
-        const decimals = tokenRef.value.asset.decimals;
-        const afterMaxValue = getMaxAmount(
-          ref(tokenRef.value.asset.symbol),
-          tokenRef.value.amount,
+    const handleSetMax = async () => {
+      if (!tokenRef.value) return;
+      const chain = useChains().get(networkValue.value);
+      if (chain.chainConfig.chainType === "ibc") {
+        const gasAssetAmount = AssetAmount(
+          chain.nativeAsset,
+          toBaseUnits("0.1", chain.nativeAsset),
         );
-        const nextAssetAmount = AssetAmount(
-          tokenRef.value.asset,
-          afterMaxValue,
-        );
-        const nextAmount = afterMaxValue.lessThan("0")
-          ? "0.0"
-          : format(nextAssetAmount.amount, nextAssetAmount.asset);
+        if (tokenRef.value.asset.symbol === chain.nativeAsset.symbol) {
+          const amount = tokenRef.value.amount.subtract(gasAssetAmount);
+          console.log({
+            amount: amount.toString(),
+            balance: tokenRef.value.amount.toString(),
+            fee: gasAssetAmount.toString(),
+          });
+          rootStore.import.setDraft({
+            amount: amount.lessThan("0")
+              ? "0.0"
+              : format(amount, tokenRef.value.asset),
+          });
+        } else {
+          rootStore.import.setDraft({
+            amount: format(tokenRef.value.amount.amount, tokenRef.value.asset),
+          });
+        }
+      } else {
         rootStore.import.setDraft({
-          amount: nextAmount,
+          amount: format(
+            getMaxAmount(
+              ref(tokenRef.value.asset.symbol),
+              tokenRef.value.amount,
+            ),
+            tokenRef.value.asset,
+          ),
         });
       }
     };
