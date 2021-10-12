@@ -526,7 +526,8 @@
       "priceUsd": 0.0318,
       "symbol": "tshp",
       "transferLimit": "99999999999999999999999",
-      "homeNetwork": "ethereum"
+      "homeNetwork": "ethereum",
+      "hasDarkIcon": true
     },
     {
       "address": "0xE8947F381f786A998eD6dA7ab938a11c7BD018B8",
@@ -559,7 +560,8 @@
       "priceUsd": 0.1596,
       "symbol": "rfuel",
       "transferLimit": "99999999999999999999999",
-      "homeNetwork": "ethereum"
+      "homeNetwork": "ethereum",
+      "hasDarkIcon": true
     },
     {
       "address": "0x380934E9D47B466616D427380f99cb7283D1e7A1",
@@ -614,7 +616,8 @@
       "priceUsd": 0,
       "symbol": "tidal",
       "transferLimit": "99999999999999999999999",
-      "homeNetwork": "ethereum"
+      "homeNetwork": "ethereum",
+      "hasDarkIcon": true
     },
     {
       "address": "",

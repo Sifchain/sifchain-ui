@@ -490,6 +490,7 @@ const assets: {
       symbol: "ctshp",
       displaySymbol: "tshp",
       homeNetwork: "ethereum",
+      hasDarkIcon: true,
     },
     {
       decimals: 18,
@@ -520,6 +521,7 @@ const assets: {
       symbol: "crfuel",
       displaySymbol: "rfuel",
       homeNetwork: "ethereum",
+      hasDarkIcon: true,
     },
     {
       decimals: 18,
@@ -567,6 +569,7 @@ const assets: {
       symbol: "ctidal",
       displaySymbol: "tidal",
       homeNetwork: "ethereum",
+      hasDarkIcon: true,
     },
     {
       decimals: 18,

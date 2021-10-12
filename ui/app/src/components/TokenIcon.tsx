@@ -58,7 +58,7 @@ export const TokenIcon = defineComponent({
           backgroundPosition: "center center",
           backgroundSize: `contain`,
           backgroundRepeat: "no-repeat",
-          filter: this.asset?.value?.hasDarkIcon
+          filter: (this.asset?.value || this.assetValue)?.hasDarkIcon
             ? "invert(100%) hue-rotate(-180deg)"
             : "",
         }}

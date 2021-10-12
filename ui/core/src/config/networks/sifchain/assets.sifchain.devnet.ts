@@ -483,6 +483,7 @@ export default {
       symbol: "ctshp",
       displaySymbol: "tshp",
       homeNetwork: "ethereum",
+      hasDarkIcon: true,
     },
     {
       decimals: 18,
@@ -513,6 +514,7 @@ export default {
       symbol: "crfuel",
       displaySymbol: "rfuel",
       homeNetwork: "ethereum",
+      hasDarkIcon: true,
     },
     {
       decimals: 18,
@@ -560,6 +562,7 @@ export default {
       symbol: "ctidal",
       displaySymbol: "tidal",
       homeNetwork: "ethereum",
+      hasDarkIcon: true,
     },
     {
       decimals: 18,
