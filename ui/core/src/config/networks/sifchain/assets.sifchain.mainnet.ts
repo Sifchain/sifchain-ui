@@ -217,7 +217,7 @@ const assets: {
       name: "Band Protocol",
       network: "sifchain",
       symbol: "cband",
-      displaySymbol: "band",
+      displaySymbol: "Band",
       homeNetwork: "ethereum",
     },
     {
@@ -676,7 +676,6 @@ const assets: {
       imageUrl:
         "https://assets.coingecko.com/coins/images/16724/small/osmosis.jpeg?1624849879",
       homeNetwork: "osmosis",
-      decommissioned: true, // not ready for mainnet
     },
     {
       address: "0xa47c8bf37f92abed4a126bda807a7b7498661acd",
@@ -969,6 +968,17 @@ const assets: {
       label: "ixo",
       imageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
       homeNetwork: "ixo",
+    },
+    {
+      symbol: "uband",
+      displaySymbol: "band",
+      decimals: 6,
+      name: "band",
+      network: "sifchain",
+      label: "band",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token.png?1625881431",
+      homeNetwork: "band",
     },
   ],
 };

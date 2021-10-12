@@ -22,7 +22,14 @@ export const createGui = () => {
   gui.show();
 
   Object.keys(flagsStore.state).forEach((key) => {
-    gui.add(flagsStore.state, key);
+    if (key !== "enableTestChains") {
+      gui.add(flagsStore.state, key);
+    }
+  });
+  Object.keys(flagsStore.state.enableTestChains).forEach((network) => {
+    gui
+      .add(flagsStore.state.enableTestChains, network)
+      .name("Enable Test Chain: " + network);
   });
 
   return gui;

@@ -1,6 +1,8 @@
 import AssetIcon from "@/components/AssetIcon";
 import { TokenIcon } from "@/components/TokenIcon";
+import { Tooltip } from "@/components/Tooltip";
 import { useNativeChain } from "@/hooks/useChains";
+import { accountStore } from "@/store/modules/accounts";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
@@ -19,7 +21,7 @@ export function LeaderboardRow(props: {
 }) {
   const { class: cls, item, ...rest } = props;
 
-  return (
+  const content = (
     <div
       class={[
         "h-[40px] px-[16px] flex items-center text-base rounded-[30px]",
@@ -69,4 +71,19 @@ export function LeaderboardRow(props: {
       </section>
     </div>
   );
+
+  if (props.isMyself) {
+    return (
+      <Tooltip
+        followCursor
+        interactive
+        delay={100}
+        content={accountStore.state.sifchain.address}
+      >
+        {content}
+      </Tooltip>
+    );
+  }
+
+  return content;
 }

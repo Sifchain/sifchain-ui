@@ -9,8 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET_042]: OSMOSIS_MAINNET,
   [NetworkEnv.DEVNET]: OSMOSIS_MAINNET,
   [NetworkEnv.TESTNET]: OSMOSIS_MAINNET,
-  [NetworkEnv.MAINNET]: {
-    ...OSMOSIS_MAINNET,
-    hidden: true, // not ready for mainnet
-  },
+  [NetworkEnv.MAINNET]: OSMOSIS_MAINNET,
 };

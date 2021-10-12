@@ -2,7 +2,8 @@
 export class ChainIdHelper {
   // VersionFormatRegExp checks if a chainID is in the format required for parsing versions
   // The chainID should be in the form: `{identifier}-{version}`
-  static readonly VersionFormatRegExp = /(.+)-([\d]+)/;
+  // Some chains omit the - before version, so that is optional.
+  static readonly VersionFormatRegExp = /(.+)-?([\d]+)/;
 
   static parse(
     chainId: string,
