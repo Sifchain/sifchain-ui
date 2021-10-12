@@ -1,15 +1,20 @@
 import { Services } from "../../services";
 import { Store } from "../../store";
-import { Pool, AssetAmount, Amount, Network } from "../../entities";
+import {
+  Pool,
+  AssetAmount,
+  Amount,
+  Network,
+  LiquidityProvider,
+} from "../../entities";
 import { isIBCDenom } from "../../services/utils/IbcService";
 import { createPoolKey } from "../../utils";
 import { AccountPool } from "../../store/pools";
-import pLimit from "p-limit";
 
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<
   Services["clp"],
-  "getPoolSymbolsByLiquidityProvider" | "getRawPools" | "getLiquidityProvider"
+  "getAccountLiquidityProviderData" | "getRawPools"
 >;
 type PickChains = Pick<
   Services["chains"],
@@ -80,42 +85,37 @@ export function SyncPools(
       store.accountpools[address] = {};
     }
 
-    const accountPoolSymbols = await clp.getPoolSymbolsByLiquidityProvider(
-      address,
-    );
+    const rawLpData = await clp.getAccountLiquidityProviderData({
+      lpAddress: address,
+    });
 
-    const limit = pLimit(3);
+    rawLpData.forEach((lpItem) => {
+      const symbol = lpItem.liquidityProvider?.asset?.symbol;
+      if (!symbol) return;
 
-    await Promise.all(
-      accountPoolSymbols.map((symbol) =>
-        limit(async () => {
-          const entry = registry.find(
-            (item) => item.denom === symbol || item.baseDenom === symbol,
-          );
-          if (!entry) return null;
+      const entry = registry.find(
+        (item) => item.denom === symbol || item.baseDenom === symbol,
+      );
+      if (!entry) return;
 
-          const asset = chains
-            .get(Network.SIFCHAIN)
-            .findAssetWithLikeSymbol(entry.baseDenom);
+      const asset = chains
+        .get(Network.SIFCHAIN)
+        .findAssetWithLikeSymbol(entry.baseDenom);
+      if (!asset) return;
 
-          if (!asset) return;
-
-          const lp = await clp.getLiquidityProvider({
-            asset,
-            lpAddress: address,
-          });
-
-          if (!lp || !asset) return;
-
-          const pool = createPoolKey(
-            asset,
-            chains.get(Network.SIFCHAIN).nativeAsset,
-          );
-
-          currentAccountPools[pool] = { lp, pool };
-        }),
-      ),
-    );
+      const lp = LiquidityProvider(
+        asset,
+        Amount(lpItem.liquidityProvider!.liquidityProviderUnits),
+        address,
+        Amount(lpItem.nativeAssetBalance),
+        Amount(lpItem.externalAssetBalance),
+      );
+      const pool = createPoolKey(
+        asset,
+        chains.get(Network.SIFCHAIN).nativeAsset,
+      );
+      currentAccountPools[pool] = { lp, pool };
+    });
 
     Object.keys(store.accountpools[address]).forEach((poolId) => {
       // If pool is gone now, delete. Ie user remioved all liquidity

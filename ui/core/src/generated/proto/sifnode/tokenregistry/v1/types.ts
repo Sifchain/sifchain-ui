@@ -72,7 +72,27 @@ export interface RegistryEntry {
   externalSymbol: string;
   transferLimit: string;
   permissions: Permission[];
+  /**
+   * The name of denomination unit of this token that is the smallest unit stored.
+   * IBC imports of this RegistryEntry convert and store funds as unit_denom.
+   * Several different denom units of a token may be imported into this same unit denom,
+   * they should all be stored under the same unit_denom if they are the same token.
+   * When exporting a RegistryEntry where unit_denom != denom,
+   * then unit_denom can, in future, be used to indicate the source of funds for a denom unit that does not actually
+   * exist on chain, enabling other chains to overcome the uint64 limit on the packet level and import large amounts
+   * of high precision tokens easily.
+   * ie. microrowan -> rowan
+   * i.e rowan -> rowan
+   */
   unitDenom: string;
+  /**
+   * The name of denomination unit of this token that should appear on counterparty chain when this unit is exported.
+   * If empty, the denom is exported as is.
+   * Generally this will only be used to map a high precision (unit_denom) to a lower precision,
+   * to overcome the current uint64 limit on the packet level.
+   * i.e rowan -> microrowan
+   * i.e microrowan -> microrowan
+   */
   ibcCounterpartyDenom: string;
   ibcCounterpartyChainId: string;
 }
