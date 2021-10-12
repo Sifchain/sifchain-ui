@@ -138,29 +138,32 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
   ): Promise<IBCHashDenomTraceLookup> {
     const chainConfig = this.getIBCChainConfig(chain);
 
-    const denomTraces = await Promise.race([
-      (async () => {
-        const denomTracesRes = await fetch(
-          `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
-        );
-        if (!denomTracesRes.ok)
-          throw new Error(
-            `Failed to fetch denomTraces for ${chain.displayName}`,
-          );
-        const denomTracesJson = await denomTracesRes.json();
-        return {
-          denomTraces: denomTracesJson.denom_traces.map(
-            (denomTrace: any): DenomTrace => {
-              return {
-                path: denomTrace.path,
-                baseDenom: denomTrace.base_denom,
-              };
-            },
-          ),
-        };
-      })(),
-      (await this.getQueryClient(chain)).ibc.transfer.allDenomTraces(),
-    ]);
+    // const denomTraces = await Promise.race([
+    //   (async () => {
+    //     const denomTracesRes = await fetch(
+    //       `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
+    //     );
+    //     if (!denomTracesRes.ok)
+    //       throw new Error(
+    //         `Failed to fetch denomTraces for ${chain.displayName}`,
+    //       );
+    //     const denomTracesJson = await denomTracesRes.json();
+    //     return {
+    //       denomTraces: denomTracesJson.denom_traces.map(
+    //         (denomTrace: any): DenomTrace => {
+    //           return {
+    //             path: denomTrace.path,
+    //             baseDenom: denomTrace.base_denom,
+    //           };
+    //         },
+    //       ),
+    //     };
+    //   })(),
+    //   (await this.getQueryClient(chain)).ibc.transfer.allDenomTraces(),
+    // ]);
+    const denomTraces = await (
+      await this.getQueryClient(chain)
+    ).ibc.transfer.allDenomTraces();
 
     const hashToTraceMapping: IBCHashDenomTraceLookup = {};
     for (let denomTrace of denomTraces.denomTraces) {
