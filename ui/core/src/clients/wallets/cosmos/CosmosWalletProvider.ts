@@ -32,6 +32,7 @@ import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { NativeDexClient } from "../../../services/utils/SifClient/NativeDexClient";
 import { Coin } from "generated/proto/cosmos/base/coin";
 import { createIBCHash } from "../../../utils/createIBCHash";
+import { QueryDenomTracesResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
 
 type IBCHashDenomTraceLookup = Record<
   string,
@@ -138,8 +139,10 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
   ): Promise<IBCHashDenomTraceLookup> {
     const chainConfig = this.getIBCChainConfig(chain);
 
-    const denomTraces = await Promise.race([
-      (async () => {
+    // For some networks, the REST denomTraces works...
+    // for others, the RPC one works. It's a mystery which networks have which implemented.
+    const denomTracesRestPromise = (async () => {
+      try {
         const denomTracesRes = await fetch(
           `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
         );
@@ -158,9 +161,27 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
             },
           ),
         };
-      })(),
-      (await this.getQueryClient(chain)).ibc.transfer.allDenomTraces(),
-    ]);
+      } catch (error) {
+        // If REST fails, let it fail and go with RPC instead.
+        return undefined;
+      }
+    })();
+    const denomTracesRpcPromise = (async () => {
+      const queryClient = await this.getQueryClient(chain);
+      return queryClient.ibc.transfer.allDenomTraces();
+    })();
+
+    // Rest usually resolves first...
+    let denomTraces: QueryDenomTracesResponse | undefined = undefined;
+    try {
+      denomTraces = await denomTracesRestPromise;
+    } catch (error) {
+      // continue if rest fails...
+    }
+    if (!denomTraces?.denomTraces) {
+      // If RPC fails, it's a real error and will throw.
+      denomTraces = await denomTracesRpcPromise;
+    }
 
     const hashToTraceMapping: IBCHashDenomTraceLookup = {};
     for (let denomTrace of denomTraces.denomTraces) {
