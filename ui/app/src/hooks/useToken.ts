@@ -7,12 +7,17 @@ import {
   IAsset,
   IAssetAmount,
   TransactionStatus,
+  isAssetAmount,
 } from "@sifchain/sdk";
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
 import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 import { useAsyncData } from "./useAsyncData";
 import { useChains } from "./useChains";
+import {
+  isAssetFlaggedDisabled,
+  isChainFlaggedDisabled,
+} from "@/store/modules/flags";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -78,6 +83,7 @@ export const useTokenList = (params: TokenListParams) => {
         };
       })
       .filter((token) => {
+        if (isAssetFlaggedDisabled(token.asset)) return false;
         if (token.asset.decommissioned) {
           if (params.showDecomissionedAssets) {
             return true;
@@ -107,12 +113,20 @@ export const useToken = (params: {
   const tokenListRef = useTokenList(params.tokenListParams || {});
 
   return computed(() => {
-    return tokenListRef.value?.find((token) => {
-      return (
-        token.asset.network === params.network.value &&
-        isLikeSymbol(token.asset.symbol, params.symbol.value)
-      );
-    });
+    return (
+      tokenListRef.value?.find((token) => {
+        return (
+          token.asset.network === params.network.value &&
+          token.asset.symbol === params.symbol.value
+        );
+      }) ||
+      tokenListRef.value?.find((token) => {
+        return (
+          token.asset.network === params.network.value &&
+          isLikeSymbol(token.asset.symbol, params.symbol.value)
+        );
+      })
+    );
   });
 };
 

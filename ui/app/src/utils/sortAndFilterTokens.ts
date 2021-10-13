@@ -1,6 +1,7 @@
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { useChainsList } from "@/hooks/useChains";
 import { TokenListItem } from "@/hooks/useToken";
+import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { Network } from "@sifchain/sdk";
 
 export type TokenSortBy = "balance" | "symbol";
@@ -33,6 +34,7 @@ export function sortAndFilterTokens(props: {
 
   const array = props.tokens
     .filter((token) => {
+      if (isAssetFlaggedDisabled(token.asset)) return false;
       if (token.asset.network !== props.network) {
         return false;
       }

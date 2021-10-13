@@ -1,7 +1,9 @@
 import AssetIcon from "@/components/AssetIcon";
 import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 import { TokenIcon } from "@/components/TokenIcon";
+import { Tooltip } from "@/components/Tooltip";
 import { useNativeChain } from "@/hooks/useChains";
+import { accountStore } from "@/store/modules/accounts";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
@@ -46,7 +48,7 @@ export const LeaderboardRow = defineComponent({
   },
   render: function LeaderboardRow() {
     const props = this;
-    return (
+    const content = (
       <div
         class={[
           "h-[40px] px-[16px] flex items-center text-base rounded-[30px]",
@@ -114,5 +116,20 @@ export const LeaderboardRow = defineComponent({
         </section>
       </div>
     );
+
+    // if (props.isMyself) {
+    //   return (
+    //     <Tooltip
+    //       followCursor
+    //       interactive
+    //       delay={100}
+    //       content={accountStore.state.sifchain.address}
+    //     >
+    //       {content}
+    //     </Tooltip>
+    //   );
+    // }
+
+    return content;
   },
 });

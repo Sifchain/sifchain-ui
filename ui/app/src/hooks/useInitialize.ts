@@ -14,6 +14,7 @@ import {
   bridgeTxEmitter,
 } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { useFaucet } from "./useFaucet";
+import { isChainFlaggedDisabled } from "@/store/modules/flags";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -170,7 +171,8 @@ export function useInitialize() {
   );
 
   for (const network of Object.values(Network)) {
-    if (useChains().get(network).chainConfig.hidden) continue;
+    if (isChainFlaggedDisabled(useChains().get(network))) continue;
+
     accountStore.actions.loadIfConnected(network);
     watch(
       accountStore.refs[network].computed(),
