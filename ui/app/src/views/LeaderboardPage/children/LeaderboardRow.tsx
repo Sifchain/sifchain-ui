@@ -93,7 +93,10 @@ export const LeaderboardRow = defineComponent({
             {/* {props.item.name} */}
             <ResourcefulTextTransition
               class="w-[200px] inline-block"
-              text={this.displayedText + (this.isMyself ? ` (you)` : "")}
+              text={
+                this.displayedText.toLocaleLowerCase() +
+                (this.isMyself ? ` (you)` : "")
+              }
             />
           </div>
         </section>
