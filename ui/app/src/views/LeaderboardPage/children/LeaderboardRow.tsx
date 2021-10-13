@@ -106,7 +106,11 @@ export const LeaderboardRow = defineComponent({
               !props.isMyself && "text-accent-base",
             ]}
           >
-            {prettyNumber(props.item.pendingReward, 0)}
+            <ResourcefulTextTransition
+              class="w-[200px] inline-block"
+              text={prettyNumber(props.item.pendingReward, 0)}
+            />
+            {/* {prettyNumber(props.item.pendingReward, 0)} */}
           </div>
         </section>
 
