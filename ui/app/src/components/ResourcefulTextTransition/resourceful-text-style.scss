@@ -9,8 +9,9 @@
   // margin-right: 10px;
 }
 .list-horizontal-complete-enter-active {
-  left: 0;
-  transition: all 0.1s ease;
+  // transition: all 0.1s ease !important;
+  // transform: translateY(2px) rotateX(90deg);
+  // opacity: 0;
 }
 
 .list-horizontal-complete-enter, .list-horizontal-complete-leave-to

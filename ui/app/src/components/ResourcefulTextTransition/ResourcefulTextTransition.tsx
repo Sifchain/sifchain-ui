@@ -26,17 +26,23 @@ export default defineComponent({
     activeIconText(): { char: string; key: string }[] {
       const text: string = this.text;
       let arr = text.split("");
-      return arr.map((char: string, index: number) => ({
-        char,
-        key: char + arr.filter((c, i) => c == char && i > index).length,
-      }));
+      const charCounts: Record<string, any> = {};
+      return arr.map((char: string, index: number) => {
+        charCounts[char] = charCounts[char] || 0;
+        const charInstanceIndex = charCounts[char];
+        charCounts[char]++;
+        return {
+          char,
+          key: char + charInstanceIndex,
+        };
+      });
     },
   },
   render() {
     const props = this;
     return (
       <div class={[props.class]}>
-        <TransitionGroup name="list-horizontal-complete">
+        <TransitionGroup appear name="list-horizontal-complete">
           {this.activeIconText.map((char, index) => {
             return (
               <span
