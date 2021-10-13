@@ -13,7 +13,7 @@ export const BAND_TESTNET: IBCChainConfig = {
     rpc: "https://proxies.sifchain.finance/api/band-laozi-testnet4/rpc",
     rest: "https://proxies.sifchain.finance/api/band-laozi-testnet4/rest",
     chainId: "band-laozi-testnet4",
-    chainName: "Band Protocol",
+    chainName: "Band Protocol Testnet",
     stakeCurrency: {
       coinDenom: "UBAND",
       coinMinimalDenom: "uband",
