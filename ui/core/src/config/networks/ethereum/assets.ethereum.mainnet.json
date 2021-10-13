@@ -922,6 +922,39 @@
       "network": "ethereum",
       "homeNetwork": "ethereum",
       "decimals": 18
+    },
+    {
+      "address": "",
+      "symbol": "uixo",
+      "displaySymbol": "ixo",
+      "decimals": 6,
+      "name": "ixo",
+      "network": "ethereum",
+      "label": "ixo",
+      "imageUrl": "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
+      "homeNetwork": "ixo"
+    },
+    {
+      "address": "",
+      "symbol": "udvpn",
+      "decimals": 6,
+      "name": "Sentinel",
+      "network": "ethereum",
+      "label": "Sentinel",
+      "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
+      "displaySymbol": "dvpn",
+      "homeNetwork": "sentinel"
+    },
+    {
+      "address": "",
+      "symbol": "ujuno",
+      "displaySymbol": "juno",
+      "decimals": 6,
+      "name": "juno",
+      "network": "ethereum",
+      "label": "juno",
+      "imageUrl": "https://junoscan.com/icons/safari-pinned-tab.svg",
+      "homeNetwork": "juno"
     }
   ]
 }

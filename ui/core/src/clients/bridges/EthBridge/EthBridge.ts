@@ -447,13 +447,22 @@ export class EthBridge extends BaseBridge<
        Should be called on load. This is a hack to make cosmos assets peggy compatible 
        while the SDK bridge abstraction is a WIP.
      */
-    for (let asset of this.context.assets) {
+    const ethChain = getChainsService().get(Network.ETHEREUM);
+    for (let asset of ethChain.assets) {
       try {
         if (this.context.peggyCompatibleCosmosBaseDenoms.has(asset.symbol)) {
           asset.address = await this.fetchTokenAddress(asset);
         }
       } catch (e) {
         console.error(e);
+      }
+    }
+    for (let asset of this.context.assets) {
+      if (this.context.peggyCompatibleCosmosBaseDenoms.has(asset.symbol)) {
+        const ethAsset = ethChain.lookupAsset(asset.symbol);
+        if (ethAsset) {
+          asset.address = ethAsset.address;
+        }
       }
     }
   }
