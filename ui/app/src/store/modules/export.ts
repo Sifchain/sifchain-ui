@@ -17,7 +17,7 @@ import {
 } from "../../../../core/src/generated/proto/sifnode/tokenregistry/v1/types";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
-import { flagsStore } from "./flags";
+import { flagsStore, isChainFlaggedDisabled } from "./flags";
 import { runTransfer } from "./import";
 
 export type ExportDraft = {
@@ -65,7 +65,10 @@ export const exportStore = Vuextra.createStore({
       return (
         useChainsList()
           .filter(
-            (c) => c.network !== Network.SIFCHAIN && !c.chainConfig.hidden,
+            (c) =>
+              c.network !== Network.SIFCHAIN &&
+              !c.chainConfig.hidden &&
+              !isChainFlaggedDisabled(c),
           )
           // Disallow IBC export of ethereum & sifchain-native tokens
           .filter((n) => {

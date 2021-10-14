@@ -12,10 +12,23 @@ import {
 } from "@sifchain/sdk";
 import { computed, defineComponent, PropType, ref } from "vue";
 import { usePoolCalculator } from "@sifchain/sdk/src/usecases/clp/calculators/addLiquidityCalculator";
-import { COLUMNS_LOOKUP, PoolDataItem } from "./usePoolPageData";
+import {
+  COLUMNS_LOOKUP,
+  PoolDataItem,
+  PoolRewardProgram,
+} from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 import { useChains } from "@/hooks/useChains";
 import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
+import { Tooltip } from "@/components/Tooltip";
+import {
+  CompetitionsLookup,
+  Competition,
+  COMPETITION_TYPE_DISPLAY_DATA,
+} from "../LeaderboardPage/useCompetitionData";
+import { flagsStore } from "@/store/modules/flags";
+import { RouterLink } from "vue-router";
 
 export default defineComponent({
   name: "PoolItem",
@@ -30,6 +43,14 @@ export default defineComponent({
     },
     accountPool: {
       type: Object as PropType<PoolDataItem["accountPool"]>,
+      required: false,
+    },
+    bonusRewardPrograms: {
+      type: Array as PropType<PoolRewardProgram[]>,
+      required: true,
+    },
+    competitionsLookup: {
+      type: Object as PropType<CompetitionsLookup>,
       required: false,
     },
   },
@@ -52,6 +73,13 @@ export default defineComponent({
     },
   },
   computed: {
+    competitions(): Competition[] {
+      return this.competitionsLookup
+        ? (Object.values(this.competitionsLookup).filter(
+            (item) => item != null,
+          ) as Competition[])
+        : [];
+    },
     myPoolValue(): string | undefined {
       if (!this.accountPool || !this.poolStat) return;
 
@@ -141,7 +169,9 @@ export default defineComponent({
           "Pool Depth USD",
           <span class="font-mono">
             {this.$props.poolStat?.poolDepth != null
-              ? prettyNumber(parseFloat(this.$props.poolStat?.poolDepth || "0"))
+              ? `${prettyNumber(
+                  parseFloat(this.$props.poolStat?.poolDepth || "0"),
+                )}`
               : "..."}
           </span>,
         ],
@@ -179,6 +209,86 @@ export default defineComponent({
                 <Button.InlineHelp>
                   {this.externalAmount.asset.decommissionReason}
                 </Button.InlineHelp>
+              )}
+            <div class="ml-[10px]" />
+            {this.bonusRewardPrograms.map((program) => (
+              <Tooltip
+                content={
+                  <div class="text-sm">
+                    <span class="font-semibold">{program.displayName}</span>: +
+                    {program.summaryAPY.toFixed(2)}% APY until{" "}
+                    {new Date(program.endDateTimeISO).toLocaleDateString()}.
+                    <br />
+                    <div class="mt-[6px]">{program.description}</div>
+                  </div>
+                }
+                key={program.rewardProgramName}
+              >
+                <AssetIcon
+                  class="mr-[4px] opacity-70"
+                  size={16}
+                  icon={
+                    getRewardProgramDisplayData(program.rewardProgramName).icon
+                  }
+                />
+              </Tooltip>
+            ))}
+            {this.competitions.length > 0 &&
+              flagsStore.state.fieldsOfGoldEnabled && (
+                <Tooltip
+                  content={
+                    <div class="text-sm">
+                      <div class="font-semibold text-md">
+                        {this.competitions[0].displayName}
+                      </div>
+
+                      {this.competitions.map((competition) => (
+                        <>
+                          <div class="mt-[6px]">
+                            {
+                              COMPETITION_TYPE_DISPLAY_DATA[competition.type]
+                                .title
+                            }{" "}
+                            Competition
+                          </div>
+                          <ul
+                            class="list-disc list-inside mt-[4px]"
+                            style={{ listStyleType: "disc" }}
+                          >
+                            <li>
+                              {prettyNumber(competition.rewardBucket, 0)} ROWAN
+                              prize pool
+                            </li>
+                            <li>
+                              Ends{" "}
+                              {competition.endDateTime.toLocaleDateString()}
+                            </li>
+                          </ul>
+                        </>
+                      ))}
+                      <div class="mt-[6px]">Click to see more!</div>
+                    </div>
+                  }
+                >
+                  <RouterLink
+                    // @ts-ignore
+                    onClick={(e: Event) => {
+                      e.stopPropagation();
+                    }}
+                    to={{
+                      name: "Leaderboard",
+                      params: {
+                        type: this.competitions[0].type,
+                        symbol: this.competitions[0].symbol,
+                      },
+                    }}
+                  >
+                    <AssetIcon
+                      class="h-[16px] text-accent-base"
+                      icon="interactive/wreath"
+                    />
+                  </RouterLink>
+                </Tooltip>
               )}
           </div>
           <div

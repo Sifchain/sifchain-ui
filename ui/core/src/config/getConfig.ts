@@ -105,6 +105,9 @@ export function getConfig(
     "uosmo",
     "uregen",
     "uion",
+    "uixo",
+    "ujuno",
+    "udvpn",
     // not sure if these contracts actually exist
     "uphoton",
     "unyan",
