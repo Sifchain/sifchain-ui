@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, computed, Ref } from "vue";
+import { onMounted, onUnmounted, computed, Ref, watch } from "vue";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { accountStore } from "@/store/modules/accounts";
 import { Asset, IAsset } from "@sifchain/sdk";
@@ -210,8 +210,8 @@ export const useLeaderboardCompetitions = () => {
             program: string;
             type: CompetitionType;
             participants: string;
-            start_trading: string;
-            end_trading: string;
+            program_start: string;
+            program_end: string;
             last_updated: string;
             last_traded_height: string;
           },
@@ -240,9 +240,8 @@ export const useLeaderboardCompetitions = () => {
           isUniversal: item.program === "ALL",
           type: item.type as CompetitionType,
           participants: parseInt(item.participants),
-          startDateTime: new Date(item.start_trading),
-          endDateTime:
-            new Date(COMPETITION_END_DATE) || new Date(item.end_trading),
+          startDateTime: new Date(item.program_start),
+          endDateTime: new Date(item.program_end),
           symbol: item.program,
           displayName: competitionData.displayName,
           rewardBucket: competitionData.bucket[item.type] as number,
@@ -257,23 +256,25 @@ export const useLeaderboardCompetitions = () => {
 };
 
 export const useLeaderboardData = (params: { symbol: Ref<string> }) => {
-  const transactionRes = useAsyncDataCached(
-    "leaderboardTxn",
-    () => getTransactionData(params.symbol.value),
-    [params.symbol],
+  const transactionRes = useAsyncDataCached("leaderboardTxn", () =>
+    getTransactionData(params.symbol.value),
   );
-  const volumeRes = useAsyncDataCached(
-    "leaderboardVol",
-    () => getVolumeData(params.symbol.value),
-    [params.symbol],
+  const volumeRes = useAsyncDataCached("leaderboardVol", () =>
+    getVolumeData(params.symbol.value),
   );
 
   const accountRes = useAsyncDataCached(
     "leaderboardAccount",
     () =>
       getAccountData(params.symbol.value, accountStore.state.sifchain.address),
-    [params.symbol.value, accountStore.refs.sifchain.address.computed()],
+    [accountStore.refs.sifchain.address.computed()],
   );
+
+  watch(params.symbol, () => {
+    accountRes.reload.value();
+    volumeRes.reload.value();
+    transactionRes.reload.value();
+  });
 
   const competitionsRes = useLeaderboardCompetitions();
 

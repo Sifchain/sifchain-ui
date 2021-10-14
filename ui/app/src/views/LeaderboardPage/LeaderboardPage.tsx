@@ -318,10 +318,7 @@ export default defineComponent({
                   />
                 )
             }
-            <TransitionGroup
-              name="flip-list"
-              key={this.currentCompetition!.displayName}
-            >
+            <TransitionGroup name="flip-list" key={this.currentKey}>
               {(this.items.length > 3 ? this.items.slice(3) : this.items).map(
                 (item) => {
                   return (
