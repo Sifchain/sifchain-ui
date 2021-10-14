@@ -6,6 +6,7 @@ import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { IconName } from "@/components/AssetIcon";
+import { useAsyncData } from "@/hooks/useAsyncData";
 
 export const COMPETITIONS: Record<
   string,
@@ -258,15 +259,12 @@ export const useLeaderboardCompetitions = () => {
 };
 
 export const useLeaderboardData = (params: { symbol: Ref<string> }) => {
-  const transactionRes = useAsyncDataCached("leaderboardTxn", () =>
+  const transactionRes = useAsyncData(() =>
     getTransactionData(params.symbol.value),
   );
-  const volumeRes = useAsyncDataCached("leaderboardVol", () =>
-    getVolumeData(params.symbol.value),
-  );
+  const volumeRes = useAsyncData(() => getVolumeData(params.symbol.value));
 
-  const accountRes = useAsyncDataCached(
-    "leaderboardAccount",
+  const accountRes = useAsyncData(
     () =>
       getAccountData(params.symbol.value, accountStore.state.sifchain.address),
     [accountStore.refs.sifchain.address.computed()],
