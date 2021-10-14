@@ -11,3 +11,4 @@ export * from "./config/switchEnv";
 export * from "./config/getConfig";
 
 export * from "./utils";
+export * from "./setup";

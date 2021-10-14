@@ -263,7 +263,7 @@ export default defineComponent({
                       <p class="mb-1">
                         You have the following pending export transactions. The
                         exported tokens will usually be available for use on
-                        their target chain within 20 minutes, sometimes upwards
+                        their target chain within 10 minutes, sometimes upwards
                         of 60 minutes.
                       </p>
                       <ul class="list-disc list-inside">

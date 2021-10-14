@@ -3,7 +3,7 @@ import {
   gasSample,
 } from "./calculateGasForIBCTransfer";
 
-describe(`IBCService/utils.calculateGasForIBCTransfer()`, () => {
+xdescribe(`IBCService/utils.calculateGasForIBCTransfer()`, () => {
   it("is correct with exact sample", () => {
     const sampleItem = gasSample[3];
     const gas = calculateGasForIBCTransfer(sampleItem.transferMsgCount);

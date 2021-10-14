@@ -45,22 +45,17 @@ describe("swapCalculator", () => {
       }
     });
 
-    ({
-      state,
-      priceMessage,
-      priceImpact,
-      providerFee,
-      minimumReceived,
-    } = useSwapCalculator({
-      balances,
-      fromAmount,
-      toAmount,
-      fromSymbol,
-      selectedField,
-      toSymbol,
-      poolFinder,
-      slippage,
-    }));
+    ({ state, priceMessage, priceImpact, providerFee, minimumReceived } =
+      useSwapCalculator({
+        balances,
+        fromAmount,
+        toAmount,
+        fromSymbol,
+        selectedField,
+        toSymbol,
+        poolFinder,
+        slippage,
+      }));
 
     balances.value = [
       AssetAmount(ATK, "1000000000000000000000"),
@@ -122,7 +117,7 @@ describe("swapCalculator", () => {
 
     expect(state.value).toBe(SwapState.INSUFFICIENT_FUNDS);
     expect(toAmount.value).toBe("4999.9999");
-    expect(priceMessage.value).toBe("0.500000 BTK per ATK");
+    expect(priceMessage.value).toBe("0.500000 ATK per BTK");
     expect(priceImpact.value).toBe("0.000001");
     expect(providerFee.value).toBe("0.00005");
   });

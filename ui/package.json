@@ -36,7 +36,8 @@
       "core",
       "app",
       "e2e",
-      "react-example"
+      "react-example",
+      "react-example-2"
     ]
   },
   "resolutions": {

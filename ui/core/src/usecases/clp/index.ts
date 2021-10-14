@@ -1,6 +1,5 @@
 import { UsecaseContext } from "..";
 import { effect, ReactiveEffect, stop } from "@vue/reactivity";
-import { Swap } from "./swap";
 import { AddLiquidity } from "./addLiquidity";
 import { RemoveLiquidity } from "./removeLiquidity";
 import { SyncPools } from "./syncPools";
@@ -19,7 +18,6 @@ export default ({
   const syncPools = SyncPools(services, store);
 
   return {
-    swap: Swap(services),
     addLiquidity: AddLiquidity(services, store),
     removeLiquidity: RemoveLiquidity(services),
     syncPools,

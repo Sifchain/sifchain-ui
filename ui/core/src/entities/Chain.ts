@@ -38,6 +38,8 @@ export interface Chain {
   assets: IAsset[];
   assetMap: Map<string, IAsset>;
 
+  forceGetAsset: (symbol: string) => IAsset;
+
   lookupAsset(symbol: string): IAsset | undefined;
   lookupAssetOrThrow(symbol: string): IAsset;
 

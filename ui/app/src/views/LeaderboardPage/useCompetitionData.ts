@@ -14,10 +14,15 @@ export const COMPETITIONS: Record<
     bucket: Record<CompetitionType, number | null>;
     displayName: string;
     description: string;
-    icon: {
-      type: "AssetIcon" | "TokenIcon";
-      icon: IconName | IAsset;
-    };
+    icon:
+      | {
+          type: "AssetIcon";
+          icon: IconName;
+        }
+      | {
+          type: "TokenIcon";
+          icon: IAsset;
+        };
   }
 > = {
   ALL: {
@@ -35,11 +40,11 @@ export const COMPETITIONS: Record<
   },
   cdino: {
     bucket: {
-      txn: 50_000,
+      txn: 0,
       vol: 50_000,
     },
     description:
-      "The Dino Battle of the Trade Winds competition awards the top 30 Dino swappers in both swap dollar volume and swap transaction count!",
+      "The Dino Battle of the Trade Winds competition awards the top 30 Dino swappers in both swap dollar volume!",
     displayName: "Dino: Battle of the Tradewinds",
     icon: {
       type: "TokenIcon",
