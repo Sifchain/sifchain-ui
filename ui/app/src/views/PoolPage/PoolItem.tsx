@@ -233,63 +233,61 @@ export default defineComponent({
                 />
               </Tooltip>
             ))}
-            {this.competitions.length > 0 &&
-              flagsStore.state.fieldsOfGoldEnabled && (
-                <Tooltip
-                  content={
-                    <div class="text-sm">
-                      <div class="font-semibold text-md">
-                        {this.competitions[0].displayName}
-                      </div>
-
-                      {this.competitions.map((competition) => (
-                        <>
-                          <div class="mt-[6px]">
-                            {
-                              COMPETITION_TYPE_DISPLAY_DATA[competition.type]
-                                .title
-                            }{" "}
-                            Competition
-                          </div>
-                          <ul
-                            class="list-disc list-inside mt-[4px]"
-                            style={{ listStyleType: "disc" }}
-                          >
-                            <li>
-                              {prettyNumber(competition.rewardBucket, 0)} ROWAN
-                              prize pool
-                            </li>
-                            <li>
-                              Ends{" "}
-                              {competition.endDateTime.toLocaleDateString()}
-                            </li>
-                          </ul>
-                        </>
-                      ))}
-                      <div class="mt-[6px]">Click to see more!</div>
+            {this.competitions.length > 0 && (
+              <Tooltip
+                content={
+                  <div class="text-sm">
+                    <div class="font-semibold text-md">
+                      {this.competitions[0].displayName}
                     </div>
-                  }
+
+                    {this.competitions.map((competition) => (
+                      <>
+                        <div class="mt-[6px]">
+                          {
+                            COMPETITION_TYPE_DISPLAY_DATA[competition.type]
+                              .title
+                          }{" "}
+                          Competition
+                        </div>
+                        <ul
+                          class="list-disc list-inside mt-[4px]"
+                          style={{ listStyleType: "disc" }}
+                        >
+                          <li>
+                            {prettyNumber(competition.rewardBucket, 0)} ROWAN
+                            prize pool
+                          </li>
+                          <li>
+                            Ends {competition.endDateTime.toLocaleDateString()}
+                          </li>
+                        </ul>
+                      </>
+                    ))}
+                    <div class="mt-[6px]">Click to see more!</div>
+                  </div>
+                }
+              >
+                <RouterLink
+                  // @ts-ignore
+                  onClick={(e: Event) => {
+                    e.stopPropagation();
+                  }}
+                  to={{
+                    name: "Leaderboard",
+                    params: {
+                      type: this.competitions[0].type,
+                      symbol: this.competitions[0].symbol,
+                    },
+                  }}
                 >
-                  <RouterLink
-                    // @ts-ignore
-                    onClick={(e: Event) => {
-                      e.stopPropagation();
-                    }}
-                    to={{
-                      name: "Leaderboard",
-                      params: {
-                        type: this.competitions[0].type,
-                        symbol: this.competitions[0].symbol,
-                      },
-                    }}
-                  >
-                    <AssetIcon
-                      class="h-[16px] text-accent-base"
-                      icon="interactive/wreath"
-                    />
-                  </RouterLink>
-                </Tooltip>
-              )}
+                  <AssetIcon
+                    class="h-[16px] text-accent-base"
+                    icon="interactive/wreath"
+                  />
+                </RouterLink>
+              </Tooltip>
+            )}
           </div>
           <div
             class={[COLUMNS_LOOKUP.apy.class, "font-mono flex items-center"]}

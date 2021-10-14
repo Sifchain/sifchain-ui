@@ -59,6 +59,7 @@ export const COMPETITIONS: Record<
     },
   },
 };
+if (!flagsStore.state.fieldsOfGoldEnabled) delete COMPETITIONS.ALL;
 if (!flagsStore.state.dinoContestEnabled) delete COMPETITIONS.cdino;
 if (!flagsStore.state.akashContestEnabled) delete COMPETITIONS.uakt;
 
