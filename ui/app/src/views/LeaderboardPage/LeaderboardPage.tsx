@@ -151,7 +151,7 @@ export default defineComponent({
     },
   },
   render() {
-    if (this.isLoading) {
+    if (this.isLoadingFirstTime) {
       return (
         <Layout>
           <div class="absolute left-0 top-[180px] w-full flex justify-center">
@@ -286,7 +286,12 @@ export default defineComponent({
               ))}
             </section>
           </div>
-          <>
+          <div
+            class={[
+              this.isReloading ? "opacity-50" : "opacity-100",
+              "transition-all",
+            ]}
+          >
             <p class="mb-[24px] mt-[16px] w-[600px]">
               {this.currentCompetition!.description}
             </p>
@@ -334,7 +339,7 @@ export default defineComponent({
                 },
               )}
             </TransitionGroup>
-          </>
+          </div>
           <div class="h-4" />
         </PageCard>
       </Layout>

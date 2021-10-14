@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, computed, Ref, watch } from "vue";
+import { onMounted, onUnmounted, computed, Ref, watch, ref } from "vue";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { accountStore } from "@/store/modules/accounts";
 import { Asset, IAsset } from "@sifchain/sdk";
@@ -270,22 +270,31 @@ export const useLeaderboardData = (params: { symbol: Ref<string> }) => {
     [accountStore.refs.sifchain.address.computed()],
   );
 
-  watch(params.symbol, () => {
-    accountRes.reload.value();
-    volumeRes.reload.value();
-    transactionRes.reload.value();
+  const isReloading = ref(false);
+  watch(params.symbol, async () => {
+    isReloading.value = true;
+    try {
+      await Promise.all([
+        accountRes.reload.value(),
+        volumeRes.reload.value(),
+        transactionRes.reload.value(),
+      ]);
+    } finally {
+      isReloading.value = false;
+    }
   });
 
   const competitionsRes = useLeaderboardCompetitions();
 
   return {
-    isLoading: computed(() => {
+    isLoadingFirstTime: computed(() => {
       return [transactionRes, volumeRes, accountRes, competitionsRes].some(
         (res) => {
           return res.isLoading.value && !res.data.value;
         },
       );
     }),
+    isReloading,
     error: computed(() => transactionRes.error.value || volumeRes.error.value),
     volumeData: volumeRes.data,
     transactionData: transactionRes.data,
