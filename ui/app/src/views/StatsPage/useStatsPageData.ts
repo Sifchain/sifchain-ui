@@ -60,6 +60,7 @@ export function useStatsPageData(initialState: StatsPageState) {
 
         return item;
       })
+      .filter((item) => !item.asset.decommissioned)
       .sort((a, b) => {
         if (state.sortBy === "asset") {
           return (a.asset.displaySymbol || a.asset.symbol).localeCompare(
