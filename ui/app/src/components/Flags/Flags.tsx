@@ -52,8 +52,12 @@ export const Flags = defineComponent({
   },
   watch: {
     flagsState: {
-      handler() {
+      handler(
+        value: typeof flagsStore.state,
+        oldValue: typeof flagsStore.state,
+      ) {
         flagsStore.persist();
+        window.location.reload();
       },
       deep: true,
     },

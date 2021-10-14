@@ -4,7 +4,7 @@ import { accountStore } from "@/store/modules/accounts";
 import { Asset, IAsset } from "@sifchain/sdk";
 import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { IconName } from "@/components/AssetIcon";
 
 export const COMPETITIONS: Record<
@@ -59,6 +59,8 @@ export const COMPETITIONS: Record<
     },
   },
 };
+if (!flagsStore.state.dinoContestEnabled) delete COMPETITIONS.cdino;
+if (!flagsStore.state.akashContestEnabled) delete COMPETITIONS.uakt;
 
 export const COMPETITION_TYPE_DISPLAY_DATA = {
   txn: {
@@ -70,7 +72,7 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
   },
   vol: {
     renderValue: (value: number) => `Volume $${prettyNumber(value, 0)}`,
-    title: "Swap Tx Volume",
+    title: "Swap Volume $",
     description:
       "In a Swap Tx Volume competition, winners have the most swap volume. This competition is best for those with large amounts of capital. Click to learn more.",
     link: "https://docs.sifchain.finance",

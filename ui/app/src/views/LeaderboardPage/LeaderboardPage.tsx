@@ -82,7 +82,33 @@ export default defineComponent({
       isSelectOpen: false,
     };
   },
+  watch: {
+    availableCompetitionTypes(availableTypes: CompetitionType[]) {
+      if (
+        !availableTypes.includes(
+          router.currentRoute.value.params.type as CompetitionType,
+        )
+      ) {
+        router.replace({
+          name: "Leaderboard",
+          params: {
+            type: availableTypes[0],
+            symbol: this.symbol || "",
+          },
+        });
+      }
+    },
+  },
   computed: {
+    availableCompetitionTypes(): CompetitionType[] {
+      return Object.values(
+        this.competitionsRes.data.value?.[
+          this.symbol || COMPETITION_UNIVERSAL_SYMBOL
+        ] || {},
+      )
+        .filter((item) => item != null)
+        .map((item) => item!.type) as CompetitionType[];
+    },
     competitionSelectOptions(): SelectDropdownOption[] {
       return Object.keys(COMPETITIONS)
         .sort((a, b) => a.localeCompare(b))
@@ -165,62 +191,68 @@ export default defineComponent({
       <Layout>
         <PageCard
           key={this.currentKey}
-          heading={
-            <SelectDropdown
-              options={ref(this.competitionSelectOptions)}
-              onChangeValue={(value: string) =>
-                (this.symbol =
-                  value === COMPETITION_UNIVERSAL_SYMBOL ? "" : value)
-              }
-              key={this.currentCompetition?.symbol}
-              value={ref(
-                this.currentCompetition?.symbol || COMPETITION_UNIVERSAL_SYMBOL,
-              )}
-              tooltipProps={{
-                onShow: () => {
-                  this.isSelectOpen = true;
-                },
-                onHide: () => {
-                  this.isSelectOpen = false;
-                },
-              }}
-            >
-              <div
-                class={[
-                  "flex items-center cursor-pointer min-w-[350px]",
-                  this.isSelectOpen ? "text-opacity-80" : "",
-                ]}
-              >
-                {this.currentCompetition && (
-                  <div class="flex items-center">
-                    {this.currentCompetition?.iconType === "AssetIcon" ? (
-                      <AssetIcon
-                        icon={this.currentCompetition?.icon as IconName}
-                        size={32}
-                        class="text-accent-base"
-                      />
-                    ) : (
-                      <TokenIcon
-                        assetValue={this.currentCompetition?.icon as IAsset}
-                        size={32}
-                      />
-                    )}
-                    <div class="ml-[6px]">
-                      {this.currentCompetition?.displayName}
-                    </div>
-                  </div>
+          heading={(() => {
+            if (!this.currentCompetition) return null;
+            const heading = (
+              <div class="flex items-center">
+                {this.currentCompetition?.iconType === "AssetIcon" ? (
+                  <AssetIcon
+                    icon={this.currentCompetition?.icon as IconName}
+                    size={32}
+                    class="text-accent-base"
+                  />
+                ) : (
+                  <TokenIcon
+                    assetValue={this.currentCompetition?.icon as IAsset}
+                    size={32}
+                  />
                 )}
-                <AssetIcon
-                  class={[
-                    "ml-[6px] transition-all duration-100 flex-shrink-0 opacity-50",
-                    this.isSelectOpen && "rotate-180",
-                  ]}
-                  size={24}
-                  icon={"interactive/chevron-down"}
-                />
+                <div class="ml-[6px]">
+                  {this.currentCompetition?.displayName}
+                </div>
               </div>
-            </SelectDropdown>
-          }
+            );
+            if (this.competitionSelectOptions.length === 1) return heading;
+            return (
+              <SelectDropdown
+                options={ref(this.competitionSelectOptions)}
+                onChangeValue={(value: string) =>
+                  (this.symbol =
+                    value === COMPETITION_UNIVERSAL_SYMBOL ? "" : value)
+                }
+                key={this.currentCompetition?.symbol}
+                value={ref(
+                  this.currentCompetition?.symbol ||
+                    COMPETITION_UNIVERSAL_SYMBOL,
+                )}
+                tooltipProps={{
+                  onShow: () => {
+                    this.isSelectOpen = true;
+                  },
+                  onHide: () => {
+                    this.isSelectOpen = false;
+                  },
+                }}
+              >
+                <div
+                  class={[
+                    "flex items-center cursor-pointer min-w-[350px]",
+                    this.isSelectOpen ? "text-opacity-80" : "",
+                  ]}
+                >
+                  {heading}
+                  <AssetIcon
+                    class={[
+                      "ml-[6px] transition-all duration-100 flex-shrink-0 opacity-50",
+                      this.isSelectOpen && "rotate-180",
+                    ]}
+                    size={24}
+                    icon={"interactive/chevron-down"}
+                  />
+                </div>
+              </SelectDropdown>
+            );
+          })()}
           headingClass={"!text-lg"}
           class="max-w-none w-[900px] rounded-tr-none"
           headerAction={
@@ -258,7 +290,7 @@ export default defineComponent({
         >
           <div class="flex absolute bottom-[100%] left-0 right-0 flex items-center justify-end">
             <section class="flex items-center">
-              {(["txn", "vol"] as Array<CompetitionType>).map((type) => (
+              {this.availableCompetitionTypes.map((type) => (
                 <RouterLink
                   to={{
                     name: "Leaderboard",
