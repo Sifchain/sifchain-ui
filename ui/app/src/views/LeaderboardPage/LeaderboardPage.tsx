@@ -140,7 +140,6 @@ export default defineComponent({
     },
     daysRemaining(): number {
       if (!this.currentCompetition) return 0;
-      console.log(this.currentCompetition);
       return Math.max(
         0,
         Math.ceil(

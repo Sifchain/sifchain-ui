@@ -190,7 +190,6 @@ export const getAccountData = async (symbol: string, address?: string) => {
       .filter(Boolean)
       .join("/")}`,
   );
-  console.log("getAccountData", items);
 
   const volItem = items?.find((i) => i.type === "vol");
   const txnItem = items?.find((i) => i.type === "txn");

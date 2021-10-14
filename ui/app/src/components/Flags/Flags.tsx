@@ -18,7 +18,6 @@ export const Flags = defineComponent({
   data(): {
     gui: null | ReturnType<typeof createGui>;
   } {
-    console.log({ isProduction });
     return {
       gui: null,
     };
