@@ -165,7 +165,9 @@ const parseApiLeaderboardItem = (
 
 export const getTransactionData = async (symbol: string) => {
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    "https://data.sifchain.finance/beta/trade/tx_vol/txn/" + symbol,
+    ["https://data.sifchain.finance/beta/trade/tx_vol/txn", symbol || ""]
+      .filter(Boolean)
+      .join("/"),
   );
   const parsed: LeaderboardItem[] = items.map(parseApiLeaderboardItem);
   const total = parsed.reduce((acc, item) => {
@@ -179,7 +181,9 @@ export const getTransactionData = async (symbol: string) => {
 
 export const getVolumeData = async (symbol: string) => {
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    "https://data.sifchain.finance/beta/trade/tx_vol/vol/" + symbol,
+    ["https://data.sifchain.finance/beta/trade/tx_vol/vol", symbol || ""]
+      .filter(Boolean)
+      .join("/"),
   );
   const parsed: LeaderboardItem[] = items.map(parseApiLeaderboardItem);
   const total = parsed.reduce((acc, item) => {

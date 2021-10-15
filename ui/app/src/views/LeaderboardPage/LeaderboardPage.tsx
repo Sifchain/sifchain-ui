@@ -341,9 +341,9 @@ export default defineComponent({
             {
               /* Show self-item if you're in top 3 or below top 15 */
               this.accountItem &&
-                this.items &&
+                this.items?.length > 0 &&
                 (this.accountItem.rank >
-                  this.items[this.items.length - 1].rank ||
+                  this.items[this.items.length - 1]?.rank ||
                   this.accountItem.rank <= 3) && (
                   <LeaderboardRow
                     item={this.accountItem}
