@@ -4,6 +4,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { Tooltip } from "@/components/Tooltip";
 import { useNativeChain } from "@/hooks/useChains";
 import { accountStore } from "@/store/modules/accounts";
+import { animateFireflies } from "@/utils/animateFireflies";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
@@ -11,7 +12,7 @@ import {
   LeaderboardItem,
 } from "../useLeaderboardData";
 import { LeaderboardAvatar } from "./LeaderboardAvatar";
-
+// animateFireflies();
 export const LeaderboardRow = defineComponent({
   props: {
     item: {
