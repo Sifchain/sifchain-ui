@@ -18,6 +18,7 @@ import { effect } from "@vue/reactivity";
 import router from "@/router";
 import { Button } from "@/components/Button/Button";
 import { Tooltip } from "@/components/Tooltip";
+import { SearchBox } from "@/components/SearchBox";
 
 export default defineComponent({
   name: "BalancePage",
@@ -93,22 +94,14 @@ export default defineComponent({
           withOverflowSpace
           headerContent={
             <div class="w-full">
-              <div class="bg-gray-input h-8 relative flex items-center rounded-lg overflow-hidden focus-within:border-white rounded border border-solid border-gray-input_outline">
-                <AssetIcon
-                  size={20}
-                  icon="interactive/search"
-                  class={[`ml-3 w-4 h-4`, isDisabled ? "text-[#6E6E6E]" : ""]}
-                />
-                <input
-                  type="search"
-                  placeholder="Search Token..."
-                  value={state.searchQuery}
-                  onInput={(e: Event) => {
-                    state.searchQuery = (e.target as HTMLInputElement).value;
-                  }}
-                  class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium text-md"
-                />
-              </div>
+              <SearchBox
+                value={state.searchQuery}
+                disabled={isDisabled}
+                placeholder="Search Token..."
+                onInput={(e: Event) => {
+                  state.searchQuery = (e.target as HTMLInputElement).value;
+                }}
+              />
               <div class="h-4 w-full" />
               {displayedTokenList.value.length > 0 && (
                 <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">

@@ -2,6 +2,7 @@ import { reactive, computed, onMounted, onUnmounted } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useCore } from "@/hooks/useCore";
+import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 
 export type StatsItem = {
   asset: IAsset;
@@ -34,7 +35,7 @@ export function useStatsPageData(initialState: StatsPageState) {
 
   let unsubscribe: () => void;
   onMounted(() => {
-    unsubscribe = useCore().usecases.clp.subscribeToPublicPools().unsubscribe;
+    unsubscribe = useCore().usecases.clp.subscribeToPublicPools();
   });
   onUnmounted(() => {
     unsubscribe?.();
@@ -59,6 +60,11 @@ export function useStatsPageData(initialState: StatsPageState) {
         };
 
         return item;
+      })
+      .filter((item) => {
+        return (
+          !item.asset.decommissioned && !isAssetFlaggedDisabled(item.asset)
+        );
       })
       .sort((a, b) => {
         if (state.sortBy === "asset") {

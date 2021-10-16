@@ -72,4 +72,10 @@ export class BaseChain implements Chain {
   getBlockExplorerUrlForAddress(address: string) {
     return urlJoin(this.chainConfig.blockExplorerUrl, "accounts", address);
   }
+
+  forceGetAsset(symbol: string) {
+    return (
+      this.lookupAsset(symbol) || this.findAssetWithLikeSymbolOrThrow(symbol)
+    );
+  }
 }

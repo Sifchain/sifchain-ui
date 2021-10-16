@@ -20,6 +20,7 @@ import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import { RouterLink } from "vue-router";
+import { COMPETITION_UNIVERSAL_SYMBOL } from "@/views/LeaderboardPage/useCompetitionData";
 
 export default defineComponent({
   props: {},
@@ -216,7 +217,12 @@ export default defineComponent({
             {flagsStore.state.fieldsOfGoldEnabled && (
               <div class="middle mt-[10px]">
                 <RouterLink
-                  to={{ name: "Leaderboard", params: { type: "vol" } }}
+                  to={{
+                    name: "Leaderboard",
+                    params: {
+                      type: "vol",
+                    },
+                  }}
                   class="h-[46px] flex items-center justify-between px-[16px] cursor-pointer text-black rounded-t-[20px] font-semibold"
                   style={{
                     backgroundImage:
@@ -238,7 +244,12 @@ export default defineComponent({
                   <div class="flex items-center mt-[8px]">
                     {["vol", "txn"].map((type) => (
                       <RouterLink
-                        to={{ name: "Leaderboard", params: { type } }}
+                        to={{
+                          name: "Leaderboard",
+                          params: {
+                            type,
+                          },
+                        }}
                         key={type}
                       >
                         <div class="pl-[8px] pr-[6px] h-[22px] border-solid border border-accent-base rounded-xs flex items-center text-sm hover:bg-gray-500 mr-[10px] whitespace-nowrap">

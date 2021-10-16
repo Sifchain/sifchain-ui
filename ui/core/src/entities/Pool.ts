@@ -21,10 +21,10 @@ export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
   return {
     amounts,
     get externalAmount() {
-      return amounts.find((amount) => amount.symbol !== "rowan");
+      return amounts.find((amount) => amount.symbol !== "rowan")!;
     },
     get nativeAmount() {
-      return amounts.find((amount) => amount.symbol === "rowan");
+      return amounts.find((amount) => amount.symbol === "rowan")!;
     },
     otherAsset: pair.otherAsset,
     symbol: pair.symbol,
@@ -152,10 +152,10 @@ export function CompositePool(pair1: IPool, pair2: IPool): IPool {
   return {
     amounts: amounts as [IAssetAmount, IAssetAmount],
     get externalAmount() {
-      return amounts.find((amount) => amount.symbol !== "rowan");
+      return amounts[0];
     },
     get nativeAmount() {
-      return amounts.find((amount) => amount.symbol === "rowan");
+      return amounts[1];
     },
 
     getAmount: (asset: Asset | string) => {

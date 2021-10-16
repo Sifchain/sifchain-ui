@@ -1,4 +1,4 @@
-import { Amount, Asset, IAmount, IAsset } from "../entities";
+import { Amount, Asset, IAmount, IAsset, AssetAmount } from "../entities";
 import { AmountNotAssetAmount, format, trimMantissa } from "./format";
 
 /**
@@ -81,4 +81,11 @@ export function getMantissaLength<T extends IAmount>(
 ): number {
   const number = format(amount, { mantissa: 18, trimMantissa: true });
   return number.length - number.indexOf(".") - 1;
+}
+
+export function humanUnitsToAssetAmount(
+  asset: IAsset,
+  amount: string | number,
+) {
+  return AssetAmount(asset, toBaseUnits(String(amount), asset));
 }

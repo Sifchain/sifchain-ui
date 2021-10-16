@@ -2,10 +2,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
-import {
-  LeaderboardCompetitionType,
-  LeaderboardItem,
-} from "../useLeaderboardData";
+import { CompetitionType, LeaderboardItem } from "../useCompetitionData";
 import { LeaderboardAvatar } from "./LeaderboardAvatar";
 
 export const LeaderboardPodium = defineComponent({
@@ -16,7 +13,7 @@ export const LeaderboardPodium = defineComponent({
       required: true,
     },
     type: {
-      type: String as PropType<LeaderboardCompetitionType>,
+      type: String as PropType<CompetitionType>,
       required: true,
     },
     class: {
@@ -86,7 +83,7 @@ export const LeaderboardPodium = defineComponent({
 
         <div class="mt-[10px] text-accent-base text-center">
           {this.item.name.split(", ")[0]},
-          <div class="capitalize">{this.item.name.split(", ")[1]}</div>
+          <div>{this.item.name.split(", ")[1] || ""}</div>
         </div>
         <div class="mt-[4px] text-sm font-mono">
           {this.type === "vol" ? "Volume $" : "Tx "}

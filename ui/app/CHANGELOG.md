@@ -1,4 +1,4 @@
-## Release 2021.10.11
+## Release 2021.10.12
 * Enabled Ethereum & ERC20 IBC exports for the first time on Cosmos!
 * Enabled IXO 
 * Sif's Bonus Pool - IXO:

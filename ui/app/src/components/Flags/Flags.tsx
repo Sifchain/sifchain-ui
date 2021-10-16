@@ -18,7 +18,6 @@ export const Flags = defineComponent({
   data(): {
     gui: null | ReturnType<typeof createGui>;
   } {
-    console.log({ isProduction });
     return {
       gui: null,
     };
@@ -53,8 +52,12 @@ export const Flags = defineComponent({
   },
   watch: {
     flagsState: {
-      handler() {
+      handler(
+        value: typeof flagsStore.state,
+        oldValue: typeof flagsStore.state,
+      ) {
         flagsStore.persist();
+        window.location.reload();
       },
       deep: true,
     },

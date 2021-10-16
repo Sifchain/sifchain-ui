@@ -8,9 +8,10 @@ import { animateFireflies } from "@/utils/animateFireflies";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
-  LeaderboardCompetitionType,
+  CompetitionType,
+  COMPETITION_TYPE_DISPLAY_DATA,
   LeaderboardItem,
-} from "../useLeaderboardData";
+} from "../useCompetitionData";
 import { LeaderboardAvatar } from "./LeaderboardAvatar";
 // animateFireflies();
 export const LeaderboardRow = defineComponent({
@@ -25,27 +26,21 @@ export const LeaderboardRow = defineComponent({
     },
     class: String as PropType<HTMLAttributes["class"]>,
     isMyself: Boolean,
-    type: Object as PropType<LeaderboardCompetitionType>,
+    type: Object as PropType<CompetitionType>,
     style: Object,
   },
   data: (_) => ({
     isHovering: false,
-    isActive: false,
   }),
   computed: {
     displayedText() {
       const name: string = this.item.name;
       const addr: string = this.item.address;
-      if (!this.isActive) {
-        return name;
+      if (this.isHovering) {
+        return addr;
       }
-      return addr;
+      return name;
     },
-  },
-  mounted() {
-    // setTimeout(() => {
-    //   this.isActive = true;
-    // }, 500 * this.item.rank);
   },
   render: function LeaderboardRow() {
     const props = this;
@@ -82,22 +77,16 @@ export const LeaderboardRow = defineComponent({
           <div
             onMouseenter={(e) => {
               this.isHovering = true;
-              if (this.isHovering) this.isActive = true;
-              setTimeout(() => {}, 100);
             }}
             onMouseleave={(e) => {
               this.isHovering = false;
-              this.isActive = false;
             }}
             class={[`cursor-pointer ml-[8px] translate-y-[-1px]`]}
           >
             {/* {props.item.name} */}
             <ResourcefulTextTransition
               class="w-[200px] inline-block"
-              text={
-                this.displayedText.toLocaleLowerCase() +
-                (this.isMyself ? ` (you)` : "")
-              }
+              text={this.displayedText + (this.isMyself ? ` (you)` : "")}
             />
           </div>
         </section>
@@ -119,8 +108,9 @@ export const LeaderboardRow = defineComponent({
         </section>
 
         <section class="flex-1 flex items-center justify-end font-mono">
-          {props.type === "vol" ? "Volume $" : "Tx "}
-          {prettyNumber(props.item.value, 0)}
+          {COMPETITION_TYPE_DISPLAY_DATA[props.item.type].renderValue(
+            props.item.value,
+          )}
         </section>
       </div>
     );

@@ -14,7 +14,11 @@ import {
 } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
-import { flagsStore, isAssetFlaggedDisabled } from "./flags";
+import {
+  flagsStore,
+  isAssetFlaggedDisabled,
+  isChainFlaggedDisabled,
+} from "./flags";
 
 export type ImportDraft = {
   amount: string;
@@ -54,7 +58,10 @@ export const importStore = Vuextra.createStore({
       return (
         useChainsList()
           .filter(
-            (c) => c.network !== Network.SIFCHAIN && !c.chainConfig.hidden,
+            (c) =>
+              c.network !== Network.SIFCHAIN &&
+              !c.chainConfig.hidden &&
+              !isChainFlaggedDisabled(c),
           )
           // Disallow IBC export of ethereum & sifchain-native tokens
           .filter((n) => {

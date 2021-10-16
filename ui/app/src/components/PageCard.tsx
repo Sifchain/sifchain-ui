@@ -1,4 +1,5 @@
 import AssetIcon, { IconName } from "@/components/AssetIcon";
+import { IAsset } from "@sifchain/sdk";
 import {
   VNode,
   Component,
@@ -11,6 +12,7 @@ import {
   ref,
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { TokenIcon } from "./TokenIcon";
 
 export default defineComponent({
   props: {
@@ -18,11 +20,18 @@ export default defineComponent({
       type: Object as PropType<JSX.Element | string>,
       required: true,
     },
+    headingClass: {
+      type: String,
+    },
     headerContent: {
       type: Object as PropType<JSX.Element>,
     },
     headerAction: Object as PropType<Component | JSX.Element>,
-    iconName: String as PropType<IconName>,
+    iconName: String as PropType<IconName | IAsset>,
+    iconType: {
+      type: String as PropType<"AssetIcon" | "TokenIcon">,
+      default: "AssetIcon",
+    },
     class: String as PropType<HTMLAttributes["class"]>,
     withOverflowSpace: {
       type: Boolean,
@@ -48,10 +57,25 @@ export default defineComponent({
             {!!props.heading && (
               <div class="w-full flex-row flex justify-between items-center pb-[10px]">
                 <div class="flex items-center">
-                  {!!props.iconName && (
-                    <AssetIcon icon={props.iconName} size={32} active />
-                  )}
-                  <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
+                  {!!props.iconName &&
+                    (props.iconType === "AssetIcon" ? (
+                      <AssetIcon
+                        icon={props.iconName as IconName}
+                        size={32}
+                        active
+                      />
+                    ) : (
+                      <TokenIcon
+                        assetValue={props.iconName as IAsset}
+                        size={32}
+                      />
+                    ))}
+                  <span
+                    class={[
+                      "text-accent-base font-sans text-[26px] ml-[10px] font-semibold",
+                      props.headingClass,
+                    ]}
+                  >
                     {props.heading}
                   </span>
                 </div>

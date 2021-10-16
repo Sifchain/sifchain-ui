@@ -22,7 +22,6 @@ export class MetamaskWalletProvider extends Web3WalletProvider {
     const provider = await this.getMetamaskProvider();
 
     const chainId = await provider.request({ method: "eth_chainId" });
-    console.log({ chainId });
     const [address] = await (provider.request({
       method: "eth_requestAccounts",
     }) as Promise<string>);

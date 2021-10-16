@@ -22,6 +22,7 @@ import createTokenRegistry, {
 } from "./TokenRegistryService";
 import { NativeDexClient } from "./utils/SifClient/NativeDexClient";
 import Web3 from "web3";
+import { LiquidityClient, LiquidityContext } from "../clients/liquidity";
 
 export type Services = ReturnType<typeof createServices>;
 
@@ -43,7 +44,8 @@ export type ServiceContext = {
   IBCServiceContext &
   ChainsServiceContext &
   WalletServiceContext &
-  TokenRegistryContext;
+  TokenRegistryContext &
+  LiquidityContext;
 
 export function createServices(context: ServiceContext) {
   const ChainsService = createChainsService(context);
@@ -60,6 +62,10 @@ export function createServices(context: ServiceContext) {
     chains: ChainsService.list(),
   });
   const TokenRegistryService = createTokenRegistry(context);
+  const liquidityService = new LiquidityClient(
+    context,
+    context.chains.find((chain) => chain.network === Network.SIFCHAIN)!,
+  )!;
 
   /* 
 
@@ -92,5 +98,6 @@ export function createServices(context: ServiceContext) {
     storage: StorageService,
     wallet: WalletService,
     tokenRegistry: TokenRegistryService,
+    liquidity: liquidityService,
   };
 }

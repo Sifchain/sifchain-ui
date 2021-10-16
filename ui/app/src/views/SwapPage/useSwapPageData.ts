@@ -21,6 +21,7 @@ import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { NativeDexClient } from "@sifchain/sdk/src/services/utils/SifClient/NativeDexClient";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 export const SWAP_MIN_BALANCE = toBaseUnits(
@@ -64,7 +65,7 @@ const getRouteSymbol = (
 };
 
 export const useSwapPageData = () => {
-  const { usecases, poolFinder, store, config } = useCore();
+  const { poolFinder, store, config } = useCore();
   const router = useRouter();
   const route = useRoute();
 
@@ -225,11 +226,29 @@ export const useSwapPageData = () => {
         hash: "",
       };
 
-      txStatus.value = await usecases.clp.swap(
-        fromFieldAmount.value,
-        toFieldAmount.value.asset,
-        minimumReceived.value,
-      );
+      try {
+        const tx = await useCore().services.liquidity.prepareSwapTx({
+          address: accountStore.state.sifchain.address,
+          fromAmount: fromFieldAmount.value,
+          toAsset: toFieldAmount.value.asset,
+          minimumReceived: minimumReceived.value,
+        });
+        const signed = await useCore().services.wallet.keplrProvider.sign(
+          useNativeChain(),
+          tx,
+        );
+        const res = await useCore().services.wallet.keplrProvider.broadcast(
+          useNativeChain(),
+          signed,
+        );
+        txStatus.value = NativeDexClient.parseTxResult(res);
+      } catch (error) {
+        txStatus.value = {
+          state: "failed",
+          hash: "",
+          memo: error.message as string,
+        };
+      }
       if (txStatus.value.state === "accepted") {
         useCore().services.bus.dispatch({
           type: "SuccessEvent",
@@ -241,10 +260,10 @@ export const useSwapPageData = () => {
             )} ${toFieldAmount.value.displaySymbol.toUpperCase()}`,
           },
         });
+        setTimeout(() => {
+          accountStore.updateBalances(Network.SIFCHAIN);
+        }, 1000);
       }
-      setTimeout(() => {
-        accountStore.updateBalances(Network.SIFCHAIN);
-      }, 1000);
     }
   }
 
