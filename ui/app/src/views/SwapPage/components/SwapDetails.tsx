@@ -23,8 +23,8 @@ export const SwapDetails = defineComponent({
         `}
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium">
-            {props.fromAsset?.value.displaySymbol.toUpperCase()} per{" "}
-            {props.toAsset?.value.displaySymbol.toUpperCase()}
+            {props.toAsset?.value.displaySymbol.toUpperCase()} per{" "}
+            {props.fromAsset?.value.displaySymbol.toUpperCase()}
           </div>
           <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium">
             <span class="mr-[4px] whitespace-nowrap">
@@ -42,8 +42,8 @@ export const SwapDetails = defineComponent({
         `}
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium">
-            {props.toAsset?.value.displaySymbol.toUpperCase()} per{" "}
-            {props.fromAsset?.value.displaySymbol.toUpperCase()}
+            {props.fromAsset?.value.displaySymbol.toUpperCase()} per{" "}
+            {props.toAsset?.value.displaySymbol.toUpperCase()}
           </div>
           <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium">
             <span class="mr-[4px] whitespace-nowrap">
