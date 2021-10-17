@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { defineComponent, watchEffect, ref, onMounted } from "vue";
-import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
+import Notifications from "./componentsLegacy/Notifications/Notifications";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
 import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";

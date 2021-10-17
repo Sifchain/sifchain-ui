@@ -17,8 +17,8 @@ const LR_EXTENSIONS = "js,json,ts,tsx,css,scss,html,vue,webp,jpg";
 export default defineConfig({
   plugins: [
     vitePolyfills(),
-    vueJsx(),
     vue(),
+    vueJsx(),
     (svgLoader as () => Plugin)(),
     liveReload(
       [

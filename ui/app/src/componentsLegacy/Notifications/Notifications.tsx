@@ -1,11 +1,11 @@
-<script lang="ts">
-import { computed, defineComponent } from "vue";
+import { defineComponent } from "vue";
 import { reactive, ref, Ref } from "@vue/reactivity"; /* eslint-disable-line */
 import { useCore } from "@/hooks/useCore";
 import { AppEvent } from "@sifchain/sdk/src/services/EventBusService";
 import { INotification } from "./INotification";
 import { NotificationElement } from "./NotificationElement";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import "./notifications.scss";
 
 let nextNotificationKey = 0;
 
@@ -193,35 +193,20 @@ export default defineComponent({
       },
     };
   },
+  render() {
+    return (
+      <div class="notifications-container z-50">
+        {this.notifications.map((item, index) => {
+          return (
+            <NotificationElement
+              key={item.key}
+              index={index}
+              onRemove={() => this.removeItem(index)}
+              notification={item}
+            />
+          );
+        })}
+      </div>
+    );
+  },
 });
-</script>
-
-<template>
-  <div class="notifications-container z-50">
-    <NotificationElement
-      v-for="(item, index) in notifications"
-      v-bind:key="item.key"
-      :index="index"
-      :onRemove="removeItem"
-      :notification="item"
-    />
-  </div>
-</template>
-
-<style lang="scss" scoped>
-.notifications-container {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  height: auto;
-  .list-enter-active,
-  .list-leave-active {
-    transition: all 0.5s ease;
-  }
-  .list-enter-from,
-  .list-leave-to {
-    opacity: 0;
-    transform: translateX(200px);
-  }
-}
-</style>
