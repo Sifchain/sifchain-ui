@@ -30,7 +30,7 @@ export const flagsStore = Vuextra.createStore({
     fieldsOfGoldEnabled: false,
     enableTestChains: {
       band: false,
-      osmosis: false,
+      osmosis: true,
     },
   },
   getters: (state) => ({}),
