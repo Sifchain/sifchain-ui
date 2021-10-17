@@ -32,7 +32,7 @@ export const flagsStore = Vuextra.createStore({
     dinoContestEnabled: false,
     enableTestChains: {
       band: false,
-      osmosis: false,
+      osmosis: true,
     },
   },
   getters: (state) => ({}),

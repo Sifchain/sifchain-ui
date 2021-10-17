@@ -955,6 +955,17 @@
       "label": "juno",
       "imageUrl": "https://junoscan.com/icons/safari-pinned-tab.svg",
       "homeNetwork": "juno"
+    },
+    {
+      "address": "",
+      "symbol": "uosmo",
+      "displaySymbol": "osmo",
+      "decimals": 6,
+      "name": "osmo",
+      "network": "ethereum",
+      "label": "osmo",
+      "imageUrl": "https://assets.coingecko.com/coins/images/16724/small/osmo.png?1632763885",
+      "homeNetwork": "osmosis"
     }
   ]
 }

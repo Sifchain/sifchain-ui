@@ -7,11 +7,11 @@ export const OSMOSIS_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://www.mintscan.io/osmosis",
   nativeAssetSymbol: "uosmo",
   chainId: "osmosis-1",
-  rpcUrl: "https://rpc-osmosis.keplr.app",
-  restUrl: "https://lcd-osmosis.keplr.app",
+  rpcUrl: "https://proxies.sifchain.finance/api/osmosis-1/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/osmosis-1/rest",
   keplrChainInfo: {
-    rpc: "https://rpc-osmosis.keplr.app",
-    rest: "https://lcd-osmosis.keplr.app",
+    rpc: "https://proxies.sifchain.finance/api/osmosis-1/rpc",
+    rest: "https://proxies.sifchain.finance/api/osmosis-1/rest",
     chainId: "osmosis-1",
     chainName: "Osmosis",
     stakeCurrency: {

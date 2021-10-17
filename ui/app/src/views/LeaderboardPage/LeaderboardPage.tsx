@@ -5,11 +5,13 @@ import { Tooltip } from "@/components/Tooltip";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import {
+  computed,
   defineComponent,
   onMounted,
   onUnmounted,
   ref,
   TransitionGroup,
+  watch,
 } from "vue";
 import {
   CompetitionType,
@@ -32,6 +34,7 @@ import { Asset } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
 import { useNativeChain } from "@/hooks/useChains";
 import { TokenIcon } from "@/components/TokenIcon";
 import { IAsset } from "@sifchain/sdk";
+import { animateFireflies } from "@/utils/animateFireflies";
 
 export default defineComponent({
   name: "LeaderboardPage",

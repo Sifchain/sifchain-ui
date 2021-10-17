@@ -682,13 +682,15 @@ export class EthBridge extends BaseBridge<
       asset.symbol,
       "e" + asset.symbol,
     ].filter(Boolean);
-
+    console.log("fetching eth addr");
     for (let symbol of possibleSymbols) {
+      console.log(symbol);
       // Fetch the token address from bridgebank
       let tokenAddress = await bridgeBankContract.methods
         .getBridgeToken(symbol)
-        .call();
-
+        .call()
+        .catch(() => {});
+      console.log({ tokenAddress, symbol });
       // Token address is a hex number. If it is non-zero (not ethereum or empty) when parsed, return it.
       if (+tokenAddress) {
         return tokenAddress;

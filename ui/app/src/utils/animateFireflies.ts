@@ -4,7 +4,8 @@
 // Saving this here for future use as we no longer have the original landing page - @mccallofthewild
 export const animateFireflies = () => {
   function createFireflyAnimation() {
-    const canvas = document.createElement("canvas"),
+    const canvas =
+        document.getElementById("canvas") || document.createElement("canvas"),
       context = canvas.getContext("2d"),
       canvasWidth =
         window.innerWidth ||
@@ -19,7 +20,7 @@ export const animateFireflies = () => {
         window.mozRequestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.msRequestAnimationFrame;
-    canvas.style = `position: fixed; top: 0; bottom:0; left:0; right: 0; pointer-events: none; z-index: 100; overflow: hidden;`;
+    canvas.style = `position: fixed; top: 0; bottom:0; left:0; right: 0; pointer-events: none; z-index: -1; overflow: hidden;`;
     canvas.id = `canvas`;
     const persons = [],
       numberOfFirefly = 75,
@@ -232,9 +233,9 @@ export const animateFireflies = () => {
       requestAnimationFrame(animate);
     }
 
-    document.body.onmousemove = function (e) {
-      giveBirth(e, birthToGive);
-    };
+    // document.body.onmousemove = function (e) {
+    //   giveBirth(e, birthToGive);
+    // };
 
     function giveBirth(e, u) {
       const i = persons.length;
@@ -244,6 +245,7 @@ export const animateFireflies = () => {
 
       if (u > 1) giveBirth(e, u - 1);
     }
+    document.body.appendChild(canvas);
   }
   createFireflyAnimation();
 };
