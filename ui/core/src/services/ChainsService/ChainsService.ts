@@ -18,6 +18,7 @@ import {
   OsmosisChain,
   JunoChain,
   IxoChain,
+  BandChain,
 } from "../../clients/chains";
 
 export * from "../../clients/chains";
@@ -40,6 +41,7 @@ export const networkChainCtorLookup = {
   [Network.OSMOSIS]: OsmosisChain,
   [Network.JUNO]: JunoChain,
   [Network.IXO]: IxoChain,
+  [Network.BAND]: BandChain,
 };
 
 export class ChainsService {

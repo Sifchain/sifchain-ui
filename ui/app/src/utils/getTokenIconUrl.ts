@@ -13,7 +13,9 @@ export const getTokenIconUrl = (
   baseUrl = "",
 ): string | undefined => {
   const core = useCore();
-  let svgUrl = tokenSrcMap.get(asset.displaySymbol.toUpperCase());
+  let svgUrl = tokenSrcMap.get(
+    asset.displaySymbol.toUpperCase().replace(/ \(ERC-20\)/, ""),
+  );
   if (svgUrl) {
     svgUrl = baseUrl + svgUrl;
   }

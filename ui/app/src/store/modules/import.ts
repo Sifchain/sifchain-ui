@@ -14,7 +14,7 @@ import {
 } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { Vuextra } from "../Vuextra";
 import { accountStore } from "./accounts";
-import { flagsStore } from "./flags";
+import { flagsStore, isAssetFlaggedDisabled } from "./flags";
 
 export type ImportDraft = {
   amount: string;
@@ -123,6 +123,9 @@ export const runTransfer = async (
 ) => {
   if (!params.assetAmount || !params.assetAmount.greaterThan("0")) {
     throw new Error("Please provide an amount");
+  }
+  if (isAssetFlaggedDisabled(params.assetAmount.asset)) {
+    throw new Error(`Asset ${params.assetAmount.asset.symbol} is not enabled!`);
   }
 
   const bridge = useCore().usecases.interchain(

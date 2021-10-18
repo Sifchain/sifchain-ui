@@ -1,5 +1,7 @@
+import { useChains, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import { flagsStore } from "@/store/modules/flags";
+import { Network } from "@sifchain/sdk";
 import { defineComponent, watch } from "@vue/runtime-core";
 import { onMounted, ref } from "vue";
 import { Button } from "../Button/Button";
@@ -7,13 +9,6 @@ import { Button } from "../Button/Button";
 const isProduction =
   import.meta.env.VITE_APP_DEPLOYMENT === "production" ||
   location.hostname == "dex.sifchain.finance";
-
-console.log({ global });
-// TODO: figure out how to dynamic import this
-// while working with our inline-everything HTML plugin
-// const loadGui = async () => {
-//   return (await import("./flagsGui")).createGui;
-// };
 
 import { createGui } from "./flagsGui";
 const loadGui = () => createGui;
@@ -50,7 +45,10 @@ export const Flags = defineComponent({
       return flagsStore.state;
     },
     timeoutMinutes() {
-      return flagsStore.refs.ibcTransferTimeoutMinutes;
+      return flagsStore.state.ibcTransferTimeoutMinutes;
+    },
+    enableTestChains() {
+      return Object.values(flagsStore.state.enableTestChains);
     },
   },
   watch: {
@@ -62,9 +60,29 @@ export const Flags = defineComponent({
     },
     timeoutMinutes: {
       handler(timeout) {
-        useCore().services.ibc.transferTimeoutMinutes =
-          timeout?.computed?.()?.value ?? timeout;
+        useCore().services.ibc.transferTimeoutMinutes = timeout;
       },
+      immediate: true,
+    },
+    enableTestChains: {
+      handler() {
+        Object.entries(flagsStore.state.enableTestChains).forEach(
+          ([n, enabled]) => {
+            const network = (n as unknown) as Network;
+            const chain = useChains().get(network);
+
+            chain.chainConfig.hidden = !enabled;
+            chain.nativeAsset.decommissioned = enabled ? undefined : true;
+
+            useNativeChain().assets.forEach((asset) => {
+              if (asset.homeNetwork === network) {
+                asset.decommissioned = enabled ? undefined : true;
+              }
+            });
+          },
+        );
+      },
+      deep: true,
       immediate: true,
     },
   },

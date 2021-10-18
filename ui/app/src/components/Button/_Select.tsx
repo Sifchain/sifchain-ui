@@ -12,7 +12,7 @@ export function _Select(
     <button
       {...props}
       class={[
-        "transition-all duration-200 relative flex justify-between items-center h-[54px] pl-[8px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border border-solid border-gray-input_outline active:border-white disabled:bg-transparent text-lg font-medium",
+        "transition-all duration-200 relative flex justify-between items-center h-[54px] pl-[8px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border border-solid border-gray-input_outline active:border-white disabled:bg-transparent text-lg font-medium whitespace-nowrap",
         props.active && "border-white",
         props.class,
       ]}

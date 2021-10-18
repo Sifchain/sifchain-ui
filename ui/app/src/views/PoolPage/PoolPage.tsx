@@ -14,6 +14,7 @@ import {
   usePoolPageData,
 } from "./usePoolPageData";
 import PoolItem from "./PoolItem";
+import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 
 export default defineComponent({
   name: "PoolsPage",
@@ -39,6 +40,7 @@ export default defineComponent({
           const asset = item.pool.externalAmount?.asset;
           if (!asset) return;
 
+          if (isAssetFlaggedDisabled(asset)) return false;
           return (
             !asset.decommissioned ||
             // Show decommissioned assets if user has a share.

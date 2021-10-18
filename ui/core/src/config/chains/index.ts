@@ -12,6 +12,7 @@ import ixo from "./ixo";
 import { NetworkEnv } from "../getEnv";
 import { Network } from "../../entities";
 import osmosis from "./osmosis";
+import band from "./band";
 
 export const chainConfigByNetworkEnv = Object.fromEntries(
   Object.values(NetworkEnv).map((env) => {
@@ -30,6 +31,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.REGEN]: regen[env],
         [Network.JUNO]: juno[env],
         [Network.IXO]: ixo[env],
+        [Network.BAND]: band[env],
       },
     ];
   }),

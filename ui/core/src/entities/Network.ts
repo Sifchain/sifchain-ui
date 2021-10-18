@@ -3,6 +3,7 @@ export enum Network {
   ETHEREUM = "ethereum",
   // The rest... sort by name
   AKASH = "akash",
+  BAND = "band",
   COSMOSHUB = "cosmoshub",
   CRYPTO_ORG = "crypto-org",
   IRIS = "iris",

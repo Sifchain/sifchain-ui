@@ -1,4 +1,19 @@
+import { useChains } from "@/hooks/useChains";
+import { Asset, Chain } from "@sifchain/sdk";
 import { Vuextra } from "../Vuextra";
+
+export const isChainFlaggedDisabled = (chain: Chain) => {
+  return (
+    flagsStore.state.enableTestChains[
+      chain?.network as keyof typeof flagsStore.state.enableTestChains
+    ] === false
+  );
+};
+
+export const isAssetFlaggedDisabled = (asset: Asset) => {
+  if (!asset.homeNetwork) return false;
+  return isChainFlaggedDisabled(useChains().get(asset.homeNetwork));
+};
 
 export const flagsStore = Vuextra.createStore({
   name: "flags",
@@ -13,6 +28,10 @@ export const flagsStore = Vuextra.createStore({
     claimsGraph: false,
     devnetCryptoecon: false,
     fieldsOfGoldEnabled: false,
+    enableTestChains: {
+      band: false,
+      osmosis: true,
+    },
   },
   getters: (state) => ({}),
   mutations: (state) => ({

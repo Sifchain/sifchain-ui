@@ -207,11 +207,11 @@ export default {
     {
       decimals: 18,
       imageUrl:
-        "https://assets.coingecko.com/coins/images/9545/thumb/band-protocol.png?1568730326",
+        "https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token.png?1625881431",
       name: "Band Protocol",
       network: "sifchain",
       symbol: "cband",
-      displaySymbol: "band",
+      displaySymbol: "Band (ERC-20)",
       homeNetwork: "ethereum",
     },
     {
@@ -689,6 +689,17 @@ export default {
       label: "ixo",
       imageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
       homeNetwork: "ixo",
+    },
+    {
+      symbol: "uband",
+      displaySymbol: "band",
+      decimals: 6,
+      name: "band",
+      network: "sifchain",
+      label: "band",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token.png?1625881431",
+      homeNetwork: "band",
     },
   ],
 };
