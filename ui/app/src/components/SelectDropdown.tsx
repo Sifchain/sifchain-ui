@@ -104,7 +104,7 @@ export const SelectDropdown = defineComponent({
               <div
                 key={option.value}
                 class={[
-                  "flex items-center w-full pl-[12px] pr-[16px] text-md h-[48px] hover:bg-gray-input cursor-pointer font-normal",
+                  "flex items-center w-full pl-[12px] pr-[16px] text-md h-[48px] hover:bg-gray-input cursor-pointer font-normal whitespace-nowrap",
                 ]}
                 onClick={() => {
                   props.onChangeValue(option.value);

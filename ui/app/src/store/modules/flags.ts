@@ -28,6 +28,8 @@ export const flagsStore = Vuextra.createStore({
     claimsGraph: false,
     devnetCryptoecon: false,
     fieldsOfGoldEnabled: false,
+    akashContestEnabled: false,
+    dinoContestEnabled: false,
     enableTestChains: {
       band: false,
       osmosis: true,

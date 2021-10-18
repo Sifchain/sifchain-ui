@@ -1,11 +1,9 @@
+import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
-import {
-  LeaderboardCompetitionType,
-  LeaderboardItem,
-} from "../useLeaderboardData";
+import { CompetitionType, LeaderboardItem } from "../useCompetitionData";
 import { LeaderboardAvatar } from "./LeaderboardAvatar";
 
 export const LeaderboardPodium = defineComponent({
@@ -16,14 +14,27 @@ export const LeaderboardPodium = defineComponent({
       required: true,
     },
     type: {
-      type: String as PropType<LeaderboardCompetitionType>,
+      type: String as PropType<CompetitionType>,
       required: true,
     },
     class: {
       type: String as PropType<HTMLAttributes["class"]>,
     },
   },
+  data: (_) => ({
+    isHovering: false,
+  }),
   computed: {
+    nameLines(): string[] {
+      const [l1, l2] = this.item.name.split(/,\s+/);
+      return [`${l1},`, l2].map((s) => s.toLocaleLowerCase());
+    },
+    displayLines(): string[] {
+      if (this.isHovering) {
+        return [this.item.address, " "];
+      }
+      return this.nameLines;
+    },
     isFirst(): boolean {
       return this.item.rank === 1;
     },
@@ -84,9 +95,19 @@ export const LeaderboardPodium = defineComponent({
           </div>
         </section>
 
-        <div class="mt-[10px] text-accent-base text-center">
-          {this.item.name.split(", ")[0]},
-          <div class="capitalize">{this.item.name.split(", ")[1]}</div>
+        <div
+          class={[
+            "mt-[10px] text-accent-base text-center whitespace-nowrap cursor-pointer h-[42px] w-full",
+          ]}
+          onMouseenter={(e) => {
+            this.isHovering = true;
+          }}
+          onMouseleave={(e) => {
+            this.isHovering = false;
+          }}
+        >
+          <ResourcefulTextTransition text={this.displayLines[0]} />
+          <ResourcefulTextTransition text={this.displayLines[1]} />
         </div>
         <div class="mt-[4px] text-sm font-mono">
           {this.type === "vol" ? "Volume $" : "Tx "}

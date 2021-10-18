@@ -20,6 +20,7 @@ import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import { RouterLink } from "vue-router";
+import { COMPETITION_UNIVERSAL_SYMBOL } from "@/views/LeaderboardPage/useCompetitionData";
 
 export default defineComponent({
   props: {},
@@ -216,7 +217,12 @@ export default defineComponent({
             {flagsStore.state.fieldsOfGoldEnabled && (
               <div class="middle mt-[10px]">
                 <RouterLink
-                  to={{ name: "Leaderboard", params: { type: "vol" } }}
+                  to={{
+                    name: "Leaderboard",
+                    params: {
+                      type: "vol",
+                    },
+                  }}
                   class="h-[46px] flex items-center justify-between px-[16px] cursor-pointer text-black rounded-t-[20px] font-semibold"
                   style={{
                     backgroundImage:
@@ -227,18 +233,25 @@ export default defineComponent({
                     <img class="w-[33px]" src="/images/wreath-tiny.svg" />
                     <div class="ml-[10px]">Fields of Gold</div>
                   </div>
-                  <AssetIcon
-                    icon="interactive/chevron-down"
-                    style={{ transform: "rotate(-90deg)" }}
-                    size={12}
-                  />
+                  <div style={{ transform: "translateY(1px)" }}>
+                    <AssetIcon
+                      icon="interactive/chevron-down"
+                      style={{ transform: "rotate(-90deg)" }}
+                      size={12}
+                    />
+                  </div>
                 </RouterLink>
                 <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
                   <div class="text-sm">View the Leaderboards</div>
                   <div class="flex items-center mt-[8px]">
                     {["vol", "txn"].map((type) => (
                       <RouterLink
-                        to={{ name: "Leaderboard", params: { type } }}
+                        to={{
+                          name: "Leaderboard",
+                          params: {
+                            type,
+                          },
+                        }}
                         key={type}
                       >
                         <div class="pl-[8px] pr-[6px] h-[22px] border-solid border border-accent-base rounded-xs flex items-center text-sm hover:bg-gray-500 mr-[10px] whitespace-nowrap">

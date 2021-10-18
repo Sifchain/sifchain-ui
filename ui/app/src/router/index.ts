@@ -200,7 +200,7 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
   },
   {
     name: "Leaderboard",
-    path: "/leaderboard/:type",
+    path: "/leaderboard/:type/:symbol?",
     component: LeaderboardPage,
   },
 

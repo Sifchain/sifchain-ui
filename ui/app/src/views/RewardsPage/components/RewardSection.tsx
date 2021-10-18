@@ -33,6 +33,14 @@ const REWARD_TYPE_DISPLAY_DATA = {
   },
 };
 
+export const getRewardProgramDisplayData = (rewardProgramName: string) => {
+  return (
+    REWARD_TYPE_DISPLAY_DATA[
+      rewardProgramName as keyof typeof REWARD_TYPE_DISPLAY_DATA
+    ] || REWARD_TYPE_DISPLAY_DATA["default"]
+  );
+};
+
 export const RewardSection = defineComponent({
   name: "RewardSection",
   props: {
@@ -115,12 +123,7 @@ export const RewardSection = defineComponent({
       ].filter((item) => !item.hide);
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
-      return (
-        REWARD_TYPE_DISPLAY_DATA[
-          this.rewardProgram
-            .rewardProgramName as keyof typeof REWARD_TYPE_DISPLAY_DATA
-        ] || REWARD_TYPE_DISPLAY_DATA["default"]
-      );
+      return getRewardProgramDisplayData(this.rewardProgram.rewardProgramName);
     },
   },
   setup() {
