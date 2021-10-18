@@ -15,6 +15,7 @@ import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProv
 import metamaskSrc from "@/assets/metamask.png";
 import keplrSrc from "@/assets/keplr.jpg";
 import router from "@/router";
+import { isChainFlaggedDisabled } from "@/store/modules/flags";
 
 export type WalletConnection = {
   walletName: string;
@@ -64,7 +65,12 @@ const createWalletConnection = (
           useChains().get(Network.SIFCHAIN).chainConfig.chainId === "sifchain"
         ) {
           const configs = useChainsList()
-            .filter((chain) => chain.chainConfig.chainType === "ibc")
+            .filter(
+              (chain) =>
+                chain.chainConfig.chainType === "ibc" &&
+                !isChainFlaggedDisabled(chain) &&
+                !chain.chainConfig.hidden,
+            )
             .map((chain) => chain.chainConfig as IBCChainConfig);
           await (window as any).keplr.enable(
             ...configs.map((chainConfig) => chainConfig.keplrChainInfo.chainId),
