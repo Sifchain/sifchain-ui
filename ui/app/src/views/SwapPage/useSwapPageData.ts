@@ -287,6 +287,10 @@ export const useSwapPageData = () => {
         return "Invalid Amount";
       case SwapState.VALID_INPUT:
         return "Swap";
+      case SwapState.FRONTRUN_SLIPPAGE:
+        return "Swap (Frontrun attack possible due to high slippage)";
+      case SwapState.INVALID_SLIPPAGE:
+        return "Invalid slippage";
     }
   });
 
@@ -359,7 +363,11 @@ export const useSwapPageData = () => {
       });
     },
     nextStepAllowed: computed(() => {
-      return nextStepMessage.value === "Swap";
+      return (
+        nextStepMessage.value === "Swap" ||
+        nextStepMessage.value ===
+          "Swap (Frontrun attack possible due to high slippage)"
+      );
     }),
     pageState,
     txStatus,
