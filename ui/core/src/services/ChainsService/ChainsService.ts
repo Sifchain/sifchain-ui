@@ -19,6 +19,7 @@ import {
   JunoChain,
   IxoChain,
   BandChain,
+  LikecoinChain,
 } from "../../clients/chains";
 
 export * from "../../clients/chains";
@@ -42,6 +43,7 @@ export const networkChainCtorLookup = {
   [Network.JUNO]: JunoChain,
   [Network.IXO]: IxoChain,
   [Network.BAND]: BandChain,
+  [Network.LIKECOIN]: LikecoinChain,
 };
 
 export class ChainsService {

@@ -302,6 +302,7 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
 
     const assetAmounts: IAssetAmount[] = [];
 
+    if (chain.network === Network.LIKECOIN) console.log(balances);
     for (let coin of balances) {
       if (!+coin.amount) continue;
 

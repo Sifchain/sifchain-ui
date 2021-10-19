@@ -712,5 +712,16 @@ export default {
         "https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token.png?1625881431",
       homeNetwork: "band",
     },
+    {
+      symbol: "nanoekil",
+      displaySymbol: "ekil",
+      decimals: 9,
+      name: "ekil",
+      network: "sifchain",
+      homeNetwork: "likecoin",
+      label: "ekil",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+    },
   ],
 };
