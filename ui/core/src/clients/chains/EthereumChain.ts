@@ -16,6 +16,4 @@ export class EthereumChain extends BaseChain implements Chain {
   getBlockExplorerUrlForAddress(address: string) {
     return urlJoin(this.chainConfig.blockExplorerUrl, "address", address);
   }
-
-  calculateTransferFeeToChain(transferAmount: IAssetAmount) {}
 }
