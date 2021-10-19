@@ -1,6 +1,5 @@
 import { Chain, IAssetAmount } from "../../entities";
 import { urlJoin } from "url-join-ts";
-import { calculateIBCExportFee } from "../../utils/ibcExportFees";
 import { BaseChain } from "./_BaseChain";
 
 export class IxoChain extends BaseChain implements Chain {
@@ -17,8 +16,5 @@ export class IxoChain extends BaseChain implements Chain {
       "/cosmos/bank/v1beta1/balances/",
       address,
     );
-  }
-  calculateTransferFeeToChain(transferAmount: IAssetAmount) {
-    return calculateIBCExportFee(transferAmount);
   }
 }

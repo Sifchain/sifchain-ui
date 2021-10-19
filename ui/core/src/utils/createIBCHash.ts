@@ -16,3 +16,5 @@ export const createIBCHash = async (
     .join(""); // convert bytes to hex string
   return "ibc/" + hashHex.toUpperCase();
 };
+// @ts-ignore
+window.createIBCHash = createIBCHash;

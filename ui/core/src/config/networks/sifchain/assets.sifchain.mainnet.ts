@@ -980,6 +980,17 @@ const assets: {
         "https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token.png?1625881431",
       homeNetwork: "band",
     },
+    {
+      symbol: "nanolike",
+      displaySymbol: "like",
+      decimals: 9,
+      name: "likecoin",
+      network: "sifchain",
+      homeNetwork: "likecoin",
+      label: "like",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+    },
   ],
 };
 
