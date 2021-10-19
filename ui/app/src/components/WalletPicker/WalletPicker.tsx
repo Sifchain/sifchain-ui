@@ -17,7 +17,7 @@ export default defineComponent({
           .map((connection) => (
             <WalletConnection
               connection={connection}
-              key={connection.walletName}
+              key={connection.getChain().network}
             />
           ))}
       </div>

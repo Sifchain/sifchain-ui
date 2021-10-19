@@ -25,6 +25,12 @@ export interface WhiteList {
   validatorList: string[];
 }
 
+export interface LiquidityProviderData {
+  liquidityProvider?: LiquidityProvider;
+  nativeAssetBalance: string;
+  externalAssetBalance: string;
+}
+
 const baseAsset: object = { symbol: "" };
 
 export const Asset = {
@@ -379,6 +385,139 @@ export const WhiteList = {
       for (const e of object.validatorList) {
         message.validatorList.push(e);
       }
+    }
+    return message;
+  },
+};
+
+const baseLiquidityProviderData: object = {
+  nativeAssetBalance: "",
+  externalAssetBalance: "",
+};
+
+export const LiquidityProviderData = {
+  encode(
+    message: LiquidityProviderData,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.liquidityProvider !== undefined) {
+      LiquidityProvider.encode(
+        message.liquidityProvider,
+        writer.uint32(10).fork(),
+      ).ldelim();
+    }
+    if (message.nativeAssetBalance !== "") {
+      writer.uint32(18).string(message.nativeAssetBalance);
+    }
+    if (message.externalAssetBalance !== "") {
+      writer.uint32(26).string(message.externalAssetBalance);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): LiquidityProviderData {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.liquidityProvider = LiquidityProvider.decode(
+            reader,
+            reader.uint32(),
+          );
+          break;
+        case 2:
+          message.nativeAssetBalance = reader.string();
+          break;
+        case 3:
+          message.externalAssetBalance = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LiquidityProviderData {
+    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
+    if (
+      object.liquidityProvider !== undefined &&
+      object.liquidityProvider !== null
+    ) {
+      message.liquidityProvider = LiquidityProvider.fromJSON(
+        object.liquidityProvider,
+      );
+    } else {
+      message.liquidityProvider = undefined;
+    }
+    if (
+      object.nativeAssetBalance !== undefined &&
+      object.nativeAssetBalance !== null
+    ) {
+      message.nativeAssetBalance = String(object.nativeAssetBalance);
+    } else {
+      message.nativeAssetBalance = "";
+    }
+    if (
+      object.externalAssetBalance !== undefined &&
+      object.externalAssetBalance !== null
+    ) {
+      message.externalAssetBalance = String(object.externalAssetBalance);
+    } else {
+      message.externalAssetBalance = "";
+    }
+    return message;
+  },
+
+  toJSON(message: LiquidityProviderData): unknown {
+    const obj: any = {};
+    message.liquidityProvider !== undefined &&
+      (obj.liquidityProvider = message.liquidityProvider
+        ? LiquidityProvider.toJSON(message.liquidityProvider)
+        : undefined);
+    message.nativeAssetBalance !== undefined &&
+      (obj.nativeAssetBalance = message.nativeAssetBalance);
+    message.externalAssetBalance !== undefined &&
+      (obj.externalAssetBalance = message.externalAssetBalance);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<LiquidityProviderData>,
+  ): LiquidityProviderData {
+    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
+    if (
+      object.liquidityProvider !== undefined &&
+      object.liquidityProvider !== null
+    ) {
+      message.liquidityProvider = LiquidityProvider.fromPartial(
+        object.liquidityProvider,
+      );
+    } else {
+      message.liquidityProvider = undefined;
+    }
+    if (
+      object.nativeAssetBalance !== undefined &&
+      object.nativeAssetBalance !== null
+    ) {
+      message.nativeAssetBalance = object.nativeAssetBalance;
+    } else {
+      message.nativeAssetBalance = "";
+    }
+    if (
+      object.externalAssetBalance !== undefined &&
+      object.externalAssetBalance !== null
+    ) {
+      message.externalAssetBalance = object.externalAssetBalance;
+    } else {
+      message.externalAssetBalance = "";
     }
     return message;
   },

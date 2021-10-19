@@ -23,7 +23,9 @@ export class WalletService {
   metamaskProvider = new MetamaskWalletProvider(this.context);
 
   tryConnectAllWallets() {
-    return this.keplrProvider.tryConnectAll(...this.context.chains);
+    return this.keplrProvider.tryConnectAll(
+      ...this.context.chains.filter((c) => c.chainConfig.hidden),
+    );
   }
 }
 export default WalletService.create.bind(WalletService);

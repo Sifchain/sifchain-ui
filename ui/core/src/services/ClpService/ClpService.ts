@@ -6,6 +6,7 @@ import {
   LiquidityProvider,
   Network,
   Pool,
+  getChainsService,
 } from "../../entities";
 
 import { SifUnSignedClient } from "../utils/SifClient";
@@ -14,6 +15,7 @@ import { RawPool } from "../utils/SifClient/x/clp";
 import TokenRegistryService from "../../services/TokenRegistryService";
 import { NativeDexClient } from "../../services/utils/SifClient/NativeDexClient";
 import { PoolsRes } from "../../generated/proto/sifnode/clp/v1/querier";
+import { LiquidityProviderData } from "../../generated/proto/sifnode/clp/v1/types";
 
 export type ClpServiceContext = {
   nativeAsset: IAsset;
@@ -26,6 +28,9 @@ export type ClpServiceContext = {
 
 type IClpService = {
   getRawPools: () => Promise<PoolsRes>;
+  getAccountLiquidityProviderData: (params: {
+    lpAddress: string;
+  }) => Promise<LiquidityProviderData[]>;
   getPools: () => Promise<Pool[]>;
   getPoolSymbolsByLiquidityProvider: (address: string) => Promise<string[]>;
   swap: (params: {
@@ -200,6 +205,14 @@ export default function createClpService({
       const poolMeta = await client.getAssets(address);
       if (!poolMeta) return [];
       return poolMeta.map(({ symbol }) => symbol);
+    },
+
+    async getAccountLiquidityProviderData(params: { lpAddress: string }) {
+      const queryClient = await dexClientPromise;
+      const res = await queryClient.query.clp.GetLiquidityProviderData({
+        lpAddress: params.lpAddress,
+      });
+      return res.liquidityProviderData;
     },
 
     async removeLiquidity(params) {

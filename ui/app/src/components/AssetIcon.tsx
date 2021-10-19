@@ -52,7 +52,8 @@ export type InteractiveIconName =
   | "warning"
   | "settings"
   | "picture"
-  | "check";
+  | "check"
+  | "wreath";
 
 export type NavIconName =
   | "balances"
