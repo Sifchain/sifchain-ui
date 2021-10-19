@@ -153,7 +153,7 @@ export const RewardSection = defineComponent({
             <AssetIcon
               icon={this.displayData.icon}
               size={20}
-              class="mr-[10px]"
+              class="mr-[10px] flex-shrink-0"
             />
             {this.rewardProgram.displayName}
           </div>
