@@ -13,7 +13,6 @@ import osmosis from "./osmosis";
 import terra from "./terra";
 import juno from "./juno";
 import ixo from "./ixo";
-import osmosis from "./osmosis";
 import band from "./band";
 import likecoin from "./likecoin";
 
