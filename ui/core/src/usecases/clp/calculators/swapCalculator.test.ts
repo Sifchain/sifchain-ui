@@ -196,6 +196,58 @@ describe("swapCalculator", () => {
     expect(state.value).toBe(SwapState.VALID_INPUT);
   });
 
+  test("invalid funds above limit", () => {
+    balances.value = [AssetAmount(ATK, "1000"), AssetAmount(ROWAN, "500")];
+    fromAmount.value = "1001";
+    toAmount.value = "501";
+    fromSymbol.value = "atk";
+    toSymbol.value = "rowan";
+
+    expect(state.value).toBe(SwapState.INSUFFICIENT_FUNDS);
+  });
+
+  test("Positive Invalid Slippage", () => {
+    balances.value = [
+      AssetAmount(ATK, "1000000000000000000000"),
+      AssetAmount(ROWAN, "500000000000000000000"),
+    ];
+    fromAmount.value = "1000";
+    toAmount.value = "500";
+    fromSymbol.value = "atk";
+    toSymbol.value = "rowan";
+    slippage.value = "50.0001";
+
+    expect(state.value).toBe(SwapState.INVALID_SLIPPAGE);
+  });
+
+  test("Negative Invalid Slippage", () => {
+    balances.value = [
+      AssetAmount(ATK, "1000000000000000000000"),
+      AssetAmount(ROWAN, "500000000000000000000"),
+    ];
+    fromAmount.value = "1000";
+    toAmount.value = "500";
+    fromSymbol.value = "atk";
+    toSymbol.value = "rowan";
+    slippage.value = "-0.01";
+
+    expect(state.value).toBe(SwapState.INVALID_SLIPPAGE);
+  });
+
+  test("Frontrun possible Slippage", () => {
+    balances.value = [
+      AssetAmount(ATK, "1000000000000000000000"),
+      AssetAmount(ROWAN, "500000000000000000000"),
+    ];
+    fromAmount.value = "1000";
+    toAmount.value = "500";
+    fromSymbol.value = "atk";
+    toSymbol.value = "rowan";
+    slippage.value = "1.01";
+
+    expect(state.value).toBe(SwapState.FRONTRUN_SLIPPAGE);
+  });
+
   test("valid funds at limit", () => {
     balances.value = [
       AssetAmount(ATK, "1000000000000000000000"),
@@ -207,15 +259,5 @@ describe("swapCalculator", () => {
     toSymbol.value = "rowan";
 
     expect(state.value).toBe(SwapState.VALID_INPUT);
-  });
-
-  test("invalid funds above limit", () => {
-    balances.value = [AssetAmount(ATK, "1000"), AssetAmount(ROWAN, "500")];
-    fromAmount.value = "1001";
-    toAmount.value = "501";
-    fromSymbol.value = "atk";
-    toSymbol.value = "rowan";
-
-    expect(state.value).toBe(SwapState.INSUFFICIENT_FUNDS);
   });
 });
