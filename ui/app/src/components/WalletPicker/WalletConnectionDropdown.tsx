@@ -20,8 +20,9 @@ export default defineComponent({
   },
   setup(props) {
     const { config } = useCore();
-    const stateRef =
-      accountStore.refs[props.connection.getChain().network].computed();
+    const stateRef = accountStore.refs[
+      props.connection.getChain().network
+    ].computed();
     const addressExplorerUrl = computed(() => {
       return props.connection
         .getChain()

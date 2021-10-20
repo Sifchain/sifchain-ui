@@ -48,7 +48,7 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
 
     web3.currentProvider.on(eventName, () => callback());
     return () =>
-      (web3.currentProvider as unknown as EventEmitter)?.off(
+      ((web3.currentProvider as unknown) as EventEmitter)?.off(
         eventName,
         callback,
       );

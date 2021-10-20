@@ -61,8 +61,7 @@ export default defineComponent({
       return poolStats.data.value?.rowanUsd;
     });
 
-    const connectedNetworkCount =
-      rootStore.accounts.refs.connectedNetworkCount.computed();
+    const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
 
     const changesData = useAsyncData(() => loadChangesData());
 
@@ -197,8 +196,9 @@ export default defineComponent({
                   ref={moreMenuRef}
                   offset={[0, -2]}
                   onShow={(instance: TooltipInstance) => {
-                    const content =
-                      instance.popper.querySelector(".tippy-content");
+                    const content = instance.popper.querySelector(
+                      ".tippy-content",
+                    );
                     if (content) {
                       content.className +=
                         " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";

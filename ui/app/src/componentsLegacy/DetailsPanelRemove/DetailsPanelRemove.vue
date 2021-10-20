@@ -96,9 +96,8 @@ export default defineComponent({
       return [
         {
           key: "Claimable  Rewards",
-          value:
-            this.$props.rewardsData
-              .totalClaimableCommissionsAndClaimableRewards,
+          value: this.$props.rewardsData
+            .totalClaimableCommissionsAndClaimableRewards,
         },
         {
           key: "Projected Full Amount",

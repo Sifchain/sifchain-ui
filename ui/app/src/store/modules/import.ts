@@ -52,8 +52,9 @@ export const importStore = Vuextra.createStore({
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
       );
-      const isPeggyWhitelistedIBCAsset =
-        useCore().config.peggyCompatibleCosmosBaseDenoms.has(asset.symbol);
+      const isPeggyWhitelistedIBCAsset = useCore().config.peggyCompatibleCosmosBaseDenoms.has(
+        asset.symbol,
+      );
       return (
         useChainsList()
           .filter(

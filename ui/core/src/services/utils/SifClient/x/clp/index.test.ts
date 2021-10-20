@@ -59,10 +59,10 @@ let base: LcdClient;
 let clp: ClpExtension["clp"];
 
 beforeEach(() => {
-  base = {
+  base = ({
     get: jest.fn(async () => "1234"),
     post: jest.fn(async () => "1234"),
-  } as any as LcdClient;
+  } as any) as LcdClient;
   clp = setupClpExtension(base).clp;
 });
 

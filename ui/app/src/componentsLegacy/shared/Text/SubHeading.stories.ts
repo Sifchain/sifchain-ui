@@ -22,6 +22,7 @@ Body.args = {};
 Body.parameters = {
   design: {
     type: "figma",
-    url: "https://www.figma.com/file/gcSOKvZrSNKmvFDFMqrbTt/Sifchain?node-id=59%3A61",
+    url:
+      "https://www.figma.com/file/gcSOKvZrSNKmvFDFMqrbTt/Sifchain?node-id=59%3A61",
   },
 };

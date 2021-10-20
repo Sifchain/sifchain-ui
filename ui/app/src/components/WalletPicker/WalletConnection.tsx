@@ -16,8 +16,9 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const stateRef =
-      accountStore.refs[props.connection.getChain().network].computed();
+    const stateRef = accountStore.refs[
+      props.connection.getChain().network
+    ].computed();
     const instanceRef = ref<TooltipInstance>();
 
     const handleClick = () => {

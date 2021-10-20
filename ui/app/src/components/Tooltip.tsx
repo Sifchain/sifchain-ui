@@ -15,7 +15,7 @@ export type TooltipProps = TippyOptions;
 
 export default Tippy;
 
-export const Tooltip = Tippy as unknown as (
+export const Tooltip = (Tippy as unknown) as (
   props: TooltipProps,
   context: SetupContext,
 ) => JSX.Element;

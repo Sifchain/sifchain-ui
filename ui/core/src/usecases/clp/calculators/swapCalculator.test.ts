@@ -45,17 +45,22 @@ describe("swapCalculator", () => {
       }
     });
 
-    ({ state, priceMessage, priceImpact, providerFee, minimumReceived } =
-      useSwapCalculator({
-        balances,
-        fromAmount,
-        toAmount,
-        fromSymbol,
-        selectedField,
-        toSymbol,
-        poolFinder,
-        slippage,
-      }));
+    ({
+      state,
+      priceMessage,
+      priceImpact,
+      providerFee,
+      minimumReceived,
+    } = useSwapCalculator({
+      balances,
+      fromAmount,
+      toAmount,
+      fromSymbol,
+      selectedField,
+      toSymbol,
+      poolFinder,
+      slippage,
+    }));
 
     balances.value = [
       AssetAmount(ATK, "1000000000000000000000"),

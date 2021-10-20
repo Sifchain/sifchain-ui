@@ -5,7 +5,9 @@ export class ChainIdHelper {
   // Some chains omit the - before version, so that is optional.
   static readonly VersionFormatRegExp = /(.+)-?([\d]+)/;
 
-  static parse(chainId: string): {
+  static parse(
+    chainId: string,
+  ): {
     identifier: string;
     version: number;
   } {

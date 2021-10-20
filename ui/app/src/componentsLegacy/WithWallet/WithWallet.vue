@@ -47,10 +47,14 @@ export default defineComponent({
     >,
   },
   setup(props) {
-    const { connected, connectedToEth, connectedToSif, connectCta } =
-      useWalletButton({
-        connectType: props.connectType,
-      });
+    const {
+      connected,
+      connectedToEth,
+      connectedToSif,
+      connectCta,
+    } = useWalletButton({
+      connectType: props.connectType,
+    });
     return {
       connected,
       connectedToEth,

@@ -69,9 +69,8 @@ export function CosmosSlashingV1beta1QuerySigningInfoResponseToJSON(
     return null;
   }
   return {
-    val_signing_info:
-      ValSigningInfoIsTheSigningInfoOfRequestedValConsAddressToJSON(
-        value.valSigningInfo,
-      ),
+    val_signing_info: ValSigningInfoIsTheSigningInfoOfRequestedValConsAddressToJSON(
+      value.valSigningInfo,
+    ),
   };
 }

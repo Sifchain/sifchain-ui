@@ -1,6 +1,6 @@
 export function memoize<
   F extends (this: any, ...args: any[]) => any,
-  R extends (...args: Parameters<F>) => any,
+  R extends (...args: Parameters<F>) => any
 >(func: F, resolver?: R) {
   if (
     typeof func != "function" ||
@@ -27,7 +27,7 @@ export function memoize<
 
 export function memoizeSuccessfulPromise<
   F extends (this: any, ...args: any[]) => any,
-  R extends (...args: Parameters<F>) => any,
+  R extends (...args: Parameters<F>) => any
 >(func: F, resolver?: R) {
   if (
     typeof func != "function" ||

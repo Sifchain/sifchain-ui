@@ -96,15 +96,17 @@ export function useRemoveLiquidityCalculator(input: {
     )
       return null;
 
-    const { withdrawExternalAssetAmount, withdrawNativeAssetAmount } =
-      calculateWithdrawal({
-        poolUnits,
-        nativeAssetBalance,
-        externalAssetBalance,
-        lpUnits,
-        wBasisPoints,
-        asymmetry: asymmetry,
-      });
+    const {
+      withdrawExternalAssetAmount,
+      withdrawNativeAssetAmount,
+    } = calculateWithdrawal({
+      poolUnits,
+      nativeAssetBalance,
+      externalAssetBalance,
+      lpUnits,
+      wBasisPoints,
+      asymmetry: asymmetry,
+    });
 
     return {
       hasLiquidity,

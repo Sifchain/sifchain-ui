@@ -86,9 +86,8 @@ export function InlineResponse20046CounterpartyToJSON(
   return {
     client_id: value.clientId,
     connection_id: value.connectionId,
-    prefix:
-      MerklePrefixIsMerklePathPrefixedToTheKeyTheConstructedKeyFromThePathAndTheKeyWillBeAppendPathKeyPathAppendPathKeyPrefixKeyToJSON(
-        value.prefix,
-      ),
+    prefix: MerklePrefixIsMerklePathPrefixedToTheKeyTheConstructedKeyFromThePathAndTheKeyWillBeAppendPathKeyPathAppendPathKeyPrefixKeyToJSON(
+      value.prefix,
+    ),
   };
 }

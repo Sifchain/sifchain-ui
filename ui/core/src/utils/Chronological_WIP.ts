@@ -9,7 +9,7 @@ enum ChronologicalItemExitStatus {
   UNSET = "UNSET",
 }
 interface ChronologicalItem<
-  T extends Readonly<{ type: string; payload: any }>,
+  T extends Readonly<{ type: string; payload: any }>
 > {
   action: T;
   activationStatus: ChronologicalItemStatus;

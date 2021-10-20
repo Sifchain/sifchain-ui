@@ -72,7 +72,7 @@ export const Flags = defineComponent({
       handler() {
         Object.entries(flagsStore.state.enableTestChains).forEach(
           ([n, enabled]) => {
-            const network = n as unknown as Network;
+            const network = (n as unknown) as Network;
             const chain = useChains().get(network);
 
             chain.chainConfig.hidden = !enabled;

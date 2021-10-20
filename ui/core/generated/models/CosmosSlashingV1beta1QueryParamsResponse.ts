@@ -66,9 +66,8 @@ export function CosmosSlashingV1beta1QueryParamsResponseToJSON(
     return null;
   }
   return {
-    params:
-      QueryParamsResponseIsTheResponseTypeForTheQueryParamsRPCMethodParamsToJSON(
-        value.params,
-      ),
+    params: QueryParamsResponseIsTheResponseTypeForTheQueryParamsRPCMethodParamsToJSON(
+      value.params,
+    ),
   };
 }

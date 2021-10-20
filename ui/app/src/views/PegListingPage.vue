@@ -92,13 +92,14 @@ export default defineComponent({
       return list;
     });
 
-    const txMatchesUnpegSymbol =
-      (pegAssetSymbol: string) => (txStatus: TransactionStatus) => {
-        return (
-          txStatus.symbol?.toLowerCase() ===
-          getUnpeggedSymbol(pegAssetSymbol.toLowerCase()).toLowerCase()
-        );
-      };
+    const txMatchesUnpegSymbol = (pegAssetSymbol: string) => (
+      txStatus: TransactionStatus,
+    ) => {
+      return (
+        txStatus.symbol?.toLowerCase() ===
+        getUnpeggedSymbol(pegAssetSymbol.toLowerCase()).toLowerCase()
+      );
+    };
 
     const assetList = computed<TokenListItem[]>(() => {
       const balances =

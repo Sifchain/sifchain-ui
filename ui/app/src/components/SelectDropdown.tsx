@@ -50,8 +50,9 @@ export const SelectDropdown = defineComponent({
 
     const updateWidth = () => {
       const reference = tooltipInstance.value?.reference?.children[0];
-      const content =
-        tooltipInstance.value?.popper.querySelector(".tippy-content");
+      const content = tooltipInstance.value?.popper.querySelector(
+        ".tippy-content",
+      );
 
       if (content && reference) {
         content.style.width = getComputedStyle(reference).width;
