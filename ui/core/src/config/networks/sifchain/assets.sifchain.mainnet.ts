@@ -992,7 +992,7 @@ const assets: {
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
     },
     {
-      address: "",
+      address: "0xd01cb3d113a864763dd3977fe1e725860013b0ed",
       symbol: "cratom",
       displaySymbol: "ratom",
       lowercasePrefixLength: 1,
