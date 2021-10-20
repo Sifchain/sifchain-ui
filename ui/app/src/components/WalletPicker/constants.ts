@@ -1,21 +1,12 @@
-import { computed, ComputedRef } from "@vue/reactivity";
-import {
-  AppConfig,
-  Chain,
-  getChainsService,
-  IBCChainConfig,
-  Network,
-} from "@sifchain/sdk";
-import { useCore } from "@/hooks/useCore";
-import { rootStore } from "../../store";
-import { accountStore } from "@/store/modules/accounts";
-import { useChains, useChainsList } from "@/hooks/useChains";
-import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
-
-import metamaskSrc from "@/assets/metamask.png";
 import keplrSrc from "@/assets/keplr.jpg";
+import metamaskSrc from "@/assets/metamask.png";
+import terraStationSrc from "@/assets/terra_station.png";
+import { useChains, useChainsList } from "@/hooks/useChains";
 import router from "@/router";
+import { accountStore } from "@/store/modules/accounts";
 import { isChainFlaggedDisabled } from "@/store/modules/flags";
+import { Chain, IBCChainConfig, Network } from "@sifchain/sdk";
+import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
 
 export type WalletConnection = {
   walletName: string;
@@ -26,7 +17,7 @@ export type WalletConnection = {
 };
 
 type WalletConfig = {
-  id: "keplr" | "metamask";
+  id: "keplr" | "metamask" | "terraStation";
   walletName: string;
   walletIconSrc: string;
 };
@@ -40,6 +31,11 @@ const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
     id: "keplr",
     walletName: "Keplr",
     walletIconSrc: keplrSrc,
+  },
+  terraStation: {
+    id: "terraStation",
+    walletName: "Terra Station",
+    walletIconSrc: terraStationSrc,
   },
 };
 
@@ -59,25 +55,8 @@ const createWalletConnection = (
           router.push({ name: "KeplrInfo" });
           return;
         }
-        const keplr = await getKeplrProvider();
-        if (
-          keplr &&
-          useChains().get(Network.SIFCHAIN).chainConfig.chainId === "sifchain"
-        ) {
-          const configs = useChainsList()
-            .filter(
-              (chain) =>
-                chain.chainConfig.chainType === "ibc" &&
-                !isChainFlaggedDisabled(chain) &&
-                !chain.chainConfig.hidden,
-            )
-            .map((chain) => chain.chainConfig as IBCChainConfig);
-          await (window as any).keplr.enable(
-            ...configs.map((chainConfig) => chainConfig.keplrChainInfo.chainId),
-          );
-        }
+        accountStore.load(network);
       }
-      accountStore.load(network);
     },
     disconnect:
       network === Network.ETHEREUM
@@ -88,19 +67,37 @@ const createWalletConnection = (
   };
 };
 
+const walletPickerByNetwork: Record<string, WalletConfig["id"]> = {
+  [Network.SIFCHAIN]: "keplr",
+  [Network.ETHEREUM]: "metamask",
+  [Network.TERRA]: "terraStation",
+  default: "keplr",
+};
+
+const manuallyOrderedNetworks = [
+  Network.SIFCHAIN,
+  Network.ETHEREUM,
+  Network.TERRA,
+];
 // Sif, then eth, then all others alphabetically
 export const walletConnections: WalletConnection[] = [
-  createWalletConnection("keplr", Network.SIFCHAIN),
-  createWalletConnection("metamask", Network.ETHEREUM),
+  ...manuallyOrderedNetworks,
   ...Object.values(Network)
-    .filter((n) => n !== Network.SIFCHAIN && n !== Network.ETHEREUM)
-    .map((n) => createWalletConnection("keplr", n))
+    .filter((n) => !manuallyOrderedNetworks.includes(n))
     .sort((a, b) =>
-      a.getChain().displayName.localeCompare(b.getChain().displayName),
+      useChains()
+        .get(a)
+        .displayName.localeCompare(useChains().get(b).displayName),
     ),
 ]
-  .filter((connection) => {
-    return !connection.getChain().chainConfig.hidden;
+  .filter((network) => {
+    return !useChains().get(network).chainConfig.hidden;
   })
+  .map((n) =>
+    createWalletConnection(
+      walletPickerByNetwork[n] || walletPickerByNetwork.default,
+      n,
+    ),
+  )
   // UI displays these bottom to top
   .reverse();
