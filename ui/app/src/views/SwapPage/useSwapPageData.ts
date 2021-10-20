@@ -260,9 +260,14 @@ export const useSwapPageData = () => {
     toSymbol.value = fromSymbolValue;
   }
 
-  const nextStepMessage = computed(() => {
+  const swapValidityMessage = (isValid: boolean, message: string) => ({
+    isValid,
+    message,
+  });
+
+  const nextStepValidityMessage = computed(() => {
     if (!accountStore.state.sifchain.address) {
-      return "Connect Sifchain Wallet";
+      return swapValidityMessage(false, "Connect Sifchain Wallet");
     }
     if (fromAsset.value?.symbol.toLowerCase() === "rowan") {
       const nativeBalance = accountStore.state.sifchain.balances.find(
@@ -273,26 +278,38 @@ export const useSwapPageData = () => {
           .subtract(fromFieldAmount.value || "0")
           .lessThan(SWAP_MIN_BALANCE)
       ) {
-        return `Insufficient ${fromAsset.value.displaySymbol.toUpperCase()} Balance`;
+        return swapValidityMessage(
+          false,
+          `Insufficient ${fromAsset.value.displaySymbol.toUpperCase()} Balance`,
+        );
       }
     }
     switch (state.value) {
       case SwapState.ZERO_AMOUNTS:
-        return "Please enter an amount";
+        return swapValidityMessage(false, "Please enter an amount");
       case SwapState.INSUFFICIENT_FUNDS:
-        return `Insufficient ${fromAsset.value.displaySymbol.toUpperCase()} Balance`;
+        return swapValidityMessage(
+          false,
+          `Insufficient ${fromAsset.value.displaySymbol.toUpperCase()} Balance`,
+        );
       case SwapState.INSUFFICIENT_LIQUIDITY:
-        return "Insufficient Liquidity";
+        return swapValidityMessage(false, "Insufficient Liquidity");
       case SwapState.INVALID_AMOUNT:
-        return "Invalid Amount";
+        return swapValidityMessage(false, "Invalid Amount");
       case SwapState.VALID_INPUT:
-        return "Swap";
+        return swapValidityMessage(true, "Swap");
+      case SwapState.FRONTRUN_SLIPPAGE:
+        return swapValidityMessage(
+          true,
+          "Swap (Frontrun attack possible due to high slippage)",
+        );
+      case SwapState.INVALID_SLIPPAGE:
+        return swapValidityMessage(false, "Invalid slippage");
     }
   });
 
   return {
     connected,
-    nextStepMessage,
     handleFromSymbolClicked(next: () => void) {
       selectedField.value = "from";
       next();
@@ -358,8 +375,14 @@ export const useSwapPageData = () => {
         trimMantissa: true,
       });
     },
+
     nextStepAllowed: computed(() => {
-      return nextStepMessage.value === "Swap";
+      // return whether swap is valid
+      return nextStepValidityMessage.value.isValid;
+    }),
+    nextStepMessage: computed(() => {
+      // return message stating whether they can proceed or need to update invalid inputs
+      return nextStepValidityMessage.value.message;
     }),
     pageState,
     txStatus,
@@ -373,7 +396,6 @@ export const useSwapPageData = () => {
     },
     handleAskConfirmClicked,
     handleBeginSwap,
-
     isFromMaxActive,
     selectedField,
   };

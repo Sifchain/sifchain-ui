@@ -17,6 +17,8 @@ export enum SwapState {
   VALID_INPUT,
   INVALID_AMOUNT,
   INSUFFICIENT_LIQUIDITY,
+  FRONTRUN_SLIPPAGE,
+  INVALID_SLIPPAGE,
 }
 
 function calculateFormattedPriceImpact(pair: IPool, amount: IAssetAmount) {
@@ -281,6 +283,21 @@ export function useSwapCalculator(input: {
     ) {
       return SwapState.INSUFFICIENT_LIQUIDITY;
     }
+
+    // slippage > 50% can be social engineered as a non-option as to prevent traders from transacting without understanding the potential price volatility before their transaction will actually execute
+    // user entering a negative slippage is not useful but hopefully works out for them
+    if (
+      Amount(input.slippage.value).greaterThan(Amount("50.001")) ||
+      Amount(input.slippage.value).lessThan(Amount("0"))
+    ) {
+      return SwapState.INVALID_SLIPPAGE;
+    }
+
+    // slippage > 1% puts trader at risk of a frontrun attack
+    if (Amount(input.slippage.value).greaterThan(Amount("1"))) {
+      return SwapState.FRONTRUN_SLIPPAGE;
+    }
+
     return SwapState.VALID_INPUT;
   });
 
