@@ -1,3 +1,10 @@
+## Release 2021.10.18
+* Enabled OSMO 
+* Sif's Bonus Pool - OSMO:
+  * Import OSMO
+  * Pool OSMO
+  * Earn Rowan
+
 ## Release 2021.10.12
 * Enabled Ethereum & ERC20 IBC exports for the first time on Cosmos!
 * Enabled IXO 

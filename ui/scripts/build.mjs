@@ -25,11 +25,14 @@ import { lint, setupStack } from "./lib.mjs";
 const core = resolve(__dirname, "../core");
 const app = resolve(__dirname, "../app");
 
+const sha = await $`git rev-parse HEAD`
+const version = require('../app/package.json').version
+
 // if (!noSetup) {
 //   await setupStack(tagName);
 // }
 await Promise.all([
  lint(),
  $`cd ${core} && yarn build`,
- $`cd ${app} && yarn build`
+ $`cd ${app} && VITE_APP_VERSION=${version} VITE_APP_SHA=${sha} yarn build`
 ])

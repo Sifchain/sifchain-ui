@@ -83,15 +83,17 @@ export const RewardSection = defineComponent({
           name: "Reserved Commission Rewards",
           tooltip:
             "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
-          amount: this.rewardProgram.participant
-            ?.currentTotalCommissionsOnClaimableDelegatorRewards,
+          amount:
+            this.rewardProgram.participant
+              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
         },
         {
           name: "Pending Dispensation",
           tooltip:
             "This is the amount that will be dispensed on Friday. Any new claimable amounts will need to be claimed after the next dispensation.",
-          amount: this.rewardProgram.participant
-            ?.claimedCommissionsAndRewardsAwaitingDispensation,
+          amount:
+            this.rewardProgram.participant
+              ?.claimedCommissionsAndRewardsAwaitingDispensation,
         },
         {
           name: "Dispensed Rewards",
@@ -156,7 +158,7 @@ export const RewardSection = defineComponent({
             <AssetIcon
               icon={this.displayData.icon}
               size={20}
-              class="mr-[10px]"
+              class="mr-[10px] flex-shrink-0"
             />
             {this.rewardProgram.displayName}
           </div>

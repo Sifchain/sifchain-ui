@@ -54,7 +54,7 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
   async disconnect(chain: Chain) {
     throw new Error("Cannot disconnect");
   }
-
+  // inconsequential change for git commit
   async getSendingSigner(chain: Chain) {
     const chainConfig = this.getIBCChainConfig(chain);
 
