@@ -135,9 +135,10 @@ export function OsmosisMintV1beta1ParamsToJSON(
     epoch_identifier: value.epochIdentifier,
     reduction_period_in_epochs: value.reductionPeriodInEpochs,
     reduction_factor: value.reductionFactor,
-    distribution_proportions: DistributionProportionsDefinesTheProportionOfTheMintedDenomToJSON(
-      value.distributionProportions,
-    ),
+    distribution_proportions:
+      DistributionProportionsDefinesTheProportionOfTheMintedDenomToJSON(
+        value.distributionProportions,
+      ),
     developer_rewards_receiver: value.developerRewardsReceiver,
     minting_rewards_distribution_start_epoch:
       value.mintingRewardsDistributionStartEpoch,

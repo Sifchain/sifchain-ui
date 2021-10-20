@@ -31,8 +31,10 @@ export class NativeAminoTypes extends AminoTypes {
     wrapAdditionToAminoFn(
       "/ibc.applications.transfer.v1.MsgTransfer",
       (value: any, originalToAmino: ToAminoFn) => {
-        value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
-        value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
+        value.timeoutHeight.revisionNumber =
+          value.timeoutHeight.revisionNumber.toString();
+        value.timeoutHeight.revisionHeight =
+          value.timeoutHeight.revisionHeight.toString();
         const converted = originalToAmino(value);
         delete converted.timeout_timestamp;
         if (converted.timeout_height.revision_number == "0") {

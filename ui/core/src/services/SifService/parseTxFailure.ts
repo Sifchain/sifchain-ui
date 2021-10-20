@@ -101,8 +101,7 @@ export function parseTxFailure(txFailure: {
     return {
       code: ErrorCode.UNKNOWN_FAILURE,
       hash: txFailure.transactionHash,
-      memo:
-        "Error processing transaction with Ledger. A fix is in progress for this. Until then, please use Sifchain without a Ledger wallet.",
+      memo: "Error processing transaction with Ledger. A fix is in progress for this. Until then, please use Sifchain without a Ledger wallet.",
       state: "failed",
     };
   }

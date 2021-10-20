@@ -9,7 +9,7 @@ import MetamaskActions from "./walletNew/metamask";
 
 export type UsecaseContext<
   T extends keyof Services = keyof Services,
-  S extends keyof Store = keyof Store
+  S extends keyof Store = keyof Store,
 > = WithService<T> & WithStore<S>;
 export type Usecases = ReturnType<typeof createUsecases>;
 export function createUsecases(context: UsecaseContext) {

@@ -182,7 +182,9 @@ export const TokenSelectDropdown = defineComponent({
                       }}
                       value={searchQuery.value}
                       onInput={(e: Event) => {
-                        searchQuery.value = (e.target as HTMLInputElement).value;
+                        searchQuery.value = (
+                          e.target as HTMLInputElement
+                        ).value;
                       }}
                       class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
                     />

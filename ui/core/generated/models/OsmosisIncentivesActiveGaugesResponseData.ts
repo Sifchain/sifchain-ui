@@ -135,9 +135,10 @@ export function OsmosisIncentivesActiveGaugesResponseDataToJSON(
   return {
     id: value.id,
     is_perpetual: value.isPerpetual,
-    distribute_to: DistributionIncentivesByThirdPartyRewardsAreDistributedToLockupsThatAreAreReturnedByAtLeastOneOfTheseQueriesToJSON(
-      value.distributeTo,
-    ),
+    distribute_to:
+      DistributionIncentivesByThirdPartyRewardsAreDistributedToLockupsThatAreAreReturnedByAtLeastOneOfTheseQueriesToJSON(
+        value.distributeTo,
+      ),
     coins:
       value.coins === undefined
         ? undefined

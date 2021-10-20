@@ -69,8 +69,9 @@ export function CosmosDistributionV1beta1QueryValidatorCommissionResponseToJSON(
     return null;
   }
   return {
-    commission: QueryValidatorCommissionResponseIsTheResponseTypeForTheQueryValidatorCommissionRPCMethodCommissionToJSON(
-      value.commission,
-    ),
+    commission:
+      QueryValidatorCommissionResponseIsTheResponseTypeForTheQueryValidatorCommissionRPCMethodCommissionToJSON(
+        value.commission,
+      ),
   };
 }

@@ -65,9 +65,7 @@ export class ChainsService {
       }
     }
   }
-  findChainAssetMatchOrThrow(
-    match: Partial<IAsset>,
-  ): {
+  findChainAssetMatchOrThrow(match: Partial<IAsset>): {
     chain: Chain;
     asset: IAsset;
   } {

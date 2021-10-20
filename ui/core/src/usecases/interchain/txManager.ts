@@ -24,13 +24,8 @@ const PersistentTxList = (context: UsecaseContext) => {
     } as SerializedTx;
   };
   const deserialize = (serializedTx: SerializedTx): BridgeTx => {
-    const {
-      $amount,
-      $symbol,
-      $fromChainNetwork,
-      $toChainNetwork,
-      ...rest
-    } = serializedTx;
+    const { $amount, $symbol, $fromChainNetwork, $toChainNetwork, ...rest } =
+      serializedTx;
     return {
       ...rest,
       assetAmount: AssetAmount($symbol, $amount),

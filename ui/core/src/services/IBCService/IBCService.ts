@@ -81,16 +81,16 @@ export class IBCService extends IBCBridge {
           const counterpartyChannelId = channel.counterparty!.channelId;
           const counterPartyChainId =
             parsedClientState.identified_client_state.client_state.chain_id;
-          const counterpartyConfig = this.loadChainConfigByChainId(
-            counterPartyChainId,
-          );
+          const counterpartyConfig =
+            this.loadChainConfigByChainId(counterPartyChainId);
           const counterpartyQueryClient = await this.loadQueryClientByNetwork(
             counterpartyConfig.network,
           );
-          const counterpartyConnection = await counterpartyQueryClient.ibc.channel.channel(
-            "transfer",
-            counterpartyChannelId,
-          );
+          const counterpartyConnection =
+            await counterpartyQueryClient.ibc.channel.channel(
+              "transfer",
+              counterpartyChannelId,
+            );
 
           return {
             srcChainId: chainConfig.chainId,

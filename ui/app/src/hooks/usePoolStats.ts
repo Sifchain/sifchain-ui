@@ -72,9 +72,8 @@ export const usePoolStats = () => {
 
           let rewardAPY = 0;
           rewardPrograms.forEach((program: any) => {
-            const isIndividuallyIncentivized = program.incentivizedPoolSymbols?.includes(
-              p.symbol,
-            );
+            const isIndividuallyIncentivized =
+              program.incentivizedPoolSymbols?.includes(p.symbol);
             if (program.isUniversal || isIndividuallyIncentivized) {
               rewardAPY += program.summaryAPY;
             }
@@ -104,9 +103,8 @@ export const usePoolStats = () => {
     getChainsService()
       .get(Network.SIFCHAIN)
       .assets.forEach((asset) => {
-        noPrefixAssetLookup[
-          symbolWithoutPrefix(asset.symbol).toLowerCase()
-        ] = asset;
+        noPrefixAssetLookup[symbolWithoutPrefix(asset.symbol).toLowerCase()] =
+          asset;
       });
 
     const poolStatLookup: Record<string, PoolStat> = {};

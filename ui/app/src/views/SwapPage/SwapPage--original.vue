@@ -40,12 +40,8 @@ export default defineComponent({
   setup() {
     const { usecases, poolFinder, store } = useCore();
 
-    const {
-      fromSymbol,
-      fromAmount,
-      toSymbol,
-      toAmount,
-    } = useCurrencyFieldState();
+    const { fromSymbol, fromAmount, toSymbol, toAmount } =
+      useCurrencyFieldState();
 
     const slippage = ref<string>("1.0");
     const pageState = ref<SwapPageState>("idle");

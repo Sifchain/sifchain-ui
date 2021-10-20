@@ -86,9 +86,10 @@ export function IbcCoreClientV1QueryConsensusStateResponseToJSON(
     return null;
   }
   return {
-    consensus_state: ConsensusStateAssociatedWithTheClientIdentifierAtTheGivenHeightToJSON(
-      value.consensusState,
-    ),
+    consensus_state:
+      ConsensusStateAssociatedWithTheClientIdentifierAtTheGivenHeightToJSON(
+        value.consensusState,
+      ),
     proof: value.proof,
     proof_height: HeightAtWhichTheProofWasRetrievedToJSON(value.proofHeight),
   };

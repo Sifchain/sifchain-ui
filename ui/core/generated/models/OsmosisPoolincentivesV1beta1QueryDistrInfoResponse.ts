@@ -69,8 +69,9 @@ export function OsmosisPoolincentivesV1beta1QueryDistrInfoResponseToJSON(
     return null;
   }
   return {
-    distr_info: OsmosisPoolincentivesV1beta1QueryDistrInfoResponseDistrInfoToJSON(
-      value.distrInfo,
-    ),
+    distr_info:
+      OsmosisPoolincentivesV1beta1QueryDistrInfoResponseDistrInfoToJSON(
+        value.distrInfo,
+      ),
   };
 }

@@ -98,15 +98,15 @@ export function useInitialize() {
               await Promise.all(
                 [...config.peggyCompatibleCosmosBaseDenoms].map(
                   async (denom) => {
-                    const web3 = await services.wallet.metamaskProvider.getWeb3();
+                    const web3 =
+                      await services.wallet.metamaskProvider.getWeb3();
                     const asset = config.assets.find(
                       (a) =>
                         a.network === Network.ETHEREUM && a.symbol === denom,
                     );
                     if (!asset) return;
-                    const addressOfToken = await services.ethbridge.fetchTokenAddress(
-                      asset,
-                    );
+                    const addressOfToken =
+                      await services.ethbridge.fetchTokenAddress(asset);
                     const tokenContract = new web3.eth.Contract(
                       await fetch(
                         `https://gist.githubusercontent.com/veox/8800debbf56e24718f9f483e1e40c35c/raw/f853187315486225002ba56e5283c1dba0556e6f/erc20.abi.json`,

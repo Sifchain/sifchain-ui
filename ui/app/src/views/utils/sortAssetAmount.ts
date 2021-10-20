@@ -5,7 +5,7 @@ export function sortAssetAmount<
   T extends {
     amount: IAssetAmount | null | undefined;
     asset: Asset;
-  }[]
+  }[],
 >(assetAmounts: T): T {
   return assetAmounts
     .sort((a, b) => {

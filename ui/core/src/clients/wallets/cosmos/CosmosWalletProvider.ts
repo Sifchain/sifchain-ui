@@ -117,10 +117,8 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     );
   }
 
-  private denomTracesCache: Record<
-    string,
-    Promise<IBCHashDenomTraceLookup>
-  > = {};
+  private denomTracesCache: Record<string, Promise<IBCHashDenomTraceLookup>> =
+    {};
   async getIBCDenomTracesLookupCached(chain: Chain) {
     const chainId = chain.chainConfig.chainId;
     if (!this.denomTracesCache[chainId]) {
@@ -352,9 +350,8 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
           if (asset) {
             asset.ibcDenom = coin.denom;
           }
-          const counterpartyAsset = await this.tokenRegistry.loadCounterpartyAsset(
-            nativeAsset,
-          );
+          const counterpartyAsset =
+            await this.tokenRegistry.loadCounterpartyAsset(nativeAsset);
           const assetAmount = AssetAmount(counterpartyAsset, coin.amount);
           assetAmounts.push(
             await this.tokenRegistry.loadNativeAssetAmount(assetAmount),

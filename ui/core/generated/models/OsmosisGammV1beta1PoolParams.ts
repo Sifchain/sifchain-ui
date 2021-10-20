@@ -94,9 +94,10 @@ export function OsmosisGammV1beta1PoolParamsToJSON(
   return {
     swapFee: value.swapFee,
     exitFee: value.exitFee,
-    smoothWeightChangeParams: ParametersForChangingTheWeightsInABalancerPoolSmoothlyFromAStartWeightAndEndWeightOverAPeriodOfTimeCurrentlyTheOnlySmoothChangeSupportedIsLinearChangingBetweenTheTwoWeightsButMoreTypesMayBeAddedInTheFutureWhenTheseParametersAreSetTheWeightWTForPoolTimeTIsTheFollowingTStartTimeWTInitialPoolWeightsStartTimeTStartTimeDurationWTInitialPoolWeightsTStartTimeTargetPoolWeightsInitialPoolWeightsDurationTStartTimeDurationWTTargetPoolWeightsToJSON(
-      value.smoothWeightChangeParams,
-    ),
+    smoothWeightChangeParams:
+      ParametersForChangingTheWeightsInABalancerPoolSmoothlyFromAStartWeightAndEndWeightOverAPeriodOfTimeCurrentlyTheOnlySmoothChangeSupportedIsLinearChangingBetweenTheTwoWeightsButMoreTypesMayBeAddedInTheFutureWhenTheseParametersAreSetTheWeightWTForPoolTimeTIsTheFollowingTStartTimeWTInitialPoolWeightsStartTimeTStartTimeDurationWTInitialPoolWeightsTStartTimeTargetPoolWeightsInitialPoolWeightsDurationTStartTimeDurationWTTargetPoolWeightsToJSON(
+        value.smoothWeightChangeParams,
+      ),
     start_time:
       value.startTime === undefined ? undefined : value.startTime.toISOString(),
   };

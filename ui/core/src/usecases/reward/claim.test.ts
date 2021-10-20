@@ -44,8 +44,7 @@ claimTests.forEach(({ rewardType }) => {
     signAndBroadcast.mockReturnValue(
       Promise.resolve({
         code: 3,
-        hash:
-          "814C5AFD654FF5C1E32E7CF0E4235C56D22BE00779A1339F5490369D3C01EC6A",
+        hash: "814C5AFD654FF5C1E32E7CF0E4235C56D22BE00779A1339F5490369D3C01EC6A",
         memo: "There was an unknown failure",
         state: "failed",
       }),

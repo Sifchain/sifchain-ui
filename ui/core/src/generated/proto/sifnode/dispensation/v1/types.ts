@@ -503,7 +503,8 @@ export const DistributionRecord = {
       object.distributionCompletedHeight !== undefined &&
       object.distributionCompletedHeight !== null
     ) {
-      message.distributionCompletedHeight = object.distributionCompletedHeight as Long;
+      message.distributionCompletedHeight =
+        object.distributionCompletedHeight as Long;
     } else {
       message.distributionCompletedHeight = Long.ZERO;
     }

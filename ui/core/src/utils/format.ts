@@ -15,13 +15,12 @@ type IFormatOptionsBase = {
   zeroFormat?: string; // could be something like `N/A`
 };
 
-type IFormatOptionsMantissa<
-  M = number | DynamicMantissa
-> = IFormatOptionsBase & {
-  shorthand?: boolean;
-  mantissa?: M; // number of decimals after point default is exponent
-  trimMantissa?: boolean | "integer"; // Remove 0s from the mantissa default false
-};
+type IFormatOptionsMantissa<M = number | DynamicMantissa> =
+  IFormatOptionsBase & {
+    shorthand?: boolean;
+    mantissa?: M; // number of decimals after point default is exponent
+    trimMantissa?: boolean | "integer"; // Remove 0s from the mantissa default false
+  };
 
 type IFormatOptionsShorthandTotalLength = IFormatOptionsBase & {
   shorthand: true;

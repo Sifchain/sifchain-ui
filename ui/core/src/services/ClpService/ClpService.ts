@@ -185,10 +185,8 @@ export default function createClpService({
         external_asset_balance,
       } = response.result;
 
-      const {
-        liquidity_provider_units,
-        liquidity_provider_address,
-      } = liquidity_provider;
+      const { liquidity_provider_units, liquidity_provider_address } =
+        liquidity_provider;
 
       return LiquidityProvider(
         params.asset,

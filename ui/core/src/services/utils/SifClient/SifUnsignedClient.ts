@@ -45,7 +45,8 @@ type IDispensationApi = DispensationExtension["dispensation"];
 type HandlerFn<T> = (a: T) => void;
 export class SifUnSignedClient
   extends CosmosClient
-  implements IClpApi, IEthbridgeApi {
+  implements IClpApi, IEthbridgeApi
+{
   protected readonly lcdClient: CustomLcdClient;
   private subscriber: TendermintSocketPoll | undefined;
   rpcUrl: string;

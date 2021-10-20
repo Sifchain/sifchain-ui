@@ -73,8 +73,7 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "userValue",
     name: "Your Pool Value",
-    help:
-      "This is your estimated pool value in USD assuming you remove your liquidity equally across both tokens. This number does not take into consideration any projected or earned rewards.",
+    help: "This is your estimated pool value in USD assuming you remove your liquidity equally across both tokens. This number does not take into consideration any projected or earned rewards.",
     class: "w-[168px] text-right justify-end",
   },
 ];
@@ -138,9 +137,10 @@ export const usePoolPageData = () => {
       );
       let accountPool: AccountPool | undefined = undefined;
       if (accountStore.state.sifchain.address) {
-        accountPool = useCore().store.accountpools[
-          accountStore.state.sifchain.address
-        ][poolKey];
+        accountPool =
+          useCore().store.accountpools[accountStore.state.sifchain.address][
+            poolKey
+          ];
       }
       const item = {
         poolStat,

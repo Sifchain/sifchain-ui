@@ -418,7 +418,8 @@ const UserPoolItem = defineComponent({
                     to={{
                       name: "AddLiquidity",
                       params: {
-                        externalAsset: currentPoolStat.value.symbol.toLowerCase(),
+                        externalAsset:
+                          currentPoolStat.value.symbol.toLowerCase(),
                       },
                     }}
                     replace
@@ -433,7 +434,8 @@ const UserPoolItem = defineComponent({
                     to={{
                       name: "RemoveLiquidity",
                       params: {
-                        externalAsset: currentPoolStat.value.symbol.toLowerCase(),
+                        externalAsset:
+                          currentPoolStat.value.symbol.toLowerCase(),
                       },
                     }}
                     replace

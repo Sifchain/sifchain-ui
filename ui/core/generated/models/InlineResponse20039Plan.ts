@@ -106,8 +106,9 @@ export function InlineResponse20039PlanToJSON(
     time: value.time === undefined ? undefined : value.time.toISOString(),
     height: value.height,
     info: value.info,
-    upgraded_client_state: IBCEnabledChainsCanOptInToIncludingTheUpgradedClientStateInItsUpgradePlanToJSON(
-      value.upgradedClientState,
-    ),
+    upgraded_client_state:
+      IBCEnabledChainsCanOptInToIncludingTheUpgradedClientStateInItsUpgradePlanToJSON(
+        value.upgradedClientState,
+      ),
   };
 }

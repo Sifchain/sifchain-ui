@@ -90,8 +90,9 @@ export function CosmosSlashingV1beta1QuerySigningInfosResponseToJSON(
         : (value.info as Array<any>).map(
             QuerySigningInfosResponseIsTheResponseTypeForTheQuerySigningInfosRPCMethodInfoToJSON,
           ),
-    pagination: QuerySigningInfosResponseIsTheResponseTypeForTheQuerySigningInfosRPCMethodPaginationToJSON(
-      value.pagination,
-    ),
+    pagination:
+      QuerySigningInfosResponseIsTheResponseTypeForTheQuerySigningInfosRPCMethodPaginationToJSON(
+        value.pagination,
+      ),
   };
 }

@@ -30,7 +30,7 @@ export function createSdk(options: {
     wallets: {
       cosmos: config.cosmosWalletProvider,
     },
-    chains: (Object.fromEntries(
+    chains: Object.fromEntries(
       Object.keys(networkChainCtorLookup).map((network) => {
         return [
           network,
@@ -40,7 +40,7 @@ export function createSdk(options: {
           }),
         ];
       }),
-    ) as unknown) as Record<Network, Chain>,
+    ) as unknown as Record<Network, Chain>,
     bridges: {
       ibc: new IBCBridge(config),
     },

@@ -122,7 +122,7 @@ export default function createCryptoeconomicsService(
         key: "userTimeSeriesData",
         devnet: props.devnet,
       });
-      return (data as unknown) as CryptoeconomicsTimeseriesItem[];
+      return data as unknown as CryptoeconomicsTimeseriesItem[];
     },
   };
 }

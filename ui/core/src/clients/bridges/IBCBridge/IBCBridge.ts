@@ -88,10 +88,16 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
 
   async extractTransferMetadataFromTx(tx: IndexedTx | BroadcastTxResult) {
     const logs = parseRawLog(tx.rawLog);
-    const sequence = findAttribute(logs, "send_packet", "packet_sequence")
-      .value;
-    const dstChannel = findAttribute(logs, "send_packet", "packet_dst_channel")
-      .value;
+    const sequence = findAttribute(
+      logs,
+      "send_packet",
+      "packet_sequence",
+    ).value;
+    const dstChannel = findAttribute(
+      logs,
+      "send_packet",
+      "packet_dst_channel",
+    ).value;
     const dstPort = findAttribute(logs, "send_packet", "packet_dst_port").value;
     const packet = findAttribute(logs, "send_packet", "packet_data").value;
     const timeoutTimestampNanoseconds = findAttribute(
@@ -181,9 +187,10 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       params.toChain.network === Network.SIFCHAIN &&
       params.fromChain.chainConfig.chainType === "ibc"
     ) {
-      paramsCopy.assetAmount = await this.tokenRegistry.loadCounterpartyAssetAmount(
-        params.assetAmount,
-      );
+      paramsCopy.assetAmount =
+        await this.tokenRegistry.loadCounterpartyAssetAmount(
+          params.assetAmount,
+        );
     }
     return paramsCopy;
   }
@@ -226,25 +233,26 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     const fromChainConfig = provider.getIBCChainConfig(params.fromChain);
     const receivingSigner = await provider.getSendingSigner(params.toChain);
 
-    const receivingStargateCient = await SigningStargateClient?.connectWithSigner(
-      toChainConfig.rpcUrl,
-      receivingSigner,
-      {
-        // we create amino additions, but these will not be used, because IBC types are already included & assigned
-        // on top of the amino additions by default
-        aminoTypes: new NativeAminoTypes(),
-        gasLimits: {
-          send: 80000,
-          transfer: 360000,
-          delegate: 250000,
-          undelegate: 250000,
-          redelegate: 250000,
-          // The gas multiplication per rewards.
-          withdrawRewards: 140000,
-          govVote: 250000,
+    const receivingStargateCient =
+      await SigningStargateClient?.connectWithSigner(
+        toChainConfig.rpcUrl,
+        receivingSigner,
+        {
+          // we create amino additions, but these will not be used, because IBC types are already included & assigned
+          // on top of the amino additions by default
+          aminoTypes: new NativeAminoTypes(),
+          gasLimits: {
+            send: 80000,
+            transfer: 360000,
+            delegate: 250000,
+            undelegate: 250000,
+            redelegate: 250000,
+            // The gas multiplication per rewards.
+            withdrawRewards: 140000,
+            govVote: 250000,
+          },
         },
-      },
-    );
+      );
 
     const { channelId } = await this.tokenRegistry.loadConnection({
       fromChain: params.fromChain,
