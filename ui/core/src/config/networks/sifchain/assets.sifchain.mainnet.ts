@@ -991,6 +991,19 @@ const assets: {
       imageUrl:
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
     },
+    {
+      address: "",
+      symbol: "cratom",
+      displaySymbol: "ratom",
+      lowercasePrefixLength: 1,
+      decimals: 18,
+      name: "ratom",
+      network: "sifchain",
+      label: "ratom",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      homeNetwork: "ethereum",
+    },
   ],
 };
 
