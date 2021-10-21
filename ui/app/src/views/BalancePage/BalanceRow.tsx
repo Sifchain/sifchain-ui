@@ -165,6 +165,7 @@ export default defineComponent({
               )}
           </div>
         </td>
+        {/* update */}
         <td class="text-right align-middle min-w-[160px]">
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80 group-hover:delay-75">
