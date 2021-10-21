@@ -660,6 +660,17 @@ export default {
       homeNetwork: "regen",
     },
     {
+      address: "0x2701E1D67219a49F5691C92468Fe8D8ADc03e609",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/17103/small/DINO.png?1626244014",
+      name: "DinoSwap",
+      displaySymbol: "DINO",
+      symbol: "cdino",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      decimals: 18,
+    },
+    {
       symbol: "uosmo",
       displaySymbol: "osmo",
       decimals: 6,
@@ -700,6 +711,17 @@ export default {
       imageUrl:
         "https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token.png?1625881431",
       homeNetwork: "band",
+    },
+    {
+      symbol: "nanolike",
+      displaySymbol: "like",
+      decimals: 9,
+      name: "like",
+      network: "sifchain",
+      homeNetwork: "likecoin",
+      label: "like",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
     },
   ],
 };

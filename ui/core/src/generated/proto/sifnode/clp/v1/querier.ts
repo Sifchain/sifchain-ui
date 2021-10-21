@@ -1,7 +1,12 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { Pool, LiquidityProvider, Asset } from "../../../sifnode/clp/v1/types";
+import {
+  Pool,
+  LiquidityProvider,
+  Asset,
+  LiquidityProviderData,
+} from "../../../sifnode/clp/v1/types";
 import {
   PageRequest,
   PageResponse,
@@ -51,6 +56,17 @@ export interface AssetListRes {
   assets: Asset[];
   height: Long;
   pagination?: PageResponse;
+}
+
+export interface LiquidityProviderDataReq {
+  lpAddress: string;
+  pagination?: PageRequest;
+}
+
+export interface LiquidityProviderDataRes {
+  liquidityProviderData: LiquidityProviderData[];
+  height: Long;
+  pagination?: PageRequest;
 }
 
 export interface LiquidityProviderListReq {
@@ -838,6 +854,221 @@ export const AssetListRes = {
   },
 };
 
+const baseLiquidityProviderDataReq: object = { lpAddress: "" };
+
+export const LiquidityProviderDataReq = {
+  encode(
+    message: LiquidityProviderDataReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.lpAddress !== "") {
+      writer.uint32(10).string(message.lpAddress);
+    }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): LiquidityProviderDataReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseLiquidityProviderDataReq,
+    } as LiquidityProviderDataReq;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.lpAddress = reader.string();
+          break;
+        case 2:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LiquidityProviderDataReq {
+    const message = {
+      ...baseLiquidityProviderDataReq,
+    } as LiquidityProviderDataReq;
+    if (object.lpAddress !== undefined && object.lpAddress !== null) {
+      message.lpAddress = String(object.lpAddress);
+    } else {
+      message.lpAddress = "";
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: LiquidityProviderDataReq): unknown {
+    const obj: any = {};
+    message.lpAddress !== undefined && (obj.lpAddress = message.lpAddress);
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<LiquidityProviderDataReq>,
+  ): LiquidityProviderDataReq {
+    const message = {
+      ...baseLiquidityProviderDataReq,
+    } as LiquidityProviderDataReq;
+    if (object.lpAddress !== undefined && object.lpAddress !== null) {
+      message.lpAddress = object.lpAddress;
+    } else {
+      message.lpAddress = "";
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseLiquidityProviderDataRes: object = { height: Long.ZERO };
+
+export const LiquidityProviderDataRes = {
+  encode(
+    message: LiquidityProviderDataRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    for (const v of message.liquidityProviderData) {
+      LiquidityProviderData.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (!message.height.isZero()) {
+      writer.uint32(16).int64(message.height);
+    }
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): LiquidityProviderDataRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseLiquidityProviderDataRes,
+    } as LiquidityProviderDataRes;
+    message.liquidityProviderData = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.liquidityProviderData.push(
+            LiquidityProviderData.decode(reader, reader.uint32()),
+          );
+          break;
+        case 2:
+          message.height = reader.int64() as Long;
+          break;
+        case 3:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LiquidityProviderDataRes {
+    const message = {
+      ...baseLiquidityProviderDataRes,
+    } as LiquidityProviderDataRes;
+    message.liquidityProviderData = [];
+    if (
+      object.liquidityProviderData !== undefined &&
+      object.liquidityProviderData !== null
+    ) {
+      for (const e of object.liquidityProviderData) {
+        message.liquidityProviderData.push(LiquidityProviderData.fromJSON(e));
+      }
+    }
+    if (object.height !== undefined && object.height !== null) {
+      message.height = Long.fromString(object.height);
+    } else {
+      message.height = Long.ZERO;
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: LiquidityProviderDataRes): unknown {
+    const obj: any = {};
+    if (message.liquidityProviderData) {
+      obj.liquidityProviderData = message.liquidityProviderData.map((e) =>
+        e ? LiquidityProviderData.toJSON(e) : undefined,
+      );
+    } else {
+      obj.liquidityProviderData = [];
+    }
+    message.height !== undefined &&
+      (obj.height = (message.height || Long.ZERO).toString());
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<LiquidityProviderDataRes>,
+  ): LiquidityProviderDataRes {
+    const message = {
+      ...baseLiquidityProviderDataRes,
+    } as LiquidityProviderDataRes;
+    message.liquidityProviderData = [];
+    if (
+      object.liquidityProviderData !== undefined &&
+      object.liquidityProviderData !== null
+    ) {
+      for (const e of object.liquidityProviderData) {
+        message.liquidityProviderData.push(
+          LiquidityProviderData.fromPartial(e),
+        );
+      }
+    }
+    if (object.height !== undefined && object.height !== null) {
+      message.height = object.height as Long;
+    } else {
+      message.height = Long.ZERO;
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
 const baseLiquidityProviderListReq: object = { symbol: "" };
 
 export const LiquidityProviderListReq = {
@@ -1247,6 +1478,9 @@ export interface Query {
   GetLiquidityProvider(
     request: LiquidityProviderReq,
   ): Promise<LiquidityProviderRes>;
+  GetLiquidityProviderData(
+    request: LiquidityProviderDataReq,
+  ): Promise<LiquidityProviderDataRes>;
   GetAssetList(request: AssetListReq): Promise<AssetListRes>;
   GetLiquidityProviders(
     request: LiquidityProvidersReq,
@@ -1263,6 +1497,7 @@ export class QueryClientImpl implements Query {
     this.GetPool = this.GetPool.bind(this);
     this.GetPools = this.GetPools.bind(this);
     this.GetLiquidityProvider = this.GetLiquidityProvider.bind(this);
+    this.GetLiquidityProviderData = this.GetLiquidityProviderData.bind(this);
     this.GetAssetList = this.GetAssetList.bind(this);
     this.GetLiquidityProviders = this.GetLiquidityProviders.bind(this);
     this.GetLiquidityProviderList = this.GetLiquidityProviderList.bind(this);
@@ -1290,6 +1525,20 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       LiquidityProviderRes.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetLiquidityProviderData(
+    request: LiquidityProviderDataReq,
+  ): Promise<LiquidityProviderDataRes> {
+    const data = LiquidityProviderDataReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetLiquidityProviderData",
+      data,
+    );
+    return promise.then((data) =>
+      LiquidityProviderDataRes.decode(new _m0.Reader(data)),
     );
   }
 

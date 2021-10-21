@@ -13,6 +13,8 @@ import {
   useUserPoolsSubscriber,
   usePublicPoolsSubscriber,
 } from "@/hooks/usePoolsSubscriber";
+import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
+import { RewardProgram } from "../RewardsPage/useRewardsPageData";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
@@ -25,6 +27,18 @@ export type PoolPageColumnId =
   | "userShare"
   | "userValue";
 
+export type PoolRewardProgram = Pick<
+  RewardProgram,
+  | "isUniversal"
+  | "summaryAPY"
+  | "description"
+  | "rewardProgramName"
+  | "displayName"
+  | "incentivizedPoolSymbols"
+  | "startDateTimeISO"
+  | "endDateTimeISO"
+>;
+
 export type PoolPageColumn = {
   id: PoolPageColumnId;
   name: string;
@@ -36,25 +50,25 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[230px] text-left justify-start",
+    class: "w-[260px] text-left justify-start",
     sortable: true,
   },
   {
     id: "apy",
     name: "Pool APY",
-    class: "w-[138px] text-right justify-end",
+    class: "w-[128px] text-right justify-end",
     sortable: true,
   },
   {
     id: "rewardApy",
     name: "Reward APY",
-    class: "w-[138px] text-right justify-end",
+    class: "w-[128px] text-right justify-end",
     sortable: true,
   },
   {
     id: "userShare",
     name: "Your Pool Share",
-    class: "w-[138px] text-right justify-end",
+    class: "w-[128px] text-right justify-end",
   },
   {
     id: "userValue",
@@ -93,6 +107,28 @@ export const usePoolPageData = () => {
     [accountStore.refs.sifchain.connected.computed()],
   );
 
+  const gql = createCryptoeconGqlClient();
+  const rewardProgramsRes = useAsyncData(
+    (): Promise<{
+      rewardPrograms: PoolRewardProgram[];
+    }> => {
+      return gql`
+        query {
+          rewardPrograms {
+            isUniversal
+            summaryAPY
+            rewardProgramName
+            displayName
+            incentivizedPoolSymbols
+            description
+            startDateTimeISO
+            endDateTimeISO
+          }
+        }
+      `;
+    },
+  );
+
   const allPoolsData = computed<PoolDataItem[]>(() => {
     const sifchainChain = useChains().get(Network.SIFCHAIN);
     return (statsRes.data?.value?.poolData?.pools || []).map((poolStat) => {
@@ -116,6 +152,7 @@ export const usePoolPageData = () => {
   });
 
   return {
+    rewardProgramsRes,
     isLoaded: computed(() => {
       return (
         !statsRes.isLoading.value &&

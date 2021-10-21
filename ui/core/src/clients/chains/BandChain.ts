@@ -13,7 +13,4 @@ export class BandChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {
     return urlJoin(this.chainConfig.blockExplorerUrl, "tx", hash);
   }
-  getBlockExplorerUrlForAddress(hash: string) {
-    return urlJoin(this.chainConfig.blockExplorerUrl, "account", hash);
-  }
 }

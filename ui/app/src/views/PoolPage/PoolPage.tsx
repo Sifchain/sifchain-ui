@@ -2,7 +2,7 @@ import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import PageCard from "@/components/PageCard";
 import Layout from "@/componentsLegacy/Layout/Layout";
-import { useChains } from "@/hooks/useChains";
+import { useChains, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import { Network } from "@sifchain/sdk";
 import { defineComponent } from "vue";
@@ -11,10 +11,18 @@ import {
   COLUMNS,
   PoolDataItem,
   PoolPageColumnId,
+  PoolRewardProgram,
   usePoolPageData,
 } from "./usePoolPageData";
 import PoolItem from "./PoolItem";
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { SearchBox } from "@/components/SearchBox";
+import { Pool } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
+import {
+  Competition,
+  CompetitionsBySymbolLookup,
+  useLeaderboardCompetitions,
+} from "../LeaderboardPage/useCompetitionData";
 
 export default defineComponent({
   name: "PoolsPage",
@@ -22,16 +30,43 @@ export default defineComponent({
     return {
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
+      searchQuery: "",
     };
   },
   setup() {
     const data = usePoolPageData();
     return {
+      competitionsRes: useLeaderboardCompetitions(),
+      rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       isLoaded: data.isLoaded,
     };
   },
   computed: {
+    poolRewardProgramLookup(): Record<string, PoolRewardProgram[]> {
+      const lookup: Record<string, PoolRewardProgram[]> = {};
+      this.rewardProgramsRes.data.value?.rewardPrograms.forEach((program) => {
+        if (program.isUniversal) return;
+        if (
+          new Date() < new Date(program.startDateTimeISO) ||
+          new Date() > new Date(program.endDateTimeISO)
+        )
+          return;
+
+        program.incentivizedPoolSymbols.forEach((symbol) => {
+          const asset = useNativeChain().findAssetWithLikeSymbol(symbol);
+          if (asset) {
+            let list = lookup[asset.symbol];
+            if (!list) list = lookup[asset.symbol] = [];
+            list.push(program);
+          }
+        });
+      });
+      return lookup;
+    },
+    symbolCompetitionsLookup(): CompetitionsBySymbolLookup | null {
+      return this.competitionsRes.data?.value || null;
+    },
     sanitizedPoolData() {
       if (!this.isLoaded) return [];
 
@@ -41,6 +76,14 @@ export default defineComponent({
           if (!asset) return;
 
           if (isAssetFlaggedDisabled(asset)) return false;
+
+          if (
+            this.searchQuery.length > 0 &&
+            !asset.symbol.toLowerCase().includes(this.searchQuery)
+          ) {
+            return false;
+          }
+
           return (
             !asset.decommissioned ||
             // Show decommissioned assets if user has a share.
@@ -114,46 +157,66 @@ export default defineComponent({
               </Button.Inline>
             }
             headerContent={
-              <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
-                {COLUMNS.map((column, index) => (
-                  <div
-                    key={column.name}
-                    onClick={() => {
-                      if (!column.sortable) return;
-                      if (this.sortBy === column.id) {
-                        this.sortReverse = !this.sortReverse;
-                      } else {
-                        this.sortReverse = false;
-                        this.sortBy = column.id;
-                      }
-                    }}
-                    class={[
-                      column.class,
-                      "opacity-50 flex items-center",
-                      column.sortable && "cursor-pointer",
-                    ]}
-                  >
-                    {column.name}
-                    {column.help && (
-                      <Button.InlineHelp>{column.help}</Button.InlineHelp>
-                    )}
-                    <AssetIcon
-                      icon="interactive/arrow-down"
+              <>
+                <SearchBox
+                  containerClass="mb-4"
+                  value={this.searchQuery}
+                  placeholder="Search Pool..."
+                  onInput={(e: Event) => {
+                    this.searchQuery = (e.target as HTMLInputElement).value;
+                  }}
+                />
+                <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+                  {COLUMNS.map((column, index) => (
+                    <div
+                      key={column.name}
+                      onClick={() => {
+                        if (!column.sortable) return;
+                        if (this.sortBy === column.id) {
+                          this.sortReverse = !this.sortReverse;
+                        } else {
+                          this.sortReverse = false;
+                          this.sortBy = column.id;
+                        }
+                      }}
                       class={[
-                        "pl-[2px] mr-[-22px]",
-                        (!column.sortable || this.sortBy !== column.id) &&
-                          "invisible",
-                        this.sortReverse && "rotate-180",
+                        column.class,
+                        "opacity-50 flex items-center",
+                        column.sortable && "cursor-pointer",
                       ]}
-                    />
-                  </div>
-                ))}
-              </div>
+                    >
+                      {column.name}
+                      {column.help && (
+                        <Button.InlineHelp>{column.help}</Button.InlineHelp>
+                      )}
+                      <AssetIcon
+                        icon="interactive/arrow-down"
+                        class={[
+                          "pl-[2px] mr-[-22px]",
+                          (!column.sortable || this.sortBy !== column.id) &&
+                            "invisible",
+                          this.sortReverse && "rotate-180",
+                        ]}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
             }
           >
             {this.sanitizedPoolData.map((item: PoolDataItem) => {
               return (
                 <PoolItem
+                  bonusRewardPrograms={
+                    this.poolRewardProgramLookup[
+                      item.pool.externalAmount!.symbol
+                    ] ?? []
+                  }
+                  competitionsLookup={
+                    this.symbolCompetitionsLookup?.[
+                      item.pool.externalAmount!.symbol
+                    ]
+                  }
                   pool={item.pool}
                   poolStat={item.poolStat}
                   accountPool={item.accountPool}

@@ -980,6 +980,30 @@ const assets: {
         "https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token.png?1625881431",
       homeNetwork: "band",
     },
+    {
+      symbol: "nanolike",
+      displaySymbol: "like",
+      decimals: 9,
+      name: "likecoin",
+      network: "sifchain",
+      homeNetwork: "likecoin",
+      label: "like",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+    },
+    {
+      address: "0xd01cb3d113a864763dd3977fe1e725860013b0ed",
+      symbol: "cratom",
+      displaySymbol: "ratom",
+      lowercasePrefixLength: 1,
+      decimals: 18,
+      name: "ratom",
+      network: "sifchain",
+      label: "ratom",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      homeNetwork: "ethereum",
+    },
   ],
 };
 

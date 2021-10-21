@@ -28,9 +28,11 @@ export const flagsStore = Vuextra.createStore({
     claimsGraph: false,
     devnetCryptoecon: false,
     fieldsOfGoldEnabled: false,
+    akashContestEnabled: false,
+    dinoContestEnabled: false,
     enableTestChains: {
       band: false,
-      osmosis: true,
+      likecoin: false,
     },
   },
   getters: (state) => ({}),
@@ -42,15 +44,25 @@ export const flagsStore = Vuextra.createStore({
       } catch (_) {
         json = {} as typeof state;
       }
-      for (const key in json) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (state[key] !== undefined) {
+
+      const copyPersistedJsonToState = (json: any, target: any): void => {
+        for (const key in json) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          state[key] = json[key];
+          if (typeof target[key] === "object") {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            copyPersistedJsonToState(json[key], target[key]);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+          } else if (typeof target[key] !== "undefined") {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            target[key] = json[key];
+          }
         }
-      }
+      };
+      copyPersistedJsonToState(json, state);
     },
   }),
   actions: (ctx) => ({

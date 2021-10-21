@@ -7,6 +7,7 @@ import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
+import { SearchBox } from "@/components/SearchBox";
 
 export default defineComponent({
   name: "StatsPage",
@@ -84,6 +85,14 @@ export default defineComponent({
       });
     });
 
+    const searchQuery = ref("");
+    const finalStats = computed(() => {
+      if (!searchQuery.value) return statsRef.value;
+      return statsRef.value?.filter((item) => {
+        return item.asset.symbol.toLowerCase().includes(searchQuery.value);
+      });
+    });
+
     return () => {
       if (res.isLoading.value) {
         return (
@@ -103,48 +112,59 @@ export default defineComponent({
             class="!w-[940px] !min-w-[940px] !max-w-[940px]"
             withOverflowSpace
             headerContent={
-              <div class="height-[40px] flex items-center text-sm font-semibold">
-                {columns.map((column, index) => (
-                  <div
-                    style={colStyles.value[index]}
-                    key={column.name}
-                    class={[column.class]}
-                  >
+              <>
+                <SearchBox
+                  containerClass="mb-4"
+                  value={searchQuery.value}
+                  placeholder="Search Token..."
+                  onInput={(e: Event) => {
+                    searchQuery.value = (e.target as HTMLInputElement).value;
+                  }}
+                />
+
+                <div class="height-[40px] flex items-center text-sm font-semibold">
+                  {columns.map((column, index) => (
                     <div
-                      class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
-                      onClick={() => {
-                        if (state.sortBy === column.sortBy) {
-                          state.sortDirection =
-                            state.sortDirection === "asc" ? "desc" : "asc";
-                        } else {
-                          state.sortDirection = "asc";
-                        }
-                        state.sortBy = column.sortBy;
-                      }}
+                      style={colStyles.value[index]}
+                      key={column.name}
+                      class={[column.class]}
                     >
-                      {column.message ? (
-                        <Tooltip content={<>{column.message}</>}>
-                          {column.name}
-                        </Tooltip>
-                      ) : (
-                        column.name
-                      )}
-                      {state.sortBy === column.sortBy && (
-                        <AssetIcon
-                          icon="interactive/arrow-down"
-                          class="transition-all w-[12px] h-[12px]"
-                          style={{
-                            transform:
-                              state.sortDirection === "asc"
-                                ? "rotate(0deg)"
-                                : "rotate(180deg)",
-                          }}
-                        />
-                      )}
+                      <div
+                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                        onClick={() => {
+                          if (state.sortBy === column.sortBy) {
+                            state.sortDirection =
+                              state.sortDirection === "asc" ? "desc" : "asc";
+                          } else {
+                            state.sortDirection = "asc";
+                          }
+                          state.sortBy = column.sortBy;
+                        }}
+                      >
+                        {column.message ? (
+                          <Tooltip content={<>{column.message}</>}>
+                            {column.name}
+                          </Tooltip>
+                        ) : (
+                          column.name
+                        )}
+                        {state.sortBy === column.sortBy && (
+                          <AssetIcon
+                            icon="interactive/arrow-down"
+                            class="transition-all w-[12px] h-[12px]"
+                            style={{
+                              transform:
+                                state.sortDirection === "asc"
+                                  ? "rotate(0deg)"
+                                  : "rotate(180deg)",
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             }
           >
             <table class="w-full">
@@ -160,7 +180,7 @@ export default defineComponent({
                 </tr>
               </thead>
               <tbody class="w-full text-base font-medium">
-                {statsRef.value.map((item) => {
+                {finalStats.value.map((item) => {
                   return (
                     <tr
                       key={item.asset.symbol}

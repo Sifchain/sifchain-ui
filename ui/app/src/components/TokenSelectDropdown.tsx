@@ -170,6 +170,16 @@ export const TokenSelectDropdown = defineComponent({
                       autofocus
                       type="search"
                       placeholder="Search Token..."
+                      onKeydown={(e: Event) => {
+                        if (
+                          (e as KeyboardEvent).key === "Enter" &&
+                          sortedAndFilteredTokens.value.length > 0
+                        ) {
+                          props.onSelectAsset(
+                            sortedAndFilteredTokens.value[0].asset,
+                          );
+                        }
+                      }}
                       value={searchQuery.value}
                       onInput={(e: Event) => {
                         searchQuery.value = (e.target as HTMLInputElement).value;

@@ -15,35 +15,46 @@ export const _InlineHelp = defineComponent({
     },
     ctx: SetupContext,
   ) {
-    return () => (
-      <button
-        {...props}
-        class={[
-          `inline align-top  text-accent-base hover:opacity-80 ml-[.25em]`,
-          props.class,
-        ]}
-        style={
-          mergeProps(
-            { style: { transform: "translateY(-1px)" } },
-            { style: props.style },
-          ).style as ButtonHTMLAttributes["style"]
-        }
-      >
-        <Tooltip
-          interactive
-          inlinePositioning={true}
-          placement="top"
-          arrow
-          appendTo={() => document.body}
-          content={<div>{ctx.slots?.default?.()}</div>}
+    return () => {
+      const content = ctx.slots?.default?.();
+
+      const icon = (
+        <AssetIcon
+          class={["flex-shrink-0 inline", props.iconClass]}
+          size={props.size || 16}
+          icon="interactive/circle-question"
+        ></AssetIcon>
+      );
+      return (
+        <button
+          {...props}
+          class={[
+            `inline align-top  text-accent-base hover:opacity-80 ml-[.25em]`,
+            props.class,
+          ]}
+          style={
+            mergeProps(
+              { style: { transform: "translateY(-1px)" } },
+              { style: props.style },
+            ).style as ButtonHTMLAttributes["style"]
+          }
         >
-          <AssetIcon
-            class={["flex-shrink-0 inline", props.iconClass]}
-            size={props.size || 16}
-            icon="interactive/circle-question"
-          ></AssetIcon>
-        </Tooltip>
-      </button>
-    );
+          {!!content ? (
+            <Tooltip
+              interactive
+              inlinePositioning={true}
+              placement="top"
+              arrow
+              appendTo={() => document.body}
+              content={<div>{content}</div>}
+            >
+              {icon}
+            </Tooltip>
+          ) : (
+            icon
+          )}
+        </button>
+      );
+    };
   },
 });

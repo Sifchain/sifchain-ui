@@ -12,8 +12,8 @@ export const SIFCHAIN_MAINNET: IBCChainConfig = {
   keplrChainInfo: {
     chainName: "Sifchain",
     chainId: "sifchain-1",
-    rpc: "https://rpc",
-    rest: "https://api",
+    rpc: "https://rpc.sifchain.finance",
+    rest: "https://api-int.sifchain.finance",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",
