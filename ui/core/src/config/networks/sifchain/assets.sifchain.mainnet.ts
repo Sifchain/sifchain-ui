@@ -947,6 +947,18 @@ const assets: {
       homeNetwork: "ethereum",
       decimals: 18,
     },
+    {
+      address: "",
+      symbol: "cratom",
+      displaySymbol: "ratom",
+      decimals: 18,
+      name: "ratom",
+      network: "sifchain",
+      label: "ratom",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      homeNetwork: "ethereum",
+    },
   ],
 };
 
