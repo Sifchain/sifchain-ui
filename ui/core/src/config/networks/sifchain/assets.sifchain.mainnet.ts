@@ -948,7 +948,7 @@ const assets: {
       decimals: 18,
     },
     {
-      address: "",
+      address: "0xd01cb3d113a864763dd3977fe1e725860013b0ed",
       symbol: "cratom",
       displaySymbol: "ratom",
       decimals: 18,
