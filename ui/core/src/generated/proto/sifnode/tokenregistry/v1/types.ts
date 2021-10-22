@@ -58,7 +58,6 @@ export interface Registry {
 }
 
 export interface RegistryEntry {
-  isWhitelisted: boolean;
   decimals: Long;
   denom: string;
   baseDenom: string;
@@ -73,25 +72,24 @@ export interface RegistryEntry {
   transferLimit: string;
   permissions: Permission[];
   /**
-   * The name of denomination unit of this token that is the smallest unit stored.
-   * IBC imports of this RegistryEntry convert and store funds as unit_denom.
-   * Several different denom units of a token may be imported into this same unit denom,
-   * they should all be stored under the same unit_denom if they are the same token.
-   * When exporting a RegistryEntry where unit_denom != denom,
-   * then unit_denom can, in future, be used to indicate the source of funds for a denom unit that does not actually
-   * exist on chain, enabling other chains to overcome the uint64 limit on the packet level and import large amounts
-   * of high precision tokens easily.
-   * ie. microrowan -> rowan
-   * i.e rowan -> rowan
+   * The name of denomination unit of this token that is the smallest unit
+   * stored. IBC imports of this RegistryEntry convert and store funds as
+   * unit_denom. Several different denom units of a token may be imported into
+   * this same unit denom, they should all be stored under the same unit_denom
+   * if they are the same token. When exporting a RegistryEntry where unit_denom
+   * != denom, then unit_denom can, in future, be used to indicate the source of
+   * funds for a denom unit that does not actually exist on chain, enabling
+   * other chains to overcome the uint64 limit on the packet level and import
+   * large amounts of high precision tokens easily. ie. microrowan -> rowan i.e
+   * rowan -> rowan
    */
   unitDenom: string;
   /**
-   * The name of denomination unit of this token that should appear on counterparty chain when this unit is exported.
-   * If empty, the denom is exported as is.
-   * Generally this will only be used to map a high precision (unit_denom) to a lower precision,
-   * to overcome the current uint64 limit on the packet level.
-   * i.e rowan -> microrowan
-   * i.e microrowan -> microrowan
+   * The name of denomination unit of this token that should appear on
+   * counterparty chain when this unit is exported. If empty, the denom is
+   * exported as is. Generally this will only be used to map a high precision
+   * (unit_denom) to a lower precision, to overcome the current uint64 limit on
+   * the packet level. i.e rowan -> microrowan i.e microrowan -> microrowan
    */
   ibcCounterpartyDenom: string;
   ibcCounterpartyChainId: string;
@@ -244,7 +242,6 @@ export const Registry = {
 };
 
 const baseRegistryEntry: object = {
-  isWhitelisted: false,
   decimals: Long.ZERO,
   denom: "",
   baseDenom: "",
@@ -268,9 +265,6 @@ export const RegistryEntry = {
     message: RegistryEntry,
     writer: _m0.Writer = _m0.Writer.create(),
   ): _m0.Writer {
-    if (message.isWhitelisted === true) {
-      writer.uint32(8).bool(message.isWhitelisted);
-    }
     if (!message.decimals.isZero()) {
       writer.uint32(16).int64(message.decimals);
     }
@@ -332,9 +326,6 @@ export const RegistryEntry = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.isWhitelisted = reader.bool();
-          break;
         case 2:
           message.decimals = reader.int64() as Long;
           break;
@@ -401,11 +392,6 @@ export const RegistryEntry = {
   fromJSON(object: any): RegistryEntry {
     const message = { ...baseRegistryEntry } as RegistryEntry;
     message.permissions = [];
-    if (object.isWhitelisted !== undefined && object.isWhitelisted !== null) {
-      message.isWhitelisted = Boolean(object.isWhitelisted);
-    } else {
-      message.isWhitelisted = false;
-    }
     if (object.decimals !== undefined && object.decimals !== null) {
       message.decimals = Long.fromString(object.decimals);
     } else {
@@ -502,8 +488,6 @@ export const RegistryEntry = {
 
   toJSON(message: RegistryEntry): unknown {
     const obj: any = {};
-    message.isWhitelisted !== undefined &&
-      (obj.isWhitelisted = message.isWhitelisted);
     message.decimals !== undefined &&
       (obj.decimals = (message.decimals || Long.ZERO).toString());
     message.denom !== undefined && (obj.denom = message.denom);
@@ -539,11 +523,6 @@ export const RegistryEntry = {
   fromPartial(object: DeepPartial<RegistryEntry>): RegistryEntry {
     const message = { ...baseRegistryEntry } as RegistryEntry;
     message.permissions = [];
-    if (object.isWhitelisted !== undefined && object.isWhitelisted !== null) {
-      message.isWhitelisted = object.isWhitelisted;
-    } else {
-      message.isWhitelisted = false;
-    }
     if (object.decimals !== undefined && object.decimals !== null) {
       message.decimals = object.decimals as Long;
     } else {

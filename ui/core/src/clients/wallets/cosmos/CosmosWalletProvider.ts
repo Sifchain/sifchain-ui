@@ -307,6 +307,7 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
 
       if (!coin.denom.startsWith("ibc/")) {
         const asset = chain.lookupAsset(coin.denom);
+        console.log(coin);
 
         try {
           // create asset it doesn't exist and is a precision-adjusted counterparty asset
@@ -328,6 +329,8 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
           // @ts-ignore
           denomTrace = await this.getDenomTraceCached(chain, coin.denom);
         }
+
+        console.log(coin, denomTrace);
 
         if (!denomTrace) {
           continue; // Ignore, it's an invalid coin from invalid chain
