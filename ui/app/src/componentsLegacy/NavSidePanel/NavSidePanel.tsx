@@ -214,7 +214,7 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
-            {flagsStore.state.fieldsOfGoldEnabled && (
+            {flagsStore.state.showTradingCompetitions && (
               <div class="middle mt-[10px]">
                 <RouterLink
                   to={{

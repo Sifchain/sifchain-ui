@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, computed, Ref } from "vue";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { accountStore } from "@/store/modules/accounts";
-import { Asset, IAsset } from "@sifchain/sdk";
+import { Asset, AssetAmount, IAsset } from "@sifchain/sdk";
 import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
@@ -11,7 +11,6 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 export const COMPETITIONS: Record<
   string,
   {
-    bucket: Record<CompetitionType, number | null>;
     displayName: string;
     description: string;
     icon:
@@ -26,10 +25,6 @@ export const COMPETITIONS: Record<
   }
 > = {
   ALL: {
-    bucket: {
-      txn: 1_000_000,
-      vol: 3_000_000,
-    },
     displayName: "Sif's Fields of Gold",
     description:
       "Get ready to swap! The Fields of Gold competition awards the top 30 swappers across all pairs, in both swap dollar volume and swap transaction count.",
@@ -39,10 +34,6 @@ export const COMPETITIONS: Record<
     },
   },
   cdino: {
-    bucket: {
-      txn: 50_000,
-      vol: 50_000,
-    },
     description:
       "The Dino Battle of the Trade Winds competition awards the top 30 Dino swappers in both swap dollar volume and swap transaction count!",
     displayName: "Dino: Battle of the Tradewinds",
@@ -52,10 +43,6 @@ export const COMPETITIONS: Record<
     },
   },
   uakt: {
-    bucket: {
-      txn: 50_000,
-      vol: null,
-    },
     description:
       "The Akash Battle of the Trade Winds competition awards the top 30 Akash swappers in both swap dollar volume and swap transaction count!",
     displayName: "Akash: Battle of the Tradewinds",
@@ -65,9 +52,6 @@ export const COMPETITIONS: Record<
     },
   },
 };
-if (!flagsStore.state.fieldsOfGoldEnabled) delete COMPETITIONS.ALL;
-if (!flagsStore.state.dinoContestEnabled) delete COMPETITIONS.cdino;
-if (!flagsStore.state.akashContestEnabled) delete COMPETITIONS.uakt;
 
 export const COMPETITION_TYPE_DISPLAY_DATA = {
   txn: {
@@ -77,7 +61,7 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       return `This leaderboard is based on who has swapped the most transactions to present day. The total reward pool for this leaderboard is ${prettyNumber(
         competition.rewardBucket,
         0,
-      )} ROWAN. Your payout amount is pre-determined by placement in the top 30. Click to learn more.`;
+      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is pre-determined by placement in the top 30. Click to learn more.`;
     },
     link: (competition: Competition) => "https://docs.sifchain.finance",
   },
@@ -88,7 +72,7 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       return `This leaderboard is based on who has swapped the most volume to present day. The total reward pool for this leaderboard is ${prettyNumber(
         competition.rewardBucket,
         0,
-      )} ROWAN. Your payout amount is determined by how much of the top 30 swap volume you have. Click to learn more.`;
+      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is determined by how much of the top 30 swap volume you have. Click to learn more.`;
     },
     link: (competition: Competition) => "https://docs.sifchain.finance",
   },
@@ -141,6 +125,7 @@ export type Competition = {
   icon: IAsset | IconName;
   description: string;
   rewardBucket: number;
+  rewardAsset: IAsset;
 };
 export type CompetitionsLookup = Record<CompetitionType, Competition | null>;
 export type CompetitionsBySymbolLookup = Record<string, CompetitionsLookup>;
@@ -231,10 +216,13 @@ export const useLeaderboardCompetitions = () => {
             program: string;
             type: CompetitionType;
             participants: string;
+            prize_pool: string;
             start_trading: string;
             end_trading: string;
             last_updated: string;
             last_traded_height: string;
+            program_start: string;
+            program_end: string;
           },
         ]
       >("https://data.sifchain.finance/beta/trade/tx_vol/type");
@@ -250,23 +238,26 @@ export const useLeaderboardCompetitions = () => {
         if (!lookup[item.program]) {
           lookup[item.program] = { vol: null, txn: null };
         }
-        if (!competitionData.bucket[item.type]) {
-          return console.log(
-            `Unrecognized competition type within program ${item.program}: ${item.type}`,
-          );
+        const startDateTime = new Date(item.program_start);
+        const endDateTime = new Date(item.program_end);
+
+        const hasNotStarted = new Date() < startDateTime;
+        if (hasNotStarted && !flagsStore.state.showTradingCompetitions) {
+          return;
         }
 
+        const asset = useNativeChain().lookupAsset(item.program);
         lookup[item.program][item.type] = {
-          asset: useNativeChain().lookupAsset(item.program),
+          asset,
           isUniversal: item.program === "ALL",
           type: item.type as CompetitionType,
           participants: parseInt(item.participants),
-          startDateTime: new Date(item.start_trading),
-          endDateTime:
-            new Date(COMPETITION_END_DATE) || new Date(item.end_trading),
+          startDateTime,
+          endDateTime,
           symbol: item.program,
           displayName: competitionData.displayName,
-          rewardBucket: competitionData.bucket[item.type] as number,
+          rewardBucket: parseFloat(item.prize_pool),
+          rewardAsset: asset || useNativeChain().nativeAsset,
           description: competitionData.description,
           iconType: competitionData.icon.type,
           icon: competitionData.icon.icon,

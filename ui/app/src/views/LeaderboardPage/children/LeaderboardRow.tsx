@@ -8,6 +8,7 @@ import { animateFireflies } from "@/utils/animateFireflies";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
+  Competition,
   CompetitionType,
   COMPETITION_TYPE_DISPLAY_DATA,
   LeaderboardItem,
@@ -20,13 +21,16 @@ export const LeaderboardRow = defineComponent({
       type: Object as PropType<LeaderboardItem>,
       required: true,
     },
+    competition: {
+      type: Object as PropType<Competition>,
+      required: true,
+    },
     maximumRank: {
       type: Number as PropType<number>,
       required: true,
     },
     class: String as PropType<HTMLAttributes["class"]>,
     isMyself: Boolean,
-    type: Object as PropType<CompetitionType>,
     style: Object,
   },
   data: (_) => ({
@@ -92,7 +96,7 @@ export const LeaderboardRow = defineComponent({
         </section>
 
         <section class="ml-[32px] flex items-center">
-          <TokenIcon assetValue={useNativeChain().nativeAsset} size={19} />
+          <TokenIcon assetValue={this.competition.rewardAsset} size={19} />
           <div
             class={[
               "ml-[8px] font-mono",

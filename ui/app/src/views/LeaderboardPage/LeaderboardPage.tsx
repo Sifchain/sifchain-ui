@@ -351,7 +351,7 @@ export default defineComponent({
                   this.accountItem.rank <= 3) && (
                   <LeaderboardRow
                     item={this.accountItem}
-                    type={this.currentType}
+                    competition={this.currentCompetition!}
                     maximumRank={this.maximumRank}
                     class="mb-[30px]"
                     isMyself
@@ -366,7 +366,7 @@ export default defineComponent({
                 (item) => {
                   return (
                     <LeaderboardRow
-                      type={this.currentType}
+                      competition={this.currentCompetition!}
                       key={item.name}
                       item={item}
                       maximumRank={this.maximumRank}
