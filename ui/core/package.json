@@ -28,7 +28,7 @@
     "@keplr-wallet/stores": "^0.9.0-alpha.9",
     "@keplr-wallet/types": "^0.8.11",
     "@metamask/detect-provider": "^1.2.0",
-    "@terra-money/terra.js": "^2.0.15",
+    "@terra-money/terra.js": "2.0.14",
     "@terra-money/wallet-provider": "^2.3.0",
     "big.js": "^6.0.1",
     "bip39": "^3.0.2",

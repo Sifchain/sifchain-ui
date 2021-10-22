@@ -3305,7 +3305,7 @@
     "@terra-money/terra.js" "^2.0.14"
     rxjs "^7.3.0"
 
-"@terra-money/terra.js@^2.0.0":
+"@terra-money/terra.js@2.0.14", "@terra-money/terra.js@^2.0.0":
   version "2.0.14"
   resolved "https://registry.yarnpkg.com/@terra-money/terra.js/-/terra.js-2.0.14.tgz#3195ed184524f926196b0b0ef15ae177ece148d1"
   integrity sha512-GeMadRIPaOedODa5a0pJ2+76l7MeFSIfSJZ2vvWPRco6MRIQLw/k0cZpPKMLm2Zo54li/oY1mrR+r3uxLM7q3Q==
@@ -3323,7 +3323,7 @@
     utf-8-validate "^5.0.5"
     ws "^7.4.2"
 
-"@terra-money/terra.js@^2.0.14", "@terra-money/terra.js@^2.0.15":
+"@terra-money/terra.js@^2.0.14":
   version "2.0.15"
   resolved "https://registry.yarnpkg.com/@terra-money/terra.js/-/terra.js-2.0.15.tgz#e8f9a2eb94e8a6d2210f6f14e25575a20d882822"
   integrity sha512-gWWpbKQCEyJZze8ctW3U1noLlOvL2VMBjFFnDLofDZfAaCNHFEyoliV77H277u1SkzVblc6XRPqPojK/aPKOTw==
