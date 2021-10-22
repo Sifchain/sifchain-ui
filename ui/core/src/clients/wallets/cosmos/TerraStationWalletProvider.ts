@@ -224,12 +224,13 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
       toJSON: () => JSON.stringify(transfer),
     };
 
-    const txDraft = ({
+    const txDraft = {
       msgs: [envelope],
       memo: tx.memo || "",
       // Fee is auto-calculated by Terra Station
-    } as unknown) as CreateTxOptions;
+    };
 
+    // @ts-ignore
     const res = await controller.post(txDraft, {
       terraAddress: tx.fromAddress,
     });
