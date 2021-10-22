@@ -1,12 +1,7 @@
 import { CosmosWalletProvider } from "./CosmosWalletProvider";
 import { WalletProviderContext } from "../WalletProvider";
 
-import {
-  WalletController,
-  ConnectType,
-  WalletStates,
-  WalletStatus,
-} from "@terra-money/wallet-provider";
+import { ChromeExtensionController } from "@terra-money/wallet-provider/modules/chrome-extension";
 
 import {
   LCDClient,
@@ -17,6 +12,7 @@ import {
 } from "@terra-money/terra.js";
 import { MsgTransfer } from "@terra-money/terra.js/dist/core/ibc-transfer/msgs/MsgTransfer";
 import { Coin } from "@terra-money/terra.js/dist/core/Coin";
+
 import * as TWP from "@terra-money/wallet-provider";
 import { Chain, IAssetAmount, AssetAmount } from "../../../entities";
 import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
@@ -43,33 +39,7 @@ import { parseRawLog } from "@cosmjs/stargate/build/logs";
 // @ts-ignore
 window.TWP = TWP;
 
-// Wait 1 tick for subscription to active (you just have to)
-const nextTick = () => new Promise((r) => setTimeout(r, 0));
-
-const waitForConnectionStatus = (
-  controller: WalletController,
-  status: WalletStatus,
-): Promise<WalletStates> => {
-  return new Promise((resolve, reject) => {
-    const states = controller.states();
-    const subscription = states.subscribe(
-      (value: WalletStates) => {
-        if (value.status === status) {
-          resolve(value);
-          subscription.unsubscribe();
-        }
-      },
-      (e: Error) => {
-        reject(e);
-        subscription.unsubscribe();
-      },
-    );
-  });
-};
-
 export class TerraStationWalletProvider extends CosmosWalletProvider {
-  private controllerChainIdLookup: Record<string, WalletController> = {};
-
   private getLcdClient(chain: Chain) {
     const config = this.getIBCChainConfig(chain);
     return new LCDClient({
@@ -77,93 +47,51 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
       chainID: config.chainId,
     });
   }
-  private getWalletController(chain: Chain) {
+
+  private extensionControllerChainIdLookup: Record<
+    string,
+    ChromeExtensionController
+  > = {};
+  private getExtensionController(chain: Chain) {
     const config = this.getIBCChainConfig(chain);
-    if (!this.controllerChainIdLookup[config.chainId]) {
+    if (!this.extensionControllerChainIdLookup[config.chainId]) {
       const name = config.chainId.includes("bombay") ? "testnet" : "mainnet";
 
-      const terraChainConfig = {
+      const networkInfo = {
         name,
         chainID: config.chainId,
         lcd: config.restUrl,
       };
-      this.controllerChainIdLookup[config.chainId] = new WalletController({
-        defaultNetwork: terraChainConfig,
-        walletConnectChainIds: {
-          0: terraChainConfig,
-          1: terraChainConfig,
-        },
+      this.extensionControllerChainIdLookup[
+        config.chainId
+      ] = new ChromeExtensionController({
+        defaultNetwork: networkInfo,
+        enableWalletConnection: true,
+        dangerously__chromeExtensionCompatibleBrowserCheck: () => false,
       });
     }
-    return this.controllerChainIdLookup[config.chainId];
+    return this.extensionControllerChainIdLookup[config.chainId];
   }
 
   async connect(chain: Chain) {
-    const controller = this.getWalletController(chain);
+    let address: string | boolean;
+    try {
+      address = await this.getExtensionController(chain).connect();
+    } catch (error) {
+      console.error(error);
+      address = false;
+    }
 
-    await new Promise<void>(async (resolve, reject) => {
-      let resolved = false;
-      const subscription = controller
-        .availableConnectTypes()
-        .subscribe(async (value: ConnectType[]) => {
-          await nextTick();
-          if (value.includes(ConnectType.CHROME_EXTENSION)) {
-            resolve();
-            resolved = true;
-            subscription.unsubscribe();
-          }
-        });
-      // Wait up to a few seconds for Terra chrome extension to show up..
-      await new Promise((r) => setTimeout(r, 3000));
-      if (!resolved) {
-        reject(new Error("Chrome extension not installed"));
-        subscription.unsubscribe();
-      }
-    });
-    controller.connect(ConnectType.CHROME_EXTENSION);
-
-    return new Promise<string>((resolve, reject) => {
-      const subscription = controller.states().subscribe(
-        async (value: WalletStates) => {
-          await nextTick();
-
-          if (value.status === WalletStatus.WALLET_CONNECTED) {
-            if (!value.wallets.length) {
-              reject(new Error("No connections found!"));
-            } else {
-              resolve(value.wallets[0].terraAddress);
-            }
-            subscription.unsubscribe();
-          }
-        },
-        (e: Error) => {
-          reject(e);
-          subscription.unsubscribe();
-        },
-      );
-    });
+    if (!address) {
+      throw new Error("Chrome extension not installed");
+    }
+    return address;
   }
   async hasConnected(chain: Chain): Promise<boolean> {
-    const controller = this.getWalletController(chain);
-    return new Promise<boolean>((resolve, reject) => {
-      const states = controller.states();
-      const subscription = states.subscribe(
-        async (value: WalletStates) => {
-          await nextTick();
-          if (value.status === WalletStatus.WALLET_CONNECTED) {
-            controller.connect(ConnectType.CHROME_EXTENSION);
-            resolve(true);
-          } else if (value.status === WalletStatus.WALLET_NOT_CONNECTED) {
-            resolve(false);
-          }
-          subscription.unsubscribe();
-        },
-        (e: Error) => {
-          reject(e);
-          subscription.unsubscribe();
-        },
-      );
-    });
+    const controller = this.getExtensionController(chain);
+
+    await controller.checkStatus();
+    return typeof controller._terraAddress.value === "string";
   }
   canDisconnect(chain: Chain): boolean {
     return false;
@@ -210,7 +138,7 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
 
-    const controller = this.getWalletController(chain);
+    const controller = this.getExtensionController(chain);
     const converter = new NativeAminoTypes();
     const msgs = tx.msgs.map(converter.toAmino.bind(converter));
 
@@ -237,9 +165,13 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
     };
 
     // @ts-ignore
-    const res = await controller.post(txDraft, {
+    const chromeRes = (await controller.post(txDraft, {
       terraAddress: tx.fromAddress,
-    });
+    })) as {
+      payload: TWP.TxResult;
+    };
+
+    const res = chromeRes.payload;
 
     // The ibc tx from terra station doesn't give us any rawLog data, so
     // we fetch the inflight TX to get it.

@@ -55,7 +55,7 @@ const createWalletConnection = (
           router.push({ name: "KeplrInfo" });
           return;
         }
-        accountStore.load(network);
+        return accountStore.load(network);
       }
     },
     disconnect:

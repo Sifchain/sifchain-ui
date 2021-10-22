@@ -6,6 +6,7 @@ import WalletConnectionDropdown from "./WalletConnectionDropdown";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import { TokenIcon } from "../TokenIcon";
 import { accountStore } from "@/store/modules/accounts";
+import { useCore } from "@/hooks/useCore";
 
 export default defineComponent({
   name: "WalletConnection",
@@ -21,9 +22,18 @@ export default defineComponent({
     ].computed();
     const instanceRef = ref<TooltipInstance>();
 
-    const handleClick = () => {
+    const handleClick = async () => {
       if (stateRef.value.connected) return;
-      props.connection.connect();
+      try {
+        await props.connection.connect();
+      } catch (error) {
+        useCore().services.bus.dispatch({
+          type: "ErrorEvent",
+          payload: {
+            message: "Wallet Connect Error: " + error.message,
+          },
+        });
+      }
     };
 
     return () => (
