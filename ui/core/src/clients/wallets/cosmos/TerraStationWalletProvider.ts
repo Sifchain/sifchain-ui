@@ -34,7 +34,6 @@ import {
 import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 import { KeplrWalletProvider } from "./KeplrWalletProvider";
 import { NativeAminoTypes } from "../../../services/utils/SifClient/NativeAminoTypes";
-import { StdFee } from "@terra-money/terra.js";
 import { parseRawLog } from "@cosmjs/stargate/build/logs";
 
 // @ts-ignore

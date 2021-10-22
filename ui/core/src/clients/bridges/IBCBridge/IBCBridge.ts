@@ -400,7 +400,6 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
 
   async transfer(provider: CosmosWalletProvider, params: BridgeParams) {
     const responses = await this.bridgeTokens(provider, params);
-    debugger;
 
     // Get the last of the batched tx first.
     for (let txResult of responses.reverse()) {
