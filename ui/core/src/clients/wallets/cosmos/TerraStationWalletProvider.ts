@@ -8,7 +8,13 @@ import {
   WalletStatus,
 } from "@terra-money/wallet-provider";
 
-import { LCDClient, Coins, Msg, BankMsg } from "@terra-money/terra.js";
+import {
+  LCDClient,
+  Coins,
+  Msg,
+  BankMsg,
+  CreateTxOptions,
+} from "@terra-money/terra.js";
 import { MsgTransfer } from "@terra-money/terra.js/dist/core/ibc-transfer/msgs/MsgTransfer";
 import { Coin } from "@terra-money/terra.js/dist/core/Coin";
 import * as TWP from "@terra-money/wallet-provider";
@@ -213,19 +219,17 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
     const transfer = MsgTransfer.fromAmino(msgs[0]).toData();
 
     // Returned transfer doesn't have a toJSON object, which is required for Terra Station...
-    // Add that, then cast it to Msg
-    const envelope = ({
+    const envelope = {
       ...transfer,
       toJSON: () => JSON.stringify(transfer),
-    } as unknown) as Msg;
+    };
 
-    const txDraft = {
+    const txDraft = ({
       msgs: [envelope],
       memo: tx.memo || "",
       // Fee is auto-calculated by Terra Station
-    };
+    } as unknown) as CreateTxOptions;
 
-    console.log(txDraft.msgs.map((m) => m.toJSON()));
     const res = await controller.post(txDraft, {
       terraAddress: tx.fromAddress,
     });
