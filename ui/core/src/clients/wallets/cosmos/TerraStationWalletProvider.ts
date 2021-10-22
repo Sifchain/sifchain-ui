@@ -31,7 +31,11 @@ import {
   BroadcastTxSuccess,
   BroadcastTxFailure,
 } from "@cosmjs/launchpad";
-import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import {
+  SigningStargateClient,
+  StargateClient,
+  IndexedTx,
+} from "@cosmjs/stargate";
 import { KeplrWalletProvider } from "./KeplrWalletProvider";
 import { NativeAminoTypes } from "../../../services/utils/SifClient/NativeAminoTypes";
 import { parseRawLog } from "@cosmjs/stargate/build/logs";
@@ -203,6 +207,9 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
   ): Promise<BroadcastTxResult> {
     const tx = signedTx.raw;
 
+    const chainConfig = this.getIBCChainConfig(chain);
+    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
+
     const controller = this.getWalletController(chain);
     const converter = new NativeAminoTypes();
     const msgs = tx.msgs.map(converter.toAmino.bind(converter));
@@ -234,17 +241,34 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
       terraAddress: tx.fromAddress,
     });
 
+    // The ibc tx from terra station doesn't give us any rawLog data, so
+    // we fetch the inflight TX to get it.
+    let txResponseData: IndexedTx | null = null;
     if (res.success) {
+      let retries = 25;
+      while (!txResponseData && retries-- > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        txResponseData = await stargate.getTx(res.result.txhash);
+      }
+    }
+
+    if (!txResponseData) {
+      res.success = false;
+    }
+
+    if (res.success) {
+      // @ts-ignore
       return {
         transactionHash: res.result.txhash,
-        rawLog: res.result.raw_log,
-        logs: parseRawLog(res.result.raw_log),
+        rawLog: txResponseData?.rawLog || res.result.raw_log,
+        logs: parseRawLog(txResponseData?.rawLog || res.result.raw_log),
       } as BroadcastTxSuccess;
     } else {
       return {
         transactionHash: res.result.txhash,
         height: res.result.height,
-        rawLog: res.result.raw_log,
+        rawLog: txResponseData?.rawLog || res.result.raw_log,
+        logs: parseRawLog(txResponseData?.rawLog || res.result.raw_log),
         code: -1,
       } as BroadcastTxFailure;
     }
