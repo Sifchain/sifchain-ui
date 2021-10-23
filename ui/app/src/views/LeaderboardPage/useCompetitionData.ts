@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, computed, Ref } from "vue";
+import { onMounted, onUnmounted, computed, Ref, ref, watch } from "vue";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { accountStore } from "@/store/modules/accounts";
 import { Asset, AssetAmount, IAsset } from "@sifchain/sdk";
@@ -196,7 +196,6 @@ export const getAccountData = async (symbol: string, address?: string) => {
       .filter(Boolean)
       .join("/")}`,
   );
-  console.log("getAccountData", items);
 
   const volItem = items?.find((i) => i.type === "vol");
   const txnItem = items?.find((i) => i.type === "txn");
@@ -282,7 +281,23 @@ export const useLeaderboardData = (params: { symbol: Ref<string> }) => {
 
   const competitionsRes = useLeaderboardCompetitions();
 
+  const isReloading = ref(false);
+  const delayReloadRef = ref<NodeJS.Timeout | undefined>();
+  watch(params.symbol, async () => {
+    isReloading.value = true;
+    if (delayReloadRef.value != null) clearTimeout(delayReloadRef.value);
+    await Promise.all(
+      [transactionRes, volumeRes, accountRes].map((res) => {
+        return res.reload.value();
+      }),
+    );
+    delayReloadRef.value = setTimeout(() => {
+      isReloading.value = false;
+    }, 1000);
+  });
+
   return {
+    isReloading,
     isLoading: computed(() => {
       return [transactionRes, volumeRes, accountRes, competitionsRes].some(
         (res) => {

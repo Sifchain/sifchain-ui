@@ -32,6 +32,7 @@ import { Asset } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
 import { useNativeChain } from "@/hooks/useChains";
 import { TokenIcon } from "@/components/TokenIcon";
 import { IAsset } from "@sifchain/sdk";
+import { useCore } from "@/hooks/useCore";
 
 export default defineComponent({
   name: "LeaderboardPage",
@@ -80,10 +81,23 @@ export default defineComponent({
   data() {
     return {
       isSelectOpen: false,
+      hasAgreed:
+        useCore().services.storage.getItem("leaderboard_toc_agreed") === "true",
+      isAgreeModalOpen: false,
     };
   },
+  methods: {
+    setAgreed(agreed: boolean) {
+      this.hasAgreed = agreed;
+      useCore().services.storage.setItem(
+        "leaderboard_toc_agreed",
+        String(agreed),
+      );
+    },
+  },
   watch: {
-    availableCompetitionTypes(availableTypes: CompetitionType[]) {
+    availableCompetitions(competitions: Competition[]) {
+      const availableTypes = competitions.map((c) => c.type);
       if (
         !availableTypes.includes(
           router.currentRoute.value.params.type as CompetitionType,
@@ -100,14 +114,12 @@ export default defineComponent({
     },
   },
   computed: {
-    availableCompetitionTypes(): CompetitionType[] {
+    availableCompetitions(): Competition[] {
       return Object.values(
         this.competitionsRes.data.value?.[
           this.symbol || COMPETITION_UNIVERSAL_SYMBOL
         ] || {},
-      )
-        .filter((item) => item != null)
-        .map((item) => item!.type) as CompetitionType[];
+      ).filter((item) => item != null) as Competition[];
     },
     competitionSelectOptions(): SelectDropdownOption[] {
       return Object.keys(COMPETITIONS)
@@ -294,32 +306,35 @@ export default defineComponent({
         >
           <div class="flex absolute bottom-[100%] left-0 right-0 flex items-center justify-end">
             <section class="flex items-center">
-              {this.availableCompetitionTypes.map((type) => (
+              {this.availableCompetitions.map((competition) => (
                 <RouterLink
                   to={{
                     name: "Leaderboard",
-                    params: { type, symbol: this.symbol || "" },
+                    params: {
+                      type: competition.type,
+                      symbol: this.symbol || "",
+                    },
                   }}
                   class={[
                     "cursor-pointer h-[32px] px-[30px] flex items-center text-bold rounded-t-sm ml-[1px]",
-                    this.currentType === type
+                    this.currentType === competition.type
                       ? "text-accent-base bg-black"
                       : "bg-gray-300 text-gray-825 hover:opacity-80",
                   ]}
                 >
-                  {COMPETITION_TYPE_DISPLAY_DATA[type].title(
-                    this.currentCompetition!,
+                  {COMPETITION_TYPE_DISPLAY_DATA[competition.type].title(
+                    competition,
                   )}
                   <Tooltip
-                    content={COMPETITION_TYPE_DISPLAY_DATA[type].description(
-                      this.currentCompetition!,
-                    )}
+                    content={COMPETITION_TYPE_DISPLAY_DATA[
+                      competition.type
+                    ].description(competition)}
                   >
                     <Button.InlineHelp
                       onClick={() =>
                         window.open(
-                          COMPETITION_TYPE_DISPLAY_DATA[type].link(
-                            this.currentCompetition!,
+                          COMPETITION_TYPE_DISPLAY_DATA[competition.type].link(
+                            competition,
                           ),
                         )
                       }
@@ -329,7 +344,7 @@ export default defineComponent({
               ))}
             </section>
           </div>
-          <>
+          <div class={[this.isReloading && "filter blur-[3px] opacity-50"]}>
             {this.items.length >= 3 && (
               <div class="flex items-end justify-around">
                 {[this.items[1], this.items[0], this.items[2]].map((item) => (
@@ -377,7 +392,7 @@ export default defineComponent({
                 },
               )}
             </TransitionGroup>
-          </>
+          </div>
           <div class="h-4" />
         </PageCard>
       </Layout>
