@@ -295,7 +295,7 @@ export default defineComponent({
           })()}
           headingClass={"!text-lg"}
           class={[
-            "max-w-none w-[950px] rounded-tr-none",
+            "max-w-none w-[950px] rounded-t-none",
             !this.hasAgreed && "filter blur-md",
           ]}
           headerAction={
