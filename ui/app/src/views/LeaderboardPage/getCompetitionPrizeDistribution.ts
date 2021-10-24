@@ -14,18 +14,44 @@ export const getCompetitionPrizeDistributionByRank = (
   } else if (competition.type === "txn") {
     const firstPlaceWeight = 1.75;
     const lastPlaceWeight = 0.25;
-    items.forEach((item) => {
-      const inversePlacement = competition.winners - item.rank;
+    items.forEach((item, index) => {
+      const rank = index + 1;
+      const inversePlacement = competition.winners - rank;
 
       const multiplier =
         lastPlaceWeight +
         ((firstPlaceWeight - lastPlaceWeight) * inversePlacement) /
           (competition.winners - 1);
+
       map.set(
-        item.rank,
+        rank,
         (competition.rewardBucket / competition.winners) * multiplier,
       );
     });
+
+    const groups: Record<
+      string,
+      Array<{ prize: number; item: LeaderboardItem }>
+    > = {};
+    items.forEach((item, index) => {
+      groups[item.rank] = groups[item.rank] || [];
+      groups[item.rank].push({ item, prize: map.get(index + 1)! });
+    });
+
+    Object.entries(groups).forEach(([rank, group]) => {
+      if (group.length > 1) {
+        const totalPrize = group.reduce(
+          (total, { prize }) => (total += prize),
+          0,
+        );
+        map.set(+rank, totalPrize / group.length);
+      }
+    });
+
+    console.log(
+      competition,
+      [...map.values()].reduce((acc, prize) => acc + prize, 0),
+    );
   }
 
   return map;

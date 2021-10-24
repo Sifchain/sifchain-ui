@@ -398,7 +398,7 @@ export default defineComponent({
                       this.prizeDistributionByRank.get(item.rank) ?? 0
                     }
                     item={item}
-                    type={this.currentType}
+                    competition={this.currentCompetition!}
                   />
                 ))}
               </div>

@@ -254,7 +254,8 @@ export default defineComponent({
                           style={{ listStyleType: "disc" }}
                         >
                           <li>
-                            {prettyNumber(competition.rewardBucket, 0)} ROWAN
+                            {prettyNumber(competition.rewardBucket, 0)}{" "}
+                            {competition.rewardAsset.displaySymbol.toUpperCase()}{" "}
                             prize pool
                           </li>
                           <li>
@@ -263,7 +264,9 @@ export default defineComponent({
                         </ul>
                       </>
                     ))}
-                    <div class="mt-[6px]">Click to see more!</div>
+                    <div class="mt-[6px]">
+                      Click to see your ranking and prizes.
+                    </div>
                   </div>
                 }
               >
