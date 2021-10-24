@@ -27,7 +27,7 @@ export const COMPETITIONS: Record<
   ALL: {
     displayName: "Sif's Fields of Gold",
     description:
-      "Get ready to swap! The Fields of Gold competition awards the top 30 swappers across all pairs, in both swap dollar volume and swap transaction count.",
+      "Get ready to swap! The Fields of Gold competition awards the top swappers across all pairs, in both swap dollar volume and swap transaction count.",
     icon: {
       type: "AssetIcon",
       icon: "interactive/wreath",
@@ -35,7 +35,7 @@ export const COMPETITIONS: Record<
   },
   cdino: {
     description:
-      "The Dino Battle of the Trade Winds competition awards the top 30 Dino swappers in swap dollar volume.",
+      "The Dino Battle of the Trade Winds competition awards the top Dino swappers in swap dollar volume.",
     displayName: "Dino: Battle of the Tradewinds",
     icon: {
       type: "TokenIcon",
@@ -44,7 +44,7 @@ export const COMPETITIONS: Record<
   },
   uakt: {
     description:
-      "The Akash Battle of the Trade Winds competition awards the top 30 Akash swappers in both swap dollar volume.",
+      "The Akash Battle of the Trade Winds competition awards the top Akash swappers in both swap dollar volume.",
     displayName: "Akash: Battle of the Tradewinds",
     icon: {
       type: "TokenIcon",
@@ -61,7 +61,9 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       return `This leaderboard is based on who has swapped the most transactions to present day. The total reward pool for this leaderboard is ${prettyNumber(
         competition.rewardBucket,
         0,
-      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is pre-determined by placement in the top 30. Click to learn more.`;
+      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is pre-determined by placement in the top ${
+        competition.winners
+      }. Click to learn more.`;
     },
     link: (competition: Competition) =>
       "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
@@ -73,7 +75,9 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       return `This leaderboard is based on who has swapped the most volume to present day. The total reward pool for this leaderboard is ${prettyNumber(
         competition.rewardBucket,
         0,
-      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is determined by how much of the top 30 swap volume you have. Click to learn more.`;
+      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is determined by how much of the top ${
+        competition.winners
+      } swap volume you have. Click to learn more.`;
     },
     link: (competition: Competition) =>
       "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
