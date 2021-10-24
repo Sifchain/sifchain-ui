@@ -33,6 +33,7 @@ import { useNativeChain } from "@/hooks/useChains";
 import { TokenIcon } from "@/components/TokenIcon";
 import { IAsset } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
+import TermsModal from "./TermsModal";
 
 export default defineComponent({
   name: "LeaderboardPage",
@@ -79,19 +80,21 @@ export default defineComponent({
     return { ...data, symbol: symbolRef };
   },
   data() {
+    const hasAgreed = useCore().services.storage.getJSONItem<Boolean>(
+      "leaderboard_toc_agreed",
+    );
     return {
       isSelectOpen: false,
-      hasAgreed:
-        useCore().services.storage.getItem("leaderboard_toc_agreed") === "true",
-      isAgreeModalOpen: false,
+      hasAgreed,
+      isAgreeModalOpen: !hasAgreed,
     };
   },
   methods: {
     setAgreed(agreed: boolean) {
       this.hasAgreed = agreed;
-      useCore().services.storage.setItem(
+      useCore().services.storage.setJSONItem<Boolean>(
         "leaderboard_toc_agreed",
-        String(agreed),
+        agreed,
       );
     },
   },
@@ -114,6 +117,9 @@ export default defineComponent({
     },
   },
   computed: {
+    isDataReady(): boolean {
+      return Boolean(this.hasAgreed && !this.isLoading);
+    },
     availableCompetitions(): Competition[] {
       return Object.values(
         this.competitionsRes.data.value?.[
@@ -202,6 +208,14 @@ export default defineComponent({
     }
     return (
       <Layout>
+        {this.isAgreeModalOpen && (
+          <TermsModal
+            onAgree={() => {
+              this.setAgreed(true);
+              this.isAgreeModalOpen = false;
+            }}
+          />
+        )}
         <PageCard
           key={this.currentKey}
           heading={(() => {
@@ -270,7 +284,10 @@ export default defineComponent({
             );
           })()}
           headingClass={"!text-lg"}
-          class="max-w-none w-[950px] rounded-tr-none"
+          class={[
+            "max-w-none w-[950px] rounded-tr-none",
+            !this.hasAgreed && "filter blur-md",
+          ]}
           headerAction={
             !!this.currentCompetition && (
               <div class="flex items-center">
@@ -304,8 +321,25 @@ export default defineComponent({
           }
           withOverflowSpace
         >
-          <div class="flex absolute bottom-[100%] left-0 right-0 flex items-center justify-end">
-            <section class="flex items-center">
+          <div
+            class={[
+              "flex absolute bottom-[100%] left-0 right-0 flex items-center justify-between",
+            ]}
+          >
+            <div
+              class={[
+                "cursor-pointer h-[32px] px-[30px] flex items-center text-bold rounded-t-sm ml-[1px] text-accent-base bg-black hover:underline",
+              ]}
+              onClick={() => (this.isAgreeModalOpen = true)}
+            >
+              <AssetIcon
+                icon="interactive/check"
+                size={20}
+                class="mr-[4px] mt-[2px]"
+              />
+              Competition Terms and Conditions
+            </div>
+            <section class="flex items-center justify-between">
               {this.availableCompetitions.map((competition) => (
                 <RouterLink
                   to={{
