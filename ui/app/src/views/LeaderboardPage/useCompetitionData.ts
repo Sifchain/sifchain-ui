@@ -63,7 +63,8 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
         0,
       )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is pre-determined by placement in the top 30. Click to learn more.`;
     },
-    link: (competition: Competition) => "https://docs.sifchain.finance",
+    link: (competition: Competition) =>
+      "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
   },
   vol: {
     renderValue: (value: number) => `Volume $${prettyNumber(value, 0)}`,
@@ -74,7 +75,8 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
         0,
       )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is determined by how much of the top 30 swap volume you have. Click to learn more.`;
     },
-    link: (competition: Competition) => "https://docs.sifchain.finance",
+    link: (competition: Competition) =>
+      "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
   },
 };
 
@@ -109,7 +111,6 @@ export type LeaderboardItem = {
   dateStartedTrading: Date;
   dateLastTraded: Date;
   lastTradedHeight: string;
-  pendingReward: number;
 };
 
 export type Competition = {
@@ -121,6 +122,7 @@ export type Competition = {
   startDateTime: Date;
   endDateTime: Date;
   displayName: string;
+  winners: number;
   iconType: "AssetIcon" | "TokenIcon";
   icon: IAsset | IconName;
   description: string;
@@ -153,7 +155,6 @@ const parseApiLeaderboardItem = (
   dateStartedTrading: new Date(item.date_stated_trading),
   dateLastTraded: new Date(item.date_last_traded),
   lastTradedHeight: item.last_traded_height,
-  pendingReward: 0,
 });
 
 export const getTransactionData = async (symbol: string) => {
@@ -163,13 +164,7 @@ export const getTransactionData = async (symbol: string) => {
       .join("/"),
   );
   const parsed: LeaderboardItem[] = items.map(parseApiLeaderboardItem);
-  const total = parsed.reduce((acc, item) => {
-    return acc + item.value;
-  }, 0);
-  return parsed.map((item) => ({
-    ...item,
-    pendingReward: (item.value / total) * TOTAL_REWARD_BUCKET.txn,
-  }));
+  return parsed;
 };
 
 export const getVolumeData = async (symbol: string) => {
@@ -179,13 +174,7 @@ export const getVolumeData = async (symbol: string) => {
       .join("/"),
   );
   const parsed: LeaderboardItem[] = items.map(parseApiLeaderboardItem);
-  const total = parsed.reduce((acc, item) => {
-    return acc + item.value;
-  }, 0);
-  return parsed.map((item) => ({
-    ...item,
-    pendingReward: (item.value / total) * TOTAL_REWARD_BUCKET.txn,
-  }));
+  return parsed;
 };
 
 export const getAccountData = async (symbol: string, address?: string) => {
@@ -222,6 +211,7 @@ export const useLeaderboardCompetitions = () => {
             last_traded_height: string;
             program_start: string;
             program_end: string;
+            winners: number;
           },
         ]
       >("https://data.sifchain.finance/beta/trade/tx_vol/type");
@@ -254,6 +244,7 @@ export const useLeaderboardCompetitions = () => {
           startDateTime,
           endDateTime,
           symbol: item.program,
+          winners: item.winners,
           displayName: competitionData.displayName,
           rewardBucket: parseFloat(item.prize_pool),
           rewardAsset: asset || useNativeChain().nativeAsset,

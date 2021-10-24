@@ -21,6 +21,10 @@ export const LeaderboardRow = defineComponent({
       type: Object as PropType<LeaderboardItem>,
       required: true,
     },
+    pendingReward: {
+      type: Number as PropType<number>,
+      required: true,
+    },
     competition: {
       type: Object as PropType<Competition>,
       required: true,
@@ -105,7 +109,7 @@ export const LeaderboardRow = defineComponent({
           >
             <ResourcefulTextTransition
               class="w-[200px] inline-block"
-              text={prettyNumber(props.item.pendingReward, 0)}
+              text={prettyNumber(props.pendingReward, 0)}
             />
             {/* {prettyNumber(props.item.pendingReward, 0)} */}
           </div>

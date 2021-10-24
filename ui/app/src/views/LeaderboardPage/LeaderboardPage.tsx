@@ -34,6 +34,7 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { IAsset } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import TermsModal from "./TermsModal";
+import { getCompetitionPrizeDistributionByRank } from "./getCompetitionPrizeDistribution";
 
 export default defineComponent({
   name: "LeaderboardPage",
@@ -191,6 +192,15 @@ export default defineComponent({
           (this.currentCompetition?.endDateTime.getTime() - Date.now()) /
             (1000 * 60 * 60 * 24),
         ),
+      );
+    },
+    prizeDistributionByRank(): Map<number, number> {
+      if (!this.items.length || !this.currentCompetition) {
+        return new Map();
+      }
+      return getCompetitionPrizeDistributionByRank(
+        this.currentCompetition,
+        this.items,
       );
     },
   },
@@ -384,6 +394,9 @@ export default defineComponent({
                 {[this.items[1], this.items[0], this.items[2]].map((item) => (
                   <LeaderboardPodium
                     key={item.name}
+                    pendingReward={
+                      this.prizeDistributionByRank.get(item.rank) ?? 0
+                    }
                     item={item}
                     type={this.currentType}
                   />
@@ -401,6 +414,10 @@ export default defineComponent({
                   <LeaderboardRow
                     item={this.accountItem}
                     competition={this.currentCompetition!}
+                    pendingReward={
+                      this.prizeDistributionByRank.get(this.accountItem.rank) ??
+                      0
+                    }
                     maximumRank={this.maximumRank}
                     class="mb-[30px]"
                     isMyself
@@ -416,6 +433,9 @@ export default defineComponent({
                   return (
                     <LeaderboardRow
                       competition={this.currentCompetition!}
+                      pendingReward={
+                        this.prizeDistributionByRank.get(item.rank) ?? 0
+                      }
                       key={item.name}
                       item={item}
                       maximumRank={this.maximumRank}

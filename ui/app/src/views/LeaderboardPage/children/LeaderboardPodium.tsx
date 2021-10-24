@@ -13,6 +13,10 @@ export const LeaderboardPodium = defineComponent({
       type: Object as PropType<LeaderboardItem>,
       required: true,
     },
+    pendingReward: {
+      type: Number as PropType<number>,
+      required: true,
+    },
     type: {
       type: String as PropType<CompetitionType>,
       required: true,
@@ -116,7 +120,7 @@ export const LeaderboardPodium = defineComponent({
         <div class="mt-[4px] bg-gray-ring h-[28px] px-[10px] flex items-center text-accent-base font-mono rounded-[20px]">
           <TokenIcon size={20} assetValue={useNativeChain().nativeAsset} />
           <div class="ml-[4px] translate-y-[-1px]">
-            {prettyNumber(this.item.pendingReward, 0)}
+            {prettyNumber(this.pendingReward, 0)}
           </div>
         </div>
       </div>
