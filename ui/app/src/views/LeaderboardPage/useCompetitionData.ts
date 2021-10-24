@@ -35,7 +35,7 @@ export const COMPETITIONS: Record<
   },
   cdino: {
     description:
-      "The Dino Battle of the Trade Winds competition awards the top 30 Dino swappers in both swap dollar volume and swap transaction count!",
+      "The Dino Battle of the Trade Winds competition awards the top 30 Dino swappers in swap dollar volume.",
     displayName: "Dino: Battle of the Tradewinds",
     icon: {
       type: "TokenIcon",
@@ -44,7 +44,7 @@ export const COMPETITIONS: Record<
   },
   uakt: {
     description:
-      "The Akash Battle of the Trade Winds competition awards the top 30 Akash swappers in both swap dollar volume and swap transaction count!",
+      "The Akash Battle of the Trade Winds competition awards the top 30 Akash swappers in both swap dollar volume.",
     displayName: "Akash: Battle of the Tradewinds",
     icon: {
       type: "TokenIcon",
