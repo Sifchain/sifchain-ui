@@ -21,17 +21,23 @@ import {
 } from "../../clients/bridges/BaseBridge";
 
 export default function InterchainUsecase(context: UsecaseContext) {
+  const getIbcWallet = (fromChain: Chain) => {
+    if (fromChain.network === Network.TERRA) {
+      return context.services.wallet.terraProvider;
+    }
+    return context.services.wallet.keplrProvider;
+  };
   const ibcBridge = {
     estimateFees(params: BridgeParams) {
       return context.services.ibc.estimateFees(
-        context.services.wallet.keplrProvider,
+        getIbcWallet(params.fromChain),
         params,
       );
     },
     async approveTransfer(params: BridgeParams) {},
     async transfer(params: BridgeParams) {
       const result = await context.services.ibc.transfer(
-        context.services.wallet.keplrProvider,
+        getIbcWallet(params.fromChain),
         params,
       );
       bridgeTxEmitter.emit("tx_sent", result);
@@ -42,7 +48,7 @@ export default function InterchainUsecase(context: UsecaseContext) {
       onUpdate?: (update: Partial<BridgeTx>) => void,
     ) {
       return context.services.ibc.waitForTransferComplete(
-        context.services.wallet.keplrProvider,
+        getIbcWallet(tx.fromChain),
         tx,
         onUpdate,
       );

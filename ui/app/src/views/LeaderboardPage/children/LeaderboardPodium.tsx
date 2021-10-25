@@ -3,7 +3,12 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
-import { CompetitionType, LeaderboardItem } from "../useCompetitionData";
+import {
+  Competition,
+  CompetitionType,
+  COMPETITION_TYPE_DISPLAY_DATA,
+  LeaderboardItem,
+} from "../useCompetitionData";
 import { LeaderboardAvatar } from "./LeaderboardAvatar";
 
 export const LeaderboardPodium = defineComponent({
@@ -13,8 +18,12 @@ export const LeaderboardPodium = defineComponent({
       type: Object as PropType<LeaderboardItem>,
       required: true,
     },
-    type: {
-      type: String as PropType<CompetitionType>,
+    pendingReward: {
+      type: Number as PropType<number>,
+      required: true,
+    },
+    competition: {
+      type: Object as PropType<Competition>,
       required: true,
     },
     class: {
@@ -110,13 +119,14 @@ export const LeaderboardPodium = defineComponent({
           <ResourcefulTextTransition text={this.displayLines[1]} />
         </div>
         <div class="mt-[4px] text-sm font-mono">
-          {this.type === "vol" ? "Volume $" : "Tx "}
-          {prettyNumber(this.item.value, 0)}
+          {COMPETITION_TYPE_DISPLAY_DATA[this.competition.type].renderValue(
+            this.item.value,
+          )}
         </div>
         <div class="mt-[4px] bg-gray-ring h-[28px] px-[10px] flex items-center text-accent-base font-mono rounded-[20px]">
-          <TokenIcon size={20} assetValue={useNativeChain().nativeAsset} />
+          <TokenIcon size={20} assetValue={this.competition.rewardAsset} />
           <div class="ml-[4px] translate-y-[-1px]">
-            {prettyNumber(this.item.pendingReward, 0)}
+            {prettyNumber(this.pendingReward, 0)}
           </div>
         </div>
       </div>

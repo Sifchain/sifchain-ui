@@ -1,7 +1,10 @@
-import { Chain } from "../../entities";
+import { Chain, Network } from "../../entities";
 import {
   KeplrWalletProvider,
   MetamaskWalletProvider,
+  TerraStationWalletProvider,
+  CosmosWalletProvider,
+  Web3WalletProvider,
 } from "../../clients/wallets";
 import { provider } from "web3-core";
 
@@ -21,6 +24,18 @@ export class WalletService {
 
   keplrProvider = new KeplrWalletProvider(this.context);
   metamaskProvider = new MetamaskWalletProvider(this.context);
+  terraProvider = new TerraStationWalletProvider(this.context);
+
+  getPreferredProvider(chain: Chain) {
+    switch (chain.network) {
+      case Network.ETHEREUM:
+        return this.metamaskProvider;
+      case Network.TERRA:
+        return this.terraProvider;
+      default:
+        return this.keplrProvider;
+    }
+  }
 
   tryConnectAllWallets() {
     return this.keplrProvider.tryConnectAll(

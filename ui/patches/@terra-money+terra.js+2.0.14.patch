@@ -1,0 +1,13 @@
+diff --git a/node_modules/@terra-money/terra.js/dist/extension/PostMessageStream.js b/node_modules/@terra-money/terra.js/dist/extension/PostMessageStream.js
+index 30b0330..31e8b99 100644
+--- a/node_modules/@terra-money/terra.js/dist/extension/PostMessageStream.js
++++ b/node_modules/@terra-money/terra.js/dist/extension/PostMessageStream.js
+@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
+     };
+ })();
+ Object.defineProperty(exports, "__esModule", { value: true });
+-var readable_stream_1 = require("readable-stream");
++var readable_stream_1 = require("vite-compatible-readable-stream");
+ var noop = function () {
+     return undefined;
+ };

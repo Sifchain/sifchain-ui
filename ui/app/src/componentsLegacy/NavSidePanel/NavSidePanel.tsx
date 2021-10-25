@@ -20,7 +20,11 @@ import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import { RouterLink } from "vue-router";
-import { COMPETITION_UNIVERSAL_SYMBOL } from "@/views/LeaderboardPage/useCompetitionData";
+import {
+  COMPETITION_UNIVERSAL_SYMBOL,
+  useHasUniversalCompetition,
+  useLeaderboardCompetitions,
+} from "@/views/LeaderboardPage/useCompetitionData";
 
 export default defineComponent({
   props: {},
@@ -60,6 +64,8 @@ export default defineComponent({
     const rowanPrice = computed(() => {
       return poolStats.data.value?.rowanUsd;
     });
+
+    const hasUniversalCompetition = useHasUniversalCompetition();
 
     const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
 
@@ -214,7 +220,7 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
-            {flagsStore.state.fieldsOfGoldEnabled && (
+            {hasUniversalCompetition.value && (
               <div class="middle mt-[10px]">
                 <RouterLink
                   to={{
