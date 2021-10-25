@@ -185,10 +185,9 @@ export default defineComponent({
     },
     daysRemaining(): number {
       if (!this.currentCompetition) return 0;
-      console.log(this.currentCompetition);
       return Math.max(
         0,
-        Math.ceil(
+        Math.floor(
           (this.currentCompetition?.endDateTime.getTime() - Date.now()) /
             (1000 * 60 * 60 * 24),
         ),
