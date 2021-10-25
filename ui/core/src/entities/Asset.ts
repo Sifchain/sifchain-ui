@@ -10,6 +10,7 @@ export type IAsset = {
   unitDenom?: string;
   ibcDenom?: string;
   displaySymbol: string;
+  lowercasePrefixLength?: number;
   label?: string;
   hasDarkIcon?: boolean;
   homeNetwork: Network;

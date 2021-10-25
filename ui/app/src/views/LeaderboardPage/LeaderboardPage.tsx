@@ -32,6 +32,9 @@ import { Asset } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
 import { useNativeChain } from "@/hooks/useChains";
 import { TokenIcon } from "@/components/TokenIcon";
 import { IAsset } from "@sifchain/sdk";
+import { useCore } from "@/hooks/useCore";
+import TermsModal from "./TermsModal";
+import { getCompetitionPrizeDistributionByRank } from "./getCompetitionPrizeDistribution";
 
 export default defineComponent({
   name: "LeaderboardPage",
@@ -78,12 +81,27 @@ export default defineComponent({
     return { ...data, symbol: symbolRef };
   },
   data() {
+    const hasAgreed = useCore().services.storage.getJSONItem<Boolean>(
+      "leaderboard_toc_agreed",
+    );
     return {
       isSelectOpen: false,
+      hasAgreed,
+      isAgreeModalOpen: !hasAgreed,
     };
   },
+  methods: {
+    setAgreed(agreed: boolean) {
+      this.hasAgreed = agreed;
+      useCore().services.storage.setJSONItem<Boolean>(
+        "leaderboard_toc_agreed",
+        agreed,
+      );
+    },
+  },
   watch: {
-    availableCompetitionTypes(availableTypes: CompetitionType[]) {
+    availableCompetitions(competitions: Competition[]) {
+      const availableTypes = competitions.map((c) => c.type);
       if (
         !availableTypes.includes(
           router.currentRoute.value.params.type as CompetitionType,
@@ -100,14 +118,15 @@ export default defineComponent({
     },
   },
   computed: {
-    availableCompetitionTypes(): CompetitionType[] {
+    isDataReady(): boolean {
+      return Boolean(this.hasAgreed && !this.isLoading);
+    },
+    availableCompetitions(): Competition[] {
       return Object.values(
         this.competitionsRes.data.value?.[
           this.symbol || COMPETITION_UNIVERSAL_SYMBOL
         ] || {},
-      )
-        .filter((item) => item != null)
-        .map((item) => item!.type) as CompetitionType[];
+      ).filter((item) => item != null) as Competition[];
     },
     competitionSelectOptions(): SelectDropdownOption[] {
       return Object.keys(COMPETITIONS)
@@ -175,6 +194,15 @@ export default defineComponent({
         ),
       );
     },
+    prizeDistributionByRank(): Map<number, number> {
+      if (!this.items.length || !this.currentCompetition) {
+        return new Map();
+      }
+      return getCompetitionPrizeDistributionByRank(
+        this.currentCompetition,
+        this.items,
+      );
+    },
   },
   render() {
     if (this.isLoading) {
@@ -190,6 +218,14 @@ export default defineComponent({
     }
     return (
       <Layout>
+        {this.isAgreeModalOpen && (
+          <TermsModal
+            onAgree={() => {
+              this.setAgreed(true);
+              this.isAgreeModalOpen = false;
+            }}
+          />
+        )}
         <PageCard
           key={this.currentKey}
           heading={(() => {
@@ -258,7 +294,10 @@ export default defineComponent({
             );
           })()}
           headingClass={"!text-lg"}
-          class="max-w-none w-[950px] rounded-tr-none"
+          class={[
+            "max-w-none w-[950px] rounded-t-none",
+            !this.hasAgreed && "filter blur-md",
+          ]}
           headerAction={
             !!this.currentCompetition && (
               <div class="flex items-center">
@@ -292,34 +331,54 @@ export default defineComponent({
           }
           withOverflowSpace
         >
-          <div class="flex absolute bottom-[100%] left-0 right-0 flex items-center justify-end">
-            <section class="flex items-center">
-              {this.availableCompetitionTypes.map((type) => (
+          <div
+            class={[
+              "flex absolute bottom-[100%] left-0 right-0 flex items-center justify-between",
+            ]}
+          >
+            <div
+              class={[
+                "cursor-pointer h-[32px] px-[30px] flex items-center text-bold rounded-t-sm ml-[1px] text-accent-base bg-black hover:underline",
+              ]}
+              onClick={() => (this.isAgreeModalOpen = true)}
+            >
+              <AssetIcon
+                icon="interactive/check"
+                size={20}
+                class="mr-[4px] mt-[2px]"
+              />
+              Competition Terms and Conditions
+            </div>
+            <section class="flex items-center justify-between">
+              {this.availableCompetitions.map((competition) => (
                 <RouterLink
                   to={{
                     name: "Leaderboard",
-                    params: { type, symbol: this.symbol || "" },
+                    params: {
+                      type: competition.type,
+                      symbol: this.symbol || "",
+                    },
                   }}
                   class={[
                     "cursor-pointer h-[32px] px-[30px] flex items-center text-bold rounded-t-sm ml-[1px]",
-                    this.currentType === type
+                    this.currentType === competition.type
                       ? "text-accent-base bg-black"
                       : "bg-gray-300 text-gray-825 hover:opacity-80",
                   ]}
                 >
-                  {COMPETITION_TYPE_DISPLAY_DATA[type].title(
-                    this.currentCompetition!,
+                  {COMPETITION_TYPE_DISPLAY_DATA[competition.type].title(
+                    competition,
                   )}
                   <Tooltip
-                    content={COMPETITION_TYPE_DISPLAY_DATA[type].description(
-                      this.currentCompetition!,
-                    )}
+                    content={COMPETITION_TYPE_DISPLAY_DATA[
+                      competition.type
+                    ].description(competition)}
                   >
                     <Button.InlineHelp
                       onClick={() =>
                         window.open(
-                          COMPETITION_TYPE_DISPLAY_DATA[type].link(
-                            this.currentCompetition!,
+                          COMPETITION_TYPE_DISPLAY_DATA[competition.type].link(
+                            competition,
                           ),
                         )
                       }
@@ -329,14 +388,17 @@ export default defineComponent({
               ))}
             </section>
           </div>
-          <>
+          <div class={[this.isReloading && "filter blur-[3px] opacity-50"]}>
             {this.items.length >= 3 && (
               <div class="flex items-end justify-around">
                 {[this.items[1], this.items[0], this.items[2]].map((item) => (
                   <LeaderboardPodium
                     key={item.name}
+                    pendingReward={
+                      this.prizeDistributionByRank.get(item.rank) ?? 0
+                    }
                     item={item}
-                    type={this.currentType}
+                    competition={this.currentCompetition!}
                   />
                 ))}
               </div>
@@ -351,7 +413,11 @@ export default defineComponent({
                   this.accountItem.rank <= 3) && (
                   <LeaderboardRow
                     item={this.accountItem}
-                    type={this.currentType}
+                    competition={this.currentCompetition!}
+                    pendingReward={
+                      this.prizeDistributionByRank.get(this.accountItem.rank) ??
+                      0
+                    }
                     maximumRank={this.maximumRank}
                     class="mb-[30px]"
                     isMyself
@@ -366,7 +432,10 @@ export default defineComponent({
                 (item) => {
                   return (
                     <LeaderboardRow
-                      type={this.currentType}
+                      competition={this.currentCompetition!}
+                      pendingReward={
+                        this.prizeDistributionByRank.get(item.rank) ?? 0
+                      }
                       key={item.name}
                       item={item}
                       maximumRank={this.maximumRank}
@@ -377,7 +446,7 @@ export default defineComponent({
                 },
               )}
             </TransitionGroup>
-          </>
+          </div>
           <div class="h-4" />
         </PageCard>
       </Layout>

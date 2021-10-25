@@ -966,6 +966,15 @@
       "label": "juno",
       "imageUrl": "https://junoscan.com/icons/safari-pinned-tab.svg",
       "homeNetwork": "juno"
+    },
+    {
+      "address": "0xd01cb3d113a864763dd3977fe1e725860013b0ed",
+      "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      "symbol": "ratom",
+      "name": "rATOM",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "decimals": 18
     }
   ]
 }

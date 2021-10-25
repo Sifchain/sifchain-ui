@@ -2,6 +2,7 @@ import balancesAreDifferent from "@sifchain/sdk/src/usecases/walletNew/utils/bal
 import { IAssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "../../hooks/useCore";
 import { Vuextra } from "../Vuextra";
+import { useChains } from "@/hooks/useChains";
 
 const core = useCore();
 export interface IWalletServiceState {
@@ -88,23 +89,21 @@ export const accountStore = Vuextra.createStore({
   }),
   actions: (context) => ({
     async loadIfConnected(network: Network) {
-      const usecase = getUsecase(network);
-      const state = await usecase.loadIfConnected(network);
-      if (state.connected) {
+      const chain = useChains().get(network);
+      const provider = useCore().services.wallet.getPreferredProvider(chain);
+      if (await provider.hasConnected(chain)) {
         this.load(network);
       }
     },
     async load(network: Network) {
-      const usecase = getUsecase(network);
+      const chain = useChains().get(network);
+      const provider = useCore().services.wallet.getPreferredProvider(chain);
+
       self.setConnecting({ network, connecting: true });
       try {
-        const state = await usecase.load(network);
-        if (!state.connected) {
-          self.setConnecting({ network, connecting: false });
-          return;
-        }
-        self.setConnected({ network, connected: state.connected });
-        self.setAddress({ network, address: state.address });
+        const address = await provider.connect(chain);
+        self.setConnected({ network, connected: true });
+        self.setAddress({ network, address });
       } catch (error) {
         console.error(network, "wallet connect error", error);
       } finally {
@@ -133,25 +132,24 @@ export const accountStore = Vuextra.createStore({
     async updateBalances(network: Network) {
       if (!self.state[network].connected) return;
 
-      const usecase = getUsecase(network);
-      const balances = await usecase.getBalances(
-        network,
-        self.state[network].address,
-      );
+      const chain = useChains().get(network);
+      const provider = useCore().services.wallet.getPreferredProvider(chain);
 
+      const balances = await provider.fetchBalances(
+        chain,
+        self.state[chain.network].address,
+      );
       self.setBalances({ network, balances });
     },
 
     async disconnect(network: Network) {
-      const usecase = getUsecase(network);
-
-      const timeoutId = walletBalancePolls.get(network);
-      if (timeoutId != null) {
-        clearTimeout(timeoutId);
-      }
-      walletBalancePolls.delete(network);
-
-      return usecase.disconnect(network);
+      // const usecase = getUsecase(network);
+      // const timeoutId = walletBalancePolls.get(network);
+      // if (timeoutId != null) {
+      //   clearTimeout(timeoutId);
+      // }
+      // walletBalancePolls.delete(network);
+      // return usecase.disconnect(network);
     },
   }),
   modules: [],

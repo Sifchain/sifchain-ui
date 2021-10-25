@@ -1,7 +1,10 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { RegistryEntry } from "../../../sifnode/tokenregistry/v1/types";
+import {
+  RegistryEntry,
+  Registry,
+} from "../../../sifnode/tokenregistry/v1/types";
 
 export const protobufPackage = "sifnode.tokenregistry.v1";
 
@@ -11,6 +14,13 @@ export interface MsgRegister {
 }
 
 export interface MsgRegisterResponse {}
+
+export interface MsgSetRegistry {
+  from: string;
+  registry?: Registry;
+}
+
+export interface MsgSetRegistryResponse {}
 
 export interface MsgDeregister {
   from: string;
@@ -138,6 +148,128 @@ export const MsgRegisterResponse = {
   },
 };
 
+const baseMsgSetRegistry: object = { from: "" };
+
+export const MsgSetRegistry = {
+  encode(
+    message: MsgSetRegistry,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.from !== "") {
+      writer.uint32(10).string(message.from);
+    }
+    if (message.registry !== undefined) {
+      Registry.encode(message.registry, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetRegistry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgSetRegistry } as MsgSetRegistry;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.from = reader.string();
+          break;
+        case 2:
+          message.registry = Registry.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSetRegistry {
+    const message = { ...baseMsgSetRegistry } as MsgSetRegistry;
+    if (object.from !== undefined && object.from !== null) {
+      message.from = String(object.from);
+    } else {
+      message.from = "";
+    }
+    if (object.registry !== undefined && object.registry !== null) {
+      message.registry = Registry.fromJSON(object.registry);
+    } else {
+      message.registry = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgSetRegistry): unknown {
+    const obj: any = {};
+    message.from !== undefined && (obj.from = message.from);
+    message.registry !== undefined &&
+      (obj.registry = message.registry
+        ? Registry.toJSON(message.registry)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgSetRegistry>): MsgSetRegistry {
+    const message = { ...baseMsgSetRegistry } as MsgSetRegistry;
+    if (object.from !== undefined && object.from !== null) {
+      message.from = object.from;
+    } else {
+      message.from = "";
+    }
+    if (object.registry !== undefined && object.registry !== null) {
+      message.registry = Registry.fromPartial(object.registry);
+    } else {
+      message.registry = undefined;
+    }
+    return message;
+  },
+};
+
+const baseMsgSetRegistryResponse: object = {};
+
+export const MsgSetRegistryResponse = {
+  encode(
+    _: MsgSetRegistryResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgSetRegistryResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgSetRegistryResponse } as MsgSetRegistryResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSetRegistryResponse {
+    const message = { ...baseMsgSetRegistryResponse } as MsgSetRegistryResponse;
+    return message;
+  },
+
+  toJSON(_: MsgSetRegistryResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<MsgSetRegistryResponse>): MsgSetRegistryResponse {
+    const message = { ...baseMsgSetRegistryResponse } as MsgSetRegistryResponse;
+    return message;
+  },
+};
+
 const baseMsgDeregister: object = { from: "", denom: "" };
 
 export const MsgDeregister = {
@@ -260,6 +392,7 @@ export const MsgDeregisterResponse = {
 export interface Msg {
   Register(request: MsgRegister): Promise<MsgRegisterResponse>;
   Deregister(request: MsgDeregister): Promise<MsgDeregisterResponse>;
+  SetRegistry(request: MsgSetRegistry): Promise<MsgSetRegistryResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -268,6 +401,7 @@ export class MsgClientImpl implements Msg {
     this.rpc = rpc;
     this.Register = this.Register.bind(this);
     this.Deregister = this.Deregister.bind(this);
+    this.SetRegistry = this.SetRegistry.bind(this);
   }
   Register(request: MsgRegister): Promise<MsgRegisterResponse> {
     const data = MsgRegister.encode(request).finish();
@@ -290,6 +424,18 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgDeregisterResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  SetRegistry(request: MsgSetRegistry): Promise<MsgSetRegistryResponse> {
+    const data = MsgSetRegistry.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.tokenregistry.v1.Msg",
+      "SetRegistry",
+      data,
+    );
+    return promise.then((data) =>
+      MsgSetRegistryResponse.decode(new _m0.Reader(data)),
     );
   }
 }

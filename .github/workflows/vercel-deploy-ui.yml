@@ -3,9 +3,7 @@ name: Deploy UI to Vercel
 on:
   push:
     branches:
-      - "**"
-      - "!develop"
-      - "!master"
+      - master
 
 jobs:
   deploy:

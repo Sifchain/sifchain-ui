@@ -1,7 +1,7 @@
-import { onMounted, onUnmounted, computed, Ref } from "vue";
+import { onMounted, onUnmounted, computed, Ref, ref, watch } from "vue";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { accountStore } from "@/store/modules/accounts";
-import { Asset, IAsset } from "@sifchain/sdk";
+import { Asset, AssetAmount, IAsset } from "@sifchain/sdk";
 import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
@@ -11,7 +11,6 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 export const COMPETITIONS: Record<
   string,
   {
-    bucket: Record<CompetitionType, number | null>;
     displayName: string;
     description: string;
     icon:
@@ -26,25 +25,17 @@ export const COMPETITIONS: Record<
   }
 > = {
   ALL: {
-    bucket: {
-      txn: 1_000_000,
-      vol: 3_000_000,
-    },
     displayName: "Sif's Fields of Gold",
     description:
-      "Get ready to swap! The Fields of Gold competition awards the top 30 swappers across all pairs, in both swap dollar volume and swap transaction count.",
+      "Get ready to swap! The Fields of Gold competition awards the top swappers across all pairs, in both swap dollar volume and swap transaction count.",
     icon: {
       type: "AssetIcon",
       icon: "interactive/wreath",
     },
   },
   cdino: {
-    bucket: {
-      txn: 50_000,
-      vol: 50_000,
-    },
     description:
-      "The Dino Battle of the Trade Winds competition awards the top 30 Dino swappers in both swap dollar volume and swap transaction count!",
+      "The Dino Battle of the Trade Winds competition awards the top Dino swappers in swap dollar volume.",
     displayName: "Dino: Battle of the Tradewinds",
     icon: {
       type: "TokenIcon",
@@ -52,12 +43,8 @@ export const COMPETITIONS: Record<
     },
   },
   uakt: {
-    bucket: {
-      txn: 50_000,
-      vol: null,
-    },
     description:
-      "The Akash Battle of the Trade Winds competition awards the top 30 Akash swappers in both swap dollar volume and swap transaction count!",
+      "The Akash Battle of the Trade Winds competition awards the top Akash swappers in both swap dollar volume.",
     displayName: "Akash: Battle of the Tradewinds",
     icon: {
       type: "TokenIcon",
@@ -65,9 +52,6 @@ export const COMPETITIONS: Record<
     },
   },
 };
-if (!flagsStore.state.fieldsOfGoldEnabled) delete COMPETITIONS.ALL;
-if (!flagsStore.state.dinoContestEnabled) delete COMPETITIONS.cdino;
-if (!flagsStore.state.akashContestEnabled) delete COMPETITIONS.uakt;
 
 export const COMPETITION_TYPE_DISPLAY_DATA = {
   txn: {
@@ -77,9 +61,12 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       return `This leaderboard is based on who has swapped the most transactions to present day. The total reward pool for this leaderboard is ${prettyNumber(
         competition.rewardBucket,
         0,
-      )} ROWAN. Your payout amount is pre-determined by placement in the top 30. Click to learn more.`;
+      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is pre-determined by placement in the top ${
+        competition.winners
+      }. Click to learn more.`;
     },
-    link: (competition: Competition) => "https://docs.sifchain.finance",
+    link: (competition: Competition) =>
+      "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
   },
   vol: {
     renderValue: (value: number) => `Volume $${prettyNumber(value, 0)}`,
@@ -88,9 +75,12 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       return `This leaderboard is based on who has swapped the most volume to present day. The total reward pool for this leaderboard is ${prettyNumber(
         competition.rewardBucket,
         0,
-      )} ROWAN. Your payout amount is determined by how much of the top 30 swap volume you have. Click to learn more.`;
+      )} ${competition.rewardAsset.displaySymbol.toUpperCase()}. Your payout amount is determined by how much of the top ${
+        competition.winners
+      } swap volume you have. Click to learn more.`;
     },
-    link: (competition: Competition) => "https://docs.sifchain.finance",
+    link: (competition: Competition) =>
+      "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
   },
 };
 
@@ -125,7 +115,6 @@ export type LeaderboardItem = {
   dateStartedTrading: Date;
   dateLastTraded: Date;
   lastTradedHeight: string;
-  pendingReward: number;
 };
 
 export type Competition = {
@@ -137,10 +126,12 @@ export type Competition = {
   startDateTime: Date;
   endDateTime: Date;
   displayName: string;
+  winners: number;
   iconType: "AssetIcon" | "TokenIcon";
   icon: IAsset | IconName;
   description: string;
   rewardBucket: number;
+  rewardAsset: IAsset;
 };
 export type CompetitionsLookup = Record<CompetitionType, Competition | null>;
 export type CompetitionsBySymbolLookup = Record<string, CompetitionsLookup>;
@@ -168,7 +159,6 @@ const parseApiLeaderboardItem = (
   dateStartedTrading: new Date(item.date_stated_trading),
   dateLastTraded: new Date(item.date_last_traded),
   lastTradedHeight: item.last_traded_height,
-  pendingReward: 0,
 });
 
 export const getTransactionData = async (symbol: string) => {
@@ -178,13 +168,7 @@ export const getTransactionData = async (symbol: string) => {
       .join("/"),
   );
   const parsed: LeaderboardItem[] = items.map(parseApiLeaderboardItem);
-  const total = parsed.reduce((acc, item) => {
-    return acc + item.value;
-  }, 0);
-  return parsed.map((item) => ({
-    ...item,
-    pendingReward: (item.value / total) * TOTAL_REWARD_BUCKET.txn,
-  }));
+  return parsed;
 };
 
 export const getVolumeData = async (symbol: string) => {
@@ -194,13 +178,7 @@ export const getVolumeData = async (symbol: string) => {
       .join("/"),
   );
   const parsed: LeaderboardItem[] = items.map(parseApiLeaderboardItem);
-  const total = parsed.reduce((acc, item) => {
-    return acc + item.value;
-  }, 0);
-  return parsed.map((item) => ({
-    ...item,
-    pendingReward: (item.value / total) * TOTAL_REWARD_BUCKET.txn,
-  }));
+  return parsed;
 };
 
 export const getAccountData = async (symbol: string, address?: string) => {
@@ -211,7 +189,6 @@ export const getAccountData = async (symbol: string, address?: string) => {
       .filter(Boolean)
       .join("/")}`,
   );
-  console.log("getAccountData", items);
 
   const volItem = items?.find((i) => i.type === "vol");
   const txnItem = items?.find((i) => i.type === "txn");
@@ -231,10 +208,14 @@ export const useLeaderboardCompetitions = () => {
             program: string;
             type: CompetitionType;
             participants: string;
+            prize_pool: string;
             start_trading: string;
             end_trading: string;
             last_updated: string;
             last_traded_height: string;
+            program_start: string;
+            program_end: string;
+            winners: number;
           },
         ]
       >("https://data.sifchain.finance/beta/trade/tx_vol/type");
@@ -250,23 +231,27 @@ export const useLeaderboardCompetitions = () => {
         if (!lookup[item.program]) {
           lookup[item.program] = { vol: null, txn: null };
         }
-        if (!competitionData.bucket[item.type]) {
-          return console.log(
-            `Unrecognized competition type within program ${item.program}: ${item.type}`,
-          );
+        const startDateTime = new Date(item.program_start);
+        const endDateTime = new Date(item.program_end);
+
+        const hasNotStarted = new Date() < startDateTime;
+        if (hasNotStarted && !flagsStore.state.showTradingCompetitions) {
+          return;
         }
 
+        const asset = useNativeChain().lookupAsset(item.program);
         lookup[item.program][item.type] = {
-          asset: useNativeChain().lookupAsset(item.program),
+          asset,
           isUniversal: item.program === "ALL",
           type: item.type as CompetitionType,
           participants: parseInt(item.participants),
-          startDateTime: new Date(item.start_trading),
-          endDateTime:
-            new Date(COMPETITION_END_DATE) || new Date(item.end_trading),
+          startDateTime,
+          endDateTime,
           symbol: item.program,
+          winners: item.winners,
           displayName: competitionData.displayName,
-          rewardBucket: competitionData.bucket[item.type] as number,
+          rewardBucket: parseFloat(item.prize_pool),
+          rewardAsset: asset || useNativeChain().nativeAsset,
           description: competitionData.description,
           iconType: competitionData.icon.type,
           icon: competitionData.icon.icon,
@@ -291,7 +276,23 @@ export const useLeaderboardData = (params: { symbol: Ref<string> }) => {
 
   const competitionsRes = useLeaderboardCompetitions();
 
+  const isReloading = ref(false);
+  const delayReloadRef = ref<NodeJS.Timeout | undefined>();
+  watch(params.symbol, async () => {
+    isReloading.value = true;
+    if (delayReloadRef.value != null) clearTimeout(delayReloadRef.value);
+    await Promise.all(
+      [transactionRes, volumeRes, accountRes].map((res) => {
+        return res.reload.value();
+      }),
+    );
+    delayReloadRef.value = setTimeout(() => {
+      isReloading.value = false;
+    }, 1000);
+  });
+
   return {
+    isReloading,
     isLoading: computed(() => {
       return [transactionRes, volumeRes, accountRes, competitionsRes].some(
         (res) => {

@@ -685,7 +685,7 @@ const assets: {
       name: "Terra USD",
       label: "Terra USD",
       network: "sifchain",
-      displaySymbol: "UST",
+      displaySymbol: "UST (ERC-20}",
       symbol: "cust",
       homeNetwork: "ethereum",
     },
@@ -873,6 +873,28 @@ const assets: {
       decimals: 18,
     },
     {
+      symbol: "uluna",
+      displaySymbol: "luna",
+      decimals: 6,
+      name: "luna",
+      network: "sifchain",
+      label: "luna",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072",
+      homeNetwork: "terra",
+    },
+    {
+      symbol: "uusd",
+      displaySymbol: "TerraUSD",
+      decimals: 6,
+      name: "TerraUSD",
+      network: "sifchain",
+      label: "TerraUSD",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
+      homeNetwork: "terra",
+    },
+    {
       address: "0x05079687d35b93538cbd59fe5596380cae9054a9",
       imageUrl:
         "https://assets.coingecko.com/coins/images/5041/large/logo_-_2021-01-10T210801.390.png?1610284134",
@@ -990,6 +1012,19 @@ const assets: {
       label: "like",
       imageUrl:
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+    },
+    {
+      address: "0xd01cb3d113a864763dd3977fe1e725860013b0ed",
+      symbol: "cratom",
+      displaySymbol: "ratom",
+      lowercasePrefixLength: 1,
+      decimals: 18,
+      name: "ratom",
+      network: "sifchain",
+      label: "ratom",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      homeNetwork: "ethereum",
     },
   ],
 };
