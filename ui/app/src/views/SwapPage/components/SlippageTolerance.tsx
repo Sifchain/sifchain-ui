@@ -4,6 +4,29 @@ export const SlippageTolerance = (props: {
   slippage: string;
   onUpdate: (val: string) => any;
 }) => {
+  const handleOnInput = (e: Event) => {
+    let v = (e.target as HTMLInputElement).value;
+
+    if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+      v = "0";
+    }
+
+    const shouldTrimInput = parseFloat(v) > 999999999;
+    const inputContainsManitssa = v.includes(".");
+
+    // if value is an integer, slice off last digit
+    if (shouldTrimInput && !inputContainsManitssa) {
+      v = v.slice(0, -1);
+    } else if (shouldTrimInput && inputContainsManitssa) {
+      // trim value to an integer of 9 digits
+      const decimalIndex = v.indexOf(".");
+      v = v.slice(0, decimalIndex);
+    }
+
+    // update the input field value
+    (e.target as HTMLInputElement).value = v;
+  };
+
   return (
     <div class="flex items-center justify-center flex-row mt-[10px]">
       <div class="inline-flex mr-[10px] items-center">
@@ -38,6 +61,7 @@ export const SlippageTolerance = (props: {
           class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none font-mono text-right text-md font-semibold"
           value={props.slippage}
           onInput={(e) => {
+            handleOnInput(e);
             props.onUpdate((e.target as HTMLInputElement).value);
           }}
         />
