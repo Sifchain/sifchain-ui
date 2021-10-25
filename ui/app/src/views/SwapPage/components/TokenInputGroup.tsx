@@ -57,6 +57,32 @@ export const TokenInputGroup = defineComponent({
       ),
     );
 
+    const handleOnInput = (e: Event) => {
+      let v = (e.target as HTMLInputElement).value;
+
+      if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+        v = "0";
+      }
+
+      const shouldTrimInput = parseFloat(v) > 999999999;
+      const inputContainsManitssa = v.includes(".");
+
+      // if value is an integer, slice off last digit
+      if (shouldTrimInput && !inputContainsManitssa) {
+        v = v.slice(0, -1);
+      } else if (shouldTrimInput && inputContainsManitssa) {
+        // trim value to an integer of 9 digits
+        const decimalIndex = v.indexOf(".");
+        v = v.slice(0, decimalIndex);
+      }
+
+      // update the input field value
+      (e.target as HTMLInputElement).value = v;
+
+      // update reactive data's value
+      props.onInputAmount(v || "");
+    };
+
     return () => {
       /* Hide browser-native validation error tooltips via form novalidate */
       return (
@@ -140,11 +166,7 @@ export const TokenInputGroup = defineComponent({
                 textAlign: "right",
               }}
               onInput={(e) => {
-                let v = (e.target as HTMLInputElement).value;
-                if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
-                  v = "0";
-                }
-                props.onInputAmount(v || "");
+                handleOnInput(e);
               }}
             />
           </div>
