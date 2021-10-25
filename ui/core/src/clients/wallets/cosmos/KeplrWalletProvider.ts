@@ -52,6 +52,10 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     } catch (e) {}
   }
 
+  async isInstalled(chain: Chain) {
+    return (window as any).keplr != null;
+  }
+
   async hasConnected(chain: Chain) {
     const chainConfig = this.getIBCChainConfig(chain);
     const keplr = await getKeplrProvider();

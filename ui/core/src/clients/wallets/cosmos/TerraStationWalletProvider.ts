@@ -1,7 +1,10 @@
 import { CosmosWalletProvider } from "./CosmosWalletProvider";
 import { WalletProviderContext } from "../WalletProvider";
 
-import { ChromeExtensionController } from "@terra-money/wallet-provider/modules/chrome-extension";
+import {
+  ChromeExtensionController,
+  ChromeExtensionStatus,
+} from "@terra-money/wallet-provider/modules/chrome-extension";
 
 import {
   LCDClient,
@@ -46,6 +49,21 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
       URL: config.restUrl,
       chainID: config.chainId,
     });
+  }
+
+  async isInstalled(chain: Chain) {
+    const controller = this.getExtensionController(chain);
+    try {
+      await controller.checkStatus();
+      return (
+        controller._status.getValue() !== ChromeExtensionStatus.UNAVAILABLE
+      );
+    } catch (error) {
+      if (/Provider not set/.test(error.message)) {
+        return false;
+      }
+      throw error;
+    }
   }
 
   private extensionControllerChainIdLookup: Record<

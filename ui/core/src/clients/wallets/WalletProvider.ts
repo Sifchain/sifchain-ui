@@ -53,6 +53,8 @@ export abstract class WalletProvider<TxType> {
     tx: NativeDexSignedTransaction<TxType>,
   ): Promise<NativeDexTransactionResult>;
 
+  abstract isInstalled(chain: Chain): Promise<boolean>;
+
   // Parse to dex-v1 compatible output
   parseTxResultToStatus(result: NativeDexTransactionResult): TransactionStatus {
     return NativeDexClient.parseTxResult(result);
