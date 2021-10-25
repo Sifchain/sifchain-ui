@@ -885,7 +885,7 @@ const assets: {
     },
     {
       symbol: "uusd",
-      displaySymbol: "TerraUSD",
+      displaySymbol: "UST",
       decimals: 6,
       name: "TerraUSD",
       network: "sifchain",
