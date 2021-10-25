@@ -39,7 +39,11 @@ export class WalletService {
 
   tryConnectAllWallets() {
     return this.keplrProvider.tryConnectAll(
-      ...this.context.chains.filter((c) => c.chainConfig.hidden),
+      ...this.context.chains.filter(
+        (chain) =>
+          !chain.chainConfig.hidden &&
+          this.getPreferredProvider(chain) === this.keplrProvider,
+      ),
     );
   }
 }
