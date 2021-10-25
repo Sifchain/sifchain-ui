@@ -700,7 +700,7 @@ export default {
       name: "Terra USD",
       label: "Terra USD",
       network: "sifchain",
-      displaySymbol: "UST (ERC-20}",
+      displaySymbol: "UST (ERC-20)",
       symbol: "cust",
       homeNetwork: "ethereum",
     },

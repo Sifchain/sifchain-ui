@@ -7,11 +7,11 @@ export const TERRA_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://terra.stake.id/",
   nativeAssetSymbol: "uluna",
   chainId: "columbus-4",
-  rpcUrl: "https://rpc.terra.dev",
-  restUrl: "https://lcd.terra.dev",
+  rpcUrl: "https://proxies.sifchain.finance/api/columbus-5/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/columbus-5/rest",
   keplrChainInfo: {
-    rpc: "https://rpc.terra.dev",
-    rest: "https://lcd.terra.dev",
+    rpc: "https://proxies.sifchain.finance/api/columbus-5/rpc",
+    rest: "https://proxies.sifchain.finance/api/columbus-5/rest",
     chainId: "columbus-4",
     chainName: "Terra",
     stakeCurrency: {
