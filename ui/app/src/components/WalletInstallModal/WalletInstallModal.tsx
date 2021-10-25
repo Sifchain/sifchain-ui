@@ -16,7 +16,7 @@ export const WalletInstallModal = defineComponent({
     return () => {
       return (
         <Modal
-          heading={`Download ${walletConfig.walletName}`}
+          heading={`Install ${walletConfig.walletName}`}
           icon="interactive/wallet"
           showClose
           onClose={onClose}
