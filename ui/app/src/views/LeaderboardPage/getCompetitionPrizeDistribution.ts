@@ -47,11 +47,6 @@ export const getCompetitionPrizeDistributionByRank = (
         map.set(+rank, totalPrize / group.length);
       }
     });
-
-    console.log(
-      competition,
-      [...map.values()].reduce((acc, prize) => acc + prize, 0),
-    );
   }
 
   return map;
