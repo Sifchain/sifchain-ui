@@ -682,6 +682,40 @@ export default {
       homeNetwork: "osmosis",
     },
     {
+      symbol: "uluna",
+      displaySymbol: "luna",
+      decimals: 6,
+      name: "luna",
+      network: "sifchain",
+      label: "luna",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072",
+      homeNetwork: "terra",
+    },
+    {
+      address: "0xa47c8bf37f92abed4a126bda807a7b7498661acd",
+      decimals: 18,
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
+      name: "Terra USD",
+      label: "Terra USD",
+      network: "sifchain",
+      displaySymbol: "UST (ERC-20)",
+      symbol: "cust",
+      homeNetwork: "ethereum",
+    },
+    {
+      symbol: "uusd",
+      displaySymbol: "ust",
+      decimals: 6,
+      name: "TerraUSD",
+      network: "sifchain",
+      label: "TerraUSD",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
+      homeNetwork: "terra",
+    },
+    {
       symbol: "ujuno",
       displaySymbol: "juno",
       decimals: 6,

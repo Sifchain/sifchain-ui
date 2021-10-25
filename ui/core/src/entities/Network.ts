@@ -15,4 +15,5 @@ export enum Network {
   PERSISTENCE = "persistence",
   REGEN = "regen",
   SENTINEL = "sentinel",
+  TERRA = "terra",
 }
