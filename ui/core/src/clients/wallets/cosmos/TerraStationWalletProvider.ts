@@ -43,14 +43,6 @@ import { parseRawLog } from "@cosmjs/stargate/build/logs";
 window.TWP = TWP;
 
 export class TerraStationWalletProvider extends CosmosWalletProvider {
-  private getLcdClient(chain: Chain) {
-    const config = this.getIBCChainConfig(chain);
-    return new LCDClient({
-      URL: config.restUrl,
-      chainID: config.chainId,
-    });
-  }
-
   async isInstalled(chain: Chain) {
     const controller = this.getExtensionController(chain);
     try {
@@ -116,21 +108,6 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
   }
   disconnect(chain: Chain): Promise<void> {
     throw new Error("Method not implemented.");
-  }
-
-  async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    const client = this.getLcdClient(chain);
-    const coins = await client.bank.balance(address);
-
-    const balances: IAssetAmount[] = [];
-    coins.toArray().forEach((coin) => {
-      coin = coin.toDecCoin();
-      const asset = chain.lookupAsset(coin.denom);
-      if (asset) {
-        balances.push(AssetAmount(asset, coin.amount.toString()));
-      }
-    });
-    return balances;
   }
 
   // The only thing that works for us is the Terra wallet's `post` method, which both
