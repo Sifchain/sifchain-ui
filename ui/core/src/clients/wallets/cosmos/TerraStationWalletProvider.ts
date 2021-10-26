@@ -12,6 +12,7 @@ import {
   Msg,
   BankMsg,
   CreateTxOptions,
+  Extension,
 } from "@terra-money/terra.js";
 import { MsgTransfer } from "@terra-money/terra.js/dist/core/ibc-transfer/msgs/MsgTransfer";
 import { Coin } from "@terra-money/terra.js/dist/core/Coin";
@@ -44,18 +45,7 @@ window.TWP = TWP;
 
 export class TerraStationWalletProvider extends CosmosWalletProvider {
   async isInstalled(chain: Chain) {
-    const controller = this.getExtensionController(chain);
-    try {
-      await controller.checkStatus();
-      return (
-        controller._status.getValue() !== ChromeExtensionStatus.UNAVAILABLE
-      );
-    } catch (error) {
-      if (/Provider not set/.test(error.message)) {
-        return false;
-      }
-      throw error;
-    }
+    return !!(window as any).isTerraExtensionAvailable;
   }
 
   private extensionControllerChainIdLookup: Record<
