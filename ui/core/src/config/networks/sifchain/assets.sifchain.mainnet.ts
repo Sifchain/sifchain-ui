@@ -1026,6 +1026,17 @@ const assets: {
         "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       homeNetwork: "ethereum",
     },
+    {
+      address: "0x16ba8Efe847EBDFef99d399902ec29397D403C30",
+      symbol: "coh",
+      displaySymbol: "oh",
+      decimals: 18,
+      name: "oh",
+      label: "oh",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      imageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/13143.png",
+    },
   ],
 };
 
