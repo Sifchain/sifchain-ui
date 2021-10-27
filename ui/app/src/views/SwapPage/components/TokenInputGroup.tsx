@@ -73,7 +73,7 @@ export const TokenInputGroup = defineComponent({
       let mantissaMaxDigits: boolean = false;
       // mantissa should be the max allowable for the selected token
       if (propRefs.asset.value?.decimals) {
-        mantissaMaxDigits = mantissa?.length > propRefs?.asset?.value?.decimals;
+        mantissaMaxDigits = mantissa?.length > propRefs.asset.value.decimals;
       }
 
       // if significand or mantissa is at max digits, return amount before user input
