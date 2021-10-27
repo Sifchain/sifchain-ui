@@ -129,7 +129,11 @@ export default defineComponent({
       ).filter((item) => item != null) as Competition[];
     },
     competitionSelectOptions(): SelectDropdownOption[] {
-      return this.availableCompetitions
+      const competitions = Object.values(this.competitionsRes.data.value ?? {})
+        .map((lookup) => Object.values(lookup).find((item) => !!item))
+        .filter(Boolean) as Competition[];
+
+      return competitions
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map((competition) => {
           return {
