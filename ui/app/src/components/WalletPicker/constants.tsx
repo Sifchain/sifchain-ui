@@ -15,12 +15,14 @@ export type WalletConnection = {
   getChain: () => Chain;
   connect: () => any;
   disconnect?: () => any;
+  cta?: string;
 };
 
 export type WalletConfig = {
   id: "keplr" | "metamask" | "terraStation";
   walletName: string;
   walletIconSrc: string;
+  cta?: string;
   instructions: any;
 };
 export const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
@@ -76,7 +78,8 @@ export const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
   },
   terraStation: {
     id: "terraStation",
-    walletName: "Terra Station (No Ledger)",
+    walletName: "Terra Station",
+    cta: "Connect\n(No Ledger)",
     walletIconSrc: terraStationSrc,
     instructions: (
       <>
