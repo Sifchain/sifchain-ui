@@ -7,6 +7,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { IconName } from "@/components/AssetIcon";
 import { useAsyncData } from "@/hooks/useAsyncData";
+import { useCore } from "@/hooks/useCore";
 
 export const COMPETITIONS: Record<
   string,
@@ -198,6 +199,31 @@ export const getAccountData = async (symbol: string, address?: string) => {
   };
 };
 
+export const useHasUniversalCompetition = () => {
+  // Store in localStorage so UI can react on refresh
+  // without a flicker while it waits for response
+  const key = "has_universal_comp";
+  const hasUniversalRef = ref(
+    useCore().services.storage.getJSONItem<Boolean>(key) ?? false,
+  );
+
+  const competitionsRes = useLeaderboardCompetitions();
+
+  watch(
+    competitionsRes.data,
+    () => {
+      const hasUniversal =
+        Object.values(competitionsRes.data.value?.ALL || {}).filter(Boolean)
+          .length > 0;
+      hasUniversalRef.value = hasUniversal;
+      useCore().services.storage.setJSONItem<Boolean>(key, hasUniversal);
+    },
+    { deep: true },
+  );
+
+  return hasUniversalRef;
+};
+
 export const useLeaderboardCompetitions = () => {
   return useAsyncDataCached(
     "leaderboardCompetitions",
@@ -235,7 +261,7 @@ export const useLeaderboardCompetitions = () => {
         const endDateTime = new Date(item.program_end);
 
         const hasNotStarted = new Date() < startDateTime;
-        if (hasNotStarted && !flagsStore.state.showTradingCompetitions) {
+        if (hasNotStarted) {
           return;
         }
 

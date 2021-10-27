@@ -27,11 +27,9 @@ export const flagsStore = Vuextra.createStore({
     ibcForEthTokens: true,
     claimsGraph: false,
     devnetCryptoecon: false,
-    showTradingCompetitions: false,
     enableTestChains: {
       band: false,
       likecoin: false,
-      terra: false,
     },
   },
   getters: (state) => ({}),

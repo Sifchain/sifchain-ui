@@ -32,6 +32,11 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
   ) {
     return new DirectSecp256k1HdWalletProvider(context, options);
   }
+
+  async isInstalled(chain: Chain) {
+    return true;
+  }
+
   constructor(
     public context: WalletProviderContext,
     private options: DirectSecp256k1HdWalletProviderOptions,

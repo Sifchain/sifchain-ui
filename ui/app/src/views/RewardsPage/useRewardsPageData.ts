@@ -13,7 +13,7 @@ import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 
 export const rewardColumnsLookup = {
   rewardProgram: {
-    class: "w-[175px] text-left flex-shrink-0",
+    class: "w-[195px] text-left flex-shrink-0",
   },
   apy: {
     class: "w-[175px] text-right",

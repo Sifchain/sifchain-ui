@@ -1,4 +1,4 @@
-import { flagsStore } from "@/store/modules/flags";
+import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { symbolWithoutPrefix } from "@/utils/symbol";
 import { getChainsService, IAsset, Network } from "@sifchain/sdk";
@@ -100,20 +100,28 @@ export const usePoolStats = () => {
   const pools = computed(() => {
     if (isLoading.value) return [];
 
-    const noPrefixAssetLookup: Record<string, IAsset> = {};
+    const assetLookup: Record<string, IAsset> = {};
     getChainsService()
       .get(Network.SIFCHAIN)
-      .assets.forEach((asset) => {
-        noPrefixAssetLookup[
-          symbolWithoutPrefix(asset.symbol).toLowerCase()
-        ] = asset;
+      .assets.filter((asset) => !isAssetFlaggedDisabled(asset))
+      .forEach((asset) => {
+        assetLookup[asset.symbol.toLowerCase()] = asset;
+        let noPrefix = "";
+        if (asset.symbol.toLowerCase().startsWith("c")) {
+          noPrefix = asset.symbol.replace(/^c/, "").toLowerCase();
+        } else {
+          noPrefix = symbolWithoutPrefix(asset.symbol).toLowerCase();
+        }
+        if (noPrefix !== asset.symbol.toLowerCase()) {
+          assetLookup[noPrefix] = asset;
+        }
       });
 
     const poolStatLookup: Record<string, PoolStat> = {};
     poolStatsRes.data.value?.poolData.pools.forEach((poolStat) => {
       const asset =
-        noPrefixAssetLookup[poolStat.symbol.toLowerCase()] ||
-        noPrefixAssetLookup[poolStat.symbol];
+        assetLookup[poolStat.symbol.toLowerCase()] ||
+        assetLookup[poolStat.symbol];
 
       if (!asset) {
         if (!hasLoggedError[poolStat.symbol]) {
