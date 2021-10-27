@@ -1026,6 +1026,28 @@ const assets: {
         "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       homeNetwork: "ethereum",
     },
+    {
+      symbol: "ungm",
+      displaySymbol: "ngm",
+      decimals: 6,
+      name: "ngm",
+      network: "sifchain",
+      homeNetwork: "emoney",
+      label: "ngm",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/13722/small/logo-200x200.jpg?1626095888",
+    },
+    {
+      symbol: "eeur",
+      displaySymbol: "eeur",
+      decimals: 6,
+      name: "e-Money EUR",
+      network: "sifchain",
+      homeNetwork: "emoney",
+      label: "e-Money EUR",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/18817/small/eeur.jpg?1633508407",
+    },
   ],
 };
 
