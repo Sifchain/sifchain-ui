@@ -91,7 +91,14 @@ export default defineComponent({
     const finalStats = computed(() => {
       if (!searchQuery.value) return statsRef.value;
       return statsRef.value?.filter((item) => {
-        return item.asset.symbol.toLowerCase().includes(searchQuery.value);
+        return (
+          item.asset.symbol
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase()) ||
+          item.asset.displaySymbol
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase())
+        );
       });
     });
 

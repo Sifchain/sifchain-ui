@@ -39,6 +39,10 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
     super();
   }
 
+  async isInstalled(chain: Chain) {
+    return true;
+  }
+
   private async onProviderEvent<T>(
     eventName: string,
     callback: () => void,

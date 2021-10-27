@@ -1,7 +1,10 @@
 import { CosmosWalletProvider } from "./CosmosWalletProvider";
 import { WalletProviderContext } from "../WalletProvider";
 
-import { ChromeExtensionController } from "@terra-money/wallet-provider/modules/chrome-extension";
+import {
+  ChromeExtensionController,
+  ChromeExtensionStatus,
+} from "@terra-money/wallet-provider/modules/chrome-extension";
 
 import {
   LCDClient,
@@ -9,6 +12,7 @@ import {
   Msg,
   BankMsg,
   CreateTxOptions,
+  Extension,
 } from "@terra-money/terra.js";
 import { MsgTransfer } from "@terra-money/terra.js/dist/core/ibc-transfer/msgs/MsgTransfer";
 import { Coin } from "@terra-money/terra.js/dist/core/Coin";
@@ -40,12 +44,8 @@ import { parseRawLog } from "@cosmjs/stargate/build/logs";
 window.TWP = TWP;
 
 export class TerraStationWalletProvider extends CosmosWalletProvider {
-  private getLcdClient(chain: Chain) {
-    const config = this.getIBCChainConfig(chain);
-    return new LCDClient({
-      URL: config.restUrl,
-      chainID: config.chainId,
-    });
+  async isInstalled(chain: Chain) {
+    return !!(window as any).isTerraExtensionAvailable;
   }
 
   private extensionControllerChainIdLookup: Record<
@@ -98,21 +98,6 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
   }
   disconnect(chain: Chain): Promise<void> {
     throw new Error("Method not implemented.");
-  }
-
-  async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    const client = this.getLcdClient(chain);
-    const coins = await client.bank.balance(address);
-
-    const balances: IAssetAmount[] = [];
-    coins.toArray().forEach((coin) => {
-      coin = coin.toDecCoin();
-      const asset = chain.lookupAsset(coin.denom);
-      if (asset) {
-        balances.push(AssetAmount(asset, coin.amount.toString()));
-      }
-    });
-    return balances;
   }
 
   // The only thing that works for us is the Terra wallet's `post` method, which both

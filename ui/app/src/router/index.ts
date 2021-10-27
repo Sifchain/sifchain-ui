@@ -31,7 +31,7 @@ import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
-import KeplrModal from "@/components/KeplrModal/KeplrModal";
+import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
 
 type SwapPageMeta = {
   title: string;
@@ -157,9 +157,9 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         component: GetRowanModal,
       },
       {
-        name: "KeplrInfo",
-        path: "keplr",
-        component: KeplrModal,
+        name: "WalletInstallModal",
+        path: "install-wallet/:walletId",
+        component: WalletInstallModal,
       },
       {
         name: "Import",
