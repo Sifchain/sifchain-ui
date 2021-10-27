@@ -1,10 +1,4 @@
-import {
-  computed,
-  defineComponent,
-  HTMLAttributes,
-  PropType,
-  watch,
-} from "vue";
+import { computed, defineComponent, HTMLAttributes, PropType } from "vue";
 import { ref, toRefs } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
@@ -59,28 +53,40 @@ export const TokenInputGroup = defineComponent({
 
     const handleOnInput = (e: Event) => {
       let v = (e.target as HTMLInputElement).value;
-
       if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
         v = "0";
       }
 
-      const shouldTrimInput = parseFloat(v) > 999999999;
-      const inputContainsManitssa = v.includes(".");
+      const [significand, mantissa]: string[] = v.split(".") || ["0"];
 
-      // if value is an integer, slice off last digit
-      if (shouldTrimInput && !inputContainsManitssa) {
-        v = v.slice(0, -1);
-      } else if (shouldTrimInput && inputContainsManitssa) {
-        // trim value to an integer of 9 digits
-        const decimalIndex = v.indexOf(".");
-        v = v.slice(0, decimalIndex);
+      const handleFinalInput = (input: string): void => {
+        // update the input field value
+        (e.target as HTMLInputElement).value = input;
+
+        // update reactive data's value
+        propRefs.onInputAmount.value(input || "");
+      };
+
+      // significand should be less than 15 digits
+      const significandMaxDigits: boolean = significand.length > 15;
+
+      let mantissaMaxDigits: boolean = false;
+      // mantissa should be the max allowable for the selected token
+      if (propRefs.asset.value?.decimals) {
+        mantissaMaxDigits = mantissa?.length > propRefs?.asset?.value?.decimals;
       }
 
-      // update the input field value
-      (e.target as HTMLInputElement).value = v;
-
-      // update reactive data's value
-      props.onInputAmount(v || "");
+      // if significand or mantissa is at max digits, return amount before user input
+      if (significandMaxDigits || mantissaMaxDigits) {
+        return handleFinalInput(propRefs.amount.value);
+      } else {
+        const formatVal: string = !isNaN(parseFloat(mantissa))
+          ? significand + "." + mantissa
+          : parseFloat(significand)
+          ? significand
+          : "";
+        return handleFinalInput(formatVal);
+      }
     };
 
     return () => {
