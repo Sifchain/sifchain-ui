@@ -17,15 +17,7 @@ export type StatsItem = {
 };
 
 export type StatsPageState = {
-  sortBy:
-    | "asset"
-    | "price"
-    | "depth"
-    | "volume"
-    | "arbitrage"
-    | "poolApy"
-    | "rewardApy"
-    | "totalApy";
+  sortBy: "asset" | "price" | "depth" | "volume" | "arbitrage" | "totalApy";
   sortDirection: "asc" | "desc";
 };
 
@@ -54,7 +46,13 @@ export function useStatsPageData(initialState: StatsPageState) {
           depth: parseFloat(pool.poolDepth),
           volume: parseFloat(pool.volume) || 0,
           arbitrage: pool.arb == null ? null : parseFloat(pool.arb) || 0,
-          poolApy: pool.poolAPY,
+          // NOTE(ajoslin): poolAPY is currently using a naive formula that is quite wrong when
+          // swappers are doing masses of minimum-size trades. It way over-estimates how many
+          // fees are paid out.
+          // As a "stupid hack" until this is fixed, we are dividing poolAPY by 10 when it is
+          // over 150%.
+          // Search for: stupid-poolapy-hack
+          poolApy: +pool.poolAPY > 150 ? +pool.poolAPY / 10 : +pool.poolAPY,
           rewardApy: pool.rewardAPY,
           totalApy: pool.totalAPY,
         };
