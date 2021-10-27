@@ -34,7 +34,7 @@ const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
   },
   terraStation: {
     id: "terraStation",
-    walletName: "Terra Station",
+    walletName: "Terra Station (No Ledger)",
     walletIconSrc: terraStationSrc,
   },
 };
