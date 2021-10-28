@@ -66,9 +66,19 @@ export const usePoolStats = () => {
       poolData: {
         ...poolData,
         pools: poolData.pools.map((p) => {
-          const poolAPY =
+          let poolAPY =
             (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
             100;
+
+          // NOTE(ajoslin): poolAPY is currently using a naive formula that is quite wrong when
+          // swappers are doing masses of minimum-size trades. It way over-estimates how many
+          // fees are paid out.
+          // As a "stupid hack" until this is fixed, we are dividing poolAPY by 10 when it is
+          // over 150%.
+          // Search for: stupid-poolapy-hack
+          if (poolAPY > 150) {
+            poolAPY /= 10;
+          }
 
           let rewardAPY = 0;
           rewardPrograms.forEach((program: any) => {

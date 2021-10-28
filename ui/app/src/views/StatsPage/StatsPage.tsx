@@ -8,6 +8,7 @@ import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
+import { Button } from "@/components/Button/Button";
 
 export default defineComponent({
   name: "StatsPage",
@@ -20,7 +21,7 @@ export default defineComponent({
 
     const columns: Array<{
       name: string;
-      message?: string;
+      message?: string | JSX.Element;
       sortBy: StatsPageState["sortBy"];
       class?: string;
       ref: Ref<HTMLElement | undefined>;
@@ -58,22 +59,23 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Pool APY",
-        sortBy: "poolApy",
-        class: "min-w-[80px] text-right",
-        ref: ref<HTMLElement>(),
-      },
-      {
-        name: "Reward APY",
-        sortBy: "rewardApy",
-        class: "min-w-[80px] text-right",
-        ref: ref<HTMLElement>(),
-      },
-      {
-        name: "Total APY",
-        message: "Combined Pool & Reward APY's",
+        name: "Estimated Total APY",
+        message: (
+          <div>
+            'Estimated Total APY' is a sum of the "Pool APY" from swap fees and
+            the "Reward APY" from Sifchain reward programs.
+            <br />
+            <br />
+            "Pool APY" is calculated as: <br />
+            <span class="font-mono">24hour_trading_volume / pool_depth</span>
+            <br /> for each pool. It only estimates the fee revenue paid to
+            pool, so it should be taken as an approximation. The estimate may be
+            thrown off by irregular trading activity during trading
+            competitions.
+          </div>
+        ),
         sortBy: "totalApy",
-        class: "min-w-[80px] text-right",
+        class: "min-w-[120px] text-right",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -143,21 +145,24 @@ export default defineComponent({
                             state.sortDirection =
                               state.sortDirection === "asc" ? "desc" : "asc";
                           } else {
-                            state.sortDirection = "asc";
+                            state.sortDirection = "desc";
                           }
                           state.sortBy = column.sortBy;
                         }}
                       >
                         {column.message ? (
-                          <Tooltip content={<>{column.message}</>}>
+                          <div class="flex items-center">
                             {column.name}
-                          </Tooltip>
+                            <Button.InlineHelp>
+                              {column.message}
+                            </Button.InlineHelp>
+                          </div>
                         ) : (
                           column.name
                         )}
                         {state.sortBy === column.sortBy && (
                           <AssetIcon
-                            icon="interactive/arrow-down"
+                            icon="interactive/arrow-up"
                             class="transition-all w-[12px] h-[12px]"
                             style={{
                               transform:
@@ -228,12 +233,6 @@ export default defineComponent({
                       <td class="align-middle text-right text-mono">
                         ${prettyNumber(item.volume)}
                       </td>
-                      <td class="align-middle text-right text-mono">
-                        {item.poolApy}%
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        {item.rewardApy}%
-                      </td>{" "}
                       <td class="align-middle text-right text-mono">
                         {item.totalApy}%
                       </td>

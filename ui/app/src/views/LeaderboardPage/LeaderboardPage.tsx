@@ -129,31 +129,35 @@ export default defineComponent({
       ).filter((item) => item != null) as Competition[];
     },
     competitionSelectOptions(): SelectDropdownOption[] {
-      return Object.keys(COMPETITIONS)
-        .sort((a, b) => a.localeCompare(b))
-        .map((key) => {
-          const data = COMPETITIONS[key as keyof typeof COMPETITIONS];
+      const competitions = Object.values(this.competitionsRes.data.value ?? {})
+        .map((lookup) => Object.values(lookup).find((item) => !!item))
+        .filter(Boolean) as Competition[];
+
+      return competitions
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+        .map((competition) => {
           return {
             content: (
               <div class="flex items-center">
-                {data.icon.type === "AssetIcon" ? (
+                {competition.iconType === "AssetIcon" ? (
                   <AssetIcon
-                    icon={data.icon.icon as IconName}
+                    icon={competition.icon as IconName}
                     size={24}
                     class="text-accent-base"
                   />
                 ) : (
-                  <TokenIcon
-                    assetValue={useNativeChain().lookupAssetOrThrow(key)}
-                    size={24}
-                  />
+                  <TokenIcon assetValue={competition.rewardAsset} size={24} />
                 )}
-                <div class="ml-[8px]">{data.displayName}</div>
+                <div class="ml-[8px]">{competition.displayName}</div>
               </div>
             ),
-            value: key,
+            value: competition.symbol,
           };
-        });
+        })
+        .filter(
+          (item, index, arr) =>
+            arr.findIndex((it) => it.value === item.value) === index,
+        );
     },
     currentCompetition(): Competition | null {
       return (
@@ -185,10 +189,9 @@ export default defineComponent({
     },
     daysRemaining(): number {
       if (!this.currentCompetition) return 0;
-      console.log(this.currentCompetition);
       return Math.max(
         0,
-        Math.ceil(
+        Math.floor(
           (this.currentCompetition?.endDateTime.getTime() - Date.now()) /
             (1000 * 60 * 60 * 24),
         ),

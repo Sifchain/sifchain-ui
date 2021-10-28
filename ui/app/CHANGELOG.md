@@ -1,3 +1,8 @@
+## Release 2021.10.27
+
+* Enabled Terra via Terra Station Wallet: UST, LUNA
+* Sif's Bonus Pools for UST and LUNA
+
 ## Release 2021.10.18
 * Enabled OSMO 
 * Sif's Bonus Pool - OSMO:
