@@ -293,15 +293,26 @@ export default defineComponent({
           </div>
           <div
             class={[
-              COLUMNS_LOOKUP.totalAPY.class,
+              COLUMNS_LOOKUP.poolAPY.class,
               "font-mono flex items-center",
             ]}
           >
             {this.$props.poolStat?.poolAPY != null
-              ? `${(
-                  parseFloat(this.$props.poolStat?.poolAPY || "0") +
-                  parseFloat(this.$props.poolStat?.rewardAPY || "0")
-                ).toFixed(2)}%`
+              ? `${parseFloat(this.$props.poolStat?.poolAPY || "0").toFixed(
+                  2,
+                )}%`
+              : "..."}
+          </div>
+          <div
+            class={[
+              COLUMNS_LOOKUP.rewardAPY.class,
+              "font-mono flex items-center",
+            ]}
+          >
+            {this.$props.poolStat?.rewardAPY != null
+              ? `${parseFloat(this.$props.poolStat?.rewardAPY || "0").toFixed(
+                  2,
+                )}%`
               : "..."}
           </div>
           <div
