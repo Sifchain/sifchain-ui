@@ -1,4 +1,4 @@
-import { useChains, useChainsList } from "@/hooks/useChains";
+import { useChains, useChainsList, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import {
   AppCookies,
@@ -75,10 +75,14 @@ export const transferStore = Vuextra.createStore({
         },
         payload.fromAddress,
       );
-      const keplr = await getKeplrProvider();
-      const signer = await keplr!.getOfflineSigner(useCore().config.sifChainId);
-      const sig = await nativeDexClient.sign(tx, signer);
-      const result = await nativeDexClient.broadcast(sig);
+      const signed = await useCore().services.wallet.keplrProvider.sign(
+        useNativeChain(),
+        tx,
+      );
+      const result = await useCore().services.wallet.keplrProvider.broadcast(
+        useNativeChain(),
+        signed,
+      );
       console.log({ result });
       self.setUnpegEvent({
         type: "sent",

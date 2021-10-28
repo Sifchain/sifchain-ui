@@ -168,8 +168,8 @@ export default defineComponent({
     };
 
     const networkOpenRef = ref(false);
-    const targetAddressRef = accountStore.computed(
-      (s) => s.state[exportParams.value.network].address,
+    const targetAddressRef = transferStore.computed(
+      (s) => s.state.draft.toAddress,
     );
 
     return () => (
