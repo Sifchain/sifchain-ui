@@ -73,7 +73,8 @@ export const accountStore = Vuextra.createStore({
     },
     setAddress(payload: { network: Network; address: string }) {
       if (checkIfBannedAddress(payload.address)) {
-        window.location.href = "https://www.youtube.com/watch?v=on9TXY8kYyk";
+        window.location.href =
+          "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists";
       }
       state[payload.network].address = payload.address;
     },
