@@ -3,6 +3,7 @@ import { IAssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "../../hooks/useCore";
 import { Vuextra } from "../Vuextra";
 import { useChains } from "@/hooks/useChains";
+import { checkIfBannedAddress } from "@/utils/checkIfBannedAddress";
 
 const core = useCore();
 export interface IWalletServiceState {
@@ -71,6 +72,9 @@ export const accountStore = Vuextra.createStore({
       state[payload.network].connected = payload.connected;
     },
     setAddress(payload: { network: Network; address: string }) {
+      if (checkIfBannedAddress(payload.address)) {
+        window.location.href = "https://www.youtube.com/watch?v=on9TXY8kYyk";
+      }
       state[payload.network].address = payload.address;
     },
     setBalances(payload: { network: Network; balances: IAssetAmount[] }) {
