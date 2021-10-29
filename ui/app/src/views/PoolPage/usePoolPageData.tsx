@@ -54,16 +54,16 @@ export const COLUMNS: PoolPageColumn[] = [
   },
   {
     id: "totalAPY",
-    name: "Estimated Total APY",
+    name: "Estimated Total APR",
     class: "w-[260px] text-right justify-end",
     sortable: true,
     help: (
       <div>
-        'Estimated Total APY' is a sum of the "Pool APY" from swap fees and the
-        "Reward APY" from Sifchain reward programs.
+        'Estimated Total APR' is a sum of the "Pool APR" from swap fees and the
+        "Reward APR" from Sifchain reward programs.
         <br />
         <br />
-        "Pool APY" is calculated as: <br />
+        "Pool APR" is calculated as: <br />
         <span class="font-mono">24hour_trading_volume / pool_depth</span>
         <br /> for each pool. It only estimates the fee revenue paid to pool, so
         it should be taken as an approximation. The estimate may be thrown off
