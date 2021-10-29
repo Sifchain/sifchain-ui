@@ -21,6 +21,7 @@ import {
   IxoChain,
   BandChain,
   LikecoinChain,
+  EmoneyChain,
 } from "../../clients/chains";
 
 export * from "../../clients/chains";
@@ -46,6 +47,7 @@ export const networkChainCtorLookup = {
   [Network.IXO]: IxoChain,
   [Network.BAND]: BandChain,
   [Network.LIKECOIN]: LikecoinChain,
+  [Network.EMONEY]: EmoneyChain,
 };
 
 export class ChainsService {
