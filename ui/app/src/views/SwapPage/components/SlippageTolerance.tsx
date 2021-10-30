@@ -53,7 +53,6 @@ export const SlippageTolerance = (props: {
             }
           }}
           onInput={(e) => {
-            handleOnInput(e);
             props.onUpdate((e.target as HTMLInputElement).value);
           }}
         />
