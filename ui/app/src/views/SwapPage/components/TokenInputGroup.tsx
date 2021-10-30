@@ -6,6 +6,7 @@ import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
+import { shouldPreventInput } from "../../../utils/shouldPreventInput";
 
 function required<T>(type: T) {
   return {
@@ -50,44 +51,6 @@ export const TokenInputGroup = defineComponent({
         parseFloat(propRefs.amount.value) === 0 ? "" : propRefs.amount.value,
       ),
     );
-
-    const handleOnInput = (e: Event) => {
-      let v = (e.target as HTMLInputElement).value;
-      if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
-        v = "0";
-      }
-
-      const [significand, mantissa]: string[] = v.split(".") || ["0"];
-
-      const handleFinalInput = (input: string): void => {
-        // update the input field value
-        (e.target as HTMLInputElement).value = input;
-
-        // update reactive data's value
-        propRefs.onInputAmount.value(input || "");
-      };
-
-      // significand should be less than 15 digits
-      const significandMaxDigits: boolean = significand.length > 15;
-
-      let mantissaMaxDigits: boolean = false;
-      // mantissa should be the max allowable for the selected token
-      if (propRefs.asset.value?.decimals) {
-        mantissaMaxDigits = mantissa?.length > propRefs.asset.value.decimals;
-      }
-
-      // if significand or mantissa is at max digits, return amount before user input
-      if (significandMaxDigits || mantissaMaxDigits) {
-        return handleFinalInput(propRefs.amount.value);
-      } else {
-        const formatVal: string = !isNaN(parseFloat(mantissa))
-          ? significand + "." + mantissa
-          : parseFloat(significand)
-          ? significand
-          : "";
-        return handleFinalInput(formatVal);
-      }
-    };
 
     return () => {
       /* Hide browser-native validation error tooltips via form novalidate */
@@ -166,13 +129,36 @@ export const TokenInputGroup = defineComponent({
               }
               onFocus={props.onFocus}
               onBlur={props.onBlur}
-              type="number"
-              min="0"
+              type="text"
               style={{
                 textAlign: "right",
               }}
+              onBeforeInput={(e: InputEvent) => {
+                const target = e.target as HTMLInputElement;
+                // prevent next keystroke from being added to e.target.value if the max digits before or after the decimal place are reached
+                if (
+                  propRefs.asset.value?.decimals &&
+                  typeof target.selectionStart === "number" &&
+                  e.data
+                ) {
+                  shouldPreventInput(
+                    target.value,
+                    target.selectionStart,
+                    e.data,
+                    15,
+                    propRefs.asset.value.decimals,
+                  )
+                    ? e.preventDefault()
+                    : null;
+                }
+              }}
               onInput={(e) => {
-                handleOnInput(e);
+                let v = (e.target as HTMLInputElement).value;
+                if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+                  v = "0";
+                }
+                // remove any hanging decimal places
+                props.onInputAmount(parseFloat(v).toString() || "");
               }}
             />
           </div>
