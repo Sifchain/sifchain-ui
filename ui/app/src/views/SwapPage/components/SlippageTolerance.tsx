@@ -34,7 +34,7 @@ export const SlippageTolerance = (props: {
       </div>
       <div class="flex flex-row items-center flex-nowrap box-border border border-solid border-transparent focus-within:border-white text-white font-mono group text-[20px] w-full bg-gray-input rounded-[4px]">
         <input
-          type="string"
+          type="text"
           class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none font-mono text-right text-md font-semibold"
           value={props.slippage}
           onBeforeInput={(e: InputEvent): void => {
