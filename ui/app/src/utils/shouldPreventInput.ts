@@ -1,37 +1,42 @@
 export const shouldPreventInput = (
-  inputValue: string,
+  currentInputValue: string,
   caretPosition: number = 0,
-  nextChar: string,
+  userInput: string,
   maxSignificand: number,
   maxMantissa: number,
 ): boolean => {
-  const [significand, mantissa]: string[] = inputValue.split(".") || ["0"];
+  const [significand, mantissa]: string[] = currentInputValue.split(".") || [
+    "0",
+  ];
 
-  const decimalIndex = inputValue.includes(".")
-    ? inputValue.indexOf(".")
-    : inputValue.length;
+  const decimalIndex = currentInputValue.includes(".")
+    ? currentInputValue.indexOf(".")
+    : currentInputValue.length;
 
   // string can only contain numbers or decimal places
-  const nextCharIsDigitOrDecimal = /^\d*\.?\d*$/.test(nextChar);
+  const userInputIsDigitOrDecimal = /^\d*\.?\d*$/.test(userInput);
 
   // string can only contain one decimal place
-  const containsMultipleDecimals = inputValue.includes(".") && nextChar === ".";
+  const containsMultipleDecimals =
+    currentInputValue.includes(".") && userInput === ".";
 
   // significand should be less than max allowed digits
   const hitMaxSignificandDigits: boolean =
-    significand.length >= maxSignificand &&
-    caretPosition <= decimalIndex &&
-    nextChar !== ".";
+    (significand.length >= maxSignificand &&
+      caretPosition <= decimalIndex &&
+      userInput !== ".") ||
+    userInput.length > maxSignificand;
 
   // mantissa should be the max allowable for the selected token
   const hitMaxMantissaDigits: boolean =
-    mantissa?.length > maxMantissa && caretPosition > decimalIndex;
+    (mantissa?.length > maxMantissa && caretPosition > decimalIndex) ||
+    userInput.length > maxMantissa;
 
   // prevent next character addition to the amount if any of these conditions are true
   return (
     hitMaxSignificandDigits ||
     hitMaxMantissaDigits ||
-    !nextCharIsDigitOrDecimal ||
+    !userInputIsDigitOrDecimal ||
     containsMultipleDecimals
   );
 };
