@@ -51,14 +51,14 @@ export const exportStore = Vuextra.createStore({
   getters: (state) => ({
     chains() {
       const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
-      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
+      // const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
+      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = false;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
       );
-      const isPeggyWhitelistedIBCAsset = useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(
-        asset.symbol,
-      );
+      const isPeggyWhitelistedIBCAsset =
+        useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(asset.symbol);
 
       const registryEntry = registry.find((e) => e.baseDenom === asset.symbol);
 
