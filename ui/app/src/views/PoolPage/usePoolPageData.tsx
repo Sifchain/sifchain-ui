@@ -24,7 +24,8 @@ export type PoolPageColumnId =
   | "gainLoss"
   | "userShare"
   | "userValue"
-  | "totalAPY";
+  | "poolAPY"
+  | "rewardAPY";
 
 export type PoolRewardProgram = Pick<
   RewardProgram,
@@ -53,23 +54,29 @@ export const COLUMNS: PoolPageColumn[] = [
     sortable: true,
   },
   {
-    id: "totalAPY",
-    name: "Estimated Total APR",
-    class: "w-[260px] text-right justify-end",
+    id: "poolAPY",
+    name: "Pool APR",
+    class: "w-[130px] text-right justify-end",
     sortable: true,
     help: (
       <div>
-        'Estimated Total APR' is a sum of the "Pool APR" from swap fees and the
-        "Reward APR" from Sifchain reward programs.
-        <br />
-        <br />
-        "Pool APR" is calculated as: <br />
+        Pool APR is calculated as: <br />
         <span class="font-mono">24hour_trading_volume / pool_depth</span>
         <br /> for each pool. It only estimates the fee revenue paid to pool, so
         it should be taken as an approximation. The estimate may be thrown off
         by irregular trading activity during trading competitions.
+        <br />
+        <br />
+        The Pool APR estimate is also adjusted lower to account for irregular
+        competition swapping.
       </div>
     ),
+  },
+  {
+    id: "rewardAPY",
+    name: "Reward APR",
+    class: "w-[130px] text-right justify-end",
+    sortable: true,
   },
   {
     id: "userShare",

@@ -30,6 +30,30 @@ export interface PoolStat {
   totalAPY: string;
 }
 
+// NOTE(ajoslin): poolAPY is currently using a naive formula that is quite wrong when
+// swappers are doing masses of minimum-size trades. It way over-estimates how many
+// fees are paid out.
+// As a "stupid hack" until this is fixed, we are dividing poolAPY
+const hackPoolAPYWeights = [
+  { threshold: 0, multiplier: 1 },
+  { threshold: 15, multiplier: 0.8 },
+  { threshold: 30, multiplier: 0.6 },
+  { threshold: 90, multiplier: 0.45 },
+  { threshold: 120, multiplier: 0.3 },
+  { threshold: 180, multiplier: 0.2 },
+  { threshold: 220, multiplier: 0.1 },
+  { threshold: 400, multiplier: 0.05 },
+];
+export const hackPoolAPYDown = (poolAPY: number) => {
+  const { multiplier } =
+    hackPoolAPYWeights
+      .slice()
+      .reverse()
+      .find((item) => poolAPY >= item.threshold) || hackPoolAPYWeights[0];
+
+  return multiplier * poolAPY;
+};
+
 export interface Headers {
   "Access-Control-Allow-Origin": string;
 }
@@ -66,19 +90,13 @@ export const usePoolStats = () => {
       poolData: {
         ...poolData,
         pools: poolData.pools.map((p) => {
-          let poolAPY =
+          let estimatedPoolAPY =
             (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
             100;
-
-          // NOTE(ajoslin): poolAPY is currently using a naive formula that is quite wrong when
-          // swappers are doing masses of minimum-size trades. It way over-estimates how many
-          // fees are paid out.
-          // As a "stupid hack" until this is fixed, we are dividing poolAPY by 10 when it is
-          // over 150%.
-          // Search for: stupid-poolapy-hack
-          if (poolAPY > 150) {
-            poolAPY /= 10;
-          }
+          const poolAPY = hackPoolAPYDown(estimatedPoolAPY);
+          // if (/osmo|usdt|atom|akt/.test(p.symbol.toLowerCase())) {
+          //   console.log(p.symbol, { estimatedPoolAPY, poolAPY });
+          // }
 
           let rewardAPY = 0;
           rewardPrograms.forEach((program: any) => {

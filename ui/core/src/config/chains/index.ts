@@ -15,6 +15,7 @@ import juno from "./juno";
 import ixo from "./ixo";
 import band from "./band";
 import likecoin from "./likecoin";
+import emoney from "./emoney";
 
 export const chainConfigByNetworkEnv = Object.fromEntries(
   Object.values(NetworkEnv).map((env) => {
@@ -37,6 +38,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.BAND]: band[env],
         // [Network.BITSONG]: bitsong[env],
         [Network.LIKECOIN]: likecoin[env],
+        [Network.EMONEY]: emoney[env],
       },
     ];
   }),

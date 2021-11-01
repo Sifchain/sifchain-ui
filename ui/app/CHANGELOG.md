@@ -1,3 +1,7 @@
+## Release 2021.10.29
+
+* Enabled OH token from oh.finance
+
 ## Release 2021.10.27
 
 * Enabled Terra via Terra Station Wallet: UST, LUNA

@@ -15,7 +15,7 @@ export default defineComponent({
   props: {},
   setup() {
     const { res, statsRef, state } = useStatsPageData({
-      sortBy: "rewardApy",
+      sortBy: "volume",
       sortDirection: "desc",
     } as StatsPageState);
 
@@ -59,23 +59,53 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Estimated Total APR",
+        name: "Pool APR",
+        sortBy: "poolApy",
+        class: "min-w-[100px] text-right",
         message: (
           <div>
-            'Estimated Total APR' is a sum of the "Pool APR" from swap fees and
-            the "Reward APR" from Sifchain reward programs.
-            <br />
-            <br />
-            "Pool APR" is calculated as: <br />
+            Pool APY is calculated as: <br />
             <span class="font-mono">24hour_trading_volume / pool_depth</span>
             <br /> for each pool. It only estimates the fee revenue paid to
             pool, so it should be taken as an approximation. The estimate may be
             thrown off by irregular trading activity during trading
             competitions.
+            <br />
+            <br />
+            The Pool APY estimate is also adjusted lower to account for
+            irregular competition swapping.
+          </div>
+        ),
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Reward APR",
+        sortBy: "rewardApy",
+        class: "min-w-[100px] text-right",
+        ref: ref<HTMLElement>(),
+      },
+      {
+        name: "Total APR",
+        message: (
+          <div>
+            "Estimated Total APR" is a sum of the "Pool APR" from swap fees and
+            the "Reward APY" from Sifchain reward programs.
+            <br />
+            <br />
+            Pool APY is calculated as: <br />
+            <span class="font-mono">24hour_trading_volume / pool_depth</span>
+            <br /> for each pool. It only estimates the fee revenue paid to
+            pool, so it should be taken as an approximation. The estimate may be
+            thrown off by irregular trading activity during trading
+            competitions.
+            <br />
+            <br />
+            The Pool APY estimate is also adjusted lower to account for
+            irregular competition swapping.
           </div>
         ),
         sortBy: "totalApy",
-        class: "min-w-[120px] text-right",
+        class: "min-w-[100px] text-right",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -234,7 +264,13 @@ export default defineComponent({
                         ${prettyNumber(item.volume)}
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {item.totalApy}%
+                        {item.poolApy.toFixed(2)}%
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        {(+item.rewardApy || 0).toFixed(2)}%
+                      </td>
+                      <td class="align-middle text-right text-mono">
+                        {(+item.poolApy + +item.rewardApy || 0).toFixed(2)}%
                       </td>
                     </tr>
                   );
