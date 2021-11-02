@@ -14,6 +14,7 @@ export type BaseChainConfig = {
   displayName: string;
   blockExplorerUrl: string;
   nativeAssetSymbol: string;
+  underMaintenance?: boolean;
 };
 export type EthChainConfig = BaseChainConfig & {
   chainType: "eth";
