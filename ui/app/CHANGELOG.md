@@ -1,3 +1,17 @@
+## Release 2021.11.04
+* Enabled E-Money
+  * EEUR
+  * NGM
+- Sif's Bonus Pool - EEUR:
+  - Import EEUR
+  - Pool EEUR
+  - Earn Rowan
+
+
+## Release 2021.10.29
+
+* Enabled OH token from oh.finance
+
 ## Release 2021.10.27
 
 * Enabled Terra via Terra Station Wallet: UST, LUNA

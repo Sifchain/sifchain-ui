@@ -37,12 +37,12 @@ export interface PoolStat {
 const hackPoolAPYWeights = [
   { threshold: 0, multiplier: 1 },
   { threshold: 15, multiplier: 0.8 },
-  { threshold: 30, multiplier: 0.6 },
-  { threshold: 90, multiplier: 0.45 },
-  { threshold: 120, multiplier: 0.3 },
-  { threshold: 180, multiplier: 0.2 },
-  { threshold: 220, multiplier: 0.1 },
-  { threshold: 400, multiplier: 0.05 },
+  { threshold: 30, multiplier: 0.7 },
+  { threshold: 90, multiplier: 0.55 },
+  { threshold: 120, multiplier: 0.45 },
+  { threshold: 180, multiplier: 0.35 },
+  { threshold: 220, multiplier: 0.2 },
+  { threshold: 400, multiplier: 0.1 },
 ];
 export const hackPoolAPYDown = (poolAPY: number) => {
   const { multiplier } =
@@ -100,9 +100,8 @@ export const usePoolStats = () => {
 
           let rewardAPY = 0;
           rewardPrograms.forEach((program: any) => {
-            const isIndividuallyIncentivized = program.incentivizedPoolSymbols?.includes(
-              p.symbol,
-            );
+            const isIndividuallyIncentivized =
+              program.incentivizedPoolSymbols?.includes(p.symbol);
             if (program.isUniversal || isIndividuallyIncentivized) {
               rewardAPY += program.summaryAPY;
             }
