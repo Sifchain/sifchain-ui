@@ -1,9 +1,9 @@
 {
   "sifAddrPrefix": "sif",
-  "sifApiUrl": "https://api-devnet.sifchain.finance",
+  "sifApiUrl": "https://proxies.sifchain.finance/api/sifchain-tempnet-380caca/rest",
   "sifWsUrl": "wss://rpc-devnet.sifchain.finance/websocket",
-  "sifRpcUrl": "https://rpc-devnet.sifchain.finance",
-  "sifChainId": "sifchain-devnet-1",
+  "sifRpcUrl": "https://proxies.sifchain.finance/api/sifchain-tempnet-380caca/rpc",
+  "sifChainId": "sifchain-tempnet-380caca",
   "web3Provider": "metamask",
   "web3Provider--option2": "https://ropsten.infura.io/v3/f2e434009a9c4db8bfbd1b03ef572170",
   "nativeAsset": "rowan",
