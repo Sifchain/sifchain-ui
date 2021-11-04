@@ -84,12 +84,7 @@ export default defineComponent({
             )}
             {props.headerContent}
           </div>
-          <div
-            style="contain: static; content-visibility: auto;"
-            class="w-full"
-          >
-            {context.slots.default?.()}
-          </div>
+          <div class="w-full">{context.slots.default?.()}</div>
         </div>
         {props.withOverflowSpace && <div class="h-[90px] 2xl:h-[130px]" />}
       </div>
