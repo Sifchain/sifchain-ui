@@ -220,63 +220,64 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
-            {hasUniversalCompetition.value && (
-              <div class="middle mt-[10px]">
-                <RouterLink
-                  to={{
-                    name: "Leaderboard",
-                    params: {
-                      type: "vol",
-                    },
-                  }}
-                  class="h-[46px] flex items-center justify-between px-[16px] cursor-pointer text-black rounded-t-[20px] font-semibold"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(93.61deg, #C79E3A 0.77%, #EBCA62 100%)",
-                  }}
-                >
-                  <div class="flex items-center">
-                    <img class="w-[33px]" src="/images/wreath-tiny.svg" />
-                    <div class="ml-[10px]">Fields of Gold</div>
-                  </div>
-                  <div style={{ transform: "translateY(1px)" }}>
-                    <AssetIcon
-                      icon="interactive/chevron-down"
-                      style={{ transform: "rotate(-90deg)" }}
-                      size={12}
-                    />
-                  </div>
-                </RouterLink>
-                <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
-                  <div class="text-sm">View the Leaderboards</div>
-                  <div class="flex items-center mt-[8px]">
-                    {["vol", "txn"].map((type) => (
-                      <RouterLink
-                        to={{
-                          name: "Leaderboard",
-                          params: {
-                            type,
-                          },
-                        }}
-                        key={type}
-                      >
-                        <div class="pl-[8px] pr-[6px] h-[22px] border-solid border border-accent-base rounded-xs flex items-center text-sm hover:bg-gray-500 mr-[10px] whitespace-nowrap">
-                          {type === "vol" ? "Volume" : "Tx Count"}
-                          <AssetIcon
-                            icon="interactive/chevron-down"
-                            size={12}
-                            style={{
-                              transform: "rotate(-90deg)",
-                            }}
-                            class="ml-[4px]"
-                          />
-                        </div>
-                      </RouterLink>
-                    ))}
+            {hasUniversalCompetition.value &&
+              flagsStore.state.tradingCompetitionsEnabled && (
+                <div class="middle mt-[10px]">
+                  <RouterLink
+                    to={{
+                      name: "Leaderboard",
+                      params: {
+                        type: "vol",
+                      },
+                    }}
+                    class="h-[46px] flex items-center justify-between px-[16px] cursor-pointer text-black rounded-t-[20px] font-semibold"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(93.61deg, #C79E3A 0.77%, #EBCA62 100%)",
+                    }}
+                  >
+                    <div class="flex items-center">
+                      <img class="w-[33px]" src="/images/wreath-tiny.svg" />
+                      <div class="ml-[10px]">Fields of Gold</div>
+                    </div>
+                    <div style={{ transform: "translateY(1px)" }}>
+                      <AssetIcon
+                        icon="interactive/chevron-down"
+                        style={{ transform: "rotate(-90deg)" }}
+                        size={12}
+                      />
+                    </div>
+                  </RouterLink>
+                  <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                    <div class="text-sm">View the Leaderboards</div>
+                    <div class="flex items-center mt-[8px]">
+                      {["vol", "txn"].map((type) => (
+                        <RouterLink
+                          to={{
+                            name: "Leaderboard",
+                            params: {
+                              type,
+                            },
+                          }}
+                          key={type}
+                        >
+                          <div class="pl-[8px] pr-[6px] h-[22px] border-solid border border-accent-base rounded-xs flex items-center text-sm hover:bg-gray-500 mr-[10px] whitespace-nowrap">
+                            {type === "vol" ? "Volume" : "Tx Count"}
+                            <AssetIcon
+                              icon="interactive/chevron-down"
+                              size={12}
+                              style={{
+                                transform: "rotate(-90deg)",
+                              }}
+                              class="ml-[4px]"
+                            />
+                          </div>
+                        </RouterLink>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             <div class="bottom mt-[10px]">
               <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
                 <span class="inline-flex items-center justify-center h-[26px] font-medium text-sm text-info-base px-[10px] border border-solid border-info-base rounded-full">
