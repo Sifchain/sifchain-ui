@@ -59,7 +59,7 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Pool APY",
+        name: "Pool APR",
         sortBy: "poolApy",
         class: "min-w-[100px] text-right",
         message: (
@@ -79,16 +79,16 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Reward APY",
+        name: "Reward APR",
         sortBy: "rewardApy",
         class: "min-w-[100px] text-right",
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Total APY",
+        name: "Total APR",
         message: (
           <div>
-            "Estimated Total APY" is a sum of the "Pool APY" from swap fees and
+            "Estimated Total APR" is a sum of the "Pool APR" from swap fees and
             the "Reward APY" from Sifchain reward programs.
             <br />
             <br />

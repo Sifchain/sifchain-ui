@@ -30,7 +30,7 @@ export const flagsStore = Vuextra.createStore({
     enableTestChains: {
       band: false,
       likecoin: false,
-      emoney: false,
+      emoney: true,
     },
   },
   getters: (state) => ({}),

@@ -145,11 +145,11 @@ export default defineComponent({
                   </div>
                   <div class={rewardColumnsLookup.duration.class}>Duration</div>
                   <div class={rewardColumnsLookup.apy.class}>
-                    Program APY
+                    Program APR
                     <Tooltip
                       content={
                         <div class="mb-2">
-                          Current overall program summary APY. This is also
+                          Current overall program summary APR. This is also
                           displayed in Pools and Pool Stats.
                         </div>
                       }
@@ -162,7 +162,7 @@ export default defineComponent({
                     <Tooltip
                       content={
                         <div class="mb-2">
-                          Current overall program summary APY. This is also
+                          Current overall program summary APR. This is also
                           displayed in Pools and Pool Stats.
                         </div>
                       }
