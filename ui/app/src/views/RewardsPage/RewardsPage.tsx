@@ -13,6 +13,7 @@ import { Button } from "@/components/Button/Button";
 import { AppCookies, NetworkEnv } from "@sifchain/sdk";
 import { flagsStore } from "@/store/modules/flags";
 import { getClaimableAmountString } from "./getClaimableAmountString";
+import { prettyNumber } from "@/utils/prettyNumber";
 
 // This one is for the chads
 export default defineComponent({
@@ -28,6 +29,23 @@ export default defineComponent({
       address,
       reloadClaims,
     } = data;
+
+    const rewardTotals = computed(() => {
+      return rewardProgramResponse.data.value?.rewardPrograms.reduce(
+        (acc, program) => {
+          if (program.participant) {
+            acc.pendingRewards +=
+              program.participant.claimedCommissionsAndRewardsAwaitingDispensation;
+            acc.dispensedRewards += program.participant.dispensed;
+          }
+          return acc;
+        },
+        {
+          pendingRewards: 0,
+          dispensedRewards: 0,
+        },
+      );
+    });
 
     const showAllRef = ref(false);
 
@@ -126,7 +144,41 @@ export default defineComponent({
             }
             headerContent={
               <>
-                <p>
+                <div class="flex items-center mt-[10px]">
+                  <div class="bg-gray-100 px-[20px] py-[10px] rounded mr-[6px] flex-1">
+                    <div class="font-lg text-accent-base font-bold">
+                      Pending Rewards
+                    </div>
+                    <div class="pt-[4px] text-sm opacity-50">
+                      Amount claimed, to be dispensed by Saturday afternoon PST
+                    </div>
+                    <div class="pt-[7px] text-xl whitespace-pre">
+                      {rewardTotals.value == null
+                        ? " "
+                        : lmClaim.value && !rewardTotals.value.pendingRewards
+                        ? "Pending Claim"
+                        : `${prettyNumber(
+                            rewardTotals.value.pendingRewards,
+                          )} ROWAN`}
+                    </div>
+                  </div>
+                  <div class="bg-gray-100 px-[20px] py-[10px] rounded ml-[6px] flex-1">
+                    <div class="font-lg text-accent-base font-bold">
+                      Dispensed Rewards
+                    </div>
+                    <div class="pt-[4px] text-sm opacity-50">
+                      Amount already claimed and received
+                    </div>
+                    <div class="pt-[7px] text-xl whitespace-pre">
+                      {rewardTotals.value == null
+                        ? " "
+                        : `${prettyNumber(
+                            rewardTotals.value.dispensedRewards,
+                          )} ROWAN`}
+                    </div>
+                  </div>
+                </div>
+                <p class="mt-[10px]">
                   Earn rewards by participating in any of our rewards-earning
                   programs. Please see additional information of our{" "}
                   <a
