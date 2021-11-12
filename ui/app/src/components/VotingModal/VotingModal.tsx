@@ -24,7 +24,7 @@ const POOLS_PROPOSAL = {
   endDateTime: new Date("2021-11-17T01:00:00.000Z"),
   title: `Sif's Expansion`,
   heading: `Sif's Expansion - Vote for 300% APR`,
-  description: `Select the 4 pools that will have ~300% APR for the next 4 weeks. As a reminder, 5 pools in total will have an APR of ~300% for the next four weeks (ATOM:ROWAN and 4 selected by this vote). All other pools will maintain a 100% APR.  Every 4 weeks, users will execute this vote.`,
+  description: `Vote for 4 pools to have ~300% APR for the next 4 weeks. As a reminder, 5 pools in total will have an APR of ~300% for the next four weeks (ATOM:ROWAN and 4 selected by the majority in this vote). All other pools will maintain a 100% APR.  Every 4 weeks, users will execute this vote.`,
 };
 
 const hasVoted = ref(
@@ -32,7 +32,13 @@ const hasVoted = ref(
 );
 export const useActiveProposal = () => {
   return computed(() => {
+    const hasEnoughRowan = accountStore.state.sifchain.balances.find(
+      (b) =>
+        b.asset.symbol.toLowerCase() === "rowan" &&
+        b.amount.greaterThanOrEqual(toBaseUnits("10", Asset("rowan"))),
+    );
     if (
+      (hasVoted || hasEnoughRowan) &&
       new Date() > POOLS_PROPOSAL.startDateTime &&
       new Date() < POOLS_PROPOSAL.endDateTime &&
       flagsStore.state.voting
@@ -59,19 +65,6 @@ export const VotingModal = defineComponent({
     };
   },
   computed: {
-    isEligibleToVote(): Boolean {
-      const hasEnoughRowan = accountStore.state.sifchain.balances.find(
-        (b) =>
-          b.asset.symbol.toLowerCase() === "rowan" &&
-          b.amount.greaterThanOrEqual(toBaseUnits("10", Asset("rowan"))),
-      );
-      return Boolean(
-        hasEnoughRowan &&
-          !this.hasVoted &&
-          new Date() > POOLS_PROPOSAL.startDateTime &&
-          new Date() < POOLS_PROPOSAL.endDateTime,
-      );
-    },
     poolStatsLookup(): Record<string, PoolStat> {
       if (!this.poolStats.data.value) return {};
       const lookup: Record<string, PoolStat> = {};
@@ -165,9 +158,6 @@ export const VotingModal = defineComponent({
     };
   },
   render() {
-    if (!flagsStore.state.voting) return null;
-    if (!this.isEligibleToVote) return null;
-
     return (
       <Modal
         onClose={() => {
