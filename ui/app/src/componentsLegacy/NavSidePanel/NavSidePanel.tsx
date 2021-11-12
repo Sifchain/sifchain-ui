@@ -25,6 +25,10 @@ import {
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
+import {
+  useActiveProposal,
+  VotingModal,
+} from "@/components/VotingModal/VotingModal";
 
 export default defineComponent({
   props: {},
@@ -36,7 +40,10 @@ export default defineComponent({
     const sidebarRef = ref();
     const isOpenRef = ref(false);
 
+    const activeProposal = useActiveProposal();
+
     const changelogOpenRef = ref(false);
+    const votingOpenRef = ref(false);
 
     onMounted(() => {
       document.addEventListener("click", (ev) => {
@@ -186,6 +193,9 @@ export default defineComponent({
                     onClose={() => (changelogOpenRef.value = false)}
                   />
                 )}
+                {votingOpenRef.value && (
+                  <VotingModal onClose={() => (votingOpenRef.value = false)} />
+                )}
                 {shouldAllowFaucetFunding() && (
                   <NavSidePanelItem
                     displayName="Get Free Rowan"
@@ -220,6 +230,47 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
+            {!!activeProposal.value && (
+              <div onClick={() => (votingOpenRef.value = !votingOpenRef.value)}>
+                <div
+                  class={[
+                    "h-[46px] flex items-center justify-between px-[16px] text-black rounded-t-[20px] font-semibold",
+                    !activeProposal.value.hasVoted && "cursor-pointer",
+                  ]}
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(93.61deg, #C79E3A 0.77%, #EBCA62 100%)",
+                  }}
+                >
+                  <div class="flex items-center">
+                    <AssetIcon
+                      size={32}
+                      icon="interactive/ticket"
+                      style={{ transform: "translateY(-1px)" }}
+                    />
+                    <div class="ml-[6px]">{activeProposal.value.title}</div>
+                  </div>
+                  {!activeProposal.value.hasVoted && (
+                    <div>
+                      <AssetIcon
+                        icon="interactive/chevron-down"
+                        style={{ transform: "rotate(-90deg)" }}
+                        size={12}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                  <div class="text-sm">
+                    {activeProposal.value.hasVoted
+                      ? "Your vote has been saved."
+                      : `Voting open until ${new Date(
+                          activeProposal.value.endDateTime,
+                        ).toLocaleDateString()}.`}
+                  </div>
+                </div>
+              </div>
+            )}
             {hasUniversalCompetition.value &&
               flagsStore.state.tradingCompetitionsEnabled && (
                 <div class="middle mt-[10px]">

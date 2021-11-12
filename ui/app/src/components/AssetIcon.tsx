@@ -53,7 +53,8 @@ export type InteractiveIconName =
   | "settings"
   | "picture"
   | "check"
-  | "wreath";
+  | "wreath"
+  | "ticket";
 
 export type NavIconName =
   | "balances"
