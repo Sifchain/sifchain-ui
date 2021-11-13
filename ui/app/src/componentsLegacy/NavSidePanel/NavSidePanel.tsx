@@ -50,7 +50,6 @@ export default defineComponent({
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
 
-    console.log({ VOTE_PARAM_IN_URL });
     watch(
       activeProposal,
       (proposal, oldProposal) => {
@@ -60,7 +59,6 @@ export default defineComponent({
           VOTE_PARAM_IN_URL &&
           !proposal.hasVoted
         ) {
-          console.log("okay go");
           votingOpenRef.value = true;
         }
       },
@@ -253,7 +251,13 @@ export default defineComponent({
               </div>
             </div>
             {!!activeProposal.value && (
-              <div onClick={() => (votingOpenRef.value = !votingOpenRef.value)}>
+              <div
+                onClick={() => {
+                  if (!activeProposal.value?.hasVoted) {
+                    votingOpenRef.value = !votingOpenRef.value;
+                  }
+                }}
+              >
                 <div
                   class={[
                     "h-[46px] flex items-center justify-between px-[16px] text-black rounded-t-[20px] font-semibold",

@@ -34,10 +34,10 @@ export const useActiveProposal = () => {
     const hasEnoughRowan = accountStore.state.sifchain.balances.find(
       (b) =>
         b.asset.symbol.toLowerCase() === "rowan" &&
-        b.amount.greaterThanOrEqual(toBaseUnits("10", Asset("rowan"))),
+        b.amount.greaterThanOrEqual(toBaseUnits("1", Asset("rowan"))),
     );
     if (
-      (hasVoted || hasEnoughRowan) &&
+      (hasVoted.value || hasEnoughRowan) &&
       new Date() > POOLS_PROPOSAL.startDateTime &&
       new Date() < POOLS_PROPOSAL.endDateTime &&
       flagsStore.state.voting
@@ -171,7 +171,7 @@ export const VotingModal = defineComponent({
         <p class="text-left">
           {POOLS_PROPOSAL.description}{" "}
           <a
-            href="https://docs.sifchain.finance/resources/reward-programs"
+            href="https://docs.sifchain.finance/resources/rewards-programs"
             class="underline cursor-pointer text-accent-base"
             target="_blank"
           >
