@@ -210,7 +210,7 @@ export const TokenSelectDropdown = defineComponent({
                   >
                     <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
                       <div>Token Name</div>
-                      <div>Balance</div>
+                      <div>{!props.hideBalances && "Balance"}</div>
                     </div>
                     <div class="w-full h-[302px] relative mr-[-15px]">
                       <div class="absolute inset-0 w-full h-full overflow-y-scroll">

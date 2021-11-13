@@ -254,7 +254,7 @@ export default defineComponent({
               <div
                 onClick={() => {
                   if (!activeProposal.value?.hasVoted) {
-                    votingOpenRef.value = !votingOpenRef.value;
+                    votingOpenRef.value = true;
                   }
                 }}
               >
