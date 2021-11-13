@@ -12,7 +12,6 @@ import { Button } from "../Button/Button";
 import Modal from "../Modal";
 import { TokenIcon } from "../TokenIcon";
 import { TokenSelectDropdown } from "../TokenSelectDropdown";
-import { NativeDexTransaction } from "@sifchain/sdk/src/services/utils/SifClient/NativeDexTransaction";
 import { useNativeChain } from "@/hooks/useChains";
 import { ReportTransactionError } from "@sifchain/sdk/src/usecases/utils";
 
@@ -134,12 +133,13 @@ export const VotingModal = defineComponent({
                 .join(", ")} pools has been recorded on-chain.`,
             },
           });
+          this.hasVoted = true;
+          useCore().services.storage.setJSONItem<Boolean>(
+            POOLS_PROPOSAL.id,
+            true,
+          );
+          this.onClose();
         }
-        this.hasVoted = true;
-        useCore().services.storage.setJSONItem<Boolean>(
-          POOLS_PROPOSAL.id,
-          true,
-        );
       } catch (error) {
         reportTransactionError({
           hash: "",

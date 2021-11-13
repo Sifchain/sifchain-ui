@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref, useCssModule } from "vue";
+import { defineComponent, onMounted, ref, useCssModule, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
@@ -30,6 +30,11 @@ import {
   VotingModal,
 } from "@/components/VotingModal/VotingModal";
 
+let VOTE_PARAM_IN_URL = false;
+try {
+  VOTE_PARAM_IN_URL = window.location.href.includes("vote=1");
+} catch (_) {}
+
 export default defineComponent({
   props: {},
   setup() {
@@ -44,6 +49,23 @@ export default defineComponent({
 
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
+
+    console.log({ VOTE_PARAM_IN_URL });
+    watch(
+      activeProposal,
+      (proposal, oldProposal) => {
+        if (
+          proposal &&
+          !oldProposal &&
+          VOTE_PARAM_IN_URL &&
+          !proposal.hasVoted
+        ) {
+          console.log("okay go");
+          votingOpenRef.value = true;
+        }
+      },
+      { immediate: true },
+    );
 
     onMounted(() => {
       document.addEventListener("click", (ev) => {
@@ -261,12 +283,14 @@ export default defineComponent({
                   )}
                 </div>
                 <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
-                  <div class="text-sm">
-                    {activeProposal.value.hasVoted
-                      ? "Your vote has been saved."
-                      : `Voting open until ${new Date(
-                          activeProposal.value.endDateTime,
-                        ).toLocaleDateString()}.`}
+                  <div class="text-sm whitespace-pre">
+                    Voting open until{" "}
+                    {new Date(
+                      activeProposal.value.endDateTime,
+                    ).toLocaleDateString()}
+                    .
+                    {activeProposal.value.hasVoted &&
+                      "\nYour vote has been recorded."}
                   </div>
                 </div>
               </div>
