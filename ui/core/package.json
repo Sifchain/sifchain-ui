@@ -13,7 +13,7 @@
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
     "test": "yarn jest --passWithNoTests --projects jest-unit.config.js",
-    "test:bridge": "yarn jest --projects jest-integration.config.js"
+    "test:integration": "yarn jest --projects jest-integration.config.js"
   },
   "files": [
     "lib/**/*"
