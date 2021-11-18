@@ -54,12 +54,7 @@ export function useStatsPageData(initialState: StatsPageState) {
           depth: parseFloat(pool.poolDepth),
           volume: parseFloat(pool.volume) || 0,
           arbitrage: pool.arb == null ? null : parseFloat(pool.arb) || 0,
-          // NOTE(ajoslin): poolAPY is currently using a naive formula that is quite wrong when
-          // swappers are doing masses of minimum-size trades. It way over-estimates how many
-          // fees are paid out.
-          // As a "stupid hack" until this is fixed, we are dividing poolAPY
-          // Search for: stupid-poolapy-hack
-          poolApy: +pool.poolAPY > 150 ? +pool.poolAPY / 10 : +pool.poolAPY,
+          poolApy: pool.poolAPY,
           rewardApy: pool.rewardAPY,
           totalApy: pool.totalAPY,
         };

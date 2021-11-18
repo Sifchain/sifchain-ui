@@ -7,9 +7,7 @@ import {
   IAssetAmount,
   Network,
   Pool,
-  PoolState,
   TransactionStatus,
-  useReactivePoolCalculator,
 } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
@@ -24,23 +22,12 @@ import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { accountStore } from "@/store/modules/accounts";
 import { debounce } from "@/views/utils/debounce";
+import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
 
 export const useAddLiquidityData = () => {
   const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
   const selectedField = ref<"from" | "to" | null>(null);
   const lastFocusedTokenField = ref<"A" | "B" | null>(null);
-  // const aPerBRatioMessage: Ref<string> = ref("");
-  // const bPerARatioMessage: Ref<string> = ref("");
-  // const aPerBRatioProjectedMessage: Ref<string> = ref("");
-  // const bPerARatioProjectedMessage: Ref<string> = ref("");
-  // const totalLiquidityProviderUnits: Ref<string> = ref("");
-  // const totalPoolUnits: Ref<string> = ref("");
-  // const shareOfPoolPercent: Ref<string> = ref("");
-  // const state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
-  // const tokenAFieldAmount: Ref<IAssetAmount | null> = ref(null);
-  // const tokenBFieldAmount: Ref<IAssetAmount | null> = ref(null);
-  // const preExistingPool: Ref<Pool | null> = ref(null);
-  // const poolAmounts: Ref<IAssetAmount[] | null> = ref(null);
 
   const modalStatus = ref<"setup" | "confirm" | "processing">("setup");
   const transactionStatus = ref<TransactionStatus | null>(null);

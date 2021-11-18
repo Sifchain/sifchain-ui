@@ -25,7 +25,7 @@ import { lint, setupStack } from "./lib.mjs";
 const core = resolve(__dirname, "../core");
 const app = resolve(__dirname, "../app");
 
-const sha = 'current' // await $`git rev-parse HEAD`
+const sha = await $`git rev-parse HEAD`
 const version = require('../app/package.json').version
 
 // if (!noSetup) {

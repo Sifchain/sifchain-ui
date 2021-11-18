@@ -292,10 +292,7 @@ export default defineComponent({
             )}
           </div>
           <div
-            class={[
-              COLUMNS_LOOKUP.poolAPY.class,
-              "font-mono flex items-center",
-            ]}
+            class={[COLUMNS_LOOKUP.apy.class, "font-mono flex items-center"]}
           >
             {this.$props.poolStat?.poolAPY != null
               ? `${parseFloat(this.$props.poolStat?.poolAPY || "0").toFixed(
@@ -305,7 +302,7 @@ export default defineComponent({
           </div>
           <div
             class={[
-              COLUMNS_LOOKUP.rewardAPY.class,
+              COLUMNS_LOOKUP.rewardApy.class,
               "font-mono flex items-center",
             ]}
           >

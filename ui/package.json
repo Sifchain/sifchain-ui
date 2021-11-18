@@ -36,12 +36,14 @@
       "core",
       "app",
       "e2e",
-      "react-example"
+      "react-example",
+      "react-example-2",
+      "wallet-keplr",
+      "wallet-terra-station",
+      "wallet-metamask"
     ]
   },
   "resolutions": {
-    "vue-loader": "^16.1.2",
-    "lodash": "4.17.21",
     "url-parse": "1.5.0"
   },
   "dependencies": {

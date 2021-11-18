@@ -1,19 +1,17 @@
 import { computed, ComputedRef, ref, watch } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
-import { getExistingClaimsData } from "@/componentsLegacy/shared/utils";
 import { accountStore } from "@/store/modules/accounts";
-import { QueryClaimsByTypeRequest } from "../../../../core/src/generated/proto/sifnode/dispensation/v1/query";
-import { NativeDexClient } from "../../../../core/src/services/utils/SifClient/NativeDexClient";
 import { DistributionType } from "../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
 import { flagsStore } from "@/store/modules/flags";
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
+import { NativeDexClient } from "@sifchain/sdk/src/clients";
 
 // TODO REACTIVE
 
 export const rewardColumnsLookup = {
   rewardProgram: {
-    class: "w-[195px] text-left flex-shrink-0",
+    class: "w-[175px] text-left flex-shrink-0",
   },
   apy: {
     class: "w-[175px] text-right",
@@ -27,34 +25,6 @@ export const rewardColumnsLookup = {
   expand: {
     class: "flex-1 flex items-center justify-end flex-shrink-0",
   },
-};
-
-const useLiquidityMiningData = (
-  address: ComputedRef<string>,
-  rewardProgram?: "harvest",
-) => {
-  const { services } = useCore();
-  return useAsyncData(async () => {
-    // return null;
-    if (!address.value) return null;
-    return services.cryptoeconomics.fetchLmData({
-      address: address.value,
-      rewardProgram,
-      devnet: flagsStore.state.devnetCryptoecon,
-    });
-  }, [address]);
-};
-
-const useValidatorSubsidyData = (address: ComputedRef<string>) => {
-  const { services } = useCore();
-  return useAsyncData(async () => {
-    return null;
-    if (!address.value) return null;
-    return services.cryptoeconomics.fetchVsData({
-      address: address.value,
-      devnet: flagsStore.state.devnetCryptoecon,
-    });
-  }, [address]);
 };
 
 const useExistingClaimsData = (

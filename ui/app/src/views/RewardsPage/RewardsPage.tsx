@@ -48,7 +48,6 @@ export default defineComponent({
     });
 
     const showAllRef = ref(false);
-
     const isClaimModalOpened = ref(false);
     const claimRewardType = ref<"vs" | "lm">("lm");
     return () => {
@@ -92,55 +91,44 @@ export default defineComponent({
       return (
         <Layout>
           <PageCard
-            class="w-[810px]"
+            class="w-[790px]"
             heading="Rewards"
             iconName="navigation/rewards"
             headerAction={
-              <div class="flex items-center">
-                <label class="flex items-center mr-[16px] opacity-80">
-                  <input
-                    type="checkbox"
-                    class="mr-[4px]"
-                    checked={showAllRef.value}
-                    onChange={(e) => (showAllRef.value = e.target.checked)}
-                  />
-                  Show Inactive
-                </label>
-                <Button.Inline
-                  onClick={() => {
-                    if (
-                      window.location.hostname !== "dex.sifchain.finance" &&
-                      AppCookies().getEnv() === NetworkEnv.MAINNET &&
-                      !window.confirm(
-                        "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
-                      )
-                    ) {
-                      alert("claim canceled.");
-                      return;
-                    }
-                    claimRewardType.value = "lm";
-                    isClaimModalOpened.value = true;
-                  }}
-                  class={["!h-[40px] px-[17px] text-md"]}
-                  icon="navigation/rewards"
-                  active
-                  disabled={
-                    !flagsStore.state.rewardClaims ||
-                    !!lmClaim.value ||
-                    !rewardProgramResponse.data.value?.rewardPrograms.some(
-                      (p) =>
-                        p.participant
-                          ?.totalClaimableCommissionsAndClaimableRewards,
+              <Button.Inline
+                onClick={() => {
+                  if (
+                    window.location.hostname !== "dex.sifchain.finance" &&
+                    AppCookies().getEnv() === NetworkEnv.MAINNET &&
+                    !window.confirm(
+                      "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
                     )
+                  ) {
+                    alert("claim canceled.");
+                    return;
                   }
-                >
-                  {!!lmClaim.value
-                    ? "Pending Claim"
-                    : `Claim ${getClaimableAmountString(
-                        totalClaimableRef.value,
-                      )} Rowan`}
-                </Button.Inline>
-              </div>
+                  claimRewardType.value = "lm";
+                  isClaimModalOpened.value = true;
+                }}
+                class={["!h-[40px] px-[17px] text-md"]}
+                icon="navigation/rewards"
+                active
+                disabled={
+                  !flagsStore.state.rewardClaims ||
+                  !!lmClaim.value ||
+                  !rewardProgramResponse.data.value?.rewardPrograms.some(
+                    (p) =>
+                      p.participant
+                        ?.totalClaimableCommissionsAndClaimableRewards,
+                  )
+                }
+              >
+                {!!lmClaim.value
+                  ? "Pending Claim"
+                  : `Claim ${getClaimableAmountString(
+                      totalClaimableRef.value,
+                    )} Rowan`}
+              </Button.Inline>
             }
             headerContent={
               <>
@@ -197,11 +185,11 @@ export default defineComponent({
                   </div>
                   <div class={rewardColumnsLookup.duration.class}>Duration</div>
                   <div class={rewardColumnsLookup.apy.class}>
-                    Program APR
+                    Program APY
                     <Tooltip
                       content={
                         <div class="mb-2">
-                          Current overall program summary APR. This is also
+                          Current overall program summary APY. This is also
                           displayed in Pools and Pool Stats.
                         </div>
                       }
@@ -214,7 +202,7 @@ export default defineComponent({
                     <Tooltip
                       content={
                         <div class="mb-2">
-                          Current overall program summary APR. This is also
+                          Current overall program summary APY. This is also
                           displayed in Pools and Pool Stats.
                         </div>
                       }
@@ -248,23 +236,8 @@ export default defineComponent({
               )}
 
             <div>
-              {rewardProgramResponse.data.value?.rewardPrograms
-                .filter((program) => {
-                  if (showAllRef.value) return true;
-
-                  const isCurrent =
-                    new Date() < new Date(program.endDateTimeISO);
-                  if (isCurrent) return true;
-
-                  return (
-                    (program.participant
-                      ?.claimedCommissionsAndRewardsAwaitingDispensation || 0) >
-                      0 ||
-                    (program.participant
-                      ?.totalClaimableCommissionsAndClaimableRewards || 0) > 0
-                  );
-                })
-                .map((program, index, items) => {
+              {rewardProgramResponse.data.value?.rewardPrograms.map(
+                (program, index, items) => {
                   return (
                     <RewardSection
                       key={program.rewardProgramName}
@@ -276,7 +249,8 @@ export default defineComponent({
                       }}
                     />
                   );
-                })}
+                },
+              )}
             </div>
 
             {/* 

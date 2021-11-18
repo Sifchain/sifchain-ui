@@ -6,7 +6,6 @@ import {
   AppCookies,
   NetworkEnv,
   Network,
-  getChainsService,
   IAsset,
 } from "@sifchain/sdk";
 import { format } from "@sifchain/sdk/src/utils/format";
@@ -23,6 +22,7 @@ import { flagsStore } from "@/store/modules/flags";
 import { rewardColumnsLookup, RewardProgram } from "../useRewardsPageData";
 import { getClaimableAmountString } from "../getClaimableAmountString";
 import { symbolWithoutPrefix } from "@/utils/symbol";
+import { useNativeChain } from "@/hooks/useChains";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   harvest: {
@@ -64,12 +64,10 @@ export const RewardSection = defineComponent({
       return this.programStarted && !this.programEnded;
     },
     poolAssets() {
-      return getChainsService()
-        .get(Network.SIFCHAIN)
-        .assets.reduce((prev, asset) => {
-          prev[symbolWithoutPrefix(asset.symbol).toLowerCase()] = asset;
-          return prev;
-        }, {} as Record<string, IAsset>);
+      return useNativeChain().assets.reduce((prev, asset) => {
+        prev[symbolWithoutPrefix(asset.symbol).toLowerCase()] = asset;
+        return prev;
+      }, {} as Record<string, IAsset>);
     },
     details(): {
       hide?: boolean;
@@ -83,15 +81,17 @@ export const RewardSection = defineComponent({
           name: "Reserved Commission Rewards",
           tooltip:
             "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
-          amount: this.rewardProgram.participant
-            ?.currentTotalCommissionsOnClaimableDelegatorRewards,
+          amount:
+            this.rewardProgram.participant
+              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
         },
         {
           name: "Pending Dispensation",
           tooltip:
             "This is the amount that will be dispensed on Friday. Any new claimable amounts will need to be claimed after the next dispensation.",
-          amount: this.rewardProgram.participant
-            ?.claimedCommissionsAndRewardsAwaitingDispensation,
+          amount:
+            this.rewardProgram.participant
+              ?.claimedCommissionsAndRewardsAwaitingDispensation,
         },
         {
           name: "Dispensed Rewards",

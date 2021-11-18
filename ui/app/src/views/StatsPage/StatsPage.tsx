@@ -8,20 +8,19 @@ import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
-import { Button } from "@/components/Button/Button";
 
 export default defineComponent({
   name: "StatsPage",
   props: {},
   setup() {
     const { res, statsRef, state } = useStatsPageData({
-      sortBy: "volume",
+      sortBy: "rewardApy",
       sortDirection: "desc",
     } as StatsPageState);
 
     const columns: Array<{
       name: string;
-      message?: string | JSX.Element;
+      message?: string;
       sortBy: StatsPageState["sortBy"];
       class?: string;
       ref: Ref<HTMLElement | undefined>;
@@ -59,53 +58,22 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Pool APR",
+        name: "Pool APY",
         sortBy: "poolApy",
-        class: "min-w-[100px] text-right",
-        message: (
-          <div>
-            Pool APY is calculated as: <br />
-            <span class="font-mono">24hour_trading_volume / pool_depth</span>
-            <br /> for each pool. It only estimates the fee revenue paid to
-            pool, so it should be taken as an approximation. The estimate may be
-            thrown off by irregular trading activity during trading
-            competitions.
-            <br />
-            <br />
-            The Pool APY estimate is also adjusted lower to account for
-            irregular competition swapping.
-          </div>
-        ),
+        class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Reward APR",
+        name: "Reward APY",
         sortBy: "rewardApy",
-        class: "min-w-[100px] text-right",
+        class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Total APR",
-        message: (
-          <div>
-            "Estimated Total APR" is a sum of the "Pool APR" from swap fees and
-            the "Reward APY" from Sifchain reward programs.
-            <br />
-            <br />
-            Pool APY is calculated as: <br />
-            <span class="font-mono">24hour_trading_volume / pool_depth</span>
-            <br /> for each pool. It only estimates the fee revenue paid to
-            pool, so it should be taken as an approximation. The estimate may be
-            thrown off by irregular trading activity during trading
-            competitions.
-            <br />
-            <br />
-            The Pool APY estimate is also adjusted lower to account for
-            irregular competition swapping.
-          </div>
-        ),
+        name: "Total APY",
+        message: "Combined Pool & Reward APY's",
         sortBy: "totalApy",
-        class: "min-w-[100px] text-right",
+        class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -121,14 +89,7 @@ export default defineComponent({
     const finalStats = computed(() => {
       if (!searchQuery.value) return statsRef.value;
       return statsRef.value?.filter((item) => {
-        return (
-          item.asset.symbol
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase()) ||
-          item.asset.displaySymbol
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase())
-        );
+        return item.asset.symbol.toLowerCase().includes(searchQuery.value);
       });
     });
 
@@ -175,24 +136,21 @@ export default defineComponent({
                             state.sortDirection =
                               state.sortDirection === "asc" ? "desc" : "asc";
                           } else {
-                            state.sortDirection = "desc";
+                            state.sortDirection = "asc";
                           }
                           state.sortBy = column.sortBy;
                         }}
                       >
                         {column.message ? (
-                          <div class="flex items-center">
+                          <Tooltip content={<>{column.message}</>}>
                             {column.name}
-                            <Button.InlineHelp>
-                              {column.message}
-                            </Button.InlineHelp>
-                          </div>
+                          </Tooltip>
                         ) : (
                           column.name
                         )}
                         {state.sortBy === column.sortBy && (
                           <AssetIcon
-                            icon="interactive/arrow-up"
+                            icon="interactive/arrow-down"
                             class="transition-all w-[12px] h-[12px]"
                             style={{
                               transform:
@@ -264,13 +222,13 @@ export default defineComponent({
                         ${prettyNumber(item.volume)}
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {item.poolApy.toFixed(2)}%
+                        {item.poolApy}%
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {(+item.rewardApy || 0).toFixed(2)}%
-                      </td>
+                        {item.rewardApy}%
+                      </td>{" "}
                       <td class="align-middle text-right text-mono">
-                        {(+item.poolApy + +item.rewardApy || 0).toFixed(2)}%
+                        {item.totalApy}%
                       </td>
                     </tr>
                   );

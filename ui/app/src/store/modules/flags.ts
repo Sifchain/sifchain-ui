@@ -1,5 +1,5 @@
 import { useChains } from "@/hooks/useChains";
-import { Asset, Chain } from "@sifchain/sdk";
+import { Asset, Chain, IAsset } from "@sifchain/sdk";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { Vuextra } from "../Vuextra";
@@ -12,7 +12,7 @@ export const isChainFlaggedDisabled = (chain: Chain) => {
   );
 };
 
-export const isAssetFlaggedDisabled = (asset: Asset) => {
+export const isAssetFlaggedDisabled = (asset: IAsset) => {
   if (!asset.homeNetwork) return false;
   return isChainFlaggedDisabled(useChains().get(asset.homeNetwork));
 };
@@ -26,7 +26,7 @@ export const flagsStore = Vuextra.createStore({
     ibcTransferTimeoutMinutes: 15,
     rewardClaims: true,
     peggyForCosmosTokens: true,
-    ibcForEthTokens: true,
+    ibcForEthTokens: false,
     claimsGraph: false,
     devnetCryptoecon: false,
     tradingCompetitionsEnabled: false,
@@ -34,7 +34,6 @@ export const flagsStore = Vuextra.createStore({
     enableTestChains: {
       band: false,
       likecoin: false,
-      emoney: true,
     },
   },
   getters: (state) => ({}),

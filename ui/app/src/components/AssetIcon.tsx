@@ -80,7 +80,7 @@ export default defineComponent({
       type: [String, Object, Array] as HTMLAttributes["class"],
     },
     icon: {
-      type: (String as unknown) as PropType<IconName>,
+      type: String as unknown as PropType<IconName>,
       required: true,
     },
     active: {

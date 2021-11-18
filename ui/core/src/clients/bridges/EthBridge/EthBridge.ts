@@ -2,7 +2,6 @@ import { BaseBridge, BridgeTx, EthBridgeTx, BridgeParams } from "../BaseBridge";
 import {
   IAsset,
   IAssetAmount,
-  getChainsService,
   Network,
   TransactionStatus,
   AssetAmount,
@@ -13,28 +12,25 @@ import Web3 from "web3";
 import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
-} from "../../../services/EthbridgeService/PegTxEventEmitter";
+} from "@sifchain/sdk/src/clients/bridges/EthBridge/PegTxEventEmitter";
 import {
   confirmTx,
   getConfirmations,
-} from "../../../services/EthbridgeService/utils/confirmTx";
+} from "@sifchain/sdk/src/clients/bridges/EthBridge/confirmTx";
 import { Contract } from "web3-eth-contract";
 import { erc20TokenAbi } from "../../wallets/ethereum/erc20TokenAbi";
-import JSBI from "jsbi";
-import { getBridgeBankContract } from "../../../services/EthbridgeService/bridgebankContract";
+import { getBridgeBankContract } from "./bridgebankContract";
 import { isOriginallySifchainNativeToken } from "./isOriginallySifchainNativeToken";
-import { NativeDexClient } from "../../../services/utils/SifClient/NativeDexClient";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import Long from "long";
 import {
   parseTxFailure,
   parseEthereumTxFailure,
-} from "../../../services/SifService/parseTxFailure";
+} from "@sifchain/sdk/src/utils/parseTxFailure";
 import { isBroadcastTxFailure } from "@cosmjs/launchpad";
-import TokenRegistryService from "../../../services/TokenRegistryService";
-import { Web3WalletProvider, Web3Transaction } from "../../wallets";
-import { NativeDexTransaction } from "../../../services/utils/SifClient/NativeDexTransaction";
-import { TxEventEthConfCountChanged } from "services/EthbridgeService/types";
+import { Web3WalletProvider, Web3Transaction } from "../../wallets/ethereum";
+import { NativeDexTransaction, NativeDexClient } from "../../native";
+import { TokenRegistry } from "../../native/TokenRegistry";
 
 export type EthBridgeContext = {
   sifApiUrl: string;
@@ -46,7 +42,6 @@ export type EthBridgeContext = {
   getWeb3Provider: () => Promise<provider>;
   assets: IAsset[];
   peggyCompatibleCosmosBaseDenoms: Set<string>;
-  cosmosWalletProvider: CosmosWalletProvider;
 };
 
 export const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -92,7 +87,7 @@ export class EthBridge extends BaseBridge<
     }
   }
 
-  tokenRegistry = TokenRegistryService(this.context);
+  tokenRegistry = TokenRegistry(this.context);
 
   // Pull this out to a util?
   // How to handle context/dependency injection?
@@ -109,9 +104,7 @@ export class EthBridge extends BaseBridge<
     params: BridgeParams,
   ): IAssetAmount | undefined {
     if (params.toChain.network === Network.ETHEREUM) {
-      const ceth = getChainsService()
-        .get(Network.SIFCHAIN)
-        .lookupAssetOrThrow("ceth");
+      const ceth = params.fromChain.lookupAssetOrThrow("ceth");
 
       const feeNumber = isOriginallySifchainNativeToken(params.assetAmount)
         ? "35370000000000000"
@@ -128,12 +121,17 @@ export class EthBridge extends BaseBridge<
     this.assertValidBridgeParams(wallet, params);
 
     if (wallet instanceof Web3WalletProvider) {
+      const tx = new NativeDexTransaction(params.fromAddress, [
+        new Web3Transaction(this.context.bridgebankContractAddress),
+      ]);
       return wallet.approve(
         params.fromChain,
-        new NativeDexTransaction(params.fromAddress, [
-          new Web3Transaction(this.context.bridgebankContractAddress),
-        ]),
-        params.assetAmount,
+        tx,
+        await wallet.getRequiredApprovalAmount(
+          params.fromChain,
+          tx,
+          params.assetAmount,
+        ),
       );
     }
   }
@@ -143,7 +141,6 @@ export class EthBridge extends BaseBridge<
     params: BridgeParams,
   ) {
     this.assertValidBridgeParams(wallet, params);
-    const web3 = new Web3(await this.context.getWeb3Provider());
 
     if (wallet instanceof CosmosWalletProvider) {
       const tx = await this.exportToEth(wallet, params);
@@ -152,11 +149,10 @@ export class EthBridge extends BaseBridge<
         throw new Error(parseTxFailure(tx).memo);
       }
 
-      const startingHeight = await web3.eth.getBlockNumber();
-
       return {
         type: "eth",
-        startingHeight,
+        // No web3 preovider is available here, this will be updated in the waitForTransferComplete fn below
+        startingHeight: 0,
         confirmCount: 0,
         completionConfirmCount: 0,
         ...params,
@@ -165,13 +161,16 @@ export class EthBridge extends BaseBridge<
         toChain: params.toChain,
       } as EthBridgeTx;
     } else {
+      const web3 = await wallet.getWeb3();
       const pegTx = await this.importFromEth(wallet, params);
       const startingHeight = await web3.eth.getBlockNumber();
 
       try {
         const hash = await new Promise<string>((resolve, reject) => {
+          let hash = "";
           pegTx.onError((error) => reject(error.payload));
-          pegTx.onTxHash((hash) => resolve(hash.txHash));
+          pegTx.onTxHash((ev) => (hash = ev.payload));
+          pegTx.onEthTxConfirmed(() => resolve(hash));
         });
 
         return {
@@ -184,8 +183,9 @@ export class EthBridge extends BaseBridge<
           toChain: params.toChain,
           hash: hash,
         } as EthBridgeTx;
-      } catch (transactionStatus) {
-        throw new Error(parseEthereumTxFailure(transactionStatus).memo);
+      } catch (error) {
+        const status = error as { transactionHash: string; rawLog?: string };
+        throw new Error(parseEthereumTxFailure(status).memo);
       }
     }
   }
@@ -248,7 +248,7 @@ export class EthBridge extends BaseBridge<
     params: BridgeParams,
   ) {
     const chainConfig = params.fromChain.chainConfig as EthChainConfig;
-    const web3 = await this.ensureWeb3();
+    const web3 = await provider.getWeb3();
     const web3ChainId = await web3.eth.getChainId();
     if (+chainConfig.chainId !== web3ChainId) {
       throw new Error(
@@ -265,11 +265,11 @@ export class EthBridge extends BaseBridge<
 
     const pegTx = await lockOrBurnFn.call(
       this,
+      provider,
       params.toAddress,
       params.assetAmount,
       ETH_CONFIRMATIONS,
     );
-    this.subscribeToTx(pegTx, console.log.bind(console, "subscribtion"));
     return pegTx;
   }
 
@@ -284,6 +284,7 @@ export class EthBridge extends BaseBridge<
       let done = false;
       return new Promise<boolean>((resolve, reject) => {
         const pegTx = this.createPegTx(
+          provider,
           ETH_CONFIRMATIONS,
           ethTx.assetAmount.asset.ibcDenom || ethTx.assetAmount.asset.symbol,
           ethTx.hash,
@@ -335,6 +336,11 @@ export class EthBridge extends BaseBridge<
       );
 
       let startingHeight = ethTx.startingHeight;
+      if (startingHeight === 0) {
+        startingHeight = await web3.eth.getBlockNumber();
+        onUpdateTx?.({ startingHeight });
+      }
+
       const transferOptions = {
         fromBlock: startingHeight,
         filter: {
@@ -370,6 +376,7 @@ export class EthBridge extends BaseBridge<
    * @param confirmations number of confirmations before pegtx is considered confirmed
    */
   createPegTx(
+    provider: Web3WalletProvider,
     confirmations: number,
     symbol?: string,
     txHash?: string,
@@ -383,7 +390,7 @@ export class EthBridge extends BaseBridge<
 
     // decorate pegtx to invert dependency to web3 and confirmations
     emitter.onTxHash(async ({ payload: txHash }) => {
-      const web3 = await this.ensureWeb3();
+      const web3 = await provider.getWeb3();
       confirmTx({
         web3,
         txHash,
@@ -408,12 +415,13 @@ export class EthBridge extends BaseBridge<
    * @param {*} blockRange number of blocks from the current block header to search
    */
   async getEventTxsInBlockrangeFromAddress(
+    provider: Web3WalletProvider,
     address: string,
     contract: Contract,
     eventList: string[],
     blockRange: number,
   ) {
-    const web3 = await this.ensureWeb3();
+    const web3 = await provider.getWeb3();
     const latest = await web3.eth.getBlockNumber();
     const fromBlock = Math.max(latest - blockRange, 0);
     const allEvents = await contract.getPastEvents("allEvents", {
@@ -442,37 +450,45 @@ export class EthBridge extends BaseBridge<
     return txs;
   }
 
-  async addEthereumAddressToPeggyCompatibleCosmosAssets() {
+  async addEthereumAddressToPeggyCompatibleCosmosAssets(
+    provider: Web3WalletProvider,
+  ) {
     /* 
        Should be called on load. This is a hack to make cosmos assets peggy compatible 
        while the SDK bridge abstraction is a WIP.
      */
-    const ethChain = getChainsService().get(Network.ETHEREUM);
-    for (let asset of ethChain.assets) {
-      try {
-        if (this.context.peggyCompatibleCosmosBaseDenoms.has(asset.symbol)) {
-          asset.address = await this.fetchTokenAddress(asset);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
+
+    const assetAddressMap = new Map<string, string | undefined>();
     for (let asset of this.context.assets) {
       if (this.context.peggyCompatibleCosmosBaseDenoms.has(asset.symbol)) {
-        const ethAsset = ethChain.lookupAsset(asset.symbol);
-        if (ethAsset) {
-          asset.address = ethAsset.address;
+        if (!assetAddressMap.has(asset.symbol)) {
+          try {
+            assetAddressMap.set(
+              asset.symbol,
+              await this.fetchTokenAddress(provider, asset),
+            );
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        if (assetAddressMap.get(asset.symbol)) {
+          asset.address = assetAddressMap.get(asset.symbol);
         }
       }
     }
   }
 
   async lockToSifchain(
+    provider: Web3WalletProvider,
     sifRecipient: string,
     assetAmount: IAssetAmount,
     confirmations: number,
   ) {
-    const pegTx = this.createPegTx(confirmations, assetAmount.asset.symbol);
+    const pegTx = this.createPegTx(
+      provider,
+      confirmations,
+      assetAmount.asset.symbol,
+    );
 
     function handleError(err: any) {
       console.log("lockToSifchain: handleError: ", err);
@@ -486,11 +502,12 @@ export class EthBridge extends BaseBridge<
     }
 
     try {
-      const web3 = await this.ensureWeb3();
+      const web3 = await provider.getWeb3();
       const cosmosRecipient = Web3.utils.utf8ToHex(sifRecipient);
 
       const bridgeBankContract = await getBridgeBankContract(
         web3,
+        this.context.sifChainId,
         this.context.bridgebankContractAddress,
       );
       const accounts = await web3.eth.getAccounts();
@@ -536,17 +553,20 @@ export class EthBridge extends BaseBridge<
    * @param confirmations number of confirmations required
    */
   async fetchUnconfirmedLockBurnTxs(
+    provider: Web3WalletProvider,
     address: string,
     confirmations: number,
   ): Promise<PegTxEventEmitter[]> {
-    const web3 = await this.ensureWeb3();
+    const web3 = await provider.getWeb3();
 
     const bridgeBankContract = await getBridgeBankContract(
       web3,
+      this.context.sifChainId,
       this.context.bridgebankContractAddress,
     );
 
     const txs = await this.getEventTxsInBlockrangeFromAddress(
+      provider,
       address,
       bridgeBankContract,
       ["LogBurn", "LogLock"],
@@ -554,11 +574,12 @@ export class EthBridge extends BaseBridge<
     );
 
     return txs.map(({ hash, symbol }) =>
-      this.createPegTx(confirmations, symbol, hash),
+      this.createPegTx(provider, confirmations, symbol, hash),
     );
   }
 
   async burnToSifchain(
+    provider: Web3WalletProvider,
     sifRecipient: string,
     assetAmount: IAssetAmount,
     confirmations: number,
@@ -573,7 +594,11 @@ export class EthBridge extends BaseBridge<
       address,
     );
 
-    const pegTx = this.createPegTx(confirmations, assetAmount.asset.symbol);
+    const pegTx = this.createPegTx(
+      provider,
+      confirmations,
+      assetAmount.asset.symbol,
+    );
 
     function handleError(err: any) {
       console.log("burnToSifchain: handleError ERROR", err);
@@ -587,11 +612,12 @@ export class EthBridge extends BaseBridge<
     }
 
     try {
-      const web3 = await this.ensureWeb3();
+      const web3 = await provider.getWeb3();
       const cosmosRecipient = Web3.utils.utf8ToHex(sifRecipient);
 
       const bridgeBankContract = await getBridgeBankContract(
         web3,
+        this.context.sifChainId,
         this.context.bridgebankContractAddress,
       );
       const accounts = await web3.eth.getAccounts();
@@ -624,24 +650,17 @@ export class EthBridge extends BaseBridge<
     return pegTx;
   }
 
-  async fetchSymbolAddress(symbol: string) {
-    return this.fetchTokenAddress(
-      getChainsService()
-        .get(Network.SIFCHAIN)
-        .findAssetWithLikeSymbolOrThrow(symbol),
-    );
-  }
-
   async fetchTokenAddress(
     // asset to fetch token address for
-    asset: IAsset,
     // optional: pass in HTTP, or other provider (for testing)
-    loadWeb3Instance: () => Promise<Web3> | Web3 = this.ensureWeb3,
+    provider: Web3WalletProvider,
+    asset: IAsset,
   ): Promise<string | undefined> {
     // const web3 = new Web3(createWeb3WsProvider());
-    const web3 = await loadWeb3Instance();
+    const web3 = await provider.getWeb3();
     const bridgeBankContract = await getBridgeBankContract(
       web3,
+      this.context.sifChainId,
       this.context.bridgebankContractAddress,
     );
 

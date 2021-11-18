@@ -5,12 +5,13 @@ import { TokenIcon } from "@/components/TokenIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { Network, PoolState } from "@sifchain/sdk";
+import { Network } from "@sifchain/sdk";
 import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useCore } from "@/hooks/useCore";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { accountStore } from "@/store/modules/accounts";
+import { PoolState } from "@/business/calculators";
 
 export default defineComponent({
   setup(props) {
@@ -112,7 +113,9 @@ export default defineComponent({
                     max="10000"
                     value={data.wBasisPoints.value}
                     onInput={(e) => {
-                      data.wBasisPoints.value = (e.target as HTMLInputElement).value;
+                      data.wBasisPoints.value = (
+                        e.target as HTMLInputElement
+                      ).value;
                     }}
                   />
                   <div
@@ -187,7 +190,9 @@ export default defineComponent({
                     max="10000"
                     value={data.asymmetry.value}
                     onInput={(e) => {
-                      data.asymmetry.value = (e.target as HTMLInputElement).value;
+                      data.asymmetry.value = (
+                        e.target as HTMLInputElement
+                      ).value;
                     }}
                   />
                 </div>
