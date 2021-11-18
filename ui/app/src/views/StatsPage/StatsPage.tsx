@@ -64,7 +64,7 @@ export default defineComponent({
         class: "min-w-[100px] text-right",
         message: (
           <div>
-            Pool APY is calculated as: <br />
+            Pool APR is calculated as: <br />
             <span class="font-mono">24hour_trading_volume / pool_depth</span>
             <br /> for each pool. It only estimates the fee revenue paid to
             pool, so it should be taken as an approximation. The estimate may be
@@ -72,7 +72,7 @@ export default defineComponent({
             competitions.
             <br />
             <br />
-            The Pool APY estimate is also adjusted lower to account for
+            The Pool APR estimate is also adjusted lower to account for
             irregular competition swapping.
           </div>
         ),
@@ -89,10 +89,10 @@ export default defineComponent({
         message: (
           <div>
             "Estimated Total APR" is a sum of the "Pool APR" from swap fees and
-            the "Reward APY" from Sifchain reward programs.
+            the "Reward APR" from Sifchain reward programs.
             <br />
             <br />
-            Pool APY is calculated as: <br />
+            Pool APR is calculated as: <br />
             <span class="font-mono">24hour_trading_volume / pool_depth</span>
             <br /> for each pool. It only estimates the fee revenue paid to
             pool, so it should be taken as an approximation. The estimate may be
@@ -100,7 +100,7 @@ export default defineComponent({
             competitions.
             <br />
             <br />
-            The Pool APY estimate is also adjusted lower to account for
+            The Pool APR estimate is also adjusted lower to account for
             irregular competition swapping.
           </div>
         ),
