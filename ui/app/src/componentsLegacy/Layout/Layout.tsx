@@ -1,4 +1,5 @@
 import BetaWarningBanner from "@/components/BetaWarningBanner";
+import { VotingModal } from "@/components/VotingModal/VotingModal";
 import { useCurrentRouteBannerMessage } from "@/hooks/useCurrentRouteBannerMessage";
 import { flagsStore } from "@/store/modules/flags";
 import { AssetAmount } from "@sifchain/sdk";
