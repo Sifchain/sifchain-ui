@@ -60,8 +60,8 @@ export const COLUMNS: PoolPageColumn[] = [
     sortable: true,
     help: (
       <div>
-        Pool APR is an indicator of trading fees generated from this pool, and
-        is calculated as{" "}
+        Pool APR is an estimate of trading fees generated from this pool, and is
+        calculated as{" "}
         <span class="font-mono">24hour_trading_volume / pool_depth</span> for
         each pool.
       </div>

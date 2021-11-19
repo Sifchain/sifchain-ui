@@ -65,7 +65,7 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
         message: (
           <div>
-            Pool APR is an indicator of trading fees generated from this pool,
+            Pool APR is an estimate of trading fees generated from this pool,
             and is calculated as{" "}
             <span class="font-mono">24hour_trading_volume / pool_depth</span>{" "}
             for each pool.
