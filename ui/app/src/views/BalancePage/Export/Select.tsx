@@ -114,6 +114,11 @@ export default defineComponent({
       ) {
         return "Amount Too Large";
       }
+
+      const chain = useChains().get(exportStore.state.draft.network);
+      if (chain.chainConfig.underMaintenance) {
+        return `${chain.displayName} Connection Under Maintenance`;
+      }
     });
 
     const buttonRef = computed(() => {

@@ -1,5 +1,7 @@
 import { useChains } from "@/hooks/useChains";
 import { Asset, Chain } from "@sifchain/sdk";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { Vuextra } from "../Vuextra";
 
 export const isChainFlaggedDisabled = (chain: Chain) => {
@@ -21,12 +23,14 @@ export const flagsStore = Vuextra.createStore({
     devtools: true,
   },
   state: {
-    ibcTransferTimeoutMinutes: 45,
+    ibcTransferTimeoutMinutes: 15,
     rewardClaims: true,
     peggyForCosmosTokens: true,
     ibcForEthTokens: true,
     claimsGraph: false,
     devnetCryptoecon: false,
+    tradingCompetitionsEnabled: false,
+    voting: false,
     enableTestChains: {
       band: false,
       likecoin: false,

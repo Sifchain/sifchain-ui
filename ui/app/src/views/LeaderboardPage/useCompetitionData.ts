@@ -228,6 +228,8 @@ export const useLeaderboardCompetitions = () => {
   return useAsyncDataCached(
     "leaderboardCompetitions",
     async (): Promise<CompetitionsBySymbolLookup> => {
+      if (!flagsStore.state.tradingCompetitionsEnabled) return {};
+
       const json = await fetchJsonWithError<
         [
           {

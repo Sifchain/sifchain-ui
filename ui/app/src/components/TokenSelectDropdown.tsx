@@ -18,12 +18,12 @@ import {
 import { IAsset, Network } from "../../../core/src";
 import { TokenIcon } from "./TokenIcon";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
-import { useTokenList } from "@/hooks/useToken";
+import { TokenListItem, useTokenList } from "@/hooks/useToken";
 
 export const TokenSelectDropdown = defineComponent({
   props: {
     active: {
-      type: Object as PropType<Ref<boolean>>,
+      type: Object as PropType<Ref<boolean> | boolean>,
       required: true,
     },
     onCloseIntent: {
@@ -38,13 +38,19 @@ export const TokenSelectDropdown = defineComponent({
       type: Object as PropType<Ref<Network>>,
       required: false,
     },
+    hideBalances: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
     excludeSymbols: {
       type: Array as PropType<Array<string>>,
       required: false,
       default: () => [],
     },
     sortBy: {
-      type: String as PropType<TokenSortBy>,
+      type: [String, Function] as PropType<
+        TokenSortBy | ((a: TokenListItem, b: TokenListItem) => number)
+      >,
       required: false,
       default: () => "symbol",
     },
@@ -54,6 +60,12 @@ export const TokenSelectDropdown = defineComponent({
     const selfRoot = ref<HTMLDivElement | null>(null);
     const dropdownRoot = ref<HTMLDivElement | null>(null);
     const iconScrollContainer = ref<HTMLDivElement | null>(null);
+
+    const activeRef = computed(() => {
+      return typeof props.active === "boolean"
+        ? props.active
+        : props.active.value;
+    });
 
     const searchQuery = ref("");
     const networksRef = computed(() => {
@@ -87,16 +99,20 @@ export const TokenSelectDropdown = defineComponent({
       // make this happen after so it really closes it.
       // This is for example, for a click on the toggle open button.
       setTimeout(() => {
-        if (!dropdownRoot.value?.contains(e.target as HTMLElement)) {
+        if (
+          !dropdownRoot.value?.contains(e.target as HTMLElement) &&
+          !selfRoot.value?.contains(e.target as HTMLElement) &&
+          !(e as any).handled
+        ) {
           props.onCloseIntent?.();
         }
       }, 1);
     });
 
     watch(
-      props.active,
+      activeRef,
       () => {
-        if (props.active?.value) {
+        if (activeRef.value) {
           // If a click is still in progress, we don't want to attach this listener yet.
           window.requestAnimationFrame(() => {
             document.body.addEventListener(
@@ -116,9 +132,9 @@ export const TokenSelectDropdown = defineComponent({
       { immediate: true, deep: true },
     );
 
-    watch([props.active], () => {
+    watch([activeRef.value], () => {
       let frameId: number;
-      if (props.active?.value) {
+      if (activeRef.value) {
         frameId = window.requestAnimationFrame(() => {
           dropdownRoot.value?.querySelector("input")?.focus();
         });
@@ -144,7 +160,7 @@ export const TokenSelectDropdown = defineComponent({
       <div ref={selfRoot} class="w-full h-0">
         {
           <Teleport to="#portal-target">
-            {props.active?.value && (
+            {activeRef.value && (
               <div
                 ref={dropdownRoot}
                 style={{
@@ -178,6 +194,7 @@ export const TokenSelectDropdown = defineComponent({
                           props.onSelectAsset(
                             sortedAndFilteredTokens.value[0].asset,
                           );
+                          searchQuery.value = "";
                         }
                       }}
                       value={searchQuery.value}
@@ -193,7 +210,7 @@ export const TokenSelectDropdown = defineComponent({
                   >
                     <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
                       <div>Token Name</div>
-                      <div>Balance</div>
+                      <div>{!props.hideBalances && "Balance"}</div>
                     </div>
                     <div class="w-full h-[302px] relative mr-[-15px]">
                       <div class="absolute inset-0 w-full h-full overflow-y-scroll">
@@ -202,6 +219,7 @@ export const TokenSelectDropdown = defineComponent({
                             <div
                               onClick={(e: MouseEvent) => {
                                 props.onSelectAsset(token.asset);
+                                (e as any).handled = true;
                               }}
                               key={token.asset.symbol}
                               class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
@@ -214,7 +232,9 @@ export const TokenSelectDropdown = defineComponent({
                               />
                               {token.asset.displaySymbol || token.asset.symbol}
                               <div class="flex-1 ml-[8px]" />
-                              {formatAssetAmount(token.amount)}
+                              {props.hideBalances
+                                ? ""
+                                : formatAssetAmount(token.amount)}
                             </div>
                           );
                         })}

@@ -70,6 +70,11 @@ export default defineComponent({
       ) {
         return "Amount Too Large";
       }
+
+      const chain = useChains().get(importDraft.value.network);
+      if (chain.chainConfig.underMaintenance) {
+        return `${chain.displayName} Connection Under Maintenance`;
+      }
     });
 
     const buttonRef = computed(() => {

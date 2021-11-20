@@ -216,7 +216,7 @@ export default defineComponent({
                 content={
                   <div class="text-sm">
                     <span class="font-semibold">{program.displayName}</span>: +
-                    {program.summaryAPY.toFixed(2)}% APY until{" "}
+                    {program.summaryAPY.toFixed(2)}% APR until{" "}
                     {new Date(program.endDateTimeISO).toLocaleDateString()}.
                     <br />
                     <div class="mt-[6px]">{program.description}</div>
