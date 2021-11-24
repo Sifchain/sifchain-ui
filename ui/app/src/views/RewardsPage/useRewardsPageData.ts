@@ -172,10 +172,32 @@ export const useRewardsPageData = () => {
     return rewardProgramResponse.error.value || claimsRes.error.value;
   });
 
+  const rewardTotals = computed(() => {
+    return rewardProgramResponse.data.value?.rewardPrograms.reduce(
+      (acc, program) => {
+        if (program.participant) {
+          acc.pendingRewards +=
+            program.participant.claimedCommissionsAndRewardsAwaitingDispensation;
+          acc.dispensedRewards += program.participant.dispensed;
+
+          acc.claimableRewards +=
+            program.participant.totalClaimableCommissionsAndClaimableRewards;
+        }
+        return acc;
+      },
+      {
+        claimableRewards: 0,
+        pendingRewards: 0,
+        dispensedRewards: 0,
+      },
+    );
+  });
+
   return {
     address,
     isLoading,
     rewardProgramResponse,
+    rewardTotals,
     error,
     lmClaim: computed(() => claimsRes.data.value?.lm),
     reloadClaims: () => claimsRes.reload.value(),

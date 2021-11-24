@@ -134,12 +134,7 @@ export default defineComponent({
                 <NavSidePanelItem
                   displayName="Dashboard"
                   icon="navigation/dashboard"
-                  class="opacity-50 pointer-events-none"
-                  action={
-                    <div class="py-[2px] px-[6px] text-sm text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
-                      Soon
-                    </div>
-                  }
+                  href="/dashboard"
                 />
                 <NavSidePanelItem
                   displayName="Swap"

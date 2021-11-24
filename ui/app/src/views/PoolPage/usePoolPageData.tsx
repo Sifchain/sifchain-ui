@@ -1,19 +1,17 @@
-import { computed, toRefs } from "@vue/reactivity";
-import { onUnmounted, watch } from "vue";
-import { useCore } from "@/hooks/useCore";
-import { defineComponent, onMounted, ref } from "vue";
-import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 import { useAsyncData } from "@/hooks/useAsyncData";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+import { useChains } from "@/hooks/useChains";
+import { useCore } from "@/hooks/useCore";
+import {
+  usePublicPoolsSubscriber,
+  useUserPoolsSubscriber,
+} from "@/hooks/usePoolsSubscriber";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
-import { AccountPool } from "@sifchain/sdk/src/store/pools";
-import { useChains } from "@/hooks/useChains";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
-import {
-  useUserPoolsSubscriber,
-  usePublicPoolsSubscriber,
-} from "@/hooks/usePoolsSubscriber";
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
+import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
+import { AccountPool } from "@sifchain/sdk/src/store/pools";
+import { computed } from "@vue/reactivity";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
@@ -161,6 +159,7 @@ export const usePoolPageData = () => {
 
   return {
     rewardProgramsRes,
+    poolStatLookup: statsRes.poolStatLookup,
     isLoaded: computed(() => {
       return (
         !statsRes.isLoading.value &&

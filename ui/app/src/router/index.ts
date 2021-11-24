@@ -32,6 +32,7 @@ import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
+import { DashboardPage } from "@/views/DashboardPage/DashboardPage";
 
 type SwapPageMeta = {
   title: string;
@@ -55,7 +56,12 @@ type RouteName<T> = T extends { name?: string }[]
 const routes: DeepReadonly<RouteRecordRaw[]> = [
   {
     path: "/",
-    redirect: "/swap",
+    redirect: "/dashboard",
+  },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: DashboardPage,
   },
   {
     path: "/stats",

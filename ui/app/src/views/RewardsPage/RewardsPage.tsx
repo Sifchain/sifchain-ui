@@ -28,24 +28,8 @@ export default defineComponent({
       lmClaim,
       address,
       reloadClaims,
+      rewardTotals,
     } = data;
-
-    const rewardTotals = computed(() => {
-      return rewardProgramResponse.data.value?.rewardPrograms.reduce(
-        (acc, program) => {
-          if (program.participant) {
-            acc.pendingRewards +=
-              program.participant.claimedCommissionsAndRewardsAwaitingDispensation;
-            acc.dispensedRewards += program.participant.dispensed;
-          }
-          return acc;
-        },
-        {
-          pendingRewards: 0,
-          dispensedRewards: 0,
-        },
-      );
-    });
 
     const showAllRef = ref(false);
 

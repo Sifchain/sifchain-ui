@@ -173,6 +173,12 @@ export const usePoolStats = () => {
 
   return {
     isLoading,
+    poolStatLookup: computed(() =>
+      wrappedData.value?.poolData.pools.reduce((acc, poolStat) => {
+        acc[poolStat.symbol] = poolStat;
+        return acc;
+      }, {} as Record<string, PoolStat>),
+    ),
     data: wrappedData,
     isError: poolStatsRes.isError,
   };
