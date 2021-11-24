@@ -28,6 +28,7 @@ import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
 import { Asset, Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
+import { useChains } from "@/hooks/useChains";
 
 export const SYMBOL_COLUMN_WIDTH = 130;
 
@@ -67,8 +68,17 @@ export default defineComponent({
         icon: "interactive/arrow-down",
         name: "Import",
         visible: true,
+        help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
+          .underMaintenance
+          ? `${
+              useChains().get(props.tokenItem.asset.homeNetwork).displayName
+            } Connection Under Maintenance`
+          : null,
         props: {
-          disabled: props.tokenItem.asset.decommissioned,
+          disabled:
+            props.tokenItem.asset.decommissioned ||
+            useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
+              .underMaintenance,
           replace: false,
           to: getImportLocation("select", {
             symbol: props.tokenItem.asset.symbol,
@@ -92,7 +102,17 @@ export default defineComponent({
             icon: "interactive/arrow-up",
             name: "Export",
             visible: expandedRef.value,
+            help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
+              .underMaintenance
+              ? `${
+                  useChains().get(props.tokenItem.asset.homeNetwork).displayName
+                } Connection Under Maintenance`
+              : null,
             props: {
+              disabled:
+                props.tokenItem.asset.decommissioned ||
+                useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
+                  .underMaintenance,
               replace: false,
               to: getExportLocation("setup", {
                 symbol: props.tokenItem.asset.symbol,
@@ -308,7 +328,7 @@ export default defineComponent({
             {buttonsRef.value
               .filter((definition) => definition.visible)
               .map((definition) => {
-                return (
+                const button = (
                   <Button.Inline
                     key={definition.name}
                     class="mr-1 animation-fade-in"
@@ -317,6 +337,12 @@ export default defineComponent({
                   >
                     {definition.name}
                   </Button.Inline>
+                );
+                if (!definition.help) return button;
+                return (
+                  <Tooltip key={definition.name} content={definition.help}>
+                    {button}
+                  </Tooltip>
                 );
               })}
             <button
