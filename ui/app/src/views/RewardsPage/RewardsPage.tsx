@@ -143,7 +143,9 @@ export default defineComponent({
                   <div class={rewardColumnsLookup.rewardProgram.class}>
                     Reward Program
                   </div>
-                  <div class={rewardColumnsLookup.duration.class}>Duration</div>
+                  <div class={rewardColumnsLookup.duration.class}>
+                    {/* Duration */}
+                  </div>
                   <div class={rewardColumnsLookup.apy.class}>
                     Program APR
                     <Tooltip
