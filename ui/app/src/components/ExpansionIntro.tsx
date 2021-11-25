@@ -258,7 +258,7 @@ export const ExpansionIntro = defineComponent({
       });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-      // document.body.appendChild(renderer.domElement);
+      document.body.appendChild(renderer.domElement);
 
       document.addEventListener("mousemove", onDocumentMouseMove, false);
       document.addEventListener("touchstart", onDocumentTouchStart, false);
