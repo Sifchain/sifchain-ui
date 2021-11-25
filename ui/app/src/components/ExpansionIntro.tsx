@@ -1,17 +1,92 @@
 // @ts-nocheck
-import { defineComponent } from "vue";
+import { defineComponent, Teleport } from "vue";
 
 export const ExpansionIntro = defineComponent({
   name: "ExpansionIntro",
-  setup() {
+  data() {
     return {
       div: <div>hello</div>,
+      isUnmounted: false,
+      textIsVisible: false,
+      isHidden: false,
     };
   },
+  beforeUnmount() {
+    this.isUnmounted = true;
+  },
   render() {
-    return this.div;
+    return this.isHidden ? null : (
+      <Teleport to="body">
+        <div
+          id="expansionintrocontainer"
+          style={{
+            position: "fixed",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 100000,
+            background: "black",
+          }}
+        ></div>
+        <div
+          style={{
+            zIndex: 10000000,
+            width: "100vw",
+            height: "100vh",
+            opacity: this.textIsVisible ? 1 : 0,
+          }}
+          class={`flex-col transition-all duration-500 fixed inset-0 overflow-hidden z-[100000000] text-white flex items-center justify-center `}
+        >
+          <span
+            style={{ fontSize: "1.5rem", fontWeight: "100", lineHeight: 1 }}
+          >
+            Sif's
+          </span>
+          <span
+            style={{
+              textShadow: `0 0 10px #c1a04f, 0 0 20px #c1a04f, 0 0 30px #c1a04f, 0 0 40px #c1a04f, 0 0 70px #c1a04f, 0 0 80px #c1a04f, 0 0 100px #c1a04f, 0 0 150px #c1a04f`,
+              fontSize: `6rem`,
+              fontWeight: 100,
+            }}
+            class="font-light uppercase"
+          >
+            Expansion
+          </span>
+          <span
+            style={{
+              textTransform: "uppercase",
+              fontWeight: 200,
+              fontSize: "1rem",
+              letterSpacing: "1.5px",
+            }}
+          >
+            100% APR on All Pools. 300% APR On Bonus Pools.
+          </span>
+          <div
+            style={{
+              textTransform: "uppercase",
+              fontWeight: 200,
+              fontSize: "1rem",
+              opacity: 0.6,
+              letterSpacing: "1.5px",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              this.isHidden = true;
+            }}
+          >
+            <br />
+            ENTER THE DEX
+          </div>
+        </div>
+      </Teleport>
+    );
   },
   async mounted() {
+    const unmountedPredicate = () => this.isUnmounted;
+    const getContainer = () =>
+      document.getElementById("expansionintrocontainer");
     await new Promise((resolve, reject) => {
       const scriptEl = document.createElement("script");
       scriptEl.src =
@@ -20,6 +95,9 @@ export const ExpansionIntro = defineComponent({
       scriptEl.onerror = reject;
       document.head.appendChild(scriptEl);
     });
+    setTimeout(() => {
+      this.textIsVisible = true;
+    }, 6000);
     // stats.js - http://github.com/mrdoob/stats.js
     var Stats = function () {
       function h(a) {
@@ -32,10 +110,10 @@ export const ExpansionIntro = defineComponent({
         l = a;
       }
       var l = 0,
-        c = this.div;
+        c = document.createElement("div");
       c.className = "expansionintro";
       c.style.cssText =
-        "position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;width:100vw;cursor:pointer;opacity:0.9;z-index:10000;background:black;";
+        "position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;width:100vw;overflow:hidden;cursor:pointer;opacity:0.9;z-index:100000;background:black;";
       c.addEventListener(
         "click",
         function (a) {
@@ -191,7 +269,7 @@ export const ExpansionIntro = defineComponent({
     // My Code
 
     if (WEBGL.isWebGLAvailable() === false) {
-      document.body.appendChild(WEBGL.getWebGLErrorMessage());
+      getContainer().appendChild(WEBGL.getWebGLErrorMessage());
     }
 
     var SCREEN_WIDTH = window.innerWidth,
@@ -217,8 +295,8 @@ export const ExpansionIntro = defineComponent({
 
       scene = new THREE.Scene();
 
-      const colorA = 0x996900;
-      const colorB = 0xcc9b00;
+      const colorA = 0xf2a600;
+      const colorB = 0xffc200;
       var i,
         line,
         material,
@@ -258,7 +336,7 @@ export const ExpansionIntro = defineComponent({
       });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-      document.body.appendChild(renderer.domElement);
+      getContainer().appendChild(renderer.domElement);
 
       document.addEventListener("mousemove", onDocumentMouseMove, false);
       document.addEventListener("touchstart", onDocumentTouchStart, false);
@@ -332,19 +410,22 @@ export const ExpansionIntro = defineComponent({
         mouseY = event.touches[0].pageY - windowHalfY;
       }
     }
-    //
-    function animate() {
-      requestAnimationFrame(animate);
 
+    function animate() {
+      if (unmountedPredicate()) return;
+      requestAnimationFrame(animate);
       render();
     }
     //
     var rpmY = 7;
-    var rpmX = 2;
+    var rpmX = 9;
+    var initTime = Date.now();
     function render() {
       renderer.render(scene, camera);
 
-      var time = Date.now() * 0.00005;
+      const START_TIME_STATE = 1637813565395;
+      const timestamp = (START_TIME_STATE + (Date.now() - initTime)) * 0.00005;
+      var time = timestamp;
 
       for (var i = 0; i < scene.children.length; i += 1) {
         var object = scene.children[i];

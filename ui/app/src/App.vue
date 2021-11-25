@@ -2,7 +2,6 @@
   <div class="main">
     <SideBar />
     <router-view />
-    <!-- <ExpansionIntro /> -->
     <OnboardingModal
       v-if="shouldShowOnboardingModal"
       :onClose="onCloseOnboardingModal"
@@ -10,6 +9,7 @@
     <Notifications />
     <EnvAlert />
     <Flags />
+    <ExpansionIntro v-if="!hasShownExpansionIntro" />
   </div>
 </template>
 
@@ -67,6 +67,21 @@ let hasShownOnboardingModal = (() => {
     return true;
   }
 })();
+const hasShownExpansionIntro = (() => {
+  try {
+    if (Date.now() > new Date(`2021-11-29T05:04:40.941Z`).getTime()) {
+      return true;
+    }
+    const val = !!localStorage.getItem("hasShownExpansionRewardsIntro");
+    return val;
+  } catch (e) {
+    return true;
+  }
+})();
+try {
+  localStorage.setItem("hasShownExpansionRewardsIntro", "true");
+} catch (e) {}
+
 export default defineComponent({
   name: "App",
   components: {
@@ -81,6 +96,9 @@ export default defineComponent({
     key() {
       console.log(this.$route.path);
       return this.$route.path;
+    },
+    hasShownExpansionIntro() {
+      return hasShownExpansionIntro;
     },
   },
   setup() {
