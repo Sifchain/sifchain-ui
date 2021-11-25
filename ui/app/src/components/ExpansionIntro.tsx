@@ -3,8 +3,13 @@ import { defineComponent } from "vue";
 
 export const ExpansionIntro = defineComponent({
   name: "ExpansionIntro",
+  setup() {
+    return {
+      div: <div>hello</div>,
+    };
+  },
   render() {
-    return <div></div>;
+    return this.div;
   },
   async mounted() {
     await new Promise((resolve, reject) => {
@@ -13,7 +18,7 @@ export const ExpansionIntro = defineComponent({
         "https://cdnjs.cloudflare.com/ajax/libs/three.js/100/three.min.js";
       scriptEl.onload = resolve;
       scriptEl.onerror = reject;
-      document.body.appendChild(scriptEl);
+      document.head.appendChild(scriptEl);
     });
     // stats.js - http://github.com/mrdoob/stats.js
     var Stats = function () {
@@ -27,10 +32,10 @@ export const ExpansionIntro = defineComponent({
         l = a;
       }
       var l = 0,
-        c = document.createElement("div");
+        c = this.div;
       c.className = "expansionintro";
       c.style.cssText =
-        "position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";
+        "position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;width:100vw;cursor:pointer;opacity:0.9;z-index:10000;background:black;";
       c.addEventListener(
         "click",
         function (a) {
@@ -253,7 +258,7 @@ export const ExpansionIntro = defineComponent({
       });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-      document.body.appendChild(renderer.domElement);
+      // document.body.appendChild(renderer.domElement);
 
       document.addEventListener("mousemove", onDocumentMouseMove, false);
       document.addEventListener("touchstart", onDocumentTouchStart, false);

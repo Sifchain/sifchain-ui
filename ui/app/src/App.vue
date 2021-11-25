@@ -26,7 +26,7 @@ import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import OnboardingModal from "@/components/OnboardingModal";
-// import { ExpansionIntro } from "@/components/ExpansionIntro";
+import { ExpansionIntro } from "@/components/ExpansionIntro";
 
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
@@ -70,7 +70,7 @@ let hasShownOnboardingModal = (() => {
 export default defineComponent({
   name: "App",
   components: {
-    // ExpansionIntro,
+    ExpansionIntro,
     Notifications,
     EnvAlert,
     SideBar,
