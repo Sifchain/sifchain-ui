@@ -14,6 +14,7 @@ export type ModalProps = {
   onClose: () => void;
   showClose?: boolean;
   class?: HTMLAttributes["class"];
+  containerClass?: HTMLAttributes["class"];
   heading?: string;
   icon?: IconName;
   escapeToClose?: boolean;
@@ -32,6 +33,9 @@ export default defineComponent({
     },
     class: {
       type: [String, Object, Array] as PropType<ModalProps["class"]>,
+    },
+    containerClass: {
+      type: [String, Object, Array] as PropType<ModalProps["containerClass"]>,
     },
     heading: {
       type: String as PropType<ModalProps["heading"]>,
@@ -75,6 +79,7 @@ export default defineComponent({
         <div
           class={[
             "overflow-y-scroll h-screen fixed left-sidebar sm:left-0 inset-0 flex items-center shorter:items-start shorter:py-[4vh] justify-center z-20 animate-fade-in duration-500 animate-fade-in-up",
+            props.containerClass,
           ]}
           onClick={() => {
             if (props.backdropClickToClose) props.onClose?.();

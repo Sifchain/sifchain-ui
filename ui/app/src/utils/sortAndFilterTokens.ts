@@ -9,7 +9,7 @@ export type TokenSortBy = "balance" | "symbol";
 export function sortAndFilterTokens(props: {
   tokens: TokenListItem[];
   searchQuery?: string;
-  sortBy?: TokenSortBy;
+  sortBy?: TokenSortBy | ((a: TokenListItem, b: TokenListItem) => number);
   reverse?: boolean;
   network?: Network;
 }) {
@@ -46,6 +46,9 @@ export function sortAndFilterTokens(props: {
       );
     })
     .sort((a: TokenListItem, b: TokenListItem) => {
+      if (typeof props.sortBy === "function") {
+        return props.sortBy(a, b);
+      }
       if (props.sortBy === "balance") {
         // Balance: descending
         return (

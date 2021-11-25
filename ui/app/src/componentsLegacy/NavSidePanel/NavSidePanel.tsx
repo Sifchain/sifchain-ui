@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref, useCssModule } from "vue";
+import { defineComponent, onMounted, ref, useCssModule, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
@@ -25,6 +25,15 @@ import {
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
+import {
+  useActiveProposal,
+  VotingModal,
+} from "@/components/VotingModal/VotingModal";
+
+let VOTE_PARAM_IN_URL = false;
+try {
+  VOTE_PARAM_IN_URL = window.location.href.includes("vote=1");
+} catch (_) {}
 
 export default defineComponent({
   props: {},
@@ -36,7 +45,25 @@ export default defineComponent({
     const sidebarRef = ref();
     const isOpenRef = ref(false);
 
+    const activeProposal = useActiveProposal();
+
     const changelogOpenRef = ref(false);
+    const votingOpenRef = ref(false);
+
+    watch(
+      activeProposal,
+      (proposal, oldProposal) => {
+        if (
+          proposal &&
+          !oldProposal &&
+          VOTE_PARAM_IN_URL &&
+          !proposal.hasVoted
+        ) {
+          votingOpenRef.value = true;
+        }
+      },
+      { immediate: true },
+    );
 
     onMounted(() => {
       document.addEventListener("click", (ev) => {
@@ -186,6 +213,9 @@ export default defineComponent({
                     onClose={() => (changelogOpenRef.value = false)}
                   />
                 )}
+                {votingOpenRef.value && (
+                  <VotingModal onClose={() => (votingOpenRef.value = false)} />
+                )}
                 {shouldAllowFaucetFunding() && (
                   <NavSidePanelItem
                     displayName="Get Free Rowan"
@@ -220,63 +250,113 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
-            {hasUniversalCompetition.value && (
-              <div class="middle mt-[10px]">
-                <RouterLink
-                  to={{
-                    name: "Leaderboard",
-                    params: {
-                      type: "vol",
-                    },
-                  }}
-                  class="h-[46px] flex items-center justify-between px-[16px] cursor-pointer text-black rounded-t-[20px] font-semibold"
+            {!!activeProposal.value && (
+              <div
+                onClick={() => {
+                  if (!activeProposal.value?.hasVoted) {
+                    votingOpenRef.value = true;
+                  }
+                }}
+              >
+                <div
+                  class={[
+                    "h-[46px] flex items-center justify-between px-[16px] text-black rounded-t-[20px] font-semibold",
+                    !activeProposal.value.hasVoted && "cursor-pointer",
+                  ]}
                   style={{
                     backgroundImage:
                       "linear-gradient(93.61deg, #C79E3A 0.77%, #EBCA62 100%)",
                   }}
                 >
                   <div class="flex items-center">
-                    <img class="w-[33px]" src="/images/wreath-tiny.svg" />
-                    <div class="ml-[10px]">Fields of Gold</div>
-                  </div>
-                  <div style={{ transform: "translateY(1px)" }}>
                     <AssetIcon
-                      icon="interactive/chevron-down"
-                      style={{ transform: "rotate(-90deg)" }}
-                      size={12}
+                      size={32}
+                      icon="interactive/ticket"
+                      style={{ transform: "translateY(-1px)" }}
                     />
+                    <div class="ml-[6px]">{activeProposal.value.title}</div>
                   </div>
-                </RouterLink>
+                  {!activeProposal.value.hasVoted && (
+                    <div>
+                      <AssetIcon
+                        icon="interactive/chevron-down"
+                        style={{ transform: "rotate(-90deg)" }}
+                        size={12}
+                      />
+                    </div>
+                  )}
+                </div>
                 <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
-                  <div class="text-sm">View the Leaderboards</div>
-                  <div class="flex items-center mt-[8px]">
-                    {["vol", "txn"].map((type) => (
-                      <RouterLink
-                        to={{
-                          name: "Leaderboard",
-                          params: {
-                            type,
-                          },
-                        }}
-                        key={type}
-                      >
-                        <div class="pl-[8px] pr-[6px] h-[22px] border-solid border border-accent-base rounded-xs flex items-center text-sm hover:bg-gray-500 mr-[10px] whitespace-nowrap">
-                          {type === "vol" ? "Volume" : "Tx Count"}
-                          <AssetIcon
-                            icon="interactive/chevron-down"
-                            size={12}
-                            style={{
-                              transform: "rotate(-90deg)",
-                            }}
-                            class="ml-[4px]"
-                          />
-                        </div>
-                      </RouterLink>
-                    ))}
+                  <div class="text-sm whitespace-pre">
+                    Voting open until{" "}
+                    {new Date(
+                      activeProposal.value.endDateTime,
+                    ).toLocaleDateString()}
+                    .
+                    {activeProposal.value.hasVoted &&
+                      "\nYour vote has been recorded."}
                   </div>
                 </div>
               </div>
             )}
+            {hasUniversalCompetition.value &&
+              flagsStore.state.tradingCompetitionsEnabled && (
+                <div class="middle mt-[10px]">
+                  <RouterLink
+                    to={{
+                      name: "Leaderboard",
+                      params: {
+                        type: "vol",
+                      },
+                    }}
+                    class="h-[46px] flex items-center justify-between px-[16px] cursor-pointer text-black rounded-t-[20px] font-semibold"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(93.61deg, #C79E3A 0.77%, #EBCA62 100%)",
+                    }}
+                  >
+                    <div class="flex items-center">
+                      <img class="w-[33px]" src="/images/wreath-tiny.svg" />
+                      <div class="ml-[10px]">Fields of Gold</div>
+                    </div>
+                    <div style={{ transform: "translateY(1px)" }}>
+                      <AssetIcon
+                        icon="interactive/chevron-down"
+                        style={{ transform: "rotate(-90deg)" }}
+                        size={12}
+                      />
+                    </div>
+                  </RouterLink>
+                  <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                    <div class="text-sm">View the Leaderboards</div>
+                    <div class="flex items-center mt-[8px]">
+                      {["vol", "txn"].map((type) => (
+                        <RouterLink
+                          to={{
+                            name: "Leaderboard",
+                            params: {
+                              type,
+                            },
+                          }}
+                          key={type}
+                        >
+                          <div class="pl-[8px] pr-[6px] h-[22px] border-solid border border-accent-base rounded-xs flex items-center text-sm hover:bg-gray-500 mr-[10px] whitespace-nowrap">
+                            {type === "vol" ? "Volume" : "Tx Count"}
+                            <AssetIcon
+                              icon="interactive/chevron-down"
+                              size={12}
+                              style={{
+                                transform: "rotate(-90deg)",
+                              }}
+                              class="ml-[4px]"
+                            />
+                          </div>
+                        </RouterLink>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             <div class="bottom mt-[10px]">
               <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
                 <span class="inline-flex items-center justify-center h-[26px] font-medium text-sm text-info-base px-[10px] border border-solid border-info-base rounded-full">
