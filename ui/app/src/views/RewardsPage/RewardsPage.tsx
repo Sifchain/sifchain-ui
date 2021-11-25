@@ -166,7 +166,7 @@ export default defineComponent({
               <>
                 <div class="flex items-center mt-[10px]">
                   <div class="bg-gray-100 px-[20px] py-[10px] rounded mr-[6px] flex-1">
-                    <div class="font-lg text-accent-base font-bold">
+                    <div class="font-lg text-accent-base font-semibold">
                       Claimed - Pending Dispensation
                     </div>
                     <div class="pt-[4px] text-sm opacity-50">
@@ -183,7 +183,7 @@ export default defineComponent({
                     </div>
                   </div>
                   <div class="bg-gray-100 px-[20px] py-[10px] rounded ml-[6px] flex-1">
-                    <div class="font-lg text-accent-base font-bold">
+                    <div class="font-lg text-accent-base font-semibold">
                       Dispensed Rewards
                     </div>
                     <div class="pt-[4px] text-sm opacity-50">
