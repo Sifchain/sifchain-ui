@@ -43,7 +43,7 @@ export function useStatsPageData(initialState: StatsPageState) {
 
   const statsRef = computed(() => {
     if (!res.data.value) return [];
-    const { liqAPY, poolData, cryptoeconSummaryAPY } = res.data.value;
+    const { liqAPY, poolData } = res.data.value;
 
     const array = poolData.pools
       .map((pool) => {

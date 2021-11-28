@@ -24,12 +24,18 @@ import { rewardColumnsLookup, RewardProgram } from "../useRewardsPageData";
 import { getClaimableAmountString } from "../getClaimableAmountString";
 import { symbolWithoutPrefix } from "@/utils/symbol";
 
-const REWARD_TYPE_DISPLAY_DATA = {
+const REWARD_TYPE_DISPLAY_DATA: Record<string, { icon: IconName }> = {
   harvest: {
-    icon: "navigation/harvest" as IconName,
+    icon: "navigation/harvest",
   },
   default: {
-    icon: "navigation/pool" as IconName,
+    icon: "navigation/pool",
+  },
+  harvest_expansion: {
+    icon: "navigation/globe",
+  },
+  expansion_bonus: {
+    icon: "navigation/people",
   },
 };
 
@@ -98,28 +104,28 @@ export const RewardSection = defineComponent({
           tooltip: "Rewards that have already been dispensed.",
           amount: this.rewardProgram.participant?.dispensed,
         },
-        {
-          name: "Program Start",
-          value: `${new Date(
-            this.rewardProgram.startDateTimeISO,
-          ).toLocaleDateString()}, ${new Date(
-            this.rewardProgram.startDateTimeISO,
-          ).toLocaleTimeString("en-US", {
-            hour12: true,
-            timeZoneName: "short",
-          })}`,
-        },
-        {
-          name: "Program End",
-          value: `${new Date(
-            this.rewardProgram.endDateTimeISO,
-          ).toLocaleDateString()}, ${new Date(
-            this.rewardProgram.endDateTimeISO,
-          ).toLocaleTimeString("en-US", {
-            hour12: true,
-            timeZoneName: "short",
-          })}`,
-        },
+        // {
+        //   name: "Program Start",
+        //   value: `${new Date(
+        //     this.rewardProgram.startDateTimeISO,
+        //   ).toLocaleDateString()}, ${new Date(
+        //     this.rewardProgram.startDateTimeISO,
+        //   ).toLocaleTimeString("en-US", {
+        //     hour12: true,
+        //     timeZoneName: "short",
+        //   })}`,
+        // },
+        // {
+        //   name: "Program End",
+        //   value: `${new Date(
+        //     this.rewardProgram.endDateTimeISO,
+        //   ).toLocaleDateString()}, ${new Date(
+        //     this.rewardProgram.endDateTimeISO,
+        //   ).toLocaleTimeString("en-US", {
+        //     hour12: true,
+        //     timeZoneName: "short",
+        //   })}`,
+        // },
       ].filter((item) => !item.hide);
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
@@ -161,7 +167,8 @@ export const RewardSection = defineComponent({
             {this.rewardProgram.displayName}
           </div>
           <div class={[rewardColumnsLookup.duration.class]}>
-            {this.programActive
+            {/* Indefinite */}
+            {/* {this.programActive
               ? "Until"
               : this.programEnded
               ? "Ended"
@@ -170,7 +177,7 @@ export const RewardSection = defineComponent({
               !this.programStarted
                 ? this.rewardProgram.startDateTimeISO // if not started yet, show start date
                 : this.rewardProgram.endDateTimeISO, // If active or ended already, show end date
-            ).toLocaleDateString()}
+            ).toLocaleDateString()} */}
           </div>
 
           <div
@@ -181,7 +188,12 @@ export const RewardSection = defineComponent({
           >
             {/* Full Amount */}
             {this.rewardProgram.distributionPattern === "GEYSER" ? null : (
-              <>{this.rewardProgram.summaryAPY.toFixed(4)} %</>
+              <>
+                {this.rewardProgram.rewardProgramName === "expansion_bonus"
+                  ? "+ "
+                  : ""}
+                {this.rewardProgram.summaryAPY.toFixed(4)} %
+              </>
             )}
           </div>
           <div
