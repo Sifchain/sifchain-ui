@@ -40,12 +40,6 @@ export const usePoolStats = () => {
   const { store, services } = useCore();
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
-    let cryptoeconSummaryAPY = await services.cryptoeconomics
-      .fetchSummaryAPY({
-        devnet: flagsStore.state.devnetCryptoecon,
-      })
-      .catch((e) => console.error(e));
-    cryptoeconSummaryAPY = cryptoeconSummaryAPY || 0;
     const res = await fetch(
       "https://data.sifchain.finance/beta/asset/tokenStats",
     );
@@ -92,7 +86,6 @@ export const usePoolStats = () => {
       },
       liqAPY: 0,
       rowanUsd: poolData.rowanUSD,
-      cryptoeconSummaryAPY: cryptoeconSummaryAPY,
     };
   });
 

@@ -69,7 +69,9 @@ export type NavIconName =
   | "rowan"
   | "stake"
   | "swap"
-  | "harvest";
+  | "harvest"
+  | "globe"
+  | "people";
 
 export type IconName =
   | `navigation/${NavIconName}`
