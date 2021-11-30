@@ -21,6 +21,8 @@ import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { Button } from "@/components/Button/Button";
+import { TokenIcon } from "@/components/TokenIcon";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 export const SWAP_MIN_BALANCE = toBaseUnits(
@@ -308,7 +310,37 @@ export const useSwapPageData = () => {
     }
   });
 
+  const details = computed(() => {
+    return [
+      [
+        <div class="flex items-center">
+          Liquidity Provider Fee
+          <Button.InlineHelp>
+            This is the fee paid to the liquidity providers of this pool.
+          </Button.InlineHelp>
+        </div>,
+        <div class="flex items-center">
+          <span class="mr-[4px]">{providerFee.value}</span>
+          {!!toAsset && <TokenIcon asset={toAsset} size={18} />}
+        </div>,
+      ],
+      ["Price Impact", `${priceImpact.value}%`],
+      ["Allowed Slippage", `${slippage.value}%`],
+      [
+        "Minimum Received",
+        <div class="flex items-center">
+          <span class="mr-[4px]">
+            {!!minimumReceived.value &&
+              formatAssetAmount(minimumReceived.value)}
+          </span>
+          <TokenIcon asset={toAsset} size={18} />
+        </div>,
+      ],
+    ];
+  });
+
   return {
+    details,
     connected,
     handleFromSymbolClicked(next: () => void) {
       selectedField.value = "from";
