@@ -13,13 +13,43 @@ import { Button } from "@/components/Button/Button";
 import { SwapDetails } from "./components/SwapDetails";
 import { Tooltip } from "@/components/Tooltip";
 import { Form } from "@/components/Form";
+import { usePoolPageData } from "../PoolPage/usePoolPageData";
+import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { SlippageTolerance } from "./components/SlippageTolerance";
 
 export default defineComponent({
   name: "SwapPage",
   data() {
     return {
       isInverted: false,
+      showSettings: false,
     };
+  },
+  computed: {
+    fromAmountUsd(): string {
+      const lookup = this.poolData.poolStatLookup.value;
+      if (
+        !lookup ||
+        !+this.fromAmount ||
+        !this.fromAsset ||
+        !this.rowanPrice.data.value
+      )
+        return "";
+
+      const price =
+        this.fromAsset.symbol.toLowerCase() === "rowan"
+          ? +(this.rowanPrice.data.value || 0)
+          : +lookup[this.fromAsset.symbol]?.priceToken;
+      return (price * parseFloat(this.fromAmount)).toFixed(4);
+    },
+    toAmountUsd(): string {
+      const lookup = this.poolData.poolStatLookup.value;
+      if (!lookup || !+this.toAmount || !this.toAsset) return "";
+
+      return (
+        +lookup[this.toAsset.symbol]?.priceToken * +this.toAmount
+      ).toFixed(4);
+    },
   },
   setup() {
     const data = useSwapPageData();
@@ -27,14 +57,9 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
 
-    // While swap page is open, ensure pools update
-    // pretty frequently so prices stay up to date...
-    usePublicPoolsSubscriber({
-      delay: ref(10 * 1000),
-    });
+    const poolData = usePoolPageData();
 
     onMounted(() => {
-      useCore().usecases.clp.syncPools.syncPublicPools();
       data.fromAmount.value = data.toAmount.value = "0";
     });
 
@@ -47,13 +72,36 @@ export default defineComponent({
     });
     return {
       ...useSwapPageData(),
+      rowanPrice: useRowanPrice(),
+      appWalletPicker: useAppWalletPicker(),
+      poolData,
       swapIcon,
     };
   },
   render() {
     return (
       <Layout>
-        <PageCard heading="Swap" iconName="navigation/swap" class="w-[531px]">
+        <PageCard
+          heading="Swap"
+          iconName="navigation/swap"
+          class="w-[531px]"
+          headerAction={
+            <AssetIcon
+              icon="interactive/settings"
+              size={24}
+              class="opacity-50 cursor-pointer"
+              onClick={() => (this.showSettings = !this.showSettings)}
+            />
+          }
+        >
+          {this.showSettings && (
+            <SlippageTolerance
+              slippage={this.slippage}
+              onUpdate={(v) => {
+                this.slippage = v;
+              }}
+            />
+          )}
           <TokenInputGroup
             onSelectAsset={(asset) => {
               this.fromSymbol.value = asset.symbol;
@@ -73,8 +121,16 @@ export default defineComponent({
             amount={this.fromAmount}
             asset={this.fromAsset}
             formattedBalance={this.formattedFromTokenBalance || undefined}
+            footerContent={
+              !!this.fromAmountUsd && (
+                <div class="opacity-70">~$ {this.fromAmountUsd}</div>
+              )
+            }
           />
-          <div class="flex relative items-center justify-center w-full overflow-hidden">
+          <div
+            class="flex relative items-center justify-center w-full overflow-hidden"
+            style={{ zIndex: 2 }}
+          >
             <button
               // onMouseover={() => {
               //   console.log("m2");
@@ -120,11 +176,21 @@ export default defineComponent({
             amount={this.toAmount}
             asset={this.toAsset}
             formattedBalance={this.formattedToTokenBalance || undefined}
+            footerContent={
+              !!this.toAmountUsd && (
+                <div class="flex items-center justify-end">
+                  <div class="opacity-70">~$ {this.toAmountUsd}</div>
+                  <div class="opacity-50 ml-[2px]">({this.priceImpact}%)</div>
+                </div>
+              )
+            }
           />
-          <div class="font-mono h-[40px] pt-[8px]">
-            {!!+this.priceRatio && (
+          <div class="font-mono p-[8px] whitespace-pre">
+            {!+this.priceRatio ? (
+              " "
+            ) : (
               <div class="flex items-center justify-end">
-                <div class="mr-[4px] opacity-50">
+                <div class="mr-[4px] opacity-70">
                   1 {this.toAsset.displaySymbol.toUpperCase()} ={" "}
                   {parseFloat(this.priceRatio || "0")}{" "}
                   {this.fromAsset.displaySymbol.toUpperCase()}
@@ -133,22 +199,41 @@ export default defineComponent({
                   interactive
                   placement="bottom"
                   arrow
+                  key={new Date().getTime()}
                   maxWidth="none"
-                  class="!p-0"
+                  onShow={(instance) => {
+                    instance.popper
+                      .querySelector(".tippy-content")
+                      ?.classList.add("tippy-content-reset");
+                  }}
                   content={
-                    <div class="cursor-pointer w-[400px]">
-                      <Form.Details
-                        key={new Date().getTime()}
-                        details={this.details}
-                      />
+                    <div class="w-[400px]">
+                      <Form.Details details={this.details} />
                     </div>
                   }
                 >
-                  <AssetIcon icon="interactive/circle-info" size={16} />
+                  <AssetIcon
+                    class="cursor-pointer"
+                    icon="interactive/circle-info"
+                    size={16}
+                  />
                 </Tooltip>
               </div>
             )}
           </div>
+          <Button.CallToAction
+            onClick={() => {
+              if (!this.nextStepAllowed) {
+                return this.appWalletPicker.show();
+              }
+              this.handleNextStepClicked();
+            }}
+            disabled={!this.nextStepAllowed}
+            class="mt-[8px]"
+          >
+            {this.nextStepMessage}
+          </Button.CallToAction>
+          <div class="pb-4" />
         </PageCard>
       </Layout>
     );

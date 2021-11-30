@@ -56,6 +56,9 @@ module.exports = {
           dark: "#C1A04F",
           light: "#FFE8A0",
         },
+        green: {
+          base: 'green'
+        },
         info: {
           // Bright Boston Blue
           base: "#459FEE",

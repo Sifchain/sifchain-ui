@@ -46,6 +46,7 @@ export const TokenInputGroup = defineComponent({
     shouldShowNumberInputOnLeft: optional(Boolean),
     selectDisabled: optional(Boolean),
     inputDisabled: optional(Boolean),
+    footerContent: optional(Object),
   },
   setup(props) {
     const propRefs = toRefs(props);
@@ -65,7 +66,7 @@ export const TokenInputGroup = defineComponent({
           onSubmit={(e) => e.preventDefault()}
           ref={selfRef}
           class={[
-            "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
+            "relative z-0 overflow-visible pb-[30px] px-[20px] pt-[10px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
             props.class,
           ]}
         >
@@ -159,6 +160,11 @@ export const TokenInputGroup = defineComponent({
             }}
             active={selectIsOpen}
           />
+          {!!props.footerContent && (
+            <div class="absolute bottom-[8px] right-[20px] text-sm flex justify-end font-mono">
+              {props.footerContent}
+            </div>
+          )}
         </form>
       );
     };

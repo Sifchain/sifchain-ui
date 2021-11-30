@@ -320,7 +320,7 @@ export const useSwapPageData = () => {
           </Button.InlineHelp>
         </div>,
         <div class="flex items-center">
-          <span class="mr-[4px]">{providerFee.value}</span>
+          <span class="mr-[4px]">~{providerFee.value}</span>
           {!!toAsset && <TokenIcon asset={toAsset} size={18} />}
         </div>,
       ],
