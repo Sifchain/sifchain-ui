@@ -4,12 +4,19 @@ import {
   makeSignDoc,
 } from "@cosmjs/proto-signing";
 
-import { Chain } from "../../../entities";
+import { Chain, Network } from "../../../entities";
 import { WalletProviderContext } from "../WalletProvider";
 import { stringToPath } from "@cosmjs/crypto";
 import { CosmosWalletProvider } from "./CosmosWalletProvider";
-import { NativeDexTransaction, NativeDexSignedTransaction } from "../../native";
-import { SigningStargateClient } from "@cosmjs/stargate";
+import {
+  NativeDexTransaction,
+  NativeDexSignedTransaction,
+  NativeDexClient,
+} from "../../native";
+import {
+  SigningStargateClient,
+  SigningStargateClientOptions,
+} from "@cosmjs/stargate";
 import {
   TxRaw,
   TxBody,
@@ -17,6 +24,7 @@ import {
 } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { TokenRegistry } from "../../native/TokenRegistry";
+import { SifchainChain } from "../../chains";
 
 export type DirectSecp256k1HdWalletProviderOptions = {
   mnemonic: string;
@@ -61,17 +69,16 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
     const chainConfig = this.getIBCChainConfig(chain);
 
     // cosmos = m/44'/118'/0'/0
-    const parts = [
-      `m`,
-      `44'`, // bip44,
-      `${chainConfig.keplrChainInfo.bip44.coinType}'`, // coinType
-      `0'`,
-      `0`,
-    ];
+    // const parts = [
+    //   `m`,
+    //   `44'`, // bip44,
+    //   `${chainConfig.keplrChainInfo.bip44.coinType}'`, // coinType
+    //   `0'`,
+    //   `0`,
+    // ];
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
       this.options.mnemonic || "",
-      // @ts-ignore
-      stringToPath(parts.join("/")),
+      undefined,
       chainConfig.keplrChainInfo.bech32Config.bech32PrefixAccAddr,
     );
     return wallet;
@@ -94,7 +101,15 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
     const stargate = await SigningStargateClient.connectWithSigner(
       chainConfig.rpcUrl,
       signer,
+      // @ts-ignore
+      chain.network === Network.SIFCHAIN
+        ? {
+            registry: NativeDexClient.getNativeRegistry(),
+          }
+        : undefined,
     );
+
+    console.log(tx);
 
     const signed = await stargate.sign(
       tx.fromAddress,
@@ -105,6 +120,7 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
       },
       tx.memo,
     );
+    console.log("signed", signed);
     return new NativeDexSignedTransaction(tx, signed);
   }
 
