@@ -20,7 +20,7 @@ const POOLS_PROPOSAL = {
   address: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
   startDateTime: new Date("2021-11-09T01:00:00.000Z"),
   // startDateTime: new Date("2021-11-14T01:00:00.000Z"),
-  endDateTime: new Date("2021-11-17T01:00:00.000Z"),
+  endDateTime: new Date("2021-12-31T00:00:00.000Z"),
   title: `Sif's Expansion`,
   heading: `Sif's Expansion - Vote for 300% APR`,
   description: `Vote for 4 pools to have ~300% APR for the next 4 weeks. As a reminder, 5 pools in total will have an APR of ~300% for the next four weeks (ATOM:ROWAN and 4 selected by the majority in this vote). All other pools will maintain a 100% APR.  Every 4 weeks, users will execute this vote.`,
