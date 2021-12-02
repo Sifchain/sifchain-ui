@@ -234,6 +234,8 @@ export const TokenSelectDropdown = defineComponent({
                             sortedAndFilteredTokens.value[0].asset,
                           );
                           searchQuery.value = "";
+                        } else if ((e as KeyboardEvent).key === 'Escape') {
+                          props.onCloseIntent()
                         } else if ((e as KeyboardEvent).key === 'ArrowDown' || (e as KeyboardEvent).key === 'ArrowUp' && sortedAndFilteredTokens.value.length > 0) {
                           handleDropdownArrowNavigation((e as KeyboardEvent).key === 'ArrowUp')                          // if ((e as KeyboardEvent).key ===
                         }
