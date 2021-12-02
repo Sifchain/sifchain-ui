@@ -1,4 +1,3 @@
-// scroll down if the user keyed down to the last element before hidden ones below
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import AssetIcon from "@/components/AssetIcon";
 import { useCore } from "@/hooks/useCore";
@@ -20,7 +19,6 @@ import { IAsset, Network } from "../../../core/src";
 import { TokenIcon } from "./TokenIcon";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
-import handleTokenDropdownScrolling from '../utils/handleTokenDropdownScrolling'
 
 export const TokenSelectDropdown = defineComponent({
   props: {
@@ -61,9 +59,8 @@ export const TokenSelectDropdown = defineComponent({
     const core = useCore();
     const selfRoot = ref<HTMLDivElement | null>(null);
     const dropdownRoot = ref<HTMLDivElement | null>(null);
-    const tokenHeaderAndListContainer = ref<HTMLDivElement | null>(null);
-    const highlightedTokenContainer = ref<HTMLLIElement | null>(null)
-    const tokenScrollContainer = ref<HTMLDivElement | null>(null)
+    const iconScrollContainer = ref<HTMLDivElement | null>(null);
+    const listContainer = ref<HTMLDivElement | null>(null);
 
     const activeRef = computed(() => {
       return typeof props.active === "boolean"
@@ -94,11 +91,49 @@ export const TokenSelectDropdown = defineComponent({
       });
     });
 
+    const handleDropdownArrowNavigation = (isArrowUp) => {
+
+      // get currently highlighted token in list or set as first item in list
+      let highlightedItem: HTMLElement | null = document.querySelector("[data-from-amount-symbol-dropdown-index].bg-gray-base") || document.querySelector("[data-from-amount-symbol-dropdown-index='0']")
+      const currentIndex: number = parseInt(highlightedItem.dataset?.fromAmountSymbolDropdownIndex || '0') || 0
+      // next highlighted item will be set based on whether user arrows up or down
+      const nextHighlightedItem: HTMLElement | null = document.querySelector(`[data-from-amount-symbol-dropdown-index='${!isArrowUp ? currentIndex + 1 : currentIndex - 1}']`)
+
+      // get the top and bottom dimensions of the new item to highlight and the parent list container to set scroll position later
+      const nextHighlightedItemTop: number = nextHighlightedItem?.getBoundingClientRect().top || 0
+      const nextHighlightedItemBottom: number = nextHighlightedItem?.getBoundingClientRect().bottom || 0
+      const listTop: number = listContainer.value?.getBoundingClientRect().top || 0
+      const listBottom: number = listContainer.value?.getBoundingClientRect().bottom || 0
+
+      // trigger style recalculations and paint last as to improve scrolling performance and keep fps down
+
+      // handle adding background to first element
+      if (!highlightedItem?.classList.contains('bg-gray-base')) {
+        highlightedItem.classList.add('bg-gray-base')
+      } else {
+        // return if hit the last element in list
+        if (!isArrowUp && currentIndex === sortedAndFilteredTokens.value.length - 1) {
+          return
+        }
+        // otherwise set the next item to highlight
+        highlightedItem.classList.remove('bg-gray-base')
+        nextHighlightedItem?.classList.add('bg-gray-base')
+      }
+      // scroll selected item into view if overflowing
+      if (isArrowUp && nextHighlightedItemTop < listTop) {
+        nextHighlightedItem?.scrollIntoView(true)
+      } else if (!isArrowUp && nextHighlightedItemBottom > listBottom) {
+        nextHighlightedItem?.scrollIntoView(false)
+      }
+
+    }
+
     const boundingClientRect = ref<DOMRect | undefined>();
     const resizeListener = ref(() => {
       boundingClientRect.value = selfRoot.value?.getBoundingClientRect();
     });
     const externalClickListener = ref((e: Event) => {
+
       // Timeout: if the click to close happens same time as a click to open,
       // make this happen after so it really closes it.
       // This is for example, for a click on the toggle open button.
@@ -191,66 +226,16 @@ export const TokenSelectDropdown = defineComponent({
                       type="search"
                       placeholder="Search Token..."
                       onKeydown={(e: Event) => {
-                        const isArrowDown = (e as KeyboardEvent).key === 'ArrowDown'
-                        const isArrowUp = (e as KeyboardEvent).key === 'ArrowUp'
-                        const isEnter = (e as KeyboardEvent).key === 'Enter'
                         if (
-                          isEnter &&
+                          (e as KeyboardEvent).key === "Enter" &&
                           sortedAndFilteredTokens.value.length > 0
                         ) {
                           props.onSelectAsset(
                             sortedAndFilteredTokens.value[0].asset,
                           );
                           searchQuery.value = "";
-                        } else if (isArrowDown || isArrowUp) {
-                          function nextFrame() {
-                            if (!highlightedTokenContainer.value) {
-                              highlightedTokenContainer.value = document.querySelector("[data-token-dropdown-index='0']")
-                              // if user keys down from the input text field, highlight the first item in tne symbols
-                              highlightedTokenContainer.value?.classList.add('bg-gray-base')
-
-                              return
-                            } else if (isArrowUp && highlightedTokenContainer.value?.dataset.tokenDropdownIndex === "0") {
-                              return
-                            }
-                            else {
-
-                              highlightedTokenContainer.value = document.querySelector('[data-token-dropdown-index].bg-gray-base')
-
-                              const currentIndex: number | undefined = parseInt(highlightedTokenContainer.value?.dataset?.tokenDropdownIndex | '0')
-
-                              const nextHighlightedTokenContainer = document.querySelector(`[data-token-dropdown-index='${isArrowDown ? currentIndex + 1 : currentIndex - 1}']`)
-
-                              // box around list of tokens
-                              const tokenListContainerRect: DOMRect | undefined = tokenHeaderAndListContainer.value?.getBoundingClientRect()
-
-                              // token that's about to be highlighted container
-                              const nextHighlightedTokenRect: DOMRect | undefined = nextHighlightedTokenContainer?.getBoundingClientRect()
-
-                              if (nextHighlightedTokenRect && tokenListContainerRect && tokenScrollContainer.value) {
-                                // adjust user scrolling based on whether select up or down
-                                if (isArrowDown && tokenListContainerRect && tokenListContainerRect?.bottom <= nextHighlightedTokenRect?.bottom) {
-                                  // if the highlighted token is closer to viewport bottom than the tokens container, the scrollbar needs to adjust to bring highlighted token into view
-                                  const bottomsDiff: number = nextHighlightedTokenRect.bottom - tokenListContainerRect.bottom
-
-                                  highlightedTokenContainer.value?.classList.remove('bg-gray-base')
-                                  nextHighlightedTokenContainer?.classList.add('bg-gray-base')
-                                  tokenScrollContainer.value?.scrollBy({ top: bottomsDiff, behavior: 'smooth' })
-                                } else if (isArrowUp && nextHighlightedTokenRect && tokenListContainerRect && nextHighlightedTokenRect.top <= tokenListContainerRect.top) {
-                                  // if the highlighted token is closer to viewport top than the tokens container, the  scrollbar needs to adjust to bring highlighted token into view
-                                  const topsDiff: number = nextHighlightedTokenRect.top - tokenListContainerRect?.top - 35
-
-                                  highlightedTokenContainer.value?.classList.remove('bg-gray-base')
-                                  nextHighlightedTokenContainer?.classList.add('bg-gray-base')
-                                  tokenScrollContainer.value?.scrollBy({ top: topsDiff, behavior: 'smooth' })
-                                } else {
-                                  highlightedTokenContainer.value?.classList.remove('bg-gray-base')
-                                  nextHighlightedTokenContainer?.classList.add('bg-gray-base')
-                                }
-                              }
-                            }
-                          }
-                          window.requestAnimationFrame(nextFrame)
+                        } else if ((e as KeyboardEvent).key === 'ArrowDown' || (e as KeyboardEvent).key === 'ArrowUp' && sortedAndFilteredTokens.value.length > 0) {
+                          handleDropdownArrowNavigation((e as KeyboardEvent).key === 'ArrowUp')                          // if ((e as KeyboardEvent).key ===
                         }
                       }}
                       value={searchQuery.value}
@@ -261,16 +246,16 @@ export const TokenSelectDropdown = defineComponent({
                     />
                   </div>
                   <div
-                    ref={tokenHeaderAndListContainer}
+                    ref={iconScrollContainer}
                     class="w-full overflow-hidden relative"
-                    id="tokenSelectContainer"
+                    id="fromTokenSymbolSelectContainer"
                   >
                     <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
                       <div>Token Name</div>
                       <div>{!props.hideBalances && "Balance"}</div>
                     </div>
                     <div class="w-full h-[302px] relative mr-[-15px]">
-                      <div class="absolute inset-0 w-full h-full overflow-y-scroll" ref={tokenScrollContainer}>
+                      <div class="absolute inset-0 w-full h-full overflow-y-scroll" ref={listContainer}>
                         <ol>
                           {sortedAndFilteredTokens.value.map((token, index) => {
                             return (
@@ -279,7 +264,7 @@ export const TokenSelectDropdown = defineComponent({
                                   props.onSelectAsset(token.asset);
                                   (e as any).handled = true;
                                 }}
-                                data-token-dropdown-index={index}
+                                data-from-amount-symbol-dropdown-index={index}
                                 key={token.asset.symbol}
                                 class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
                               >
