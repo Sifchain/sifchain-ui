@@ -45,19 +45,19 @@ export default defineComponent({
     const sidebarRef = ref();
     const isOpenRef = ref(false);
 
-    const activeProposal = useActiveProposal();
+    const proposalData = useActiveProposal();
 
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
 
     watch(
-      activeProposal,
-      (proposal, oldProposal) => {
+      proposalData,
+      (data, oldData) => {
         if (
-          proposal &&
-          !oldProposal &&
+          data.proposal &&
+          !oldData?.proposal &&
           VOTE_PARAM_IN_URL &&
-          !proposal.hasVoted
+          !data.hasVoted
         ) {
           votingOpenRef.value = true;
         }
@@ -100,6 +100,12 @@ export default defineComponent({
 
     return () => (
       <>
+        {changelogOpenRef.value && (
+          <ChangelogModal onClose={() => (changelogOpenRef.value = false)} />
+        )}
+        {votingOpenRef.value && (
+          <VotingModal onClose={() => (votingOpenRef.value = false)} />
+        )}
         <Button.Inline
           id="open-button"
           class={[
@@ -208,14 +214,6 @@ export default defineComponent({
                     )
                   }
                 />
-                {changelogOpenRef.value && (
-                  <ChangelogModal
-                    onClose={() => (changelogOpenRef.value = false)}
-                  />
-                )}
-                {votingOpenRef.value && (
-                  <VotingModal onClose={() => (votingOpenRef.value = false)} />
-                )}
                 {shouldAllowFaucetFunding() && (
                   <NavSidePanelItem
                     displayName="Get Free Rowan"
@@ -250,10 +248,10 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
-            {!!activeProposal.value && (
+            {!!proposalData.value.proposal && (
               <div
                 onClick={() => {
-                  if (!activeProposal.value?.hasVoted) {
+                  if (!proposalData.value?.hasVoted) {
                     votingOpenRef.value = true;
                   }
                 }}
@@ -261,7 +259,7 @@ export default defineComponent({
                 <div
                   class={[
                     "h-[46px] flex items-center justify-between px-[16px] text-black rounded-t-[20px] font-semibold",
-                    !activeProposal.value.hasVoted && "cursor-pointer",
+                    !proposalData.value.hasVoted && "cursor-pointer",
                   ]}
                   style={{
                     backgroundImage:
@@ -274,9 +272,11 @@ export default defineComponent({
                       icon="interactive/ticket"
                       style={{ transform: "translateY(-1px)" }}
                     />
-                    <div class="ml-[6px]">{activeProposal.value.title}</div>
+                    <div class="ml-[6px]">
+                      {proposalData.value.proposal.title}
+                    </div>
                   </div>
-                  {!activeProposal.value.hasVoted && (
+                  {!proposalData.value.hasVoted && (
                     <div>
                       <AssetIcon
                         icon="interactive/chevron-down"
@@ -290,10 +290,10 @@ export default defineComponent({
                   <div class="text-sm whitespace-pre">
                     Voting open until{" "}
                     {new Date(
-                      activeProposal.value.endDateTime,
+                      proposalData.value.proposal.endDateTime,
                     ).toLocaleDateString()}
                     .
-                    {activeProposal.value.hasVoted &&
+                    {proposalData.value.hasVoted &&
                       "\nYour vote has been recorded."}
                   </div>
                 </div>
