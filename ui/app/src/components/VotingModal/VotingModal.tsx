@@ -91,15 +91,17 @@ export const useActiveProposal = () => {
       return p.startDateTime < new Date() && new Date() < p.endDateTime;
     })[0];
 
+    const hasVoted = useCurrentVotes().value.includes(activeProposal?.id);
+    const shouldShow = hasVoted || hasEnoughRowan;
+
     if (
+      shouldShow &&
       accountStore.state.sifchain.address &&
       flagsStore.state.voting &&
-      hasEnoughRowan &&
       activeProposal
     ) {
       return {
         proposal: activeProposal,
-        hasVoted: useCurrentVotes().value.includes(activeProposal.id),
       };
     }
     return {
