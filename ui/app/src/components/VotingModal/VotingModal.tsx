@@ -6,7 +6,7 @@ import { flagsStore } from "@/store/modules/flags";
 import { TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { Asset, IAsset, toBaseUnits } from "@sifchain/sdk";
 import { defineComponent } from "@vue/runtime-core";
-import { computed, PropType, ref } from "vue";
+import { computed, PropType, Ref, ref } from "vue";
 import AssetIcon from "../AssetIcon";
 import { Button } from "../Button/Button";
 import Modal from "../Modal";
@@ -17,6 +17,8 @@ import { ReportTransactionError } from "@sifchain/sdk/src/usecases/utils";
 
 import { PoolsSelector } from "./PoolsSelector";
 import { YesNoSelector } from "./YesNoSelector";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 
 type Proposal = {
   id: string;
@@ -52,20 +54,30 @@ const PROPOSALS: Proposal[] = [
   },
 ];
 
-const currentVotes = ref(
-  useCore().services.storage.getJSONItem<string[]>("votes") ?? [],
-);
+const getVotesKey = () => {
+  if (!accountStore.state.sifchain.address) {
+    return null;
+  }
+  return `votes_${accountStore.state.sifchain.address}`;
+};
+
+const useCurrentVotes = () => {
+  return computed(() => {
+    const key = getVotesKey();
+    if (key) {
+      return useCore().services.storage.getJSONItem<string[]>(key) ?? [];
+    }
+    return [];
+  });
+};
 
 const updateCurrentVotes = (value: string[]) => {
+  const key = getVotesKey();
+  if (!key) throw new Error("Need to be connected to update votes");
   // Remove duplicates
   value = [...new Set([...value])];
 
-  currentVotes.value = value;
-  useCore().services.storage.setJSONItem<string[]>("votes", value);
-};
-
-export const markVoted = (proposalId: string) => {
-  currentVotes.value.push(proposalId);
+  useCore().services.storage.setJSONItem<string[]>(key, value);
 };
 
 export const useActiveProposal = () => {
@@ -79,10 +91,15 @@ export const useActiveProposal = () => {
       return p.startDateTime < new Date() && new Date() < p.endDateTime;
     })[0];
 
-    if (flagsStore.state.voting && hasEnoughRowan && activeProposal) {
+    if (
+      accountStore.state.sifchain.address &&
+      flagsStore.state.voting &&
+      hasEnoughRowan &&
+      activeProposal
+    ) {
       return {
         proposal: activeProposal,
-        hasVoted: currentVotes.value.includes(activeProposal.id),
+        hasVoted: useCurrentVotes().value.includes(activeProposal.id),
       };
     }
     return {
@@ -190,7 +207,7 @@ export const VotingModal = defineComponent({
             },
           });
 
-          updateCurrentVotes(currentVotes.value.concat(this.proposal.id));
+          updateCurrentVotes(useCurrentVotes().value.concat(this.proposal.id));
           this.onClose();
         }
       } catch (error) {
