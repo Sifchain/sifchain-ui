@@ -961,7 +961,7 @@ const assets: {
     },
     {
       address: "0x4461cfd640da24d1a4642fa5f9ea3e6da966b831",
-      symbol: "csms",
+      symbol: "ccsms",
       displaySymbol: "csms",
       decimals: 18,
       name: "Cosmostarter",
@@ -973,7 +973,7 @@ const assets: {
     },
     {
       address: "0xae697f994fc5ebc000f8e22ebffee04612f98a0d",
-      symbol: "lgcy",
+      symbol: "clgcy",
       displaySymbol: "lgcy",
       decimals: 18,
       name: "LGCY Network",
