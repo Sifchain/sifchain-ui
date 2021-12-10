@@ -121,16 +121,16 @@ export default defineComponent({
         <div
           ref={sidebarRef}
           class={[
-            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-gray-base text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
+            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-black text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
             isOpenRef.value && "!translate-x-0",
           ]}
         >
           <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
             <div class="top">
-              <div class="mt-[38px] shorter:mt-[19px] flex justify-center">
-                <Logo class="w-[119px] shorter:w-[80px]" />
+              <div class="mt-[38px] shorter:mt-[30px] flex justify-center">
+                <Logo class="w-[100px] shorter:w-[85px]" />
               </div>
-              <div class="mt-[9.3vmin] shorter:mt-[3vmin]">
+              <div class="mt-[8.3vmin] shorter:mt-[3.4vmin]">
                 <NavSidePanelItem
                   displayName="Dashboard"
                   icon="navigation/dashboard"

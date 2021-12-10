@@ -4,7 +4,7 @@ module.exports = {
   mode: "jit",
   // purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
   purge: {
-    enabled: true,
+    enabled: false,
     content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
   },
   darkMode: false, // or 'media' or 'class'
@@ -48,6 +48,8 @@ module.exports = {
         sidebar: SIDEBAR_WIDTH,
       },
       colors: {
+        white: "#e6e6e6",
+        black: "rgb(12, 17, 19)",
         accent: {
           // Tacha Gold
           base: "#D4B553",
@@ -57,24 +59,24 @@ module.exports = {
           light: "#FFE8A0",
         },
         green: {
-          base: 'green'
+          base: "green",
         },
         info: {
           // Bright Boston Blue
           base: "#459FEE",
         },
         connected: {
-          base: "#5AF37C",
+          base: "#00db9d",
         },
         danger: {
-          base: "#FF4F4F",
+          base: "#ff4d67",
           warning: "orange",
           bad: "#cccc0e",
         },
         gray: {
           // Ash Black
           100: "#171717",
-          base: "#171717",
+          base: "#101010",
 
           action_button: "#191919",
 

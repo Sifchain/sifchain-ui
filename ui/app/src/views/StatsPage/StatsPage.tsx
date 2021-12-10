@@ -39,7 +39,7 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Arbitrage Opportunity",
+        name: "Arbitrage",
         message:
           "This is the arbitrage opportunity available based on a differential between the price of this token on Sifchain and its price on CoinMarketCap. If the percentage is green, it means the token is currently cheaper in Sifchain than CoinMarketCap.",
         sortBy: "arbitrage",
@@ -53,7 +53,7 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Total Volume (24hr)",
+        name: "Vol (24hr)",
         sortBy: "volume",
         class: "min-w-[110px] text-right",
         ref: ref<HTMLElement>(),
@@ -131,7 +131,7 @@ export default defineComponent({
                 <SearchBox
                   containerClass="mb-4"
                   value={searchQuery.value}
-                  placeholder="Search Token..."
+                  placeholder="Search Token"
                   onInput={(e: Event) => {
                     searchQuery.value = (e.target as HTMLInputElement).value;
                   }}
@@ -202,7 +202,7 @@ export default defineComponent({
                   return (
                     <tr
                       key={item.asset.symbol}
-                      class="align-middle h-8 border-dashed border-b border-white border-opacity-40 last:border-transparent hover:opacity-80"
+                      class="align-middle h-8 border-solid border-b border-gray-200 last:border-transparent hover:opacity-80"
                     >
                       <td class="align-middle">
                         <div class="flex items-center">

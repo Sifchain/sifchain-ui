@@ -54,16 +54,12 @@ export default defineComponent({
           ]}
         >
           <div class="sticky top-0 w-full bg-black z-10 pt-4">
-            {!!props.heading && (
-              <div class="w-full flex-row flex justify-between items-center pb-[10px]">
-                <div class="flex items-center">
+            {false && !!props.heading && (
+              <div class=" w-full flex-row flex justify-between items-center pb-[10px]">
+                <div class="flex text-[#5f5f5f] items-center">
                   {!!props.iconName &&
                     (props.iconType === "AssetIcon" ? (
-                      <AssetIcon
-                        icon={props.iconName as IconName}
-                        size={32}
-                        active
-                      />
+                      <AssetIcon icon={props.iconName as IconName} size={32} />
                     ) : (
                       <TokenIcon
                         assetValue={props.iconName as IAsset}
@@ -72,7 +68,7 @@ export default defineComponent({
                     ))}
                   <span
                     class={[
-                      "text-accent-base font-sans text-[26px] ml-[10px] font-semibold",
+                      " text-[#5f5f5f]  font-sans text-[26px] ml-[10px] font-semibold",
                       props.headingClass,
                     ]}
                   >

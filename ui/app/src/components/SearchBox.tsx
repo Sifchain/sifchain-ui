@@ -17,7 +17,7 @@ export function SearchBox(
     <div
       {...containerProps}
       class={[
-        "bg-gray-input h-8 relative flex items-center rounded-lg overflow-hidden focus-within:border-white rounded border border-solid border-gray-input_outline",
+        "bg-gradient-to-r_cancel from-gray-input to-transparent h-8 relative flex items-center rounded-lg overflow-hidden focus-within:border-white rounded border border-solid border-0 border-gray-input_outline",
         containerProps?.class,
         containerClass,
       ]}

@@ -19,7 +19,7 @@ export function _Base(
     <div
       {...containerProps}
       class={[
-        "relative flex items-center h-[54px] px-3 rounded bg-gray-input border-solid border-gray-input_outline border border-solid focus-within:border-white",
+        "relative flex items-center h-[54px] px-3 rounded bg-gray-input border-solid__CANCEL border-gray-input_outline border__CANCEL border-solid__CANCEL focus-within:border-white",
         containerProps?.class,
         containerClass,
       ]}

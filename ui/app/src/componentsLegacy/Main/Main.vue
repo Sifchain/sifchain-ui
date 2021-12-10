@@ -18,6 +18,7 @@ export default {};
   justify-content: center;
   align-items: center;
   background: url("../../assets/World_Background_opt.jpg");
+  // background: rgb(12, 17, 19);
   background-size: cover;
   background-position: bottom center;
 }

@@ -166,7 +166,7 @@ export default defineComponent({
                 <SearchBox
                   containerClass="mb-4"
                   value={this.searchQuery}
-                  placeholder="Search Pool..."
+                  placeholder="Search Pool"
                   onInput={(e: Event) => {
                     this.searchQuery = (e.target as HTMLInputElement).value;
                   }}

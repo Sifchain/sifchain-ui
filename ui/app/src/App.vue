@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main backdrop-blur-2xl">
     <SideBar />
     <router-view />
     <OnboardingModal

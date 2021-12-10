@@ -84,7 +84,7 @@ const ImageBg = defineComponent({
             style={getStyle(props.src.value)}
           />
 
-          <div class={["bg-black inset-0 absolute bg-opacity-20"]} />
+          <div class={["bg-black inset-0 absolute bg-opacity-50"]} />
         </div>
       );
     };

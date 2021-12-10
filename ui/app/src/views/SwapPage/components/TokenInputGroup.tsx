@@ -66,7 +66,7 @@ export const TokenInputGroup = defineComponent({
           onSubmit={(e) => e.preventDefault()}
           ref={selfRef}
           class={[
-            "relative z-0 overflow-visible pb-[30px] px-[20px] pt-[10px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
+            "relative z-0 overflow-visible pb-[30px] px-[20px] pt-[10px] bg-gray-base border-solid border-[1px]__CANCEL border-gray-input_outline__CANCEL rounded-lg",
             props.class,
           ]}
         >

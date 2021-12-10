@@ -21,7 +21,7 @@ export const _InlineHelp = defineComponent({
       const icon = (
         <AssetIcon
           class={["flex-shrink-0 inline", props.iconClass]}
-          size={props.size || 16}
+          size={props.size || 14}
           icon="interactive/circle-question"
         ></AssetIcon>
       );
@@ -29,7 +29,7 @@ export const _InlineHelp = defineComponent({
         <button
           {...props}
           class={[
-            `inline align-top  text-accent-base hover:opacity-80 ml-[.25em]`,
+            `inline align-top opacity-60 text-gray-900 hover:opacity-80 ml-[.25em]`,
             props.class,
           ]}
           style={

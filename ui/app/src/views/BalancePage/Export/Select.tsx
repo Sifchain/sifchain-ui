@@ -279,7 +279,7 @@ export default defineComponent({
           <div class="text-white capitalize">
             {exportParams.value.network} Recipient Address
           </div>
-          <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
+          <div class="relative border__CANCEL border-0 h-[54px] rounded border-solid__CANCEL border-gray-input_outline__CANCEL focus-within:border-white bg-gray-input mt-[10px]">
             <input
               readonly
               value={targetAddressRef.value}

@@ -189,7 +189,7 @@ export default defineComponent({
 
   render() {
     return (
-      <div class="w-full py-[10px] border-dashed border-b border-white border-opacity-40 last:border-none group">
+      <div class="w-full py-[10px] border-solid border-b border-gray-200 last:border-transparent group">
         <div
           onClick={() => this.toggleExpanded()}
           class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] font-sans group-hover:opacity-80"

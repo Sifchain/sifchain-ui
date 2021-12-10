@@ -97,7 +97,7 @@ export default defineComponent({
               <SearchBox
                 value={state.searchQuery}
                 disabled={isDisabled}
-                placeholder="Search Token..."
+                placeholder="Search Token"
                 onInput={(e: Event) => {
                   state.searchQuery = (e.target as HTMLInputElement).value;
                 }}
