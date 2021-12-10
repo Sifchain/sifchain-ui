@@ -20,6 +20,7 @@ import { YesNoSelector } from "./YesNoSelector";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { governanceStore } from "@/store/modules/governance";
+import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
 
 export const VotingModal = defineComponent({
   name: "VotingModal",
@@ -90,6 +91,7 @@ export const VotingModal = defineComponent({
       } else {
         memo = this.currentYesNoAnswer ? "YES" : "NO";
       }
+
       const tx = client.tx.bank.Send(
         {
           fromAddress: accountStore.state.sifchain.address,
@@ -105,6 +107,7 @@ export const VotingModal = defineComponent({
         undefined,
         memo,
       );
+
       try {
         const signed = await keplrProvider.sign(useNativeChain(), tx);
         const sent = await keplrProvider.broadcast(useNativeChain(), signed);
