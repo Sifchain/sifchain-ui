@@ -25,10 +25,8 @@ import {
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
-import {
-  useActiveProposal,
-  VotingModal,
-} from "@/components/VotingModal/VotingModal";
+import { VotingModal } from "@/components/VotingModal/VotingModal";
+import { governanceStore } from "@/store/modules/governance";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -45,7 +43,7 @@ export default defineComponent({
     const sidebarRef = ref();
     const isOpenRef = ref(false);
 
-    const proposalData = useActiveProposal();
+    const proposalData = computed(() => governanceStore.getters.activeProposal);
 
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
@@ -251,15 +249,12 @@ export default defineComponent({
             {!!proposalData.value.proposal && (
               <div
                 onClick={() => {
-                  if (!proposalData.value?.hasVoted) {
-                    votingOpenRef.value = true;
-                  }
+                  votingOpenRef.value = true;
                 }}
               >
                 <div
                   class={[
-                    "h-[46px] flex items-center justify-between px-[16px] text-black rounded-t-[20px] font-semibold",
-                    !proposalData.value.hasVoted && "cursor-pointer",
+                    "mt-[10px] h-[46px] flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
                   ]}
                   style={{
                     backgroundImage:
@@ -286,7 +281,7 @@ export default defineComponent({
                     </div>
                   )}
                 </div>
-                <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
                   <div class="text-sm whitespace-pre">
                     Voting open until{" "}
                     {new Date(
@@ -327,7 +322,7 @@ export default defineComponent({
                       />
                     </div>
                   </RouterLink>
-                  <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                  <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
                     <div class="text-sm">View the Leaderboards</div>
                     <div class="flex items-center mt-[8px]">
                       {["vol", "txn"].map((type) => (
