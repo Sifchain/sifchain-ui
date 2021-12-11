@@ -61,6 +61,7 @@ export const TokenSelectDropdown = defineComponent({
     const dropdownRoot = ref<HTMLDivElement | null>(null);
     const iconScrollContainer = ref<HTMLDivElement | null>(null);
     const listContainer = ref<HTMLDivElement | null>(null);
+    const highlightedToken = ref<HTMLLIElement | null>(null)
 
     const activeRef = computed(() => {
       return typeof props.active === "boolean"
@@ -91,41 +92,89 @@ export const TokenSelectDropdown = defineComponent({
       });
     });
 
-    const handleDropdownArrowNavigation = (isArrowUp) => {
 
-      // get currently highlighted token in list or set as first item in list
-      let highlightedItem: HTMLElement | null = document.querySelector("[data-from-amount-symbol-dropdown-index].bg-gray-base") || document.querySelector("[data-from-amount-symbol-dropdown-index='0']")
-      const currentIndex: number = parseInt(highlightedItem.dataset?.fromAmountSymbolDropdownIndex || '0') || 0
-      // next highlighted item will be set based on whether user arrows up or down
-      const nextHighlightedItem: HTMLElement | null = document.querySelector(`[data-from-amount-symbol-dropdown-index='${!isArrowUp ? currentIndex + 1 : currentIndex - 1}']`)
+    // var duration = '16'
+    var ticking = false
+    var listTop: number;
+    var listBottom: number;
+    var isArrowUp = false
+    var currentIndex: number;
+    var nextHighlightedItem: HTMLLIElement | null;
+    var nextHighlightedItemTop: number;
+    var nextHighlightedItemBottom: number;
+    var startTime = 0;
+    var scrollDownValue = 0
+    var scrollUpValue = 0
 
-      // get the top and bottom dimensions of the new item to highlight and the parent list container to set scroll position later
-      const nextHighlightedItemTop: number = nextHighlightedItem?.getBoundingClientRect().top || 0
-      const nextHighlightedItemBottom: number = nextHighlightedItem?.getBoundingClientRect().bottom || 0
-      const listTop: number = listContainer.value?.getBoundingClientRect().top || 0
-      const listBottom: number = listContainer.value?.getBoundingClientRect().bottom || 0
+    function requestTick() {
+
+      if (!ticking) {
+        currentIndex = parseInt(highlightedToken.value?.dataset?.fromAmountSymbolDropdownIndex || '0') || 0;
+        // next highlighted item will be set based on whether user arrows up or down
+        nextHighlightedItem = listContainer.value?.querySelector(`[data-from-amount-symbol-dropdown-index='${!isArrowUp ? currentIndex + 1 : currentIndex - 1}']`);
+
+        // get the top and bottom dimensions of the new item to highlight and the parent list container to set scroll position later
+        nextHighlightedItemTop = nextHighlightedItem?.getBoundingClientRect().top || 0;
+        nextHighlightedItemBottom = nextHighlightedItem?.getBoundingClientRect().bottom || 0;
+        scrollUpValue = nextHighlightedItemTop - listTop
+        scrollDownValue = nextHighlightedItemBottom - listBottom
+        requestAnimationFrame(rAFCallback);
+        ticking = true
+      }
+    }
+    function rAFCallback(timeStamp) {
+      // if (isArrowUp) {
+      //   listContainer.value.scrollBy({
+      //     top: -29,
+      //     behavior: 'smooth'
+      //   });
+      // } else listContainer.value.scrollBy({
+      //   top: 29,
+      //   behavior: 'smooth'
+      // });
 
       // trigger style recalculations and paint last as to improve scrolling performance and keep fps down
-
-      // handle adding background to first element
-      if (!highlightedItem?.classList.contains('bg-gray-base')) {
-        highlightedItem.classList.add('bg-gray-base')
+      // scroll selected item into view if overflowing
+      if (isArrowUp && nextHighlightedItemTop < listTop) {
+        listContainer.value.scrollBy({
+          top: scrollUpValue,
+          behavior: 'smooth'
+        });
+      } else if (!isArrowUp && nextHighlightedItemBottom > listBottom) {
+        listContainer.value.scrollBy({
+          top: scrollDownValue,
+          behavior: 'smooth'
+        });
+      }
+      // // handle adding background to first element
+      if (!highlightedToken.value?.classList.contains('bg-gray-base')) {
+        highlightedToken.value?.classList.add('bg-gray-base');
       } else {
         // return if hit the last element in list
         if (!isArrowUp && currentIndex === sortedAndFilteredTokens.value.length - 1) {
+          ticking = false
           return
+        } else if (isArrowUp && currentIndex === 0) {
+          highlightedToken.value = listContainer.value?.querySelector("[data-from-amount-symbol-dropdown-index='0']");
         }
         // otherwise set the next item to highlight
-        highlightedItem.classList.remove('bg-gray-base')
-        nextHighlightedItem?.classList.add('bg-gray-base')
+        highlightedToken.value.classList.remove('bg-gray-base');
+        nextHighlightedItem?.classList.add('bg-gray-base');
       }
-      // scroll selected item into view if overflowing
-      if (isArrowUp && nextHighlightedItemTop < listTop) {
-        nextHighlightedItem?.scrollIntoView(true)
-      } else if (!isArrowUp && nextHighlightedItemBottom > listBottom) {
-        nextHighlightedItem?.scrollIntoView(false)
+      const now = performance.now()
+      if (now - timeStamp < 1600) {
+        ticking = false
       }
-
+    }
+    const handleDropdownArrowNavigation = () => {
+      if (!listTop || !listBottom) {
+        listTop = listContainer.value?.getBoundingClientRect().top || 0;
+        listBottom = listContainer.value?.getBoundingClientRect().bottom || 0;
+      }
+      if (!highlightedToken.value) {
+        highlightedToken.value = listContainer.value?.querySelector("[data-from-amount-symbol-dropdown-index='0']");
+      } else highlightedToken.value = listContainer.value?.querySelector("[data-from-amount-symbol-dropdown-index].bg-gray-base");
+      requestTick()
     }
 
     const boundingClientRect = ref<DOMRect | undefined>();
@@ -230,14 +279,20 @@ export const TokenSelectDropdown = defineComponent({
                           (e as KeyboardEvent).key === "Enter" &&
                           sortedAndFilteredTokens.value.length > 0
                         ) {
+                          const selectedToken = highlightedToken.value?.querySelector('span')?.innerText.toLowerCase();
+                          const tokenMatch = sortedAndFilteredTokens.value.find(({ amount }) => {
+                            return selectedToken === amount.displaySymbol || selectedToken === amount.symbol;
+                          })
                           props.onSelectAsset(
-                            sortedAndFilteredTokens.value[0].asset,
+                            tokenMatch?.asset || sortedAndFilteredTokens.value[0].asset
                           );
                           searchQuery.value = "";
-                        } else if ((e as KeyboardEvent).key === 'Escape') {
-                          props.onCloseIntent()
+                        }
+                        else if ((e as KeyboardEvent).key === 'Escape') {
+                          props.onCloseIntent();
                         } else if ((e as KeyboardEvent).key === 'ArrowDown' || (e as KeyboardEvent).key === 'ArrowUp' && sortedAndFilteredTokens.value.length > 0) {
-                          handleDropdownArrowNavigation((e as KeyboardEvent).key === 'ArrowUp')                          // if ((e as KeyboardEvent).key ===
+                          (e as KeyboardEvent).key === 'ArrowUp' ? isArrowUp = true : isArrowUp = false
+                          handleDropdownArrowNavigation();
                         }
                       }}
                       value={searchQuery.value}
@@ -257,7 +312,7 @@ export const TokenSelectDropdown = defineComponent({
                       <div>{!props.hideBalances && "Balance"}</div>
                     </div>
                     <div class="w-full h-[302px] relative mr-[-15px]">
-                      <div class="absolute inset-0 w-full h-full overflow-y-scroll" ref={listContainer}>
+                      <div class="absolute inset-0 w-full h-full overflow-y-scroll" ref={listContainer} style={{ willChange: 'transform' }}>
                         <ol>
                           {sortedAndFilteredTokens.value.map((token, index) => {
                             return (
@@ -276,7 +331,7 @@ export const TokenSelectDropdown = defineComponent({
                                   assetValue={token.asset}
                                   class="mr-[8px]"
                                 />
-                                {token.asset.displaySymbol || token.asset.symbol}
+                                <span>{token.asset.displaySymbol || token.asset.symbol}</span>
                                 <div class="flex-1 ml-[8px]" />
                                 {props.hideBalances
                                   ? ""
