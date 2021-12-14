@@ -19,7 +19,7 @@ import { IAsset, Network } from "../../../core/src";
 import { TokenIcon } from "./TokenIcon";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
-
+import { VirtualScroller } from './VirtualScroller'
 export const TokenSelectDropdown = defineComponent({
   props: {
     active: {
@@ -91,6 +91,28 @@ export const TokenSelectDropdown = defineComponent({
         return !excludeSymbolsSet.has(token.asset.symbol.toLowerCase());
       });
     });
+
+    const SETTINGS = {
+      minIndex: 0,
+      maxIndex: sortedAndFilteredTokens.value.length,
+      startIndex: 1,
+      itemHeight: 20,
+      amount: 12,
+      tolerance: 2
+    }
+    console.log('settings', SETTINGS)
+
+    const getData = (offset, limit) => {
+      const data = []
+      const start = Math.max(SETTINGS.minIndex, offset)
+      const end = Math.min(offset + limit - 1, SETTINGS.maxIndex)
+      if (start <= end) {
+        for (let i = start; i <= end; i++) {
+          data.push({ index: i, text: `item${i}` })
+        }
+      }
+      return data
+    }
 
 
     // var duration = '16'
@@ -313,7 +335,8 @@ export const TokenSelectDropdown = defineComponent({
                     </div>
                     <div class="w-full h-[302px] relative mr-[-15px]">
                       <div class="absolute inset-0 w-full h-full overflow-y-scroll" ref={listContainer} style={{ willChange: 'transform' }}>
-                        <ol>
+                        <VirtualScroller settings={SETTINGS} get={getData} />
+                        {/* <ol>
                           {sortedAndFilteredTokens.value.map((token, index) => {
                             return (
                               <li
@@ -339,7 +362,7 @@ export const TokenSelectDropdown = defineComponent({
                               </li>
                             );
                           })}
-                        </ol>
+                        </ol> */}
                       </div>
                     </div>
                   </div>
@@ -352,3 +375,11 @@ export const TokenSelectDropdown = defineComponent({
     );
   },
 });
+
+export const RowTemplate = defineComponent({
+  props: { item: { type: Object, required: true } },
+  setup(props) {
+    return () => (<li class="item" key={props.item.index} >
+      {props.item.text}
+    </li >)
+  }
