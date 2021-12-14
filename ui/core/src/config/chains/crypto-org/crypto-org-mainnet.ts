@@ -7,11 +7,13 @@ export const CRYPTO_ORG_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://crypto.org/explorer/",
   nativeAssetSymbol: "basecro",
   chainId: "crypto-org-chain-mainnet-1",
-  rpcUrl: "https://rpc-crypto-org.keplr.app/",
-  restUrl: "https://lcd-crypto-org.keplr.app/",
+  rpcUrl: "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rpc",
+  restUrl:
+    "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rest",
   keplrChainInfo: {
-    rpc: "https://rpc-crypto-org.keplr.app/",
-    rest: "https://lcd-crypto-org.keplr.app/",
+    rpc: "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rpc",
+    rest:
+      "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rest",
     chainId: "crypto-org-chain-mainnet-1",
     chainName: "Sentinel",
     stakeCurrency: {

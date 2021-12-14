@@ -29,6 +29,7 @@ import {
 } from "../LeaderboardPage/useCompetitionData";
 import { flagsStore } from "@/store/modules/flags";
 import { RouterLink } from "vue-router";
+import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 
 export default defineComponent({
   name: "PoolItem",
@@ -312,8 +313,10 @@ export default defineComponent({
           >
             {this.$props.poolStat?.rewardAPY != null
               ? `${parseFloat(this.$props.poolStat?.rewardAPY || "0").toFixed(
-                  2,
-                )}%`
+                  0,
+                )}% (${aprToWeeklyCompoundedApy(
+                  parseFloat(this.$props.poolStat?.rewardAPY || "0"),
+                ).toFixed(0)}%)`
               : "..."}
           </div>
           <div

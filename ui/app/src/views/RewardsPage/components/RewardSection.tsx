@@ -95,7 +95,7 @@ export const RewardSection = defineComponent({
         {
           name: "Pending Dispensation",
           tooltip:
-            "This is the amount that will be dispensed on Friday. Any new claimable amounts will need to be claimed after the next dispensation.",
+            "This is the amount that will be dispensed on Tuesday. Any new claimable amounts will need to be claimed after the next dispensation.",
           amount: this.rewardProgram.participant
             ?.claimedCommissionsAndRewardsAwaitingDispensation,
         },
