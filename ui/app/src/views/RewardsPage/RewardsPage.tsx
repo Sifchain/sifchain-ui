@@ -156,7 +156,7 @@ export default defineComponent({
                       class="absolute top-[-8px] right-[-8px]"
                     >
                       You will be able to claim additional rewards after the
-                      dispensation run on Saturday morning PST
+                      dispensation run each Tuesday
                     </Button.InlineHelp>
                   )}
                 </Button.Inline>
@@ -170,7 +170,7 @@ export default defineComponent({
                       Claimed - Pending Dispensation
                     </div>
                     <div class="pt-[4px] text-sm opacity-50">
-                      Amount claimed, to be dispensed by Saturday afternoon PST
+                      Amount claimed, to be dispensed by Tuesday evening PST
                     </div>
                     <div class="pt-[7px] text-xl whitespace-pre">
                       {rewardTotals.value == null

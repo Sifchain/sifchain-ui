@@ -149,7 +149,7 @@ export default {
                 <Tooltip>
                   <template #message>
                     <div class="tooltip">
-                      This is the amount that will be dispensed on Friday. Any
+                      This is the amount that will be dispensed on Tuesday. Any
                       new claimable amounts will need to be claimed after the
                       next dispensation.
                     </div>
