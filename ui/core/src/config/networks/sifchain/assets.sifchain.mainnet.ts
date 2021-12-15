@@ -982,8 +982,6 @@ const assets: {
       label: "Cosmostarter",
       imageUrl:
         "https://assets.coingecko.com/coins/images/19875/small/cosmosstarter.PNG?1636083064",
-      decommissioned: true,
-      decommissionReason: "coming soon",
     },
     {
       address: "0xae697f994fc5ebc000f8e22ebffee04612f98a0d",
@@ -996,8 +994,6 @@ const assets: {
       label: "LGCY Network",
       imageUrl:
         "https://assets.coingecko.com/coins/images/12181/small/LGCY_network.jpg?1597926587",
-      decommissioned: true,
-      decommissionReason: "coming soon",
     },
     {
       symbol: "ujuno",
