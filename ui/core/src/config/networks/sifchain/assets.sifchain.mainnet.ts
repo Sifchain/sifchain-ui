@@ -899,7 +899,7 @@ const assets: {
       imageUrl:
         "https://assets.coingecko.com/coins/images/5041/large/logo_-_2021-01-10T210801.390.png?1610284134",
       name: "BitSong",
-      displaySymbol: "BTSG",
+      displaySymbol: "BTSG (ERC-20)",
       symbol: "cbtsg",
       network: "sifchain",
       homeNetwork: "ethereum",
