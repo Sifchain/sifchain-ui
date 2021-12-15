@@ -9,6 +9,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
 import { Button } from "@/components/Button/Button";
+import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 
 export default defineComponent({
   name: "StatsPage",
@@ -73,10 +74,16 @@ export default defineComponent({
         ),
       },
       {
-        name: "Reward APR",
+        name: "Reward APR (APY)",
         sortBy: "rewardApy",
-        class: "min-w-[100px] text-right",
+        class: "min-w-[140px] text-right",
         ref: ref<HTMLElement>(),
+        message: (
+          <div>
+            The Reward APY is calculated as the rate of return from the given
+            reward APR, compounded weekly.
+          </div>
+        ),
       },
       {
         name: "Total APR",
@@ -243,7 +250,11 @@ export default defineComponent({
                         {item.poolApy.toFixed(2)}%
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {(+item.rewardApy || 0).toFixed(2)}%
+                        {(+item.rewardApy || 0).toFixed(0)}% (
+                        {aprToWeeklyCompoundedApy(+item.rewardApy || 0).toFixed(
+                          0,
+                        )}
+                        %)
                       </td>
                       <td class="align-middle text-right text-mono">
                         {(+item.poolApy + +item.rewardApy || 0).toFixed(2)}%
