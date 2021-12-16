@@ -8,6 +8,11 @@ import * as EthbridgeV1Query from "@sifchain/sdk/src/generated/proto/sifnode/eth
 import * as EthbridgeV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/ethbridge/v1/tx";
 import * as IBCTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
 import * as CosmosBankV1Tx from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
+import * as CosmosStakingV1Tx from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx";
+import * as CosmosStakingV1Query from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/query";
+import * as CosmosDistributionV1Tx from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/tx";
+import * as CosmosDistributionV1Query from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/query";
+
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { buildFeeTable, defaultGasPrice } from "@cosmjs/stargate";
 import { Registry } from "@cosmjs/proto-signing/build/registry";
@@ -105,6 +110,8 @@ export class NativeDexClient {
       ...this.createCustomTypesForModule(CLPV1Tx),
       ...this.createCustomTypesForModule(TokenRegistryV1Tx),
       ...this.createCustomTypesForModule(CosmosBankV1Tx),
+      ...this.createCustomTypesForModule(CosmosDistributionV1Tx),
+      ...this.createCustomTypesForModule(CosmosStakingV1Tx),
     ];
   }
 
@@ -287,6 +294,10 @@ export class NativeDexClient {
       registry: createTxClient<TokenRegistryV1Tx.Msg>(TokenRegistryV1Tx),
       ibc: createTxClient<IBCTransferV1Tx.Msg>(IBCTransferV1Tx),
       bank: createTxClient<CosmosBankV1Tx.Msg>(CosmosBankV1Tx),
+      staking: createTxClient<CosmosStakingV1Tx.Msg>(CosmosStakingV1Tx),
+      distribution: createTxClient<CosmosDistributionV1Tx.Msg>(
+        CosmosDistributionV1Tx,
+      ),
     };
     return txs;
   }
@@ -303,6 +314,10 @@ export class NativeDexClient {
           clp: new CLPV1Query.QueryClientImpl(rpcClient),
           dispensation: new DispensationV1Query.QueryClientImpl(rpcClient),
           ethbridge: new EthbridgeV1Query.QueryClientImpl(rpcClient),
+          staking: new CosmosStakingV1Query.QueryClientImpl(rpcClient),
+          distribution: new CosmosDistributionV1Query.QueryClientImpl(
+            rpcClient,
+          ),
         };
       },
     );
