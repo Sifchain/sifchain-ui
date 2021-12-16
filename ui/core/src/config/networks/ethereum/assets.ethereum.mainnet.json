@@ -1017,7 +1017,7 @@
       "homeNetwork": "ethereum",
       "label": "Cosmostarter",
       "imageUrl": "https://assets.coingecko.com/coins/images/19875/small/cosmosstarter.PNG?1636083064",
-      "decommissioned": false
+      "decommissioned": true
     },
     {
       "address": "0xae697f994fc5ebc000f8e22ebffee04612f98a0d",
