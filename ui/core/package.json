@@ -25,6 +25,7 @@
     "@cosmjs/stargate": "^0.25.5",
     "@cosmjs/tendermint-rpc": "^0.25.5",
     "@cosmostation/keystation-es6": "^0.1.1",
+    "@keplr-wallet/cosmos": "^0.9.9",
     "@keplr-wallet/stores": "^0.9.9",
     "@keplr-wallet/types": "^0.9.9",
     "@metamask/detect-provider": "^1.2.0",

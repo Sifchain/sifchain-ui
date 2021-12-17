@@ -285,6 +285,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       // transfering this entry's token elsewhere: use ibc hash
       transferDenom = params.assetAmount.asset.ibcDenom || ibcDenom;
     }
+    transferDenom = "uatom";
 
     const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
     const client = await NativeDexClient.connect(
@@ -555,7 +556,7 @@ Data
         "sender": "cosmos1shywxv2g8gvjcqknvkxu4p6lkqhfclwwhh0q4u",
         "receiver": "sif1shywxv2g8gvjcqknvkxu4p6lkqhfclwwj2qk6h",
         "token": {
-          "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          "denom": "uatom",
           "amount": "10000"
         },
         "timeout_height": {

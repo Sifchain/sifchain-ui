@@ -78,6 +78,7 @@ export default class DemerisSigningClient
       messages: signed.msgs.map((msg) => aminoTypes.fromAmino(msg)),
       memo: signed.memo,
     };
+    console.log("signedTxBody", signedTxBody);
 
     // @ts-ignore
     const signedTxBodyEncodeObject: TxBodyEncodeObject = {
