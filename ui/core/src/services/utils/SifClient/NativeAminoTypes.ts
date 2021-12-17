@@ -2,6 +2,7 @@ import { AminoConverter, AminoTypes } from "@cosmjs/stargate";
 import { NativeDexClient } from "./NativeDexClient";
 import * as inflection from "inflection";
 import { AminoMsg } from "@cosmjs/amino";
+import Long from "long";
 
 export class NativeAminoTypes extends AminoTypes {
   constructor() {
@@ -31,13 +32,17 @@ export class NativeAminoTypes extends AminoTypes {
     wrapAdditionToAminoFn(
       "/ibc.applications.transfer.v1.MsgTransfer",
       (value: any, originalToAmino: ToAminoFn) => {
-        value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
-        value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
-        const converted = originalToAmino(value);
-        delete converted.timeout_timestamp;
-        if (converted.timeout_height.revision_number == "0") {
-          delete converted.timeout_height.revision_number;
+        // value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
+        // value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
+        if (value.timeoutTimestamp instanceof Long) {
+          value.timeoutTimestamp = value.timeoutTimestamp.toString();
         }
+        const converted = originalToAmino(value);
+        // delete converted.timeout_timestamp;
+        // if (converted.timeout_height.revision_number == "0") {
+        //   delete converted.timeout_height.revision_number;
+        // }
+        converted.timeout_height = {};
         return converted;
       },
     );

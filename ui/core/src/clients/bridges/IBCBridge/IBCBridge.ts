@@ -44,6 +44,7 @@ import { BaseBridge, BridgeParams, IBCBridgeTx, BridgeTx } from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";
 import { parseTxFailure } from "../../../services/SifService/parseTxFailure";
 import { fromBaseUnits, toBaseUnits } from "utils";
+import Long from "long";
 
 export type IBCBridgeContext = {
   // applicationNetworkEnvironment: NetworkEnv;
@@ -259,6 +260,12 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       receivingStargateCient,
       this.transferTimeoutMinutes,
     );
+    const timeoutTimestampInSeconds = Math.floor(
+      new Date().getTime() / 1000 + 60 * this.transferTimeoutMinutes,
+    );
+    const timeoutTimestampNanoseconds = timeoutTimestampInSeconds
+      ? Long.fromNumber(timeoutTimestampInSeconds).multiply(1_000_000_000)
+      : undefined;
 
     if (!transferTokenEntry) {
       throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
@@ -305,7 +312,10 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
           denom: transferDenom,
           amount: params.assetAmount.toBigInt().toString(),
         },
-        timeoutHeight: timeoutHeight,
+        // timeoutHeight: timeoutHeight,
+        // timeoutHeight: {}, // @ts-ignore
+        // @ts-ignore
+        timeoutTimestamp: timeoutTimestampNanoseconds,
       }),
     ];
 
@@ -563,6 +573,76 @@ Data
           "revision_number": "1",
           "revision_height": "4684092"
         }
+      }
+    }
+  ],
+  "memo": ""
+}
+*/
+/*
+ * Emeris
+ *
+ * {
+  "chain_id": "osmosis-1",
+  "account_number": "136813",
+  "sequence": "1",
+  "fee": {
+    "gas": "500000",
+    "amount": [
+      {
+        "amount": "0",
+        "denom": "uosmo"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-0",
+        "token": {
+          "amount": "100150",
+          "denom": "uosmo"
+        },
+        "sender": "osmo1cnfwkwccnt95zzngqlyqx94k6px2qh4vzl7qhv",
+        "receiver": "cosmos1cnfwkwccnt95zzngqlyqx94k6px2qh4v2ydsp7",
+        "timeout_height": {},
+        "timeout_timestamp": "1639776180832000000"
+      }
+    }
+  ],
+  "memo": ""
+}*/
+/*
+SIFCHAIN NEW
+{
+  "chain_id": "cosmoshub-4",
+  "account_number": "415665",
+  "sequence": "1",
+  "fee": {
+    "gas": "500000",
+    "amount": [
+      {
+        "denom": "uatom",
+        "amount": "12500"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-192",
+        "sender": "cosmos1cnfwkwccnt95zzngqlyqx94k6px2qh4v2ydsp7",
+        "receiver": "sif1cnfwkwccnt95zzngqlyqx94k6px2qh4v0ezxw4",
+        "token": {
+          "denom": "uatom",
+          "amount": "10000"
+        },
+        "timeout_timestamp": "1639777603000000000",
+        "timeout_height": {}
       }
     }
   ],
