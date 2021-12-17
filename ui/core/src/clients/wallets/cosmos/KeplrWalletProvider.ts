@@ -192,73 +192,73 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       );
     }
 
-    const signedTx = await demerisClient.signWMeta(
-      account.address,
-      tx.msgs,
+    // const signedTx = await demerisClient.signWMeta(
+    //   account.address,
+    //   tx.msgs,
+    //   fee,
+    //   tx.memo,
+    //   {
+    //     accountNumber: account.accountNumber,
+    //     sequence: account.sequence,
+    //     chainId: chainConfig.chainId,
+    //   },
+    // );
+
+    const keplr = (await getKeplrProvider())!;
+    const signDoc = makeSignDoc(
+      aminoMsgs,
       fee,
-      tx.memo,
-      {
-        accountNumber: account.accountNumber,
-        sequence: account.sequence,
-        chainId: chainConfig.chainId,
+      chainConfig.chainId,
+      tx.memo || "",
+      account!.accountNumber.toString(),
+      account!.sequence.toString(),
+    );
+    keplr.defaultOptions = {
+      sign: {
+        preferNoSetFee: false,
+        preferNoSetMemo: true,
       },
+    };
+    const signResponse = await keplr.signAmino(
+      chainConfig.chainId,
+      account.address,
+      signDoc,
     );
 
-    // const keplr = (await getKeplrProvider())!;
-    // const signDoc = makeSignDoc(
-    //   aminoMsgs,
-    //   fee,
-    //   chainConfig.chainId,
-    //   tx.memo || "",
-    //   account!.accountNumber.toString(),
-    //   account!.sequence.toString(),
-    // );
-    // keplr.defaultOptions = {
-    //   sign: {
-    //     preferNoSetFee: false,
-    //     preferNoSetMemo: true,
-    //   },
-    // };
-    // const signResponse = await keplr.signAmino(
-    //   chainConfig.chainId,
-    //   account.address,
-    //   signDoc,
-    // );
-
-    // const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-    //   bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-    //     messages: protoMsgs,
-    //     memo: signResponse.signed.memo,
-    //   }).finish(),
-    //   authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
-    //     signerInfos: [
-    //       {
-    //         publicKey: {
-    //           type_url: "/cosmos.crypto.secp256k1.PubKey",
-    //           value: cosmos.crypto.secp256k1.PubKey.encode({
-    //             key: Buffer.from(
-    //               signResponse.signature.pub_key.value,
-    //               "base64",
-    //             ),
-    //           }).finish(),
-    //         },
-    //         modeInfo: {
-    //           single: {
-    //             mode:
-    //               cosmos.tx.signing.v1beta1.SignMode
-    //                 .SIGN_MODE_LEGACY_AMINO_JSON,
-    //           },
-    //         },
-    //         sequence: Long.fromString(signResponse.signed.sequence),
-    //       },
-    //     ],
-    //     fee: {
-    //       amount: signResponse.signed.fee.amount as cosmos.base.v1beta1.ICoin[],
-    //       gasLimit: Long.fromString(signResponse.signed.fee.gas),
-    //     },
-    //   }).finish(),
-    //   signatures: [Buffer.from(signResponse.signature.signature, "base64")],
-    // }).finish();
+    const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
+      bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+        messages: protoMsgs,
+        memo: signResponse.signed.memo,
+      }).finish(),
+      authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
+        signerInfos: [
+          {
+            publicKey: {
+              type_url: "/cosmos.crypto.secp256k1.PubKey",
+              value: cosmos.crypto.secp256k1.PubKey.encode({
+                key: Buffer.from(
+                  signResponse.signature.pub_key.value,
+                  "base64",
+                ),
+              }).finish(),
+            },
+            modeInfo: {
+              single: {
+                mode:
+                  cosmos.tx.signing.v1beta1.SignMode
+                    .SIGN_MODE_LEGACY_AMINO_JSON,
+              },
+            },
+            sequence: Long.fromString(signResponse.signed.sequence),
+          },
+        ],
+        fee: {
+          amount: signResponse.signed.fee.amount as cosmos.base.v1beta1.ICoin[],
+          gasLimit: Long.fromString(signResponse.signed.fee.gas),
+        },
+      }).finish(),
+      signatures: [Buffer.from(signResponse.signature.signature, "base64")],
+    }).finish();
 
     return new NativeDexSignedTransaction(tx, signedTx);
   }
@@ -331,7 +331,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const chainConfig = this.getIBCChainConfig(chain);
     const keplr = await getKeplrProvider();
 
-    // const txHashHex = await this.sendTx(chain, signed, BroadcastMode.Block);
+    const txHashHex = await this.sendTx(chain, signed, BroadcastMode.Block);
 
     // const txHashUInt8Array = await keplr!.sendTx(
     //   chainConfig.chainId,
@@ -340,13 +340,13 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     // );
     // const txHashHex = toHex(txHashUInt8Array).toUpperCase();
 
-    const signingStargate = await SigningStargateClient.connectWithSigner(
-      chainConfig.rpcUrl,
-      await this.getSendingSigner(chain),
-      {},
-    );
-    const res = await signingStargate.broadcastTx(signed);
-    const txHashHex = res.transactionHash;
+    // const signingStargate = await SigningStargateClient.connectWithSigner(
+    //   chainConfig.rpcUrl,
+    //   await this.getSendingSigner(chain),
+    //   {},
+    // );
+    // const res = await signingStargate.broadcastTx(signed);
+    // const txHashHex = res.transactionHash;
 
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
     const resultRaw = await stargate.getTx(txHashHex);
