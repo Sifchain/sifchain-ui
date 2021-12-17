@@ -484,3 +484,87 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
   }
 }
 export default IBCBridge.create;
+
+/*
+ * Osmo
+ * 
+Cosmos
+Details
+Data
+{
+  "chain_id": "cosmoshub-4",
+  "account_number": "392354",
+  "sequence": "37",
+  "fee": {
+    "gas": "500000",
+    "amount": [
+      {
+        "denom": "uatom",
+        "amount": "12500"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-141",
+        "token": {
+          "denom": "uatom",
+          "amount": "100000"
+        },
+        "sender": "cosmos1shywxv2g8gvjcqknvkxu4p6lkqhfclwwhh0q4u",
+        "receiver": "osmo1shywxv2g8gvjcqknvkxu4p6lkqhfclwwlvusrw",
+        "timeout_height": {
+          "revision_number": "1",
+          "revision_height": "2410962"
+        }
+      }
+    }
+  ],
+  "memo": ""
+}
+*/
+
+/*
+ * Sifchain
+ * 
+Cosmos
+Details
+Data
+{
+  "chain_id": "cosmoshub-4",
+  "account_number": "392354",
+  "sequence": "37",
+  "fee": {
+    "gas": "500000",
+    "amount": [
+      {
+        "denom": "uatom",
+        "amount": "12500"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-192",
+        "sender": "cosmos1shywxv2g8gvjcqknvkxu4p6lkqhfclwwhh0q4u",
+        "receiver": "sif1shywxv2g8gvjcqknvkxu4p6lkqhfclwwj2qk6h",
+        "token": {
+          "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          "amount": "10000"
+        },
+        "timeout_height": {
+          "revision_number": "1",
+          "revision_height": "4684092"
+        }
+      }
+    }
+  ],
+  "memo": ""
+}
+*/

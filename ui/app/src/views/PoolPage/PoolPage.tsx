@@ -69,6 +69,7 @@ export default defineComponent({
     },
     sanitizedPoolData() {
       if (!this.isLoaded) return [];
+      console.log(this.allPoolsData);
 
       const result = this.allPoolsData
         .filter((item: PoolDataItem) => {
