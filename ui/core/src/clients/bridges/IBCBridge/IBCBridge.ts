@@ -268,9 +268,16 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       await provider.getQueryClient(params.fromChain)
     ).bank.totalSupply();
 
+    console.log(
+      "from chain id",
+      params.fromChain.chainConfig.chainId,
+      transferTokenEntry,
+    );
+
     let transferDenom: string;
     if (
-      totalSupply.some((coin) => coin.denom === transferTokenEntry.baseDenom)
+      params.fromChain.chainConfig.chainId ===
+      transferTokenEntry.ibcCounterpartyChainId
     ) {
       // transfering FROM token entry's token's chain: use baseDenom
       transferDenom = transferTokenEntry.baseDenom;
