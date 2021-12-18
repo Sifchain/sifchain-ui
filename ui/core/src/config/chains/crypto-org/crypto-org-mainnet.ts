@@ -2,7 +2,6 @@ import { Network, IBCChainConfig } from "../../../entities";
 
 export const CRYPTO_ORG_MAINNET: IBCChainConfig = {
   chainType: "ibc",
-  underMaintenance: true,
   network: Network.CRYPTO_ORG,
   displayName: "Crypto.org",
   blockExplorerUrl: "https://crypto.org/explorer/",
