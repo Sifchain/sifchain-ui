@@ -10,7 +10,7 @@ import {
 import { Uint53 } from "@cosmjs/math";
 import pLimit from "p-limit";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { Chain } from "../../../entities";
+import { Chain, Network } from "../../../entities";
 import { WalletProviderContext } from "../WalletProvider";
 import { toHex } from "@cosmjs/encoding";
 import {
@@ -130,7 +130,37 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return address;
   }
 
+  async signProtobuf(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+    const chainConfig = this.getIBCChainConfig(chain);
+    const signer = await this.getSendingSigner(chain);
+
+    const stargate = await SigningStargateClient.connectWithSigner(
+      chainConfig.rpcUrl,
+      signer,
+    );
+
+    const signed = await stargate.sign(
+      tx.fromAddress,
+      tx.msgs,
+      {
+        amount: [tx.fee.price],
+        gas: tx.fee.gas,
+      },
+      tx.memo,
+    );
+    return new NativeDexSignedTransaction(tx, signed);
+  }
+
   async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+    // For IBC imports: use protobuf for now.
+    // Amino messages on external 0.44 chains are having compatibility issues.
+    if (
+      tx.msgs[0]?.typeUrl === "/ibc.applications.transfer.v1.MsgTransfer" &&
+      chain.network !== Network.SIFCHAIN
+    ) {
+      return this.signProtobuf(chain, tx);
+    }
+
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
 
@@ -181,9 +211,23 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
-    const signed = tx.signed as StdTx;
-    if (!signed.msg)
+    if ((tx.signed as TxRaw).authInfoBytes) {
+      const chainConfig = this.getIBCChainConfig(chain);
+      const signer = await this.getSendingSigner(chain);
+
+      const stargate = await SigningStargateClient.connectWithSigner(
+        chainConfig.rpcUrl,
+        signer,
+      );
+      const result = await stargate.broadcastTx(
+        Uint8Array.from(TxRaw.encode(tx.signed as TxRaw).finish()),
+      );
+      return result as BroadcastTxResult;
+    } else if (!(tx.signed as StdTx).msg) {
       throw new Error("Invalid signedTx, possibly it was not amino signed.");
+    }
+
+    const signed = tx.signed as StdTx;
 
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);

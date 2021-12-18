@@ -264,13 +264,10 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       throw new Error("Invalid transfer symbol not in whitelist: " + symbol);
     }
 
-    const totalSupply = await (
-      await provider.getQueryClient(params.fromChain)
-    ).bank.totalSupply();
-
     let transferDenom: string;
     if (
-      totalSupply.some((coin) => coin.denom === transferTokenEntry.baseDenom)
+      params.fromChain.chainConfig.chainId ===
+      transferTokenEntry.ibcCounterpartyChainId
     ) {
       // transfering FROM token entry's token's chain: use baseDenom
       transferDenom = transferTokenEntry.baseDenom;

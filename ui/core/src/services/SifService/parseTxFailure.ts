@@ -102,7 +102,7 @@ export function parseTxFailure(txFailure: {
       code: ErrorCode.UNKNOWN_FAILURE,
       hash: txFailure.transactionHash,
       memo:
-        "Error processing transaction with Ledger. A fix is in progress for this. Until then, please use Sifchain without a Ledger wallet.",
+        "Ledger IBC imports are currently disabled due to an Amino incompatibility issue with Cosmos chains that have upgraded to 0.44. A fix will be out soon.",
       state: "failed",
     };
   }
