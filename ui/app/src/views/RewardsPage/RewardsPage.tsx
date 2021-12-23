@@ -47,7 +47,7 @@ export default defineComponent({
       );
     });
 
-    const showAllRef = ref(false);
+    const showAllRef = ref(true);
 
     const isClaimModalOpened = ref(false);
     const claimRewardType = ref<"vs" | "lm">("lm");
@@ -275,7 +275,8 @@ export default defineComponent({
                   if (showAllRef.value) return true;
 
                   const isCurrent =
-                    new Date() < new Date(program.endDateTimeISO);
+                    new Date().getTime() <
+                    new Date(program.endDateTimeISO).getTime();
                   if (isCurrent) return true;
 
                   return (
@@ -285,6 +286,11 @@ export default defineComponent({
                     (program.participant
                       ?.totalClaimableCommissionsAndClaimableRewards || 0) > 0
                   );
+                })
+                .sort((a, b) => {
+                  const aIsCurrent = new Date() < new Date(a.endDateTimeISO);
+                  const bIsCurrent = new Date() < new Date(b.endDateTimeISO);
+                  return +bIsCurrent - +aIsCurrent;
                 })
                 .map((program, index, items) => {
                   return (
