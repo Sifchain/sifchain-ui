@@ -109,10 +109,8 @@ export default defineComponent({
                 } Connection Under Maintenance`
               : null,
             props: {
-              disabled:
-                props.tokenItem.asset.decommissioned ||
-                useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
-                  .underMaintenance,
+              disabled: useChains().get(props.tokenItem.asset.homeNetwork)
+                .chainConfig.underMaintenance,
               replace: false,
               to: getExportLocation("setup", {
                 symbol: props.tokenItem.asset.symbol,
