@@ -90,12 +90,16 @@ export default defineComponent({
         );
       });
 
-      const disabledClaim =
-        !flagsStore.state.rewardClaims ||
-        !!lmClaim.value ||
+      const disabledClaim = !flagsStore.state.rewardClaims || !!lmClaim.value;
+
+      /*
+        Utilize if there is large rollover between distribution times 
+        & claims need to be disabled during distributions
+         ||
         !rewardProgramResponse.data.value?.rewardPrograms.some(
           (p) => p.participant?.totalClaimableCommissionsAndClaimableRewards,
         );
+      */
       return (
         <Layout>
           <PageCard
