@@ -120,15 +120,22 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
       amount.asset.address!,
     );
 
-    const sendArgs = {
-      from: tx.fromAddress,
-      value: 0,
-      gas: 100000,
-    };
-    const res = await tokenContract.methods
-      .approve(tx.msgs[0].contractAddress, amount.toBigInt().toString())
-      .send(sendArgs);
-    console.log("approveBridgeBankSpend:", res);
+    const requiredAmount = await this.getRequiredApprovalAmount(
+      chain,
+      tx,
+      amount,
+    );
+    if (requiredAmount?.greaterThan("0")) {
+      const sendArgs = {
+        from: tx.fromAddress,
+        value: 0,
+        gas: 125000,
+      };
+      const res = await tokenContract.methods
+        .approve(tx.msgs[0].contractAddress, amount.toBigInt().toString())
+        .send(sendArgs);
+      console.log("approveBridgeBankSpend:", res);
+    }
   }
   sign(
     chain: Chain,
