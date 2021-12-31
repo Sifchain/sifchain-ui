@@ -51,7 +51,7 @@ export function getBridgeEventDetails(
       return {
         heading: "Waiting for Approval",
         description:
-          "Approving transaction in wallet (this may take a few minutes to confirm...)",
+          "Approving spend (this may take a few minutes to confirm on-chain...)",
       };
     }
     // case 'approved': {} What do with this???
