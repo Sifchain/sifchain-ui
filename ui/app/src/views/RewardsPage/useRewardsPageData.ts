@@ -225,14 +225,22 @@ export const useTimeUntilNextDispensation = () => {
     isMounted.value = false;
   });
   return computed(() => {
-    const dateOfNextDispensation = calculateDateOfNextDispensation(
-      currentDate.value,
-    );
-    return {
-      timeUntilNextDispensation: getHumanReadableTimeUntil(
+    try {
+      const dateOfNextDispensation = calculateDateOfNextDispensation(
+        currentDate.value,
+      );
+      return {
+        timeUntilNextDispensation: getHumanReadableTimeUntil(
+          dateOfNextDispensation,
+        ),
         dateOfNextDispensation,
-      ),
-      dateOfNextDispensation,
-    };
+      };
+    } catch (e) {
+      console.error(e);
+      return {
+        timeUntilNextDispensation: "browser not supported",
+        dateOfNextDispensation: new Date(0),
+      };
+    }
   });
 };
