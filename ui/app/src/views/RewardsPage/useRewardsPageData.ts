@@ -189,7 +189,7 @@ function calculateDateOfNextDispensation(currentDate: Date) {
   while (hoursIterationLimit--) {
     date.setHours(date.getHours() + 1);
     // output format: Friday, December 31, 2021 at 4:17:29 PM PST
-    const formattedDate = new Intl.DateTimeFormat(["en-us"], {
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
       timeZone: "PST",
       dateStyle: "full",
       timeStyle: "long",
