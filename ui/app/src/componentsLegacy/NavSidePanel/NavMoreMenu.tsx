@@ -10,6 +10,10 @@ export default defineComponent({
   setup(props) {
     const items = [
       {
+        name: "Documentation",
+        href: "https://docs.sifchain.finance/resources/sifchain-dex-ui",
+      },
+      {
         name: "Newsletter",
         href: "https://sifchain.finance/#newsletter",
       },
@@ -23,13 +27,11 @@ export default defineComponent({
       },
       {
         name: "Tutorials",
-        href:
-          "https://www.youtube.com/playlist?list=PLj5x_t273CNiBvcH6GjI9gBPzMFm9BlCL",
+        href: "https://www.youtube.com/playlist?list=PLj5x_t273CNiBvcH6GjI9gBPzMFm9BlCL",
       },
       {
         name: "Privacy Policy",
-        href:
-          "https://sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf",
+        href: "https://sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf",
       },
     ];
     return () => (
