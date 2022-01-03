@@ -125,16 +125,19 @@ export default defineComponent({
         <div
           ref={sidebarRef}
           class={[
-            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-gray-base text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
+            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-black text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
             isOpenRef.value && "!translate-x-0",
           ]}
         >
           <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
             <div class="top">
-              <div class="mt-[38px] shorter:mt-[19px] flex justify-center">
-                <Logo class="w-[119px] shorter:w-[80px]" />
+              <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
+                <Logo class="w-[119px] shorter:w-[90px]" />
               </div>
-              <div class="mt-[9.3vmin] shorter:mt-[3vmin]">
+              {/* <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
+                <Logo class="w-full h-[50px]" />
+              </div> */}
+              <div class="mt-[9.3vmin] shorter:mt-[7.5vmin]">
                 <NavSidePanelItem
                   displayName="Dashboard"
                   icon="navigation/dashboard"
@@ -171,6 +174,23 @@ export default defineComponent({
                   href="/rewards"
                 />
                 <NavSidePanelItem
+                  icon="navigation/changelog"
+                  onClick={() => (changelogOpenRef.value = true)}
+                  displayName={<div class="flex items-center">Changelog</div>}
+                  action={
+                    changelogViewedVersion.isLatest() ? undefined : (
+                      <div class="flex flex-1 justify-end">
+                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
+                      </div>
+                    )
+                  }
+                />
+                {changelogOpenRef.value && (
+                  <ChangelogModal
+                    onClose={() => (changelogOpenRef.value = false)}
+                  />
+                )}
+                <NavSidePanelItem
                   displayName="Stake"
                   icon="navigation/stake"
                   href="https://wallet.keplr.app/#/sifchain/stake"
@@ -185,7 +205,7 @@ export default defineComponent({
                     </div>
                   }
                 />
-                <NavSidePanelItem
+                {/* <NavSidePanelItem
                   displayName="Documents"
                   icon="navigation/documents"
                   href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
@@ -199,6 +219,7 @@ export default defineComponent({
                       />
                     </div>
                   }
+<<<<<<< HEAD
                 />
                 <NavSidePanelItem
                   icon="navigation/changelog"
@@ -212,6 +233,11 @@ export default defineComponent({
                     )
                   }
                 />
+                /> */}
+
+                {votingOpenRef.value && (
+                  <VotingModal onClose={() => (votingOpenRef.value = false)} />
+                )}
                 {shouldAllowFaucetFunding() && (
                   <NavSidePanelItem
                     displayName="Get Free Rowan"
@@ -219,6 +245,31 @@ export default defineComponent({
                     href="/balances/get-rowan"
                   />
                 )}
+                {!accountStore.state.sifchain.connecting &&
+                  // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+                  accountStore.state.sifchain.hasLoadedBalancesOnce &&
+                  !accountStore.state.sifchain.balances.some(
+                    // does not have rowan
+                    (b) =>
+                      b.asset.symbol.includes("rowan") &&
+                      b.amount.greaterThan("1".padEnd(b.asset.decimals, "0")),
+                  ) && (
+                    <NavSidePanelItem
+                      displayName="Rowan Faucet"
+                      icon="navigation/rowan"
+                      href="https://stakely.io/faucet/sifchain-rowan"
+                      class="group"
+                      action={
+                        <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                          <AssetIcon
+                            icon="interactive/open-external"
+                            size={16}
+                            class="opacity-50"
+                          />
+                        </div>
+                      }
+                    />
+                  )}
                 <Tooltip
                   trigger="click"
                   placement="bottom"
@@ -353,22 +404,26 @@ export default defineComponent({
                 </div>
               )}
             <div class="bottom mt-[10px]">
-              <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
-                <span class="inline-flex items-center justify-center h-[26px] font-medium text-sm text-info-base px-[10px] border border-solid border-info-base rounded-full">
-                  TVL: {tvl.value ? `$${prettyNumber(tvl.value)}` : "..."}
-                </span>
-                <div />
-                <span class="inline-flex items-center justify-center h-[26px] mt-[10px] font-medium text-sm text-accent-base pr-[10px] pl-[5px] border border-solid border-accent-base rounded-full">
-                  <img
-                    class="w-[20px] h-[20px] mr-[4px]"
-                    alt="ROWAN price"
-                    src="/images/tokens/ROWAN.svg"
-                  />
-                  ROWAN:{" "}
-                  {rowanPrice.value
-                    ? `$${(+rowanPrice.value).toFixed(5)}`
-                    : "..."}
-                </span>
+              <div class="transition-all w-full text-left mb-[2.2vh]">
+                <NavSidePanelItem
+                  class={"opacity-50 mt-[0px]"}
+                  displayName={
+                    <>{tvl.value ? `$${prettyNumber(tvl.value)}` : "..."} TVL</>
+                  }
+                  icon="interactive/lock"
+                ></NavSidePanelItem>
+                <NavSidePanelItem
+                  class={"opacity-50 mt-[0px]"}
+                  displayName={
+                    <>
+                      {rowanPrice.value
+                        ? `$${(+rowanPrice.value).toFixed(5)}`
+                        : "..."}{" "}
+                      / ROWAN
+                    </>
+                  }
+                  icon="navigation/rowan"
+                ></NavSidePanelItem>
               </div>
               <Tooltip
                 placement="top-start"

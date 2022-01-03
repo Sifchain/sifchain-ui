@@ -144,7 +144,7 @@ export const runTransfer = async (
     await bridge.approveTransfer(params);
     onBridgeEvent({ type: "approve_started" });
   } catch (error) {
-    onBridgeEvent({
+    return onBridgeEvent({
       type: "approve_error",
       tx: {
         state: "failed",

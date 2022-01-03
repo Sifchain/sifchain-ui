@@ -48,6 +48,8 @@ module.exports = {
         sidebar: SIDEBAR_WIDTH,
       },
       colors: {
+        white: "#e6e6e6",
+        black: "rgb(12, 17, 19)",
         accent: {
           // Tacha Gold
           base: "#D4B553",

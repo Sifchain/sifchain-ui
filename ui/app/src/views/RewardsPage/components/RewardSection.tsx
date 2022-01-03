@@ -37,6 +37,9 @@ const REWARD_TYPE_DISPLAY_DATA: Record<string, { icon: IconName }> = {
   expansion_bonus: {
     icon: "navigation/people",
   },
+  expansion_v2_bonus: {
+    icon: "navigation/people",
+  },
 };
 
 export const getRewardProgramDisplayData = (rewardProgramName: string) => {
@@ -152,6 +155,12 @@ export const RewardSection = defineComponent({
         <section
           class="text flex items-center cursor-pointer"
           onClick={() => (this.expanded = !this.expanded)}
+          style={{
+            opacity:
+              new Date(this.rewardProgram.endDateTimeISO).getTime() < Date.now()
+                ? 0.5
+                : 1,
+          }}
         >
           <div
             class={[
@@ -189,7 +198,9 @@ export const RewardSection = defineComponent({
             {/* Full Amount */}
             {this.rewardProgram.distributionPattern === "GEYSER" ? null : (
               <>
-                {this.rewardProgram.rewardProgramName === "expansion_bonus"
+                {["expansion_bonus", "expansion_v2_bonus"].includes(
+                  this.rewardProgram.rewardProgramName,
+                )
                   ? "+ "
                   : ""}
                 {this.rewardProgram.summaryAPY.toFixed(4)} %
