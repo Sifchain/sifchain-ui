@@ -185,7 +185,8 @@ export const useRewardsPageData = () => {
 function calculateDateOfNextDispensation(currentDate: Date) {
   const date = currentDate;
   date.setMinutes(0, 0, 0);
-  while (true) {
+  let hoursIterationLimit = 24 * 7.5;
+  while (hoursIterationLimit--) {
     date.setHours(date.getHours() + 1);
     // output format: Friday, December 31, 2021 at 4:17:29 PM PST
     const formattedDate = new Intl.DateTimeFormat(["en-us"], {
@@ -198,9 +199,9 @@ function calculateDateOfNextDispensation(currentDate: Date) {
       formattedDate.includes("Monday") &&
       formattedDate.includes("8:00:00 AM PST")
     )
-      break;
+      return date;
   }
-  return date;
+  throw new Error("date not found");
 }
 
 function getHumanReadableTimeUntil(date: Date) {
