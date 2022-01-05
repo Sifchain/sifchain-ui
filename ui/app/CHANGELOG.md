@@ -1,4 +1,11 @@
-
+## Release 2022.01.03
+* Added rowan balance in navigation sidebar 
+* increased download speed by 1000x
+* Displayed "export" by default on balances page
+* Restyled row borders (no more white dashes)
+* Optimized "connected" and "danger" colors for eye appeal
+* Added an easter egg for the first person to read this
+  * Mnemonic: credit spray elite grass immense evidence daughter play swift cruel warfare pottery daring flash educate heart direct wheat outdoor jump odor regular ocean road
 
 ## Release 2022.01.02
 * Added Reward Claim Countdown Timer
