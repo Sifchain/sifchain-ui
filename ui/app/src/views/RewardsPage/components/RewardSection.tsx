@@ -153,7 +153,7 @@ export const RewardSection = defineComponent({
         ?.totalClaimableCommissionsAndClaimableRewards &&
       this.rewardProgram?.participant?.totalCommissionsAndRewardsAtMaturity;
     return (
-      <article class="border-dashed border-b border-white border-opacity-40 last:border-none py-[16px]">
+      <article class="align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 py-[16px]">
         <section
           class="text flex items-center cursor-pointer"
           onClick={() => (this.expanded = !this.expanded)}

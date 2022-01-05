@@ -429,6 +429,33 @@ export default defineComponent({
                     ) : (
                       <>
                         <div>Connected Wallets</div>
+                        <div class="opacity-50 text-sm font-semibold w-full text-left mt-[-2px]">
+                          {" "}
+                          {!accountStore.state.sifchain.connecting &&
+                            // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+                            accountStore.state.sifchain
+                              .hasLoadedBalancesOnce && (
+                              <>
+                                <>
+                                  {accountStore.state.sifchain.balances
+                                    .filter(
+                                      // does not have rowan
+                                      (b) => b.asset.symbol.includes("rowan"),
+                                    )
+                                    .map((asset) => {
+                                      const formatted =
+                                        formatAssetAmount(asset);
+                                      if (formatted.length > 6) {
+                                        return Intl.NumberFormat("en", {
+                                          notation: "compact",
+                                        }).format(+formatted);
+                                      }
+                                    })[0] || 0}{" "}
+                                  ROWAN
+                                </>
+                              </>
+                            )}
+                        </div>
                       </>
                     )
                   }
@@ -460,31 +487,6 @@ export default defineComponent({
                     )
                   }
                 />
-                <div class="opacity-50 text-sm">
-                  {" "}
-                  {!accountStore.state.sifchain.connecting &&
-                    // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
-                    accountStore.state.sifchain.hasLoadedBalancesOnce && (
-                      <>
-                        <>
-                          {accountStore.state.sifchain.balances
-                            .filter(
-                              // does not have rowan
-                              (b) => b.asset.symbol.includes("rowan"),
-                            )
-                            .map((asset) => {
-                              const formatted = formatAssetAmount(asset);
-                              if (formatted.length > 6) {
-                                return Intl.NumberFormat("en", {
-                                  notation: "compact",
-                                }).format(+formatted);
-                              }
-                            })[0] || 0}{" "}
-                          ROWAN
-                        </>
-                      </>
-                    )}
-                </div>
               </Tooltip>
 
               <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px] hover:opacity-100">
