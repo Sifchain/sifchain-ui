@@ -7,11 +7,11 @@ export const IRIS_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://irishub.iobscan.io/",
   nativeAssetSymbol: "uiris",
   chainId: "irishub-1",
-  rpcUrl: "https://rpc-iris.keplr.app/",
-  restUrl: "https://lcd-iris.keplr.app/",
+  rpcUrl: "https://proxies.sifchain.finance/api/irishub-1/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/irishub-1/rest",
   keplrChainInfo: {
-    rpc: "https://rpc-iris.keplr.app/",
-    rest: "https://lcd-iris.keplr.app/",
+    rpc: "https://proxies.sifchain.finance/api/irishub-1/rpc",
+    rest: "https://proxies.sifchain.finance/api/irishub-1/rest",
     chainId: "irishub-1",
     chainName: "IRISnet",
     stakeCurrency: {

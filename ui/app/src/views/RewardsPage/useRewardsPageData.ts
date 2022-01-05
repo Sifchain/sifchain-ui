@@ -1,4 +1,4 @@
-import { computed, ComputedRef, ref, watch } from "vue";
+import { computed, ComputedRef, onMounted, onUnmounted, ref, watch } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { getExistingClaimsData } from "@/componentsLegacy/shared/utils";
@@ -180,4 +180,68 @@ export const useRewardsPageData = () => {
     lmClaim: computed(() => claimsRes.data.value?.lm),
     reloadClaims: () => claimsRes.reload.value(),
   };
+};
+
+function calculateDateOfNextDispensation(currentDate: Date) {
+  const date = currentDate;
+  date.setMinutes(0, 0, 0);
+  let hoursIterationLimit = 24 * 7.5;
+  while (hoursIterationLimit--) {
+    date.setHours(date.getHours() + 1);
+    // output format: Friday, December 31, 2021 at 4:17:29 PM PST
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      timeZone: "PST",
+      dateStyle: "full",
+      timeStyle: "long",
+    }).format(date);
+    // dispensations are on Mondays at 8:00 AM PST
+    if (
+      formattedDate.includes("Monday") &&
+      formattedDate.includes("8:00:00 AM PST")
+    )
+      return date;
+  }
+  throw new Error("date not found");
+}
+
+function getHumanReadableTimeUntil(date: Date) {
+  const diff = date.getTime() - new Date().getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const mins = Math.floor((diff / 1000 / 60) % 60);
+  return `${days}d ${hours}h ${mins}m`;
+}
+
+export const useTimeUntilNextDispensation = () => {
+  const isMounted = ref(false);
+  const currentDate = ref(new Date());
+  onMounted(() => {
+    isMounted.value = true;
+    const interval = setInterval(() => {
+      currentDate.value = new Date();
+      if (!isMounted.value) clearInterval(interval);
+    }, 1000);
+  });
+  onUnmounted(() => {
+    isMounted.value = false;
+  });
+  return computed(() => {
+    try {
+      const dateOfNextDispensation = calculateDateOfNextDispensation(
+        currentDate.value,
+      );
+      return {
+        timeUntilNextDispensation: getHumanReadableTimeUntil(
+          dateOfNextDispensation,
+        ),
+        dateOfNextDispensation,
+      };
+    } catch (e) {
+      console.error(e);
+      return {
+        timeUntilNextDispensation: "browser not supported",
+        dateOfNextDispensation: new Date(0),
+      };
+    }
+  });
 };

@@ -69,9 +69,15 @@ export const COLUMNS: PoolPageColumn[] = [
   },
   {
     id: "rewardAPY",
-    name: "Reward APR",
-    class: "w-[130px] text-right justify-end",
+    name: "Reward APR (APY)",
+    class: "w-[150px] text-right justify-end",
     sortable: true,
+    help: (
+      <div>
+        The Reward APY is calculated as the rate of return from the given reward
+        APR, compounded weekly.
+      </div>
+    ),
   },
   {
     id: "userShare",
