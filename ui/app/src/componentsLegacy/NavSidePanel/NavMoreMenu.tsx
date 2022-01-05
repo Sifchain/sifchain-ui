@@ -10,6 +10,10 @@ export default defineComponent({
   setup(props) {
     const items = [
       {
+        name: "Stake",
+        href: "https://wallet.keplr.app/#/sifchain/stake",
+      },
+      {
         name: "Documentation",
         href: "https://docs.sifchain.finance/resources/sifchain-dex-ui",
       },

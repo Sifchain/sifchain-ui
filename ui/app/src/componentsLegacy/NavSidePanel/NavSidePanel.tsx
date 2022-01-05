@@ -29,6 +29,7 @@ import {
   useActiveProposal,
   VotingModal,
 } from "@/components/VotingModal/VotingModal";
+import { formatAssetAmount } from "../shared/utils";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -151,10 +152,11 @@ export default defineComponent({
                   href="/swap"
                 />
                 <NavSidePanelItem
-                  displayName="Balances"
+                  displayName={<>Balances</>}
                   icon="navigation/balances"
                   href="/balances"
                 />
+
                 <NavSidePanelItem
                   displayName="Pool"
                   icon="navigation/pool"
@@ -187,21 +189,7 @@ export default defineComponent({
                     onClose={() => (changelogOpenRef.value = false)}
                   />
                 )}
-                <NavSidePanelItem
-                  displayName="Stake"
-                  icon="navigation/stake"
-                  href="https://wallet.keplr.app/#/sifchain/stake"
-                  class="group"
-                  action={
-                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                      <AssetIcon
-                        icon="interactive/open-external"
-                        size={16}
-                        class="opacity-50"
-                      />
-                    </div>
-                  }
-                />
+
                 {/* <NavSidePanelItem
                   displayName="Documents"
                   icon="navigation/documents"
@@ -408,6 +396,7 @@ export default defineComponent({
                   icon="navigation/rowan"
                 ></NavSidePanelItem>
               </div>
+
               <Tooltip
                 placement="top-start"
                 animation="scale"
@@ -433,11 +422,15 @@ export default defineComponent({
                 <NavSidePanelItem
                   icon="interactive/wallet"
                   displayName={
-                    connectedNetworkCount.value === 0
-                      ? "Connect Wallets"
-                      : accountStore.getters.isConnecting
-                      ? "Connecting..."
-                      : "Connected Wallets"
+                    connectedNetworkCount.value === 0 ? (
+                      "Connect Wallets"
+                    ) : accountStore.getters.isConnecting ? (
+                      "Connecting..."
+                    ) : (
+                      <>
+                        <div>Connected Wallets</div>
+                      </>
+                    )
                   }
                   class={[
                     "mt-0",
@@ -467,7 +460,33 @@ export default defineComponent({
                     )
                   }
                 />
+                <div class="opacity-50 text-sm">
+                  {" "}
+                  {!accountStore.state.sifchain.connecting &&
+                    // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+                    accountStore.state.sifchain.hasLoadedBalancesOnce && (
+                      <>
+                        <>
+                          {accountStore.state.sifchain.balances
+                            .filter(
+                              // does not have rowan
+                              (b) => b.asset.symbol.includes("rowan"),
+                            )
+                            .map((asset) => {
+                              const formatted = formatAssetAmount(asset);
+                              if (formatted.length > 6) {
+                                return Intl.NumberFormat("en", {
+                                  notation: "compact",
+                                }).format(+formatted);
+                              }
+                            })[0] || 0}{" "}
+                          ROWAN
+                        </>
+                      </>
+                    )}
+                </div>
               </Tooltip>
+
               <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px] hover:opacity-100">
                 {/* V.2.0.X © {new Date().getFullYear()} Sifchain */}
                 {changesData.isSuccess.value &&

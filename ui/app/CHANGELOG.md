@@ -1,3 +1,12 @@
+
+
+## Release 2022.01.02
+* Added Reward Claim Countdown Timer
+* Softened color scheme to decrease eye strain
+* Updated price ticker design to be inline with navigation sidebar design
+* Moved documentation tab to "more" section
+* Added Stakely.io faucet link that appears when Rowan balance < 0.5
+
 ## Release 2021.11.04
 * Enabled E-Money
   * EEUR
