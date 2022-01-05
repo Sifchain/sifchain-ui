@@ -210,6 +210,7 @@ export const animateFireflies = () => {
       instantiatePopulation();
       animate();
     }
+    // bump version
 
     function instantiatePopulation() {
       let i = 0;
