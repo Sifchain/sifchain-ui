@@ -92,15 +92,17 @@ export const RewardSection = defineComponent({
           name: "Reserved Commission Rewards",
           tooltip:
             "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
-          amount: this.rewardProgram.participant
-            ?.currentTotalCommissionsOnClaimableDelegatorRewards,
+          amount:
+            this.rewardProgram.participant
+              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
         },
         {
           name: "Pending Dispensation",
           tooltip:
             "This is the amount that will be dispensed on Tuesday. Any new claimable amounts will need to be claimed after the next dispensation.",
-          amount: this.rewardProgram.participant
-            ?.claimedCommissionsAndRewardsAwaitingDispensation,
+          amount:
+            this.rewardProgram.participant
+              ?.claimedCommissionsAndRewardsAwaitingDispensation,
         },
         {
           name: "Dispensed Rewards",
@@ -151,7 +153,7 @@ export const RewardSection = defineComponent({
         ?.totalClaimableCommissionsAndClaimableRewards &&
       this.rewardProgram?.participant?.totalCommissionsAndRewardsAtMaturity;
     return (
-      <article class="border-dashed border-b border-white border-opacity-40 last:border-none py-[16px]">
+      <article class="align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 py-[16px]">
         <section
           class="text flex items-center cursor-pointer"
           onClick={() => (this.expanded = !this.expanded)}

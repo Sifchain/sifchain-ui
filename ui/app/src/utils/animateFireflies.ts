@@ -192,11 +192,19 @@ export const animateFireflies = () => {
     };
 
     window.onload = function () {
+      // canvas.setAttribute("width", canvasWidth);
+      // canvas.setAttribute("height", canvasHeight);
+      // start();
+    };
+
+    setTimeout(() => {
       canvas.setAttribute("width", canvasWidth);
       canvas.setAttribute("height", canvasHeight);
-
+      canvas.style.pointerEvents = "none";
+      canvas.style.zIndex = -1;
+      document.body.appendChild(canvas);
       start();
-    };
+    }, 10);
 
     function start() {
       instantiatePopulation();
@@ -232,9 +240,9 @@ export const animateFireflies = () => {
       requestAnimationFrame(animate);
     }
 
-    document.body.onmousemove = function (e) {
-      giveBirth(e, birthToGive);
-    };
+    // document.body.onmousemove = function (e) {
+    //   giveBirth(e, birthToGive);
+    // };
 
     function giveBirth(e, u) {
       const i = persons.length;

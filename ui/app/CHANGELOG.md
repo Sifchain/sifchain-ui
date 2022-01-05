@@ -1,3 +1,19 @@
+## Release 2022.01.03
+* Added rowan balance in navigation sidebar 
+* increased download speed by 1000x
+* Displayed "export" by default on balances page
+* Restyled row borders (no more white dashes)
+* Optimized "connected" and "danger" colors for eye appeal
+* Added an easter egg for the first person to read this
+  * Mnemonic: credit spray elite grass immense evidence daughter play swift cruel warfare pottery daring flash educate heart direct wheat outdoor jump odor regular ocean road
+
+## Release 2022.01.02
+* Added Reward Claim Countdown Timer
+* Softened color scheme to decrease eye strain
+* Updated price ticker design to be inline with navigation sidebar design
+* Moved documentation tab to "more" section
+* Added Stakely.io faucet link that appears when Rowan balance < 0.5
+
 ## Release 2021.11.04
 * Enabled E-Money
   * EEUR

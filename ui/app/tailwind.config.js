@@ -63,10 +63,10 @@ module.exports = {
           base: "#459FEE",
         },
         connected: {
-          base: "#5AF37C",
+          base: "#00db9d",
         },
         danger: {
-          base: "#FF4F4F",
+          base: "#ff4d67",
           warning: "orange",
           bad: "#cccc0e",
         },

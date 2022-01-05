@@ -25,8 +25,12 @@ import {
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
-import { VotingModal } from "@/components/VotingModal/VotingModal";
 import { governanceStore } from "@/store/modules/governance";
+import {
+  useActiveProposal,
+  VotingModal,
+} from "@/components/VotingModal/VotingModal";
+import { formatAssetAmount } from "../shared/utils";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -92,7 +96,8 @@ export default defineComponent({
 
     const hasUniversalCompetition = useHasUniversalCompetition();
 
-    const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
+    const connectedNetworkCount =
+      rootStore.accounts.refs.connectedNetworkCount.computed();
 
     const changesData = useAsyncData(() => loadChangesData());
 
@@ -154,10 +159,11 @@ export default defineComponent({
                   href="/swap"
                 />
                 <NavSidePanelItem
-                  displayName="Balances"
+                  displayName={<>Balances</>}
                   icon="navigation/balances"
                   href="/balances"
                 />
+
                 <NavSidePanelItem
                   displayName="Pool"
                   icon="navigation/pool"
@@ -190,21 +196,7 @@ export default defineComponent({
                     onClose={() => (changelogOpenRef.value = false)}
                   />
                 )}
-                <NavSidePanelItem
-                  displayName="Stake"
-                  icon="navigation/stake"
-                  href="https://wallet.keplr.app/#/sifchain/stake"
-                  class="group"
-                  action={
-                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                      <AssetIcon
-                        icon="interactive/open-external"
-                        size={16}
-                        class="opacity-50"
-                      />
-                    </div>
-                  }
-                />
+
                 {/* <NavSidePanelItem
                   displayName="Documents"
                   icon="navigation/documents"
@@ -279,9 +271,8 @@ export default defineComponent({
                   ref={moreMenuRef}
                   offset={[0, -2]}
                   onShow={(instance: TooltipInstance) => {
-                    const content = instance.popper.querySelector(
-                      ".tippy-content",
-                    );
+                    const content =
+                      instance.popper.querySelector(".tippy-content");
                     if (content) {
                       content.className +=
                         " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
@@ -425,6 +416,7 @@ export default defineComponent({
                   icon="navigation/rowan"
                 ></NavSidePanelItem>
               </div>
+
               <Tooltip
                 placement="top-start"
                 animation="scale"
@@ -450,11 +442,42 @@ export default defineComponent({
                 <NavSidePanelItem
                   icon="interactive/wallet"
                   displayName={
-                    connectedNetworkCount.value === 0
-                      ? "Connect Wallets"
-                      : accountStore.getters.isConnecting
-                      ? "Connecting..."
-                      : "Connected Wallets"
+                    connectedNetworkCount.value === 0 ? (
+                      "Connect Wallets"
+                    ) : accountStore.getters.isConnecting ? (
+                      "Connecting..."
+                    ) : (
+                      <>
+                        <div>Connected Wallets</div>
+                        <div class="opacity-50 text-sm font-semibold w-full text-left mt-[-2px]">
+                          {" "}
+                          {!accountStore.state.sifchain.connecting &&
+                            // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+                            accountStore.state.sifchain
+                              .hasLoadedBalancesOnce && (
+                              <>
+                                <>
+                                  {accountStore.state.sifchain.balances
+                                    .filter(
+                                      // does not have rowan
+                                      (b) => b.asset.symbol.includes("rowan"),
+                                    )
+                                    .map((asset) => {
+                                      const formatted =
+                                        formatAssetAmount(asset);
+                                      if (formatted.length > 6) {
+                                        return Intl.NumberFormat("en", {
+                                          notation: "compact",
+                                        }).format(+formatted);
+                                      }
+                                    })[0] || 0}{" "}
+                                  ROWAN
+                                </>
+                              </>
+                            )}
+                        </div>
+                      </>
+                    )
                   }
                   class={[
                     "mt-0",
@@ -485,6 +508,7 @@ export default defineComponent({
                   }
                 />
               </Tooltip>
+
               <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px] hover:opacity-100">
                 {/* V.2.0.X © {new Date().getFullYear()} Sifchain */}
                 {changesData.isSuccess.value &&

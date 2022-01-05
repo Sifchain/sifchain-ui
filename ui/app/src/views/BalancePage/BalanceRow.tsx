@@ -94,14 +94,14 @@ export default defineComponent({
             tag: "button",
             icon: "interactive/arrow-up",
             name: "Export",
-            visible: expandedRef.value,
-            props: { disabled: true, class: !expandedRef.value && "invisible" },
+            visible: true,
+            props: { disabled: true, class: "" },
           }
         : {
             tag: RouterLink,
             icon: "interactive/arrow-up",
             name: "Export",
-            visible: expandedRef.value,
+            visible: true,
             help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
               .underMaintenance
               ? `${
@@ -164,7 +164,7 @@ export default defineComponent({
           }
         }}
         class={cx(
-          "list-complete-item align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden last:border-transparent group",
+          "list-complete-item align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 relative overflow-hidden group",
           showMaskRef.value && "opacity-40",
         )}
       >
