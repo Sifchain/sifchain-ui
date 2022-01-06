@@ -32,17 +32,13 @@ export class NativeAminoTypes extends AminoTypes {
     wrapAdditionToAminoFn(
       "/ibc.applications.transfer.v1.MsgTransfer",
       (value: any, originalToAmino: ToAminoFn) => {
-        // value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
-        // value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
-        if (value.timeoutTimestamp instanceof Long) {
-          value.timeoutTimestamp = value.timeoutTimestamp.toString();
-        }
+        value.timeoutHeight.revisionNumber = value.timeoutHeight.revisionNumber.toString();
+        value.timeoutHeight.revisionHeight = value.timeoutHeight.revisionHeight.toString();
         const converted = originalToAmino(value);
-        // delete converted.timeout_timestamp;
-        // if (converted.timeout_height.revision_number == "0") {
-        //   delete converted.timeout_height.revision_number;
-        // }
-        converted.timeout_height = {};
+        delete converted.timeout_timestamp;
+        if (converted.timeout_height.revision_number == "0") {
+          delete converted.timeout_height.revision_number;
+        }
         return converted;
       },
     );

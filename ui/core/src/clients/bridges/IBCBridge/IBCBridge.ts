@@ -26,7 +26,6 @@ import {
   IBCChainConfig,
   Network,
   NetworkChainConfigLookup,
-  TransactionStatus,
   AssetAmount,
   Chain,
 } from "../../../entities";
@@ -312,10 +311,10 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
           denom: transferDenom,
           amount: params.assetAmount.toBigInt().toString(),
         },
-        // timeoutHeight: timeoutHeight,
+        timeoutHeight: timeoutHeight,
         // timeoutHeight: {}, // @ts-ignore
         // @ts-ignore
-        timeoutTimestamp: timeoutTimestampNanoseconds,
+        // timeoutTimestamp: timeoutTimestampNanoseconds,
       }),
     ];
 

@@ -1,18 +1,10 @@
-import {
-  Coin,
-  QueryClient,
-  setupAuthExtension,
-  setupBankExtension,
-  setupIbcExtension,
-  SigningStargateClient,
-  StargateClient,
-} from "@cosmjs/stargate";
+import { StargateClient } from "@cosmjs/stargate";
 import { cosmos, ibc } from "@keplr-wallet/cosmos";
 import fetch from "cross-fetch";
 import { Uint53 } from "@cosmjs/math";
 import pLimit from "p-limit";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { Chain } from "../../../entities";
+import { Chain, Network } from "../../../entities";
 import { WalletProviderContext } from "../WalletProvider";
 import { toHex } from "@cosmjs/encoding";
 import {
@@ -27,7 +19,6 @@ import {
   BroadcastMode,
   isBroadcastTxSuccess,
   isBroadcastTxFailure,
-  StdTx,
 } from "@cosmjs/launchpad";
 import {
   NativeDexTransaction,
@@ -36,11 +27,8 @@ import {
 import { NativeAminoTypes } from "../../../services/utils/SifClient/NativeAminoTypes";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { parseLogs } from "@cosmjs/stargate/build/logs";
-import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 import getKeplrProvider from "../../../services/SifService/getKeplrProvider";
-import DemerisSigningClient from "./EmerisSigningClient";
 import Long from "long";
-import { MsgTransfer } from "@terra-money/terra.proto/ibc/applications/transfer/v1/tx";
 
 export class KeplrWalletProvider extends CosmosWalletProvider {
   static create(context: WalletProviderContext) {
@@ -137,22 +125,16 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     // f
   }
 
-  async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+  /*
+   * After 0.44 upgrade, external chains don't accept Amino tx broadcasts.
+   * To make this work, we sign an amino tx (since Ledger requires Amino),
+   * then we broadcast a protobuf tx body with the extracted amino signature.
+   * This is ONLY required for IBC imports right now and our protobuf-encoding
+   * IBC function is not working so we manually write it for IBC.
+   */
+  async signIbcImport(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
-
-    const signingStargate = await SigningStargateClient.connectWithSigner(
-      chainConfig.rpcUrl,
-      await this.getSendingSigner(chain),
-      {},
-    );
-
-    const demerisClient = new DemerisSigningClient(
-      await Tendermint34Client.connect(chainConfig.rpcUrl),
-      // @ts-ignore
-      await this.getSendingSigner(chain),
-      {},
-    );
 
     const account = await stargate.getAccount(tx.fromAddress || "");
     const fee = {
@@ -162,26 +144,32 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const converter = new NativeAminoTypes();
 
-    const protoMsgs = tx.msgs.map((message) => {
-      if (message.typeUrl === "/ibc.applications.transfer.v1.MsgTransfer") {
-        return {
-          type_url: message.typeUrl,
-          value: ibc.applications.transfer.v1.MsgTransfer.encode(
-            // @ts-ignore
-            message,
-          ).finish(),
-        };
-      } else {
-        return message;
-      }
-    });
-    console.log(
-      "decoded",
-      ibc.applications.transfer.v1.MsgTransfer.decode(protoMsgs[0].value),
-    );
-    const aminoMsgs = tx.msgs.map(converter.toAmino.bind(converter));
+    const keplr = (await getKeplrProvider())!;
+    const key = await keplr?.getKey(chainConfig.chainId);
+    const bech32Address = key!.bech32Address;
 
-    console.log(tx.msgs);
+    const aminoMsgs = tx.msgs.map(converter.toAmino.bind(converter));
+    const aminoMsg = aminoMsgs[0];
+
+    const protoMsg = {
+      type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+      value: ibc.applications.transfer.v1.MsgTransfer.encode({
+        sourcePort: aminoMsg.value.source_port,
+        sourceChannel: aminoMsg.value.source_channel,
+        token: aminoMsg.value.token,
+        sender: aminoMsg.value.sender,
+        receiver: aminoMsg.value.receiver,
+        timeoutHeight: {
+          revisionNumber: Long.fromString(
+            aminoMsg.value.timeout_height.revision_number,
+          ),
+          revisionHeight: Long.fromString(
+            aminoMsg.value.timeout_height.revision_height,
+          ),
+        },
+      }).finish(),
+    };
+
     if (
       !account ||
       (typeof account?.accountNumber !== "number" &&
@@ -192,19 +180,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       );
     }
 
-    // const signedTx = await demerisClient.signWMeta(
-    //   account.address,
-    //   tx.msgs,
-    //   fee,
-    //   tx.memo,
-    //   {
-    //     accountNumber: account.accountNumber,
-    //     sequence: account.sequence,
-    //     chainId: chainConfig.chainId,
-    //   },
-    // );
-
-    const keplr = (await getKeplrProvider())!;
     const signDoc = makeSignDoc(
       aminoMsgs,
       fee,
@@ -221,13 +196,13 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     };
     const signResponse = await keplr.signAmino(
       chainConfig.chainId,
-      account.address,
+      bech32Address,
       signDoc,
     );
 
     const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
       bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-        messages: protoMsgs,
+        messages: [protoMsg],
         memo: signResponse.signed.memo,
       }).finish(),
       authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
@@ -263,64 +238,65 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return new NativeDexSignedTransaction(tx, signedTx);
   }
 
-  async sendTx(
-    chain: Chain,
-    tx: StdTx | Uint8Array,
-    mode: BroadcastMode,
-  ): Promise<string> {
-    const chainConfig = this.getIBCChainConfig(chain);
-
-    const isProtoTx = Buffer.isBuffer(tx) || tx instanceof Uint8Array;
-
-    const body = isProtoTx
-      ? {
-          tx_bytes: Buffer.from(tx as any).toString("base64"),
-          mode: (() => {
-            switch (mode) {
-              case "async":
-                return "BROADCAST_MODE_ASYNC";
-              case "block":
-                return "BROADCAST_MODE_BLOCK";
-              case "sync":
-                return "BROADCAST_MODE_SYNC";
-              default:
-                return "BROADCAST_MODE_UNSPECIFIED";
-            }
-          })(),
-        }
-      : {
-          tx,
-          mode: "block",
-        };
-
-    try {
-      const url = `${chainConfig.restUrl}${
-        isProtoTx ? "/cosmos/tx/v1beta1/txs" : "/txs"
-      }`;
-      console.log("url", url);
-      const res = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!res.ok) {
-        throw new Error(await res.text());
+  async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+    if (
+      tx.msgs[0]?.typeUrl === "/ibc.applications.transfer.v1.MsgTransfer" &&
+      chain.network !== Network.SIFCHAIN
+    ) {
+      if (tx.msgs.length > 1) {
+        throw new Error(
+          "Cannot send batched tx for import, please send only 1 import message as tx",
+        );
       }
-      const json = await res.json();
-
-      const txResponse = isProtoTx ? json["tx_response"] : json;
-
-      if (txResponse.code != null && txResponse.code !== 0) {
-        throw new Error(txResponse["raw_log"]);
-      }
-
-      return txResponse.txhash;
-    } catch (error) {
-      console.error(error);
-      throw error;
+      return this.signIbcImport(chain, tx);
     }
+    const chainConfig = this.getIBCChainConfig(chain);
+    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
+
+    const converter = new NativeAminoTypes();
+
+    const msgs = tx.msgs.map(converter.toAmino.bind(converter));
+
+    const fee = {
+      amount: [tx.fee.price],
+      gas: tx.fee.gas,
+    };
+    const account = await stargate.getAccount(tx.fromAddress || "");
+    if (
+      typeof account?.accountNumber !== "number" &&
+      typeof account?.sequence === "number"
+    ) {
+      throw new Error(
+        `This account (${tx.fromAddress}) does not yet exist on-chain. Please send some funds to it before proceeding.`,
+      );
+    }
+    const keplr = await getKeplrProvider();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const signDoc = makeSignDoc(
+      msgs,
+      fee,
+      chainConfig.chainId,
+      tx.memo || "",
+      account?.accountNumber.toString() || "",
+      account?.sequence.toString() || "",
+    );
+    const key = await keplr?.getKey(chainConfig.chainId);
+    let bech32Address = key?.bech32Address;
+    const defaultKeplrOpts = keplr!.defaultOptions;
+    keplr!.defaultOptions = {
+      sign: {
+        preferNoSetFee: false,
+        preferNoSetMemo: true,
+      },
+    };
+    const signResponse = await keplr!.signAmino(
+      chainConfig.chainId,
+      bech32Address || "",
+      signDoc,
+    );
+    keplr!.defaultOptions = defaultKeplrOpts;
+    const signedTx = makeStdTx(signResponse.signed, signResponse.signature);
+    return new NativeDexSignedTransaction(tx, signedTx);
   }
 
   async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
@@ -331,14 +307,14 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const chainConfig = this.getIBCChainConfig(chain);
     const keplr = await getKeplrProvider();
 
-    const txHashHex = await this.sendTx(chain, signed, BroadcastMode.Block);
+    // const txHashHex = await this.sendTx(chain, signed, BroadcastMode.Block);
 
-    // const txHashUInt8Array = await keplr!.sendTx(
-    //   chainConfig.chainId,
-    //   signed,
-    //   BroadcastMode.Block,
-    // );
-    // const txHashHex = toHex(txHashUInt8Array).toUpperCase();
+    const txHashUInt8Array = await keplr!.sendTx(
+      chainConfig.chainId,
+      signed,
+      BroadcastMode.Block,
+    );
+    const txHashHex = toHex(txHashUInt8Array).toUpperCase();
 
     // const signingStargate = await SigningStargateClient.connectWithSigner(
     //   chainConfig.rpcUrl,
@@ -387,3 +363,88 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         };
   }
 }
+/*
+ * -----------------------
+ * OSMOSIS vvvvvvvvvvv
+ * ---------------------
+{
+  "chain_id": "cosmoshub-4",
+  "account_number": "415665",
+  "sequence": "2",
+  "fee": {
+    "gas": "130000",
+    "amount": [
+      {
+        "denom": "uatom",
+        "amount": "3250"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-141",
+        "token": {
+          "denom": "uatom",
+          "amount": "1000"
+        },
+        "sender": "cosmos1cnfwkwccnt95zzngqlyqx94k6px2qh4v2ydsp7",
+        "receiver": "osmo1cnfwkwccnt95zzngqlyqx94k6px2qh4vzl7qhv",
+        "timeout_height": {
+          "revision_number": "1",
+          "revision_height": "2692063"
+        }
+      }
+    }
+  ],
+  "memo": ""
+}
+ * -----------------------
+ * OSMOSIS ^^^^^^^^^^^^^^^^^
+ * ---------------------
+ * */
+/*
+ *
+ * -----------------------
+ * SIFCHAIN vvvvvvvvvvv
+ * ---------------------
+{
+  "chain_id": "cosmoshub-4",
+  "account_number": "415665",
+  "sequence": "2",
+  "fee": {
+    "gas": "500000",
+    "amount": [
+      {
+        "denom": "uatom",
+        "amount": "12500"
+      }
+    ]
+  },
+  "msgs": [
+    {
+      "type": "cosmos-sdk/MsgTransfer",
+      "value": {
+        "source_port": "transfer",
+        "source_channel": "channel-192",
+        "token": {
+          "denom": "uatom",
+          "amount": "10000"
+        },
+        "sender": "cosmos1cnfwkwccnt95zzngqlyqx94k6px2qh4v2ydsp7",
+        "receiver": "sif1cnfwkwccnt95zzngqlyqx94k6px2qh4v0ezxw4",
+        "timeout_height": {
+          "revision_number": "1",
+          "revision_height": "4989814"
+        }
+      }
+    }
+  ],
+  "memo": ""
+}
+ * -----------------------
+ * SIFCHAIN ^^^^^^^^^^^^^^^^^
+ * ---------------------
+ * */
