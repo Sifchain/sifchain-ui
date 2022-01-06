@@ -1,12 +1,10 @@
 import {
-  Coin,
-  QueryClient,
-  setupAuthExtension,
-  setupBankExtension,
-  setupIbcExtension,
-  SigningStargateClient,
   StargateClient,
+  SigningStargateClient,
+  IndexedTx,
 } from "@cosmjs/stargate";
+import { cosmos, ibc } from "@keplr-wallet/cosmos";
+import fetch from "cross-fetch";
 import { Uint53 } from "@cosmjs/math";
 import pLimit from "p-limit";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
@@ -34,8 +32,9 @@ import {
 import { NativeAminoTypes } from "../../../services/utils/SifClient/NativeAminoTypes";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { parseLogs } from "@cosmjs/stargate/build/logs";
-import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 import getKeplrProvider from "../../../services/SifService/getKeplrProvider";
+import Long from "long";
+import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 
 export class KeplrWalletProvider extends CosmosWalletProvider {
   static create(context: WalletProviderContext) {
@@ -128,39 +127,135 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     }
 
     return address;
+    // console.log("txhash!", txhash);
+    // f
   }
 
-  async signProtobuf(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+  /*
+   * After 0.44 upgrade, external chains don't accept Amino tx broadcasts.
+   * To make this work, we sign an amino tx (since Ledger requires Amino),
+   * then we broadcast a protobuf tx body with the extracted amino signature.
+   * This is ONLY required for IBC imports right now and our protobuf-encoding
+   * IBC function is not working so we manually write it for IBC.
+   */
+  async signIbcImport(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
     const chainConfig = this.getIBCChainConfig(chain);
-    const signer = await this.getSendingSigner(chain);
+    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
 
-    const stargate = await SigningStargateClient.connectWithSigner(
-      chainConfig.rpcUrl,
-      signer,
+    const account = await stargate.getAccount(tx.fromAddress || "");
+    const fee = {
+      amount: [tx.fee.price],
+      gas: tx.fee.gas,
+    };
+
+    const converter = new NativeAminoTypes();
+
+    const keplr = (await getKeplrProvider())!;
+    const key = await keplr?.getKey(chainConfig.chainId);
+    const bech32Address = key!.bech32Address;
+
+    const aminoMsgs = tx.msgs.map(converter.toAmino.bind(converter));
+    const aminoMsg = aminoMsgs[0];
+
+    const protoMsg = {
+      type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+      value: ibc.applications.transfer.v1.MsgTransfer.encode({
+        sourcePort: aminoMsg.value.source_port,
+        sourceChannel: aminoMsg.value.source_channel,
+        token: aminoMsg.value.token,
+        sender: aminoMsg.value.sender,
+        receiver: aminoMsg.value.receiver,
+        timeoutHeight: {
+          revisionNumber: Long.fromString(
+            aminoMsg.value.timeout_height.revision_number,
+          ),
+          revisionHeight: Long.fromString(
+            aminoMsg.value.timeout_height.revision_height,
+          ),
+        },
+      }).finish(),
+    };
+
+    if (
+      !account ||
+      (typeof account?.accountNumber !== "number" &&
+        typeof account?.sequence === "number")
+    ) {
+      throw new Error(
+        `This account (${tx.fromAddress}) does not yet exist on-chain. Please send some funds to it before proceeding.`,
+      );
+    }
+
+    const signDoc = makeSignDoc(
+      aminoMsgs,
+      fee,
+      chainConfig.chainId,
+      tx.memo || "",
+      account!.accountNumber.toString(),
+      account!.sequence.toString(),
     );
-
-    const signed = await stargate.sign(
-      tx.fromAddress,
-      tx.msgs,
-      {
-        amount: [tx.fee.price],
-        gas: tx.fee.gas,
+    keplr.defaultOptions = {
+      sign: {
+        preferNoSetFee: false,
+        preferNoSetMemo: true,
       },
-      tx.memo,
+    };
+    const signResponse = await keplr.signAmino(
+      chainConfig.chainId,
+      bech32Address,
+      signDoc,
     );
-    return new NativeDexSignedTransaction(tx, signed);
+
+    const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
+      bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+        messages: [protoMsg],
+        memo: signResponse.signed.memo,
+      }).finish(),
+      authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
+        signerInfos: [
+          {
+            publicKey: {
+              type_url: "/cosmos.crypto.secp256k1.PubKey",
+              value: cosmos.crypto.secp256k1.PubKey.encode({
+                key: Buffer.from(
+                  signResponse.signature.pub_key.value,
+                  "base64",
+                ),
+              }).finish(),
+            },
+            modeInfo: {
+              single: {
+                mode:
+                  cosmos.tx.signing.v1beta1.SignMode
+                    .SIGN_MODE_LEGACY_AMINO_JSON,
+              },
+            },
+            sequence: Long.fromString(signResponse.signed.sequence),
+          },
+        ],
+        fee: {
+          amount: signResponse.signed.fee.amount as cosmos.base.v1beta1.ICoin[],
+          gasLimit: Long.fromString(signResponse.signed.fee.gas),
+        },
+      }).finish(),
+      signatures: [Buffer.from(signResponse.signature.signature, "base64")],
+    }).finish();
+
+    return new NativeDexSignedTransaction(tx, signedTx);
   }
 
   async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
-    // For IBC imports: use protobuf for now.
-    // Amino messages on external 0.44 chains are having compatibility issues.
     if (
       tx.msgs[0]?.typeUrl === "/ibc.applications.transfer.v1.MsgTransfer" &&
       chain.network !== Network.SIFCHAIN
     ) {
-      return this.signProtobuf(chain, tx);
+      if (tx.msgs.length > 1) {
+        throw new Error(
+          "Cannot send batched tx for import, please send only 1 import message as tx",
+        );
+      }
+      return this.signIbcImport(chain, tx);
     }
-
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
 
@@ -211,6 +306,8 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
+    console.log("tx", tx);
+    // Broadcast EncodeObject
     if ((tx.signed as TxRaw).authInfoBytes) {
       const chainConfig = this.getIBCChainConfig(chain);
       const signer = await this.getSendingSigner(chain);
@@ -223,23 +320,32 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         Uint8Array.from(TxRaw.encode(tx.signed as TxRaw).finish()),
       );
       return result as BroadcastTxResult;
-    } else if (!(tx.signed as StdTx).msg) {
-      throw new Error("Invalid signedTx, possibly it was not amino signed.");
+    } else if (
+      !(tx.signed instanceof Uint8Array) &&
+      !(tx.signed as StdTx).msg
+    ) {
+      throw new Error("Invalid signedTx, must be Uint8Array or TxRaw or StdTx");
     }
 
-    const signed = tx.signed as StdTx;
-
     const chainConfig = this.getIBCChainConfig(chain);
-    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
     const keplr = await getKeplrProvider();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
     const txHashUInt8Array = await keplr!.sendTx(
       chainConfig.chainId,
-      signed,
-      BroadcastMode.Block,
+      tx.signed as Uint8Array | StdTx,
+      BroadcastMode.Sync,
     );
     const txHashHex = toHex(txHashUInt8Array).toUpperCase();
-    const resultRaw = await stargate.getTx(txHashHex);
+
+    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
+    let resultRaw: IndexedTx | null = null;
+    let triesRemaining = 5;
+
+    while (!resultRaw && triesRemaining-- > 0) {
+      resultRaw = await stargate.getTx(txHashHex);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    }
+
     if (!resultRaw || !resultRaw.hash?.match(/^([0-9A-F][0-9A-F])+$/)) {
       console.error("INVALID TXHASH IN RESULT", resultRaw);
       throw new Error(
