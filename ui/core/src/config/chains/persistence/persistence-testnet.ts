@@ -7,11 +7,11 @@ export const PERSISTENCE_TESTNET: IBCChainConfig = {
   blockExplorerUrl: "https://test-core-1.explorer.persistence.one/",
   nativeAssetSymbol: "uxprt",
   chainId: "test-core-1",
-  rpcUrl: "https://persistence.testnet.rpc.audit.one/",
-  restUrl: "https://persistence.testnet.rest.audit.one/",
+  rpcUrl: "https://proxies.sifchain.finance/api/test-core-1/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/test-core-1/rest",
   keplrChainInfo: {
-    rpc: "https://persistence.testnet.rpc.audit.one/",
-    rest: "https://persistence.testnet.rest.audit.one/",
+    rpc: "https://proxies.sifchain.finance/api/test-core-1/rpc",
+    rest: "https://proxies.sifchain.finance/api/test-core-1/rest",
     chainId: "test-core-1",
     chainName: "Persistence Testnet",
     stakeCurrency: {
