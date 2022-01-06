@@ -6,7 +6,7 @@
     "bump": "bump patch --tag --commit 'testnet release '",
     "bump:minor": "bump minor --tag --commit 'testnet release '",
     "dev": "cd .. && yarn dev",
-    "serve": "vite --port 8080",
+    "serve": "vite --host --port 8080",
     "prebuild": "cd .. && patch-package",
     "build": "vite build",
     "test": "vue-cli-service test:unit",
@@ -32,12 +32,12 @@
     "p-props": "^5.0.0",
     "process": "^0.11.10",
     "style-loader": "^3.0.0",
-    "tailwindcss": "^2.2.9",
     "tippy.js": "^6.3.1",
     "vue": "3.0.0",
     "vue-router": "^4.0.0-0",
     "vue-tippy": "^6.0.0-alpha.30",
-    "vuex": "4.0.2"
+    "vuex": "4.0.2",
+    "tailwindcss": "^3.0.0"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^13.1.0",

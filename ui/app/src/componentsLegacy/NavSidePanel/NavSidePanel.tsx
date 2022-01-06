@@ -25,6 +25,7 @@ import {
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
+import { governanceStore } from "@/store/modules/governance";
 import {
   useActiveProposal,
   VotingModal,
@@ -46,19 +47,19 @@ export default defineComponent({
     const sidebarRef = ref();
     const isOpenRef = ref(false);
 
-    const activeProposal = useActiveProposal();
+    const proposalData = computed(() => governanceStore.getters.activeProposal);
 
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
 
     watch(
-      activeProposal,
-      (proposal, oldProposal) => {
+      proposalData,
+      (data, oldData) => {
         if (
-          proposal &&
-          !oldProposal &&
+          data.proposal &&
+          !oldData?.proposal &&
           VOTE_PARAM_IN_URL &&
-          !proposal.hasVoted
+          !data.hasVoted
         ) {
           votingOpenRef.value = true;
         }
@@ -102,6 +103,12 @@ export default defineComponent({
 
     return () => (
       <>
+        {changelogOpenRef.value && (
+          <ChangelogModal onClose={() => (changelogOpenRef.value = false)} />
+        )}
+        {votingOpenRef.value && (
+          <VotingModal onClose={() => (votingOpenRef.value = false)} />
+        )}
         <Button.Inline
           id="open-button"
           class={[
@@ -204,6 +211,20 @@ export default defineComponent({
                       />
                     </div>
                   }
+<<<<<<< HEAD
+                />
+                <NavSidePanelItem
+                  icon="navigation/changelog"
+                  onClick={() => (changelogOpenRef.value = true)}
+                  displayName={<div class="flex items-center">Changelog</div>}
+                  action={
+                    changelogViewedVersion.isLatest() ? undefined : (
+                      <div class="flex flex-1 justify-end">
+                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
+                      </div>
+                    )
+                  }
+                />
                 /> */}
 
                 {votingOpenRef.value && (
@@ -267,18 +288,15 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
-            {!!activeProposal.value && (
+            {!!proposalData.value.proposal && (
               <div
                 onClick={() => {
-                  if (!activeProposal.value?.hasVoted) {
-                    votingOpenRef.value = true;
-                  }
+                  votingOpenRef.value = true;
                 }}
               >
                 <div
                   class={[
-                    "h-[46px] flex items-center justify-between px-[16px] text-black rounded-t-[20px] font-semibold",
-                    !activeProposal.value.hasVoted && "cursor-pointer",
+                    "mt-[10px] h-[46px] flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
                   ]}
                   style={{
                     backgroundImage:
@@ -291,9 +309,11 @@ export default defineComponent({
                       icon="interactive/ticket"
                       style={{ transform: "translateY(-1px)" }}
                     />
-                    <div class="ml-[6px]">{activeProposal.value.title}</div>
+                    <div class="ml-[6px]">
+                      {proposalData.value.proposal.title}
+                    </div>
                   </div>
-                  {!activeProposal.value.hasVoted && (
+                  {!proposalData.value.hasVoted && (
                     <div>
                       <AssetIcon
                         icon="interactive/chevron-down"
@@ -303,14 +323,14 @@ export default defineComponent({
                     </div>
                   )}
                 </div>
-                <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
                   <div class="text-sm whitespace-pre">
                     Voting open until{" "}
                     {new Date(
-                      activeProposal.value.endDateTime,
+                      proposalData.value.proposal.endDateTime,
                     ).toLocaleDateString()}
                     .
-                    {activeProposal.value.hasVoted &&
+                    {proposalData.value.hasVoted &&
                       "\nYour vote has been recorded."}
                   </div>
                 </div>
@@ -344,7 +364,7 @@ export default defineComponent({
                       />
                     </div>
                   </RouterLink>
-                  <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                  <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
                     <div class="text-sm">View the Leaderboards</div>
                     <div class="flex items-center mt-[8px]">
                       {["vol", "txn"].map((type) => (

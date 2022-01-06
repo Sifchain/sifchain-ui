@@ -73,8 +73,8 @@ export const exportStore = Vuextra.createStore({
           )
           // Disallow IBC export of ethereum & sifchain-native tokens
           .filter((n) => {
-            // If it's from IBC network, of course you can export it anywhere.
-            if (isExternalIBCAsset) return true;
+            // If it's from IBC network, you can export it to its home network.
+            if (isExternalIBCAsset) return n.network === asset.homeNetwork;
 
             // Yep, you can export to eth (unless the next .filter below catches you).
             if (n.network === Network.ETHEREUM) return true;
