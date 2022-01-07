@@ -1,10 +1,4 @@
-import {
-  computed,
-  defineComponent,
-  HTMLAttributes,
-  PropType,
-  watch,
-} from "vue";
+import { computed, defineComponent, HTMLAttributes, PropType } from "vue";
 import { ref, toRefs } from "@vue/reactivity";
 import { IAsset } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
@@ -12,6 +6,7 @@ import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
+import { shouldPreventInput } from "../../../utils/shouldPreventInput";
 
 function required<T>(type: T) {
   return {
@@ -134,17 +129,36 @@ export const TokenInputGroup = defineComponent({
               }
               onFocus={props.onFocus}
               onBlur={props.onBlur}
-              type="number"
-              min="0"
+              type="text"
               style={{
                 textAlign: "right",
+              }}
+              onBeforeInput={(e: InputEvent) => {
+                const target = e.target as HTMLInputElement;
+                // prevent next keystroke from being added to e.target.value if the max digits before or after the decimal place are reached
+                if (
+                  propRefs.asset.value?.decimals &&
+                  typeof target.selectionStart === "number" &&
+                  e.data
+                ) {
+                  shouldPreventInput(
+                    target.value,
+                    target.selectionStart,
+                    e.data,
+                    15,
+                    propRefs.asset.value.decimals,
+                  )
+                    ? e.preventDefault()
+                    : null;
+                }
               }}
               onInput={(e) => {
                 let v = (e.target as HTMLInputElement).value;
                 if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
                   v = "0";
                 }
-                props.onInputAmount(v || "");
+                // remove any hanging decimal places
+                props.onInputAmount(parseFloat(v).toString() || "");
               }}
             />
           </div>

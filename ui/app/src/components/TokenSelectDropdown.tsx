@@ -195,6 +195,43 @@ export const TokenSelectDropdown = defineComponent({
                             sortedAndFilteredTokens.value[0].asset,
                           );
                           searchQuery.value = "";
+                        } else if ((e as KeyboardEvent).key === 'ArrowDown' || (e as KeyboardEvent).key === 'ArrowUp' && sortedAndFilteredTokens.value.length > 0) {
+                          let highlightedItem: HTMLElement | null = document.querySelector("[data-from-amount-symbol-dropdown-index].bg-gray-base")
+
+                          if (highlightedItem) {
+                            // get index of currently highlighted item
+                            const currentIndex: number | undefined = parseInt(highlightedItem.dataset?.fromAmountSymbolDropdownIndex || '-1')
+
+                            // set which item is next to highlight depending upon user selects to traverse up or down
+                            const nextHighlightedItem: HTMLElement | null = document.querySelector(`[data-from-amount-symbol-dropdown-index='${(e as KeyboardEvent).key === 'ArrowDown' ? currentIndex + 1 : currentIndex - 1}']`)
+
+                            // define element that scrolls through available symbols
+                            let scrollBox = document.querySelector('.absolute.inset-0.w-full.h-full.overflow-y-scroll')
+
+                            // scroll down if the user keyed down to the last element before hidden ones below
+                            if ((e as KeyboardEvent).key === 'ArrowDown') {
+                              const parentBoxBottom: number | undefined = document.querySelector('#fromTokenSymbolSelectContainer')?.getBoundingClientRect().bottom
+                              const myBoxBottom = nextHighlightedItem?.getBoundingClientRect().bottom
+
+                              if (myBoxBottom && parentBoxBottom && myBoxBottom > parentBoxBottom) {
+                                scrollBox?.scrollBy({ top: 33, behavior: 'smooth' })
+                              }
+                            } else {
+                              // scroll up if the user keyed up to an element higher than the parent
+                              const parentBoxTop: number | undefined = document.querySelector('#fromTokenSymbolSelectContainer')?.getBoundingClientRect().top
+                              const myBoxTop = nextHighlightedItem?.getBoundingClientRect().top
+                              scrollBox?.scrollBy({ top: -33, behavior: 'smooth' })
+                            }
+
+                            // highlight the next symbol in list after user keys up or down
+                            nextHighlightedItem?.classList.add('bg-gray-base')
+                            highlightedItem.classList.remove('bg-gray-base')
+                          } else {
+                            // if user keys down from the input text field, highlight the first item in tne symbols list
+                            const firstItemInList: HTMLElement | null = document.querySelector("[data-from-amount-symbol-dropdown-index='0']")
+                            firstItemInList?.classList.add('bg-gray-base')
+                          }
+
                         }
                       }}
                       value={searchQuery.value}
@@ -207,6 +244,7 @@ export const TokenSelectDropdown = defineComponent({
                   <div
                     ref={iconScrollContainer}
                     class="w-full overflow-hidden relative"
+                    id="fromTokenSymbolSelectContainer"
                   >
                     <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
                       <div>Token Name</div>
@@ -214,30 +252,33 @@ export const TokenSelectDropdown = defineComponent({
                     </div>
                     <div class="w-full h-[302px] relative mr-[-15px]">
                       <div class="absolute inset-0 w-full h-full overflow-y-scroll">
-                        {sortedAndFilteredTokens.value.map((token) => {
-                          return (
-                            <div
-                              onClick={(e: MouseEvent) => {
-                                props.onSelectAsset(token.asset);
-                                (e as any).handled = true;
-                              }}
-                              key={token.asset.symbol}
-                              class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
-                            >
-                              <TokenIcon
+                        <ol>
+                          {sortedAndFilteredTokens.value.map((token, index) => {
+                            return (
+                              <li
+                                onClick={(e: MouseEvent) => {
+                                  props.onSelectAsset(token.asset);
+                                  (e as any).handled = true;
+                                }}
+                                data-from-amount-symbol-dropdown-index={index}
                                 key={token.asset.symbol}
-                                size={20}
-                                assetValue={token.asset}
-                                class="mr-[8px]"
-                              />
-                              {token.asset.displaySymbol || token.asset.symbol}
-                              <div class="flex-1 ml-[8px]" />
-                              {props.hideBalances
-                                ? ""
-                                : formatAssetAmount(token.amount)}
-                            </div>
-                          );
-                        })}
+                                class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
+                              >
+                                <TokenIcon
+                                  key={token.asset.symbol}
+                                  size={20}
+                                  assetValue={token.asset}
+                                  class="mr-[8px]"
+                                />
+                                {token.asset.displaySymbol || token.asset.symbol}
+                                <div class="flex-1 ml-[8px]" />
+                                {props.hideBalances
+                                  ? ""
+                                  : formatAssetAmount(token.amount)}
+                              </li>
+                            );
+                          })}
+                        </ol>
                       </div>
                     </div>
                   </div>
