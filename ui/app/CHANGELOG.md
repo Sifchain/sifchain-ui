@@ -1,6 +1,6 @@
 ## Release 2022.01.06
 
-* Ledger imports working again
+* Ledger imports working again 
 
 ## Release 2022.01.03
 * Added rowan balance in navigation sidebar 
