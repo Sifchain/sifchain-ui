@@ -5,6 +5,7 @@ export function _Select(
   props: ButtonHTMLAttributes & {
     active?: boolean;
     chevronIcon?: IconName;
+    hideIcon?: boolean;
   },
   ctx: SetupContext,
 ) {
@@ -18,14 +19,16 @@ export function _Select(
       ]}
     >
       {ctx.slots.default?.()}
-      <AssetIcon
-        class={[
-          "w-[24px] h-[24px] ml-[8px] mr-[16px] transition-all duration-100 flex-shrink-0",
-          props.active && "rotate-180",
-        ]}
-        size={24}
-        icon={props.chevronIcon || "interactive/chevron-down"}
-      />
+      {!props.hideIcon && (
+        <AssetIcon
+          class={[
+            "w-[24px] h-[24px] ml-[8px] mr-[16px] transition-all duration-100 flex-shrink-0",
+            props.active && "rotate-180",
+          ]}
+          size={24}
+          icon={props.chevronIcon || "interactive/chevron-down"}
+        />
+      )}
     </button>
   );
 }
