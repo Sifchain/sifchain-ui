@@ -326,10 +326,13 @@ export default defineComponent({
             {buttonsRef.value
               .filter((definition) => definition.visible)
               .map((definition) => {
+                const dataHandle =
+                  `${definition.name}-${props.tokenItem.asset.name}`.toLowerCase();
                 const button = (
                   <Button.Inline
                     key={definition.name}
                     class="mr-1 animation-fade-in"
+                    data-handle={dataHandle}
                     icon={definition.icon as IconName}
                     {...definition.props}
                   >

@@ -1,5 +1,5 @@
 import { KEPLR_CONFIG } from "../config";
-import { getExtensionPage } from "../utils";
+import { getExtensionPage, sleep } from "../utils";
 
 export class KeplrPage {
   constructor(config = KEPLR_CONFIG) {
@@ -7,6 +7,7 @@ export class KeplrPage {
   }
 
   async setup() {
+    await sleep(1000);
     this.page = await getExtensionPage(this.config.id);
     await this.importAccount();
   }
@@ -17,7 +18,9 @@ export class KeplrPage {
     } else {
       this.page = await getExtensionPage(this.config.id);
     }
-    await this.page.goto(`chrome-extension://${this.config.id}/popup.html`);
+    await this.page.goto(`chrome-extension://${this.config.id}/popup.html`, {
+      waitUntil: "domcontentloaded",
+    });
   }
 
   async importAccount() {
