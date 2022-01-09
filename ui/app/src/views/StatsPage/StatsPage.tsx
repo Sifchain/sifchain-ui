@@ -209,7 +209,7 @@ export default defineComponent({
                   return (
                     <tr
                       key={item.asset.symbol}
-                      class="align-middle h-8 border-dashed border-b border-white border-opacity-40 last:border-transparent hover:opacity-80"
+                      class="align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80"
                     >
                       <td class="align-middle">
                         <div class="flex items-center">

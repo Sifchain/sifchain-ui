@@ -29,7 +29,7 @@ export default defineConfig({
       ],
       {},
     ),
-    viteSingleFile(),
+    // viteSingleFile(),
     minifyHtml(),
   ].filter(Boolean),
 

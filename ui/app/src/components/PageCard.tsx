@@ -45,11 +45,11 @@ export default defineComponent({
     });
 
     return () => (
-      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px] ">
+      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px]">
         <div
           key="view-layer"
           class={[
-            `transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white px-4`,
+            `shadow-2xl transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white px-4`,
             props.class,
           ]}
         >

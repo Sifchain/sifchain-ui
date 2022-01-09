@@ -27,7 +27,7 @@ import { Amount } from "@sifchain/sdk";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import OnboardingModal from "@/components/OnboardingModal";
 import { ExpansionIntro } from "@/components/ExpansionIntro";
-
+import { animateFireflies } from "./utils/animateFireflies";
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
   let hiddenCount = 0;
@@ -111,6 +111,14 @@ export default defineComponent({
       }, 3000);
     });
     watchEffect(() => {
+      // easter egg
+      if (
+        accountStore.state.sifchain.address ===
+        "sif1cp3y0wpn0qt6sjdgjmam7dstpjunlk3hanqlx5"
+      ) {
+        animateFireflies();
+      }
+      //
       const balances = accountStore.state.sifchain.balances;
       const hasSufficientRowanToTrade = balances.find(
         (b) =>
