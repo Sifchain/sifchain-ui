@@ -2,6 +2,8 @@ import { defineComponent } from "vue";
 import Layout from "@/componentsLegacy/Layout/Layout";
 
 import { RewardsCalculator } from "./components/RewardsCalculator/RewardsCalculator";
+import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { AsyncDataState } from "@/hooks/useAsyncData";
 
 export default defineComponent({
   name: "RewardsCalculatorPage",
@@ -9,9 +11,12 @@ export default defineComponent({
     const data = useRewardsCalculatorData();
     return {
       ...data,
-      originalAPR: data.apr,
-      originalPrice: data.tokenOutPrice,
-      tokenOutFuturePrice: "0.15",
+      currentAPR: data.apr,
+      tokenOutCurrentPrice: "0",
+      tokenOutPriceAtPurchase: "0",
+      tokenOutFuturePrice: "0",
+      tokenInAmount: "0",
+      timeInWeeks: 1,
     };
   },
   methods: {
@@ -27,14 +32,51 @@ export default defineComponent({
       this.timeInWeeks = value;
       this.$forceUpdate();
     },
+    handleAPRChange(value: string) {
+      this.apr = value;
+      this.$forceUpdate();
+    },
     handleResetAPR() {
-      this.apr = this.originalAPR;
+      this.apr = this.currentAPR;
+      this.$forceUpdate();
     },
-    handleResetPriceAtPurchase() {
-      this.tokenOutPrice = this.originalPrice;
+    handleTokenOutPriceAtPurchaseChange(value: string) {
+      this.tokenOutPriceAtPurchase = value;
+      this.$forceUpdate();
     },
-    handleResetFuturePrice() {
-      this.tokenOutFuturePrice = this.originalPrice;
+    handleResetTokenOutPriceAtPurchase() {
+      this.tokenOutPriceAtPurchase = this.tokenOutCurrentPrice;
+      this.$forceUpdate();
+    },
+    handleTokenOutFuturePriceChange(value: string) {
+      this.tokenOutFuturePrice = value;
+      this.$forceUpdate();
+    },
+    handleResetTokenOutFuturePrice() {
+      this.tokenOutFuturePrice = this.tokenOutCurrentPrice;
+      this.$forceUpdate();
+    },
+  },
+  computed: {
+    tokenOutPrice() {
+      if (this.tokenOutPriceAsync.isSuccess.value) {
+        return String(
+          // @ts-ignore
+          this.tokenOutPriceAsync.data.value,
+        );
+      }
+      return "0";
+    },
+  },
+  watch: {
+    tokenOutPriceAsync: {
+      handler(asyncValue: AsyncDataState<() => Promise<string | undefined>>) {
+        if (asyncValue.data) {
+          console.log(asyncValue.data);
+          this.tokenOutPrice = String(asyncValue.data.value);
+          this.$forceUpdate();
+        }
+      },
     },
   },
   render() {
@@ -45,15 +87,25 @@ export default defineComponent({
           tokenInBalance={this.tokenInBalance}
           tokenInAmount={this.tokenInAmount}
           tokenOutPrice={this.tokenOutPrice}
+          tokenOutPriceAtPurchase={this.tokenOutPriceAtPurchase}
+          tokenOutFuturePrice={this.tokenOutFuturePrice}
           tokenOutSymbol={this.tokenOutSymbol}
           timeInWeeks={this.timeInWeeks}
+          currentAPR={this.currentAPR}
           apr={this.apr}
           onApplyMaxBalance={this.handleApplyMaxBalance}
           onTokenInAmountChange={this.handleTokenInAmountChange}
           onTimeInWeeksChage={this.handleTimeInWeeksChange}
+          onAPRChange={this.handleAPRChange}
           onResetAPR={this.handleResetAPR}
-          onResetFuturePrice={this.handleResetFuturePrice}
-          onResetPriceAtPurchase={this.handleResetPriceAtPurchase}
+          onResetTokenOutFuturePrice={this.handleResetTokenOutFuturePrice}
+          onTokenOutPriceAtPurchaseChange={
+            this.handleTokenOutPriceAtPurchaseChange
+          }
+          onResetTokenOutPriceAtPurchase={
+            this.handleResetTokenOutPriceAtPurchase
+          }
+          onTokenOutFuturePriceChange={this.handleTokenOutFuturePriceChange}
         />
       </Layout>
     );
@@ -64,11 +116,8 @@ export function useRewardsCalculatorData() {
   return {
     tokenInSymbol: "ROWAN",
     tokenInBalance: "2000",
-    tokenInAmount: "0",
-    tokenOutPrice: "0.15",
-
+    tokenOutPriceAsync: useRowanPrice(),
     tokenOutSymbol: "ROWAN",
-    timeInWeeks: 1,
     apr: "12.5",
   };
 }

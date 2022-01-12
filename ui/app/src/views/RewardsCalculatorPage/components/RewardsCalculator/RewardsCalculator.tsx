@@ -3,6 +3,7 @@ import { computed, SetupContext } from "vue";
 import { Button } from "@/components/Button/Button";
 import { Input } from "@/components/Input/Input";
 import PageCard from "@/components/PageCard";
+import { prettyNumber } from "@/utils/prettyNumber";
 
 type Props = {
   tokenInSymbol: string;
@@ -11,15 +12,20 @@ type Props = {
   tokenOutSymbol: string;
   tokenOutPrice: string;
   tokenOutFuturePrice: string;
+  tokenOutPriceAtPurchase: string;
+  currentAPR: string;
   apr: string;
   timeInWeeks: number;
-
+  // callbacks
   onTokenInAmountChange?: (value: string) => void;
   onTimeInWeeksChage?: (value: number) => void;
   onApplyMaxBalance?: () => void;
+  onAPRChange?: (value: string) => void;
   onResetAPR?: () => void;
-  onResetPriceAtPurchase?: () => void;
-  onResetFuturePrice?: () => void;
+  onTokenOutPriceAtPurchaseChange?: (value: string) => void;
+  onResetTokenOutPriceAtPurchase?: () => void;
+  onTokenOutFuturePriceChange?: (value: string) => void;
+  onResetTokenOutFuturePrice?: () => void;
 };
 
 export const RewardsCalculator = (props: Props) => {
@@ -36,7 +42,10 @@ export const RewardsCalculator = (props: Props) => {
               title={`${props.tokenOutSymbol} Price`}
               value={props.tokenOutPrice}
             />
-            <HeaderInfoItem title="Current APR" value={`${props.apr}%`} />
+            <HeaderInfoItem
+              title="Current APR"
+              value={`${props.currentAPR}%`}
+            />
             <HeaderInfoItem
               title={`Your ${props.tokenInSymbol} Balance`}
               value={props.tokenInBalance}
@@ -49,6 +58,9 @@ export const RewardsCalculator = (props: Props) => {
               <Input.Base
                 placeholder={"0"}
                 class="text-right"
+                type="number"
+                min="0"
+                value={props.tokenInAmount}
                 startContent={
                   props.onApplyMaxBalance && (
                     <Button.Pill onClick={props.onApplyMaxBalance}>
@@ -56,8 +68,6 @@ export const RewardsCalculator = (props: Props) => {
                     </Button.Pill>
                   )
                 }
-                type="number"
-                min="0"
                 onInput={(e) => {
                   let v = (e.target as HTMLInputElement).value;
                   if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
@@ -67,7 +77,6 @@ export const RewardsCalculator = (props: Props) => {
                     props.onTokenInAmountChange(v);
                   }
                 }}
-                value={props.tokenInAmount}
               />
             </InputLabel>
             <InputLabel label="APR (%)">
@@ -77,6 +86,17 @@ export const RewardsCalculator = (props: Props) => {
                 type="number"
                 name="tokenInAmount"
                 min="0"
+                value={props.apr}
+                startContent={
+                  props.onResetAPR && (
+                    <Button.Pill onClick={props.onResetAPR}>RESET</Button.Pill>
+                  )
+                }
+                onChange={(e) => {
+                  if (props.onAPRChange) {
+                    props.onAPRChange((e.target as HTMLInputElement).value);
+                  }
+                }}
               />
             </InputLabel>
             <InputLabel label={`${props.tokenOutSymbol} price at purchase ($)`}>
@@ -86,6 +106,21 @@ export const RewardsCalculator = (props: Props) => {
                 type="number"
                 name="currentTokenOutPrice"
                 min="0"
+                value={props.tokenOutPriceAtPurchase}
+                startContent={
+                  props.onResetTokenOutPriceAtPurchase && (
+                    <Button.Pill onClick={props.onResetTokenOutPriceAtPurchase}>
+                      RESET
+                    </Button.Pill>
+                  )
+                }
+                onInput={(e) => {
+                  if (props.onTokenOutPriceAtPurchaseChange) {
+                    props.onTokenOutPriceAtPurchaseChange(
+                      (e.target as HTMLInputElement).value,
+                    );
+                  }
+                }}
               />
             </InputLabel>
             <InputLabel
@@ -97,6 +132,21 @@ export const RewardsCalculator = (props: Props) => {
                 type="number"
                 name="futureTokenOutPrice"
                 min="0"
+                value={props.tokenOutFuturePrice}
+                startContent={
+                  props.onResetTokenOutFuturePrice && (
+                    <Button.Pill onClick={props.onResetTokenOutFuturePrice}>
+                      RESET
+                    </Button.Pill>
+                  )
+                }
+                onInput={(e) => {
+                  if (props.onTokenOutFuturePriceChange) {
+                    props.onTokenOutFuturePriceChange(
+                      (e.target as HTMLInputElement).value,
+                    );
+                  }
+                }}
               />
             </InputLabel>
           </div>
@@ -112,8 +162,7 @@ export const RewardsCalculator = (props: Props) => {
               value={props.timeInWeeks}
               onInput={(e) => {
                 if (props.onTimeInWeeksChage) {
-                  // @ts-ignore
-                  const value = Number(e.target.value);
+                  const value = Number((e.target as HTMLInputElement).value);
                   props.onTimeInWeeksChage(value);
                 }
               }}
@@ -123,14 +172,14 @@ export const RewardsCalculator = (props: Props) => {
         <footer className="grid gap-1">
           <FooterInfoItem
             title="Your initial investment"
-            value={String(investment.value)}
+            value={`$${prettyNumber(investment.value)}`}
           />
-          <FooterInfoItem title="Current wealth" value="0" />
+          <FooterInfoItem title="Current wealth" value="$0" />
           <FooterInfoItem
             title={`${props.tokenOutSymbol} rewards estimation`}
-            value="0"
+            value={`0 ${props.tokenOutSymbol}`}
           />
-          <FooterInfoItem title="Your initial investiment" value="0" />
+          <FooterInfoItem title="Potential return" value="$0" />
         </footer>
       </section>
     </PageCard>
