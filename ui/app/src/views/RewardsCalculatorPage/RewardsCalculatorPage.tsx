@@ -3,7 +3,6 @@ import Layout from "@/componentsLegacy/Layout/Layout";
 
 import { RewardsCalculator } from "./components/RewardsCalculator/RewardsCalculator";
 import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
-import { AsyncDataState } from "@/hooks/useAsyncData";
 
 export default defineComponent({
   name: "RewardsCalculatorPage",
