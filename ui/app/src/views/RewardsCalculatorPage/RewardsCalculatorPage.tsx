@@ -72,6 +72,7 @@ export default defineComponent({
     tokenOutPrice: {
       handler(value: string) {
         if (value) {
+          this.tokenOutCurrentPrice = value;
           this.tokenOutPriceAtPurchase = value;
           this.tokenOutFuturePrice = value;
         }
