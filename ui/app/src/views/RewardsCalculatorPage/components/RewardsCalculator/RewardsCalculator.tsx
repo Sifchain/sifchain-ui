@@ -1,9 +1,9 @@
 import { computed, SetupContext } from "vue";
 
+import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
 import { Input } from "@/components/Input/Input";
 import PageCard from "@/components/PageCard";
-import { prettyNumber } from "@/utils/prettyNumber";
 
 type Props = {
   tokenInSymbol: string;
@@ -30,8 +30,27 @@ type Props = {
 
 export const RewardsCalculator = (props: Props) => {
   const investment = computed(
-    () => Number(props.tokenInAmount) * Number(props.tokenOutPrice),
+    () => parseFloat(props.tokenInAmount) * parseFloat(props.tokenOutPrice),
   );
+
+  const currentWealth = computed(
+    () => parseFloat(props.tokenInBalance) * parseFloat(props.tokenOutPrice),
+  );
+
+  const rewardsEstimate = computed(
+    () => parseFloat(props.tokenInAmount) * parseFloat(props.apr),
+  );
+
+  // compound APR
+  const potentialReturn = computed(() =>
+    Array(props.timeInWeeks)
+      .fill(0)
+      .reduce(
+        (acc) => acc + acc * (parseFloat(props.apr) / 100),
+        parseFloat(props.tokenInAmount) * parseFloat(props.tokenOutPrice),
+      ),
+  );
+
   return (
     <PageCard heading="Calculator">
       <section className="grid w-full gap-4 p-2 pb-4">
@@ -174,12 +193,20 @@ export const RewardsCalculator = (props: Props) => {
             title="Your initial investment"
             value={`$${prettyNumber(investment.value)}`}
           />
-          <FooterInfoItem title="Current wealth" value="$0" />
+          <FooterInfoItem
+            title="Current wealth"
+            value={`$${prettyNumber(currentWealth.value)}`}
+          />
           <FooterInfoItem
             title={`${props.tokenOutSymbol} rewards estimation`}
-            value={`0 ${props.tokenOutSymbol}`}
+            value={`${prettyNumber(rewardsEstimate.value)} ${
+              props.tokenOutSymbol
+            }`}
           />
-          <FooterInfoItem title="Potential return" value="$0" />
+          <FooterInfoItem
+            title="Potential return"
+            value={`$${prettyNumber(potentialReturn.value)}`}
+          />
         </footer>
       </section>
     </PageCard>

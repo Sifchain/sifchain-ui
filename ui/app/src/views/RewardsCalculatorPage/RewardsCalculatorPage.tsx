@@ -69,12 +69,11 @@ export default defineComponent({
     },
   },
   watch: {
-    tokenOutPriceAsync: {
-      handler(asyncValue: AsyncDataState<() => Promise<string | undefined>>) {
-        if (asyncValue.data) {
-          console.log(asyncValue.data);
-          this.tokenOutPrice = String(asyncValue.data.value);
-          this.$forceUpdate();
+    tokenOutPrice: {
+      handler(value: string) {
+        if (value) {
+          this.tokenOutPriceAtPurchase = value;
+          this.tokenOutFuturePrice = value;
         }
       },
     },
