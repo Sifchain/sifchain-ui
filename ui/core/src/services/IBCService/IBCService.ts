@@ -1,5 +1,5 @@
 import { IBCBridge } from "../../clients/bridges/IBCBridge/IBCBridge";
-import type { IBCBridgeContext as IBCServiceContext } from "../../clients/bridges/IBCBridge/IBCBridge";
+import type { IBCBridgeContext as _IBCServiceContext } from "../../clients/bridges/IBCBridge/IBCBridge";
 import {
   Network,
   IAssetAmount,
@@ -7,6 +7,8 @@ import {
   IBCChainConfig,
 } from "../../entities";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
+
+export type IBCServiceContext = _IBCServiceContext;
 
 // NOTE(ajoslin): this is deprecated, most functionality is moved to IBCBridge
 // debug functions only left here or functions with old signatures
@@ -156,8 +158,6 @@ export class IBCService extends IBCBridge {
     // }
   }
 }
-
-export { IBCServiceContext };
 
 export default function createIBCService(context: IBCServiceContext) {
   return IBCService.create(context);
