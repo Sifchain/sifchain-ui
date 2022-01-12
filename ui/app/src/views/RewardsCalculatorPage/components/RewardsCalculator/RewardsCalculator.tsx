@@ -59,7 +59,11 @@ export const RewardsCalculator = (props: Props) => {
           <div className="grid grid-cols-3 gap-2 p-4 bg-gray-input rounded-lg">
             <HeaderInfoItem
               title={`${props.tokenOutSymbol} Price`}
-              value={props.tokenOutPrice}
+              value={
+                props.tokenOutPrice !== "0"
+                  ? `$${prettyNumber(parseFloat(props.tokenOutPrice), 5)}`
+                  : "..."
+              }
             />
             <HeaderInfoItem
               title="Current APR"
