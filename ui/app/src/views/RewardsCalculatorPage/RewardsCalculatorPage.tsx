@@ -9,6 +9,7 @@ export default defineComponent({
   name: "RewardsCalculatorPage",
   setup() {
     const data = useRewardsCalculatorData();
+
     return {
       ...data,
       currentAPR: data.apr,
