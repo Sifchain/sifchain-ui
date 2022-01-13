@@ -51,8 +51,7 @@ export const exportStore = Vuextra.createStore({
   getters: (state) => ({
     chains() {
       const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
-      // const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
-      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = false;
+      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
@@ -72,12 +71,12 @@ export const exportStore = Vuextra.createStore({
               !isChainFlaggedDisabled(c),
           )
           // Disallow IBC export of ethereum & sifchain-native tokens
-          .filter((n) => {
+          .filter((chain) => {
             // If it's from IBC network, you can export it to its home network.
-            if (isExternalIBCAsset) return n.network === asset.homeNetwork;
+            if (isExternalIBCAsset) return chain.network === asset.homeNetwork;
 
             // Yep, you can export to eth (unless the next .filter below catches you).
-            if (n.network === Network.ETHEREUM) return true;
+            if (chain.network === Network.ETHEREUM) return true;
 
             // Otherwise, only allow exporting to all networks token has permission.
             return (
@@ -85,8 +84,8 @@ export const exportStore = Vuextra.createStore({
               registryEntry?.permissions.includes(Permission.IBCEXPORT)
             );
           })
-          .filter((c) => {
-            if (isExternalIBCAsset && c.network === Network.ETHEREUM) {
+          .filter((chain) => {
+            if (isExternalIBCAsset && chain.network === Network.ETHEREUM) {
               // if it's a peggy-whitelisted IBC token and IBC ethereum is enabled
               return isPeggyWhitelistedIBCAsset && IBC_ETHEREUM_ENABLED;
             }

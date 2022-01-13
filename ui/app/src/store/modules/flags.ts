@@ -26,7 +26,7 @@ export const flagsStore = Vuextra.createStore({
     ibcTransferTimeoutMinutes: 15,
     rewardClaims: true,
     peggyForCosmosTokens: true,
-    ibcForEthTokens: true,
+    ibcForEthTokens: false,
     claimsGraph: false,
     devnetCryptoecon: false,
     tradingCompetitionsEnabled: false,
