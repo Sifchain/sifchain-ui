@@ -40,7 +40,7 @@ export const TokenNetworkIcon = defineComponent({
         : useChains().get(asset.homeNetwork).nativeAsset;
     });
 
-    const homeIconSize = computed(() => props.size / 2);
+    const homeIconSize = computed(() => Math.max(props.size / 2, 12));
 
     return () => {
       if (!assetRef.value) return null;
