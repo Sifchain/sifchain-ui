@@ -15,6 +15,10 @@ export class KeplrNotificationPopup {
   async clickApprove() {
     await this.page.click('button:has-text("Approve")');
   }
+
+  async verifyNetworkName(name) {
+    await this.page.waitForSelector(`text=${name}`);
+  }
 }
 
 export const keplrNotificationPopup = new KeplrNotificationPopup();

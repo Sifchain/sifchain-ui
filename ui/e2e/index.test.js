@@ -23,13 +23,14 @@ const { advanceEthBlocks } = require("./ethereum.js");
 const { useStack } = require("../test/stack");
 
 // utils
-const { resetExtensionsConnection, setupExtensions } = require("./helpers.js");
+const { setupExtensions } = require("./helpers.js");
 
 // dex pages
 const { balancesPage } = require("./pages/BalancesPage.js");
 const { poolPage } = require("./pages/PoolPage.js");
 const { confirmSupplyModal } = require("./pages/ConfirmSupplyModal.js");
 const { rewardsPage } = require("./pages/RewardsPage.js");
+const { getExtensionPage } = require("./utils.js");
 
 useStack("every-test");
 
@@ -37,12 +38,12 @@ beforeAll(async () => {
   await setupExtensions();
 });
 
-beforeEach(async () => {
-  await resetExtensionsConnection();
-});
+// beforeEach(async () => {
+//   await resetExtensionsConnection();
+// });
 
-describe("Import/export", () => {
-  it("imports rowan", async () => {
+describe.only("Import/export", () => {
+  it.only("imports rowan", async () => {
     const assetNative = "rowan";
     const exportAmount = "500";
     const assetExternal = "erowan";
@@ -50,7 +51,7 @@ describe("Import/export", () => {
     // First we need to export rowan in order to have erowan on the bridgebank contract
     await balancesPage.navigate();
 
-    await balancesPage.openTab("native");
+    // await balancesPage.openTab("native");
     await balancesPage.export(assetNative, exportAmount);
 
     await balancesPage.openTab("external");
@@ -82,7 +83,7 @@ describe("Import/export", () => {
     await balancesPage.verifyTransactionPending(assetNative);
 
     // move chain forward
-    await advanceEthBlocks(52);
+    await advanceEthBlocks(52); // todo: update method, api used doesn't exist anymore
 
     await page.waitForSelector("text=has succeded", { timeout: 60 * 1000 });
 

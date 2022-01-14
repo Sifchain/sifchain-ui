@@ -68,6 +68,7 @@ export default defineComponent({
             tab-index={-1}
             role="button"
             onClick={handleClick}
+            data-handle="button-connect-network"
             class={[
               "h-[42px] flex items-center px-[10px] w-full border border-solid rounded cursor-pointer focus:bg-black hover:bg-black transition-all",
               stateRef.value.connected
