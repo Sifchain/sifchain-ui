@@ -3,6 +3,7 @@ import { Network } from "@sifchain/sdk";
 import { accountStore } from "@/store/modules/accounts";
 import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 
 /**
  * Returns a given token's balance based on its Symbol and Network
@@ -10,35 +11,39 @@ import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
  * @param tokenSymbol
  * @param options - { network: Network.SIFCHAIN, strict: false }
  */
-export function useTokenBalance(
+export function useTokenBalanceAsync(
   tokenSymbol: string,
   options = { network: Network.SIFCHAIN, strict: false },
 ) {
-  const { balances } = accountStore.state[options.network];
+  return useAsyncDataCached(
+    "useTokenBalanceAsync",
+    async () => {
+      if (!accountStore.refs.sifchain.connected) {
+        console.log("not connected");
+      }
+      const { balances } = accountStore.state[options.network];
 
-  const rawBalance = balances.find(({ asset }) =>
-    options.strict
-      ? asset.symbol === tokenSymbol
-      : asset.symbol.toUpperCase().includes(tokenSymbol.toUpperCase()),
+      const balance = balances.find(({ asset }) => {
+        return asset.symbol.toLowerCase().includes(tokenSymbol.toLowerCase());
+      });
+      if (!balance) return;
+
+      return balance;
+    },
+    [accountStore.refs[options.network].balances.computed()],
   );
-
-  return rawBalance;
 }
 
 export function useRewardsCalculatorData(
   tokenInSymbol = "ROWAN",
   tokenInNetwork = Network.SIFCHAIN,
 ) {
-  const rawBalance = useTokenBalance(tokenInSymbol, {
-    network: tokenInNetwork,
-    strict: false,
-  });
-
-  const tokenInBalance = rawBalance ? formatAssetAmount(rawBalance) : "0.00";
-
   return {
     tokenInSymbol,
-    tokenInBalance,
+    tokenInBalanceAsync: useTokenBalanceAsync(tokenInSymbol, {
+      network: tokenInNetwork,
+      strict: false,
+    }),
     tokenOutPriceAsync: useRowanPrice(),
     tokenOutSymbol: tokenInSymbol,
     apr: "12.5",

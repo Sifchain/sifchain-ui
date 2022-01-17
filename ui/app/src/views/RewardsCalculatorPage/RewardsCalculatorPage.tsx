@@ -1,5 +1,6 @@
 import { defineComponent } from "vue";
 
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import Layout from "@/componentsLegacy/Layout/Layout";
 
 import { RewardsCalculator } from "./components/RewardsCalculator";
@@ -65,6 +66,13 @@ export default defineComponent({
           // @ts-ignore
           this.tokenOutPriceAsync.data.value,
         );
+      }
+      return "0";
+    },
+    tokenInBalance() {
+      if (this.tokenInBalanceAsync.isSuccess.value) {
+        // @ts-ignore
+        return formatAssetAmount(this.tokenInBalanceAsync?.data?.value);
       }
       return "0";
     },
