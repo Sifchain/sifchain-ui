@@ -37,9 +37,11 @@ export const RewardsCalculator = (props: Props) => {
     () => parseFloat(props.tokenInBalance) * parseFloat(props.tokenOutPrice),
   );
 
-  const rewardsEstimate = computed(
-    () => parseFloat(props.tokenInAmount) * parseFloat(props.apr),
-  );
+  // const inflationRate = computed(
+  //   () =>
+  //     parseFloat(props.tokenOutFuturePrice) *
+  //     parseFloat(props.tokenOutPriceAtPurchase),
+  // );
 
   // compound APR
   const potentialReturn = computed(() => {
@@ -51,6 +53,12 @@ export const RewardsCalculator = (props: Props) => {
 
     return compoundReturn;
   });
+
+  const rewardsEstimate = computed(
+    () =>
+      (potentialReturn.value - investment.value) /
+      parseFloat(props.tokenOutFuturePrice),
+  );
 
   return (
     <PageCard heading="Calculator">
@@ -108,7 +116,7 @@ export const RewardsCalculator = (props: Props) => {
                 class="text-right"
                 placeholder="0"
                 type="number"
-                name="tokenInAmount"
+                name="apr"
                 min="0"
                 value={props.apr}
                 startContent={
@@ -116,7 +124,7 @@ export const RewardsCalculator = (props: Props) => {
                     <Button.Pill onClick={props.onResetAPR}>RESET</Button.Pill>
                   )
                 }
-                onChange={(e) => {
+                onInput={(e) => {
                   if (props.onAPRChange) {
                     props.onAPRChange((e.target as HTMLInputElement).value);
                   }

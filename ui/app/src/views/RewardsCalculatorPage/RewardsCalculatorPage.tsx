@@ -8,31 +8,34 @@ import { useRewardsCalculatorData } from "./hooks";
 
 export default defineComponent({
   name: "RewardsCalculatorPage",
+  data() {
+    return {
+      tokenOutCurrentPrice: "0",
+      tokenOutPriceAtPurchase: "0",
+      tokenOutFuturePrice: "0",
+      tokenInAmount: "0",
+      timeInWeeks: 1,
+      apr: "0",
+      currentApr: "0",
+    };
+  },
   setup() {
     const data = useRewardsCalculatorData();
 
     return {
       ...data,
       currentAPR: data.apr,
-      tokenOutCurrentPrice: "0",
-      tokenOutPriceAtPurchase: "0",
-      tokenOutFuturePrice: "0",
-      tokenInAmount: "0",
-      timeInWeeks: 1,
     };
   },
   methods: {
     handleApplyMaxBalance() {
       this.tokenInAmount = this.tokenInBalance;
-      this.$forceUpdate();
     },
     handleTokenInAmountChange(value: string) {
       this.tokenInAmount = value;
-      this.$forceUpdate();
     },
     handleTimeInWeeksChange(value: number) {
       this.timeInWeeks = value;
-      this.$forceUpdate();
     },
     handleAPRChange(value: string) {
       this.apr = value;
@@ -44,19 +47,15 @@ export default defineComponent({
     },
     handleTokenOutPriceAtPurchaseChange(value: string) {
       this.tokenOutPriceAtPurchase = value;
-      this.$forceUpdate();
     },
     handleResetTokenOutPriceAtPurchase() {
       this.tokenOutPriceAtPurchase = this.tokenOutCurrentPrice;
-      this.$forceUpdate();
     },
     handleTokenOutFuturePriceChange(value: string) {
       this.tokenOutFuturePrice = value;
-      this.$forceUpdate();
     },
     handleResetTokenOutFuturePrice() {
       this.tokenOutFuturePrice = this.tokenOutCurrentPrice;
-      this.$forceUpdate();
     },
   },
   computed: {
