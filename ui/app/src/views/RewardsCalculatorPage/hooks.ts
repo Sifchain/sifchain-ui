@@ -16,15 +16,14 @@ export function useTokenBalanceAsync(
   options = { network: Network.SIFCHAIN, strict: false },
 ) {
   return useAsyncDataCached(
-    "useTokenBalanceAsync",
+    `useTokenBalanceAsync-${options.network}-${tokenSymbol}`,
     async () => {
-      if (!accountStore.refs.sifchain.connected) {
-        console.log("not connected");
-      }
       const { balances } = accountStore.state[options.network];
 
       const balance = balances.find(({ asset }) => {
-        return asset.symbol.toLowerCase().includes(tokenSymbol.toLowerCase());
+        return options.strict
+          ? asset.symbol === tokenSymbol
+          : asset.symbol.toLowerCase().includes(tokenSymbol.toLowerCase());
       });
       if (!balance) return;
 
