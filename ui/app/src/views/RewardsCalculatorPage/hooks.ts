@@ -45,6 +45,6 @@ export function useRewardsCalculatorData(
     }),
     tokenOutPriceAsync: useRowanPrice(),
     tokenOutSymbol: tokenInSymbol,
-    apr: "12.5",
+    apr: "100",
   };
 }

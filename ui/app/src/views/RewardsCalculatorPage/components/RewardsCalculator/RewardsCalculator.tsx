@@ -42,14 +42,15 @@ export const RewardsCalculator = (props: Props) => {
   );
 
   // compound APR
-  const potentialReturn = computed(() =>
-    Array(props.timeInWeeks)
+  const potentialReturn = computed(() => {
+    const apr = parseFloat(props.apr) / 100;
+
+    const compoundReturn = Array(props.timeInWeeks)
       .fill(0)
-      .reduce(
-        (acc) => acc + acc * (parseFloat(props.apr) / 100),
-        parseFloat(props.tokenInAmount) * parseFloat(props.tokenOutPrice),
-      ),
-  );
+      .reduce((acc) => acc + (acc * apr) / 52, investment.value);
+
+    return compoundReturn;
+  });
 
   return (
     <PageCard heading="Calculator">
