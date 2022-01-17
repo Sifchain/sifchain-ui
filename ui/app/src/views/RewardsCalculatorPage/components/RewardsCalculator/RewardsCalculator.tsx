@@ -71,7 +71,7 @@ export const RewardsCalculator = (props: Props) => {
             />
             <HeaderInfoItem
               title={`Your ${props.tokenInSymbol} Balance`}
-              value={props.tokenInBalance}
+              value={prettyNumber(parseFloat(props.tokenInBalance))}
             />
           </div>
         </header>
