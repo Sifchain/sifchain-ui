@@ -1,8 +1,9 @@
 import { defineComponent } from "vue";
+
 import Layout from "@/componentsLegacy/Layout/Layout";
 
-import { RewardsCalculator } from "./components/RewardsCalculator/RewardsCalculator";
-import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { RewardsCalculator } from "./components/RewardsCalculator";
+import { useRewardsCalculatorData } from "./hooks";
 
 export default defineComponent({
   name: "RewardsCalculatorPage",
@@ -111,13 +112,3 @@ export default defineComponent({
     );
   },
 });
-
-export function useRewardsCalculatorData() {
-  return {
-    tokenInSymbol: "ROWAN",
-    tokenInBalance: "2000",
-    tokenOutPriceAsync: useRowanPrice(),
-    tokenOutSymbol: "ROWAN",
-    apr: "12.5",
-  };
-}
