@@ -19,6 +19,7 @@ import { IAsset, Network } from "../../../core/src";
 import { TokenIcon } from "./TokenIcon";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
+import { TokenNetworkIcon } from "./TokenNetworkIcon/TokenNetworkIcon";
 
 export const TokenSelectDropdown = defineComponent({
   props: {
@@ -224,7 +225,7 @@ export const TokenSelectDropdown = defineComponent({
                               key={token.asset.symbol}
                               class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
                             >
-                              <TokenIcon
+                              <TokenNetworkIcon
                                 key={token.asset.symbol}
                                 size={20}
                                 assetValue={token.asset}

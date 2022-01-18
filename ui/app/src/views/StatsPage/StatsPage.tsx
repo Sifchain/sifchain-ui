@@ -10,6 +10,7 @@ import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
 import { Button } from "@/components/Button/Button";
 import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
   name: "StatsPage",
@@ -213,7 +214,7 @@ export default defineComponent({
                     >
                       <td class="align-middle">
                         <div class="flex items-center">
-                          <TokenIcon
+                          <TokenNetworkIcon
                             assetValue={item.asset}
                             size={22}
                             class="mr-[10px]"

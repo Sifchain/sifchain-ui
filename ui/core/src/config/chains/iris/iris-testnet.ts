@@ -12,7 +12,7 @@ export const IRIS_TESTNET: IBCChainConfig = {
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/nyancat-9/rpc",
     rest: "https://proxies.sifchain.finance/api/nyancat-9/rest",
-    chainId: "nyancat-8",
+    chainId: "nyancat-9",
     chainName: "Iris Testnet",
     stakeCurrency: {
       coinDenom: "NYAN",

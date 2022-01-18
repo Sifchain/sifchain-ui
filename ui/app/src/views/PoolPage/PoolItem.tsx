@@ -30,6 +30,7 @@ import {
 import { flagsStore } from "@/store/modules/flags";
 import { RouterLink } from "vue-router";
 import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
   name: "PoolItem",
@@ -197,7 +198,7 @@ export default defineComponent({
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
             <TokenIcon assetValue={this.nativeAmount.asset} size={22} />
-            <TokenIcon
+            <TokenNetworkIcon
               assetValue={this.externalAmount.asset}
               size={22}
               class="ml-[4px]"
