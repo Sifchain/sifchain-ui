@@ -196,7 +196,11 @@ export const RewardsCalculator = (props: Props) => {
           <FooterInfoItem
             highlight
             title="Potential return"
-            value={`$${prettyNumber(props.potentialReturn)}`}
+            value={`$${prettyNumber(props.potentialReturn)} ${
+              props.potentialReturn
+                ? `(${(props.potentialReturn / props.investment).toFixed(2)}x)`
+                : ""
+            }`}
           />
         </footer>
       </section>
