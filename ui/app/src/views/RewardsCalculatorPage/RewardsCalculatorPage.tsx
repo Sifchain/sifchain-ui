@@ -42,26 +42,42 @@ export default defineComponent({
       );
       return balance ? formatAssetAmount(balance) : "0";
     },
+    // inflationRate(): number {
+    //   const priceA = parseFloat(this.tokenOutPriceAtPurchase);
+    //   const priceB = parseFloat(this.tokenOutFuturePrice);
+
+    //   const delta = priceB - priceA;
+
+    //   const absDelta = Math.abs(delta);
+
+    //   const isNegative = delta < 0;
+
+    //   const onePercent = priceA / 100;
+
+    //   const inflatiionRate = absDelta / onePercent;
+
+    //   return isNegative ? inflatiionRate * -1 : inflatiionRate;
+    // },
     investment(): number {
       return parseFloat(this.tokenInAmount) * parseFloat(this.tokenOutPrice);
     },
     currentWealth(): number {
       return parseFloat(this.tokenInBalance) * parseFloat(this.tokenOutPrice);
     },
-    potentialReturn(): number {
+    rewardsEstimate(): number {
       const apr = parseFloat(this.apr) / 100;
 
       const compoundReturn = Array(this.timeInWeeks)
         .fill(0)
-        .reduce((acc) => acc + (acc * apr) / 52, this.investment);
+        .reduce<number>(
+          (acc) => acc + (acc * apr) / 52,
+          parseFloat(this.tokenInAmount),
+        );
 
       return compoundReturn;
     },
-    rewardsEstimate(): number {
-      return (
-        (this.potentialReturn - this.investment) /
-        parseFloat(this.tokenOutFuturePrice)
-      );
+    potentialReturn(): number {
+      return this.rewardsEstimate * parseFloat(this.tokenOutFuturePrice);
     },
   },
   watch: {
