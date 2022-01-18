@@ -1,4 +1,4 @@
-import { computed, SetupContext } from "vue";
+import { SetupContext } from "vue";
 
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
@@ -16,6 +16,13 @@ type Props = {
   currentAPR: string;
   apr: string;
   timeInWeeks: number;
+
+  // computed
+  investment: number;
+  currentWealth: number;
+  potentialReturn: number;
+  rewardsEstimate: number;
+
   // callbacks
   onTokenInAmountChange?: (value: string) => void;
   onTimeInWeeksChage?: (value: number) => void;
@@ -29,37 +36,6 @@ type Props = {
 };
 
 export const RewardsCalculator = (props: Props) => {
-  const investment = computed(
-    () => parseFloat(props.tokenInAmount) * parseFloat(props.tokenOutPrice),
-  );
-
-  const currentWealth = computed(
-    () => parseFloat(props.tokenInBalance) * parseFloat(props.tokenOutPrice),
-  );
-
-  // const inflationRate = computed(
-  //   () =>
-  //     parseFloat(props.tokenOutFuturePrice) *
-  //     parseFloat(props.tokenOutPriceAtPurchase),
-  // );
-
-  // compound APR
-  const potentialReturn = computed(() => {
-    const apr = parseFloat(props.apr) / 100;
-
-    const compoundReturn = Array(props.timeInWeeks)
-      .fill(0)
-      .reduce((acc) => acc + (acc * apr) / 52, investment.value);
-
-    return compoundReturn;
-  });
-
-  const rewardsEstimate = computed(
-    () =>
-      (potentialReturn.value - investment.value) /
-      parseFloat(props.tokenOutFuturePrice),
-  );
-
   return (
     <PageCard heading="Calculator">
       <section className="grid w-full gap-4 p-2 pb-4">
@@ -204,21 +180,21 @@ export const RewardsCalculator = (props: Props) => {
         <footer className="grid gap-1">
           <FooterInfoItem
             title="Your initial investment"
-            value={`$${prettyNumber(investment.value)}`}
+            value={`$${prettyNumber(props.investment)}`}
           />
           <FooterInfoItem
             title="Current wealth"
-            value={`$${prettyNumber(currentWealth.value)}`}
+            value={`$${prettyNumber(props.currentWealth)}`}
           />
           <FooterInfoItem
             title={`${props.tokenOutSymbol} rewards estimation`}
-            value={`${prettyNumber(rewardsEstimate.value)} ${
+            value={`${prettyNumber(props.rewardsEstimate)} ${
               props.tokenOutSymbol
             }`}
           />
           <FooterInfoItem
             title="Potential return"
-            value={`$${prettyNumber(potentialReturn.value)}`}
+            value={`$${prettyNumber(props.potentialReturn)}`}
           />
         </footer>
       </section>

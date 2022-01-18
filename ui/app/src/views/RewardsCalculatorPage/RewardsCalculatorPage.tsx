@@ -1,79 +1,67 @@
 import { defineComponent } from "vue";
 
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { accountStore } from "@/store/modules/accounts";
 import Layout from "@/componentsLegacy/Layout/Layout";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 
 import { RewardsCalculator } from "./components/RewardsCalculator";
 import { useRewardsCalculatorData } from "./hooks";
+
+const DEFAULT_APR = "100";
+const DEFAULT_TOKEN_SYMBOL = "ROWAN";
 
 export default defineComponent({
   name: "RewardsCalculatorPage",
   data() {
     return {
+      tokenInSymbol: DEFAULT_TOKEN_SYMBOL,
+      tokenOutSymbol: DEFAULT_TOKEN_SYMBOL,
+      apr: DEFAULT_APR,
+      currentAPR: DEFAULT_APR,
       tokenOutCurrentPrice: "0",
       tokenOutPriceAtPurchase: "0",
       tokenOutFuturePrice: "0",
       tokenInAmount: "0",
       timeInWeeks: 1,
-      apr: "0",
-      currentApr: "0",
     };
   },
   setup() {
-    const data = useRewardsCalculatorData();
-
-    return {
-      ...data,
-      currentAPR: data.apr,
-    };
-  },
-  methods: {
-    handleApplyMaxBalance() {
-      this.tokenInAmount = this.tokenInBalance;
-    },
-    handleTokenInAmountChange(value: string) {
-      this.tokenInAmount = value;
-    },
-    handleTimeInWeeksChange(value: number) {
-      this.timeInWeeks = value;
-    },
-    handleAPRChange(value: string) {
-      this.apr = value;
-      this.$forceUpdate();
-    },
-    handleResetAPR() {
-      this.apr = this.currentAPR;
-      this.$forceUpdate();
-    },
-    handleTokenOutPriceAtPurchaseChange(value: string) {
-      this.tokenOutPriceAtPurchase = value;
-    },
-    handleResetTokenOutPriceAtPurchase() {
-      this.tokenOutPriceAtPurchase = this.tokenOutCurrentPrice;
-    },
-    handleTokenOutFuturePriceChange(value: string) {
-      this.tokenOutFuturePrice = value;
-    },
-    handleResetTokenOutFuturePrice() {
-      this.tokenOutFuturePrice = this.tokenOutCurrentPrice;
-    },
+    return useRewardsCalculatorData();
   },
   computed: {
-    tokenOutPrice() {
+    tokenOutPrice(): string {
       if (this.tokenOutPriceAsync.isSuccess.value) {
-        return String(
-          // @ts-ignore
-          this.tokenOutPriceAsync.data.value,
-        );
+        return String(this.tokenOutPriceAsync.data.value);
       }
       return "0";
     },
-    tokenInBalance() {
-      if (this.tokenInBalanceAsync.isSuccess.value) {
-        // @ts-ignore
-        return formatAssetAmount(this.tokenInBalanceAsync?.data?.value);
-      }
-      return "0";
+    tokenInBalance(): string {
+      const { balances } = accountStore.state.sifchain;
+      const balance = balances.find(({ asset }) =>
+        asset.symbol.toLowerCase().includes(this.tokenInSymbol.toLowerCase()),
+      );
+      return balance ? formatAssetAmount(balance) : "0";
+    },
+    investment(): number {
+      return parseFloat(this.tokenInAmount) * parseFloat(this.tokenOutPrice);
+    },
+    currentWealth(): number {
+      return parseFloat(this.tokenInBalance) * parseFloat(this.tokenOutPrice);
+    },
+    potentialReturn(): number {
+      const apr = parseFloat(this.apr) / 100;
+
+      const compoundReturn = Array(this.timeInWeeks)
+        .fill(0)
+        .reduce((acc) => acc + (acc * apr) / 52, this.investment);
+
+      return compoundReturn;
+    },
+    rewardsEstimate(): number {
+      return (
+        (this.potentialReturn - this.investment) /
+        parseFloat(this.tokenOutFuturePrice)
+      );
     },
   },
   watch: {
@@ -101,19 +89,39 @@ export default defineComponent({
           timeInWeeks={this.timeInWeeks}
           currentAPR={this.currentAPR}
           apr={this.apr}
-          onApplyMaxBalance={this.handleApplyMaxBalance}
-          onTokenInAmountChange={this.handleTokenInAmountChange}
-          onTimeInWeeksChage={this.handleTimeInWeeksChange}
-          onAPRChange={this.handleAPRChange}
-          onResetAPR={this.handleResetAPR}
-          onResetTokenOutFuturePrice={this.handleResetTokenOutFuturePrice}
-          onTokenOutPriceAtPurchaseChange={
-            this.handleTokenOutPriceAtPurchaseChange
-          }
-          onResetTokenOutPriceAtPurchase={
-            this.handleResetTokenOutPriceAtPurchase
-          }
-          onTokenOutFuturePriceChange={this.handleTokenOutFuturePriceChange}
+          // claculated
+          investment={this.investment}
+          currentWealth={this.currentWealth}
+          potentialReturn={this.potentialReturn}
+          rewardsEstimate={this.rewardsEstimate}
+          // handlers
+          onApplyMaxBalance={() => {
+            this.tokenInAmount = this.tokenInBalance;
+          }}
+          onTokenInAmountChange={(value) => {
+            this.tokenInAmount = value;
+          }}
+          onTimeInWeeksChage={(value) => {
+            this.timeInWeeks = value;
+          }}
+          onAPRChange={(value) => {
+            this.apr = value;
+          }}
+          onTokenOutPriceAtPurchaseChange={(value) => {
+            this.tokenOutPriceAtPurchase = value;
+          }}
+          onTokenOutFuturePriceChange={(value) => {
+            this.tokenOutFuturePrice = value;
+          }}
+          onResetAPR={() => {
+            this.apr = this.currentAPR;
+          }}
+          onResetTokenOutPriceAtPurchase={() => {
+            this.tokenOutPriceAtPurchase = this.tokenOutCurrentPrice;
+          }}
+          onResetTokenOutFuturePrice={() => {
+            this.tokenOutFuturePrice = this.tokenOutCurrentPrice;
+          }}
         />
       </Layout>
     );
