@@ -16,6 +16,30 @@ const COMPOUNDING_FACTOR = {
   yearly: 1,
 } as const;
 
+/**
+ * Calculates future value based on compounding rate and period
+ *
+ * Formula: FV=PV*(1+r/m)^m*t;
+ * source: https://www.calculatorsoup.com/calculators/financial/future-value-investment-calculator.php
+ *
+ * @param presentValue
+ * @param periods
+ * @param interestPerPeriod
+ * @param compounding
+ * @returns
+ */
+export function calculateFutureValue(
+  presentValue: number,
+  periods: number,
+  interestPerPeriod: number,
+  compounding: number,
+) {
+  return (
+    presentValue *
+    (1 + interestPerPeriod / compounding) ** (compounding * periods)
+  );
+}
+
 export default defineComponent({
   name: "RewardsCalculatorPage",
   data() {
@@ -57,14 +81,12 @@ export default defineComponent({
     rewardsEstimate(): number {
       const apr = parseFloat(this.apr) / 100;
 
-      const compoundReturn = Array(this.timeInWeeks)
-        .fill(0)
-        .reduce<number>(
-          (acc) => acc + (acc * apr) / COMPOUNDING_FACTOR.weekly,
-          parseFloat(this.tokenInAmount),
-        );
-
-      return compoundReturn;
+      return calculateFutureValue(
+        parseFloat(this.tokenInAmount),
+        this.timeInWeeks / COMPOUNDING_FACTOR.weekly,
+        apr,
+        COMPOUNDING_FACTOR.weekly,
+      );
     },
     potentialReturn(): number {
       return this.rewardsEstimate * parseFloat(this.tokenOutFuturePrice);
