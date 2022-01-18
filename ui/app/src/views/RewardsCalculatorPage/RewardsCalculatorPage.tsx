@@ -8,7 +8,8 @@ import { RewardsCalculator } from "./components/RewardsCalculator";
 import { useRewardsCalculatorData } from "./hooks";
 
 const DEFAULT_TOKEN_SYMBOL = "ROWAN";
-const DEFAULT_APR = "100";
+const DEFAULT_APR = "300";
+const DEFAULT_TIME_IN_WEEKS = 12;
 const COMPOUNDING_FACTOR = {
   daily: 365,
   weekly: 52,
@@ -48,11 +49,11 @@ export default defineComponent({
       tokenOutSymbol: DEFAULT_TOKEN_SYMBOL,
       apr: DEFAULT_APR,
       currentAPR: DEFAULT_APR,
+      timeInWeeks: DEFAULT_TIME_IN_WEEKS,
       tokenOutCurrentPrice: "0",
       tokenOutPriceAtPurchase: "0",
       tokenOutFuturePrice: "0",
       tokenInAmount: "0",
-      timeInWeeks: 1,
     };
   },
   setup() {
@@ -73,7 +74,10 @@ export default defineComponent({
       return balance ? formatAssetAmount(balance) : "0";
     },
     investment(): number {
-      return parseFloat(this.tokenInAmount) * parseFloat(this.tokenOutPrice);
+      return (
+        parseFloat(this.tokenInAmount) *
+        parseFloat(this.tokenOutPriceAtPurchase)
+      );
     },
     currentWealth(): number {
       return parseFloat(this.tokenInBalance) * parseFloat(this.tokenOutPrice);
@@ -99,6 +103,13 @@ export default defineComponent({
           this.tokenOutCurrentPrice = value;
           this.tokenOutPriceAtPurchase = value;
           this.tokenOutFuturePrice = value;
+        }
+      },
+    },
+    tokenInBalance: {
+      handler(value: string) {
+        if (value) {
+          this.tokenInAmount = value;
         }
       },
     },
