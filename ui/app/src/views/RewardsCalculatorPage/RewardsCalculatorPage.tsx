@@ -7,8 +7,14 @@ import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import { RewardsCalculator } from "./components/RewardsCalculator";
 import { useRewardsCalculatorData } from "./hooks";
 
-const DEFAULT_APR = "100";
 const DEFAULT_TOKEN_SYMBOL = "ROWAN";
+const DEFAULT_APR = "100";
+const COMPOUNDING_FACTOR = {
+  daily: 365,
+  weekly: 52,
+  monthly: 12,
+  yearly: 1,
+} as const;
 
 export default defineComponent({
   name: "RewardsCalculatorPage",
@@ -42,22 +48,6 @@ export default defineComponent({
       );
       return balance ? formatAssetAmount(balance) : "0";
     },
-    // inflationRate(): number {
-    //   const priceA = parseFloat(this.tokenOutPriceAtPurchase);
-    //   const priceB = parseFloat(this.tokenOutFuturePrice);
-
-    //   const delta = priceB - priceA;
-
-    //   const absDelta = Math.abs(delta);
-
-    //   const isNegative = delta < 0;
-
-    //   const onePercent = priceA / 100;
-
-    //   const inflatiionRate = absDelta / onePercent;
-
-    //   return isNegative ? inflatiionRate * -1 : inflatiionRate;
-    // },
     investment(): number {
       return parseFloat(this.tokenInAmount) * parseFloat(this.tokenOutPrice);
     },
@@ -70,7 +60,7 @@ export default defineComponent({
       const compoundReturn = Array(this.timeInWeeks)
         .fill(0)
         .reduce<number>(
-          (acc) => acc + (acc * apr) / 52,
+          (acc) => acc + (acc * apr) / COMPOUNDING_FACTOR.weekly,
           parseFloat(this.tokenInAmount),
         );
 
