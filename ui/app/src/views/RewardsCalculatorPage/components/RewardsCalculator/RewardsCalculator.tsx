@@ -1,4 +1,5 @@
 import { SetupContext } from "vue";
+import clsx from "clsx";
 
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Button } from "@/components/Button/Button";
@@ -193,6 +194,7 @@ export const RewardsCalculator = (props: Props) => {
             }`}
           />
           <FooterInfoItem
+            highlight
             title="Potential return"
             value={`$${prettyNumber(props.potentialReturn)}`}
           />
@@ -209,10 +211,20 @@ const HeaderInfoItem = (props: { title: string; value: string }) => (
   </div>
 );
 
-const FooterInfoItem = (props: { title: string; value: string }) => (
+const FooterInfoItem = (props: {
+  title: string;
+  value: string;
+  highlight?: boolean;
+}) => (
   <div className="flex justify-between">
     <div className="text-md">{props.title}</div>
-    <div>{props.value}</div>
+    <div
+      className={clsx({
+        "text-accent-base font-bold text-lg": props.highlight,
+      })}
+    >
+      {props.value}
+    </div>
   </div>
 );
 
