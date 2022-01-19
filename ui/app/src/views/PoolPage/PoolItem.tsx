@@ -18,7 +18,7 @@ import {
   PoolRewardProgram,
 } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
-import { useChains } from "@/hooks/useChains";
+import { useChains, useNativeChain } from "@/hooks/useChains";
 import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
 import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
 import { Tooltip } from "@/components/Tooltip";
@@ -117,6 +117,38 @@ export default defineComponent({
     details(): [string, JSX.Element][] {
       if (!this.expanded) return []; // don't compute unless expanded
       return [
+        this.accountPool?.lp && [
+          "Your Liquidity",
+          <div class="flex items-center">
+            {String(
+              +formatAssetAmount(
+                AssetAmount(
+                  useNativeChain().nativeAsset,
+                  this.accountPool.lp.nativeAmount,
+                ),
+              ),
+            )}
+            <TokenIcon
+              assetValue={useNativeChain().nativeAsset}
+              size={14}
+              class="ml-[2px]"
+            />
+            ,<span class="ml-[4px]" />
+            {String(
+              +formatAssetAmount(
+                AssetAmount(
+                  this.accountPool.lp.asset,
+                  this.accountPool.lp.externalAmount,
+                ),
+              ),
+            )}
+            <TokenIcon
+              assetValue={this.accountPool.lp.asset}
+              class="ml-[2px]"
+              size={14}
+            />
+          </div>,
+        ],
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">
@@ -185,7 +217,7 @@ export default defineComponent({
               : "..."}
           </span>,
         ],
-      ];
+      ].filter(Boolean) as [string, JSX.Element][];
     },
   },
 
@@ -359,7 +391,7 @@ export default defineComponent({
           <section
             id={`expandable-${this.pool.symbol()}`}
             class={[
-              "h-[193px] mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
+              "h-[210px] mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
             ]}
           >
             <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">
