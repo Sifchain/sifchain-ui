@@ -391,7 +391,8 @@ export default defineComponent({
           <section
             id={`expandable-${this.pool.symbol()}`}
             class={[
-              "h-[210px] mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
+              "mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
+              this.accountPool ? "h-[216px]" : "h-[193px]",
             ]}
           >
             <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">
