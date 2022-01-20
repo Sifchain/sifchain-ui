@@ -88,7 +88,7 @@ export const SunsetRewardSection = defineComponent({
               <Button.Inline
                 class="w-full no-underline"
                 href={
-                  "https://docs.sifchain.finance/resources/rewards-programs#liquidity-mining-and-validator-subsidy-rewards-on-sifchain"
+                  "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs#liquidity-mining-and-validator-subsidy-rewards-on-sifchain"
                 }
                 target="_blank"
                 icon="interactive/circle-info"

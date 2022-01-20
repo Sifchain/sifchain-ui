@@ -177,7 +177,7 @@ export default defineComponent({
                 Earn rewards by participating in Sifchain's Liquidity Mining
                 programs.{" "}
                 <a
-                  href="https://docs.sifchain.finance/resources/rewards-programs"
+                  href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
                   rel="noopener noreferrer"
                   target="_blank"
                   class="underline"

@@ -158,7 +158,7 @@ export const VotingModal = defineComponent({
         <p class="text-left mt-[20px]">
           <div class="whitespace-pre-wrap">{this.proposal.description}</div>
           <a
-            href="https://docs.sifchain.finance/resources/rewards-programs"
+            href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
             class="underline cursor-pointer text-accent-base"
             target="_blank"
           >
