@@ -192,7 +192,6 @@ export default defineComponent({
 
     const exportNetworkButton = (
       <Button.Select
-        hideIcon={optionsRef.value.length === 1}
         style={{
           pointerEvents: optionsRef.value.length === 1 ? "none" : "auto",
         }}
