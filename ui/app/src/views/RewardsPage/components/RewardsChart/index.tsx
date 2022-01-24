@@ -36,6 +36,7 @@ export const RewardsChart = defineComponent({
     const timeseriesData = useAsyncData(() => {
       return useCore().services.cryptoeconomics.fetchTimeseriesData({
         address: accountStore.state.sifchain.address,
+        devnet: false,
       });
     });
 
@@ -99,7 +100,7 @@ function calculateRewardProgramDates(
   const startDate = new Date(Date.now() - timestampDiffWithNow * ONE_MINUTE);
 
   // Give end date a buffer to show flattening curve.
-  const endDate = new Date(userData.user.maturityDate);
+  const endDate = new Date(userData.user?.maturityDate ?? new Date());
   const endTimestamp =
     userData.timestamp +
     Math.floor(endDate.getTime() - Date.now()) / ONE_MINUTE;
