@@ -162,10 +162,7 @@ export default defineComponent({
                         totalClaimableRef.value,
                       )} Rowan`}
                   {!!lmClaim.value && (
-                    <Button.InlineHelp
-                      size={16}
-                      class="absolute top-[-8px] right-[-8px]"
-                    >
+                    <Button.InlineHelp class="absolute top-[-8px] right-[-8px]">
                       You will be able to claim additional rewards after the
                       dispensation run each Tuesday
                     </Button.InlineHelp>
@@ -210,33 +207,6 @@ export default defineComponent({
                   <div class="font-lg text-accent-base font-semibold">
                     Dispensed Rewards
                   </div>
-                  <div class={rewardColumnsLookup.duration.class}>Duration</div>
-                  <div class={rewardColumnsLookup.apy.class}>
-                    Program APY
-                    <Tooltip
-                      content={
-                        <div class="mb-2">
-                          Current overall program summary APY. This is also
-                          displayed in Pools and Pool Stats.
-                        </div>
-                      }
-                    >
-                      <Button.InlineHelp></Button.InlineHelp>
-                    </Tooltip>
-                  </div>
-                  <div class={rewardColumnsLookup.claimableAmount.class}>
-                    Claimable Amount
-                    <Tooltip
-                      content={
-                        <div class="mb-2">
-                          Current overall program summary APY. This is also
-                          displayed in Pools and Pool Stats.
-                        </div>
-                      }
-                    >
-                      <Button.InlineHelp></Button.InlineHelp>
-                    </Tooltip>
-                  </div>
                   <div class="pt-[4px] text-sm opacity-50">
                     Amount already claimed and received
                   </div>
@@ -261,7 +231,7 @@ export default defineComponent({
                 </div>
               </div>
 
-              <div class="w-full pb-[5px] mt-[12px] mb-[-5px] w-full flex items-center justify-start opacity-50 text-md">
+              <div class="pb-[5px] mt-[12px] mb-[-5px] w-full flex items-center justify-start opacity-50 text-md">
                 <div class={rewardColumnsLookup.rewardProgram.class}>
                   Reward Program
                 </div>
