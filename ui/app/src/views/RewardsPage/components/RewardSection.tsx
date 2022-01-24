@@ -210,7 +210,7 @@ export const RewardSection = defineComponent({
           <div
             class={[
               rewardColumnsLookup.claimableAmount.class,
-              "justify-end font-mono flex items-center justify-end",
+              "justify-end font-mono flex items-center",
             ]}
           >
             {/* Claimable Amount */}
