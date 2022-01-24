@@ -1,15 +1,12 @@
-import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { TokenIcon } from "@/components/TokenIcon";
-import { Asset, Amount } from "@sifchain/sdk";
+import { defineComponent, PropType, computed } from "vue";
+import { Amount } from "@sifchain/sdk";
 import { format } from "@sifchain/sdk/src/utils/format";
 import {
   CryptoeconomicsRewardType,
   CryptoeconomicsUserData,
-} from "@sifchain/sdk/src/services/CryptoeconomicsService";
-import { Tooltip } from "@/components/Tooltip";
+} from "@/business/services/CryptoeconomicsService";
+import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
-import { defineComponent, PropType, computed } from "vue";
-import { useCore } from "@/hooks/useCore";
 
 const REWARD_TYPE_DISPLAY_DATA = {
   lm_harvest: {
