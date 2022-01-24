@@ -1,11 +1,4 @@
-import {
-  computed,
-  defineComponent,
-  onUnmounted,
-  PropType,
-  ref,
-  watch,
-} from "vue";
+import { defineComponent, onUnmounted, PropType, ref } from "vue";
 import { effect } from "@vue/reactivity";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
