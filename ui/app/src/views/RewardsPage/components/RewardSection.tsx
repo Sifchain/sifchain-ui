@@ -263,7 +263,8 @@ export const RewardSection = defineComponent({
                   <span class="w-[250px] text-right">
                     {detail.amount != null
                       ? getClaimableAmountString(detail.amount)
-                      : detail.value}
+                      : // TODO: what's this value supposed to be? it doesn't exist in the type definition
+                        detail.value}
                   </span>
                 </div>
               ))}
