@@ -1,13 +1,11 @@
-import { defineComponent, watch, onMounted } from "vue";
-import { computed, ref, ComputedRef, ToRefs } from "@vue/reactivity";
+import { computed, ref, ToRefs } from "@vue/reactivity";
 import {
   getAssetLabel,
   getBlockExplorerUrl,
-  getRewardEarningsUrl,
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
-import { Amount, getErrorMessage, IAsset, Network } from "@sifchain/sdk";
+import { Amount } from "@sifchain/sdk";
 import { useNativeChain } from "@/hooks/useChains";
 
 const DECIMALS = 5;
