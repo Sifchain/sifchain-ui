@@ -1,24 +1,10 @@
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { TokenIcon } from "@/components/TokenIcon";
-import {
-  Asset,
-  Amount,
-  AppCookies,
-  NetworkEnv,
-  Network,
-  IAsset,
-} from "@sifchain/sdk";
-import { format } from "@sifchain/sdk/src/utils/format";
-import {
-  CryptoeconomicsRewardType,
-  CryptoeconomicsUserData,
-} from "@sifchain/sdk/src/services/CryptoeconomicsService";
-import { Tooltip } from "@/components/Tooltip";
+import { Asset, IAsset } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
-import { defineComponent, PropType, computed } from "vue";
+import { defineComponent, PropType } from "vue";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
 import { rewardColumnsLookup, RewardProgram } from "../useRewardsPageData";
 import { getClaimableAmountString } from "../getClaimableAmountString";
 import { symbolWithoutPrefix } from "@/utils/symbol";
