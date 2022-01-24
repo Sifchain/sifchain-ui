@@ -13,7 +13,7 @@ import { accountStore } from "@/store/modules/accounts";
 import {
   CryptoeconomicsTimeseriesItem,
   CryptoeconomicsUserData,
-} from "@sifchain/sdk/src/services/CryptoeconomicsService/CryptoeconomicsService";
+} from "@/business/services/CryptoeconomicsService";
 import { loadAllChartDeps } from "./loadDeps";
 
 // NOTE(ajoslin): Do not import the values of these libs, only the types.
