@@ -39,10 +39,10 @@ type Props = {
 export const RewardsCalculator = (props: Props) => {
   return (
     <PageCard heading="Calculator">
-      <section className="grid w-full gap-4 p-2 pb-4">
-        <header className="grid gap-1">
-          <span className="text-md">Estimate your returns</span>
-          <div className="grid grid-cols-3 gap-2 p-4 bg-gray-input rounded-lg">
+      <section class="grid w-full gap-4 p-2 pb-4">
+        <header class="grid gap-1">
+          <span class="text-md">Estimate your returns</span>
+          <div class="grid grid-cols-3 gap-2 p-4 bg-gray-input rounded-lg">
             <HeaderInfoItem
               title={`${props.tokenOutSymbol} Price`}
               value={
@@ -61,8 +61,8 @@ export const RewardsCalculator = (props: Props) => {
             />
           </div>
         </header>
-        <main className="grid gap-4">
-          <div className="grid md:grid-cols-2 md:grid-rows-2 gap-4">
+        <main class="grid gap-4">
+          <div class="grid md:grid-cols-2 md:grid-rows-2 gap-4">
             <InputLabel label={`${props.tokenInSymbol} Amount`}>
               <Input.Base
                 placeholder={"0"}
@@ -178,7 +178,7 @@ export const RewardsCalculator = (props: Props) => {
             />
           </InputLabel>
         </main>
-        <footer className="grid gap-1">
+        <footer class="grid gap-1">
           <FooterInfoItem
             title="Your initial investment"
             value={`$${prettyNumber(props.investment)}`}
@@ -209,9 +209,9 @@ export const RewardsCalculator = (props: Props) => {
 };
 
 const HeaderInfoItem = (props: { title: string; value: string }) => (
-  <div className={"text-center grid gap-1"}>
-    <div className="text-md">{props.title}</div>
-    <div className="font-bold text-xl">{props.value}</div>
+  <div class={"text-center grid gap-1"}>
+    <div class="text-md">{props.title}</div>
+    <div class="font-bold text-xl">{props.value}</div>
   </div>
 );
 
@@ -220,10 +220,10 @@ const FooterInfoItem = (props: {
   value: string;
   highlight?: boolean;
 }) => (
-  <div className="flex justify-between">
-    <div className="text-md">{props.title}</div>
+  <div class="flex justify-between">
+    <div class="text-md">{props.title}</div>
     <div
-      className={clsx({
+      class={clsx({
         "text-accent-base font-bold text-lg": props.highlight,
       })}
     >
@@ -232,11 +232,8 @@ const FooterInfoItem = (props: {
   </div>
 );
 
-const InputLabel = (
-  props: { label: string; children: any },
-  ctx: SetupContext,
-) => (
-  <label className="grid gap-1 text-md">
+const InputLabel = (props: { label: string }, ctx: SetupContext) => (
+  <label class="grid gap-1 text-md">
     {props.label}
     {ctx.slots.default && ctx.slots.default()}
   </label>
