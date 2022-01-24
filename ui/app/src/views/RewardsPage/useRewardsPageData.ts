@@ -2,10 +2,10 @@ import { computed, ComputedRef, onMounted, onUnmounted, ref, watch } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
-import { DistributionType } from "../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
-import { flagsStore } from "@/store/modules/flags";
+
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
+import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
 
 // TODO REACTIVE
 
