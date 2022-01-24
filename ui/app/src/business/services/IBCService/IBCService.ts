@@ -1,9 +1,10 @@
 import { IBCBridge } from "@sifchain/sdk/src/clients/bridges/IBCBridge/IBCBridge";
-import type { IBCBridgeContext as IBCServiceContext } from "@sifchain/sdk/src/clients/bridges/IBCBridge/IBCBridge";
-import { Network, IAssetAmount, IBCChainConfig } from "@sifchain/sdk";
-import { BroadcastTxResult } from "@cosmjs/launchpad";
+import type { IBCBridgeContext as _IBCServiceContext } from "@sifchain/sdk/src/clients/bridges/IBCBridge/IBCBridge";
+import { Network, IBCChainConfig } from "@sifchain/sdk";
 import { useChains } from "@/hooks/useChains";
 import { KeplrWalletProvider } from "@sifchain/wallet-keplr";
+
+export type IBCServiceContext = _IBCServiceContext;
 
 // NOTE(ajoslin): this is deprecated, most functionality is moved to IBCBridge
 // debug functions only left here or functions with old signatures
@@ -123,8 +124,6 @@ export class IBCService extends IBCBridge {
     // }
   }
 }
-
-export { IBCServiceContext };
 
 export default function createIBCService(context: IBCServiceContext) {
   return IBCService.create(context);

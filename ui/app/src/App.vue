@@ -9,6 +9,7 @@
     <Notifications />
     <EnvAlert />
     <Flags />
+    <ExpansionIntro v-if="!hasShownExpansionIntro" />
   </div>
 </template>
 
@@ -25,7 +26,8 @@ import { accountStore } from "./store/modules/accounts";
 import { Amount } from "@sifchain/sdk";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import OnboardingModal from "@/components/OnboardingModal";
-
+import { ExpansionIntro } from "@/components/ExpansionIntro";
+import { animateFireflies } from "./utils/animateFireflies";
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
   let hiddenCount = 0;
@@ -65,9 +67,25 @@ let hasShownOnboardingModal = (() => {
     return true;
   }
 })();
+const hasShownExpansionIntro = (() => {
+  try {
+    if (Date.now() > new Date(`2021-11-29T05:04:40.941Z`).getTime()) {
+      return true;
+    }
+    const val = !!localStorage.getItem("hasShownExpansionRewardsIntro");
+    return val;
+  } catch (e) {
+    return true;
+  }
+})();
+try {
+  localStorage.setItem("hasShownExpansionRewardsIntro", "true");
+} catch (e) {}
+
 export default defineComponent({
   name: "App",
   components: {
+    ExpansionIntro,
     Notifications,
     EnvAlert,
     SideBar,
@@ -78,6 +96,9 @@ export default defineComponent({
     key() {
       console.log(this.$route.path);
       return this.$route.path;
+    },
+    hasShownExpansionIntro() {
+      return hasShownExpansionIntro;
     },
   },
   setup() {
@@ -90,6 +111,14 @@ export default defineComponent({
       }, 3000);
     });
     watchEffect(() => {
+      // easter egg
+      if (
+        accountStore.state.sifchain.address ===
+        "sif1cp3y0wpn0qt6sjdgjmam7dstpjunlk3hanqlx5"
+      ) {
+        animateFireflies();
+      }
+      //
       const balances = accountStore.state.sifchain.balances;
       const hasSufficientRowanToTrade = balances.find(
         (b) =>

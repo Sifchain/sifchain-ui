@@ -25,10 +25,12 @@ import {
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
+import { governanceStore } from "@/store/modules/governance";
 import {
   useActiveProposal,
   VotingModal,
 } from "@/components/VotingModal/VotingModal";
+import { formatAssetAmount } from "../shared/utils";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -45,19 +47,19 @@ export default defineComponent({
     const sidebarRef = ref();
     const isOpenRef = ref(false);
 
-    const activeProposal = useActiveProposal();
+    const proposalData = computed(() => governanceStore.getters.activeProposal);
 
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
 
     watch(
-      activeProposal,
-      (proposal, oldProposal) => {
+      proposalData,
+      (data, oldData) => {
         if (
-          proposal &&
-          !oldProposal &&
+          data.proposal &&
+          !oldData?.proposal &&
           VOTE_PARAM_IN_URL &&
-          !proposal.hasVoted
+          !data.hasVoted
         ) {
           votingOpenRef.value = true;
         }
@@ -101,6 +103,12 @@ export default defineComponent({
 
     return () => (
       <>
+        {changelogOpenRef.value && (
+          <ChangelogModal onClose={() => (changelogOpenRef.value = false)} />
+        )}
+        {votingOpenRef.value && (
+          <VotingModal onClose={() => (votingOpenRef.value = false)} />
+        )}
         <Button.Inline
           id="open-button"
           class={[
@@ -122,16 +130,19 @@ export default defineComponent({
         <div
           ref={sidebarRef}
           class={[
-            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-gray-base text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
+            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-black text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
             isOpenRef.value && "!translate-x-0",
           ]}
         >
           <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
             <div class="top">
-              <div class="mt-[38px] shorter:mt-[19px] flex justify-center">
-                <Logo class="w-[119px] shorter:w-[80px]" />
+              <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
+                <Logo class="w-[119px] shorter:w-[90px]" />
               </div>
-              <div class="mt-[9.3vmin] shorter:mt-[3vmin]">
+              {/* <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
+                <Logo class="w-full h-[50px]" />
+              </div> */}
+              <div class="mt-[9.3vmin] shorter:mt-[7.5vmin]">
                 <NavSidePanelItem
                   displayName="Dashboard"
                   icon="navigation/dashboard"
@@ -148,10 +159,11 @@ export default defineComponent({
                   href="/swap"
                 />
                 <NavSidePanelItem
-                  displayName="Balances"
+                  displayName={<>Balances</>}
                   icon="navigation/balances"
                   href="/balances"
                 />
+
                 <NavSidePanelItem
                   displayName="Pool"
                   icon="navigation/pool"
@@ -166,36 +178,6 @@ export default defineComponent({
                   displayName="Rewards"
                   icon="navigation/rewards"
                   href="/rewards"
-                />
-                <NavSidePanelItem
-                  displayName="Stake"
-                  icon="navigation/stake"
-                  href="https://wallet.keplr.app/#/sifchain/stake"
-                  class="group"
-                  action={
-                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                      <AssetIcon
-                        icon="interactive/open-external"
-                        size={16}
-                        class="opacity-50"
-                      />
-                    </div>
-                  }
-                />
-                <NavSidePanelItem
-                  displayName="Documents"
-                  icon="navigation/documents"
-                  href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
-                  class="group"
-                  action={
-                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                      <AssetIcon
-                        icon="interactive/open-external"
-                        size={16}
-                        class="opacity-50"
-                      />
-                    </div>
-                  }
                 />
                 <NavSidePanelItem
                   icon="navigation/changelog"
@@ -214,6 +196,37 @@ export default defineComponent({
                     onClose={() => (changelogOpenRef.value = false)}
                   />
                 )}
+
+                {/* <NavSidePanelItem
+                  displayName="Documents"
+                  icon="navigation/documents"
+                  href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
+                  class="group"
+                  action={
+                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                      <AssetIcon
+                        icon="interactive/open-external"
+                        size={16}
+                        class="opacity-50"
+                      />
+                    </div>
+                  }
+<<<<<<< HEAD
+                />
+                <NavSidePanelItem
+                  icon="navigation/changelog"
+                  onClick={() => (changelogOpenRef.value = true)}
+                  displayName={<div class="flex items-center">Changelog</div>}
+                  action={
+                    changelogViewedVersion.isLatest() ? undefined : (
+                      <div class="flex flex-1 justify-end">
+                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
+                      </div>
+                    )
+                  }
+                />
+                /> */}
+
                 {votingOpenRef.value && (
                   <VotingModal onClose={() => (votingOpenRef.value = false)} />
                 )}
@@ -224,6 +237,31 @@ export default defineComponent({
                     href="/balances/get-rowan"
                   />
                 )}
+                {!accountStore.state.sifchain.connecting &&
+                  // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+                  accountStore.state.sifchain.hasLoadedBalancesOnce &&
+                  !accountStore.state.sifchain.balances.some(
+                    // does not have rowan
+                    (b) =>
+                      b.asset.symbol.includes("rowan") &&
+                      b.amount.greaterThan("1".padEnd(b.asset.decimals, "0")),
+                  ) && (
+                    <NavSidePanelItem
+                      displayName="Rowan Faucet"
+                      icon="navigation/rowan"
+                      href="https://stakely.io/faucet/sifchain-rowan"
+                      class="group"
+                      action={
+                        <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                          <AssetIcon
+                            icon="interactive/open-external"
+                            size={16}
+                            class="opacity-50"
+                          />
+                        </div>
+                      }
+                    />
+                  )}
                 <Tooltip
                   trigger="click"
                   placement="bottom"
@@ -250,18 +288,15 @@ export default defineComponent({
                 </Tooltip>
               </div>
             </div>
-            {!!activeProposal.value && (
+            {!!proposalData.value.proposal && (
               <div
                 onClick={() => {
-                  if (!activeProposal.value?.hasVoted) {
-                    votingOpenRef.value = true;
-                  }
+                  votingOpenRef.value = true;
                 }}
               >
                 <div
                   class={[
-                    "h-[46px] flex items-center justify-between px-[16px] text-black rounded-t-[20px] font-semibold",
-                    !activeProposal.value.hasVoted && "cursor-pointer",
+                    "mt-[10px] h-[46px] flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
                   ]}
                   style={{
                     backgroundImage:
@@ -274,9 +309,11 @@ export default defineComponent({
                       icon="interactive/ticket"
                       style={{ transform: "translateY(-1px)" }}
                     />
-                    <div class="ml-[6px]">{activeProposal.value.title}</div>
+                    <div class="ml-[6px]">
+                      {proposalData.value.proposal.title}
+                    </div>
                   </div>
-                  {!activeProposal.value.hasVoted && (
+                  {!proposalData.value.hasVoted && (
                     <div>
                       <AssetIcon
                         icon="interactive/chevron-down"
@@ -286,14 +323,14 @@ export default defineComponent({
                     </div>
                   )}
                 </div>
-                <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
                   <div class="text-sm whitespace-pre">
                     Voting open until{" "}
                     {new Date(
-                      activeProposal.value.endDateTime,
+                      proposalData.value.proposal.endDateTime,
                     ).toLocaleDateString()}
                     .
-                    {activeProposal.value.hasVoted &&
+                    {proposalData.value.hasVoted &&
                       "\nYour vote has been recorded."}
                   </div>
                 </div>
@@ -327,7 +364,7 @@ export default defineComponent({
                       />
                     </div>
                   </RouterLink>
-                  <div class="p-[12px] bg-gray-250 rounded-b-[20px] text-accent-base font-medium text-left">
+                  <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
                     <div class="text-sm">View the Leaderboards</div>
                     <div class="flex items-center mt-[8px]">
                       {["vol", "txn"].map((type) => (
@@ -358,23 +395,28 @@ export default defineComponent({
                 </div>
               )}
             <div class="bottom mt-[10px]">
-              <div class="transition-all pl-[30px] w-full text-left mb-[2.2vh]">
-                <span class="inline-flex items-center justify-center h-[26px] font-medium text-sm text-info-base px-[10px] border border-solid border-info-base rounded-full">
-                  TVL: {tvl.value ? `$${prettyNumber(tvl.value)}` : "..."}
-                </span>
-                <div />
-                <span class="inline-flex items-center justify-center h-[26px] mt-[10px] font-medium text-sm text-accent-base pr-[10px] pl-[5px] border border-solid border-accent-base rounded-full">
-                  <img
-                    class="w-[20px] h-[20px] mr-[4px]"
-                    alt="ROWAN price"
-                    src="/images/tokens/ROWAN.svg"
-                  />
-                  ROWAN:{" "}
-                  {rowanPrice.value
-                    ? `$${(+rowanPrice.value).toFixed(5)}`
-                    : "..."}
-                </span>
+              <div class="transition-all w-full text-left mb-[2.2vh]">
+                <NavSidePanelItem
+                  class={"opacity-50 mt-[0px]"}
+                  displayName={
+                    <>{tvl.value ? `$${prettyNumber(tvl.value)}` : "..."} TVL</>
+                  }
+                  icon="interactive/lock"
+                ></NavSidePanelItem>
+                <NavSidePanelItem
+                  class={"opacity-50 mt-[0px]"}
+                  displayName={
+                    <>
+                      {rowanPrice.value
+                        ? `$${(+rowanPrice.value).toFixed(5)}`
+                        : "..."}{" "}
+                      / ROWAN
+                    </>
+                  }
+                  icon="navigation/rowan"
+                ></NavSidePanelItem>
               </div>
+
               <Tooltip
                 placement="top-start"
                 animation="scale"
@@ -400,11 +442,42 @@ export default defineComponent({
                 <NavSidePanelItem
                   icon="interactive/wallet"
                   displayName={
-                    connectedNetworkCount.value === 0
-                      ? "Connect Wallets"
-                      : accountStore.getters.isConnecting
-                      ? "Connecting..."
-                      : "Connected Wallets"
+                    connectedNetworkCount.value === 0 ? (
+                      "Connect Wallets"
+                    ) : accountStore.getters.isConnecting ? (
+                      "Connecting..."
+                    ) : (
+                      <>
+                        <div>Connected Wallets</div>
+                        <div class="opacity-50 text-sm font-semibold w-full text-left mt-[-2px]">
+                          {" "}
+                          {!accountStore.state.sifchain.connecting &&
+                            // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+                            accountStore.state.sifchain
+                              .hasLoadedBalancesOnce && (
+                              <>
+                                <>
+                                  {accountStore.state.sifchain.balances
+                                    .filter(
+                                      // does not have rowan
+                                      (b) => b.asset.symbol.includes("rowan"),
+                                    )
+                                    .map((asset) => {
+                                      const formatted =
+                                        formatAssetAmount(asset);
+                                      if (formatted.length > 6) {
+                                        return Intl.NumberFormat("en", {
+                                          notation: "compact",
+                                        }).format(+formatted);
+                                      }
+                                    })[0] || 0}{" "}
+                                  ROWAN
+                                </>
+                              </>
+                            )}
+                        </div>
+                      </>
+                    )
                   }
                   class={[
                     "mt-0",
@@ -435,6 +508,7 @@ export default defineComponent({
                   }
                 />
               </Tooltip>
+
               <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px] hover:opacity-100">
                 {/* V.2.0.X © {new Date().getFullYear()} Sifchain */}
                 {changesData.isSuccess.value &&

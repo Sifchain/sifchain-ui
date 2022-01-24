@@ -2,12 +2,8 @@ const SIDEBAR_WIDTH = "210px";
 
 module.exports = {
   mode: "jit",
-  // purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
-  purge: {
-    enabled: true,
-    content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
-  },
-  darkMode: false, // or 'media' or 'class'
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
+  darkMode: "media",
   theme: {
     extend: {
       backgroundImage: {
@@ -48,6 +44,8 @@ module.exports = {
         sidebar: SIDEBAR_WIDTH,
       },
       colors: {
+        white: "#e6e6e6",
+        black: "rgb(12, 17, 19)",
         accent: {
           // Tacha Gold
           base: "#D4B553",
@@ -61,10 +59,10 @@ module.exports = {
           base: "#459FEE",
         },
         connected: {
-          base: "#5AF37C",
+          base: "#00db9d",
         },
         danger: {
-          base: "#FF4F4F",
+          base: "#ff4d67",
           warning: "orange",
           bad: "#cccc0e",
         },

@@ -7,6 +7,7 @@ import {
   getNetworkEnv,
   IAsset,
   IAssetAmount,
+  IBCChainConfig,
   Network,
   NetworkEnv,
 } from "@sifchain/sdk";
@@ -50,47 +51,46 @@ export const exportStore = Vuextra.createStore({
   } as State,
   getters: (state) => ({
     chains() {
-      const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
-      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
+      // const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
+      const ERC20_IBC_TRANSFERS_ENABLED = flagsStore.state.ibcForEthTokens;
       const asset = Asset(state.draft.symbol);
-      const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
-        asset.homeNetwork,
-      );
-      const isPeggyWhitelistedIBCAsset =
-        useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(asset.symbol);
+      // const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
+      //   asset.homeNetwork,
+      // );
+      // const isPeggyWhitelistedIBCAsset = useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(
+      //   asset.symbol,
+      // );
 
       const registryEntry = registry.find((e) => e.baseDenom === asset.symbol);
 
-      return (
-        useChainsList()
-          .filter(
-            (c) =>
-              c.network !== Network.SIFCHAIN &&
-              !c.chainConfig.hidden &&
-              !isChainFlaggedDisabled(c),
-          )
-          // Disallow IBC export of ethereum & sifchain-native tokens
-          .filter((n) => {
-            // If it's from IBC network, of course you can export it anywhere.
-            if (isExternalIBCAsset) return true;
-
-            // Yep, you can export to eth (unless the next .filter below catches you).
-            if (n.network === Network.ETHEREUM) return true;
-
-            // Otherwise, only allow exporting to all networks token has permission.
-            return (
-              NATIVE_TOKEN_IBC_EXPORTS_ENABLED &&
-              registryEntry?.permissions.includes(Permission.IBCEXPORT)
-            );
-          })
-          .filter((c) => {
-            if (isExternalIBCAsset && c.network === Network.ETHEREUM) {
-              // if it's a peggy-whitelisted IBC token and IBC ethereum is enabled
-              return isPeggyWhitelistedIBCAsset && IBC_ETHEREUM_ENABLED;
-            }
-            return true;
-          })
+      const visibleChains = useChainsList().filter(
+        (c) =>
+          c.network !== Network.SIFCHAIN &&
+          !c.chainConfig.hidden &&
+          !isChainFlaggedDisabled(c),
       );
+
+      // ERC-20 Assets (And Rowan)
+      // These can be exported back to ETH and to chains with erc20 transfers enabled.
+      if (
+        ERC20_IBC_TRANSFERS_ENABLED &&
+        registryEntry?.permissions.includes(Permission.IBCEXPORT) &&
+        (asset.symbol === useNativeChain().nativeAsset.symbol ||
+          asset.homeNetwork === Network.ETHEREUM)
+      ) {
+        return visibleChains.filter((chain) => {
+          if (chain.network === Network.ETHEREUM) return true;
+
+          const ibcConfig = chain.chainConfig as IBCChainConfig;
+          return ibcConfig.features?.erc20Transfers;
+        });
+      }
+
+      // IBC assets
+      // If it's from IBC network, you can export it to its home network.
+      return visibleChains.filter((chain) => {
+        return chain.network === asset.homeNetwork;
+      });
     },
   }),
   mutations: (state) => ({

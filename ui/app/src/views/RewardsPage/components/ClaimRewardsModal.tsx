@@ -239,7 +239,7 @@ export default defineComponent({
             Are you sure you want to claim your rewards?
           </p>
           <p class="mt-[10px]">
-            Claims are paid out on Friday of each week. Once your funds are
+            Claims are paid out on Tuesday of each week. Once your funds are
             dispensed, you may be interested in staking or delegating your
             earnings with{" "}
             <a

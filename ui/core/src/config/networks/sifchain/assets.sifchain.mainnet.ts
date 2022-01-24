@@ -685,7 +685,7 @@ const assets: {
       name: "Terra USD",
       label: "Terra USD",
       network: "sifchain",
-      displaySymbol: "UST (ERC-20)",
+      displaySymbol: "UST",
       symbol: "cust",
       homeNetwork: "ethereum",
     },
@@ -899,7 +899,7 @@ const assets: {
       imageUrl:
         "https://assets.coingecko.com/coins/images/5041/large/logo_-_2021-01-10T210801.390.png?1610284134",
       name: "BitSong",
-      displaySymbol: "BTSG",
+      displaySymbol: "BTSG (ERC-20)",
       symbol: "cbtsg",
       network: "sifchain",
       homeNetwork: "ethereum",
@@ -970,6 +970,30 @@ const assets: {
       network: "sifchain",
       homeNetwork: "ethereum",
       decimals: 18,
+    },
+    {
+      address: "0x4461cfd640da24d1a4642fa5f9ea3e6da966b831",
+      symbol: "ccsms",
+      displaySymbol: "csms",
+      decimals: 18,
+      name: "Cosmostarter",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      label: "Cosmostarter",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/19875/small/cosmosstarter.PNG?1636083064",
+    },
+    {
+      address: "0xae697f994fc5ebc000f8e22ebffee04612f98a0d",
+      symbol: "clgcy",
+      displaySymbol: "lgcy",
+      decimals: 18,
+      name: "LGCY Network",
+      network: "sifchain",
+      homeNetwork: "ethereum",
+      label: "LGCY Network",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12181/small/LGCY_network.jpg?1597926587",
     },
     {
       symbol: "ujuno",

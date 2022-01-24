@@ -24,12 +24,21 @@ import { getClaimableAmountString } from "../getClaimableAmountString";
 import { symbolWithoutPrefix } from "@/utils/symbol";
 import { useNativeChain } from "@/hooks/useChains";
 
-const REWARD_TYPE_DISPLAY_DATA = {
+const REWARD_TYPE_DISPLAY_DATA: Record<string, { icon: IconName }> = {
   harvest: {
-    icon: "navigation/harvest" as IconName,
+    icon: "navigation/harvest",
   },
   default: {
-    icon: "navigation/pool" as IconName,
+    icon: "navigation/pool",
+  },
+  harvest_expansion: {
+    icon: "navigation/globe",
+  },
+  expansion_bonus: {
+    icon: "navigation/people",
+  },
+  expansion_v2_bonus: {
+    icon: "navigation/people",
   },
 };
 
@@ -88,7 +97,7 @@ export const RewardSection = defineComponent({
         {
           name: "Pending Dispensation",
           tooltip:
-            "This is the amount that will be dispensed on Friday. Any new claimable amounts will need to be claimed after the next dispensation.",
+            "This is the amount that will be dispensed on Tuesday. Any new claimable amounts will need to be claimed after the next dispensation.",
           amount:
             this.rewardProgram.participant
               ?.claimedCommissionsAndRewardsAwaitingDispensation,
@@ -98,28 +107,28 @@ export const RewardSection = defineComponent({
           tooltip: "Rewards that have already been dispensed.",
           amount: this.rewardProgram.participant?.dispensed,
         },
-        {
-          name: "Program Start",
-          value: `${new Date(
-            this.rewardProgram.startDateTimeISO,
-          ).toLocaleDateString()}, ${new Date(
-            this.rewardProgram.startDateTimeISO,
-          ).toLocaleTimeString("en-US", {
-            hour12: true,
-            timeZoneName: "short",
-          })}`,
-        },
-        {
-          name: "Program End",
-          value: `${new Date(
-            this.rewardProgram.endDateTimeISO,
-          ).toLocaleDateString()}, ${new Date(
-            this.rewardProgram.endDateTimeISO,
-          ).toLocaleTimeString("en-US", {
-            hour12: true,
-            timeZoneName: "short",
-          })}`,
-        },
+        // {
+        //   name: "Program Start",
+        //   value: `${new Date(
+        //     this.rewardProgram.startDateTimeISO,
+        //   ).toLocaleDateString()}, ${new Date(
+        //     this.rewardProgram.startDateTimeISO,
+        //   ).toLocaleTimeString("en-US", {
+        //     hour12: true,
+        //     timeZoneName: "short",
+        //   })}`,
+        // },
+        // {
+        //   name: "Program End",
+        //   value: `${new Date(
+        //     this.rewardProgram.endDateTimeISO,
+        //   ).toLocaleDateString()}, ${new Date(
+        //     this.rewardProgram.endDateTimeISO,
+        //   ).toLocaleTimeString("en-US", {
+        //     hour12: true,
+        //     timeZoneName: "short",
+        //   })}`,
+        // },
       ].filter((item) => !item.hide);
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
@@ -142,10 +151,16 @@ export const RewardSection = defineComponent({
         ?.totalClaimableCommissionsAndClaimableRewards &&
       this.rewardProgram?.participant?.totalCommissionsAndRewardsAtMaturity;
     return (
-      <article class="border-dashed border-b border-white border-opacity-40 last:border-none py-[16px]">
+      <article class="align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 py-[16px]">
         <section
           class="text flex items-center cursor-pointer"
           onClick={() => (this.expanded = !this.expanded)}
+          style={{
+            opacity:
+              new Date(this.rewardProgram.endDateTimeISO).getTime() < Date.now()
+                ? 0.5
+                : 1,
+          }}
         >
           <div
             class={[
@@ -161,7 +176,8 @@ export const RewardSection = defineComponent({
             {this.rewardProgram.displayName}
           </div>
           <div class={[rewardColumnsLookup.duration.class]}>
-            {this.programActive
+            {/* Indefinite */}
+            {/* {this.programActive
               ? "Until"
               : this.programEnded
               ? "Ended"
@@ -170,7 +186,7 @@ export const RewardSection = defineComponent({
               !this.programStarted
                 ? this.rewardProgram.startDateTimeISO // if not started yet, show start date
                 : this.rewardProgram.endDateTimeISO, // If active or ended already, show end date
-            ).toLocaleDateString()}
+            ).toLocaleDateString()} */}
           </div>
 
           <div
@@ -181,7 +197,14 @@ export const RewardSection = defineComponent({
           >
             {/* Full Amount */}
             {this.rewardProgram.distributionPattern === "GEYSER" ? null : (
-              <>{this.rewardProgram.summaryAPY.toFixed(4)} %</>
+              <>
+                {["expansion_bonus", "expansion_v2_bonus"].includes(
+                  this.rewardProgram.rewardProgramName,
+                )
+                  ? "+ "
+                  : ""}
+                {this.rewardProgram.summaryAPY.toFixed(4)} %
+              </>
             )}
           </div>
           <div

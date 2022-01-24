@@ -18,7 +18,7 @@ import {
   PoolRewardProgram,
 } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
-import { useChains } from "@/hooks/useChains";
+import { useChains, useNativeChain } from "@/hooks/useChains";
 import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
 import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
 import { Tooltip } from "@/components/Tooltip";
@@ -29,6 +29,8 @@ import {
 } from "../LeaderboardPage/useCompetitionData";
 import { flagsStore } from "@/store/modules/flags";
 import { RouterLink } from "vue-router";
+import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
   name: "PoolItem",
@@ -115,6 +117,38 @@ export default defineComponent({
     details(): [string, JSX.Element][] {
       if (!this.expanded) return []; // don't compute unless expanded
       return [
+        this.accountPool?.lp && [
+          "Your Liquidity",
+          <div class="flex items-center">
+            {String(
+              +formatAssetAmount(
+                AssetAmount(
+                  useNativeChain().nativeAsset,
+                  this.accountPool.lp.nativeAmount,
+                ),
+              ),
+            )}
+            <TokenIcon
+              assetValue={useNativeChain().nativeAsset}
+              size={14}
+              class="ml-[2px]"
+            />
+            ,<span class="ml-[4px]" />
+            {String(
+              +formatAssetAmount(
+                AssetAmount(
+                  this.accountPool.lp.asset,
+                  this.accountPool.lp.externalAmount,
+                ),
+              ),
+            )}
+            <TokenIcon
+              assetValue={this.accountPool.lp.asset}
+              class="ml-[2px]"
+              size={14}
+            />
+          </div>,
+        ],
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">
@@ -183,20 +217,20 @@ export default defineComponent({
               : "..."}
           </span>,
         ],
-      ];
+      ].filter(Boolean) as [string, JSX.Element][];
     },
   },
 
   render() {
     return (
-      <div class="w-full py-[10px] border-dashed border-b border-white border-opacity-40 last:border-none group">
+      <div class="w-full py-[10px] align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 last:border-none group">
         <div
           onClick={() => this.toggleExpanded()}
           class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] font-sans group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
             <TokenIcon assetValue={this.nativeAmount.asset} size={22} />
-            <TokenIcon
+            <TokenNetworkIcon
               assetValue={this.externalAmount.asset}
               size={22}
               class="ml-[4px]"
@@ -216,8 +250,9 @@ export default defineComponent({
                 content={
                   <div class="text-sm">
                     <span class="font-semibold">{program.displayName}</span>: +
-                    {program.summaryAPY.toFixed(2)}% APY until{" "}
-                    {new Date(program.endDateTimeISO).toLocaleDateString()}.
+                    {program.summaryAPY.toFixed(2)}% APR
+                    {/* until{" "}
+                    {new Date(program.endDateTimeISO).toLocaleDateString()}. */}
                     <br />
                     <div class="mt-[6px]">{program.description}</div>
                   </div>
@@ -308,8 +343,10 @@ export default defineComponent({
           >
             {this.$props.poolStat?.rewardAPY != null
               ? `${parseFloat(this.$props.poolStat?.rewardAPY || "0").toFixed(
-                  2,
-                )}%`
+                  0,
+                )}% (${aprToWeeklyCompoundedApy(
+                  parseFloat(this.$props.poolStat?.rewardAPY || "0"),
+                ).toFixed(0)}%)`
               : "..."}
           </div>
           <div
@@ -351,7 +388,8 @@ export default defineComponent({
           <section
             id={`expandable-${this.pool.symbol()}`}
             class={[
-              "h-[193px] mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
+              "mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
+              this.accountPool ? "h-[216px]" : "h-[193px]",
             ]}
           >
             <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">

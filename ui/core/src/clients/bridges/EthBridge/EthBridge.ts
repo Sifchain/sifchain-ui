@@ -308,13 +308,13 @@ export class EthBridge extends BaseBridge<
             }
             await new Promise((resolve) => setTimeout(resolve, 5000));
 
-            if (blockHeight > ethTx.startingHeight + ETH_CONFIRMATIONS * 1.1) {
+            if (blockHeight > ethTx.startingHeight + ETH_CONFIRMATIONS * 5) {
               // In the cases a tx was sped up or canceled in metamask before
               // it took off, we don't have an API to find out.
               // https://github.com/ChainSafe/web3.js/issues/3723
               // In this case, our transaction will timeout. Just quietly cancel
               // our UI-side listen for the import after a grace period of expected
-              // confirmations + 10%.
+              // confirmations + buffer.
               resolve(false);
               break;
             }
@@ -628,7 +628,7 @@ export class EthBridge extends BaseBridge<
       const sendArgs = {
         from: fromAddress,
         value: 0,
-        gas: 150000, // Note: This chose in lieu of burn(params).estimateGas({from})
+        gas: 160000, // Note: This chose in lieu of burn(params).estimateGas({from})
       };
 
       bridgeBankContract.methods

@@ -1,12 +1,10 @@
-import { computed, toRefs } from "@vue/reactivity";
-import { onUnmounted, watch } from "vue";
+import { computed } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { defineComponent, onMounted, ref } from "vue";
 import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
-import { AccountPool } from "@sifchain/sdk/src/store/pools";
+
 import { useChains } from "@/hooks/useChains";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import {
@@ -15,6 +13,7 @@ import {
 } from "@/hooks/usePoolsSubscriber";
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
+import { AccountPool } from "@/business/store/pools";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
@@ -43,7 +42,7 @@ export type PoolPageColumn = {
   id: PoolPageColumnId;
   name: string;
   class: string;
-  help?: string;
+  help?: string | JSX.Element;
   sortable?: boolean;
 };
 export const COLUMNS: PoolPageColumn[] = [
@@ -58,12 +57,26 @@ export const COLUMNS: PoolPageColumn[] = [
     name: "Pool APY",
     class: "w-[128px] text-right justify-end",
     sortable: true,
+    help: (
+      <div>
+        Pool APR is an estimate of trading fees generated from this pool, and is
+        calculated as{" "}
+        <span class="font-mono">24hour_trading_volume / pool_depth</span> for
+        each pool.
+      </div>
+    ),
   },
   {
     id: "rewardApy",
-    name: "Reward APY",
-    class: "w-[128px] text-right justify-end",
+    name: "Reward APR (APY)",
+    class: "w-[150px] text-right justify-end",
     sortable: true,
+    help: (
+      <div>
+        The Reward APY is calculated as the rate of return from the given reward
+        APR, compounded weekly.
+      </div>
+    ),
   },
   {
     id: "userShare",

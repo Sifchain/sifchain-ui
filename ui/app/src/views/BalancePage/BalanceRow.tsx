@@ -28,6 +28,8 @@ import { getExportLocation } from "./Export/useExportData";
 import { useCore } from "@/hooks/useCore";
 import { Asset, Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
+import { useChains } from "@/hooks/useChains";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export const SYMBOL_COLUMN_WIDTH = 130;
 
@@ -67,8 +69,17 @@ export default defineComponent({
         icon: "interactive/arrow-down",
         name: "Import",
         visible: true,
+        help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
+          .underMaintenance
+          ? `${
+              useChains().get(props.tokenItem.asset.homeNetwork).displayName
+            } Connection Under Maintenance`
+          : null,
         props: {
-          disabled: props.tokenItem.asset.decommissioned,
+          disabled:
+            props.tokenItem.asset.decommissioned ||
+            useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
+              .underMaintenance,
           replace: false,
           to: getImportLocation("select", {
             symbol: props.tokenItem.asset.symbol,
@@ -84,15 +95,23 @@ export default defineComponent({
             tag: "button",
             icon: "interactive/arrow-up",
             name: "Export",
-            visible: expandedRef.value,
-            props: { disabled: true, class: !expandedRef.value && "invisible" },
+            visible: true,
+            props: { disabled: true, class: "" },
           }
         : {
             tag: RouterLink,
             icon: "interactive/arrow-up",
             name: "Export",
-            visible: expandedRef.value,
+            visible: true,
+            help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
+              .underMaintenance
+              ? `${
+                  useChains().get(props.tokenItem.asset.homeNetwork).displayName
+                } Connection Under Maintenance`
+              : null,
             props: {
+              disabled: useChains().get(props.tokenItem.asset.homeNetwork)
+                .chainConfig.underMaintenance,
               replace: false,
               to: getExportLocation("setup", {
                 symbol: props.tokenItem.asset.symbol,
@@ -146,13 +165,13 @@ export default defineComponent({
           }
         }}
         class={cx(
-          "list-complete-item align-middle h-8 border-dashed border-b border-white border-opacity-40 relative overflow-hidden last:border-transparent group",
+          "list-complete-item align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 relative overflow-hidden group",
           showMaskRef.value && "opacity-40",
         )}
       >
         <td class="text-left align-middle w-[120px] group-hover:opacity-80">
           <div class="flex items-center">
-            <TokenIcon asset={assetRef}></TokenIcon>
+            <TokenNetworkIcon asset={assetRef} />
             {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}
@@ -308,7 +327,7 @@ export default defineComponent({
             {buttonsRef.value
               .filter((definition) => definition.visible)
               .map((definition) => {
-                return (
+                const button = (
                   <Button.Inline
                     key={definition.name}
                     class="mr-1 animation-fade-in"
@@ -317,6 +336,12 @@ export default defineComponent({
                   >
                     {definition.name}
                   </Button.Inline>
+                );
+                if (!definition.help) return button;
+                return (
+                  <Tooltip key={definition.name} content={definition.help}>
+                    {button}
+                  </Tooltip>
                 );
               })}
             <button

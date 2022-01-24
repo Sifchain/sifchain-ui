@@ -29,7 +29,7 @@ export default defineConfig({
       ],
       {},
     ),
-    viteSingleFile(),
+    // viteSingleFile(),
     minifyHtml(),
   ].filter(Boolean),
 
@@ -59,7 +59,7 @@ export default defineConfig({
     },
   },
   server: {
-    hmr: false,
+    hmr: true,
   },
   resolve: {
     alias: {

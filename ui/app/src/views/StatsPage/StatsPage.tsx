@@ -8,6 +8,9 @@ import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
+import { Button } from "@/components/Button/Button";
+import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
   name: "StatsPage",
@@ -20,7 +23,7 @@ export default defineComponent({
 
     const columns: Array<{
       name: string;
-      message?: string;
+      message?: string | JSX.Element;
       sortBy: StatsPageState["sortBy"];
       class?: string;
       ref: Ref<HTMLElement | undefined>;
@@ -60,18 +63,31 @@ export default defineComponent({
       {
         name: "Pool APY",
         sortBy: "poolApy",
-        class: "min-w-[80px] text-right",
+        class: "min-w-[100px] text-right",
         ref: ref<HTMLElement>(),
+        message: (
+          <div>
+            Pool APR is an estimate of trading fees generated from this pool,
+            and is calculated as{" "}
+            <span class="font-mono">24hour_trading_volume / pool_depth</span>{" "}
+            for each pool.
+          </div>
+        ),
       },
       {
-        name: "Reward APY",
+        name: "Reward APR (APY)",
         sortBy: "rewardApy",
-        class: "min-w-[80px] text-right",
+        class: "min-w-[140px] text-right",
         ref: ref<HTMLElement>(),
+        message: (
+          <div>
+            The Reward APY is calculated as the rate of return from the given
+            reward APR, compounded weekly.
+          </div>
+        ),
       },
       {
-        name: "Total APY",
-        message: "Combined Pool & Reward APY's",
+        name: "Total APR",
         sortBy: "totalApy",
         class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
@@ -184,11 +200,11 @@ export default defineComponent({
                   return (
                     <tr
                       key={item.asset.symbol}
-                      class="align-middle h-8 border-dashed border-b border-white border-opacity-40 last:border-transparent hover:opacity-80"
+                      class="align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80"
                     >
                       <td class="align-middle">
                         <div class="flex items-center">
-                          <TokenIcon
+                          <TokenNetworkIcon
                             assetValue={item.asset}
                             size={22}
                             class="mr-[10px]"
@@ -225,8 +241,12 @@ export default defineComponent({
                         {item.poolApy}%
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {item.rewardApy}%
-                      </td>{" "}
+                        {(+item.rewardApy || 0).toFixed(0)}% (
+                        {aprToWeeklyCompoundedApy(+item.rewardApy || 0).toFixed(
+                          0,
+                        )}
+                        %)
+                      </td>
                       <td class="align-middle text-right text-mono">
                         {item.totalApy}%
                       </td>

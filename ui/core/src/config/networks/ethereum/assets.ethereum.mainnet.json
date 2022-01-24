@@ -975,6 +975,61 @@
       "network": "ethereum",
       "homeNetwork": "ethereum",
       "decimals": 18
+    },
+    {
+      "address": "0x16ba8Efe847EBDFef99d399902ec29397D403C30",
+      "symbol": "coh",
+      "displaySymbol": "oh",
+      "decimals": 18,
+      "name": "oh",
+      "label": "oh",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "imageUrl": "https://s2.coinmarketcap.com/static/img/coins/64x64/13143.png"
+    },
+    {
+      "symbol": "ngm",
+      "displaySymbol": "ngm",
+      "decimals": 6,
+      "name": "ngm",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "ngm",
+      "imageUrl": "https://assets.coingecko.com/coins/images/13722/small/logo-200x200.jpg?1626095888"
+    },
+    {
+      "symbol": "eeur",
+      "displaySymbol": "eeur",
+      "decimals": 6,
+      "name": "e-Money EUR",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "e-Money EUR",
+      "imageUrl": "https://assets.coingecko.com/coins/images/18817/small/eeur.jpg?1633508407"
+    },
+    {
+      "address": "0x4461cfd640da24d1a4642fa5f9ea3e6da966b831",
+      "symbol": "csms",
+      "displaySymbol": "csms",
+      "decimals": 18,
+      "name": "Cosmostarter",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "Cosmostarter",
+      "imageUrl": "https://assets.coingecko.com/coins/images/19875/small/cosmosstarter.PNG?1636083064",
+      "decommissioned": true
+    },
+    {
+      "address": "0xae697f994fc5ebc000f8e22ebffee04612f98a0d",
+      "symbol": "lgcy",
+      "displaySymbol": "lgcy",
+      "decimals": 18,
+      "name": "LGCY Network",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "LGCY Network",
+      "imageUrl": "https://assets.coingecko.com/coins/images/12181/small/LGCY_network.jpg?1597926587",
+      "decommissioned": false
     }
   ]
 }

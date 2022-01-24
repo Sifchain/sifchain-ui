@@ -28,6 +28,7 @@ import ImportProcessing from "@/views/BalancePage/Import/Processing";
 import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
+import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
@@ -220,6 +221,11 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
   //     title: "Export Asset - Sifchain",
   //   },
   // },
+  {
+    name: "RewardsCalculator",
+    path: "/calculator",
+    component: RewardsCalculatorPage,
+  },
 ] as const;
 
 const router = createRouter({

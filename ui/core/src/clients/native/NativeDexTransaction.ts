@@ -28,7 +28,7 @@ export class NativeDexTransaction<EncodeMsg> {
 export class NativeDexSignedTransaction<T> {
   constructor(
     readonly raw: NativeDexTransaction<T>,
-    readonly signed?: StdTx | TxRaw,
+    readonly signed?: StdTx | TxRaw | Uint8Array,
   ) {}
 }
 

@@ -1,9 +1,8 @@
-import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { symbolWithoutPrefix } from "@/utils/symbol";
-import { IAsset, Network } from "@sifchain/sdk";
+import { IAsset } from "@sifchain/sdk";
 import { computed } from "vue";
-import { useAsyncData } from "./useAsyncData";
 import { useAsyncDataCached } from "./useAsyncDataCached";
 import { useNativeChain } from "./useChains";
 import { useCore } from "./useCore";
@@ -41,12 +40,6 @@ export const usePoolStats = () => {
   const { store, services } = useCore();
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
-    let cryptoeconSummaryAPY = await services.cryptoeconomics
-      .fetchSummaryAPY({
-        devnet: flagsStore.state.devnetCryptoecon,
-      })
-      .catch((e) => console.error(e));
-    cryptoeconSummaryAPY = cryptoeconSummaryAPY || 0;
     const res = await fetch(
       "https://data.sifchain.finance/beta/asset/tokenStats",
     );
@@ -89,7 +82,6 @@ export const usePoolStats = () => {
       },
       liqAPY: 0,
       rowanUsd: poolData.rowanUSD,
-      cryptoeconSummaryAPY: cryptoeconSummaryAPY,
     };
   });
 
