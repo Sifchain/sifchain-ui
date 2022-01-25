@@ -23,7 +23,10 @@ const useSwapPageData = () => {
   const [fromAmount, setFromAmount] = useState('0')
   const [toAmount, setToAmount] = useState('0')
   const [pools, setPools] = useState<Pool[]>([])
-  const [fromToPool, setFromToPool] = useState<{ fromPool: Pool; toPool: Pool } | null>(null)
+  const [fromToPool, setFromToPool] = useState<{
+    fromPool: Pool
+    toPool: Pool
+  } | null>(null)
   const [slippagePercent, setSlippagePercent] = useState(DEFAULT_SWAP_SLIPPAGE_PERCENT)
   const [swapQuote, setSwapQuote] = useState<ReturnType<typeof sdk.liquidity.swap.createSwapQuote> | null>(null)
 

@@ -6,7 +6,7 @@
   "scripts": {
     "bump": "cd ./app && yarn bump",
     "advance": "zx ./scripts/advance.mjs",
-    "build": "zx ./scripts/build.mjs --skip-lint",
+    "build": "zx ./scripts/build.mjs",
     "dev": "zx ./scripts/dev.mjs",
     "e2e": "zx ./scripts/e2e.mjs",
     "lint": "zx ./scripts/lint.mjs",
