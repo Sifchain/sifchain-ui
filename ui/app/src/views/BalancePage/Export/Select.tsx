@@ -192,7 +192,6 @@ export default defineComponent({
 
     const exportNetworkButton = (
       <Button.Select
-        hideIcon={optionsRef.value.length === 1}
         style={{
           pointerEvents: optionsRef.value.length === 1 ? "none" : "auto",
         }}
@@ -256,30 +255,26 @@ export default defineComponent({
 
           <div class="block mt-[10px]">
             Network
-            {optionsRef.value.length > 1 ? (
-              <SelectDropdown
-                key={optionsRef.value.map((o) => o.value).join("")}
-                options={optionsRef}
-                value={networkRef}
-                onChangeValue={(value) => {
-                  exportStore.setDraft({
-                    network: value as Network,
-                  });
-                }}
-                tooltipProps={{
-                  onShow: () => {
-                    networkOpenRef.value = true;
-                  },
-                  onHide: () => {
-                    networkOpenRef.value = false;
-                  },
-                }}
-              >
-                {exportNetworkButton}
-              </SelectDropdown>
-            ) : (
-              exportNetworkButton
-            )}
+            <SelectDropdown
+              key={optionsRef.value.map((o) => o.value).join("")}
+              options={optionsRef}
+              value={networkRef}
+              onChangeValue={(value) => {
+                exportStore.setDraft({
+                  network: value as Network,
+                });
+              }}
+              tooltipProps={{
+                onShow: () => {
+                  networkOpenRef.value = true;
+                },
+                onHide: () => {
+                  networkOpenRef.value = false;
+                },
+              }}
+            >
+              {exportNetworkButton}
+            </SelectDropdown>
           </div>
         </section>
 
