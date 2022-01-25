@@ -6,7 +6,7 @@
   "scripts": {
     "bump": "cd ./app && yarn bump",
     "advance": "zx ./scripts/advance.mjs",
-    "build": "zx ./scripts/build.mjs",
+    "build": "zx ./scripts/build.mjs --skip-lint",
     "dev": "zx ./scripts/dev.mjs",
     "e2e": "zx ./scripts/e2e.mjs",
     "lint": "zx ./scripts/lint.mjs",
@@ -29,8 +29,7 @@
     "vercel": "^21.0.1",
     "wait-on": "^5.2.1",
     "wscat": "^4.0.1",
-    "zx": "^4.3.0",
-    "@types/react": "file:stub/types__react"
+    "zx": "^4.3.0"
   },
   "workspaces": {
     "packages": [

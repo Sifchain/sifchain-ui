@@ -1,4 +1,5 @@
-import { KeplrWalletProvider, MetamaskWalletProvider } from '@sifchain/sdk/src/clients/wallets'
+import { KeplrWalletProvider } from '@sifchain/wallet-keplr'
+import { MetamaskWalletProvider } from '@sifchain/wallet-metamask'
 import { sdk } from '../../sdk'
 
 export const keplrProvider = new KeplrWalletProvider(sdk.context)

@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { AssetAmount, formatAssetAmount, toBaseUnits } from '@sifchain/sdk'
+import { KeplrWalletProvider } from '@sifchain/wallet-keplr'
+
 import { sdk } from '../../sdk'
 import { useSwapContext } from './context'
-import { KeplrWalletProvider } from '@sifchain/sdk/src/clients/wallets'
 import Layout from '../../components/Layout'
 import { useWalletContext } from '../../modules/Wallet/context'
 

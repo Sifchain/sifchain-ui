@@ -2,7 +2,6 @@ import {
   IAssetAmount,
   Chain,
   TransactionStatus,
-  IAsset,
   AssetAmount,
 } from "../../entities";
 import {
