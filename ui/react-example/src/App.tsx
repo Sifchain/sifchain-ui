@@ -1,8 +1,8 @@
-import React from 'react'
-import SwapPage from './pages/SwapPage/SwapPage'
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
-import { SwapPageProvider } from './pages/SwapPage/context'
-import { WalletProvider } from './modules/Wallet/context'
+import React from "react";
+import SwapPage from "./pages/SwapPage/SwapPage";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { SwapPageProvider } from "./pages/SwapPage/context";
+import { WalletProvider } from "./modules/Wallet/context";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         </WalletProvider>
       </SwapPageProvider>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

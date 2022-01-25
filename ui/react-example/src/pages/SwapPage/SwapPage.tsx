@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { AssetAmount, formatAssetAmount, toBaseUnits } from '@sifchain/sdk'
-import { KeplrWalletProvider } from '@sifchain/wallet-keplr'
+import React, { useState } from "react";
+import { AssetAmount, formatAssetAmount, toBaseUnits } from "@sifchain/sdk";
+import { KeplrWalletProvider } from "@sifchain/wallet-keplr";
 
-import { sdk } from '../../sdk'
-import { useSwapContext } from './context'
-import Layout from '../../components/Layout'
-import { useWalletContext } from '../../modules/Wallet/context'
+import { sdk } from "../../sdk";
+import { useSwapContext } from "./context";
+import Layout from "../../components/Layout";
+import { useWalletContext } from "../../modules/Wallet/context";
 
 export default function SwapPage() {
   const {
@@ -22,38 +22,41 @@ export default function SwapPage() {
     setSlippagePercent,
     swapQuote,
     setSwapQuote,
-  } = useSwapContext()
+  } = useSwapContext();
 
-  const { accountState } = useWalletContext()
+  const { accountState } = useWalletContext();
 
   const handleSwap = async () => {
-    const wallet = new KeplrWalletProvider(sdk.context)
-    const address = await wallet.connect(sdk.chains.sifchain)
+    const wallet = new KeplrWalletProvider(sdk.context);
+    const address = await wallet.connect(sdk.chains.sifchain);
 
-    if (!swapQuote) throw new Error('no swap quote')
+    if (!swapQuote) throw new Error("no swap quote");
 
     const draft = await sdk.liquidity.swap.prepareSwapTx({
       address,
       fromAmount: AssetAmount(fromAsset, toBaseUnits(fromAmount, fromAsset)),
       toAsset,
       minimumReceived: swapQuote.minimumReceived,
-    })
-    const signed = await wallet.sign(sdk.chains.sifchain, draft)
-    const res = await wallet.broadcast(sdk.chains.sifchain, signed)
-  }
+    });
+    const signed = await wallet.sign(sdk.chains.sifchain, draft);
+    const res = await wallet.broadcast(sdk.chains.sifchain, signed);
+  };
 
-  const fromAmountInputRef = React.useRef<HTMLInputElement | null>(null)
-  const toAmountInputRef = React.useRef<HTMLInputElement | null>(null)
+  const fromAmountInputRef = React.useRef<HTMLInputElement | null>(null);
+  const toAmountInputRef = React.useRef<HTMLInputElement | null>(null);
 
-  const onInputChange = (key: 'fromAmount' | 'toAmount', amount: string) => {
-    amount = String(parseFloat(amount) || '0')
+  const onInputChange = (key: "fromAmount" | "toAmount", amount: string) => {
+    amount = String(parseFloat(amount) || "0");
 
-    const matchingAsset = key === 'fromAmount' ? fromAsset : toAsset
+    const matchingAsset = key === "fromAmount" ? fromAsset : toAsset;
 
     if (fromToPool?.fromPool && fromToPool?.toPool) {
-      const assetAmount = AssetAmount(matchingAsset, toBaseUnits(amount, matchingAsset))
+      const assetAmount = AssetAmount(
+        matchingAsset,
+        toBaseUnits(amount, matchingAsset),
+      );
       const quote = sdk.liquidity.swap.createSwapQuote(
-        key === 'fromAmount'
+        key === "fromAmount"
           ? {
               ...fromToPool,
               slippagePercent,
@@ -64,38 +67,52 @@ export default function SwapPage() {
               slippagePercent,
               toAmount: assetAmount,
             },
-      )
+      );
 
-      setFromAmount(formatAssetAmount(quote.fromAmount))
-      setToAmount(formatAssetAmount(quote.toAmount))
-      setSwapQuote(quote)
+      setFromAmount(formatAssetAmount(quote.fromAmount));
+      setToAmount(formatAssetAmount(quote.toAmount));
+      setSwapQuote(quote);
 
-      const otherInput = key === 'fromAmount' ? toAmountInputRef.current : fromAmountInputRef.current
-      const otherValue = formatAssetAmount(key === 'fromAmount' ? quote.toAmount : quote.fromAmount)
-      if (otherInput) otherInput.value = +otherValue !== 0 ? otherValue : ''
+      const otherInput =
+        key === "fromAmount"
+          ? toAmountInputRef.current
+          : fromAmountInputRef.current;
+      const otherValue = formatAssetAmount(
+        key === "fromAmount" ? quote.toAmount : quote.fromAmount,
+      );
+      if (otherInput) otherInput.value = +otherValue !== 0 ? otherValue : "";
     }
-  }
+  };
 
   const validationError =
-    !swapQuote || swapQuote.fromAmount.equalTo('0') || swapQuote.toAmount.equalTo('0')
-      ? 'Enter Amount'
+    !swapQuote ||
+    swapQuote.fromAmount.equalTo("0") ||
+    swapQuote.toAmount.equalTo("0")
+      ? "Enter Amount"
       : fromAsset.symbol === toAsset.symbol
-      ? 'Enter different from and to tokens'
+      ? "Enter different from and to tokens"
       : swapQuote.flags.insufficientLiquidity
-      ? 'Insufficient Liquidity'
+      ? "Insufficient Liquidity"
       : swapQuote.fromAmount.greaterThan(
-          accountState.sifchain.balanceLookup[swapQuote.fromAmount.symbol] || AssetAmount(swapQuote.fromAmount, '0'),
+          accountState.sifchain.balanceLookup[swapQuote.fromAmount.symbol] ||
+            AssetAmount(swapQuote.fromAmount, "0"),
         )
-      ? 'Not Enough ' + fromAsset.symbol.toUpperCase()
-      : null
+      ? "Not Enough " + fromAsset.symbol.toUpperCase()
+      : null;
 
   // re-calculate amounts when assets or pools change
   React.useEffect(() => {
-    if (!fromToPool) return
+    if (!fromToPool) return;
     // Don't recalculate from amount when pool changes if from is already focused.
-    const keyToChange = document.activeElement === fromAmountInputRef.current ? 'toAmount' : 'fromAmount'
-    onInputChange(keyToChange, keyToChange === 'fromAmount' ? fromAmount : toAmount)
-  }, [fromToPool, slippagePercent])
+    const keyToChange =
+      document.activeElement === fromAmountInputRef.current
+        ? "toAmount"
+        : "fromAmount";
+    onInputChange(
+      keyToChange,
+      keyToChange === "fromAmount" ? fromAmount : toAmount,
+    );
+  }, [fromToPool, slippagePercent]);
 
   return (
     <Layout>
@@ -107,39 +124,51 @@ export default function SwapPage() {
             <b>From</b>
             <select
               className="bg-gray-200"
-              onChange={ev => setFromAsset(sdk.chains.sifchain.lookupAssetOrThrow(ev.target.value))}
+              onChange={(ev) =>
+                setFromAsset(
+                  sdk.chains.sifchain.lookupAssetOrThrow(ev.target.value),
+                )
+              }
               value={fromAsset.symbol}
             >
-              {sdk.chains.sifchain.assets.map(asset => (
+              {sdk.chains.sifchain.assets.map((asset) => (
                 <option key={asset.symbol} value={asset.symbol}>
                   {asset.symbol} (
-                  {formatAssetAmount(accountState.sifchain.balanceLookup[asset.symbol] || AssetAmount(asset, '0'))})
+                  {formatAssetAmount(
+                    accountState.sifchain.balanceLookup[asset.symbol] ||
+                      AssetAmount(asset, "0"),
+                  )}
+                  )
                 </option>
               ))}
             </select>
           </div>
           <div className="flex w-full justify-between items-center">
             <b>
-              Available:{' '}
-              {formatAssetAmount(accountState.sifchain.balanceLookup[fromAsset.symbol] || AssetAmount(fromAsset, '0'))}
+              Available:{" "}
+              {formatAssetAmount(
+                accountState.sifchain.balanceLookup[fromAsset.symbol] ||
+                  AssetAmount(fromAsset, "0"),
+              )}
             </b>
             <input
               type="string"
               className="bg-gray-200"
               ref={fromAmountInputRef}
               placeholder="Enter Amount"
-              onChange={e => onInputChange('fromAmount', e.target.value)}
+              onChange={(e) => onInputChange("fromAmount", e.target.value)}
             />
           </div>
           <button
             className="bg-gray-200 p-1 cursor-pointer"
             onClick={() => {
-              setFromAsset(toAsset)
-              setToAsset(fromAsset)
+              setFromAsset(toAsset);
+              setToAsset(fromAsset);
               if (fromAmountInputRef.current && toAmountInputRef.current) {
-                let fromVal = fromAmountInputRef.current.value
-                fromAmountInputRef.current.value = toAmountInputRef.current.value
-                toAmountInputRef.current.value = fromVal
+                let fromVal = fromAmountInputRef.current.value;
+                fromAmountInputRef.current.value =
+                  toAmountInputRef.current.value;
+                toAmountInputRef.current.value = fromVal;
               }
             }}
           >
@@ -149,28 +178,39 @@ export default function SwapPage() {
             <b>To</b>
             <select
               className="bg-gray-200"
-              onChange={ev => setToAsset(sdk.chains.sifchain.lookupAssetOrThrow(ev.target.value))}
+              onChange={(ev) =>
+                setToAsset(
+                  sdk.chains.sifchain.lookupAssetOrThrow(ev.target.value),
+                )
+              }
               value={toAsset.symbol}
             >
-              {sdk.chains.sifchain.assets.map(asset => (
+              {sdk.chains.sifchain.assets.map((asset) => (
                 <option key={asset.symbol} value={asset.symbol}>
                   {asset.symbol} (
-                  {formatAssetAmount(accountState.sifchain.balanceLookup[asset.symbol] || AssetAmount(asset, '0'))})
+                  {formatAssetAmount(
+                    accountState.sifchain.balanceLookup[asset.symbol] ||
+                      AssetAmount(asset, "0"),
+                  )}
+                  )
                 </option>
               ))}
             </select>
           </div>
           <div className="flex w-full justify-between items-center">
             <b>
-              Available:{' '}
-              {formatAssetAmount(accountState.sifchain.balanceLookup[toAsset.symbol] || AssetAmount(toAsset, '0'))}
+              Available:{" "}
+              {formatAssetAmount(
+                accountState.sifchain.balanceLookup[toAsset.symbol] ||
+                  AssetAmount(toAsset, "0"),
+              )}
             </b>
             <input
               type="string"
               className="bg-gray-200"
               ref={toAmountInputRef}
               placeholder="Enter Amount"
-              onChange={e => onInputChange('toAmount', e.target.value)}
+              onChange={(e) => onInputChange("toAmount", e.target.value)}
             />
           </div>
         </div>
@@ -209,16 +249,17 @@ export default function SwapPage() {
         {!!swapQuote && (
           <ul>
             <li>
-              Price: {swapQuote.fromToRatio} {fromAsset.displaySymbol.toUpperCase()} per{' '}
+              Price: {swapQuote.fromToRatio}{" "}
+              {fromAsset.displaySymbol.toUpperCase()} per{" "}
               {toAsset.displaySymbol.toUpperCase()}
             </li>
             <li>
-              Minimum received: {formatAssetAmount(swapQuote.minimumReceived)}{' '}
+              Minimum received: {formatAssetAmount(swapQuote.minimumReceived)}{" "}
               {swapQuote.minimumReceived.displaySymbol.toUpperCase()}
             </li>
             <li>Price impact: {swapQuote.priceImpact}%</li>
             <li>
-              Liquidity Provider Fee: {formatAssetAmount(swapQuote.providerFee)}{' '}
+              Liquidity Provider Fee: {formatAssetAmount(swapQuote.providerFee)}{" "}
               {swapQuote.providerFee.displaySymbol.toUpperCase()}
             </li>
           </ul>
@@ -226,14 +267,17 @@ export default function SwapPage() {
         <hr />
         <button
           onClick={handleSwap}
-          className={['text-lg bg-gray-200 p-1 w-full', !!validationError && 'bg-gray-400 cursor-not-allowed']
+          className={[
+            "text-lg bg-gray-200 p-1 w-full",
+            !!validationError && "bg-gray-400 cursor-not-allowed",
+          ]
             .filter(Boolean)
-            .join(' ')}
+            .join(" ")}
           disabled={!!validationError}
         >
-          {validationError || 'Swap!'}
+          {validationError || "Swap!"}
         </button>
       </div>
     </Layout>
-  )
+  );
 }
