@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 import { resolve } from "path";
-import { lint, _setupStack } from "./lib.mjs";
+import { lint, setupStack as _setupStack } from "./lib.mjs";
 import { arg } from "./lib.mjs";
 
 const args = arg({
