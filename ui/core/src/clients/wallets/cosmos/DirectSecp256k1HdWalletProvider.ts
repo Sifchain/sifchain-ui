@@ -1,22 +1,15 @@
-import {
-  DirectSecp256k1HdWallet,
-  EncodeObject,
-  makeSignDoc,
-} from "@cosmjs/proto-signing";
-
-import { Chain } from "../../../entities";
-import { WalletProviderContext } from "../WalletProvider";
-import { stringToPath } from "@cosmjs/crypto";
-import { CosmosWalletProvider } from "./CosmosWalletProvider";
-import { NativeDexTransaction, NativeDexSignedTransaction } from "../../native";
-import { SigningStargateClient } from "@cosmjs/stargate";
-import {
-  TxRaw,
-  TxBody,
-  SignDoc,
-} from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
+import { DirectSecp256k1HdWallet, EncodeObject } from "@cosmjs/proto-signing";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
+import { SigningStargateClient } from "@cosmjs/stargate";
+import { stringToPath } from "@cosmjs/crypto";
+
+import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
+
+import { NativeDexTransaction, NativeDexSignedTransaction } from "../../native";
+import { Chain } from "../../../entities";
+import { WalletProviderContext } from "../../wallets/WalletProvider";
 import { TokenRegistry } from "../../native/TokenRegistry";
+import { CosmosWalletProvider } from "./CosmosWalletProvider";
 
 export type DirectSecp256k1HdWalletProviderOptions = {
   mnemonic: string;
@@ -70,9 +63,10 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
     ];
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
       this.options.mnemonic || "",
-      // @ts-ignore
-      stringToPath(parts.join("/")),
-      chainConfig.keplrChainInfo.bech32Config.bech32PrefixAccAddr,
+      {
+        hdPaths: [stringToPath(parts.join("/")) as any],
+        prefix: chainConfig.keplrChainInfo.bech32Config.bech32PrefixAccAddr,
+      },
     );
     return wallet;
   }

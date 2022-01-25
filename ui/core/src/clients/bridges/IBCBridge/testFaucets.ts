@@ -1,8 +1,7 @@
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { SigningStargateClient, coins } from "@cosmjs/stargate";
+import { AKASH_TESTNET } from "config/chains/akash/akash-testnet";
 import fetch from "cross-fetch";
-import { MsgSend } from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
-import { AKASH_TESTNET } from "../../../config/chains/akash/akash-testnet";
 
 // This contains TEST tokens only, please be nice and don't take them all.
 const COUNTERPARTY_TEST_MNEMONIC = process.env.COUNTERPARTY_TEST_MNEMONIC!;
@@ -10,8 +9,9 @@ const COUNTERPARTY_TEST_MNEMONIC = process.env.COUNTERPARTY_TEST_MNEMONIC!;
 export const runAkashFaucet = async (toAddress: string) => {
   const signer = await DirectSecp256k1HdWallet.fromMnemonic(
     COUNTERPARTY_TEST_MNEMONIC,
-    undefined,
-    "akash",
+    {
+      prefix: "akash",
+    },
   );
 
   const faucetAddr = (await signer.getAccounts())[0].address;
