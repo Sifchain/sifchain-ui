@@ -7,10 +7,10 @@ export const REGEN_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://regen.aneka.io/",
   nativeAssetSymbol: "uregen",
   chainId: "regen-1",
-  rpcUrl: "https://regen.stakesystems.io:2053",
+  rpcUrl: "https://proxies.sifchain.finance/api/regen-1/rpc",
   restUrl: "https://proxies.sifchain.finance/api/regen-1/rest",
   keplrChainInfo: {
-    rpc: "https://regen.stakesystems.io:2053",
+    rpc: "https://proxies.sifchain.finance/api/regen-1/rpc",
     rest: "https://proxies.sifchain.finance/api/regen-1/rest",
     chainId: "regen-1",
     chainName: "Regen",
