@@ -59,6 +59,13 @@ export interface MsgRescueCeth {
 
 export interface MsgRescueCethResponse {}
 
+export interface MsgSetBlacklist {
+  from: string;
+  addresses: string[];
+}
+
+export interface MsgSetBlacklistResponse {}
+
 const baseMsgLock: object = {
   cosmosSender: "",
   amount: "",
@@ -1055,6 +1062,140 @@ export const MsgRescueCethResponse = {
   },
 };
 
+const baseMsgSetBlacklist: object = { from: "", addresses: "" };
+
+export const MsgSetBlacklist = {
+  encode(
+    message: MsgSetBlacklist,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.from !== "") {
+      writer.uint32(10).string(message.from);
+    }
+    for (const v of message.addresses) {
+      writer.uint32(18).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetBlacklist {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgSetBlacklist } as MsgSetBlacklist;
+    message.addresses = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.from = reader.string();
+          break;
+        case 2:
+          message.addresses.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSetBlacklist {
+    const message = { ...baseMsgSetBlacklist } as MsgSetBlacklist;
+    message.addresses = [];
+    if (object.from !== undefined && object.from !== null) {
+      message.from = String(object.from);
+    } else {
+      message.from = "";
+    }
+    if (object.addresses !== undefined && object.addresses !== null) {
+      for (const e of object.addresses) {
+        message.addresses.push(String(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: MsgSetBlacklist): unknown {
+    const obj: any = {};
+    message.from !== undefined && (obj.from = message.from);
+    if (message.addresses) {
+      obj.addresses = message.addresses.map((e) => e);
+    } else {
+      obj.addresses = [];
+    }
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgSetBlacklist>): MsgSetBlacklist {
+    const message = { ...baseMsgSetBlacklist } as MsgSetBlacklist;
+    message.addresses = [];
+    if (object.from !== undefined && object.from !== null) {
+      message.from = object.from;
+    } else {
+      message.from = "";
+    }
+    if (object.addresses !== undefined && object.addresses !== null) {
+      for (const e of object.addresses) {
+        message.addresses.push(e);
+      }
+    }
+    return message;
+  },
+};
+
+const baseMsgSetBlacklistResponse: object = {};
+
+export const MsgSetBlacklistResponse = {
+  encode(
+    _: MsgSetBlacklistResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgSetBlacklistResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseMsgSetBlacklistResponse,
+    } as MsgSetBlacklistResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSetBlacklistResponse {
+    const message = {
+      ...baseMsgSetBlacklistResponse,
+    } as MsgSetBlacklistResponse;
+    return message;
+  },
+
+  toJSON(_: MsgSetBlacklistResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(
+    _: DeepPartial<MsgSetBlacklistResponse>,
+  ): MsgSetBlacklistResponse {
+    const message = {
+      ...baseMsgSetBlacklistResponse,
+    } as MsgSetBlacklistResponse;
+    return message;
+  },
+};
+
 /** Msg service for messages */
 export interface Msg {
   Lock(request: MsgLock): Promise<MsgLockResponse>;
@@ -1069,6 +1210,7 @@ export interface Msg {
     request: MsgUpdateCethReceiverAccount,
   ): Promise<MsgUpdateCethReceiverAccountResponse>;
   RescueCeth(request: MsgRescueCeth): Promise<MsgRescueCethResponse>;
+  SetBlacklist(request: MsgSetBlacklist): Promise<MsgSetBlacklistResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1081,6 +1223,7 @@ export class MsgClientImpl implements Msg {
     this.UpdateWhiteListValidator = this.UpdateWhiteListValidator.bind(this);
     this.UpdateCethReceiverAccount = this.UpdateCethReceiverAccount.bind(this);
     this.RescueCeth = this.RescueCeth.bind(this);
+    this.SetBlacklist = this.SetBlacklist.bind(this);
   }
   Lock(request: MsgLock): Promise<MsgLockResponse> {
     const data = MsgLock.encode(request).finish();
@@ -1145,6 +1288,18 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgRescueCethResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  SetBlacklist(request: MsgSetBlacklist): Promise<MsgSetBlacklistResponse> {
+    const data = MsgSetBlacklist.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.ethbridge.v1.Msg",
+      "SetBlacklist",
+      data,
+    );
+    return promise.then((data) =>
+      MsgSetBlacklistResponse.decode(new _m0.Reader(data)),
     );
   }
 }

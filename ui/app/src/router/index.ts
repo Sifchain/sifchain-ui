@@ -29,6 +29,7 @@ import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
+import MarginPage from "@/views/MarginPage/MarginPage";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
@@ -198,6 +199,11 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
       //   component: BalanceExport,
       // },
     ],
+  },
+  {
+    name: "Margin",
+    path: "/margin",
+    component: MarginPage,
   },
   {
     name: "Leaderboard",

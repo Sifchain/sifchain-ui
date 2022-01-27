@@ -96,8 +96,7 @@ export default defineComponent({
 
     const hasUniversalCompetition = useHasUniversalCompetition();
 
-    const connectedNetworkCount =
-      rootStore.accounts.refs.connectedNetworkCount.computed();
+    const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
 
     const changesData = useAsyncData(() => loadChangesData());
 
@@ -179,6 +178,18 @@ export default defineComponent({
                   icon="navigation/rewards"
                   href="/rewards"
                 />
+                <NavSidePanelItem
+                  displayName="Margin"
+                  icon="navigation/harvest"
+                  href="/margin"
+                />
+                <NavSidePanelItem
+                  displayName="Stake"
+                  icon="navigation/stake"
+                  href="https://wallet.keplr.app/#/sifchain/stake"
+                  class="group"
+                />
+
                 <NavSidePanelItem
                   icon="navigation/changelog"
                   onClick={() => (changelogOpenRef.value = true)}
@@ -271,8 +282,9 @@ export default defineComponent({
                   ref={moreMenuRef}
                   offset={[0, -2]}
                   onShow={(instance: TooltipInstance) => {
-                    const content =
-                      instance.popper.querySelector(".tippy-content");
+                    const content = instance.popper.querySelector(
+                      ".tippy-content",
+                    );
                     if (content) {
                       content.className +=
                         " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
@@ -463,8 +475,9 @@ export default defineComponent({
                                       (b) => b.asset.symbol.includes("rowan"),
                                     )
                                     .map((asset) => {
-                                      const formatted =
-                                        formatAssetAmount(asset);
+                                      const formatted = formatAssetAmount(
+                                        asset,
+                                      );
                                       if (formatted.length > 6) {
                                         return Intl.NumberFormat("en", {
                                           notation: "compact",

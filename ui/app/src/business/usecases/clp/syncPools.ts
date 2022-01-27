@@ -43,6 +43,7 @@ export function SyncPools(
     const registry = await tokenRegistry.load();
 
     const rawPools = await clp.getRawPools();
+    console.log({ rawPools });
     const pools = rawPools.pools
       .map((pool) => {
         const externalSymbol = pool.externalAsset?.symbol;

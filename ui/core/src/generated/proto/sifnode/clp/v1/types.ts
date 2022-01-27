@@ -13,6 +13,12 @@ export interface Pool {
   nativeAssetBalance: string;
   externalAssetBalance: string;
   poolUnits: string;
+  externalLiabilities: string;
+  externalCustody: string;
+  nativeLiabilities: string;
+  nativeCustody: string;
+  health: string;
+  interestRate: string;
 }
 
 export interface LiquidityProvider {
@@ -90,6 +96,12 @@ const basePool: object = {
   nativeAssetBalance: "",
   externalAssetBalance: "",
   poolUnits: "",
+  externalLiabilities: "",
+  externalCustody: "",
+  nativeLiabilities: "",
+  nativeCustody: "",
+  health: "",
+  interestRate: "",
 };
 
 export const Pool = {
@@ -105,6 +117,24 @@ export const Pool = {
     }
     if (message.poolUnits !== "") {
       writer.uint32(34).string(message.poolUnits);
+    }
+    if (message.externalLiabilities !== "") {
+      writer.uint32(42).string(message.externalLiabilities);
+    }
+    if (message.externalCustody !== "") {
+      writer.uint32(50).string(message.externalCustody);
+    }
+    if (message.nativeLiabilities !== "") {
+      writer.uint32(58).string(message.nativeLiabilities);
+    }
+    if (message.nativeCustody !== "") {
+      writer.uint32(66).string(message.nativeCustody);
+    }
+    if (message.health !== "") {
+      writer.uint32(74).string(message.health);
+    }
+    if (message.interestRate !== "") {
+      writer.uint32(82).string(message.interestRate);
     }
     return writer;
   },
@@ -127,6 +157,24 @@ export const Pool = {
           break;
         case 4:
           message.poolUnits = reader.string();
+          break;
+        case 5:
+          message.externalLiabilities = reader.string();
+          break;
+        case 6:
+          message.externalCustody = reader.string();
+          break;
+        case 7:
+          message.nativeLiabilities = reader.string();
+          break;
+        case 8:
+          message.nativeCustody = reader.string();
+          break;
+        case 9:
+          message.health = reader.string();
+          break;
+        case 10:
+          message.interestRate = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -164,6 +212,45 @@ export const Pool = {
     } else {
       message.poolUnits = "";
     }
+    if (
+      object.externalLiabilities !== undefined &&
+      object.externalLiabilities !== null
+    ) {
+      message.externalLiabilities = String(object.externalLiabilities);
+    } else {
+      message.externalLiabilities = "";
+    }
+    if (
+      object.externalCustody !== undefined &&
+      object.externalCustody !== null
+    ) {
+      message.externalCustody = String(object.externalCustody);
+    } else {
+      message.externalCustody = "";
+    }
+    if (
+      object.nativeLiabilities !== undefined &&
+      object.nativeLiabilities !== null
+    ) {
+      message.nativeLiabilities = String(object.nativeLiabilities);
+    } else {
+      message.nativeLiabilities = "";
+    }
+    if (object.nativeCustody !== undefined && object.nativeCustody !== null) {
+      message.nativeCustody = String(object.nativeCustody);
+    } else {
+      message.nativeCustody = "";
+    }
+    if (object.health !== undefined && object.health !== null) {
+      message.health = String(object.health);
+    } else {
+      message.health = "";
+    }
+    if (object.interestRate !== undefined && object.interestRate !== null) {
+      message.interestRate = String(object.interestRate);
+    } else {
+      message.interestRate = "";
+    }
     return message;
   },
 
@@ -178,6 +265,17 @@ export const Pool = {
     message.externalAssetBalance !== undefined &&
       (obj.externalAssetBalance = message.externalAssetBalance);
     message.poolUnits !== undefined && (obj.poolUnits = message.poolUnits);
+    message.externalLiabilities !== undefined &&
+      (obj.externalLiabilities = message.externalLiabilities);
+    message.externalCustody !== undefined &&
+      (obj.externalCustody = message.externalCustody);
+    message.nativeLiabilities !== undefined &&
+      (obj.nativeLiabilities = message.nativeLiabilities);
+    message.nativeCustody !== undefined &&
+      (obj.nativeCustody = message.nativeCustody);
+    message.health !== undefined && (obj.health = message.health);
+    message.interestRate !== undefined &&
+      (obj.interestRate = message.interestRate);
     return obj;
   },
 
@@ -208,6 +306,45 @@ export const Pool = {
       message.poolUnits = object.poolUnits;
     } else {
       message.poolUnits = "";
+    }
+    if (
+      object.externalLiabilities !== undefined &&
+      object.externalLiabilities !== null
+    ) {
+      message.externalLiabilities = object.externalLiabilities;
+    } else {
+      message.externalLiabilities = "";
+    }
+    if (
+      object.externalCustody !== undefined &&
+      object.externalCustody !== null
+    ) {
+      message.externalCustody = object.externalCustody;
+    } else {
+      message.externalCustody = "";
+    }
+    if (
+      object.nativeLiabilities !== undefined &&
+      object.nativeLiabilities !== null
+    ) {
+      message.nativeLiabilities = object.nativeLiabilities;
+    } else {
+      message.nativeLiabilities = "";
+    }
+    if (object.nativeCustody !== undefined && object.nativeCustody !== null) {
+      message.nativeCustody = object.nativeCustody;
+    } else {
+      message.nativeCustody = "";
+    }
+    if (object.health !== undefined && object.health !== null) {
+      message.health = object.health;
+    } else {
+      message.health = "";
+    }
+    if (object.interestRate !== undefined && object.interestRate !== null) {
+      message.interestRate = object.interestRate;
+    } else {
+      message.interestRate = "";
     }
     return message;
   },

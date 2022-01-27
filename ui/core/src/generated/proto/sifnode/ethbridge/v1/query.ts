@@ -26,6 +26,12 @@ export interface QueryEthProphecyResponse {
   claims: EthBridgeClaim[];
 }
 
+export interface QueryBlacklistRequest {}
+
+export interface QueryBlacklistResponse {
+  addresses: string[];
+}
+
 const baseQueryEthProphecyRequest: object = {
   ethereumChainId: Long.ZERO,
   bridgeContractAddress: "",
@@ -323,12 +329,127 @@ export const QueryEthProphecyResponse = {
   },
 };
 
+const baseQueryBlacklistRequest: object = {};
+
+export const QueryBlacklistRequest = {
+  encode(
+    _: QueryBlacklistRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): QueryBlacklistRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryBlacklistRequest } as QueryBlacklistRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryBlacklistRequest {
+    const message = { ...baseQueryBlacklistRequest } as QueryBlacklistRequest;
+    return message;
+  },
+
+  toJSON(_: QueryBlacklistRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<QueryBlacklistRequest>): QueryBlacklistRequest {
+    const message = { ...baseQueryBlacklistRequest } as QueryBlacklistRequest;
+    return message;
+  },
+};
+
+const baseQueryBlacklistResponse: object = { addresses: "" };
+
+export const QueryBlacklistResponse = {
+  encode(
+    message: QueryBlacklistResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    for (const v of message.addresses) {
+      writer.uint32(10).string(v!);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): QueryBlacklistResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryBlacklistResponse } as QueryBlacklistResponse;
+    message.addresses = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.addresses.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryBlacklistResponse {
+    const message = { ...baseQueryBlacklistResponse } as QueryBlacklistResponse;
+    message.addresses = [];
+    if (object.addresses !== undefined && object.addresses !== null) {
+      for (const e of object.addresses) {
+        message.addresses.push(String(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: QueryBlacklistResponse): unknown {
+    const obj: any = {};
+    if (message.addresses) {
+      obj.addresses = message.addresses.map((e) => e);
+    } else {
+      obj.addresses = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryBlacklistResponse>,
+  ): QueryBlacklistResponse {
+    const message = { ...baseQueryBlacklistResponse } as QueryBlacklistResponse;
+    message.addresses = [];
+    if (object.addresses !== undefined && object.addresses !== null) {
+      for (const e of object.addresses) {
+        message.addresses.push(e);
+      }
+    }
+    return message;
+  },
+};
+
 /** Query service for queries */
 export interface Query {
   /** EthProphecy queries an EthProphecy */
   EthProphecy(
     request: QueryEthProphecyRequest,
   ): Promise<QueryEthProphecyResponse>;
+  GetBlacklist(request: QueryBlacklistRequest): Promise<QueryBlacklistResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -336,6 +457,7 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.EthProphecy = this.EthProphecy.bind(this);
+    this.GetBlacklist = this.GetBlacklist.bind(this);
   }
   EthProphecy(
     request: QueryEthProphecyRequest,
@@ -348,6 +470,20 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryEthProphecyResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetBlacklist(
+    request: QueryBlacklistRequest,
+  ): Promise<QueryBlacklistResponse> {
+    const data = QueryBlacklistRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.ethbridge.v1.Query",
+      "GetBlacklist",
+      data,
+    );
+    return promise.then((data) =>
+      QueryBlacklistResponse.decode(new _m0.Reader(data)),
     );
   }
 }

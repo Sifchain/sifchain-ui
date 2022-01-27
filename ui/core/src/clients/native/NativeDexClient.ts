@@ -6,6 +6,8 @@ import * as DispensationV1Query from "@sifchain/sdk/src/generated/proto/sifnode/
 import * as DispensationV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/tx";
 import * as EthbridgeV1Query from "@sifchain/sdk/src/generated/proto/sifnode/ethbridge/v1/query";
 import * as EthbridgeV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/ethbridge/v1/tx";
+import * as MarginV1Query from "@sifchain/sdk/src/generated/proto/sifnode/margin/v1/query";
+import * as MarginV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/margin/v1/tx";
 import * as IBCTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
 import * as CosmosBankV1Tx from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
 import * as CosmosStakingV1Tx from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx";
@@ -298,6 +300,7 @@ export class NativeDexClient {
       distribution: createTxClient<CosmosDistributionV1Tx.Msg>(
         CosmosDistributionV1Tx,
       ),
+      margin: createTxClient<MarginV1Tx.Msg>(MarginV1Tx),
     };
     return txs;
   }
@@ -318,6 +321,7 @@ export class NativeDexClient {
           distribution: new CosmosDistributionV1Query.QueryClientImpl(
             rpcClient,
           ),
+          margin: new MarginV1Query.QueryClientImpl(rpcClient),
         };
       },
     );
