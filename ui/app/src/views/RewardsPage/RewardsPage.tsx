@@ -121,53 +121,6 @@ export default defineComponent({
                   />
                   Show Inactive
                 </label>
-                <Button.Inline
-                  onClick={() => {
-                    if (disabledClaim) return;
-                    if (
-                      window.location.hostname !== "dex.sifchain.finance" &&
-                      AppCookies().getEnv() === NetworkEnv.MAINNET &&
-                      !window.confirm(
-                        "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
-                      )
-                    ) {
-                      alert("claim canceled.");
-                      return;
-                    }
-                    claimRewardType.value = "lm";
-                    isClaimModalOpened.value = true;
-                  }}
-                  class={[
-                    "!h-[40px] px-[17px] text-md relative",
-                    disabledClaim &&
-                      "!text-accent-base !bg-gray-action_button !bg-none !cursor-default opacity-75",
-                  ]}
-                  icon={
-                    !!lmClaim.value
-                      ? "interactive/saturday"
-                      : "navigation/rewards"
-                  }
-                  iconClass={
-                    !!lmClaim.value &&
-                    "!w-[24px] !h-[24px] transform translate-y-[1px]"
-                  }
-                  active
-                >
-                  {!!lmClaim.value
-                    ? "Pending Claim"
-                    : `Claim ${getClaimableAmountString(
-                        totalClaimableRef.value,
-                      )} Rowan`}
-                  {!!lmClaim.value && (
-                    <Button.InlineHelp
-                      size={16}
-                      class="absolute top-[-8px] right-[-8px]"
-                    >
-                      You will be able to claim additional rewards after the
-                      dispensation run each Tuesday
-                    </Button.InlineHelp>
-                  )}
-                </Button.Inline>
               </div>
             }
             headerContent={<>{""}</>}
