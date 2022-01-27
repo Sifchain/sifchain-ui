@@ -10,6 +10,7 @@ import {
 } from "@sifchain/sdk";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import { RegistryEntry } from "@sifchain/sdk/src/generated/proto/sifnode/tokenregistry/v1/types";
+import Long from "long";
 
 export type TokenRegistryContext = {
   sifRpcUrl: string;
@@ -31,15 +32,17 @@ export const TokenRegistry = (context: TokenRegistryContext) => {
         const res = await dex.query?.tokenregistry.Entries({});
         const data = res?.registry?.entries;
         if (data && !data?.find((d) => d.baseDenom.toLowerCase() === "rowan")) {
+          // Tempnet doesn't have rowan
           data.push({
-            decimals: 18,
+            decimals: Long.fromNumber(18),
             denom: "rowan",
-            base_denom: "rowan",
-            display_name: "Rowan",
-            external_symbol: "eRowan",
+            baseDenom: "rowan",
+            displayName: "Rowan",
+            externalSymbol: "eRowan",
+            displaySymbol: "rowan",
             permissions: [1, 2, 3],
-            unit_denom: "rowan",
-          });
+            unitDenom: "rowan",
+          } as unknown as RegistryEntry);
         }
         if (!data) throw new Error("Whitelist not found");
         return data as RegistryEntry[];

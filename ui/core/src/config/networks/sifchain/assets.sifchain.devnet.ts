@@ -758,6 +758,7 @@ export default {
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
     },
     {
+      // Tempnet has this weird new asset stake for some reason
       symbol: "stake",
       displaySymbol: "stake",
       decimals: 6,
