@@ -87,6 +87,7 @@ export class ChainsService {
   constructor(private context: ChainsServiceContext) {
     Object.keys(networkChainCtorLookup).forEach((network) => {
       const n = network as Network;
+      debugger;
       this.addChain(
         new networkChainCtorLookup[n]({
           assets: this.context.assets,

@@ -258,6 +258,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     }
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
+    debugger;
 
     const converter = new NativeAminoTypes();
 
