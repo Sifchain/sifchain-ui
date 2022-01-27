@@ -265,13 +265,20 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     }
 
     let transferDenom: string;
+    const isEthereumAsset =
+      params.assetAmount.homeNetwork === Network.ETHEREUM ||
+      params.assetAmount.symbol.toLowerCase() === "rowan";
     if (
+      // Use baseDenom when transferring cosmos asset from native chain
       params.fromChain.chainConfig.chainId ===
-      transferTokenEntry.ibcCounterpartyChainId
+        transferTokenEntry.ibcCounterpartyChainId ||
+      //
+      // Also use baseDenom for transferring eth asset out of sifchain
+      (params.fromChain.network === Network.SIFCHAIN && isEthereumAsset)
     ) {
-      // transfering FROM token entry's token's chain: use baseDenom
       transferDenom = transferTokenEntry.baseDenom;
     } else {
+      // Otherwise generate IBC hash based upon asset's transfer path
       const ibcDenom = transferTokenEntry.denom.startsWith("ibc/")
         ? transferTokenEntry.denom
         : await provider.createIBCHash(

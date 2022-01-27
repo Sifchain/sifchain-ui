@@ -25,6 +25,9 @@ export type IBCChainConfig = BaseChainConfig & {
   rpcUrl: string;
   restUrl: string;
   keplrChainInfo: ChainInfo;
+  features?: {
+    erc20Transfers: boolean;
+  };
 };
 
 export type ChainConfig = IBCChainConfig | EthChainConfig;

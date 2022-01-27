@@ -12,6 +12,7 @@ import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 function required<T>(type: T) {
   return {
@@ -109,7 +110,7 @@ export const TokenInputGroup = defineComponent({
               }}
             >
               <div class="flex justify-between items-center">
-                <TokenIcon size={38} asset={propRefs.asset}></TokenIcon>
+                <TokenNetworkIcon size={38} asset={propRefs.asset} />
                 <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
                   {props.asset?.displaySymbol}
                 </div>

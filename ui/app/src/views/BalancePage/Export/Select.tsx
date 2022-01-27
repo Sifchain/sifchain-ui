@@ -190,6 +190,18 @@ export default defineComponent({
       (s) => s.state[exportParams.value.network].address,
     );
 
+    const exportNetworkButton = (
+      <Button.Select
+        style={{
+          pointerEvents: optionsRef.value.length === 1 ? "none" : "auto",
+        }}
+        class="w-full relative capitalize pl-[16px] mt-[10px]"
+        active={networkOpenRef.value}
+      >
+        {useChains().get(exportParams.value.network).displayName}
+      </Button.Select>
+    );
+
     return () => (
       <Modal
         heading={exportData.headingRef.value}
@@ -243,31 +255,30 @@ export default defineComponent({
 
           <div class="block mt-[10px]">
             Network
-            <SelectDropdown
-              key={optionsRef.value.map((o) => o.value).join("")}
-              options={optionsRef}
-              value={networkRef}
-              onChangeValue={(value) => {
-                exportStore.setDraft({
-                  network: value as Network,
-                });
-              }}
-              tooltipProps={{
-                onShow: () => {
-                  networkOpenRef.value = true;
-                },
-                onHide: () => {
-                  networkOpenRef.value = false;
-                },
-              }}
-            >
-              <Button.Select
-                class="w-full relative capitalize pl-[16px] mt-[10px]"
-                active={networkOpenRef.value}
+            {optionsRef.value.length > 1 ? (
+              <SelectDropdown
+                key={optionsRef.value.map((o) => o.value).join("")}
+                options={optionsRef}
+                value={networkRef}
+                onChangeValue={(value) => {
+                  exportStore.setDraft({
+                    network: value as Network,
+                  });
+                }}
+                tooltipProps={{
+                  onShow: () => {
+                    networkOpenRef.value = true;
+                  },
+                  onHide: () => {
+                    networkOpenRef.value = false;
+                  },
+                }}
               >
-                {useChains().get(exportParams.value.network).displayName}
-              </Button.Select>
-            </SelectDropdown>
+                {exportNetworkButton}
+              </SelectDropdown>
+            ) : (
+              exportNetworkButton
+            )}
           </div>
         </section>
 

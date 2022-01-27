@@ -29,6 +29,7 @@ import { useCore } from "@/hooks/useCore";
 import { Asset, Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export const SYMBOL_COLUMN_WIDTH = 130;
 
@@ -170,7 +171,7 @@ export default defineComponent({
       >
         <td class="text-left align-middle w-[120px] group-hover:opacity-80">
           <div class="flex items-center">
-            <TokenIcon asset={assetRef}></TokenIcon>
+            <TokenNetworkIcon asset={assetRef} />
             {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}

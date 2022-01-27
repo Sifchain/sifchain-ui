@@ -22,6 +22,7 @@ import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
   name: "ImportSelect",
@@ -51,6 +52,10 @@ export default defineComponent({
     );
 
     const validationErrorRef = computed(() => {
+      const chain = useChains().get(importDraft.value.network);
+      if (chain.chainConfig.underMaintenance) {
+        return `${chain.displayName} Connection Under Maintenance`;
+      }
       if (!tokenRef.value) {
         return "Select Token";
       }
@@ -69,11 +74,6 @@ export default defineComponent({
         )
       ) {
         return "Amount Too Large";
-      }
-
-      const chain = useChains().get(importDraft.value.network);
-      if (chain.chainConfig.underMaintenance) {
-        return `${chain.displayName} Connection Under Maintenance`;
       }
     });
 
@@ -243,11 +243,11 @@ export default defineComponent({
                   }}
                 >
                   <div class="flex justify-between items-center">
-                    <TokenIcon
+                    <TokenNetworkIcon
                       size={38}
                       key={boundAsset.value?.symbol || ""}
                       asset={boundAsset}
-                    ></TokenIcon>
+                    />
                     <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
                       {tokenRef.value?.asset?.displaySymbol ||
                         tokenRef.value?.asset?.symbol}

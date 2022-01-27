@@ -47,7 +47,7 @@ export const importStore = Vuextra.createStore({
   getters: (state) => ({
     chains() {
       const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
-      const NATIVE_TOKEN_IBC_EXPORTS_ENABLED = flagsStore.state.ibcForEthTokens;
+      const ERC20_IBC_TRANSFERS_ENABLED = flagsStore.state.ibcForEthTokens;
       const asset = Asset(state.draft.symbol);
       const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
         asset.homeNetwork,
@@ -65,7 +65,7 @@ export const importStore = Vuextra.createStore({
           )
           // Disallow IBC export of ethereum & sifchain-native tokens
           .filter((n) => {
-            if (NATIVE_TOKEN_IBC_EXPORTS_ENABLED) {
+            if (ERC20_IBC_TRANSFERS_ENABLED) {
               // return all tokens when native IBC exports are enabled
               return true;
             } else {
