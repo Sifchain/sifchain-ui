@@ -4142,6 +4142,10 @@
 "@types/react@file:app/stub/types__react":
   version "0.0.0"
 
+"@types/react@link:stub/types__react":
+  version "0.0.0"
+  uid ""
+
 "@types/resolve@1.17.1":
   version "1.17.1"
   resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-1.17.1.tgz#3afd6ad8967c77e4376c598a82ddd58f46ec45d6"
