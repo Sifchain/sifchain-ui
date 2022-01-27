@@ -30,6 +30,17 @@ export const TokenRegistry = (context: TokenRegistryContext) => {
         );
         const res = await dex.query?.tokenregistry.Entries({});
         const data = res?.registry?.entries;
+        if (data && !data?.find((d) => d.baseDenom.toLowerCase() === "rowan")) {
+          data.push({
+            decimals: 18,
+            denom: "rowan",
+            base_denom: "rowan",
+            display_name: "Rowan",
+            external_symbol: "eRowan",
+            permissions: [1, 2, 3],
+            unit_denom: "rowan",
+          });
+        }
         if (!data) throw new Error("Whitelist not found");
         return data as RegistryEntry[];
       })();

@@ -757,5 +757,16 @@ export default {
       imageUrl:
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
     },
+    {
+      symbol: "stake",
+      displaySymbol: "stake",
+      decimals: 6,
+      name: "stake",
+      network: "sifchain",
+      homeNetwork: "sifchain",
+      label: "stake",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/11061/small/xdai.png?1587714165",
+    },
   ],
 };
