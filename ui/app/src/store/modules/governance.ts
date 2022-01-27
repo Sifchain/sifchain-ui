@@ -51,6 +51,17 @@ const proposals: Proposal[] = [
     description: `Vote for 4 pools to have ~300% APR for the next 4 weeks. As a reminder, 5 pools in total will have an APR of ~300% for the next four weeks (ATOM:ROWAN and 4 selected by the majority in this vote). All other pools will maintain a 100% APR.  Every 4 weeks, users will execute this vote.`,
     voteType: "pools",
   },
+  {
+    id: "4pools_01_29_22",
+    address: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
+    // startDateTime: new Date(1643472000000),
+    startDateTime: new Date(Date.now() - 100000000),
+    endDateTime: new Date(1643472000000 + 72 * 60 * 60 * 1000),
+    title: `EDIT START DATE BEFORE SHIPPING!! Sif's Expansion`,
+    heading: `Pools of the People (v4, Stable)`,
+    description: `Stable Coin - Voting is open until 1/31 at 8am PST`,
+    voteType: "pools",
+  },
 ];
 
 export const governanceStore = Vuextra.createStore({
