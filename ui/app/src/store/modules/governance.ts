@@ -62,7 +62,7 @@ const proposals: Proposal[] = [
     startDateTime: new Date(Date.now() - 100000000),
     endDateTime: new Date(1643472000000 + 72 * 60 * 60 * 1000),
     heading: `Sif's Expansion Bonus (v4)`,
-    title: `Stablecoin Vote`,
+    title: `Stablecoin Ballot`,
     description: `Polls are now open for the Pools of the People v4 - Stable Coin Vote. The voting period will end on 2/1 at 8am PST.`,
     voteType: "pools",
     maxBallots: 1,
