@@ -26,6 +26,10 @@ export const PoolsSelector = defineComponent({
       type: Array as PropType<string[]>,
       required: true,
     },
+    excludeSymbols: {
+      type: Array as PropType<string[]>,
+      required: true,
+    },
     maxSymbols: {
       type: Number,
       default: 4,
@@ -58,10 +62,12 @@ export const PoolsSelector = defineComponent({
       return (a: TokenListItem, b: TokenListItem) => {
         return (
           parseFloat(
-            this.poolStatsLookup[b.asset.symbol.toLowerCase()]?.volume || "0",
+            this.poolStatsLookup[b.asset.displaySymbol.toLowerCase()]?.volume ||
+              "0",
           ) -
           parseFloat(
-            this.poolStatsLookup[a.asset.symbol.toLowerCase()]?.volume || "0",
+            this.poolStatsLookup[a.asset.displaySymbol.toLowerCase()]?.volume ||
+              "0",
           )
         );
       };
@@ -138,7 +144,9 @@ export const PoolsSelector = defineComponent({
               ]}
             >
               {!this.symbols.length
-                ? "Select up to 4 pools..."
+                ? `Select ${this.maxSymbols > 1 ? "up to" : ""} ${
+                    this.maxSymbols
+                  } pool${this.maxSymbols > 1 ? "s" : ""}...`
                 : `Select up to ${
                     this.maxSymbols - this.symbols.length
                   } more pools...`}
@@ -147,14 +155,14 @@ export const PoolsSelector = defineComponent({
         </section>
         <TokenSelectDropdown
           sortBy={this.tokenSortBy}
-          excludeSymbols={this.symbols.concat("rowan", "uatom")}
+          excludeSymbols={this.symbols.concat(...this.excludeSymbols)}
           active={this.dropdownOpen}
           hideBalances
           onCloseIntent={() => (this.dropdownOpen = false)}
           onSelectAsset={(asset: IAsset) => {
             if (this.symbols.length < this.maxSymbols) {
               this.onChangeSymbols(
-                this.symbols.concat(asset.symbol.toLowerCase()),
+                this.symbols.concat(asset.displaySymbol.toLowerCase()),
               );
             }
             if (this.symbols.length === this.maxSymbols) {

@@ -33,13 +33,15 @@ export const VotingModal = defineComponent({
   data() {
     return {
       signing: false,
-      maxSymbols: 4,
       currentPoolsVote: [] as string[],
       currentYesNoAnswer: null as null | boolean,
       dropdownOpen: false,
     };
   },
   computed: {
+    maxSymbols(): number {
+      return this.proposal?.maxBallots || 0;
+    },
     poolStatsLookup(): Record<string, PoolStat> {
       if (!this.poolStats.data.value) return {};
       const lookup: Record<string, PoolStat> = {};
@@ -168,6 +170,9 @@ export const VotingModal = defineComponent({
         <div class="mt-[20px]" />
         {this.proposal.voteType === "pools" ? (
           <PoolsSelector
+            class=""
+            excludeSymbols={this.proposal.excludedSymbols || ["rowan", "atom"]}
+            maxSymbols={this.maxSymbols || 0}
             onChangeSymbols={(symbols: string[]) => {
               this.currentPoolsVote = symbols;
             }}
@@ -176,8 +181,8 @@ export const VotingModal = defineComponent({
         ) : (
           <YesNoSelector
             value={this.currentYesNoAnswer}
-            onChange={(value: boolean) => {
-              this.currentYesNoAnswer = value;
+            onChange={(value: Boolean) => {
+              this.currentYesNoAnswer = !!value;
             }}
           />
         )}
