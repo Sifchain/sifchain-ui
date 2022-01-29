@@ -26,10 +26,7 @@ import {
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
 import { governanceStore } from "@/store/modules/governance";
-import {
-  useActiveProposal,
-  VotingModal,
-} from "@/components/VotingModal/VotingModal";
+import { VotingModal } from "@/components/VotingModal/VotingModal";
 import { formatAssetAmount } from "../shared/utils";
 
 let VOTE_PARAM_IN_URL = false;

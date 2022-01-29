@@ -123,7 +123,7 @@ export const VotingModal = defineComponent({
           useCore().services.bus.dispatch({
             type: "SuccessEvent",
             payload: {
-              message: `Your ${this.proposal.title} vote has been sent.`,
+              message: `Your ${this.proposal.heading} vote has been sent.`,
             },
           });
           governanceStore.updateCurrentVotes(
