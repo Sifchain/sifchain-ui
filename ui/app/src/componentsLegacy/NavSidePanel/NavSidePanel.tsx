@@ -19,17 +19,14 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import {
   COMPETITION_UNIVERSAL_SYMBOL,
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
 import { governanceStore } from "@/store/modules/governance";
-import {
-  useActiveProposal,
-  VotingModal,
-} from "@/components/VotingModal/VotingModal";
+import { VotingModal } from "@/components/VotingModal/VotingModal";
 import { formatAssetAmount } from "../shared/utils";
 
 let VOTE_PARAM_IN_URL = false;
@@ -51,6 +48,15 @@ export default defineComponent({
 
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
+
+    const router = useRouter();
+
+    watch([router.currentRoute], () => {
+      // add ?vote=anything to any hash route to open the voting modal
+      if (!!router.currentRoute.value?.query?.vote) {
+        votingOpenRef.value = true;
+      }
+    });
 
     watch(
       proposalData,
@@ -96,8 +102,7 @@ export default defineComponent({
 
     const hasUniversalCompetition = useHasUniversalCompetition();
 
-    const connectedNetworkCount =
-      rootStore.accounts.refs.connectedNetworkCount.computed();
+    const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
 
     const changesData = useAsyncData(() => loadChangesData());
 
@@ -271,8 +276,9 @@ export default defineComponent({
                   ref={moreMenuRef}
                   offset={[0, -2]}
                   onShow={(instance: TooltipInstance) => {
-                    const content =
-                      instance.popper.querySelector(".tippy-content");
+                    const content = instance.popper.querySelector(
+                      ".tippy-content",
+                    );
                     if (content) {
                       content.className +=
                         " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
@@ -463,8 +469,9 @@ export default defineComponent({
                                       (b) => b.asset.symbol.includes("rowan"),
                                     )
                                     .map((asset) => {
-                                      const formatted =
-                                        formatAssetAmount(asset);
+                                      const formatted = formatAssetAmount(
+                                        asset,
+                                      );
                                       if (formatted.length > 6) {
                                         return Intl.NumberFormat("en", {
                                           notation: "compact",

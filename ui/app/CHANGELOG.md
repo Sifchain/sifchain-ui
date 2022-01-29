@@ -1,3 +1,6 @@
+## Release 2022.01.29
+* Added voting UI for Pools of the People governance
+
 ## Release 2022.01.06
 
 * Ledger imports working again 
