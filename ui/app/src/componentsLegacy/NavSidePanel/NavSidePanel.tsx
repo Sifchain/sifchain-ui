@@ -19,7 +19,7 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import {
   COMPETITION_UNIVERSAL_SYMBOL,
   useHasUniversalCompetition,
@@ -49,11 +49,11 @@ export default defineComponent({
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
 
-    const route = useRoute();
+    const router = useRouter();
 
-    watch(route, () => {
+    watch([router.currentRoute], () => {
       // add ?vote=anything to any hash route to open the voting modal
-      if (route.query.vote !== undefined) {
+      if (!!router.currentRoute.value?.query?.vote) {
         votingOpenRef.value = true;
       }
     });
