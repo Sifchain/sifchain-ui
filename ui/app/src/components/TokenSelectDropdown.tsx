@@ -187,7 +187,6 @@ export const TokenSelectDropdown = defineComponent({
                       autofocus
                       type="search"
                       placeholder="Search Token..."
-                      autocomplete="off"
                       onKeydown={(e: Event) => {
                         if (
                           (e as KeyboardEvent).key === "Enter" &&

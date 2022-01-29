@@ -26,10 +26,6 @@ export const PoolsSelector = defineComponent({
       type: Array as PropType<string[]>,
       required: true,
     },
-    excludeSymbols: {
-      type: Array as PropType<string[]>,
-      required: true,
-    },
     maxSymbols: {
       type: Number,
       default: 4,
@@ -82,10 +78,7 @@ export const PoolsSelector = defineComponent({
         <section
           active={this.dropdownOpen}
           onClick={() => {
-            if (this.symbols.length === this.maxSymbols) {
-              this.dropdownOpen = false;
-              return;
-            }
+            if (this.symbols.length === this.maxSymbols) return;
             this.dropdownOpen = !this.dropdownOpen;
           }}
           class={[
@@ -145,9 +138,7 @@ export const PoolsSelector = defineComponent({
               ]}
             >
               {!this.symbols.length
-                ? `Select ${this.maxSymbols > 1 ? "up to" : ""} ${
-                    this.maxSymbols
-                  } pool${this.maxSymbols > 1 ? "s" : ""}...`
+                ? "Select up to 4 pools..."
                 : `Select up to ${
                     this.maxSymbols - this.symbols.length
                   } more pools...`}
@@ -156,18 +147,17 @@ export const PoolsSelector = defineComponent({
         </section>
         <TokenSelectDropdown
           sortBy={this.tokenSortBy}
-          excludeSymbols={[...this.symbols, ...this.excludeSymbols]}
+          excludeSymbols={this.symbols.concat("rowan", "uatom")}
           active={this.dropdownOpen}
           hideBalances
           onCloseIntent={() => (this.dropdownOpen = false)}
           onSelectAsset={(asset: IAsset) => {
-            const nextSymbols = [
-              ...new Set([...this.symbols, asset.symbol.toLowerCase()]),
-            ];
             if (this.symbols.length < this.maxSymbols) {
-              this.onChangeSymbols(nextSymbols);
+              this.onChangeSymbols(
+                this.symbols.concat(asset.symbol.toLowerCase()),
+              );
             }
-            if (nextSymbols.length === this.maxSymbols) {
+            if (this.symbols.length === this.maxSymbols) {
               this.dropdownOpen = false;
             }
           }}
