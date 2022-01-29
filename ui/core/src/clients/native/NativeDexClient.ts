@@ -114,6 +114,7 @@ export class NativeDexClient {
       ...this.createCustomTypesForModule(CosmosBankV1Tx),
       ...this.createCustomTypesForModule(CosmosDistributionV1Tx),
       ...this.createCustomTypesForModule(CosmosStakingV1Tx),
+      ...this.createCustomTypesForModule(MarginV1Tx),
     ];
   }
 

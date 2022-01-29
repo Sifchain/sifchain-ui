@@ -66,8 +66,9 @@ export const usePoolStats = () => {
 
           let rewardAPY = 0;
           rewardPrograms.forEach((program: any) => {
-            const isIndividuallyIncentivized =
-              program.incentivizedPoolSymbols?.includes(p.symbol);
+            const isIndividuallyIncentivized = program.incentivizedPoolSymbols?.includes(
+              p.symbol,
+            );
             if (program.isUniversal || isIndividuallyIncentivized) {
               rewardAPY += program.summaryAPY;
             }
@@ -118,7 +119,7 @@ export const usePoolStats = () => {
         if (!hasLoggedError[poolStat.symbol]) {
           // Don't spam logs for not-found stats, because this happens a lot
           hasLoggedError[poolStat.symbol] = true;
-          console.log("Found no asset match for poolStat", poolStat);
+          // console.log("Found no asset match for poolStat", poolStat);
         }
         return;
       }

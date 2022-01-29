@@ -47,7 +47,7 @@ export const Params = {
       object.minCreatePoolThreshold !== null
     ) {
       message.minCreatePoolThreshold = Long.fromString(
-        object.minCreatePoolThreshold,
+        object.minCreatePoolThreshold
       );
     } else {
       message.minCreatePoolThreshold = Long.UZERO;

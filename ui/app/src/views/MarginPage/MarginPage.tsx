@@ -2,7 +2,7 @@ import PageCard from "@/components/PageCard";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { useNativeChain } from "@/hooks/useChains";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
-import { defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
 
 import * as MarginV1Types from "@sifchain/sdk/src/generated/proto/sifnode/margin/v1/types";
 import * as CLPV1Types from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
@@ -10,6 +10,24 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, formatAssetAmount } from "@sifchain/sdk";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { marginStore } from "@/store/modules/margin";
+import { Card } from "@/components/Card";
+import { MarginPosition } from "./MarginPosition";
+import { accountStore } from "@/store/modules/accounts";
+import { POSITION_COLUMNS } from "./data";
+import { Button } from "@/components/Button/Button";
+import { MarginPool } from "./MarginPool";
+
+const poll = (fn: () => Promise<unknown>, intervalMs = 10000) => {
+  let timeout: NodeJS.Timeout;
+  (async function runPoll() {
+    await fn();
+    timeout = setTimeout(runPoll, intervalMs);
+  })();
+  return () => {
+    clearTimeout(timeout);
+  };
+};
 
 export default defineComponent({
   name: "MarginPage",
@@ -21,84 +39,53 @@ export default defineComponent({
       useNativeChain(),
     );
 
-    let poolTimeout: NodeJS.Timeout;
-    (async function fetchPools() {
-      console.log("HELLOOP!!!");
-      const client = await nativeDexClientPromise;
-      const res = await client.query.clp.GetPools({});
-      poolsRef.value = res.pools;
-      poolTimeout = setTimeout(fetchPools, 10 * 1000);
+    const unsubscribeFns = [
+      poll(() => marginStore.fetchPools(), 10_000),
+      poll(() => marginStore.fetchAccountPositions(), 10_000),
+    ];
 
-      console.log("HELLO", res, res.pools, poolsRef.value);
-    })();
-
-    onUnmounted(() => {
-      clearTimeout(poolTimeout);
+    watch(accountStore.refs.sifchain.address.computed(), (address: string) => {
+      if (address) {
+        marginStore.fetchAccountPositions();
+      }
     });
 
-    return {
-      pools: poolsRef,
-    };
+    onUnmounted(() => {
+      unsubscribeFns.forEach((fn) => fn());
+    });
   },
   render() {
     return (
       <Layout>
         <PageCard heading="Margin" iconName="navigation/globe">
-          <h1>Margin Pools</h1>
-          <ul>
-            {this.pools
-              .filter((pool) => pool.externalAsset)
-              .map((pool) => {
-                const asset = useNativeChain().forceGetAsset(
-                  pool.externalAsset!.symbol,
-                );
-                return (
-                  <li
-                    key={pool.externalAsset!.symbol}
-                    class="cursor-pointer font-mono w-full p-2 my-2 border border-solid border-white font-medium font-sans group-hover:opacity-80"
+          {accountStore.state.sifchain.address && (
+            <Card heading="Your Positions" class="mb-3">
+              <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+                {POSITION_COLUMNS.map((column) => (
+                  <div
+                    key={column.id}
+                    class={[column.class, "opacity-50 flex items-center"]}
                   >
-                    <div class="flex items-center">
-                      <TokenIcon
-                        assetValue={useNativeChain().forceGetAsset("rowan")}
-                        size={22}
-                      />
-                      <TokenNetworkIcon
-                        assetValue={asset}
-                        size={22}
-                        class="ml-[4px]"
-                      />
-                      <div class="ml-[10px] uppercase font-sans ">
-                        <b>ROWAN / {asset.displaySymbol.toUpperCase()}</b>
-                      </div>
-                    </div>
-                    <div>
-                      {asset.displaySymbol.toUpperCase()} Liabilities:{" "}
-                      {formatAssetAmount(
-                        AssetAmount(asset, pool.externalLiabilities),
-                      )}
-                    </div>
-                    <div>
-                      {asset.displaySymbol.toUpperCase()} Custody:{" "}
-                      {pool.externalCustody}
-                    </div>
-                    <div>
-                      ROWAN Liabilities:{" "}
-                      {formatAssetAmount(
-                        AssetAmount("rowan", pool.nativeLiabilities),
-                      )}
-                    </div>
-                    <div>
-                      ROWAN Custody:{" "}
-                      {formatAssetAmount(
-                        AssetAmount("rowan", pool.nativeCustody),
-                      )}
-                    </div>
-                    <div>Health: {pool.health}</div>
-                    <div>Interest Rate: {pool.externalCustody}</div>
-                  </li>
-                );
-              })}
-          </ul>
+                    {column.name}
+                    {column.help && (
+                      <Button.InlineHelp>{column.help}</Button.InlineHelp>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {marginStore.state.positions.map((position, index) => (
+                <MarginPosition key={index} position={position} />
+              ))}
+            </Card>
+          )}
+          <Card heading="Margin Pools">
+            {marginStore.state.pools
+              .filter((pool) => pool.externalAsset)
+              .map((pool) => (
+                <MarginPool pool={pool} key={pool.externalAsset!.symbol} />
+              ))}
+          </Card>
+          <div class="h-2" />
         </PageCard>
       </Layout>
     );
