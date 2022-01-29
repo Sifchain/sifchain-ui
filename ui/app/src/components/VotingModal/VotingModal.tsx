@@ -81,12 +81,15 @@ export const VotingModal = defineComponent({
 
       const keplrProvider = useCore().services.wallet.keplrProvider;
       const client = await useCore().services.sif.loadNativeDexClient();
-
+      const nativeChain = useNativeChain();
       if (!this.proposal) return;
 
       let memo: string;
       if (this.proposal.voteType === "pools") {
         memo = this.currentPoolsVote
+          .map(
+            (s) => nativeChain.findAssetWithLikeSymbol(s)?.displaySymbol || s,
+          )
           .map((s) => s.toUpperCase())
           .sort((a, b) => a.localeCompare(b))
           .join(",");

@@ -62,12 +62,10 @@ export const PoolsSelector = defineComponent({
       return (a: TokenListItem, b: TokenListItem) => {
         return (
           parseFloat(
-            this.poolStatsLookup[b.asset.displaySymbol.toLowerCase()]?.volume ||
-              "0",
+            this.poolStatsLookup[b.asset.symbol.toLowerCase()]?.volume || "0",
           ) -
           parseFloat(
-            this.poolStatsLookup[a.asset.displaySymbol.toLowerCase()]?.volume ||
-              "0",
+            this.poolStatsLookup[a.asset.symbol.toLowerCase()]?.volume || "0",
           )
         );
       };
@@ -84,7 +82,10 @@ export const PoolsSelector = defineComponent({
         <section
           active={this.dropdownOpen}
           onClick={() => {
-            if (this.symbols.length === this.maxSymbols) return;
+            if (this.symbols.length === this.maxSymbols) {
+              this.dropdownOpen = false;
+              return;
+            }
             this.dropdownOpen = !this.dropdownOpen;
           }}
           class={[
@@ -155,17 +156,18 @@ export const PoolsSelector = defineComponent({
         </section>
         <TokenSelectDropdown
           sortBy={this.tokenSortBy}
-          excludeSymbols={this.symbols.concat(...this.excludeSymbols)}
+          excludeSymbols={[...this.symbols, ...this.excludeSymbols]}
           active={this.dropdownOpen}
           hideBalances
           onCloseIntent={() => (this.dropdownOpen = false)}
           onSelectAsset={(asset: IAsset) => {
+            const nextSymbols = [
+              ...new Set([...this.symbols, asset.symbol.toLowerCase()]),
+            ];
             if (this.symbols.length < this.maxSymbols) {
-              this.onChangeSymbols(
-                this.symbols.concat(asset.displaySymbol.toLowerCase()),
-              );
+              this.onChangeSymbols(nextSymbols);
             }
-            if (this.symbols.length === this.maxSymbols) {
+            if (nextSymbols.length === this.maxSymbols) {
               this.dropdownOpen = false;
             }
           }}
