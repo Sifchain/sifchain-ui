@@ -1,28 +1,24 @@
-import {
-  defineComponent,
-  TransitionGroup,
-  ref,
-  computed,
-  Transition,
-  KeepAlive,
-  onMounted,
-} from "vue";
+import clsx from "clsx";
+import { RouterView } from "vue-router";
+import { defineComponent, ref, computed, onMounted } from "vue";
+import { effect } from "@vue/reactivity";
+
 import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
-import BalanceRow from "./BalanceRow";
-import { BalancePageState, useBalancePageData } from "./useBalancePageData";
-import { RouterView } from "vue-router";
 
-import { effect } from "@vue/reactivity";
-import router from "@/router";
-import { Button } from "@/components/Button/Button";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
+
+import BalanceRow from "./BalanceRow";
+import { BalancePageState, useBalancePageData } from "./useBalancePageData";
+
+const PAGE_SIZE = 20;
 
 export default defineComponent({
   name: "BalancePage",
   props: {},
+
   setup() {
     const { state, displayedTokenList } = useBalancePageData({
       searchQuery: "",
@@ -68,26 +64,59 @@ export default defineComponent({
       });
     });
     let isDisabled = false;
+
+    const showZeroBalance = ref(true);
+    const pageIndex = ref(0);
+
+    const allBalances = computed(() =>
+      showZeroBalance.value
+        ? displayedTokenList.value
+        : displayedTokenList.value.filter((x) => x.amount.greaterThan("0")),
+    );
+
+    const pageStart = computed(() => pageIndex.value * PAGE_SIZE);
+
+    const page = computed(() =>
+      allBalances.value.slice(pageStart.value, pageStart.value + PAGE_SIZE),
+    );
+
+    const pages = computed(() =>
+      Math.ceil(allBalances.value.length / PAGE_SIZE),
+    );
+
     return () => (
       <Layout>
         <PageCard
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
-            <Tooltip
-              content={
-                <>
-                  These are your balances within Sifchain. Press Import to bring
-                  your tokens in from other chains. Then you can swap, provide
-                  liquidity, and export to other chains.
-                </>
-              }
-            >
-              <AssetIcon
-                icon="interactive/help"
-                class="text-gray-300 transition-all hover:text-accent-base opacity-100 hover:opacity-50 cursor-pointer mt-[4px] mr-[2px]"
-                size={24}
-              ></AssetIcon>
-            </Tooltip>
+            <div class="flex gap-2 items-center">
+              <label class="flex items-center mr-[16px] opacity-80">
+                <input
+                  type="checkbox"
+                  class="mr-[4px]"
+                  checked={showZeroBalance.value}
+                  onChange={(e) =>
+                    (showZeroBalance.value = (e.target as HTMLInputElement).checked)
+                  }
+                />
+                Show 0 Balances
+              </label>
+              <Tooltip
+                content={
+                  <>
+                    These are your balances within Sifchain. Press Import to
+                    bring your tokens in from other chains. Then you can swap,
+                    provide liquidity, and export to other chains.
+                  </>
+                }
+              >
+                <AssetIcon
+                  icon="interactive/help"
+                  class="text-gray-300 transition-all hover:text-accent-base opacity-100 hover:opacity-50 cursor-pointer mt-[4px] mr-[2px]"
+                  size={24}
+                ></AssetIcon>
+              </Tooltip>
+            </div>
           }
           iconName="navigation/balances"
           class="w-[800px]"
@@ -147,7 +176,7 @@ export default defineComponent({
           <table class="w-full">
             <thead>
               <tr>
-                {columns.map((column, index) => (
+                {columns.map((column) => (
                   <td
                     ref={column.ref}
                     class={[column.class]}
@@ -159,7 +188,7 @@ export default defineComponent({
               </tr>
             </thead>
             <tbody class="w-full relative">
-              {displayedTokenList.value.map((item, index) => (
+              {page.value.map((item) => (
                 <BalanceRow
                   key={item.asset.symbol + item.asset.network}
                   tokenItem={item}
@@ -171,10 +200,47 @@ export default defineComponent({
               ))}
             </tbody>
           </table>
+          <div class="flex items-center gap-2 pt-4 pb-6 justify-center">
+            <div
+              role="button"
+              class="outline outline-1 w-6 h-6 grid place-items-center"
+              onClick={() => {
+                if (pageIndex.value) pageIndex.value--;
+              }}
+            >
+              «
+            </div>
+            {new Array(pages.value).fill(0).map((_, idx) => (
+              <div
+                role="button"
+                class={clsx(
+                  "outline outline-1 w-6 h-6 grid place-items-center",
+                  {
+                    "outline-accent-base text-accent-base font-semibold":
+                      idx === pageIndex.value,
+                  },
+                )}
+                onClick={() => {
+                  pageIndex.value = idx;
+                }}
+              >
+                {idx + 1}
+              </div>
+            ))}
+            <div
+              role="button"
+              class="outline outline-1 w-6 h-6 grid place-items-center"
+              onClick={() => {
+                if (pageIndex.value < pages.value - 1) pageIndex.value++;
+              }}
+            >
+              »
+            </div>
+          </div>
         </PageCard>
         <RouterView
           name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
-        ></RouterView>
+        />
       </Layout>
     );
   },
