@@ -32,9 +32,11 @@ export const TokenInputGroup = defineComponent({
   props: {
     heading: required(String),
     formattedBalance: optional(String),
+    hideBalance: optional(Boolean),
     asset: required(Object as PropType<IAsset | undefined>),
     amount: required(String),
     onSetToMaxAmount: optional(Function as PropType<() => any>),
+    onSetToHalfAmount: optional(Function as PropType<() => any>),
     onInputAmount: required(Function as PropType<(amount: string) => any>),
     onSelectAsset: required(Function as PropType<(asset: IAsset) => any>),
     onBlur: required(Function as PropType<HTMLAttributes["onBlur"]>),
@@ -42,6 +44,7 @@ export const TokenInputGroup = defineComponent({
     class: required([Object, String, Array] as PropType<
       HTMLAttributes["class"]
     >),
+    formattedFiatValue: optional(String),
     excludeSymbols: optional(Array as PropType<string[]>),
     tokenIconUrl: optional(String),
     shouldShowNumberInputOnLeft: optional(Boolean),
@@ -66,31 +69,52 @@ export const TokenInputGroup = defineComponent({
           onSubmit={(e) => e.preventDefault()}
           ref={selfRef}
           class={[
-            "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
+            "z-0 overflow-visible py-[20px] bg-transparent border-solid border-[0px] border-gray-input_outline rounded-lg",
             props.class,
           ]}
         >
           <div class="w-full flex justify-between items-baseline">
-            <div class=" text-md text-white font-sans font-medium capitalize">
+            <div class=" text-sm text-[#919191] font-sans font-medium capitalize">
               {props.heading}
             </div>
             <div
-              onClick={() => props.onSetToMaxAmount?.()}
               class={[
-                `text-white opacity-50 font-sans font-medium text-sm ${
+                `text-[#919191] font-sans font-medium text-sm ${
                   props.formattedBalance ? "" : "opacity-0"
                 }`,
-                !!props.onSetToMaxAmount &&
-                  "hover:text-accent-base cursor-pointer",
+                // !!props.onSetToMaxAmount &&
+                //   "hover:text-accent-dark cursor-pointer",
+                !!props.hideBalance && `hidden`,
               ]}
             >
-              Balance: {props.formattedBalance || "0"}{" "}
-              {props.asset?.displaySymbol.toUpperCase()}
+              Balance:{" "}
+              <span class="text-accent-base">
+                {props.formattedBalance || "0"}{" "}
+                {props.asset?.displaySymbol.toUpperCase()}
+              </span>
+              <button
+                onClick={() => props.onSetToMaxAmount?.()}
+                class="text-[10px] py-[2.5px] px-[10px] ml-[10px] bg-white bg-opacity-5 rounded-[4px] text-accent-base font-semibold"
+                style={{
+                  letterSpacing: "-3%",
+                }}
+              >
+                MAX
+              </button>
+              <button
+                onClick={() => props.onSetToHalfAmount?.()}
+                class="text-[10px] py-[2.5px] px-[10px] ml-[10px] bg-white bg-opacity-5 rounded-[4px] text-accent-base font-semibold"
+                style={{
+                  letterSpacing: "-3%",
+                }}
+              >
+                HALF
+              </button>
             </div>
           </div>
           <div
             class={[
-              `relative flex flex-row mt-[10px] overflow-visible gap-[10px]`,
+              `relative flex flex-row  mt-[10px] overflow-visible gap-[10px]`,
               props.shouldShowNumberInputOnLeft ? "flex-row-reverse" : "",
             ]}
           >
@@ -109,11 +133,12 @@ export const TokenInputGroup = defineComponent({
                 selectIsOpen.value = !selectIsOpen.value;
               }}
             >
-              <div class="flex justify-between items-center">
+              <div class="flex justify-between items-center w-full">
                 <TokenNetworkIcon size={38} asset={propRefs.asset} />
-                <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
+                <div class="font-sans text-center text-[18px] font-bold text-white uppercase">
                   {props.asset?.displaySymbol}
                 </div>
+                <div></div>
               </div>
             </Button.Select>
             <Input.Base
@@ -121,18 +146,7 @@ export const TokenInputGroup = defineComponent({
               inputRef={inputRef}
               class="token-input flex-1 opacity-100"
               disabled={props.inputDisabled}
-              startContent={
-                !!props.onSetToMaxAmount &&
-                !props.inputDisabled && (
-                  <Button.Pill
-                    onClick={() =>
-                      props.onSetToMaxAmount && props.onSetToMaxAmount()
-                    }
-                  >
-                    MAX
-                  </Button.Pill>
-                )
-              }
+              startContent={<>{props.formattedFiatValue || null}</>}
               onFocus={props.onFocus}
               onBlur={props.onBlur}
               type="number"

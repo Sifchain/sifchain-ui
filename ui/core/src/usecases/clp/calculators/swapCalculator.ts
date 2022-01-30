@@ -86,13 +86,16 @@ export function useSwapCalculator(input: {
   const priceRatio = computed(() => {
     if (
       !fromField.fieldAmount.value ||
-      fromField.fieldAmount.value.equalTo("0") ||
+      // fromField.fieldAmount.value.equalTo("0") ||
       !pool.value
     ) {
       return "0.0";
     }
 
-    const amount = fromField.fieldAmount.value;
+    let amount = fromField.fieldAmount.value;
+    if (amount.equalTo("0")) {
+      amount = AssetAmount(amount.asset, "1");
+    }
     const pair = pool.value;
     const swapResult = pair.calcSwapResult(amount);
     // to get ratio needs to be divided by amount as input by user

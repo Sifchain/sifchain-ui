@@ -132,7 +132,7 @@ export default defineComponent({
           <PageCard
             heading="Pool Stats"
             iconName="navigation/pool-stats"
-            class="!w-[940px] !min-w-[940px] !max-w-[940px]"
+            class="!w-[1000px] !min-w-[940px] !max-w-[1000px]"
             withOverflowSpace
             headerContent={
               <>

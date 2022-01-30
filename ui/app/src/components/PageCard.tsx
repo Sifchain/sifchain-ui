@@ -13,7 +13,9 @@ import {
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TokenIcon } from "./TokenIcon";
+/*
 
+*/
 export default defineComponent({
   props: {
     heading: {
@@ -49,9 +51,12 @@ export default defineComponent({
         <div
           key="view-layer"
           class={[
-            `shadow-2xl transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white px-4`,
+            `shadow-2xl transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[1000px] min-w-[531px] text-white px-7 rounded-[20px]`,
             props.class,
           ]}
+          style={{
+            boxShadow: `0px 10px 55px #000000`,
+          }}
         >
           <div class="sticky top-0 w-full bg-black z-10 pt-4">
             {!!props.heading && (
@@ -72,7 +77,8 @@ export default defineComponent({
                     ))}
                   <span
                     class={[
-                      "text-accent-base font-sans text-[26px] ml-[10px] font-semibold",
+                      "text-accent-base font-sans text-[26px] font-semibold",
+                      props.iconName && "ml-[10px]",
                       props.headingClass,
                     ]}
                   >

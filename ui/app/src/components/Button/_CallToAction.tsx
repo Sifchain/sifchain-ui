@@ -1,5 +1,4 @@
 import { ButtonHTMLAttributes, mergeProps, SetupContext } from "vue";
-
 export const _CallToAction = (
   props: ButtonHTMLAttributes,
   ctx: SetupContext,
@@ -8,7 +7,7 @@ export const _CallToAction = (
     <button
       {...props}
       class={[
-        `w-full h-[62px] rounded-[4px] bg-accent-gradient flex items-center justify-center font-sans text-[18px] font-semibold text-white disabled:bg-gray-disabled disabled:text-gray-800 disabled:bg-none`,
+        `w-full uppercase font-extrabold h-[62px] gradient-image-background rounded-[8px] bdg-accent-gradient flex items-center justify-center font-sans text-[18px] text-white disabled:bdg-none disabled:cursor-not-allowed`,
         props.class,
       ]}
       style={
@@ -16,6 +15,8 @@ export const _CallToAction = (
           {
             style: {
               textShadow: "0px 1px 1px rgba(0, 0, 0, 0.3)",
+              // backgroundImage: `url()`,
+              backgroundSize: "cover",
             },
           },
           { style: props.style },

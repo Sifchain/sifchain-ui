@@ -29,7 +29,7 @@ export const _InlineHelp = defineComponent({
         <button
           {...props}
           class={[
-            `inline align-top  text-accent-base hover:opacity-80 ml-[.25em]`,
+            `inline align-top text-gray-input_outline hover:opacity-80 ml-[.25em]`,
             props.class,
           ]}
           style={

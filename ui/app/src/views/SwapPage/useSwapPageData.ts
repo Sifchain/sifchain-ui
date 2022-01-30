@@ -10,6 +10,7 @@ import {
   ServiceContext,
   Asset,
   toBaseUnits,
+  AssetAmount,
 } from "@sifchain/sdk";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { getMaxAmount } from "../utils/getMaxAmount";
@@ -286,7 +287,7 @@ export const useSwapPageData = () => {
     }
     switch (state.value) {
       case SwapState.ZERO_AMOUNTS:
-        return swapValidityMessage(false, "Please enter an amount");
+        return swapValidityMessage(false, "Enter Amount");
       case SwapState.INSUFFICIENT_FUNDS:
         return swapValidityMessage(
           false,
@@ -299,10 +300,8 @@ export const useSwapPageData = () => {
       case SwapState.VALID_INPUT:
         return swapValidityMessage(true, "Swap");
       case SwapState.FRONTRUN_SLIPPAGE:
-        return swapValidityMessage(
-          true,
-          "Swap (Frontrun attack possible due to high slippage)",
-        );
+        // Frontrun attack possible
+        return swapValidityMessage(true, "Swap (high slippage!)");
       case SwapState.INVALID_SLIPPAGE:
         return swapValidityMessage(false, "Invalid slippage");
     }
@@ -370,6 +369,19 @@ export const useSwapPageData = () => {
       const accountBalance = getAccountBalance();
       if (!accountBalance) return;
       const maxAmount = getMaxAmount(fromSymbol, accountBalance);
+      fromAmount.value = format(maxAmount, accountBalance.asset, {
+        mantissa: accountBalance.asset.decimals,
+        trimMantissa: true,
+      });
+    },
+    handleFromHalfClicked() {
+      selectedField.value = "from";
+      const accountBalance = getAccountBalance();
+      if (!accountBalance) return;
+      const maxAmount = getMaxAmount(
+        fromSymbol,
+        AssetAmount(accountBalance.asset, accountBalance.divide("2")),
+      );
       fromAmount.value = format(maxAmount, accountBalance.asset, {
         mantissa: accountBalance.asset.decimals,
         trimMantissa: true,

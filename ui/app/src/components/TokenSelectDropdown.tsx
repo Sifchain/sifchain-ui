@@ -173,10 +173,10 @@ export const TokenSelectDropdown = defineComponent({
                     // (boundingClientRect.value?.width ?? 0) +
                     "px",
                 }}
-                class=" overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[440px] mt-[7px] z-50 rounded-[4px]"
+                class=" overflow-hidden bg-gray-input border-gray-input_outline border-none border-[1px] w-[440px] mt-[7px] z-50 rounded-[4px]"
               >
                 <div class="w-full h-full py-[20px] px-[15px]">
-                  <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">
+                  <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-none h-8 relative flex items-center rounded-lg overflow-hidden">
                     <AssetIcon
                       size={20}
                       icon="interactive/search"

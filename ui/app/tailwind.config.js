@@ -52,8 +52,8 @@ module.exports = {
         black: "rgb(12, 17, 19)",
         accent: {
           // Tacha Gold
-          base: "#D4B553",
-          accent_gradient_to: "#C1A04F",
+          accent_gradient_to: "#D4B553",
+          base: "#C1A04F",
           muted: "#A98929",
           dark: "#C1A04F",
           light: "#FFE8A0",
@@ -78,7 +78,7 @@ module.exports = {
           action_button: "#191919",
 
           200: "#232323",
-          input: "#232323",
+          input: "#181D1F",
 
           ring: "#272727",
           250: "#2B2B2B",
