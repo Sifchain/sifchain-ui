@@ -1,5 +1,12 @@
 import { RouterView } from "vue-router";
-import { defineComponent, ref, computed, onMounted, onUnmounted } from "vue";
+import {
+  defineComponent,
+  ref,
+  computed,
+  onMounted,
+  onUnmounted,
+  watch,
+} from "vue";
 import { effect } from "@vue/reactivity";
 
 import Layout from "@/componentsLegacy/Layout/Layout";
@@ -72,19 +79,24 @@ export default defineComponent({
     const pageIndex = ref(0);
 
     const allBalances = computed(() =>
-      showZeroBalance.value
+      showZeroBalance.value || state.searchQuery.length
         ? displayedTokenList.value
         : displayedTokenList.value.filter((x) => x.amount.greaterThan("0")),
     );
 
-    const pageStart = computed(() => pageIndex.value * PAGE_SIZE);
+    const pages = computed(() =>
+      Math.ceil(allBalances.value.length / PAGE_SIZE),
+    );
+    const safePageIndex = computed(() =>
+      state.searchQuery.length && pageIndex.value >= pages.value
+        ? pages.value - 1
+        : pageIndex.value,
+    );
+
+    const pageStart = computed(() => safePageIndex.value * PAGE_SIZE);
 
     const page = computed(() =>
       allBalances.value.slice(pageStart.value, pageStart.value + PAGE_SIZE),
-    );
-
-    const pages = computed(() =>
-      Math.ceil(allBalances.value.length / PAGE_SIZE),
     );
 
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -242,7 +254,7 @@ export default defineComponent({
           </table>
           <Pagination
             pages={pages.value}
-            pageIndex={pageIndex.value}
+            pageIndex={safePageIndex.value}
             onPageIndexChange={(idx) => {
               pageIndex.value = idx;
             }}
