@@ -37,7 +37,6 @@
     "vue": "3.0.0",
     "vue-router": "^4.0.0-0",
     "vue-tippy": "^6.0.0-alpha.30",
-    "vue-virtual-scroller": "^2.0.0-alpha.1",
     "vuex": "4.0.2"
   },
   "devDependencies": {

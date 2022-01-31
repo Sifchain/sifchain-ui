@@ -1,5 +1,5 @@
 import { RouterView } from "vue-router";
-import { defineComponent, ref, computed, onMounted } from "vue";
+import { defineComponent, ref, computed, onMounted, onUnmounted } from "vue";
 import { effect } from "@vue/reactivity";
 
 import Layout from "@/componentsLegacy/Layout/Layout";
@@ -86,6 +86,29 @@ export default defineComponent({
     const pages = computed(() =>
       Math.ceil(allBalances.value.length / PAGE_SIZE),
     );
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "ArrowRight":
+          if (pageIndex.value < pages.value - 1) {
+            pageIndex.value++;
+          }
+          break;
+        case "ArrowLeft":
+          if (pageIndex.value) {
+            pageIndex.value--;
+          }
+          break;
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener("keyup", handleKeyUp);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("keyup", handleKeyUp);
+    });
 
     return () => (
       <Layout>
