@@ -1,10 +1,9 @@
-import { defineComponent, PropType, computed, Ref, watchEffect } from "vue";
-import { useImportData } from "./useImportData";
-import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
+import { defineComponent, watchEffect } from "vue";
 import { useRouter } from "vue-router";
+import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { importStore } from "@/store/modules/import";
+
+import { useImportData } from "./useImportData";
 
 export default defineComponent({
   name: "ImportProcessingModal",
