@@ -12,6 +12,9 @@ import { SearchBox } from "@/components/SearchBox";
 
 import BalanceRow from "./BalanceRow";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";
+import { Button } from "@/components/Button/Button";
+import { getImportLocation } from "./Import/useImportData";
+import { Network } from "@sifchain/sdk";
 
 const PAGE_SIZE = 20;
 
@@ -101,6 +104,19 @@ export default defineComponent({
                 />
                 Show 0 Balances
               </label>
+              <Button.Inline
+                onClick={() => {}}
+                class="!h-[40px] px-[17px] text-md relative"
+                icon="interactive/plus"
+                iconClass="!w-[24px] !h-[24px] transform translate-y-[1px]"
+                to={getImportLocation("select", {
+                  symbol: "rowan",
+                  network: Network.COSMOSHUB,
+                })}
+                active
+              >
+                Import Token Balance
+              </Button.Inline>
               <Tooltip
                 content={
                   <>
