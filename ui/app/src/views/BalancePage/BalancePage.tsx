@@ -15,6 +15,7 @@ import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { Button } from "@/components/Button/Button";
 import { getImportLocation } from "./Import/useImportData";
 import { Network } from "@sifchain/sdk";
+import Pagination from "@/components/Pagination";
 
 const PAGE_SIZE = 20;
 
@@ -93,6 +94,21 @@ export default defineComponent({
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
             <div class="flex gap-2 items-center">
+              <Tooltip
+                content={
+                  <>
+                    These are your balances within Sifchain. Press Import to
+                    bring your tokens in from other chains. Then you can swap,
+                    provide liquidity, and export to other chains.
+                  </>
+                }
+              >
+                <AssetIcon
+                  icon="interactive/help"
+                  class="text-gray-300 transition-all hover:text-accent-base opacity-100 hover:opacity-50 cursor-pointer mt-[4px] mr-[2px]"
+                  size={24}
+                ></AssetIcon>
+              </Tooltip>
               <label class="flex items-center mr-[16px] opacity-80">
                 <input
                   type="checkbox"
@@ -117,21 +133,6 @@ export default defineComponent({
               >
                 Import
               </Button.Inline>
-              <Tooltip
-                content={
-                  <>
-                    These are your balances within Sifchain. Press Import to
-                    bring your tokens in from other chains. Then you can swap,
-                    provide liquidity, and export to other chains.
-                  </>
-                }
-              >
-                <AssetIcon
-                  icon="interactive/help"
-                  class="text-gray-300 transition-all hover:text-accent-base opacity-100 hover:opacity-50 cursor-pointer mt-[4px] mr-[2px]"
-                  size={24}
-                ></AssetIcon>
-              </Tooltip>
             </div>
           }
           iconName="navigation/balances"
@@ -216,43 +217,13 @@ export default defineComponent({
               ))}
             </tbody>
           </table>
-          <div class="flex items-center gap-2 pt-4 pb-6 justify-center">
-            <div
-              role="button"
-              class="outline outline-1 w-6 h-6 grid place-items-center"
-              onClick={() => {
-                if (pageIndex.value) pageIndex.value--;
-              }}
-            >
-              «
-            </div>
-            {new Array(pages.value).fill(0).map((_, idx) => (
-              <div
-                role="button"
-                class={clsx(
-                  "outline outline-1 w-6 h-6 grid place-items-center",
-                  {
-                    "outline-accent-base text-accent-base font-semibold":
-                      idx === pageIndex.value,
-                  },
-                )}
-                onClick={() => {
-                  pageIndex.value = idx;
-                }}
-              >
-                {idx + 1}
-              </div>
-            ))}
-            <div
-              role="button"
-              class="outline outline-1 w-6 h-6 grid place-items-center"
-              onClick={() => {
-                if (pageIndex.value < pages.value - 1) pageIndex.value++;
-              }}
-            >
-              »
-            </div>
-          </div>
+          <Pagination
+            pages={pages.value}
+            pageIndex={pageIndex.value}
+            onPageIndexChange={(idx) => {
+              pageIndex.value = idx;
+            }}
+          />
         </PageCard>
         <RouterView
           name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
