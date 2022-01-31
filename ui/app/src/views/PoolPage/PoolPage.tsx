@@ -15,9 +15,7 @@ import {
   usePoolPageData,
 } from "./usePoolPageData";
 import PoolItem from "./PoolItem";
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
-
-import { flagsStore } from "@/store/modules/flags";
+import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 
 import {
   CompetitionsBySymbolLookup,
