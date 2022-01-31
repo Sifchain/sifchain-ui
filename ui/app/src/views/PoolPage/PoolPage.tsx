@@ -17,6 +17,8 @@ import {
 import PoolItem from "./PoolItem";
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 
+import { flagsStore } from "@/store/modules/flags";
+
 import {
   CompetitionsBySymbolLookup,
   useLeaderboardCompetitions,
@@ -135,7 +137,13 @@ export default defineComponent({
     return (
       <Layout>
         <RouterView
-          name={!this.isLoaded ? "DISABLED_WHILE_LOADING" : undefined}
+          name={
+            flagsStore.state.allowEmptyLiquidityAdd
+              ? undefined
+              : !this.isLoaded
+              ? "DISABLED_WHILE_LOADING"
+              : undefined
+          }
         />
         {!this.isLoaded ? (
           <div class="absolute left-0 top-[180px] w-full flex justify-center">
