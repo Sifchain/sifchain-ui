@@ -5,6 +5,7 @@ import {
   HTMLAttributes,
   InputHTMLAttributes,
   onMounted,
+  onUnmounted,
   ref,
 } from "vue";
 import AssetIcon from "./AssetIcon";
@@ -56,14 +57,22 @@ export const SearchBox = defineComponent({
         navigator.userAgent.includes("Mac"),
     );
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === "f" && e.ctrlKey) || e.key === "/") {
+        e.preventDefault();
+        inputRef.value?.focus();
+      }
+    };
+
     onMounted(() => {
       if (enableKeyBindings) {
-        document.addEventListener("keydown", (e) => {
-          if ((e.key === "f" && e.ctrlKey) || e.key === "/") {
-            e.preventDefault();
-            inputRef.value?.focus();
-          }
-        });
+        document.addEventListener("keydown", handleKeyDown);
+      }
+    });
+
+    onUnmounted(() => {
+      if (enableKeyBindings) {
+        document.removeEventListener("keydown", handleKeyDown);
       }
     });
 
