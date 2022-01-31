@@ -140,6 +140,7 @@ export default defineComponent({
           headerContent={
             <div class="w-full">
               <SearchBox
+                enableKeyBindings
                 value={state.searchQuery}
                 disabled={isDisabled}
                 placeholder="Search Token..."
@@ -197,10 +198,10 @@ export default defineComponent({
                     ref={column.ref}
                     class={[column.class]}
                     key={column.name}
-                  ></td>
+                  />
                 ))}
                 <td /> {/* Actions */}
-                <td></td>
+                <td />
               </tr>
             </thead>
             <tbody class="w-full relative">
