@@ -115,7 +115,7 @@ export default defineComponent({
                 })}
                 active
               >
-                Import Token Balance
+                Import
               </Button.Inline>
               <Tooltip
                 content={
