@@ -14,9 +14,12 @@ import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { Button } from "@/components/Button/Button";
 import { getImportLocation } from "./Import/useImportData";
 import { Network } from "@sifchain/sdk";
-import Pagination from "@/components/Pagination";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 25;
+const ROW_HEIGHT = 50;
+const BUFFER = ROW_HEIGHT * 2;
+
+const clamp = (max: number, value: number) => (value > max ? max : value);
 
 export default defineComponent({
   name: "BalancePage",
@@ -33,6 +36,11 @@ export default defineComponent({
     // There's a bug with refreshing while an import child route is open
     // right as balance page loads... this "fixes" it. TODO: find real cause.
     let isReady = ref(false);
+    let isDisabled = false;
+
+    const tbodyRef = ref<HTMLElement | undefined>();
+    const showZeroBalance = ref(true);
+
     onMounted(() => {
       setTimeout(() => {
         isReady.value = true;
@@ -44,6 +52,28 @@ export default defineComponent({
         state.expandedSymbol = "";
       }
     });
+
+    const allBalances = computed(() =>
+      showZeroBalance.value || state.searchQuery.length
+        ? displayedTokenList.value
+        : displayedTokenList.value.filter((x) => x.amount.greaterThan("0")),
+    );
+
+    const pageEnd = ref(PAGE_SIZE);
+
+    const page = computed(() => allBalances.value.slice(0, pageEnd.value));
+
+    const handleScroll = (e: UIEvent) => {
+      const { scrollTop } = e.target as HTMLElement;
+
+      if (scrollTop <= BUFFER) {
+        pageEnd.value = PAGE_SIZE;
+      } else {
+        const delta = 2 + Math.ceil((scrollTop - BUFFER) / ROW_HEIGHT);
+
+        pageEnd.value = clamp(allBalances.value.length, PAGE_SIZE + delta);
+      }
+    };
 
     const columns = [
       {
@@ -59,64 +89,15 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
     ];
-    const colStyles = computed(() => {
-      return columns.map((col) => {
-        return {
-          width: `${col.ref.value?.getBoundingClientRect().width}px`,
-        };
-      });
-    });
-    let isDisabled = false;
 
-    const showZeroBalance = ref(true);
-    const pageIndex = ref(0);
-
-    const allBalances = computed(() =>
-      showZeroBalance.value || state.searchQuery.length
-        ? displayedTokenList.value
-        : displayedTokenList.value.filter((x) => x.amount.greaterThan("0")),
+    const colStyles = computed(() =>
+      columns.map((col) => ({
+        width: `${col.ref.value?.getBoundingClientRect().width}px`,
+      })),
     );
-
-    const pages = computed(() =>
-      Math.ceil(allBalances.value.length / PAGE_SIZE),
-    );
-    const safePageIndex = computed(() =>
-      state.searchQuery.length && pageIndex.value >= pages.value
-        ? pages.value - 1
-        : pageIndex.value,
-    );
-
-    const pageStart = computed(() => safePageIndex.value * PAGE_SIZE);
-
-    const page = computed(() =>
-      allBalances.value.slice(pageStart.value, pageStart.value + PAGE_SIZE),
-    );
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case "ArrowRight":
-          if (pageIndex.value < pages.value - 1) {
-            pageIndex.value++;
-          }
-          break;
-        case "ArrowLeft":
-          if (pageIndex.value) {
-            pageIndex.value--;
-          }
-          break;
-      }
-    };
-
-    onMounted(() => {
-      document.addEventListener("keyup", handleKeyUp);
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener("keyup", handleKeyUp);
-    });
 
     return () => (
-      <Layout>
+      <Layout onScroll={handleScroll}>
         <PageCard
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
@@ -134,7 +115,7 @@ export default defineComponent({
                   icon="interactive/help"
                   class="text-gray-300 transition-all hover:text-accent-base opacity-100 hover:opacity-50 cursor-pointer mt-[4px] mr-[2px]"
                   size={24}
-                ></AssetIcon>
+                />
               </Tooltip>
               <label class="flex items-center mr-[16px] opacity-80">
                 <input
@@ -232,7 +213,7 @@ export default defineComponent({
                 <td />
               </tr>
             </thead>
-            <tbody class="w-full relative">
+            <tbody class="w-full relative" ref={tbodyRef}>
               {page.value.map((item) => (
                 <BalanceRow
                   key={item.asset.symbol + item.asset.network}
@@ -245,15 +226,6 @@ export default defineComponent({
               ))}
             </tbody>
           </table>
-          {Boolean(pages.value) && (
-            <Pagination
-              pages={pages.value}
-              pageIndex={safePageIndex.value}
-              onPageIndexChange={(idx) => {
-                pageIndex.value = idx;
-              }}
-            />
-          )}
         </PageCard>
         <RouterView
           name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
