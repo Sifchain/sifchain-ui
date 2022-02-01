@@ -47,7 +47,6 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
           echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
-
           if [[ $BRANCH_NAME == 'master' ]]
           then
             echo "SUBDOMAIN=staging" >> $GITHUB_ENV
@@ -69,22 +68,6 @@ jobs:
           yarn
           yarn build
 
-      - name: Test Frontend
-        env:
-          CI: true
-        run: |
-          set +x
-          yarn test
-
-      - name: "Testing: upload coverage report"
-        uses: codecov/codecov-action@v1
-        if: ${{ always() }}
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./ui/core/coverage
-          flags: ui
-          verbose: true
-
       - name: "Build & Push Docker Image"
         shell: bash
         env:
@@ -95,5 +78,4 @@ jobs:
           mv Dockerfile.staticonly Dockerfile
           docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
           docker build -t ${image}:${TAG_NAME} .
-
           docker push ${image}:${TAG_NAME}
