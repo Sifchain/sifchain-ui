@@ -65,7 +65,8 @@ jobs:
       - name: "Install Dependencies & Build Frontend Application"
         run: |
           set +x
-          yarn install --frozen-lockfile --silent
+          cd app/
+          yarn install
           yarn build --tag $BRANCH_NAME --no-setup
 
       - name: Test Frontend
