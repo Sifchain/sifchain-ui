@@ -55,122 +55,118 @@ export default defineComponent({
       }
     });
     return () => (
-      <Layout>
-        <PageCard heading="Swap" class="w-[531px]">
-          {/* <TransitionGroup name="flip-list"> */}
-          <div class="px-[8px]">
-            <TokenInputGroup
-              onSelectAsset={(asset) => {
-                data.fromSymbol.value = asset.symbol;
-              }}
-              class="overflow-hidden mb-[-12px]"
-              tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
-              onFocus={() => data.handleFromFocused()}
-              onBlur={() => data.handleBlur()}
-              heading="From"
-              // key={data.fromSymbol.value}
-              onSetToHalfAmount={() => {
-                data.handleFromHalfClicked();
-              }}
-              onSetToMaxAmount={() => {
-                data.handleFromMaxClicked();
-              }}
-              onInputAmount={(val) => {
-                data.fromAmount.value = val;
-              }}
-              amount={data.fromAmount.value}
-              asset={data.fromAsset.value}
-              formattedBalance={
-                data.formattedFromTokenBalance.value || undefined
-              }
-            />
-            <div
+      <PageCard heading="Swap" class="w-[531px]">
+        {/* <TransitionGroup name="flip-list"> */}
+        <div class="px-[8px]">
+          <TokenInputGroup
+            onSelectAsset={(asset) => {
+              data.fromSymbol.value = asset.symbol;
+            }}
+            class="overflow-hidden mb-[-12px]"
+            tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
+            onFocus={() => data.handleFromFocused()}
+            onBlur={() => data.handleBlur()}
+            heading="From"
+            // key={data.fromSymbol.value}
+            onSetToHalfAmount={() => {
+              data.handleFromHalfClicked();
+            }}
+            onSetToMaxAmount={() => {
+              data.handleFromMaxClicked();
+            }}
+            onInputAmount={(val) => {
+              data.fromAmount.value = val;
+            }}
+            amount={data.fromAmount.value}
+            asset={data.fromAsset.value}
+            formattedBalance={data.formattedFromTokenBalance.value || undefined}
+          />
+          <div
+            key="button"
+            class="flex relative items-center justify-center w-full overflow-hidden mt-[7px]"
+          >
+            <button
+              // onMouseover={() => {
+              //   console.log("m2");
+              // }}
+              // onMouseout={() => {
+              //   console.log("m1");
+              //   isHoveringOverInvertButtonRef.value = false;
+              // }}
+              class="origin-center actidve:rotate-180 flex items-center relative"
               key="button"
-              class="flex relative items-center justify-center w-full overflow-hidden mt-[7px]"
+              onClick={async (e: MouseEvent) => {
+                data.handleArrowClicked();
+                isInverted.value = !isInverted.value;
+              }}
             >
-              <button
-                // onMouseover={() => {
-                //   console.log("m2");
-                // }}
-                // onMouseout={() => {
-                //   console.log("m1");
-                //   isHoveringOverInvertButtonRef.value = false;
-                // }}
-                class="origin-center actidve:rotate-180 flex items-center relative"
-                key="button"
-                onClick={async (e: MouseEvent) => {
-                  data.handleArrowClicked();
-                  isInverted.value = !isInverted.value;
+              <div
+                class="text-pink-50"
+                style={{
+                  transform: `scaleY(${isInverted.value ? -1 : 1})`,
                 }}
               >
-                <div
-                  class="text-pink-50"
-                  style={{
-                    transform: `scaleY(${isInverted.value ? -1 : 1})`,
-                  }}
-                >
-                  <img
-                    style="height: 45px;"
-                    src={swapGradientImage}
-                    alt="swap icon"
-                  />
-                </div>
-              </button>
-            </div>
-
-            <TokenInputGroup
-              onSelectAsset={(asset) => {
-                data.toSymbol.value = asset.symbol;
-              }}
-              class="overflow-hidden mt-[-34px]"
-              tokenIconUrl={data.toTokenIconUrl.value ?? ""}
-              onFocus={() => data.handleToFocused()}
-              onBlur={() => data.handleBlur()}
-              heading="To"
-              // key={data.toSymbol.value}
-              // key={data.modules.fromTokenInputGroup.state.symbol}
-              onInputAmount={(val) => {
-                data.toAmount.value = val;
-              }}
-              amount={data.toAmount.value}
-              asset={data.toAsset.value}
-              formattedBalance={data.formattedToTokenBalance.value || undefined}
-              hideBalance={true}
-            />
-            {/* </TransitionGroup> */}
-            <SlippageTolerance
-              slippage={data.slippage.value}
-              onUpdate={(v) => {
-                data.slippage.value = v;
-              }}
-            ></SlippageTolerance>
-            <SwapDetails
-              fromAsset={data.fromAsset}
-              toAsset={data.toAsset}
-              priceRatio={data.priceRatio}
-              priceImpact={(data.priceImpact.value ?? "") + "%"}
-              liquidityProviderFee={data.providerFee.value ?? ""}
-              minimumReceived={data.minimumReceived.value}
-            />
+                <img
+                  style="height: 45px;"
+                  src={swapGradientImage}
+                  alt="swap icon"
+                />
+              </div>
+            </button>
           </div>
 
-          <div class={`mx-[-12px] mt-[20px]`}>
-            <Button.CallToAction
-              onClick={() => {
-                if (!data.nextStepAllowed.value) {
-                  return appWalletPicker.show();
-                }
-                data.handleNextStepClicked();
-              }}
-              disabled={!data.nextStepAllowed.value}
-            >
-              {data.nextStepMessage.value}
-            </Button.CallToAction>
-          </div>
-          <RouterView></RouterView>
-          <div class="pb-4" />
-        </PageCard>
-      </Layout>
+          <TokenInputGroup
+            onSelectAsset={(asset) => {
+              data.toSymbol.value = asset.symbol;
+            }}
+            class="overflow-hidden mt-[-34px]"
+            tokenIconUrl={data.toTokenIconUrl.value ?? ""}
+            onFocus={() => data.handleToFocused()}
+            onBlur={() => data.handleBlur()}
+            heading="To"
+            // key={data.toSymbol.value}
+            // key={data.modules.fromTokenInputGroup.state.symbol}
+            onInputAmount={(val) => {
+              data.toAmount.value = val;
+            }}
+            amount={data.toAmount.value}
+            asset={data.toAsset.value}
+            formattedBalance={data.formattedToTokenBalance.value || undefined}
+            hideBalance={true}
+          />
+          {/* </TransitionGroup> */}
+          <SlippageTolerance
+            slippage={data.slippage.value}
+            onUpdate={(v) => {
+              data.slippage.value = v;
+            }}
+          ></SlippageTolerance>
+          <SwapDetails
+            fromAsset={data.fromAsset}
+            toAsset={data.toAsset}
+            priceRatio={data.priceRatio}
+            priceImpact={(data.priceImpact.value ?? "") + "%"}
+            liquidityProviderFee={data.providerFee.value ?? ""}
+            minimumReceived={data.minimumReceived.value}
+          />
+        </div>
+
+        <div class={`mx-[-12px] mt-[20px]`}>
+          <Button.CallToAction
+            onClick={() => {
+              if (!data.nextStepAllowed.value) {
+                return appWalletPicker.show();
+              }
+              data.handleNextStepClicked();
+            }}
+            disabled={!data.nextStepAllowed.value}
+          >
+            {data.nextStepMessage.value}
+          </Button.CallToAction>
+        </div>
+        <RouterView></RouterView>
+        <div class="pb-4" />
+      </PageCard>
     );
   },
 });

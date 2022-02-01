@@ -201,7 +201,7 @@ export default defineComponent({
         onClose={exitImport}
         showClose
       >
-        <section class="bg-gray-base p-4 rounded">
+        <section class="bg-gray-base--cancel p-4 rounded">
           <div class="w-full">
             <div class="flex w-full">
               <div class="block flex-1 mr-[5px]">

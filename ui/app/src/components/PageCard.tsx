@@ -47,11 +47,11 @@ export default defineComponent({
     });
 
     return () => (
-      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px]">
+      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px] page-card">
         <div
           key="view-layer"
           class={[
-            `shadow-2xl transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[1000px] min-w-[531px] text-white px-7 rounded-[20px]`,
+            `shadow-2xl transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[890px] min-w-[531px] text-white px-7 rounded-[20px]`,
             props.class,
           ]}
           style={{

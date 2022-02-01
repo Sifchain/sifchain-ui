@@ -210,17 +210,15 @@ export default defineComponent({
   render() {
     if (this.isLoading) {
       return (
-        <Layout>
-          <div class="absolute left-0 top-[180px] w-full flex justify-center">
-            <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
-              <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
-            </div>
+        <div class="absolute left-0 top-[180px] w-full flex justify-center">
+          <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+            <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
           </div>
-        </Layout>
+        </div>
       );
     }
     return (
-      <Layout>
+      <>
         {this.isAgreeModalOpen && (
           <TermsModal
             onAgree={() => {
@@ -452,7 +450,7 @@ export default defineComponent({
           </div>
           <div class="h-4" />
         </PageCard>
-      </Layout>
+      </>
     );
   },
 });

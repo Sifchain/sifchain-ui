@@ -1,7 +1,9 @@
 <template>
   <div class="main">
     <SideBar />
-    <router-view />
+    <Layout>
+      <router-view />
+    </Layout>
     <OnboardingModal
       v-if="shouldShowOnboardingModal"
       :onClose="onCloseOnboardingModal"
@@ -14,7 +16,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect, ref, onMounted } from "vue";
+import {
+  defineComponent,
+  watchEffect,
+  ref,
+  onMounted,
+  Transition,
+  TransitionGroup,
+} from "vue";
 import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
@@ -91,6 +100,9 @@ export default defineComponent({
     SideBar,
     Flags,
     OnboardingModal,
+    Transition,
+    TransitionGroup,
+    Layout,
   },
   computed: {
     key() {

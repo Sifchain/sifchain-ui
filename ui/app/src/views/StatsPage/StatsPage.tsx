@@ -128,145 +128,143 @@ export default defineComponent({
       }
 
       return (
-        <Layout>
-          <PageCard
-            heading="Pool Stats"
-            iconName="navigation/pool-stats"
-            class="!w-[1000px] !min-w-[940px] !max-w-[1000px]"
-            withOverflowSpace
-            headerContent={
-              <>
-                <SearchBox
-                  containerClass="mb-4"
-                  value={searchQuery.value}
-                  placeholder="Search Token..."
-                  onInput={(e: Event) => {
-                    searchQuery.value = (e.target as HTMLInputElement).value;
-                  }}
-                />
+        <PageCard
+          heading="Pool Stats"
+          iconName="navigation/pool-stats"
+          class="!w-[1000px] !min-w-[940px] !max-w-[1000px]"
+          withOverflowSpace
+          headerContent={
+            <>
+              <SearchBox
+                containerClass="mb-4"
+                value={searchQuery.value}
+                placeholder="Search Token..."
+                onInput={(e: Event) => {
+                  searchQuery.value = (e.target as HTMLInputElement).value;
+                }}
+              />
 
-                <div class="height-[40px] flex items-center text-sm font-semibold">
-                  {columns.map((column, index) => (
+              <div class="height-[40px] flex items-center text-sm font-semibold">
+                {columns.map((column, index) => (
+                  <div
+                    style={colStyles.value[index]}
+                    key={column.name}
+                    class={[column.class]}
+                  >
                     <div
-                      style={colStyles.value[index]}
-                      key={column.name}
-                      class={[column.class]}
+                      class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                      onClick={() => {
+                        if (state.sortBy === column.sortBy) {
+                          state.sortDirection =
+                            state.sortDirection === "asc" ? "desc" : "asc";
+                        } else {
+                          state.sortDirection = "desc";
+                        }
+                        state.sortBy = column.sortBy;
+                      }}
                     >
-                      <div
-                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
-                        onClick={() => {
-                          if (state.sortBy === column.sortBy) {
-                            state.sortDirection =
-                              state.sortDirection === "asc" ? "desc" : "asc";
-                          } else {
-                            state.sortDirection = "desc";
-                          }
-                          state.sortBy = column.sortBy;
-                        }}
-                      >
-                        {column.message ? (
-                          <div class="flex items-center">
-                            {column.name}
-                            <Button.InlineHelp>
-                              {column.message}
-                            </Button.InlineHelp>
-                          </div>
-                        ) : (
-                          column.name
-                        )}
-                        {state.sortBy === column.sortBy && (
-                          <AssetIcon
-                            icon="interactive/arrow-up"
-                            class="transition-all w-[12px] h-[12px]"
-                            style={{
-                              transform:
-                                state.sortDirection === "asc"
-                                  ? "rotate(0deg)"
-                                  : "rotate(180deg)",
-                            }}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            }
-          >
-            <table class="w-full">
-              <thead>
-                <tr>
-                  {columns.map((column, index) => (
-                    <td
-                      ref={column.ref}
-                      class={[column.class]}
-                      key={column.name}
-                    />
-                  ))}
-                </tr>
-              </thead>
-              <tbody class="w-full text-base font-medium">
-                {finalStats.value.map((item) => {
-                  return (
-                    <tr
-                      key={item.asset.symbol}
-                      class="align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80"
-                    >
-                      <td class="align-middle">
+                      {column.message ? (
                         <div class="flex items-center">
-                          <TokenNetworkIcon
-                            assetValue={item.asset}
-                            size={22}
-                            class="mr-[10px]"
-                          />
-                          {(
-                            item.asset.displaySymbol || item.asset.symbol
-                          ).toUpperCase()}
+                          {column.name}
+                          <Button.InlineHelp>
+                            {column.message}
+                          </Button.InlineHelp>
                         </div>
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        ${prettyNumber(item.price, 3)}
-                      </td>
-                      <td
-                        class={[
-                          "align-middle text-mono text-right",
-                          item.arbitrage == null
-                            ? "text-gray-800"
-                            : item.arbitrage < 0
-                            ? `text-connected-base`
-                            : `text-danger-base`,
-                        ]}
-                      >
-                        {item.arbitrage == null
-                          ? "N/A"
-                          : `${prettyNumber(Math.abs(item.arbitrage))}%`}
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        ${prettyNumber(item.depth)}
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        ${prettyNumber(item.volume)}
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        {item.poolApy.toFixed(2)}%
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        {(+item.rewardApy || 0).toFixed(0)}% (
-                        {aprToWeeklyCompoundedApy(+item.rewardApy || 0).toFixed(
-                          0,
-                        )}
-                        %)
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        {(+item.poolApy + +item.rewardApy || 0).toFixed(2)}%
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </PageCard>
-        </Layout>
+                      ) : (
+                        column.name
+                      )}
+                      {state.sortBy === column.sortBy && (
+                        <AssetIcon
+                          icon="interactive/arrow-up"
+                          class="transition-all w-[12px] h-[12px]"
+                          style={{
+                            transform:
+                              state.sortDirection === "asc"
+                                ? "rotate(0deg)"
+                                : "rotate(180deg)",
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          }
+        >
+          <table class="w-full">
+            <thead>
+              <tr>
+                {columns.map((column, index) => (
+                  <td
+                    ref={column.ref}
+                    class={[column.class]}
+                    key={column.name}
+                  />
+                ))}
+              </tr>
+            </thead>
+            <tbody class="w-full text-base font-medium">
+              {finalStats.value.map((item) => {
+                return (
+                  <tr
+                    key={item.asset.symbol}
+                    class="align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80"
+                  >
+                    <td class="align-middle">
+                      <div class="flex items-center">
+                        <TokenNetworkIcon
+                          assetValue={item.asset}
+                          size={22}
+                          class="mr-[10px]"
+                        />
+                        {(
+                          item.asset.displaySymbol || item.asset.symbol
+                        ).toUpperCase()}
+                      </div>
+                    </td>
+                    <td class="align-middle text-right text-mono">
+                      ${prettyNumber(item.price, 3)}
+                    </td>
+                    <td
+                      class={[
+                        "align-middle text-mono text-right",
+                        item.arbitrage == null
+                          ? "text-gray-800"
+                          : item.arbitrage < 0
+                          ? `text-connected-base`
+                          : `text-danger-base`,
+                      ]}
+                    >
+                      {item.arbitrage == null
+                        ? "N/A"
+                        : `${prettyNumber(Math.abs(item.arbitrage))}%`}
+                    </td>
+                    <td class="align-middle text-right text-mono">
+                      ${prettyNumber(item.depth)}
+                    </td>
+                    <td class="align-middle text-right text-mono">
+                      ${prettyNumber(item.volume)}
+                    </td>
+                    <td class="align-middle text-right text-mono">
+                      {item.poolApy.toFixed(2)}%
+                    </td>
+                    <td class="align-middle text-right text-mono">
+                      {(+item.rewardApy || 0).toFixed(0)}% (
+                      {aprToWeeklyCompoundedApy(+item.rewardApy || 0).toFixed(
+                        0,
+                      )}
+                      %)
+                    </td>
+                    <td class="align-middle text-right text-mono">
+                      {(+item.poolApy + +item.rewardApy || 0).toFixed(2)}%
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </PageCard>
       );
     };
   },

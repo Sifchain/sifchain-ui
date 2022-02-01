@@ -58,16 +58,11 @@ export default defineComponent({
     return () => {
       if (isLoading.value) {
         return (
-          <Layout>
-            <div class="absolute left-0 top-[180px] w-full flex justify-center">
-              <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
-                <AssetIcon
-                  icon="interactive/anim-racetrack-spinner"
-                  size={64}
-                />
-              </div>
+          <div class="absolute left-0 top-[180px] w-full flex justify-center">
+            <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+              <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
             </div>
-          </Layout>
+          </div>
         );
       }
       if (error.value) {
@@ -105,179 +100,178 @@ export default defineComponent({
         );
       */
       return (
-        <Layout>
-          <PageCard
-            class="w-[1000px]"
-            heading="Rewards"
-            iconName="navigation/rewards"
-            headerAction={
-              <div class="flex items-center">
-                <label class="flex items-center mr-[16px] opacity-80">
-                  <input
-                    type="checkbox"
-                    class="mr-[4px]"
-                    checked={showAllRef.value}
-                    onChange={(e) => (showAllRef.value = e.target.checked)}
-                  />
-                  Show Inactive
-                </label>
+        <PageCard
+          class="w-[1000px]"
+          heading="Rewards"
+          iconName="navigation/rewards"
+          headerAction={
+            <div class="flex items-center">
+              <label class="flex items-center mr-[16px] opacity-80">
+                <input
+                  type="checkbox"
+                  class="mr-[4px]"
+                  checked={showAllRef.value}
+                  onChange={(e) => (showAllRef.value = e.target.checked)}
+                />
+                Show Inactive
+              </label>
+            </div>
+          }
+          headerContent={<>{""}</>}
+        >
+          <>
+            <p class="mt-[0px] ml-[5px] text-gray-850 ">
+              Earn rewards by participating in Sifchain's Liquidity Mining
+              programs.{" "}
+              <a
+                href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
+                rel="noopener noreferrer"
+                target="_blank"
+                class="underline"
+              >
+                Learn More
+              </a>{" "}
+            </p>
+            <div class="flex w-full items-center gap-[12px] mt-[10px] whitespace-nowrap">
+              <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
+                <div class="font-lg text-accent-base font-semibold">
+                  Claimed - Pending Dispensation
+                </div>
+                <div class="pt-[4px] text-sm opacity-50">
+                  Dispensed by Tuesday morning PST
+                </div>
+                <div class="pt-[7px] text-xl whitespace-pre">
+                  {rewardTotals.value == null
+                    ? " "
+                    : lmClaim.value && !rewardTotals.value.pendingRewards
+                    ? "Pending Claim"
+                    : `${prettyNumber(
+                        rewardTotals.value.pendingRewards,
+                      )} ROWAN`}
+                </div>
               </div>
-            }
-            headerContent={<>{""}</>}
-          >
-            <>
-              <p class="mt-[0px] ml-[5px] text-gray-850 ">
-                Earn rewards by participating in Sifchain's Liquidity Mining
-                programs.{" "}
-                <a
-                  href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  class="underline"
+              <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
+                <div class="font-lg text-accent-base font-semibold">
+                  Dispensed Rewards
+                </div>
+                <div class="pt-[4px] text-sm opacity-50">
+                  Amount already claimed and received
+                </div>
+                <div class="pt-[7px] text-xl whitespace-pre">
+                  {rewardTotals.value == null
+                    ? " "
+                    : `${prettyNumber(
+                        rewardTotals.value.dispensedRewards,
+                      )} ROWAN`}
+                </div>
+              </div>
+              <div class="bg-white bg-opacity-5 px-[20px] py-[10px] rounded flex-1">
+                <div class="font-lg text-accent-base font-semibold">
+                  Time Remaining to Claim
+                </div>
+                <div class="pt-[4px] text-sm opacity-50 whitespace-nowrap">
+                  Claim deadline for weekly dispensation
+                </div>
+                <div class="pt-[7px] text-xl whitespace-pre">
+                  {timeUntilNextDispensation.value.timeUntilNextDispensation}
+                </div>
+              </div>
+            </div>
+
+            <div class="w-full pb-[5px] mt-[12px] mb-[-5px] w-full flex items-center justify-start opacity-50 text-md">
+              <div class={rewardColumnsLookup.rewardProgram.class}>
+                Reward Program
+              </div>
+              <div class={rewardColumnsLookup.duration.class}>
+                {/* Duration */}
+              </div>
+              <div class={rewardColumnsLookup.apy.class}>
+                Program APR
+                <Tooltip
+                  content={
+                    <div class="mb-2">
+                      Current overall program summary APR. This is also
+                      displayed in Pools and Pool Stats.
+                    </div>
+                  }
                 >
-                  Learn More
-                </a>{" "}
-              </p>
-              <div class="flex w-full items-center gap-[12px] mt-[10px] whitespace-nowrap">
-                <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
-                  <div class="font-lg text-accent-base font-semibold">
-                    Claimed - Pending Dispensation
-                  </div>
-                  <div class="pt-[4px] text-sm opacity-50">
-                    Dispensed by Tuesday morning PST
-                  </div>
-                  <div class="pt-[7px] text-xl whitespace-pre">
-                    {rewardTotals.value == null
-                      ? " "
-                      : lmClaim.value && !rewardTotals.value.pendingRewards
-                      ? "Pending Claim"
-                      : `${prettyNumber(
-                          rewardTotals.value.pendingRewards,
-                        )} ROWAN`}
-                  </div>
-                </div>
-                <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
-                  <div class="font-lg text-accent-base font-semibold">
-                    Dispensed Rewards
-                  </div>
-                  <div class="pt-[4px] text-sm opacity-50">
-                    Amount already claimed and received
-                  </div>
-                  <div class="pt-[7px] text-xl whitespace-pre">
-                    {rewardTotals.value == null
-                      ? " "
-                      : `${prettyNumber(
-                          rewardTotals.value.dispensedRewards,
-                        )} ROWAN`}
-                  </div>
-                </div>
-                <div class="bg-white bg-opacity-5 px-[20px] py-[10px] rounded flex-1">
-                  <div class="font-lg text-accent-base font-semibold">
-                    Time Remaining to Claim
-                  </div>
-                  <div class="pt-[4px] text-sm opacity-50 whitespace-nowrap">
-                    Claim deadline for weekly dispensation
-                  </div>
-                  <div class="pt-[7px] text-xl whitespace-pre">
-                    {timeUntilNextDispensation.value.timeUntilNextDispensation}
-                  </div>
-                </div>
+                  <Button.InlineHelp></Button.InlineHelp>
+                </Tooltip>
               </div>
-
-              <div class="w-full pb-[5px] mt-[12px] mb-[-5px] w-full flex items-center justify-start opacity-50 text-md">
-                <div class={rewardColumnsLookup.rewardProgram.class}>
-                  Reward Program
-                </div>
-                <div class={rewardColumnsLookup.duration.class}>
-                  {/* Duration */}
-                </div>
-                <div class={rewardColumnsLookup.apy.class}>
-                  Program APR
-                  <Tooltip
-                    content={
-                      <div class="mb-2">
-                        Current overall program summary APR. This is also
-                        displayed in Pools and Pool Stats.
-                      </div>
-                    }
-                  >
-                    <Button.InlineHelp></Button.InlineHelp>
-                  </Tooltip>
-                </div>
-                <div class={rewardColumnsLookup.claimableAmount.class}>
-                  Claimable Amount
-                  <Tooltip
-                    content={
-                      <div class="mb-2">
-                        Current overall program summary APR. This is also
-                        displayed in Pools and Pool Stats.
-                      </div>
-                    }
-                  >
-                    <Button.InlineHelp></Button.InlineHelp>
-                  </Tooltip>
-                </div>
-                <div class={rewardColumnsLookup.expand.class} />
+              <div class={rewardColumnsLookup.claimableAmount.class}>
+                Claimable Amount
+                <Tooltip
+                  content={
+                    <div class="mb-2">
+                      Current overall program summary APR. This is also
+                      displayed in Pools and Pool Stats.
+                    </div>
+                  }
+                >
+                  <Button.InlineHelp></Button.InlineHelp>
+                </Tooltip>
               </div>
-              {isClaimModalOpened.value &&
-                rewardProgramResponse.data.value?.rewardPrograms.some(
-                  (p) => p.summaryAPY !== null,
-                ) && (
-                  <ClaimRewardsModal
-                    address={address.value}
-                    rewardType={
-                      claimRewardType.value as CryptoeconomicsRewardType
-                    }
-                    summaryAPY={summaryApyRef.value}
-                    rewardPrograms={
-                      rewardProgramResponse.data.value.rewardPrograms
-                    }
-                    onClose={() => {
-                      isClaimModalOpened.value = false;
-                      reloadClaims();
-                    }}
-                  />
-                )}
+              <div class={rewardColumnsLookup.expand.class} />
+            </div>
+            {isClaimModalOpened.value &&
+              rewardProgramResponse.data.value?.rewardPrograms.some(
+                (p) => p.summaryAPY !== null,
+              ) && (
+                <ClaimRewardsModal
+                  address={address.value}
+                  rewardType={
+                    claimRewardType.value as CryptoeconomicsRewardType
+                  }
+                  summaryAPY={summaryApyRef.value}
+                  rewardPrograms={
+                    rewardProgramResponse.data.value.rewardPrograms
+                  }
+                  onClose={() => {
+                    isClaimModalOpened.value = false;
+                    reloadClaims();
+                  }}
+                />
+              )}
 
-              <div>
-                {rewardProgramResponse.data.value?.rewardPrograms
-                  .filter((program) => {
-                    if (showAllRef.value) return true;
+            <div>
+              {rewardProgramResponse.data.value?.rewardPrograms
+                .filter((program) => {
+                  if (showAllRef.value) return true;
 
-                    const isCurrent =
-                      new Date().getTime() <
-                      new Date(program.endDateTimeISO).getTime();
-                    if (isCurrent) return true;
+                  const isCurrent =
+                    new Date().getTime() <
+                    new Date(program.endDateTimeISO).getTime();
+                  if (isCurrent) return true;
 
-                    return (
-                      (program.participant
-                        ?.claimedCommissionsAndRewardsAwaitingDispensation ||
-                        0) > 0 ||
-                      (program.participant
-                        ?.totalClaimableCommissionsAndClaimableRewards || 0) > 0
-                    );
-                  })
-                  .sort((a, b) => {
-                    const aIsCurrent = new Date() < new Date(a.endDateTimeISO);
-                    const bIsCurrent = new Date() < new Date(b.endDateTimeISO);
-                    return +bIsCurrent - +aIsCurrent;
-                  })
-                  .map((program, index, items) => {
-                    return (
-                      <RewardSection
-                        key={program.rewardProgramName}
-                        rewardProgram={program}
-                        alreadyClaimed={!!lmClaim.value}
-                        onClaimIntent={() => {
-                          claimRewardType.value = "lm";
-                          isClaimModalOpened.value = true;
-                        }}
-                      />
-                    );
-                  })}
-              </div>
+                  return (
+                    (program.participant
+                      ?.claimedCommissionsAndRewardsAwaitingDispensation || 0) >
+                      0 ||
+                    (program.participant
+                      ?.totalClaimableCommissionsAndClaimableRewards || 0) > 0
+                  );
+                })
+                .sort((a, b) => {
+                  const aIsCurrent = new Date() < new Date(a.endDateTimeISO);
+                  const bIsCurrent = new Date() < new Date(b.endDateTimeISO);
+                  return +bIsCurrent - +aIsCurrent;
+                })
+                .map((program, index, items) => {
+                  return (
+                    <RewardSection
+                      key={program.rewardProgramName}
+                      rewardProgram={program}
+                      alreadyClaimed={!!lmClaim.value}
+                      onClaimIntent={() => {
+                        claimRewardType.value = "lm";
+                        isClaimModalOpened.value = true;
+                      }}
+                    />
+                  );
+                })}
+            </div>
 
-              {/* 
+            {/* 
             <div class="my-[16px] border border-dashed border-white opacity-40" />
             <SunsetRewardSection
               rewardType="lm"
@@ -301,10 +295,9 @@ export default defineComponent({
               }}
             /> */}
 
-              <div class="h-1" />
-            </>
-          </PageCard>
-        </Layout>
+            <div class="h-1" />
+          </>
+        </PageCard>
       );
     };
   },

@@ -94,7 +94,7 @@ export default defineComponent({
 
     return () => {
       return (
-        <Layout>
+        <>
           {/* Disable child routes (add/remove liq modals) while data isnt loaded  */}
           <RouterView
             name={
@@ -177,7 +177,7 @@ export default defineComponent({
               })}
             </PageCard>
           )}
-        </Layout>
+        </>
       );
     };
   },

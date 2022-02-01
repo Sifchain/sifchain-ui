@@ -69,7 +69,7 @@ export default defineComponent({
     });
     let isDisabled = false;
     return () => (
-      <Layout>
+      <>
         <PageCard
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
@@ -175,7 +175,7 @@ export default defineComponent({
         <RouterView
           name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
         ></RouterView>
-      </Layout>
+      </>
     );
   },
 });

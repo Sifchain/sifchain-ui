@@ -209,12 +209,12 @@ export default defineComponent({
         onClose={exportData.exitExport}
         showClose
       >
-        <section class="bg-gray-base p-4 rounded">
+        <section class="bg-gray-base--cancel p-4 rounded">
           <label
             for="exportAmount"
             class={"flex relative items-center justify-between"}
           >
-            <span>Amount</span>
+            <Form.Label>Amount</Form.Label>
             {!!exportTokenRef.value && (
               <span
                 class="text-base opacity-50 hover:text-accent-base cursor-pointer self-end"
@@ -254,7 +254,7 @@ export default defineComponent({
           />
 
           <div class="block mt-[10px]">
-            Network
+            <Form.Label>Network</Form.Label>
             <SelectDropdown
               key={optionsRef.value.map((o) => o.value).join("")}
               options={optionsRef}
@@ -278,11 +278,11 @@ export default defineComponent({
           </div>
         </section>
 
-        <section class="bg-gray-base p-4 rounded mt-[10px]">
+        <section class="bg-gray-base--cancel px-4 rounded mt-[5px]">
           <Form.Details details={exportData.detailsRef.value} />
         </section>
 
-        <section class="bg-gray-base p-4 rounded mt-[10px]">
+        <section class="bg-gray-base--cancel p-4 rounded mt-[5px]">
           <div class="text-white capitalize">
             {exportParams.value.network} Recipient Address
           </div>

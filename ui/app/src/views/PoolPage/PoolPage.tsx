@@ -134,7 +134,7 @@ export default defineComponent({
 
   render() {
     return (
-      <Layout>
+      <>
         <RouterView
           name={!this.isLoaded ? "DISABLED_WHILE_LOADING" : undefined}
         />
@@ -231,7 +231,7 @@ export default defineComponent({
             })}
           </PageCard>
         )}
-      </Layout>
+      </>
     );
   },
 });
