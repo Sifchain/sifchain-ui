@@ -1,20 +1,27 @@
-import BetaWarningBanner from "@/components/BetaWarningBanner";
-import { VotingModal } from "@/components/VotingModal/VotingModal";
+import { defineComponent, HtmlHTMLAttributes } from "vue";
+
 import { useCurrentRouteBannerMessage } from "@/hooks/useCurrentRouteBannerMessage";
-import { flagsStore } from "@/store/modules/flags";
-import { AssetAmount } from "@sifchain/sdk";
-import { defineComponent } from "vue";
-import { useRoute } from "vue-router";
+import BetaWarningBanner from "@/components/BetaWarningBanner";
+
 import LayoutBackground from "./LayoutBackground";
 
 export default defineComponent({
   name: "Layout",
+  props: {
+    onScroll: {
+      type: Function,
+      default: () => {},
+    },
+  },
   setup(props, context) {
     const bannerMessageRef = useCurrentRouteBannerMessage();
 
     return () => (
       <>
-        <div class="flex absolute justify-center sm:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background overflow-y-scroll bg-black bg-opacity-40">
+        <div
+          class="flex absolute justify-center sm:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background overflow-y-scroll bg-black bg-opacity-40"
+          onScroll={props.onScroll as HtmlHTMLAttributes["onScroll"]}
+        >
           {context.slots.default?.()}
           <div id="modal-target"></div>
           <BetaWarningBanner />
