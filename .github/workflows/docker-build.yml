@@ -67,7 +67,7 @@ jobs:
           set +x
           cd app/
           yarn install
-          yarn build --tag $BRANCH_NAME --no-setup
+          yarn build
 
       - name: Test Frontend
         env:
