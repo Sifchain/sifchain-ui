@@ -77,6 +77,11 @@ jobs:
           set +x
           mv Dockerfile.staticonly Dockerfile
           docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+
+          if [ -z "${TAG_NAME}" ]; then
+            TAG_NAME=latest
+          fi
+
           docker build -t ${image}:${TAG_NAME} .
 
           docker push ${image}:${TAG_NAME}
