@@ -3,7 +3,7 @@
   "sifApiUrl": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
   "sifWsUrl": "wss://rpc-devnet.sifchain.finance/websocket",
   "sifRpcUrl": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
-  "sifChainId": "sifchain-tempnet-a45a138",
+  "sifChainId": "sifchain-tempnet-d3a9d94",
   "web3Provider": "metamask",
   "web3Provider--option2": "https://ropsten.infura.io/v3/f2e434009a9c4db8bfbd1b03ef572170",
   "nativeAsset": "rowan",
@@ -11,8 +11,8 @@
   "cryptoeconomicsUrl": "https://api-cryptoeconomics.sifchain.finance/api",
   "bridgebankContractAddress": "0x96DC6f02C66Bbf2dfbA934b8DafE7B2c08715A73",
   "keplrChainConfig": {
-    "chainName": "Sifchain Tempnet a45a138",
-    "chainId": "sifchain-tempnet-a45a138",
+    "chainName": "sifchain-tempnet-d3a9d94",
+    "chainId": "sifchain-tempnet-d3a9d94",
     "rpc": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
     "rest": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
     "stakeCurrency": {

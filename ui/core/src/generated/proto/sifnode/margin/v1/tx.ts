@@ -21,12 +21,14 @@ export interface MsgCloseLong {
 
 export interface MsgCloseLongResponse {}
 
-const baseMsgOpenLong: object = {
-  signer: "",
-  collateralAsset: "",
-  collateralAmount: "",
-  borrowAsset: "",
-};
+function createBaseMsgOpenLong(): MsgOpenLong {
+  return {
+    signer: "",
+    collateralAsset: "",
+    collateralAmount: "",
+    borrowAsset: "",
+  };
+}
 
 export const MsgOpenLong = {
   encode(
@@ -51,7 +53,7 @@ export const MsgOpenLong = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgOpenLong {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgOpenLong } as MsgOpenLong;
+    const message = createBaseMsgOpenLong();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -76,34 +78,16 @@ export const MsgOpenLong = {
   },
 
   fromJSON(object: any): MsgOpenLong {
-    const message = { ...baseMsgOpenLong } as MsgOpenLong;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = String(object.collateralAsset);
-    } else {
-      message.collateralAsset = "";
-    }
-    if (
-      object.collateralAmount !== undefined &&
-      object.collateralAmount !== null
-    ) {
-      message.collateralAmount = String(object.collateralAmount);
-    } else {
-      message.collateralAmount = "";
-    }
-    if (object.borrowAsset !== undefined && object.borrowAsset !== null) {
-      message.borrowAsset = String(object.borrowAsset);
-    } else {
-      message.borrowAsset = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      collateralAsset: isSet(object.collateralAsset)
+        ? String(object.collateralAsset)
+        : "",
+      collateralAmount: isSet(object.collateralAmount)
+        ? String(object.collateralAmount)
+        : "",
+      borrowAsset: isSet(object.borrowAsset) ? String(object.borrowAsset) : "",
+    };
   },
 
   toJSON(message: MsgOpenLong): unknown {
@@ -118,39 +102,21 @@ export const MsgOpenLong = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgOpenLong>): MsgOpenLong {
-    const message = { ...baseMsgOpenLong } as MsgOpenLong;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = object.collateralAsset;
-    } else {
-      message.collateralAsset = "";
-    }
-    if (
-      object.collateralAmount !== undefined &&
-      object.collateralAmount !== null
-    ) {
-      message.collateralAmount = object.collateralAmount;
-    } else {
-      message.collateralAmount = "";
-    }
-    if (object.borrowAsset !== undefined && object.borrowAsset !== null) {
-      message.borrowAsset = object.borrowAsset;
-    } else {
-      message.borrowAsset = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgOpenLong>, I>>(
+    object: I,
+  ): MsgOpenLong {
+    const message = createBaseMsgOpenLong();
+    message.signer = object.signer ?? "";
+    message.collateralAsset = object.collateralAsset ?? "";
+    message.collateralAmount = object.collateralAmount ?? "";
+    message.borrowAsset = object.borrowAsset ?? "";
     return message;
   },
 };
 
-const baseMsgOpenLongResponse: object = {};
+function createBaseMsgOpenLongResponse(): MsgOpenLongResponse {
+  return {};
+}
 
 export const MsgOpenLongResponse = {
   encode(
@@ -163,7 +129,7 @@ export const MsgOpenLongResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgOpenLongResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgOpenLongResponse } as MsgOpenLongResponse;
+    const message = createBaseMsgOpenLongResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -176,8 +142,7 @@ export const MsgOpenLongResponse = {
   },
 
   fromJSON(_: any): MsgOpenLongResponse {
-    const message = { ...baseMsgOpenLongResponse } as MsgOpenLongResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgOpenLongResponse): unknown {
@@ -185,17 +150,17 @@ export const MsgOpenLongResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgOpenLongResponse>): MsgOpenLongResponse {
-    const message = { ...baseMsgOpenLongResponse } as MsgOpenLongResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgOpenLongResponse>, I>>(
+    _: I,
+  ): MsgOpenLongResponse {
+    const message = createBaseMsgOpenLongResponse();
     return message;
   },
 };
 
-const baseMsgCloseLong: object = {
-  signer: "",
-  collateralAsset: "",
-  borrowAsset: "",
-};
+function createBaseMsgCloseLong(): MsgCloseLong {
+  return { signer: "", collateralAsset: "", borrowAsset: "" };
+}
 
 export const MsgCloseLong = {
   encode(
@@ -217,7 +182,7 @@ export const MsgCloseLong = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCloseLong {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCloseLong } as MsgCloseLong;
+    const message = createBaseMsgCloseLong();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -239,26 +204,13 @@ export const MsgCloseLong = {
   },
 
   fromJSON(object: any): MsgCloseLong {
-    const message = { ...baseMsgCloseLong } as MsgCloseLong;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = String(object.collateralAsset);
-    } else {
-      message.collateralAsset = "";
-    }
-    if (object.borrowAsset !== undefined && object.borrowAsset !== null) {
-      message.borrowAsset = String(object.borrowAsset);
-    } else {
-      message.borrowAsset = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      collateralAsset: isSet(object.collateralAsset)
+        ? String(object.collateralAsset)
+        : "",
+      borrowAsset: isSet(object.borrowAsset) ? String(object.borrowAsset) : "",
+    };
   },
 
   toJSON(message: MsgCloseLong): unknown {
@@ -271,31 +223,20 @@ export const MsgCloseLong = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgCloseLong>): MsgCloseLong {
-    const message = { ...baseMsgCloseLong } as MsgCloseLong;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = object.collateralAsset;
-    } else {
-      message.collateralAsset = "";
-    }
-    if (object.borrowAsset !== undefined && object.borrowAsset !== null) {
-      message.borrowAsset = object.borrowAsset;
-    } else {
-      message.borrowAsset = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgCloseLong>, I>>(
+    object: I,
+  ): MsgCloseLong {
+    const message = createBaseMsgCloseLong();
+    message.signer = object.signer ?? "";
+    message.collateralAsset = object.collateralAsset ?? "";
+    message.borrowAsset = object.borrowAsset ?? "";
     return message;
   },
 };
 
-const baseMsgCloseLongResponse: object = {};
+function createBaseMsgCloseLongResponse(): MsgCloseLongResponse {
+  return {};
+}
 
 export const MsgCloseLongResponse = {
   encode(
@@ -311,7 +252,7 @@ export const MsgCloseLongResponse = {
   ): MsgCloseLongResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCloseLongResponse } as MsgCloseLongResponse;
+    const message = createBaseMsgCloseLongResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -324,8 +265,7 @@ export const MsgCloseLongResponse = {
   },
 
   fromJSON(_: any): MsgCloseLongResponse {
-    const message = { ...baseMsgCloseLongResponse } as MsgCloseLongResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCloseLongResponse): unknown {
@@ -333,8 +273,10 @@ export const MsgCloseLongResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgCloseLongResponse>): MsgCloseLongResponse {
-    const message = { ...baseMsgCloseLongResponse } as MsgCloseLongResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCloseLongResponse>, I>>(
+    _: I,
+  ): MsgCloseLongResponse {
+    const message = createBaseMsgCloseLongResponse();
     return message;
   },
 };
@@ -387,10 +329,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -399,7 +343,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

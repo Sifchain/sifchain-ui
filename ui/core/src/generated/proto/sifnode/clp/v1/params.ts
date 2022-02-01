@@ -9,7 +9,9 @@ export interface Params {
   minCreatePoolThreshold: Long;
 }
 
-const baseParams: object = { minCreatePoolThreshold: Long.UZERO };
+function createBaseParams(): Params {
+  return { minCreatePoolThreshold: Long.UZERO };
+}
 
 export const Params = {
   encode(
@@ -25,7 +27,7 @@ export const Params = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseParams } as Params;
+    const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -41,18 +43,11 @@ export const Params = {
   },
 
   fromJSON(object: any): Params {
-    const message = { ...baseParams } as Params;
-    if (
-      object.minCreatePoolThreshold !== undefined &&
-      object.minCreatePoolThreshold !== null
-    ) {
-      message.minCreatePoolThreshold = Long.fromString(
-        object.minCreatePoolThreshold
-      );
-    } else {
-      message.minCreatePoolThreshold = Long.UZERO;
-    }
-    return message;
+    return {
+      minCreatePoolThreshold: isSet(object.minCreatePoolThreshold)
+        ? Long.fromString(object.minCreatePoolThreshold)
+        : Long.UZERO,
+    };
   },
 
   toJSON(message: Params): unknown {
@@ -64,16 +59,13 @@ export const Params = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Params>): Params {
-    const message = { ...baseParams } as Params;
-    if (
+  fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
+    const message = createBaseParams();
+    message.minCreatePoolThreshold =
       object.minCreatePoolThreshold !== undefined &&
       object.minCreatePoolThreshold !== null
-    ) {
-      message.minCreatePoolThreshold = object.minCreatePoolThreshold as Long;
-    } else {
-      message.minCreatePoolThreshold = Long.UZERO;
-    }
+        ? Long.fromValue(object.minCreatePoolThreshold)
+        : Long.UZERO;
     return message;
   },
 };
@@ -85,10 +77,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -97,7 +91,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

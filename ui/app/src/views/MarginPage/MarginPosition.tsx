@@ -16,6 +16,10 @@ import { useNativeChain } from "@/hooks/useChains";
 import { marginStore } from "@/store/modules/margin";
 
 import { Pool as SdkPool } from "@sifchain/sdk";
+import { NativeDexClient } from "@sifchain/sdk/src/clients";
+import { accountStore } from "@/store/modules/accounts";
+import { useCore } from "@/hooks/useCore";
+import { Button } from "@/components/Button/Button";
 
 const sdk = createSdk({
   environment: NetworkEnv.DEVNET,
@@ -26,6 +30,51 @@ export const MarginPosition = defineComponent({
     position: {
       type: Object as PropType<MarginV1Types.MTP>,
       required: true,
+    },
+  },
+  methods: {
+    async closePosition() {
+      const client = await NativeDexClient.connectByChain(useNativeChain());
+
+      const txDraft = client.tx.margin.CloseLong(
+        {
+          signer: accountStore.state.sifchain.address,
+          collateralAsset: this.position.collateralAsset,
+          borrowAsset: this.position.custodyAsset,
+        },
+        accountStore.state.sifchain.address,
+      );
+      try {
+        const signedTx = await useCore().services.wallet.keplrProvider.sign(
+          useNativeChain(),
+          txDraft,
+        );
+        const sentTx = await useCore().services.wallet.keplrProvider.broadcast(
+          useNativeChain(),
+          signedTx,
+        );
+        const txStatus = client.parseTxResult(sentTx);
+        console.log(sentTx, txStatus);
+        if (txStatus.state !== "accepted") {
+          useCore().services.bus.dispatch({
+            type: "TransactionErrorEvent",
+            payload: {
+              txStatus,
+              message: txStatus.memo || "There was an error removing liquidity",
+            },
+          });
+        } else {
+          marginStore.fetchAccountPositions();
+          useCore().services.bus.dispatch({
+            type: "SuccessEvent",
+            payload: {
+              message: `${this.custodyAssetAmount.displaySymbol.toUpperCase()} Position Closed`,
+            },
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
   computed: {
@@ -93,7 +142,7 @@ export const MarginPosition = defineComponent({
   },
   render() {
     return (
-      <div class="font-mono w-full py-2 border-bottom border-solid border-opacity-50 font-medium font-sans group-hover:opacity-80">
+      <div class="font-mono w-full py-2 border-bottom border-solid border-opacity-50 font-medium group-hover:opacity-80">
         <div class="flex items-center">
           <div
             class={["flex items-center", POSITION_COLUMNS_BY_ID.asset.class]}
@@ -114,6 +163,16 @@ export const MarginPosition = defineComponent({
           </div>
           <div class={["flex items-center", POSITION_COLUMNS_BY_ID.pnl.class]}>
             ~${formatAssetAmount(this.pnl)}{" "}
+          </div>
+          <div
+            class={[
+              "flex items-center justify-end",
+              POSITION_COLUMNS_BY_ID.actions.class,
+            ]}
+          >
+            <Button.Inline onClick={() => this.closePosition()}>
+              Close
+            </Button.Inline>
           </div>
         </div>
         {/* <div> */}

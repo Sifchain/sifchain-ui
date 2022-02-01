@@ -66,14 +66,16 @@ export interface MsgSetBlacklist {
 
 export interface MsgSetBlacklistResponse {}
 
-const baseMsgLock: object = {
-  cosmosSender: "",
-  amount: "",
-  symbol: "",
-  ethereumChainId: Long.ZERO,
-  ethereumReceiver: "",
-  cethAmount: "",
-};
+function createBaseMsgLock(): MsgLock {
+  return {
+    cosmosSender: "",
+    amount: "",
+    symbol: "",
+    ethereumChainId: Long.ZERO,
+    ethereumReceiver: "",
+    cethAmount: "",
+  };
+}
 
 export const MsgLock = {
   encode(
@@ -104,7 +106,7 @@ export const MsgLock = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgLock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgLock } as MsgLock;
+    const message = createBaseMsgLock();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -135,44 +137,20 @@ export const MsgLock = {
   },
 
   fromJSON(object: any): MsgLock {
-    const message = { ...baseMsgLock } as MsgLock;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = String(object.cosmosSender);
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = String(object.amount);
-    } else {
-      message.amount = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = String(object.symbol);
-    } else {
-      message.symbol = "";
-    }
-    if (
-      object.ethereumChainId !== undefined &&
-      object.ethereumChainId !== null
-    ) {
-      message.ethereumChainId = Long.fromString(object.ethereumChainId);
-    } else {
-      message.ethereumChainId = Long.ZERO;
-    }
-    if (
-      object.ethereumReceiver !== undefined &&
-      object.ethereumReceiver !== null
-    ) {
-      message.ethereumReceiver = String(object.ethereumReceiver);
-    } else {
-      message.ethereumReceiver = "";
-    }
-    if (object.cethAmount !== undefined && object.cethAmount !== null) {
-      message.cethAmount = String(object.cethAmount);
-    } else {
-      message.cethAmount = "";
-    }
-    return message;
+    return {
+      cosmosSender: isSet(object.cosmosSender)
+        ? String(object.cosmosSender)
+        : "",
+      amount: isSet(object.amount) ? String(object.amount) : "",
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+      ethereumChainId: isSet(object.ethereumChainId)
+        ? Long.fromString(object.ethereumChainId)
+        : Long.ZERO,
+      ethereumReceiver: isSet(object.ethereumReceiver)
+        ? String(object.ethereumReceiver)
+        : "",
+      cethAmount: isSet(object.cethAmount) ? String(object.cethAmount) : "",
+    };
   },
 
   toJSON(message: MsgLock): unknown {
@@ -189,49 +167,24 @@ export const MsgLock = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgLock>): MsgLock {
-    const message = { ...baseMsgLock } as MsgLock;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = object.cosmosSender;
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = object.symbol;
-    } else {
-      message.symbol = "";
-    }
-    if (
-      object.ethereumChainId !== undefined &&
-      object.ethereumChainId !== null
-    ) {
-      message.ethereumChainId = object.ethereumChainId as Long;
-    } else {
-      message.ethereumChainId = Long.ZERO;
-    }
-    if (
-      object.ethereumReceiver !== undefined &&
-      object.ethereumReceiver !== null
-    ) {
-      message.ethereumReceiver = object.ethereumReceiver;
-    } else {
-      message.ethereumReceiver = "";
-    }
-    if (object.cethAmount !== undefined && object.cethAmount !== null) {
-      message.cethAmount = object.cethAmount;
-    } else {
-      message.cethAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgLock>, I>>(object: I): MsgLock {
+    const message = createBaseMsgLock();
+    message.cosmosSender = object.cosmosSender ?? "";
+    message.amount = object.amount ?? "";
+    message.symbol = object.symbol ?? "";
+    message.ethereumChainId =
+      object.ethereumChainId !== undefined && object.ethereumChainId !== null
+        ? Long.fromValue(object.ethereumChainId)
+        : Long.ZERO;
+    message.ethereumReceiver = object.ethereumReceiver ?? "";
+    message.cethAmount = object.cethAmount ?? "";
     return message;
   },
 };
 
-const baseMsgLockResponse: object = {};
+function createBaseMsgLockResponse(): MsgLockResponse {
+  return {};
+}
 
 export const MsgLockResponse = {
   encode(
@@ -244,7 +197,7 @@ export const MsgLockResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgLockResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgLockResponse } as MsgLockResponse;
+    const message = createBaseMsgLockResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -257,8 +210,7 @@ export const MsgLockResponse = {
   },
 
   fromJSON(_: any): MsgLockResponse {
-    const message = { ...baseMsgLockResponse } as MsgLockResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgLockResponse): unknown {
@@ -266,20 +218,24 @@ export const MsgLockResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgLockResponse>): MsgLockResponse {
-    const message = { ...baseMsgLockResponse } as MsgLockResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgLockResponse>, I>>(
+    _: I,
+  ): MsgLockResponse {
+    const message = createBaseMsgLockResponse();
     return message;
   },
 };
 
-const baseMsgBurn: object = {
-  cosmosSender: "",
-  amount: "",
-  symbol: "",
-  ethereumChainId: Long.ZERO,
-  ethereumReceiver: "",
-  cethAmount: "",
-};
+function createBaseMsgBurn(): MsgBurn {
+  return {
+    cosmosSender: "",
+    amount: "",
+    symbol: "",
+    ethereumChainId: Long.ZERO,
+    ethereumReceiver: "",
+    cethAmount: "",
+  };
+}
 
 export const MsgBurn = {
   encode(
@@ -310,7 +266,7 @@ export const MsgBurn = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgBurn } as MsgBurn;
+    const message = createBaseMsgBurn();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -341,44 +297,20 @@ export const MsgBurn = {
   },
 
   fromJSON(object: any): MsgBurn {
-    const message = { ...baseMsgBurn } as MsgBurn;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = String(object.cosmosSender);
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = String(object.amount);
-    } else {
-      message.amount = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = String(object.symbol);
-    } else {
-      message.symbol = "";
-    }
-    if (
-      object.ethereumChainId !== undefined &&
-      object.ethereumChainId !== null
-    ) {
-      message.ethereumChainId = Long.fromString(object.ethereumChainId);
-    } else {
-      message.ethereumChainId = Long.ZERO;
-    }
-    if (
-      object.ethereumReceiver !== undefined &&
-      object.ethereumReceiver !== null
-    ) {
-      message.ethereumReceiver = String(object.ethereumReceiver);
-    } else {
-      message.ethereumReceiver = "";
-    }
-    if (object.cethAmount !== undefined && object.cethAmount !== null) {
-      message.cethAmount = String(object.cethAmount);
-    } else {
-      message.cethAmount = "";
-    }
-    return message;
+    return {
+      cosmosSender: isSet(object.cosmosSender)
+        ? String(object.cosmosSender)
+        : "",
+      amount: isSet(object.amount) ? String(object.amount) : "",
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+      ethereumChainId: isSet(object.ethereumChainId)
+        ? Long.fromString(object.ethereumChainId)
+        : Long.ZERO,
+      ethereumReceiver: isSet(object.ethereumReceiver)
+        ? String(object.ethereumReceiver)
+        : "",
+      cethAmount: isSet(object.cethAmount) ? String(object.cethAmount) : "",
+    };
   },
 
   toJSON(message: MsgBurn): unknown {
@@ -395,49 +327,24 @@ export const MsgBurn = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgBurn>): MsgBurn {
-    const message = { ...baseMsgBurn } as MsgBurn;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = object.cosmosSender;
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = object.symbol;
-    } else {
-      message.symbol = "";
-    }
-    if (
-      object.ethereumChainId !== undefined &&
-      object.ethereumChainId !== null
-    ) {
-      message.ethereumChainId = object.ethereumChainId as Long;
-    } else {
-      message.ethereumChainId = Long.ZERO;
-    }
-    if (
-      object.ethereumReceiver !== undefined &&
-      object.ethereumReceiver !== null
-    ) {
-      message.ethereumReceiver = object.ethereumReceiver;
-    } else {
-      message.ethereumReceiver = "";
-    }
-    if (object.cethAmount !== undefined && object.cethAmount !== null) {
-      message.cethAmount = object.cethAmount;
-    } else {
-      message.cethAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgBurn>, I>>(object: I): MsgBurn {
+    const message = createBaseMsgBurn();
+    message.cosmosSender = object.cosmosSender ?? "";
+    message.amount = object.amount ?? "";
+    message.symbol = object.symbol ?? "";
+    message.ethereumChainId =
+      object.ethereumChainId !== undefined && object.ethereumChainId !== null
+        ? Long.fromValue(object.ethereumChainId)
+        : Long.ZERO;
+    message.ethereumReceiver = object.ethereumReceiver ?? "";
+    message.cethAmount = object.cethAmount ?? "";
     return message;
   },
 };
 
-const baseMsgBurnResponse: object = {};
+function createBaseMsgBurnResponse(): MsgBurnResponse {
+  return {};
+}
 
 export const MsgBurnResponse = {
   encode(
@@ -450,7 +357,7 @@ export const MsgBurnResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgBurnResponse } as MsgBurnResponse;
+    const message = createBaseMsgBurnResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -463,8 +370,7 @@ export const MsgBurnResponse = {
   },
 
   fromJSON(_: any): MsgBurnResponse {
-    const message = { ...baseMsgBurnResponse } as MsgBurnResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgBurnResponse): unknown {
@@ -472,13 +378,17 @@ export const MsgBurnResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgBurnResponse>): MsgBurnResponse {
-    const message = { ...baseMsgBurnResponse } as MsgBurnResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgBurnResponse>, I>>(
+    _: I,
+  ): MsgBurnResponse {
+    const message = createBaseMsgBurnResponse();
     return message;
   },
 };
 
-const baseMsgCreateEthBridgeClaim: object = {};
+function createBaseMsgCreateEthBridgeClaim(): MsgCreateEthBridgeClaim {
+  return { ethBridgeClaim: undefined };
+}
 
 export const MsgCreateEthBridgeClaim = {
   encode(
@@ -500,9 +410,7 @@ export const MsgCreateEthBridgeClaim = {
   ): MsgCreateEthBridgeClaim {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgCreateEthBridgeClaim,
-    } as MsgCreateEthBridgeClaim;
+    const message = createBaseMsgCreateEthBridgeClaim();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -521,15 +429,11 @@ export const MsgCreateEthBridgeClaim = {
   },
 
   fromJSON(object: any): MsgCreateEthBridgeClaim {
-    const message = {
-      ...baseMsgCreateEthBridgeClaim,
-    } as MsgCreateEthBridgeClaim;
-    if (object.ethBridgeClaim !== undefined && object.ethBridgeClaim !== null) {
-      message.ethBridgeClaim = EthBridgeClaim.fromJSON(object.ethBridgeClaim);
-    } else {
-      message.ethBridgeClaim = undefined;
-    }
-    return message;
+    return {
+      ethBridgeClaim: isSet(object.ethBridgeClaim)
+        ? EthBridgeClaim.fromJSON(object.ethBridgeClaim)
+        : undefined,
+    };
   },
 
   toJSON(message: MsgCreateEthBridgeClaim): unknown {
@@ -541,24 +445,21 @@ export const MsgCreateEthBridgeClaim = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<MsgCreateEthBridgeClaim>,
+  fromPartial<I extends Exact<DeepPartial<MsgCreateEthBridgeClaim>, I>>(
+    object: I,
   ): MsgCreateEthBridgeClaim {
-    const message = {
-      ...baseMsgCreateEthBridgeClaim,
-    } as MsgCreateEthBridgeClaim;
-    if (object.ethBridgeClaim !== undefined && object.ethBridgeClaim !== null) {
-      message.ethBridgeClaim = EthBridgeClaim.fromPartial(
-        object.ethBridgeClaim,
-      );
-    } else {
-      message.ethBridgeClaim = undefined;
-    }
+    const message = createBaseMsgCreateEthBridgeClaim();
+    message.ethBridgeClaim =
+      object.ethBridgeClaim !== undefined && object.ethBridgeClaim !== null
+        ? EthBridgeClaim.fromPartial(object.ethBridgeClaim)
+        : undefined;
     return message;
   },
 };
 
-const baseMsgCreateEthBridgeClaimResponse: object = {};
+function createBaseMsgCreateEthBridgeClaimResponse(): MsgCreateEthBridgeClaimResponse {
+  return {};
+}
 
 export const MsgCreateEthBridgeClaimResponse = {
   encode(
@@ -574,9 +475,7 @@ export const MsgCreateEthBridgeClaimResponse = {
   ): MsgCreateEthBridgeClaimResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgCreateEthBridgeClaimResponse,
-    } as MsgCreateEthBridgeClaimResponse;
+    const message = createBaseMsgCreateEthBridgeClaimResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -589,10 +488,7 @@ export const MsgCreateEthBridgeClaimResponse = {
   },
 
   fromJSON(_: any): MsgCreateEthBridgeClaimResponse {
-    const message = {
-      ...baseMsgCreateEthBridgeClaimResponse,
-    } as MsgCreateEthBridgeClaimResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateEthBridgeClaimResponse): unknown {
@@ -600,21 +496,17 @@ export const MsgCreateEthBridgeClaimResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgCreateEthBridgeClaimResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgCreateEthBridgeClaimResponse>, I>>(
+    _: I,
   ): MsgCreateEthBridgeClaimResponse {
-    const message = {
-      ...baseMsgCreateEthBridgeClaimResponse,
-    } as MsgCreateEthBridgeClaimResponse;
+    const message = createBaseMsgCreateEthBridgeClaimResponse();
     return message;
   },
 };
 
-const baseMsgUpdateWhiteListValidator: object = {
-  cosmosSender: "",
-  validator: "",
-  operationType: "",
-};
+function createBaseMsgUpdateWhiteListValidator(): MsgUpdateWhiteListValidator {
+  return { cosmosSender: "", validator: "", operationType: "" };
+}
 
 export const MsgUpdateWhiteListValidator = {
   encode(
@@ -639,9 +531,7 @@ export const MsgUpdateWhiteListValidator = {
   ): MsgUpdateWhiteListValidator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgUpdateWhiteListValidator,
-    } as MsgUpdateWhiteListValidator;
+    const message = createBaseMsgUpdateWhiteListValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -663,25 +553,15 @@ export const MsgUpdateWhiteListValidator = {
   },
 
   fromJSON(object: any): MsgUpdateWhiteListValidator {
-    const message = {
-      ...baseMsgUpdateWhiteListValidator,
-    } as MsgUpdateWhiteListValidator;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = String(object.cosmosSender);
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.validator !== undefined && object.validator !== null) {
-      message.validator = String(object.validator);
-    } else {
-      message.validator = "";
-    }
-    if (object.operationType !== undefined && object.operationType !== null) {
-      message.operationType = String(object.operationType);
-    } else {
-      message.operationType = "";
-    }
-    return message;
+    return {
+      cosmosSender: isSet(object.cosmosSender)
+        ? String(object.cosmosSender)
+        : "",
+      validator: isSet(object.validator) ? String(object.validator) : "",
+      operationType: isSet(object.operationType)
+        ? String(object.operationType)
+        : "",
+    };
   },
 
   toJSON(message: MsgUpdateWhiteListValidator): unknown {
@@ -694,32 +574,20 @@ export const MsgUpdateWhiteListValidator = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<MsgUpdateWhiteListValidator>,
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateWhiteListValidator>, I>>(
+    object: I,
   ): MsgUpdateWhiteListValidator {
-    const message = {
-      ...baseMsgUpdateWhiteListValidator,
-    } as MsgUpdateWhiteListValidator;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = object.cosmosSender;
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.validator !== undefined && object.validator !== null) {
-      message.validator = object.validator;
-    } else {
-      message.validator = "";
-    }
-    if (object.operationType !== undefined && object.operationType !== null) {
-      message.operationType = object.operationType;
-    } else {
-      message.operationType = "";
-    }
+    const message = createBaseMsgUpdateWhiteListValidator();
+    message.cosmosSender = object.cosmosSender ?? "";
+    message.validator = object.validator ?? "";
+    message.operationType = object.operationType ?? "";
     return message;
   },
 };
 
-const baseMsgUpdateWhiteListValidatorResponse: object = {};
+function createBaseMsgUpdateWhiteListValidatorResponse(): MsgUpdateWhiteListValidatorResponse {
+  return {};
+}
 
 export const MsgUpdateWhiteListValidatorResponse = {
   encode(
@@ -735,9 +603,7 @@ export const MsgUpdateWhiteListValidatorResponse = {
   ): MsgUpdateWhiteListValidatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgUpdateWhiteListValidatorResponse,
-    } as MsgUpdateWhiteListValidatorResponse;
+    const message = createBaseMsgUpdateWhiteListValidatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -750,10 +616,7 @@ export const MsgUpdateWhiteListValidatorResponse = {
   },
 
   fromJSON(_: any): MsgUpdateWhiteListValidatorResponse {
-    const message = {
-      ...baseMsgUpdateWhiteListValidatorResponse,
-    } as MsgUpdateWhiteListValidatorResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgUpdateWhiteListValidatorResponse): unknown {
@@ -761,20 +624,17 @@ export const MsgUpdateWhiteListValidatorResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgUpdateWhiteListValidatorResponse>,
-  ): MsgUpdateWhiteListValidatorResponse {
-    const message = {
-      ...baseMsgUpdateWhiteListValidatorResponse,
-    } as MsgUpdateWhiteListValidatorResponse;
+  fromPartial<
+    I extends Exact<DeepPartial<MsgUpdateWhiteListValidatorResponse>, I>,
+  >(_: I): MsgUpdateWhiteListValidatorResponse {
+    const message = createBaseMsgUpdateWhiteListValidatorResponse();
     return message;
   },
 };
 
-const baseMsgUpdateCethReceiverAccount: object = {
-  cosmosSender: "",
-  cethReceiverAccount: "",
-};
+function createBaseMsgUpdateCethReceiverAccount(): MsgUpdateCethReceiverAccount {
+  return { cosmosSender: "", cethReceiverAccount: "" };
+}
 
 export const MsgUpdateCethReceiverAccount = {
   encode(
@@ -796,9 +656,7 @@ export const MsgUpdateCethReceiverAccount = {
   ): MsgUpdateCethReceiverAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgUpdateCethReceiverAccount,
-    } as MsgUpdateCethReceiverAccount;
+    const message = createBaseMsgUpdateCethReceiverAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -817,23 +675,14 @@ export const MsgUpdateCethReceiverAccount = {
   },
 
   fromJSON(object: any): MsgUpdateCethReceiverAccount {
-    const message = {
-      ...baseMsgUpdateCethReceiverAccount,
-    } as MsgUpdateCethReceiverAccount;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = String(object.cosmosSender);
-    } else {
-      message.cosmosSender = "";
-    }
-    if (
-      object.cethReceiverAccount !== undefined &&
-      object.cethReceiverAccount !== null
-    ) {
-      message.cethReceiverAccount = String(object.cethReceiverAccount);
-    } else {
-      message.cethReceiverAccount = "";
-    }
-    return message;
+    return {
+      cosmosSender: isSet(object.cosmosSender)
+        ? String(object.cosmosSender)
+        : "",
+      cethReceiverAccount: isSet(object.cethReceiverAccount)
+        ? String(object.cethReceiverAccount)
+        : "",
+    };
   },
 
   toJSON(message: MsgUpdateCethReceiverAccount): unknown {
@@ -845,30 +694,19 @@ export const MsgUpdateCethReceiverAccount = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<MsgUpdateCethReceiverAccount>,
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateCethReceiverAccount>, I>>(
+    object: I,
   ): MsgUpdateCethReceiverAccount {
-    const message = {
-      ...baseMsgUpdateCethReceiverAccount,
-    } as MsgUpdateCethReceiverAccount;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = object.cosmosSender;
-    } else {
-      message.cosmosSender = "";
-    }
-    if (
-      object.cethReceiverAccount !== undefined &&
-      object.cethReceiverAccount !== null
-    ) {
-      message.cethReceiverAccount = object.cethReceiverAccount;
-    } else {
-      message.cethReceiverAccount = "";
-    }
+    const message = createBaseMsgUpdateCethReceiverAccount();
+    message.cosmosSender = object.cosmosSender ?? "";
+    message.cethReceiverAccount = object.cethReceiverAccount ?? "";
     return message;
   },
 };
 
-const baseMsgUpdateCethReceiverAccountResponse: object = {};
+function createBaseMsgUpdateCethReceiverAccountResponse(): MsgUpdateCethReceiverAccountResponse {
+  return {};
+}
 
 export const MsgUpdateCethReceiverAccountResponse = {
   encode(
@@ -884,9 +722,7 @@ export const MsgUpdateCethReceiverAccountResponse = {
   ): MsgUpdateCethReceiverAccountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgUpdateCethReceiverAccountResponse,
-    } as MsgUpdateCethReceiverAccountResponse;
+    const message = createBaseMsgUpdateCethReceiverAccountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -899,10 +735,7 @@ export const MsgUpdateCethReceiverAccountResponse = {
   },
 
   fromJSON(_: any): MsgUpdateCethReceiverAccountResponse {
-    const message = {
-      ...baseMsgUpdateCethReceiverAccountResponse,
-    } as MsgUpdateCethReceiverAccountResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgUpdateCethReceiverAccountResponse): unknown {
@@ -910,21 +743,17 @@ export const MsgUpdateCethReceiverAccountResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgUpdateCethReceiverAccountResponse>,
-  ): MsgUpdateCethReceiverAccountResponse {
-    const message = {
-      ...baseMsgUpdateCethReceiverAccountResponse,
-    } as MsgUpdateCethReceiverAccountResponse;
+  fromPartial<
+    I extends Exact<DeepPartial<MsgUpdateCethReceiverAccountResponse>, I>,
+  >(_: I): MsgUpdateCethReceiverAccountResponse {
+    const message = createBaseMsgUpdateCethReceiverAccountResponse();
     return message;
   },
 };
 
-const baseMsgRescueCeth: object = {
-  cosmosSender: "",
-  cosmosReceiver: "",
-  cethAmount: "",
-};
+function createBaseMsgRescueCeth(): MsgRescueCeth {
+  return { cosmosSender: "", cosmosReceiver: "", cethAmount: "" };
+}
 
 export const MsgRescueCeth = {
   encode(
@@ -946,7 +775,7 @@ export const MsgRescueCeth = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRescueCeth {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgRescueCeth } as MsgRescueCeth;
+    const message = createBaseMsgRescueCeth();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -968,23 +797,15 @@ export const MsgRescueCeth = {
   },
 
   fromJSON(object: any): MsgRescueCeth {
-    const message = { ...baseMsgRescueCeth } as MsgRescueCeth;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = String(object.cosmosSender);
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.cosmosReceiver !== undefined && object.cosmosReceiver !== null) {
-      message.cosmosReceiver = String(object.cosmosReceiver);
-    } else {
-      message.cosmosReceiver = "";
-    }
-    if (object.cethAmount !== undefined && object.cethAmount !== null) {
-      message.cethAmount = String(object.cethAmount);
-    } else {
-      message.cethAmount = "";
-    }
-    return message;
+    return {
+      cosmosSender: isSet(object.cosmosSender)
+        ? String(object.cosmosSender)
+        : "",
+      cosmosReceiver: isSet(object.cosmosReceiver)
+        ? String(object.cosmosReceiver)
+        : "",
+      cethAmount: isSet(object.cethAmount) ? String(object.cethAmount) : "",
+    };
   },
 
   toJSON(message: MsgRescueCeth): unknown {
@@ -997,28 +818,20 @@ export const MsgRescueCeth = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgRescueCeth>): MsgRescueCeth {
-    const message = { ...baseMsgRescueCeth } as MsgRescueCeth;
-    if (object.cosmosSender !== undefined && object.cosmosSender !== null) {
-      message.cosmosSender = object.cosmosSender;
-    } else {
-      message.cosmosSender = "";
-    }
-    if (object.cosmosReceiver !== undefined && object.cosmosReceiver !== null) {
-      message.cosmosReceiver = object.cosmosReceiver;
-    } else {
-      message.cosmosReceiver = "";
-    }
-    if (object.cethAmount !== undefined && object.cethAmount !== null) {
-      message.cethAmount = object.cethAmount;
-    } else {
-      message.cethAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgRescueCeth>, I>>(
+    object: I,
+  ): MsgRescueCeth {
+    const message = createBaseMsgRescueCeth();
+    message.cosmosSender = object.cosmosSender ?? "";
+    message.cosmosReceiver = object.cosmosReceiver ?? "";
+    message.cethAmount = object.cethAmount ?? "";
     return message;
   },
 };
 
-const baseMsgRescueCethResponse: object = {};
+function createBaseMsgRescueCethResponse(): MsgRescueCethResponse {
+  return {};
+}
 
 export const MsgRescueCethResponse = {
   encode(
@@ -1034,7 +847,7 @@ export const MsgRescueCethResponse = {
   ): MsgRescueCethResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgRescueCethResponse } as MsgRescueCethResponse;
+    const message = createBaseMsgRescueCethResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1047,8 +860,7 @@ export const MsgRescueCethResponse = {
   },
 
   fromJSON(_: any): MsgRescueCethResponse {
-    const message = { ...baseMsgRescueCethResponse } as MsgRescueCethResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgRescueCethResponse): unknown {
@@ -1056,13 +868,17 @@ export const MsgRescueCethResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgRescueCethResponse>): MsgRescueCethResponse {
-    const message = { ...baseMsgRescueCethResponse } as MsgRescueCethResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgRescueCethResponse>, I>>(
+    _: I,
+  ): MsgRescueCethResponse {
+    const message = createBaseMsgRescueCethResponse();
     return message;
   },
 };
 
-const baseMsgSetBlacklist: object = { from: "", addresses: "" };
+function createBaseMsgSetBlacklist(): MsgSetBlacklist {
+  return { from: "", addresses: [] };
+}
 
 export const MsgSetBlacklist = {
   encode(
@@ -1081,8 +897,7 @@ export const MsgSetBlacklist = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetBlacklist {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgSetBlacklist } as MsgSetBlacklist;
-    message.addresses = [];
+    const message = createBaseMsgSetBlacklist();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1101,19 +916,12 @@ export const MsgSetBlacklist = {
   },
 
   fromJSON(object: any): MsgSetBlacklist {
-    const message = { ...baseMsgSetBlacklist } as MsgSetBlacklist;
-    message.addresses = [];
-    if (object.from !== undefined && object.from !== null) {
-      message.from = String(object.from);
-    } else {
-      message.from = "";
-    }
-    if (object.addresses !== undefined && object.addresses !== null) {
-      for (const e of object.addresses) {
-        message.addresses.push(String(e));
-      }
-    }
-    return message;
+    return {
+      from: isSet(object.from) ? String(object.from) : "",
+      addresses: Array.isArray(object?.addresses)
+        ? object.addresses.map((e: any) => String(e))
+        : [],
+    };
   },
 
   toJSON(message: MsgSetBlacklist): unknown {
@@ -1127,24 +935,19 @@ export const MsgSetBlacklist = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgSetBlacklist>): MsgSetBlacklist {
-    const message = { ...baseMsgSetBlacklist } as MsgSetBlacklist;
-    message.addresses = [];
-    if (object.from !== undefined && object.from !== null) {
-      message.from = object.from;
-    } else {
-      message.from = "";
-    }
-    if (object.addresses !== undefined && object.addresses !== null) {
-      for (const e of object.addresses) {
-        message.addresses.push(e);
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgSetBlacklist>, I>>(
+    object: I,
+  ): MsgSetBlacklist {
+    const message = createBaseMsgSetBlacklist();
+    message.from = object.from ?? "";
+    message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   },
 };
 
-const baseMsgSetBlacklistResponse: object = {};
+function createBaseMsgSetBlacklistResponse(): MsgSetBlacklistResponse {
+  return {};
+}
 
 export const MsgSetBlacklistResponse = {
   encode(
@@ -1160,9 +963,7 @@ export const MsgSetBlacklistResponse = {
   ): MsgSetBlacklistResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgSetBlacklistResponse,
-    } as MsgSetBlacklistResponse;
+    const message = createBaseMsgSetBlacklistResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1175,10 +976,7 @@ export const MsgSetBlacklistResponse = {
   },
 
   fromJSON(_: any): MsgSetBlacklistResponse {
-    const message = {
-      ...baseMsgSetBlacklistResponse,
-    } as MsgSetBlacklistResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSetBlacklistResponse): unknown {
@@ -1186,12 +984,10 @@ export const MsgSetBlacklistResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgSetBlacklistResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgSetBlacklistResponse>, I>>(
+    _: I,
   ): MsgSetBlacklistResponse {
-    const message = {
-      ...baseMsgSetBlacklistResponse,
-    } as MsgSetBlacklistResponse;
+    const message = createBaseMsgSetBlacklistResponse();
     return message;
   },
 };
@@ -1319,10 +1115,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -1331,7 +1129,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

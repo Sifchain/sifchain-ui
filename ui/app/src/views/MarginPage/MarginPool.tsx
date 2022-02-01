@@ -36,7 +36,6 @@ export const MarginPool = defineComponent({
       let humanAmount = window.prompt(
         "Enter rowan amount to use as collateral",
       );
-      debugger;
       if (!humanAmount) return;
 
       const amount = toBaseUnits(humanAmount, rowan);

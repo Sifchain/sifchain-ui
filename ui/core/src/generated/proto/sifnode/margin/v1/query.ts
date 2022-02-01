@@ -23,11 +23,9 @@ export interface PositionsForAddressResponse {
   mtps: MTP[];
 }
 
-const baseMTPRequest: object = {
-  address: "",
-  custodyAsset: "",
-  collateralAsset: "",
-};
+function createBaseMTPRequest(): MTPRequest {
+  return { address: "", custodyAsset: "", collateralAsset: "" };
+}
 
 export const MTPRequest = {
   encode(
@@ -49,7 +47,7 @@ export const MTPRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MTPRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMTPRequest } as MTPRequest;
+    const message = createBaseMTPRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -71,26 +69,15 @@ export const MTPRequest = {
   },
 
   fromJSON(object: any): MTPRequest {
-    const message = { ...baseMTPRequest } as MTPRequest;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    if (object.custodyAsset !== undefined && object.custodyAsset !== null) {
-      message.custodyAsset = String(object.custodyAsset);
-    } else {
-      message.custodyAsset = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = String(object.collateralAsset);
-    } else {
-      message.collateralAsset = "";
-    }
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      custodyAsset: isSet(object.custodyAsset)
+        ? String(object.custodyAsset)
+        : "",
+      collateralAsset: isSet(object.collateralAsset)
+        ? String(object.collateralAsset)
+        : "",
+    };
   },
 
   toJSON(message: MTPRequest): unknown {
@@ -103,31 +90,20 @@ export const MTPRequest = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MTPRequest>): MTPRequest {
-    const message = { ...baseMTPRequest } as MTPRequest;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
-    if (object.custodyAsset !== undefined && object.custodyAsset !== null) {
-      message.custodyAsset = object.custodyAsset;
-    } else {
-      message.custodyAsset = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = object.collateralAsset;
-    } else {
-      message.collateralAsset = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MTPRequest>, I>>(
+    object: I,
+  ): MTPRequest {
+    const message = createBaseMTPRequest();
+    message.address = object.address ?? "";
+    message.custodyAsset = object.custodyAsset ?? "";
+    message.collateralAsset = object.collateralAsset ?? "";
     return message;
   },
 };
 
-const baseMTPResponse: object = {};
+function createBaseMTPResponse(): MTPResponse {
+  return { mtp: undefined };
+}
 
 export const MTPResponse = {
   encode(
@@ -143,7 +119,7 @@ export const MTPResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MTPResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMTPResponse } as MTPResponse;
+    const message = createBaseMTPResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -159,13 +135,9 @@ export const MTPResponse = {
   },
 
   fromJSON(object: any): MTPResponse {
-    const message = { ...baseMTPResponse } as MTPResponse;
-    if (object.mtp !== undefined && object.mtp !== null) {
-      message.mtp = MTP.fromJSON(object.mtp);
-    } else {
-      message.mtp = undefined;
-    }
-    return message;
+    return {
+      mtp: isSet(object.mtp) ? MTP.fromJSON(object.mtp) : undefined,
+    };
   },
 
   toJSON(message: MTPResponse): unknown {
@@ -175,18 +147,21 @@ export const MTPResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MTPResponse>): MTPResponse {
-    const message = { ...baseMTPResponse } as MTPResponse;
-    if (object.mtp !== undefined && object.mtp !== null) {
-      message.mtp = MTP.fromPartial(object.mtp);
-    } else {
-      message.mtp = undefined;
-    }
+  fromPartial<I extends Exact<DeepPartial<MTPResponse>, I>>(
+    object: I,
+  ): MTPResponse {
+    const message = createBaseMTPResponse();
+    message.mtp =
+      object.mtp !== undefined && object.mtp !== null
+        ? MTP.fromPartial(object.mtp)
+        : undefined;
     return message;
   },
 };
 
-const basePositionsForAddressRequest: object = { address: "" };
+function createBasePositionsForAddressRequest(): PositionsForAddressRequest {
+  return { address: "" };
+}
 
 export const PositionsForAddressRequest = {
   encode(
@@ -205,9 +180,7 @@ export const PositionsForAddressRequest = {
   ): PositionsForAddressRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...basePositionsForAddressRequest,
-    } as PositionsForAddressRequest;
+    const message = createBasePositionsForAddressRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -223,15 +196,9 @@ export const PositionsForAddressRequest = {
   },
 
   fromJSON(object: any): PositionsForAddressRequest {
-    const message = {
-      ...basePositionsForAddressRequest,
-    } as PositionsForAddressRequest;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+    };
   },
 
   toJSON(message: PositionsForAddressRequest): unknown {
@@ -240,22 +207,18 @@ export const PositionsForAddressRequest = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<PositionsForAddressRequest>,
+  fromPartial<I extends Exact<DeepPartial<PositionsForAddressRequest>, I>>(
+    object: I,
   ): PositionsForAddressRequest {
-    const message = {
-      ...basePositionsForAddressRequest,
-    } as PositionsForAddressRequest;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
+    const message = createBasePositionsForAddressRequest();
+    message.address = object.address ?? "";
     return message;
   },
 };
 
-const basePositionsForAddressResponse: object = {};
+function createBasePositionsForAddressResponse(): PositionsForAddressResponse {
+  return { mtps: [] };
+}
 
 export const PositionsForAddressResponse = {
   encode(
@@ -274,10 +237,7 @@ export const PositionsForAddressResponse = {
   ): PositionsForAddressResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...basePositionsForAddressResponse,
-    } as PositionsForAddressResponse;
-    message.mtps = [];
+    const message = createBasePositionsForAddressResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -293,16 +253,11 @@ export const PositionsForAddressResponse = {
   },
 
   fromJSON(object: any): PositionsForAddressResponse {
-    const message = {
-      ...basePositionsForAddressResponse,
-    } as PositionsForAddressResponse;
-    message.mtps = [];
-    if (object.mtps !== undefined && object.mtps !== null) {
-      for (const e of object.mtps) {
-        message.mtps.push(MTP.fromJSON(e));
-      }
-    }
-    return message;
+    return {
+      mtps: Array.isArray(object?.mtps)
+        ? object.mtps.map((e: any) => MTP.fromJSON(e))
+        : [],
+    };
   },
 
   toJSON(message: PositionsForAddressResponse): unknown {
@@ -315,18 +270,11 @@ export const PositionsForAddressResponse = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<PositionsForAddressResponse>,
+  fromPartial<I extends Exact<DeepPartial<PositionsForAddressResponse>, I>>(
+    object: I,
   ): PositionsForAddressResponse {
-    const message = {
-      ...basePositionsForAddressResponse,
-    } as PositionsForAddressResponse;
-    message.mtps = [];
-    if (object.mtps !== undefined && object.mtps !== null) {
-      for (const e of object.mtps) {
-        message.mtps.push(MTP.fromPartial(e));
-      }
-    }
+    const message = createBasePositionsForAddressResponse();
+    message.mtps = object.mtps?.map((e) => MTP.fromPartial(e)) || [];
     return message;
   },
 };
@@ -381,10 +329,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -393,7 +343,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

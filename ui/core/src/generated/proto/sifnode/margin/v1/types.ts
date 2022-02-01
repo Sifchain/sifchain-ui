@@ -31,7 +31,9 @@ export interface MTP {
   mtpHealth: string;
 }
 
-const baseGenesisState: object = {};
+function createBaseGenesisState(): GenesisState {
+  return { params: undefined };
+}
 
 export const GenesisState = {
   encode(
@@ -47,7 +49,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGenesisState } as GenesisState;
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -63,13 +65,9 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromJSON(object.params);
-    } else {
-      message.params = undefined;
-    }
-    return message;
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -79,27 +77,30 @@ export const GenesisState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromPartial(object.params);
-    } else {
-      message.params = undefined;
-    }
+  fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(
+    object: I,
+  ): GenesisState {
+    const message = createBaseGenesisState();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? Params.fromPartial(object.params)
+        : undefined;
     return message;
   },
 };
 
-const baseParams: object = {
-  leverageMax: "",
-  interestRateMax: "",
-  interestRateMin: "",
-  interestRateIncrease: "",
-  interestRateDecrease: "",
-  healthGainFactor: "",
-  epochLength: Long.ZERO,
-  pools: "",
-};
+function createBaseParams(): Params {
+  return {
+    leverageMax: "",
+    interestRateMax: "",
+    interestRateMin: "",
+    interestRateIncrease: "",
+    interestRateDecrease: "",
+    healthGainFactor: "",
+    epochLength: Long.ZERO,
+    pools: [],
+  };
+}
 
 export const Params = {
   encode(
@@ -136,8 +137,7 @@ export const Params = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseParams } as Params;
-    message.pools = [];
+    const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -174,64 +174,30 @@ export const Params = {
   },
 
   fromJSON(object: any): Params {
-    const message = { ...baseParams } as Params;
-    message.pools = [];
-    if (object.leverageMax !== undefined && object.leverageMax !== null) {
-      message.leverageMax = String(object.leverageMax);
-    } else {
-      message.leverageMax = "";
-    }
-    if (
-      object.interestRateMax !== undefined &&
-      object.interestRateMax !== null
-    ) {
-      message.interestRateMax = String(object.interestRateMax);
-    } else {
-      message.interestRateMax = "";
-    }
-    if (
-      object.interestRateMin !== undefined &&
-      object.interestRateMin !== null
-    ) {
-      message.interestRateMin = String(object.interestRateMin);
-    } else {
-      message.interestRateMin = "";
-    }
-    if (
-      object.interestRateIncrease !== undefined &&
-      object.interestRateIncrease !== null
-    ) {
-      message.interestRateIncrease = String(object.interestRateIncrease);
-    } else {
-      message.interestRateIncrease = "";
-    }
-    if (
-      object.interestRateDecrease !== undefined &&
-      object.interestRateDecrease !== null
-    ) {
-      message.interestRateDecrease = String(object.interestRateDecrease);
-    } else {
-      message.interestRateDecrease = "";
-    }
-    if (
-      object.healthGainFactor !== undefined &&
-      object.healthGainFactor !== null
-    ) {
-      message.healthGainFactor = String(object.healthGainFactor);
-    } else {
-      message.healthGainFactor = "";
-    }
-    if (object.epochLength !== undefined && object.epochLength !== null) {
-      message.epochLength = Long.fromString(object.epochLength);
-    } else {
-      message.epochLength = Long.ZERO;
-    }
-    if (object.pools !== undefined && object.pools !== null) {
-      for (const e of object.pools) {
-        message.pools.push(String(e));
-      }
-    }
-    return message;
+    return {
+      leverageMax: isSet(object.leverageMax) ? String(object.leverageMax) : "",
+      interestRateMax: isSet(object.interestRateMax)
+        ? String(object.interestRateMax)
+        : "",
+      interestRateMin: isSet(object.interestRateMin)
+        ? String(object.interestRateMin)
+        : "",
+      interestRateIncrease: isSet(object.interestRateIncrease)
+        ? String(object.interestRateIncrease)
+        : "",
+      interestRateDecrease: isSet(object.interestRateDecrease)
+        ? String(object.interestRateDecrease)
+        : "",
+      healthGainFactor: isSet(object.healthGainFactor)
+        ? String(object.healthGainFactor)
+        : "",
+      epochLength: isSet(object.epochLength)
+        ? Long.fromString(object.epochLength)
+        : Long.ZERO,
+      pools: Array.isArray(object?.pools)
+        ? object.pools.map((e: any) => String(e))
+        : [],
+    };
   },
 
   toJSON(message: Params): unknown {
@@ -258,79 +224,36 @@ export const Params = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Params>): Params {
-    const message = { ...baseParams } as Params;
-    message.pools = [];
-    if (object.leverageMax !== undefined && object.leverageMax !== null) {
-      message.leverageMax = object.leverageMax;
-    } else {
-      message.leverageMax = "";
-    }
-    if (
-      object.interestRateMax !== undefined &&
-      object.interestRateMax !== null
-    ) {
-      message.interestRateMax = object.interestRateMax;
-    } else {
-      message.interestRateMax = "";
-    }
-    if (
-      object.interestRateMin !== undefined &&
-      object.interestRateMin !== null
-    ) {
-      message.interestRateMin = object.interestRateMin;
-    } else {
-      message.interestRateMin = "";
-    }
-    if (
-      object.interestRateIncrease !== undefined &&
-      object.interestRateIncrease !== null
-    ) {
-      message.interestRateIncrease = object.interestRateIncrease;
-    } else {
-      message.interestRateIncrease = "";
-    }
-    if (
-      object.interestRateDecrease !== undefined &&
-      object.interestRateDecrease !== null
-    ) {
-      message.interestRateDecrease = object.interestRateDecrease;
-    } else {
-      message.interestRateDecrease = "";
-    }
-    if (
-      object.healthGainFactor !== undefined &&
-      object.healthGainFactor !== null
-    ) {
-      message.healthGainFactor = object.healthGainFactor;
-    } else {
-      message.healthGainFactor = "";
-    }
-    if (object.epochLength !== undefined && object.epochLength !== null) {
-      message.epochLength = object.epochLength as Long;
-    } else {
-      message.epochLength = Long.ZERO;
-    }
-    if (object.pools !== undefined && object.pools !== null) {
-      for (const e of object.pools) {
-        message.pools.push(e);
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
+    const message = createBaseParams();
+    message.leverageMax = object.leverageMax ?? "";
+    message.interestRateMax = object.interestRateMax ?? "";
+    message.interestRateMin = object.interestRateMin ?? "";
+    message.interestRateIncrease = object.interestRateIncrease ?? "";
+    message.interestRateDecrease = object.interestRateDecrease ?? "";
+    message.healthGainFactor = object.healthGainFactor ?? "";
+    message.epochLength =
+      object.epochLength !== undefined && object.epochLength !== null
+        ? Long.fromValue(object.epochLength)
+        : Long.ZERO;
+    message.pools = object.pools?.map((e) => e) || [];
     return message;
   },
 };
 
-const baseMTP: object = {
-  address: "",
-  collateralAsset: "",
-  collateralAmount: "",
-  liabilitiesP: "",
-  liabilitiesI: "",
-  custodyAsset: "",
-  custodyAmount: "",
-  leverage: "",
-  mtpHealth: "",
-};
+function createBaseMTP(): MTP {
+  return {
+    address: "",
+    collateralAsset: "",
+    collateralAmount: "",
+    liabilitiesP: "",
+    liabilitiesI: "",
+    custodyAsset: "",
+    custodyAmount: "",
+    leverage: "",
+    mtpHealth: "",
+  };
+}
 
 export const MTP = {
   encode(message: MTP, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -367,7 +290,7 @@ export const MTP = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MTP {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMTP } as MTP;
+    const message = createBaseMTP();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -407,59 +330,29 @@ export const MTP = {
   },
 
   fromJSON(object: any): MTP {
-    const message = { ...baseMTP } as MTP;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = String(object.collateralAsset);
-    } else {
-      message.collateralAsset = "";
-    }
-    if (
-      object.collateralAmount !== undefined &&
-      object.collateralAmount !== null
-    ) {
-      message.collateralAmount = String(object.collateralAmount);
-    } else {
-      message.collateralAmount = "";
-    }
-    if (object.liabilitiesP !== undefined && object.liabilitiesP !== null) {
-      message.liabilitiesP = String(object.liabilitiesP);
-    } else {
-      message.liabilitiesP = "";
-    }
-    if (object.liabilitiesI !== undefined && object.liabilitiesI !== null) {
-      message.liabilitiesI = String(object.liabilitiesI);
-    } else {
-      message.liabilitiesI = "";
-    }
-    if (object.custodyAsset !== undefined && object.custodyAsset !== null) {
-      message.custodyAsset = String(object.custodyAsset);
-    } else {
-      message.custodyAsset = "";
-    }
-    if (object.custodyAmount !== undefined && object.custodyAmount !== null) {
-      message.custodyAmount = String(object.custodyAmount);
-    } else {
-      message.custodyAmount = "";
-    }
-    if (object.leverage !== undefined && object.leverage !== null) {
-      message.leverage = String(object.leverage);
-    } else {
-      message.leverage = "";
-    }
-    if (object.mtpHealth !== undefined && object.mtpHealth !== null) {
-      message.mtpHealth = String(object.mtpHealth);
-    } else {
-      message.mtpHealth = "";
-    }
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      collateralAsset: isSet(object.collateralAsset)
+        ? String(object.collateralAsset)
+        : "",
+      collateralAmount: isSet(object.collateralAmount)
+        ? String(object.collateralAmount)
+        : "",
+      liabilitiesP: isSet(object.liabilitiesP)
+        ? String(object.liabilitiesP)
+        : "",
+      liabilitiesI: isSet(object.liabilitiesI)
+        ? String(object.liabilitiesI)
+        : "",
+      custodyAsset: isSet(object.custodyAsset)
+        ? String(object.custodyAsset)
+        : "",
+      custodyAmount: isSet(object.custodyAmount)
+        ? String(object.custodyAmount)
+        : "",
+      leverage: isSet(object.leverage) ? String(object.leverage) : "",
+      mtpHealth: isSet(object.mtpHealth) ? String(object.mtpHealth) : "",
+    };
   },
 
   toJSON(message: MTP): unknown {
@@ -482,59 +375,17 @@ export const MTP = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MTP>): MTP {
-    const message = { ...baseMTP } as MTP;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
-    if (
-      object.collateralAsset !== undefined &&
-      object.collateralAsset !== null
-    ) {
-      message.collateralAsset = object.collateralAsset;
-    } else {
-      message.collateralAsset = "";
-    }
-    if (
-      object.collateralAmount !== undefined &&
-      object.collateralAmount !== null
-    ) {
-      message.collateralAmount = object.collateralAmount;
-    } else {
-      message.collateralAmount = "";
-    }
-    if (object.liabilitiesP !== undefined && object.liabilitiesP !== null) {
-      message.liabilitiesP = object.liabilitiesP;
-    } else {
-      message.liabilitiesP = "";
-    }
-    if (object.liabilitiesI !== undefined && object.liabilitiesI !== null) {
-      message.liabilitiesI = object.liabilitiesI;
-    } else {
-      message.liabilitiesI = "";
-    }
-    if (object.custodyAsset !== undefined && object.custodyAsset !== null) {
-      message.custodyAsset = object.custodyAsset;
-    } else {
-      message.custodyAsset = "";
-    }
-    if (object.custodyAmount !== undefined && object.custodyAmount !== null) {
-      message.custodyAmount = object.custodyAmount;
-    } else {
-      message.custodyAmount = "";
-    }
-    if (object.leverage !== undefined && object.leverage !== null) {
-      message.leverage = object.leverage;
-    } else {
-      message.leverage = "";
-    }
-    if (object.mtpHealth !== undefined && object.mtpHealth !== null) {
-      message.mtpHealth = object.mtpHealth;
-    } else {
-      message.mtpHealth = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MTP>, I>>(object: I): MTP {
+    const message = createBaseMTP();
+    message.address = object.address ?? "";
+    message.collateralAsset = object.collateralAsset ?? "";
+    message.collateralAmount = object.collateralAmount ?? "";
+    message.liabilitiesP = object.liabilitiesP ?? "";
+    message.liabilitiesI = object.liabilitiesI ?? "";
+    message.custodyAsset = object.custodyAsset ?? "";
+    message.custodyAmount = object.custodyAmount ?? "";
+    message.leverage = object.leverage ?? "";
+    message.mtpHealth = object.mtpHealth ?? "";
     return message;
   },
 };
@@ -546,10 +397,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -558,7 +411,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

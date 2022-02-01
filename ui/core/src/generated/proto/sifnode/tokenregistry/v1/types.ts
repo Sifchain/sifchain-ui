@@ -95,7 +95,9 @@ export interface RegistryEntry {
   ibcCounterpartyChainId: string;
 }
 
-const baseGenesisState: object = { adminAccount: "" };
+function createBaseGenesisState(): GenesisState {
+  return { adminAccount: "", registry: undefined };
+}
 
 export const GenesisState = {
   encode(
@@ -114,7 +116,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGenesisState } as GenesisState;
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -133,18 +135,14 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    if (object.adminAccount !== undefined && object.adminAccount !== null) {
-      message.adminAccount = String(object.adminAccount);
-    } else {
-      message.adminAccount = "";
-    }
-    if (object.registry !== undefined && object.registry !== null) {
-      message.registry = Registry.fromJSON(object.registry);
-    } else {
-      message.registry = undefined;
-    }
-    return message;
+    return {
+      adminAccount: isSet(object.adminAccount)
+        ? String(object.adminAccount)
+        : "",
+      registry: isSet(object.registry)
+        ? Registry.fromJSON(object.registry)
+        : undefined,
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -158,23 +156,22 @@ export const GenesisState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    if (object.adminAccount !== undefined && object.adminAccount !== null) {
-      message.adminAccount = object.adminAccount;
-    } else {
-      message.adminAccount = "";
-    }
-    if (object.registry !== undefined && object.registry !== null) {
-      message.registry = Registry.fromPartial(object.registry);
-    } else {
-      message.registry = undefined;
-    }
+  fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(
+    object: I,
+  ): GenesisState {
+    const message = createBaseGenesisState();
+    message.adminAccount = object.adminAccount ?? "";
+    message.registry =
+      object.registry !== undefined && object.registry !== null
+        ? Registry.fromPartial(object.registry)
+        : undefined;
     return message;
   },
 };
 
-const baseRegistry: object = {};
+function createBaseRegistry(): Registry {
+  return { entries: [] };
+}
 
 export const Registry = {
   encode(
@@ -190,8 +187,7 @@ export const Registry = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Registry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseRegistry } as Registry;
-    message.entries = [];
+    const message = createBaseRegistry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -207,14 +203,11 @@ export const Registry = {
   },
 
   fromJSON(object: any): Registry {
-    const message = { ...baseRegistry } as Registry;
-    message.entries = [];
-    if (object.entries !== undefined && object.entries !== null) {
-      for (const e of object.entries) {
-        message.entries.push(RegistryEntry.fromJSON(e));
-      }
-    }
-    return message;
+    return {
+      entries: Array.isArray(object?.entries)
+        ? object.entries.map((e: any) => RegistryEntry.fromJSON(e))
+        : [],
+    };
   },
 
   toJSON(message: Registry): unknown {
@@ -229,36 +222,34 @@ export const Registry = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Registry>): Registry {
-    const message = { ...baseRegistry } as Registry;
-    message.entries = [];
-    if (object.entries !== undefined && object.entries !== null) {
-      for (const e of object.entries) {
-        message.entries.push(RegistryEntry.fromPartial(e));
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<Registry>, I>>(object: I): Registry {
+    const message = createBaseRegistry();
+    message.entries =
+      object.entries?.map((e) => RegistryEntry.fromPartial(e)) || [];
     return message;
   },
 };
 
-const baseRegistryEntry: object = {
-  decimals: Long.ZERO,
-  denom: "",
-  baseDenom: "",
-  path: "",
-  ibcChannelId: "",
-  ibcCounterpartyChannelId: "",
-  displayName: "",
-  displaySymbol: "",
-  network: "",
-  address: "",
-  externalSymbol: "",
-  transferLimit: "",
-  permissions: 0,
-  unitDenom: "",
-  ibcCounterpartyDenom: "",
-  ibcCounterpartyChainId: "",
-};
+function createBaseRegistryEntry(): RegistryEntry {
+  return {
+    decimals: Long.ZERO,
+    denom: "",
+    baseDenom: "",
+    path: "",
+    ibcChannelId: "",
+    ibcCounterpartyChannelId: "",
+    displayName: "",
+    displaySymbol: "",
+    network: "",
+    address: "",
+    externalSymbol: "",
+    transferLimit: "",
+    permissions: [],
+    unitDenom: "",
+    ibcCounterpartyDenom: "",
+    ibcCounterpartyChainId: "",
+  };
+}
 
 export const RegistryEntry = {
   encode(
@@ -321,8 +312,7 @@ export const RegistryEntry = {
   decode(input: _m0.Reader | Uint8Array, length?: number): RegistryEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseRegistryEntry } as RegistryEntry;
-    message.permissions = [];
+    const message = createBaseRegistryEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -390,100 +380,42 @@ export const RegistryEntry = {
   },
 
   fromJSON(object: any): RegistryEntry {
-    const message = { ...baseRegistryEntry } as RegistryEntry;
-    message.permissions = [];
-    if (object.decimals !== undefined && object.decimals !== null) {
-      message.decimals = Long.fromString(object.decimals);
-    } else {
-      message.decimals = Long.ZERO;
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = String(object.denom);
-    } else {
-      message.denom = "";
-    }
-    if (object.baseDenom !== undefined && object.baseDenom !== null) {
-      message.baseDenom = String(object.baseDenom);
-    } else {
-      message.baseDenom = "";
-    }
-    if (object.path !== undefined && object.path !== null) {
-      message.path = String(object.path);
-    } else {
-      message.path = "";
-    }
-    if (object.ibcChannelId !== undefined && object.ibcChannelId !== null) {
-      message.ibcChannelId = String(object.ibcChannelId);
-    } else {
-      message.ibcChannelId = "";
-    }
-    if (
-      object.ibcCounterpartyChannelId !== undefined &&
-      object.ibcCounterpartyChannelId !== null
-    ) {
-      message.ibcCounterpartyChannelId = String(
-        object.ibcCounterpartyChannelId,
-      );
-    } else {
-      message.ibcCounterpartyChannelId = "";
-    }
-    if (object.displayName !== undefined && object.displayName !== null) {
-      message.displayName = String(object.displayName);
-    } else {
-      message.displayName = "";
-    }
-    if (object.displaySymbol !== undefined && object.displaySymbol !== null) {
-      message.displaySymbol = String(object.displaySymbol);
-    } else {
-      message.displaySymbol = "";
-    }
-    if (object.network !== undefined && object.network !== null) {
-      message.network = String(object.network);
-    } else {
-      message.network = "";
-    }
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    if (object.externalSymbol !== undefined && object.externalSymbol !== null) {
-      message.externalSymbol = String(object.externalSymbol);
-    } else {
-      message.externalSymbol = "";
-    }
-    if (object.transferLimit !== undefined && object.transferLimit !== null) {
-      message.transferLimit = String(object.transferLimit);
-    } else {
-      message.transferLimit = "";
-    }
-    if (object.permissions !== undefined && object.permissions !== null) {
-      for (const e of object.permissions) {
-        message.permissions.push(permissionFromJSON(e));
-      }
-    }
-    if (object.unitDenom !== undefined && object.unitDenom !== null) {
-      message.unitDenom = String(object.unitDenom);
-    } else {
-      message.unitDenom = "";
-    }
-    if (
-      object.ibcCounterpartyDenom !== undefined &&
-      object.ibcCounterpartyDenom !== null
-    ) {
-      message.ibcCounterpartyDenom = String(object.ibcCounterpartyDenom);
-    } else {
-      message.ibcCounterpartyDenom = "";
-    }
-    if (
-      object.ibcCounterpartyChainId !== undefined &&
-      object.ibcCounterpartyChainId !== null
-    ) {
-      message.ibcCounterpartyChainId = String(object.ibcCounterpartyChainId);
-    } else {
-      message.ibcCounterpartyChainId = "";
-    }
-    return message;
+    return {
+      decimals: isSet(object.decimals)
+        ? Long.fromString(object.decimals)
+        : Long.ZERO,
+      denom: isSet(object.denom) ? String(object.denom) : "",
+      baseDenom: isSet(object.baseDenom) ? String(object.baseDenom) : "",
+      path: isSet(object.path) ? String(object.path) : "",
+      ibcChannelId: isSet(object.ibcChannelId)
+        ? String(object.ibcChannelId)
+        : "",
+      ibcCounterpartyChannelId: isSet(object.ibcCounterpartyChannelId)
+        ? String(object.ibcCounterpartyChannelId)
+        : "",
+      displayName: isSet(object.displayName) ? String(object.displayName) : "",
+      displaySymbol: isSet(object.displaySymbol)
+        ? String(object.displaySymbol)
+        : "",
+      network: isSet(object.network) ? String(object.network) : "",
+      address: isSet(object.address) ? String(object.address) : "",
+      externalSymbol: isSet(object.externalSymbol)
+        ? String(object.externalSymbol)
+        : "",
+      transferLimit: isSet(object.transferLimit)
+        ? String(object.transferLimit)
+        : "",
+      permissions: Array.isArray(object?.permissions)
+        ? object.permissions.map((e: any) => permissionFromJSON(e))
+        : [],
+      unitDenom: isSet(object.unitDenom) ? String(object.unitDenom) : "",
+      ibcCounterpartyDenom: isSet(object.ibcCounterpartyDenom)
+        ? String(object.ibcCounterpartyDenom)
+        : "",
+      ibcCounterpartyChainId: isSet(object.ibcCounterpartyChainId)
+        ? String(object.ibcCounterpartyChainId)
+        : "",
+    };
   },
 
   toJSON(message: RegistryEntry): unknown {
@@ -520,98 +452,29 @@ export const RegistryEntry = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<RegistryEntry>): RegistryEntry {
-    const message = { ...baseRegistryEntry } as RegistryEntry;
-    message.permissions = [];
-    if (object.decimals !== undefined && object.decimals !== null) {
-      message.decimals = object.decimals as Long;
-    } else {
-      message.decimals = Long.ZERO;
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = object.denom;
-    } else {
-      message.denom = "";
-    }
-    if (object.baseDenom !== undefined && object.baseDenom !== null) {
-      message.baseDenom = object.baseDenom;
-    } else {
-      message.baseDenom = "";
-    }
-    if (object.path !== undefined && object.path !== null) {
-      message.path = object.path;
-    } else {
-      message.path = "";
-    }
-    if (object.ibcChannelId !== undefined && object.ibcChannelId !== null) {
-      message.ibcChannelId = object.ibcChannelId;
-    } else {
-      message.ibcChannelId = "";
-    }
-    if (
-      object.ibcCounterpartyChannelId !== undefined &&
-      object.ibcCounterpartyChannelId !== null
-    ) {
-      message.ibcCounterpartyChannelId = object.ibcCounterpartyChannelId;
-    } else {
-      message.ibcCounterpartyChannelId = "";
-    }
-    if (object.displayName !== undefined && object.displayName !== null) {
-      message.displayName = object.displayName;
-    } else {
-      message.displayName = "";
-    }
-    if (object.displaySymbol !== undefined && object.displaySymbol !== null) {
-      message.displaySymbol = object.displaySymbol;
-    } else {
-      message.displaySymbol = "";
-    }
-    if (object.network !== undefined && object.network !== null) {
-      message.network = object.network;
-    } else {
-      message.network = "";
-    }
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
-    if (object.externalSymbol !== undefined && object.externalSymbol !== null) {
-      message.externalSymbol = object.externalSymbol;
-    } else {
-      message.externalSymbol = "";
-    }
-    if (object.transferLimit !== undefined && object.transferLimit !== null) {
-      message.transferLimit = object.transferLimit;
-    } else {
-      message.transferLimit = "";
-    }
-    if (object.permissions !== undefined && object.permissions !== null) {
-      for (const e of object.permissions) {
-        message.permissions.push(e);
-      }
-    }
-    if (object.unitDenom !== undefined && object.unitDenom !== null) {
-      message.unitDenom = object.unitDenom;
-    } else {
-      message.unitDenom = "";
-    }
-    if (
-      object.ibcCounterpartyDenom !== undefined &&
-      object.ibcCounterpartyDenom !== null
-    ) {
-      message.ibcCounterpartyDenom = object.ibcCounterpartyDenom;
-    } else {
-      message.ibcCounterpartyDenom = "";
-    }
-    if (
-      object.ibcCounterpartyChainId !== undefined &&
-      object.ibcCounterpartyChainId !== null
-    ) {
-      message.ibcCounterpartyChainId = object.ibcCounterpartyChainId;
-    } else {
-      message.ibcCounterpartyChainId = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<RegistryEntry>, I>>(
+    object: I,
+  ): RegistryEntry {
+    const message = createBaseRegistryEntry();
+    message.decimals =
+      object.decimals !== undefined && object.decimals !== null
+        ? Long.fromValue(object.decimals)
+        : Long.ZERO;
+    message.denom = object.denom ?? "";
+    message.baseDenom = object.baseDenom ?? "";
+    message.path = object.path ?? "";
+    message.ibcChannelId = object.ibcChannelId ?? "";
+    message.ibcCounterpartyChannelId = object.ibcCounterpartyChannelId ?? "";
+    message.displayName = object.displayName ?? "";
+    message.displaySymbol = object.displaySymbol ?? "";
+    message.network = object.network ?? "";
+    message.address = object.address ?? "";
+    message.externalSymbol = object.externalSymbol ?? "";
+    message.transferLimit = object.transferLimit ?? "";
+    message.permissions = object.permissions?.map((e) => e) || [];
+    message.unitDenom = object.unitDenom ?? "";
+    message.ibcCounterpartyDenom = object.ibcCounterpartyDenom ?? "";
+    message.ibcCounterpartyChainId = object.ibcCounterpartyChainId ?? "";
     return message;
   },
 };
@@ -623,10 +486,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -635,7 +500,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

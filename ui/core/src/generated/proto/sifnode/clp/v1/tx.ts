@@ -49,11 +49,14 @@ export interface MsgDecommissionPool {
 
 export interface MsgDecommissionPoolResponse {}
 
-const baseMsgRemoveLiquidity: object = {
-  signer: "",
-  wBasisPoints: "",
-  asymmetry: "",
-};
+function createBaseMsgRemoveLiquidity(): MsgRemoveLiquidity {
+  return {
+    signer: "",
+    externalAsset: undefined,
+    wBasisPoints: "",
+    asymmetry: "",
+  };
+}
 
 export const MsgRemoveLiquidity = {
   encode(
@@ -78,7 +81,7 @@ export const MsgRemoveLiquidity = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRemoveLiquidity {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgRemoveLiquidity } as MsgRemoveLiquidity;
+    const message = createBaseMsgRemoveLiquidity();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -103,28 +106,16 @@ export const MsgRemoveLiquidity = {
   },
 
   fromJSON(object: any): MsgRemoveLiquidity {
-    const message = { ...baseMsgRemoveLiquidity } as MsgRemoveLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (object.wBasisPoints !== undefined && object.wBasisPoints !== null) {
-      message.wBasisPoints = String(object.wBasisPoints);
-    } else {
-      message.wBasisPoints = "";
-    }
-    if (object.asymmetry !== undefined && object.asymmetry !== null) {
-      message.asymmetry = String(object.asymmetry);
-    } else {
-      message.asymmetry = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      wBasisPoints: isSet(object.wBasisPoints)
+        ? String(object.wBasisPoints)
+        : "",
+      asymmetry: isSet(object.asymmetry) ? String(object.asymmetry) : "",
+    };
   },
 
   toJSON(message: MsgRemoveLiquidity): unknown {
@@ -140,33 +131,24 @@ export const MsgRemoveLiquidity = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgRemoveLiquidity>): MsgRemoveLiquidity {
-    const message = { ...baseMsgRemoveLiquidity } as MsgRemoveLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (object.wBasisPoints !== undefined && object.wBasisPoints !== null) {
-      message.wBasisPoints = object.wBasisPoints;
-    } else {
-      message.wBasisPoints = "";
-    }
-    if (object.asymmetry !== undefined && object.asymmetry !== null) {
-      message.asymmetry = object.asymmetry;
-    } else {
-      message.asymmetry = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidity>, I>>(
+    object: I,
+  ): MsgRemoveLiquidity {
+    const message = createBaseMsgRemoveLiquidity();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.wBasisPoints = object.wBasisPoints ?? "";
+    message.asymmetry = object.asymmetry ?? "";
     return message;
   },
 };
 
-const baseMsgRemoveLiquidityResponse: object = {};
+function createBaseMsgRemoveLiquidityResponse(): MsgRemoveLiquidityResponse {
+  return {};
+}
 
 export const MsgRemoveLiquidityResponse = {
   encode(
@@ -182,9 +164,7 @@ export const MsgRemoveLiquidityResponse = {
   ): MsgRemoveLiquidityResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgRemoveLiquidityResponse,
-    } as MsgRemoveLiquidityResponse;
+    const message = createBaseMsgRemoveLiquidityResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -197,10 +177,7 @@ export const MsgRemoveLiquidityResponse = {
   },
 
   fromJSON(_: any): MsgRemoveLiquidityResponse {
-    const message = {
-      ...baseMsgRemoveLiquidityResponse,
-    } as MsgRemoveLiquidityResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgRemoveLiquidityResponse): unknown {
@@ -208,21 +185,22 @@ export const MsgRemoveLiquidityResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgRemoveLiquidityResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidityResponse>, I>>(
+    _: I,
   ): MsgRemoveLiquidityResponse {
-    const message = {
-      ...baseMsgRemoveLiquidityResponse,
-    } as MsgRemoveLiquidityResponse;
+    const message = createBaseMsgRemoveLiquidityResponse();
     return message;
   },
 };
 
-const baseMsgCreatePool: object = {
-  signer: "",
-  nativeAssetAmount: "",
-  externalAssetAmount: "",
-};
+function createBaseMsgCreatePool(): MsgCreatePool {
+  return {
+    signer: "",
+    externalAsset: undefined,
+    nativeAssetAmount: "",
+    externalAssetAmount: "",
+  };
+}
 
 export const MsgCreatePool = {
   encode(
@@ -247,7 +225,7 @@ export const MsgCreatePool = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreatePool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreatePool } as MsgCreatePool;
+    const message = createBaseMsgCreatePool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -272,34 +250,18 @@ export const MsgCreatePool = {
   },
 
   fromJSON(object: any): MsgCreatePool {
-    const message = { ...baseMsgCreatePool } as MsgCreatePool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = String(object.nativeAssetAmount);
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = String(object.externalAssetAmount);
-    } else {
-      message.externalAssetAmount = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      nativeAssetAmount: isSet(object.nativeAssetAmount)
+        ? String(object.nativeAssetAmount)
+        : "",
+      externalAssetAmount: isSet(object.externalAssetAmount)
+        ? String(object.externalAssetAmount)
+        : "",
+    };
   },
 
   toJSON(message: MsgCreatePool): unknown {
@@ -316,39 +278,24 @@ export const MsgCreatePool = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgCreatePool>): MsgCreatePool {
-    const message = { ...baseMsgCreatePool } as MsgCreatePool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = object.nativeAssetAmount;
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = object.externalAssetAmount;
-    } else {
-      message.externalAssetAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgCreatePool>, I>>(
+    object: I,
+  ): MsgCreatePool {
+    const message = createBaseMsgCreatePool();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.nativeAssetAmount = object.nativeAssetAmount ?? "";
+    message.externalAssetAmount = object.externalAssetAmount ?? "";
     return message;
   },
 };
 
-const baseMsgCreatePoolResponse: object = {};
+function createBaseMsgCreatePoolResponse(): MsgCreatePoolResponse {
+  return {};
+}
 
 export const MsgCreatePoolResponse = {
   encode(
@@ -364,7 +311,7 @@ export const MsgCreatePoolResponse = {
   ): MsgCreatePoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreatePoolResponse } as MsgCreatePoolResponse;
+    const message = createBaseMsgCreatePoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -377,8 +324,7 @@ export const MsgCreatePoolResponse = {
   },
 
   fromJSON(_: any): MsgCreatePoolResponse {
-    const message = { ...baseMsgCreatePoolResponse } as MsgCreatePoolResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreatePoolResponse): unknown {
@@ -386,17 +332,22 @@ export const MsgCreatePoolResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgCreatePoolResponse>): MsgCreatePoolResponse {
-    const message = { ...baseMsgCreatePoolResponse } as MsgCreatePoolResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCreatePoolResponse>, I>>(
+    _: I,
+  ): MsgCreatePoolResponse {
+    const message = createBaseMsgCreatePoolResponse();
     return message;
   },
 };
 
-const baseMsgAddLiquidity: object = {
-  signer: "",
-  nativeAssetAmount: "",
-  externalAssetAmount: "",
-};
+function createBaseMsgAddLiquidity(): MsgAddLiquidity {
+  return {
+    signer: "",
+    externalAsset: undefined,
+    nativeAssetAmount: "",
+    externalAssetAmount: "",
+  };
+}
 
 export const MsgAddLiquidity = {
   encode(
@@ -421,7 +372,7 @@ export const MsgAddLiquidity = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddLiquidity {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgAddLiquidity } as MsgAddLiquidity;
+    const message = createBaseMsgAddLiquidity();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -446,34 +397,18 @@ export const MsgAddLiquidity = {
   },
 
   fromJSON(object: any): MsgAddLiquidity {
-    const message = { ...baseMsgAddLiquidity } as MsgAddLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = String(object.nativeAssetAmount);
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = String(object.externalAssetAmount);
-    } else {
-      message.externalAssetAmount = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      nativeAssetAmount: isSet(object.nativeAssetAmount)
+        ? String(object.nativeAssetAmount)
+        : "",
+      externalAssetAmount: isSet(object.externalAssetAmount)
+        ? String(object.externalAssetAmount)
+        : "",
+    };
   },
 
   toJSON(message: MsgAddLiquidity): unknown {
@@ -490,39 +425,24 @@ export const MsgAddLiquidity = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgAddLiquidity>): MsgAddLiquidity {
-    const message = { ...baseMsgAddLiquidity } as MsgAddLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = object.nativeAssetAmount;
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = object.externalAssetAmount;
-    } else {
-      message.externalAssetAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgAddLiquidity>, I>>(
+    object: I,
+  ): MsgAddLiquidity {
+    const message = createBaseMsgAddLiquidity();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.nativeAssetAmount = object.nativeAssetAmount ?? "";
+    message.externalAssetAmount = object.externalAssetAmount ?? "";
     return message;
   },
 };
 
-const baseMsgAddLiquidityResponse: object = {};
+function createBaseMsgAddLiquidityResponse(): MsgAddLiquidityResponse {
+  return {};
+}
 
 export const MsgAddLiquidityResponse = {
   encode(
@@ -538,9 +458,7 @@ export const MsgAddLiquidityResponse = {
   ): MsgAddLiquidityResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgAddLiquidityResponse,
-    } as MsgAddLiquidityResponse;
+    const message = createBaseMsgAddLiquidityResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -553,10 +471,7 @@ export const MsgAddLiquidityResponse = {
   },
 
   fromJSON(_: any): MsgAddLiquidityResponse {
-    const message = {
-      ...baseMsgAddLiquidityResponse,
-    } as MsgAddLiquidityResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgAddLiquidityResponse): unknown {
@@ -564,21 +479,23 @@ export const MsgAddLiquidityResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgAddLiquidityResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgAddLiquidityResponse>, I>>(
+    _: I,
   ): MsgAddLiquidityResponse {
-    const message = {
-      ...baseMsgAddLiquidityResponse,
-    } as MsgAddLiquidityResponse;
+    const message = createBaseMsgAddLiquidityResponse();
     return message;
   },
 };
 
-const baseMsgSwap: object = {
-  signer: "",
-  sentAmount: "",
-  minReceivingAmount: "",
-};
+function createBaseMsgSwap(): MsgSwap {
+  return {
+    signer: "",
+    sentAsset: undefined,
+    receivedAsset: undefined,
+    sentAmount: "",
+    minReceivingAmount: "",
+  };
+}
 
 export const MsgSwap = {
   encode(
@@ -606,7 +523,7 @@ export const MsgSwap = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSwap {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgSwap } as MsgSwap;
+    const message = createBaseMsgSwap();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -634,36 +551,19 @@ export const MsgSwap = {
   },
 
   fromJSON(object: any): MsgSwap {
-    const message = { ...baseMsgSwap } as MsgSwap;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.sentAsset !== undefined && object.sentAsset !== null) {
-      message.sentAsset = Asset.fromJSON(object.sentAsset);
-    } else {
-      message.sentAsset = undefined;
-    }
-    if (object.receivedAsset !== undefined && object.receivedAsset !== null) {
-      message.receivedAsset = Asset.fromJSON(object.receivedAsset);
-    } else {
-      message.receivedAsset = undefined;
-    }
-    if (object.sentAmount !== undefined && object.sentAmount !== null) {
-      message.sentAmount = String(object.sentAmount);
-    } else {
-      message.sentAmount = "";
-    }
-    if (
-      object.minReceivingAmount !== undefined &&
-      object.minReceivingAmount !== null
-    ) {
-      message.minReceivingAmount = String(object.minReceivingAmount);
-    } else {
-      message.minReceivingAmount = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      sentAsset: isSet(object.sentAsset)
+        ? Asset.fromJSON(object.sentAsset)
+        : undefined,
+      receivedAsset: isSet(object.receivedAsset)
+        ? Asset.fromJSON(object.receivedAsset)
+        : undefined,
+      sentAmount: isSet(object.sentAmount) ? String(object.sentAmount) : "",
+      minReceivingAmount: isSet(object.minReceivingAmount)
+        ? String(object.minReceivingAmount)
+        : "",
+    };
   },
 
   toJSON(message: MsgSwap): unknown {
@@ -683,41 +583,26 @@ export const MsgSwap = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgSwap>): MsgSwap {
-    const message = { ...baseMsgSwap } as MsgSwap;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.sentAsset !== undefined && object.sentAsset !== null) {
-      message.sentAsset = Asset.fromPartial(object.sentAsset);
-    } else {
-      message.sentAsset = undefined;
-    }
-    if (object.receivedAsset !== undefined && object.receivedAsset !== null) {
-      message.receivedAsset = Asset.fromPartial(object.receivedAsset);
-    } else {
-      message.receivedAsset = undefined;
-    }
-    if (object.sentAmount !== undefined && object.sentAmount !== null) {
-      message.sentAmount = object.sentAmount;
-    } else {
-      message.sentAmount = "";
-    }
-    if (
-      object.minReceivingAmount !== undefined &&
-      object.minReceivingAmount !== null
-    ) {
-      message.minReceivingAmount = object.minReceivingAmount;
-    } else {
-      message.minReceivingAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgSwap>, I>>(object: I): MsgSwap {
+    const message = createBaseMsgSwap();
+    message.signer = object.signer ?? "";
+    message.sentAsset =
+      object.sentAsset !== undefined && object.sentAsset !== null
+        ? Asset.fromPartial(object.sentAsset)
+        : undefined;
+    message.receivedAsset =
+      object.receivedAsset !== undefined && object.receivedAsset !== null
+        ? Asset.fromPartial(object.receivedAsset)
+        : undefined;
+    message.sentAmount = object.sentAmount ?? "";
+    message.minReceivingAmount = object.minReceivingAmount ?? "";
     return message;
   },
 };
 
-const baseMsgSwapResponse: object = {};
+function createBaseMsgSwapResponse(): MsgSwapResponse {
+  return {};
+}
 
 export const MsgSwapResponse = {
   encode(
@@ -730,7 +615,7 @@ export const MsgSwapResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSwapResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgSwapResponse } as MsgSwapResponse;
+    const message = createBaseMsgSwapResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -743,8 +628,7 @@ export const MsgSwapResponse = {
   },
 
   fromJSON(_: any): MsgSwapResponse {
-    const message = { ...baseMsgSwapResponse } as MsgSwapResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSwapResponse): unknown {
@@ -752,13 +636,17 @@ export const MsgSwapResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgSwapResponse>): MsgSwapResponse {
-    const message = { ...baseMsgSwapResponse } as MsgSwapResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgSwapResponse>, I>>(
+    _: I,
+  ): MsgSwapResponse {
+    const message = createBaseMsgSwapResponse();
     return message;
   },
 };
 
-const baseMsgDecommissionPool: object = { signer: "", symbol: "" };
+function createBaseMsgDecommissionPool(): MsgDecommissionPool {
+  return { signer: "", symbol: "" };
+}
 
 export const MsgDecommissionPool = {
   encode(
@@ -777,7 +665,7 @@ export const MsgDecommissionPool = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDecommissionPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgDecommissionPool } as MsgDecommissionPool;
+    const message = createBaseMsgDecommissionPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -796,18 +684,10 @@ export const MsgDecommissionPool = {
   },
 
   fromJSON(object: any): MsgDecommissionPool {
-    const message = { ...baseMsgDecommissionPool } as MsgDecommissionPool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = String(object.symbol);
-    } else {
-      message.symbol = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+    };
   },
 
   toJSON(message: MsgDecommissionPool): unknown {
@@ -817,23 +697,19 @@ export const MsgDecommissionPool = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgDecommissionPool>): MsgDecommissionPool {
-    const message = { ...baseMsgDecommissionPool } as MsgDecommissionPool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = object.symbol;
-    } else {
-      message.symbol = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgDecommissionPool>, I>>(
+    object: I,
+  ): MsgDecommissionPool {
+    const message = createBaseMsgDecommissionPool();
+    message.signer = object.signer ?? "";
+    message.symbol = object.symbol ?? "";
     return message;
   },
 };
 
-const baseMsgDecommissionPoolResponse: object = {};
+function createBaseMsgDecommissionPoolResponse(): MsgDecommissionPoolResponse {
+  return {};
+}
 
 export const MsgDecommissionPoolResponse = {
   encode(
@@ -849,9 +725,7 @@ export const MsgDecommissionPoolResponse = {
   ): MsgDecommissionPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgDecommissionPoolResponse,
-    } as MsgDecommissionPoolResponse;
+    const message = createBaseMsgDecommissionPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -864,10 +738,7 @@ export const MsgDecommissionPoolResponse = {
   },
 
   fromJSON(_: any): MsgDecommissionPoolResponse {
-    const message = {
-      ...baseMsgDecommissionPoolResponse,
-    } as MsgDecommissionPoolResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgDecommissionPoolResponse): unknown {
@@ -875,12 +746,10 @@ export const MsgDecommissionPoolResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgDecommissionPoolResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgDecommissionPoolResponse>, I>>(
+    _: I,
   ): MsgDecommissionPoolResponse {
-    const message = {
-      ...baseMsgDecommissionPoolResponse,
-    } as MsgDecommissionPoolResponse;
+    const message = createBaseMsgDecommissionPoolResponse();
     return message;
   },
 };
@@ -977,10 +846,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -989,7 +860,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

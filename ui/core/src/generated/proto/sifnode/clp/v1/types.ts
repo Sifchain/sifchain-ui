@@ -37,7 +37,9 @@ export interface LiquidityProviderData {
   externalAssetBalance: string;
 }
 
-const baseAsset: object = { symbol: "" };
+function createBaseAsset(): Asset {
+  return { symbol: "" };
+}
 
 export const Asset = {
   encode(message: Asset, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -50,7 +52,7 @@ export const Asset = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Asset {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAsset } as Asset;
+    const message = createBaseAsset();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -66,13 +68,9 @@ export const Asset = {
   },
 
   fromJSON(object: any): Asset {
-    const message = { ...baseAsset } as Asset;
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = String(object.symbol);
-    } else {
-      message.symbol = "";
-    }
-    return message;
+    return {
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+    };
   },
 
   toJSON(message: Asset): unknown {
@@ -81,28 +79,27 @@ export const Asset = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Asset>): Asset {
-    const message = { ...baseAsset } as Asset;
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = object.symbol;
-    } else {
-      message.symbol = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<Asset>, I>>(object: I): Asset {
+    const message = createBaseAsset();
+    message.symbol = object.symbol ?? "";
     return message;
   },
 };
 
-const basePool: object = {
-  nativeAssetBalance: "",
-  externalAssetBalance: "",
-  poolUnits: "",
-  externalLiabilities: "",
-  externalCustody: "",
-  nativeLiabilities: "",
-  nativeCustody: "",
-  health: "",
-  interestRate: "",
-};
+function createBasePool(): Pool {
+  return {
+    externalAsset: undefined,
+    nativeAssetBalance: "",
+    externalAssetBalance: "",
+    poolUnits: "",
+    externalLiabilities: "",
+    externalCustody: "",
+    nativeLiabilities: "",
+    nativeCustody: "",
+    health: "",
+    interestRate: "",
+  };
+}
 
 export const Pool = {
   encode(message: Pool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -142,7 +139,7 @@ export const Pool = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Pool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...basePool } as Pool;
+    const message = createBasePool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -185,73 +182,34 @@ export const Pool = {
   },
 
   fromJSON(object: any): Pool {
-    const message = { ...basePool } as Pool;
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = String(object.nativeAssetBalance);
-    } else {
-      message.nativeAssetBalance = "";
-    }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = String(object.externalAssetBalance);
-    } else {
-      message.externalAssetBalance = "";
-    }
-    if (object.poolUnits !== undefined && object.poolUnits !== null) {
-      message.poolUnits = String(object.poolUnits);
-    } else {
-      message.poolUnits = "";
-    }
-    if (
-      object.externalLiabilities !== undefined &&
-      object.externalLiabilities !== null
-    ) {
-      message.externalLiabilities = String(object.externalLiabilities);
-    } else {
-      message.externalLiabilities = "";
-    }
-    if (
-      object.externalCustody !== undefined &&
-      object.externalCustody !== null
-    ) {
-      message.externalCustody = String(object.externalCustody);
-    } else {
-      message.externalCustody = "";
-    }
-    if (
-      object.nativeLiabilities !== undefined &&
-      object.nativeLiabilities !== null
-    ) {
-      message.nativeLiabilities = String(object.nativeLiabilities);
-    } else {
-      message.nativeLiabilities = "";
-    }
-    if (object.nativeCustody !== undefined && object.nativeCustody !== null) {
-      message.nativeCustody = String(object.nativeCustody);
-    } else {
-      message.nativeCustody = "";
-    }
-    if (object.health !== undefined && object.health !== null) {
-      message.health = String(object.health);
-    } else {
-      message.health = "";
-    }
-    if (object.interestRate !== undefined && object.interestRate !== null) {
-      message.interestRate = String(object.interestRate);
-    } else {
-      message.interestRate = "";
-    }
-    return message;
+    return {
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      nativeAssetBalance: isSet(object.nativeAssetBalance)
+        ? String(object.nativeAssetBalance)
+        : "",
+      externalAssetBalance: isSet(object.externalAssetBalance)
+        ? String(object.externalAssetBalance)
+        : "",
+      poolUnits: isSet(object.poolUnits) ? String(object.poolUnits) : "",
+      externalLiabilities: isSet(object.externalLiabilities)
+        ? String(object.externalLiabilities)
+        : "",
+      externalCustody: isSet(object.externalCustody)
+        ? String(object.externalCustody)
+        : "",
+      nativeLiabilities: isSet(object.nativeLiabilities)
+        ? String(object.nativeLiabilities)
+        : "",
+      nativeCustody: isSet(object.nativeCustody)
+        ? String(object.nativeCustody)
+        : "",
+      health: isSet(object.health) ? String(object.health) : "",
+      interestRate: isSet(object.interestRate)
+        ? String(object.interestRate)
+        : "",
+    };
   },
 
   toJSON(message: Pool): unknown {
@@ -279,81 +237,32 @@ export const Pool = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Pool>): Pool {
-    const message = { ...basePool } as Pool;
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = object.nativeAssetBalance;
-    } else {
-      message.nativeAssetBalance = "";
-    }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = object.externalAssetBalance;
-    } else {
-      message.externalAssetBalance = "";
-    }
-    if (object.poolUnits !== undefined && object.poolUnits !== null) {
-      message.poolUnits = object.poolUnits;
-    } else {
-      message.poolUnits = "";
-    }
-    if (
-      object.externalLiabilities !== undefined &&
-      object.externalLiabilities !== null
-    ) {
-      message.externalLiabilities = object.externalLiabilities;
-    } else {
-      message.externalLiabilities = "";
-    }
-    if (
-      object.externalCustody !== undefined &&
-      object.externalCustody !== null
-    ) {
-      message.externalCustody = object.externalCustody;
-    } else {
-      message.externalCustody = "";
-    }
-    if (
-      object.nativeLiabilities !== undefined &&
-      object.nativeLiabilities !== null
-    ) {
-      message.nativeLiabilities = object.nativeLiabilities;
-    } else {
-      message.nativeLiabilities = "";
-    }
-    if (object.nativeCustody !== undefined && object.nativeCustody !== null) {
-      message.nativeCustody = object.nativeCustody;
-    } else {
-      message.nativeCustody = "";
-    }
-    if (object.health !== undefined && object.health !== null) {
-      message.health = object.health;
-    } else {
-      message.health = "";
-    }
-    if (object.interestRate !== undefined && object.interestRate !== null) {
-      message.interestRate = object.interestRate;
-    } else {
-      message.interestRate = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<Pool>, I>>(object: I): Pool {
+    const message = createBasePool();
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.nativeAssetBalance = object.nativeAssetBalance ?? "";
+    message.externalAssetBalance = object.externalAssetBalance ?? "";
+    message.poolUnits = object.poolUnits ?? "";
+    message.externalLiabilities = object.externalLiabilities ?? "";
+    message.externalCustody = object.externalCustody ?? "";
+    message.nativeLiabilities = object.nativeLiabilities ?? "";
+    message.nativeCustody = object.nativeCustody ?? "";
+    message.health = object.health ?? "";
+    message.interestRate = object.interestRate ?? "";
     return message;
   },
 };
 
-const baseLiquidityProvider: object = {
-  liquidityProviderUnits: "",
-  liquidityProviderAddress: "",
-};
+function createBaseLiquidityProvider(): LiquidityProvider {
+  return {
+    asset: undefined,
+    liquidityProviderUnits: "",
+    liquidityProviderAddress: "",
+  };
+}
 
 export const LiquidityProvider = {
   encode(
@@ -375,7 +284,7 @@ export const LiquidityProvider = {
   decode(input: _m0.Reader | Uint8Array, length?: number): LiquidityProvider {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseLiquidityProvider } as LiquidityProvider;
+    const message = createBaseLiquidityProvider();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -397,31 +306,15 @@ export const LiquidityProvider = {
   },
 
   fromJSON(object: any): LiquidityProvider {
-    const message = { ...baseLiquidityProvider } as LiquidityProvider;
-    if (object.asset !== undefined && object.asset !== null) {
-      message.asset = Asset.fromJSON(object.asset);
-    } else {
-      message.asset = undefined;
-    }
-    if (
-      object.liquidityProviderUnits !== undefined &&
-      object.liquidityProviderUnits !== null
-    ) {
-      message.liquidityProviderUnits = String(object.liquidityProviderUnits);
-    } else {
-      message.liquidityProviderUnits = "";
-    }
-    if (
-      object.liquidityProviderAddress !== undefined &&
-      object.liquidityProviderAddress !== null
-    ) {
-      message.liquidityProviderAddress = String(
-        object.liquidityProviderAddress,
-      );
-    } else {
-      message.liquidityProviderAddress = "";
-    }
-    return message;
+    return {
+      asset: isSet(object.asset) ? Asset.fromJSON(object.asset) : undefined,
+      liquidityProviderUnits: isSet(object.liquidityProviderUnits)
+        ? String(object.liquidityProviderUnits)
+        : "",
+      liquidityProviderAddress: isSet(object.liquidityProviderAddress)
+        ? String(object.liquidityProviderAddress)
+        : "",
+    };
   },
 
   toJSON(message: LiquidityProvider): unknown {
@@ -435,34 +328,23 @@ export const LiquidityProvider = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<LiquidityProvider>): LiquidityProvider {
-    const message = { ...baseLiquidityProvider } as LiquidityProvider;
-    if (object.asset !== undefined && object.asset !== null) {
-      message.asset = Asset.fromPartial(object.asset);
-    } else {
-      message.asset = undefined;
-    }
-    if (
-      object.liquidityProviderUnits !== undefined &&
-      object.liquidityProviderUnits !== null
-    ) {
-      message.liquidityProviderUnits = object.liquidityProviderUnits;
-    } else {
-      message.liquidityProviderUnits = "";
-    }
-    if (
-      object.liquidityProviderAddress !== undefined &&
-      object.liquidityProviderAddress !== null
-    ) {
-      message.liquidityProviderAddress = object.liquidityProviderAddress;
-    } else {
-      message.liquidityProviderAddress = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<LiquidityProvider>, I>>(
+    object: I,
+  ): LiquidityProvider {
+    const message = createBaseLiquidityProvider();
+    message.asset =
+      object.asset !== undefined && object.asset !== null
+        ? Asset.fromPartial(object.asset)
+        : undefined;
+    message.liquidityProviderUnits = object.liquidityProviderUnits ?? "";
+    message.liquidityProviderAddress = object.liquidityProviderAddress ?? "";
     return message;
   },
 };
 
-const baseWhiteList: object = { validatorList: "" };
+function createBaseWhiteList(): WhiteList {
+  return { validatorList: [] };
+}
 
 export const WhiteList = {
   encode(
@@ -478,8 +360,7 @@ export const WhiteList = {
   decode(input: _m0.Reader | Uint8Array, length?: number): WhiteList {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseWhiteList } as WhiteList;
-    message.validatorList = [];
+    const message = createBaseWhiteList();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -495,14 +376,11 @@ export const WhiteList = {
   },
 
   fromJSON(object: any): WhiteList {
-    const message = { ...baseWhiteList } as WhiteList;
-    message.validatorList = [];
-    if (object.validatorList !== undefined && object.validatorList !== null) {
-      for (const e of object.validatorList) {
-        message.validatorList.push(String(e));
-      }
-    }
-    return message;
+    return {
+      validatorList: Array.isArray(object?.validatorList)
+        ? object.validatorList.map((e: any) => String(e))
+        : [],
+    };
   },
 
   toJSON(message: WhiteList): unknown {
@@ -515,22 +393,22 @@ export const WhiteList = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<WhiteList>): WhiteList {
-    const message = { ...baseWhiteList } as WhiteList;
-    message.validatorList = [];
-    if (object.validatorList !== undefined && object.validatorList !== null) {
-      for (const e of object.validatorList) {
-        message.validatorList.push(e);
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<WhiteList>, I>>(
+    object: I,
+  ): WhiteList {
+    const message = createBaseWhiteList();
+    message.validatorList = object.validatorList?.map((e) => e) || [];
     return message;
   },
 };
 
-const baseLiquidityProviderData: object = {
-  nativeAssetBalance: "",
-  externalAssetBalance: "",
-};
+function createBaseLiquidityProviderData(): LiquidityProviderData {
+  return {
+    liquidityProvider: undefined,
+    nativeAssetBalance: "",
+    externalAssetBalance: "",
+  };
+}
 
 export const LiquidityProviderData = {
   encode(
@@ -558,7 +436,7 @@ export const LiquidityProviderData = {
   ): LiquidityProviderData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
+    const message = createBaseLiquidityProviderData();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -583,34 +461,17 @@ export const LiquidityProviderData = {
   },
 
   fromJSON(object: any): LiquidityProviderData {
-    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
-    if (
-      object.liquidityProvider !== undefined &&
-      object.liquidityProvider !== null
-    ) {
-      message.liquidityProvider = LiquidityProvider.fromJSON(
-        object.liquidityProvider,
-      );
-    } else {
-      message.liquidityProvider = undefined;
-    }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = String(object.nativeAssetBalance);
-    } else {
-      message.nativeAssetBalance = "";
-    }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = String(object.externalAssetBalance);
-    } else {
-      message.externalAssetBalance = "";
-    }
-    return message;
+    return {
+      liquidityProvider: isSet(object.liquidityProvider)
+        ? LiquidityProvider.fromJSON(object.liquidityProvider)
+        : undefined,
+      nativeAssetBalance: isSet(object.nativeAssetBalance)
+        ? String(object.nativeAssetBalance)
+        : "",
+      externalAssetBalance: isSet(object.externalAssetBalance)
+        ? String(object.externalAssetBalance)
+        : "",
+    };
   },
 
   toJSON(message: LiquidityProviderData): unknown {
@@ -626,36 +487,17 @@ export const LiquidityProviderData = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<LiquidityProviderData>,
+  fromPartial<I extends Exact<DeepPartial<LiquidityProviderData>, I>>(
+    object: I,
   ): LiquidityProviderData {
-    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
-    if (
+    const message = createBaseLiquidityProviderData();
+    message.liquidityProvider =
       object.liquidityProvider !== undefined &&
       object.liquidityProvider !== null
-    ) {
-      message.liquidityProvider = LiquidityProvider.fromPartial(
-        object.liquidityProvider,
-      );
-    } else {
-      message.liquidityProvider = undefined;
-    }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = object.nativeAssetBalance;
-    } else {
-      message.nativeAssetBalance = "";
-    }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = object.externalAssetBalance;
-    } else {
-      message.externalAssetBalance = "";
-    }
+        ? LiquidityProvider.fromPartial(object.liquidityProvider)
+        : undefined;
+    message.nativeAssetBalance = object.nativeAssetBalance ?? "";
+    message.externalAssetBalance = object.externalAssetBalance ?? "";
     return message;
   },
 };
@@ -667,10 +509,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -679,7 +523,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

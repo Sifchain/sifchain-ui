@@ -60,7 +60,7 @@ export default defineComponent({
         <PageCard heading="Margin" iconName="navigation/globe">
           {accountStore.state.sifchain.address && (
             <Card heading="Your Positions" class="mb-3">
-              <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+              <div class="w-full pb-[5px] w-full flex items-center">
                 {POSITION_COLUMNS.map((column) => (
                   <div
                     key={column.id}
