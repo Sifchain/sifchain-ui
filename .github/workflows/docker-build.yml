@@ -94,4 +94,5 @@ jobs:
           mv Dockerfile.staticonly Dockerfile
           docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
           docker build -t ${image}:${TAG_NAME} .
+
           docker push ${image}:${TAG_NAME}
