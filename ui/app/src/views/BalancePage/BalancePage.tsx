@@ -1,12 +1,5 @@
 import { RouterView } from "vue-router";
-import {
-  defineComponent,
-  ref,
-  computed,
-  onMounted,
-  onUnmounted,
-  watch,
-} from "vue";
+import { defineComponent, ref, computed, onMounted, onUnmounted } from "vue";
 import { effect } from "@vue/reactivity";
 
 import Layout from "@/componentsLegacy/Layout/Layout";
