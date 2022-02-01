@@ -1,11 +1,9 @@
 name: "Frontend: Docker: Build"
 
-on: workflow_dispatch
-
-#on:
-#  push:
-#    branches:
-#      - 'dockerfile'
+on:
+  push:
+    branches:
+      - 'dockerfile'
 
 jobs:
   test_build_push:
@@ -93,6 +91,7 @@ jobs:
           DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
         run: |
           set +x
+          mv Dockerfile.staticonly Dockerfile
           docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
           docker build -t ${image}:${TAG_NAME} .
           docker push ${image}:${TAG_NAME}
