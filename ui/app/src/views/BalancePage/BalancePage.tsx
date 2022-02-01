@@ -252,13 +252,15 @@ export default defineComponent({
               ))}
             </tbody>
           </table>
-          <Pagination
-            pages={pages.value}
-            pageIndex={safePageIndex.value}
-            onPageIndexChange={(idx) => {
-              pageIndex.value = idx;
-            }}
-          />
+          {Boolean(pages.value) && (
+            <Pagination
+              pages={pages.value}
+              pageIndex={safePageIndex.value}
+              onPageIndexChange={(idx) => {
+                pageIndex.value = idx;
+              }}
+            />
+          )}
         </PageCard>
         <RouterView
           name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
