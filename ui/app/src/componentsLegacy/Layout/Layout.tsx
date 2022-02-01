@@ -6,6 +6,40 @@ import { AssetAmount } from "@sifchain/sdk";
 import { defineComponent } from "vue";
 import { useRoute } from "vue-router";
 import LayoutBackground from "./LayoutBackground";
+import { useCore } from "@/hooks/useCore";
+import { accountStore } from "@/store/modules/accounts";
+
+const initiateTransfer = async () => {
+  const core = useCore();
+  await core.services?.wallet.keplrProvider.connect(
+    core.services?.chains.nativeChain,
+  );
+  const client = await core.services.sif.loadNativeDexClient();
+  const tx = client.tx.bank.Send(
+    {
+      amount: [
+        {
+          denom: "rowan",
+          amount: "1".padEnd(18, "0"),
+        },
+      ],
+      fromAddress: accountStore.state.sifchain.address,
+      toAddress: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
+    },
+    accountStore.state.sifchain.address,
+  );
+  const signed = await core.services?.wallet.keplrProvider?.sign(
+    core.services.chains.nativeChain,
+    tx,
+  );
+  const sent = await core.services?.wallet.keplrProvider.broadcast(
+    core.services.chains.nativeChain,
+    signed,
+  );
+  console.log(sent);
+};
+
+const elections = [];
 
 export default defineComponent({
   name: "Layout",
