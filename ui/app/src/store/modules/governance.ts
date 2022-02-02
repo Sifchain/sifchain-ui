@@ -79,7 +79,7 @@ const proposals: Proposal[] = [
     description: `Polls are now open for the Pools of the People v4 - Bonus Coin Vote. The voting period will end on 2/5 at 12pm PST. Please select 4 bonus coin pools, in order of preference.`,
     voteType: "pools",
     maxBallots: 4,
-    excludedSymbols: ["rowan", "uatom", "ceth"],
+    excludedSymbols: ["rowan", "uatom", "ceth", "cusdc"],
     // use display symbols instead of denoms
     // add home network in future (consider omnievm)
     // change address to deprecate old voting method (manual)
