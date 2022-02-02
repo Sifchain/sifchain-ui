@@ -38,7 +38,6 @@ export default defineComponent({
     let isReady = ref(false);
     let isDisabled = false;
 
-    const tbodyRef = ref<HTMLElement | undefined>();
     const showZeroBalance = ref(true);
 
     onMounted(() => {
@@ -213,7 +212,21 @@ export default defineComponent({
                 <td />
               </tr>
             </thead>
-            <tbody class="w-full relative" ref={tbodyRef}>
+            <tbody class="w-full relative">
+              {!page.value.length && Boolean(state.searchQuery.length) && (
+                <tr>
+                  <td class="block pb-4">
+                    <div class="p-4 grid place-items-center bg-gray-200 rounded-md">
+                      <span class="text-lg">
+                        No results matching{" "}
+                        <span class="text-accent-base">
+                          "{state.searchQuery}"
+                        </span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              )}
               {page.value.map((item) => (
                 <BalanceRow
                   key={item.asset.symbol + item.asset.network}
