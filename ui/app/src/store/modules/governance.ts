@@ -68,22 +68,22 @@ const proposals: Proposal[] = [
     maxBallots: 1,
     excludedSymbols: ["rowan", "uatom", "ceth", "cust"],
   },
-  // {
-  //   id: "4pools_01_29_22",
-  //   address: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
-  //   // startDateTime: new Date(1643472000000),
-  //   startDateTime: new Date(Date.now() - 100000000),
-  //   endDateTime: new Date(1643472000000 + 72 * 60 * 60 * 1000),
-  //   heading: `Sif's Expansion Bonus (v4)`,
-  //   title: `Stablecoin Vote`,
-  //   description: `Polls are now open for the Pools of the People v4 - Bonus Coin Vote. The voting period will end on 2/4 at 8am PST.`,
-  //   voteType: "pools",
-  //   maxBallots: 1,
-  //   excludedSymbols: ['rowan', 'uatom', 'ceth']
-  //   // use display symbols instead of denoms
-  //   // add home network in future (consider omnievm)
-  //   // change address to deprecate old voting method (manual)
-  // },
+  {
+    id: "4pools_01_29_22",
+    address: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
+    // startDateTime: new Date(1643472000000),
+    startDateTime: new Date(1643825944188),
+    endDateTime: new Date(1643990400000),
+    heading: `Sif's Expansion Bonus (v4)`,
+    title: `Bonus Coin Vote`,
+    description: `Polls are now open for the Pools of the People v4 - Bonus Coin Vote. The voting period will end on 2/4 at 8am PST. Please select 4 bonus coin pools, in order of preference.`,
+    voteType: "pools",
+    maxBallots: 4,
+    excludedSymbols: ["rowan", "uatom", "ceth"],
+    // use display symbols instead of denoms
+    // add home network in future (consider omnievm)
+    // change address to deprecate old voting method (manual)
+  },
 ];
 
 export const governanceStore = Vuextra.createStore({
