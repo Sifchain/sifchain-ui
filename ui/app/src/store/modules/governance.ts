@@ -69,7 +69,7 @@ const proposals: Proposal[] = [
     excludedSymbols: ["rowan", "uatom", "ceth", "cust"],
   },
   {
-    id: "4pools_01_29_22",
+    id: "4pools_02_02_22",
     address: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
     // startDateTime: new Date(1643472000000),
     startDateTime: new Date(1643825944188),
