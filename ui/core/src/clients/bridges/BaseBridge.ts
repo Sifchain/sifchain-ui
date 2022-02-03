@@ -58,7 +58,8 @@ export interface BridgeTxEvents {
   tx_sent: (tx: BridgeTx) => void;
   tx_complete: (tx: BridgeTx) => void;
 }
-export const bridgeTxEmitter = new EventEmitter() as TypedEmitter<BridgeTxEvents>;
+export const bridgeTxEmitter =
+  new EventEmitter() as TypedEmitter<BridgeTxEvents>;
 
 export abstract class BaseBridge<WalletProviderType> {
   abstract estimateFees(

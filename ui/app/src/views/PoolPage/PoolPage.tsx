@@ -79,12 +79,7 @@ export default defineComponent({
 
           if (
             this.searchQuery.length > 0 &&
-            !asset.symbol
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase()) &&
-            !asset.displaySymbol
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
+            !asset.symbol.toLowerCase().includes(this.searchQuery)
           ) {
             return false;
           }

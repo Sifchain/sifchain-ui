@@ -1,9 +1,20 @@
-import balancesAreDifferent from "@sifchain/sdk/src/usecases/walletNew/utils/balancesAreDifferent";
 import { IAssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "../../hooks/useCore";
 import { Vuextra } from "../Vuextra";
 import { useChains } from "@/hooks/useChains";
-import { checkIfBannedAddress } from "@/utils/checkIfBannedAddress";
+
+function balancesAreDifferent(b1: IAssetAmount[], b2: IAssetAmount[]) {
+  const getAssetAmountKey = (balances: IAssetAmount[]) =>
+    balances
+      .map((b) => {
+        return `${b.symbol}_${b.amount.toBigInt().toString()}`;
+      })
+      .join(" ");
+
+  // Extremely naive check just so we don't spam state-setting with the exact same balance list.
+  // Yes, if balances change order or are added/removed it will re-set the whole array. Don't care.
+  return getAssetAmountKey(b1) !== getAssetAmountKey(b2);
+}
 
 const core = useCore();
 export interface IWalletServiceState {
@@ -26,12 +37,6 @@ const initWalletState = (network: Network) => ({
   connecting: false,
   log: "",
 });
-
-const getUsecase = (network: Network) => {
-  return core.usecases.walletNew[
-    network === Network.ETHEREUM ? "metamask" : "keplr"
-  ];
-};
 
 const walletBalancePolls = new Map<string, NodeJS.Timeout>();
 
@@ -72,10 +77,6 @@ export const accountStore = Vuextra.createStore({
       state[payload.network].connected = payload.connected;
     },
     setAddress(payload: { network: Network; address: string }) {
-      if (checkIfBannedAddress(payload.address)) {
-        window.location.href =
-          "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists";
-      }
       state[payload.network].address = payload.address;
     },
     setBalances(payload: { network: Network; balances: IAssetAmount[] }) {

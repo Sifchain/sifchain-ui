@@ -12,8 +12,7 @@ export const CRYPTO_ORG_MAINNET: IBCChainConfig = {
     "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rest",
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rpc",
-    rest:
-      "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rest",
+    rest: "https://proxies.sifchain.finance/api/crypto-org-chain-mainnet-1/rest",
     chainId: "crypto-org-chain-mainnet-1",
     chainName: "Sentinel",
     stakeCurrency: {

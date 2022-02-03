@@ -38,8 +38,9 @@ export default defineComponent({
       if (exportData.targetTokenRef.value?.asset) {
         const asset = exportData.targetTokenRef.value?.asset;
         const address =
-          (await useCore().services.ethbridge.fetchSymbolAddress(
-            exportStore.state.draft.symbol,
+          (await useCore().services.ethbridge.fetchTokenAddress(
+            useCore().services.wallet.metamaskProvider,
+            asset,
           )) || "0x0000000000000000000000000000000000000000";
 
         const imageUrl = getTokenIconUrl(asset, window.location.origin);

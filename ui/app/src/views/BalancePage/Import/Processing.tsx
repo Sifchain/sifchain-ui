@@ -10,12 +10,8 @@ export default defineComponent({
   name: "ImportProcessingModal",
   props: {},
   setup(props) {
-    const {
-      pegEventRef,
-      exitImport,
-      detailsRef,
-      pegEventDetails,
-    } = useImportData();
+    const { pegEventRef, exitImport, detailsRef, pegEventDetails } =
+      useImportData();
     const router = useRouter();
 
     watchEffect(() => {

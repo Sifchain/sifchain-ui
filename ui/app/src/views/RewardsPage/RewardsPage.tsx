@@ -7,11 +7,9 @@ import {
 } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
-import { SunsetRewardSection } from "./components/SunsetRewardSection";
 import ClaimRewardsModal from "./components/ClaimRewardsModal";
-import { CryptoeconomicsRewardType } from "@sifchain/sdk/src/services/CryptoeconomicsService";
+import { CryptoeconomicsRewardType } from "@/business/services/CryptoeconomicsService";
 import Layout from "@/componentsLegacy/Layout/Layout";
-import { accountStore } from "@/store/modules/accounts";
 import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
 import { AppCookies, NetworkEnv } from "@sifchain/sdk";
@@ -117,7 +115,11 @@ export default defineComponent({
                     type="checkbox"
                     class="mr-[4px]"
                     checked={showAllRef.value}
-                    onChange={(e) => (showAllRef.value = e.target.checked)}
+                    onChange={(e) =>
+                      (showAllRef.value = (
+                        e.target as HTMLInputElement
+                      ).checked)
+                    }
                   />
                   Show Inactive
                 </label>
@@ -148,8 +150,9 @@ export default defineComponent({
                       : "navigation/rewards"
                   }
                   iconClass={
-                    !!lmClaim.value &&
-                    "!w-[24px] !h-[24px] transform translate-y-[1px]"
+                    !!lmClaim.value
+                      ? "!w-[24px] !h-[24px] transform translate-y-[1px]"
+                      : ""
                   }
                   active
                 >
@@ -159,10 +162,7 @@ export default defineComponent({
                         totalClaimableRef.value,
                       )} Rowan`}
                   {!!lmClaim.value && (
-                    <Button.InlineHelp
-                      size={16}
-                      class="absolute top-[-8px] right-[-8px]"
-                    >
+                    <Button.InlineHelp class="absolute top-[-8px] right-[-8px]">
                       You will be able to claim additional rewards after the
                       dispensation run each Tuesday
                     </Button.InlineHelp>
@@ -231,7 +231,7 @@ export default defineComponent({
                 </div>
               </div>
 
-              <div class="w-full pb-[5px] mt-[12px] mb-[-5px] w-full flex items-center justify-start opacity-50 text-md">
+              <div class="pb-[5px] mt-[12px] mb-[-5px] w-full flex items-center justify-start opacity-50 text-md">
                 <div class={rewardColumnsLookup.rewardProgram.class}>
                   Reward Program
                 </div>
@@ -323,30 +323,6 @@ export default defineComponent({
                     );
                   })}
               </div>
-
-              {/* 
-            <div class="my-[16px] border border-dashed border-white opacity-40" />
-            <SunsetRewardSection
-              rewardType="lm"
-              data={lmData.value}
-              alreadyClaimed={!!vsClaim.value}
-              infoLink={lmInfoLink.value}
-              onClaimIntent={() => {
-                claimRewardType.value = "lm";
-                isClaimModalOpened.value = true;
-              }}
-            />
-            <div class="my-[16px] border border-dashed border-white opacity-40" />
-            <SunsetRewardSection
-              rewardType="vs"
-              data={vsData.value}
-              alreadyClaimed={!!lmClaim.value}
-              infoLink={vsInfoLink.value}
-              onClaimIntent={() => {
-                claimRewardType.value = "vs";
-                isClaimModalOpened.value = true;
-              }}
-            /> */}
 
               <div class="h-1" />
             </>

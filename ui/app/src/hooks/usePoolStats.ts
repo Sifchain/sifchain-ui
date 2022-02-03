@@ -1,10 +1,10 @@
-import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { symbolWithoutPrefix } from "@/utils/symbol";
-import { getChainsService, IAsset, Network } from "@sifchain/sdk";
+import { IAsset } from "@sifchain/sdk";
 import { computed } from "vue";
-import { useAsyncData } from "./useAsyncData";
 import { useAsyncDataCached } from "./useAsyncDataCached";
+import { useNativeChain } from "./useChains";
 import { useCore } from "./useCore";
 
 export interface PoolStatsResponseData {
@@ -63,15 +63,11 @@ export const usePoolStats = () => {
           const poolAPY =
             (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
             100;
-          // if (/osmo|usdt|atom|akt/.test(p.symbol.toLowerCase())) {
-          //   console.log(p.symbol, { estimatedPoolAPY, poolAPY });
-          // }
 
           let rewardAPY = 0;
           rewardPrograms.forEach((program: any) => {
-            const isIndividuallyIncentivized = program.incentivizedPoolSymbols?.includes(
-              p.symbol,
-            );
+            const isIndividuallyIncentivized =
+              program.incentivizedPoolSymbols?.includes(p.symbol);
             if (program.isUniversal || isIndividuallyIncentivized) {
               rewardAPY += program.summaryAPY;
             }
@@ -97,8 +93,7 @@ export const usePoolStats = () => {
     if (isLoading.value) return [];
 
     const assetLookup: Record<string, IAsset> = {};
-    getChainsService()
-      .get(Network.SIFCHAIN)
+    useNativeChain()
       .assets.filter((asset) => !isAssetFlaggedDisabled(asset))
       .forEach((asset) => {
         assetLookup[asset.symbol.toLowerCase()] = asset;

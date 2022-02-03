@@ -1,28 +1,14 @@
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { TokenIcon } from "@/components/TokenIcon";
-import {
-  Asset,
-  Amount,
-  AppCookies,
-  NetworkEnv,
-  Network,
-  getChainsService,
-  IAsset,
-} from "@sifchain/sdk";
-import { format } from "@sifchain/sdk/src/utils/format";
-import {
-  CryptoeconomicsRewardType,
-  CryptoeconomicsUserData,
-} from "@sifchain/sdk/src/services/CryptoeconomicsService";
-import { Tooltip } from "@/components/Tooltip";
+import { Asset, IAsset } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
-import { defineComponent, PropType, computed } from "vue";
+import { defineComponent, PropType } from "vue";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
 import { rewardColumnsLookup, RewardProgram } from "../useRewardsPageData";
 import { getClaimableAmountString } from "../getClaimableAmountString";
 import { symbolWithoutPrefix } from "@/utils/symbol";
+import { useNativeChain } from "@/hooks/useChains";
 
 const REWARD_TYPE_DISPLAY_DATA: Record<string, { icon: IconName }> = {
   harvest: {
@@ -73,12 +59,10 @@ export const RewardSection = defineComponent({
       return this.programStarted && !this.programEnded;
     },
     poolAssets() {
-      return getChainsService()
-        .get(Network.SIFCHAIN)
-        .assets.reduce((prev, asset) => {
-          prev[symbolWithoutPrefix(asset.symbol).toLowerCase()] = asset;
-          return prev;
-        }, {} as Record<string, IAsset>);
+      return useNativeChain().assets.reduce((prev, asset) => {
+        prev[symbolWithoutPrefix(asset.symbol).toLowerCase()] = asset;
+        return prev;
+      }, {} as Record<string, IAsset>);
     },
     details(): {
       hide?: boolean;
@@ -92,15 +76,17 @@ export const RewardSection = defineComponent({
           name: "Reserved Commission Rewards",
           tooltip:
             "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
-          amount: this.rewardProgram.participant
-            ?.currentTotalCommissionsOnClaimableDelegatorRewards,
+          amount:
+            this.rewardProgram.participant
+              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
         },
         {
           name: "Pending Dispensation",
           tooltip:
             "This is the amount that will be dispensed on Tuesday. Any new claimable amounts will need to be claimed after the next dispensation.",
-          amount: this.rewardProgram.participant
-            ?.claimedCommissionsAndRewardsAwaitingDispensation,
+          amount:
+            this.rewardProgram.participant
+              ?.claimedCommissionsAndRewardsAwaitingDispensation,
         },
         {
           name: "Dispensed Rewards",
@@ -210,7 +196,7 @@ export const RewardSection = defineComponent({
           <div
             class={[
               rewardColumnsLookup.claimableAmount.class,
-              "justify-end font-mono flex items-center justify-end",
+              "justify-end font-mono flex items-center",
             ]}
           >
             {/* Claimable Amount */}
@@ -277,7 +263,8 @@ export const RewardSection = defineComponent({
                   <span class="w-[250px] text-right">
                     {detail.amount != null
                       ? getClaimableAmountString(detail.amount)
-                      : detail.value}
+                      : // TODO: what's this value supposed to be? it doesn't exist in the type definition
+                        detail.value}
                   </span>
                 </div>
               ))}

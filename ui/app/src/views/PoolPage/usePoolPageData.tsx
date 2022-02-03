@@ -1,12 +1,10 @@
-import { computed, toRefs } from "@vue/reactivity";
-import { onUnmounted, watch } from "vue";
+import { computed } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { defineComponent, onMounted, ref } from "vue";
 import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
-import { AccountPool } from "@sifchain/sdk/src/store/pools";
+
 import { useChains } from "@/hooks/useChains";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import {
@@ -15,17 +13,18 @@ import {
 } from "@/hooks/usePoolsSubscriber";
 import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
+import { AccountPool } from "@/business/store/pools";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
 export type PoolPageColumnId =
   | "token"
+  | "apy"
   | "gainLoss"
+  | "rewardApy"
   | "userShare"
-  | "userValue"
-  | "poolAPY"
-  | "rewardAPY";
+  | "userValue";
 
 export type PoolRewardProgram = Pick<
   RewardProgram,
@@ -54,9 +53,9 @@ export const COLUMNS: PoolPageColumn[] = [
     sortable: true,
   },
   {
-    id: "poolAPY",
-    name: "Pool APR",
-    class: "w-[130px] text-right justify-end",
+    id: "apy",
+    name: "Pool APY",
+    class: "w-[128px] text-right justify-end",
     sortable: true,
     help: (
       <div>
@@ -68,7 +67,7 @@ export const COLUMNS: PoolPageColumn[] = [
     ),
   },
   {
-    id: "rewardAPY",
+    id: "rewardApy",
     name: "Reward APR (APY)",
     class: "w-[150px] text-right justify-end",
     sortable: true,
@@ -87,8 +86,7 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "userValue",
     name: "Your Pool Value",
-    help:
-      "This is your estimated pool value in USD assuming you remove your liquidity equally across both tokens. This number does not take into consideration any projected or earned rewards.",
+    help: "This is your estimated pool value in USD assuming you remove your liquidity equally across both tokens. This number does not take into consideration any projected or earned rewards.",
     class: "w-[168px] text-right justify-end",
   },
 ];
@@ -152,9 +150,10 @@ export const usePoolPageData = () => {
       );
       let accountPool: AccountPool | undefined = undefined;
       if (accountStore.state.sifchain.address) {
-        accountPool = useCore().store.accountpools[
-          accountStore.state.sifchain.address
-        ][poolKey];
+        accountPool =
+          useCore().store.accountpools[accountStore.state.sifchain.address][
+            poolKey
+          ];
       }
       const item = {
         poolStat,
