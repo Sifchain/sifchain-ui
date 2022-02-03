@@ -14,6 +14,7 @@ import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { Button } from "@/components/Button/Button";
 import { getImportLocation } from "./Import/useImportData";
 import { Network } from "@sifchain/sdk";
+import RecyclerView from "@/components/RecyclerView";
 
 const PAGE_SIZE = 25;
 const ROW_HEIGHT = 50;
@@ -122,7 +123,9 @@ export default defineComponent({
                   class="mr-[4px]"
                   checked={showZeroBalance.value}
                   onChange={(e) =>
-                    (showZeroBalance.value = (e.target as HTMLInputElement).checked)
+                    (showZeroBalance.value = (
+                      e.target as HTMLInputElement
+                    ).checked)
                   }
                 />
                 Show 0 Balances
@@ -163,7 +166,7 @@ export default defineComponent({
                     {columns.map((column, index) => (
                       <div
                         style={colStyles.value[index]}
-                        class={[column.class]}
+                        class={[column.class, "whitespace-nowrap"]}
                         key={column.name}
                       >
                         <div
@@ -200,11 +203,11 @@ export default defineComponent({
         >
           <table class="w-full">
             <thead>
-              <tr>
+              <tr class="block">
                 {columns.map((column) => (
                   <td
                     ref={column.ref}
-                    class={[column.class]}
+                    class={[column.class, "whitespace-nowrap"]}
                     key={column.name}
                   />
                 ))}
@@ -212,8 +215,8 @@ export default defineComponent({
                 <td />
               </tr>
             </thead>
-            <tbody class="w-full relative">
-              {!page.value.length && Boolean(state.searchQuery.length) && (
+            {!page.value.length && Boolean(state.searchQuery.length) && (
+              <tbody class="w-full relative">
                 <tr>
                   <td class="block pb-4">
                     <div class="p-4 grid place-items-center bg-gray-200 rounded-md">
@@ -226,8 +229,15 @@ export default defineComponent({
                     </div>
                   </td>
                 </tr>
-              )}
-              {page.value.map((item) => (
+              </tbody>
+            )}
+            <RecyclerView
+              as="tbody"
+              containerClass="w-full relative overflow-y-scroll"
+              data={allBalances.value}
+              rowHeight={50}
+              visibleRows={20}
+              renderItem={(item) => (
                 <BalanceRow
                   key={item.asset.symbol + item.asset.network}
                   tokenItem={item}
@@ -236,8 +246,8 @@ export default defineComponent({
                     state.expandedSymbol = symbol;
                   }}
                 />
-              ))}
-            </tbody>
+              )}
+            />
           </table>
         </PageCard>
         <RouterView
