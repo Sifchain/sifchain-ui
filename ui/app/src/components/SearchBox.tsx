@@ -42,12 +42,8 @@ export const SearchBox = defineComponent({
     },
   },
   setup(props) {
-    const {
-      containerClass,
-      containerProps,
-      enableKeyBindings,
-      ...inputProps
-    } = props;
+    const { containerClass, containerProps, enableKeyBindings, ...inputProps } =
+      props;
 
     const inputRef = ref<HTMLInputElement>();
 
@@ -58,7 +54,10 @@ export const SearchBox = defineComponent({
     );
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === "f" && e.ctrlKey) || e.key === "/") {
+      if (
+        (e.key === "f" && (isMacOs ? e.metaKey : e.ctrlKey)) ||
+        e.key === "/"
+      ) {
         e.preventDefault();
         inputRef.value?.focus();
       }
