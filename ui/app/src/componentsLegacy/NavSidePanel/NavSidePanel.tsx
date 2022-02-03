@@ -320,6 +320,7 @@ export default defineComponent({
                       {proposalData.value.proposal.title}
                     </div>
                   </div>
+                  {/* bump */}
                   {!proposalData.value.hasVoted && (
                     <div>
                       <AssetIcon
