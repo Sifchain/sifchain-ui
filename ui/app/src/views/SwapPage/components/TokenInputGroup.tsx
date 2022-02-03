@@ -13,6 +13,7 @@ import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 
 function required<T>(type: T) {
   return {
@@ -89,8 +90,16 @@ export const TokenInputGroup = defineComponent({
             >
               Balance:{" "}
               <span class="text-accent-base">
-                {props.formattedBalance || "0"}{" "}
-                {props.asset?.displaySymbol.toUpperCase()}
+                <ResourcefulTextTransition
+                  class="inline-block"
+                  text={
+                    (props.formattedBalance || "0") +
+                    " " +
+                    props.asset?.displaySymbol.toUpperCase()
+                  }
+                ></ResourcefulTextTransition>
+                {/* {props.formattedBalance || "0"}{" "}
+                {props.asset?.displaySymbol.toUpperCase()} */}
               </span>
               <button
                 onClick={() => props.onSetToMaxAmount?.()}

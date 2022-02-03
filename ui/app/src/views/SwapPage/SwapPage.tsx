@@ -3,6 +3,7 @@ import {
   defineComponent,
   onMounted,
   ref,
+  Transition,
   watch,
 } from "vue";
 import PageCard from "@/components/PageCard";
@@ -18,6 +19,8 @@ import { RouterView, useRouter } from "vue-router";
 import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
 import { useCore } from "@/hooks/useCore";
 import swapGradientImage from "@/assets/swap-gradient.png";
+import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
+import { useHoldToConfirm } from "@/hooks/useHoldToConfirm";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -35,6 +38,14 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
     const isInverted = ref(false);
+    const holdToConfirm = useHoldToConfirm(
+      () => {
+        data.handleNextStepClicked();
+      },
+      {
+        holdDurationMs: 3000,
+      },
+    );
 
     // While swap page is open, ensure pools update
     // pretty frequently so prices stay up to date...
@@ -153,15 +164,18 @@ export default defineComponent({
 
         <div class={`mx-[-12px] mt-[20px]`}>
           <Button.CallToAction
-            onClick={() => {
-              if (!data.nextStepAllowed.value) {
-                return appWalletPicker.show();
-              }
-              data.handleNextStepClicked();
-            }}
+            onMousedown={holdToConfirm.onMouseDown}
+            onMouseup={holdToConfirm.onMouseUp}
+            // onClick={() => {
+            //   if (!data.nextStepAllowed.value) {
+            //     return appWalletPicker.show();
+            //   }
+            //   data.handleNextStepClicked();
+            // }}
             disabled={!data.nextStepAllowed.value}
           >
-            {data.nextStepMessage.value}
+            {holdToConfirm.state.value}
+            {/* {data.nextStepMessage.value} */}
           </Button.CallToAction>
         </div>
         <RouterView></RouterView>

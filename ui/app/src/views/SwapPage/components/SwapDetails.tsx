@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button/Button";
+import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 import { TokenIcon } from "@/components/TokenIcon";
 import { defineComponent, PropType, Ref } from "vue";
 import { IAsset } from "../../../../../core/src";
@@ -13,57 +14,76 @@ export const SwapDetails = defineComponent({
     fromAsset: Object as PropType<Ref<IAsset>>,
   },
   setup: (props) => {
-    return () => (
-      <div class="mt-[30px] w-full">
-        <div class="flex  flex-row w-full">
-          <div class="flex text-sm mr-[10px] items-start">
-            <span class="text-[#919191]">Rate</span>
-            {/* <Button.InlineHelp>
+    return () => {
+      const rateOutUnitsPerInUnit = `${
+        (props.priceRatio?.value &&
+          !!+props.priceRatio.value &&
+          parseFloat(props.priceRatio?.value || "0").toFixed(6)) ||
+        "?"
+      } ${props.toAsset?.value.displaySymbol.toUpperCase()}`;
+      const rateInUnitsPerOutUnit = `${
+        (props.priceRatio?.value &&
+          !!+props.priceRatio.value &&
+          (1 / parseFloat(props.priceRatio?.value || "0")).toFixed(6)) ||
+        "?"
+      } ${props.fromAsset?.value.displaySymbol.toUpperCase()}`;
+      return (
+        <div class="mt-[30px] w-full">
+          <div class="flex  flex-row w-full">
+            <div class="flex text-sm mr-[10px] items-start">
+              <span class="text-[#919191]">Rate</span>
+              {/* <Button.InlineHelp>
               Your transaction will revert if the price changes unfavorably by
               more than this percentage.
             </Button.InlineHelp> */}
-          </div>
-          <div class="flex flex-col w-full">
-            <div class="flex flex-row justify-end items-start pl-[20px] text-right w-full text-md text-[#9D9F9F] font-mono font-medium">
-              1 {props.fromAsset?.value.displaySymbol.toUpperCase()} =&nbsp;
-              <span class="whitespace-nowrap">
-                {(props.priceRatio?.value &&
-                  !!+props.priceRatio.value &&
-                  parseFloat(props.priceRatio?.value || "0").toFixed(6)) ||
-                  "?"}{" "}
-                {props.toAsset?.value.displaySymbol.toUpperCase()}
-              </span>
             </div>
-            <div class="flex flex-row mt-[3px] justify-end items-start pl-[20px] text-right w-full text-sm text-[#E8E8E8] opacity-[0.33] font-mono font-medium">
-              1 {props.toAsset?.value.displaySymbol.toUpperCase()} =&nbsp;
-              <span class="whitespace-nowrap">
-                {(props.priceRatio?.value &&
-                  !!+props.priceRatio.value &&
-                  (1 / parseFloat(props.priceRatio?.value || "0")).toFixed(
-                    6,
-                  )) ||
-                  "?"}{" "}
-                {props.fromAsset?.value.displaySymbol.toUpperCase()}
-              </span>
+            <div class="flex flex-col w-full">
+              <div class="flex flex-row justify-end items-start pl-[20px] text-right w-full text-md text-[#9D9F9F] font-mono font-medium">
+                <span class="whitespace-nowrap">
+                  <ResourcefulTextTransition
+                    class="inline-block"
+                    text={`1 ${props.fromAsset?.value.displaySymbol.toUpperCase()} = `}
+                  />
+                  <ResourcefulTextTransition
+                    class="inline-block"
+                    text={rateOutUnitsPerInUnit}
+                  ></ResourcefulTextTransition>
+                </span>
+              </div>
+              <div class="flex flex-row mt-[3px] justify-end items-start pl-[20px] text-right w-full text-sm text-[#E8E8E8] opacity-[0.33] font-mono font-medium">
+                <span class="whitespace-nowrap">
+                  <ResourcefulTextTransition
+                    class="inline-block"
+                    text={`1 ${props.toAsset?.value.displaySymbol.toUpperCase()} = `}
+                  />
+                  <ResourcefulTextTransition
+                    class="inline-block"
+                    text={rateInUnitsPerOutUnit}
+                  ></ResourcefulTextTransition>
+                </span>
+              </div>
             </div>
-          </div>
-        </div>{" "}
-        <div class="flex flex-row w-full mt-[15px]">
-          <div class="flex text-sm mr-[10px] w-1/2 items-start">
-            <span class="text-[#919191]">Swap Fee</span>
-            {/* <Button.InlineHelp>
+          </div>{" "}
+          <div class="flex flex-row w-full mt-[15px]">
+            <div class="flex text-sm mr-[10px] w-1/2 items-start">
+              <span class="text-[#919191]">Swap Fee</span>
+              {/* <Button.InlineHelp>
               Your transaction will revert if the price changes unfavorably by
               more than this percentage.
             </Button.InlineHelp> */}
-          </div>
-          <div class="flex flex-col w-full">
-            <div class="flex flex-row justify-end items-start pl-[20px] text-right w-full text-md text-[#9D9F9F] font-mono font-medium">
-              {props.liquidityProviderFee || "?"}{" "}
-              {props.toAsset?.value.displaySymbol.toUpperCase()}
+            </div>
+            <div class="flex flex-col w-full">
+              <div class="flex flex-row justify-end items-start pl-[20px] text-right w-full text-md text-[#9D9F9F] font-mono font-medium">
+                <ResourcefulTextTransition
+                  class="inline-block"
+                  text={`${
+                    props.liquidityProviderFee || "?"
+                  } ${props.toAsset?.value.displaySymbol.toUpperCase()}`}
+                ></ResourcefulTextTransition>
+              </div>
             </div>
           </div>
-        </div>
-        {/* <div
+          {/* <div
           class={`
           h-[49px] w-full flex justify-center items-center box-border
           bg-gray-base border-gray-input_outline
@@ -166,7 +186,8 @@ export const SwapDetails = defineComponent({
             )}
           </div>
         </div> */}
-      </div>
-    );
+        </div>
+      );
+    };
   },
 });

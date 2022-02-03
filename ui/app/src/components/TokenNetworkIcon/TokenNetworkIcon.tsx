@@ -44,12 +44,10 @@ export const TokenNetworkIcon = defineComponent({
 
     return () => {
       if (!assetRef.value) return null;
-      if (
+      // returning TokenIcon by default would disable transitions
+      const isNetworkNativeToken =
         !homeAssetRef.value ||
-        isLikeSymbol(assetRef.value.symbol, homeAssetRef.value.symbol)
-      ) {
-        return <TokenIcon {...props} />;
-      }
+        isLikeSymbol(assetRef.value.symbol, homeAssetRef.value.symbol);
       return (
         <Tooltip
           onShow={(instance) => {
@@ -68,23 +66,26 @@ export const TokenNetworkIcon = defineComponent({
             }}
           >
             <TokenIcon asset={assetRef} size={props.size} />
-            {!!homeAssetRef.value && (
+            {
               <div
-                class="flex items-center justify-center rounded-full bg-gray-100"
+                class="flex items-center transition-all duration-100 justify-center rounded-full bg-gray-100"
                 style={{
                   position: "absolute",
                   width: homeIconSize.value,
                   height: homeIconSize.value,
                   bottom: "-4px",
                   right: "-4px",
+                  opacity:
+                    !!homeAssetRef.value && !isNetworkNativeToken ? 1 : 0,
                 }}
               >
                 <TokenIcon
+                  class="transition-none"
                   assetValue={homeAssetRef.value}
                   size={homeIconSize.value}
                 />
               </div>
-            )}
+            }
           </div>
         </Tooltip>
       );

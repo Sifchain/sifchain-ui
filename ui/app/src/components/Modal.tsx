@@ -86,7 +86,7 @@ export default defineComponent({
           }}
         >
           <div
-            class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
+            class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 px-7 rounded-[20px] ${
               props.class || ""
             }`}
             onClick={(e) => e.stopPropagation()}

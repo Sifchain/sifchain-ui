@@ -47,7 +47,7 @@ export default defineComponent({
     });
 
     return () => (
-      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px] page-card">
+      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px]">
         <div
           key="view-layer"
           class={[

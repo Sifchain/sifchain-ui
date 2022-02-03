@@ -13,7 +13,7 @@ export function _Select(
     <button
       {...props}
       class={[
-        "transition-all duration-200 relative flex justify-between items-center h-[54px] pl-[8px] pr-0 rounded-[4px]  active:border-white disabled:bg-transparent text-lg font-medium whitespace-nowrap",
+        "transition-all text-white text-[18px] font-bold duration-200 relative flex justify-between items-center h-[54px] pl-[8px] pr-0 rounded-[4px]  active:border-white disabled:bg-transparent text-lg font-medium whitespace-nowrap",
         props.active && "border-white",
         props.class,
       ]}

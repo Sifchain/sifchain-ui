@@ -153,29 +153,31 @@ export const useExportData = () => {
   const detailsRef = computed(
     () =>
       [
-        [
-          "Destination",
-          <span class="capitalize">{exportParams.value.network}</span>,
-        ],
-        [
-          "Export Amount",
-          !exportParams.value.amount ? null : (
-            <span class="flex items-center font-mono">
-              {exportParams.value.amount}{" "}
-              {(
-                exportTokenRef.value?.asset.displaySymbol ||
-                exportTokenRef.value?.asset.symbol ||
-                ""
-              ).toUpperCase()}
-              <TokenIcon
-                class="ml-[4px]"
-                key={exportTokenRef.value?.asset.symbol || "undef"}
-                assetValue={exportTokenRef.value?.asset}
-                size={16}
-              />
-            </span>
-          ),
-        ],
+        // Redundant. Already visible in select field.
+        // [
+        //   "Destination",
+        //   <span class="capitalize">{exportParams.value.network}</span>,
+        // ],
+        // Redundant. Already visible in value field
+        // [
+        //   "Export Amount",
+        //   !exportParams.value.amount ? null : (
+        //     <span class="flex items-center font-mono">
+        //       {exportParams.value.amount}{" "}
+        //       {(
+        //         exportTokenRef.value?.asset.displaySymbol ||
+        //         exportTokenRef.value?.asset.symbol ||
+        //         ""
+        //       ).toUpperCase()}
+        //       <TokenIcon
+        //         class="ml-[4px]"
+        //         key={exportTokenRef.value?.asset.symbol || "undef"}
+        //         assetValue={exportTokenRef.value?.asset}
+        //         size={16}
+        //       />
+        //     </span>
+        //   ),
+        // ],
         feeAmountRef.value?.amount?.greaterThan("0") && [
           <>
             Export Fee

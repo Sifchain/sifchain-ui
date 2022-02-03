@@ -22,6 +22,7 @@ import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { effect } from "@vue/reactivity";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
+import { TokenIcon } from "@/components/TokenIcon";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -190,124 +191,135 @@ export default defineComponent({
       (s) => s.state[exportParams.value.network].address,
     );
 
-    const exportNetworkButton = (
-      <Button.Select
-        style={{
-          pointerEvents: optionsRef.value.length === 1 ? "none" : "auto",
-        }}
-        class="w-full relative capitalize pl-[16px] mt-[10px]"
-        active={networkOpenRef.value}
-      >
-        {useChains().get(exportParams.value.network).displayName}
-      </Button.Select>
-    );
-
-    return () => (
-      <Modal
-        heading={exportData.headingRef.value}
-        icon="interactive/arrow-up"
-        onClose={exportData.exitExport}
-        showClose
-      >
-        <section class="bg-gray-base--cancel p-4 rounded">
-          <label
-            for="exportAmount"
-            class={"flex relative items-center justify-between"}
-          >
-            <Form.Label>Amount</Form.Label>
-            {!!exportTokenRef.value && (
-              <span
-                class="text-base opacity-50 hover:text-accent-base cursor-pointer self-end"
-                onClick={handleSetMax}
-              >
-                Balance: {formatAssetAmount(exportTokenRef.value?.amount)}
-              </span>
-            )}
-          </label>
-
-          <Input.Base
-            inputRef={inputRef}
-            containerClass="mt-[10px]"
-            startContent={
-              !!exportTokenRef.value && (
-                <Button.Pill onClick={handleSetMax}>MAX</Button.Pill>
-              )
-            }
-            id="exportAmount"
-            type="number"
-            min="0"
-            style={{
-              textAlign: "right",
-            }}
-            onInput={(e: Event) => {
-              const value = (e.target as HTMLInputElement).value;
-              if (isNaN(parseFloat(value))) {
-                exportStore.setDraft({
-                  amount: "",
-                });
-              } else {
-                exportStore.setDraft({
-                  amount: value,
-                });
+    return () => {
+      const exportNetworkButton = (
+        <Button.Select
+          style={{
+            pointerEvents: optionsRef.value.length === 1 ? "none" : "auto",
+          }}
+          class="w-full relative capitalize pl-[16px] mt-[10px]"
+          active={networkOpenRef.value}
+        >
+          <div>
+            <TokenIcon
+              size={38}
+              assetValue={
+                useChains().get(exportParams.value.network).nativeAsset
               }
-            }}
-          />
-
-          <div class="block mt-[10px]">
-            <Form.Label>Network</Form.Label>
-            <SelectDropdown
-              key={optionsRef.value.map((o) => o.value).join("")}
-              options={optionsRef}
-              value={networkRef}
-              onChangeValue={(value) => {
-                exportStore.setDraft({
-                  network: value as Network,
-                });
-              }}
-              tooltipProps={{
-                onShow: () => {
-                  networkOpenRef.value = true;
-                },
-                onHide: () => {
-                  networkOpenRef.value = false;
-                },
-              }}
+            ></TokenIcon>
+          </div>
+          <div class="font-sans text-center text-[18px] font-bold text-white uppercase">
+            {useChains().get(exportParams.value.network).displayName}
+          </div>
+        </Button.Select>
+      );
+      return (
+        <Modal
+          heading={exportData.headingRef.value}
+          icon="interactive/arrow-up"
+          onClose={exportData.exitExport}
+          showClose
+        >
+          <section class="bg-gray-base--cancel p-4 rounded">
+            <label
+              for="exportAmount"
+              class={"flex relative items-center justify-between"}
             >
-              {exportNetworkButton}
-            </SelectDropdown>
-          </div>
-        </section>
+              <Form.Label>Amount</Form.Label>
+              {!!exportTokenRef.value && (
+                <span
+                  class="text-base opacity-50 hover:text-accent-base cursor-pointer self-end"
+                  onClick={handleSetMax}
+                >
+                  Balance: {formatAssetAmount(exportTokenRef.value?.amount)}
+                </span>
+              )}
+            </label>
 
-        <section class="bg-gray-base--cancel px-4 rounded mt-[5px]">
-          <Form.Details details={exportData.detailsRef.value} />
-        </section>
-
-        <section class="bg-gray-base--cancel p-4 rounded mt-[5px]">
-          <div class="text-white capitalize">
-            {exportParams.value.network} Recipient Address
-          </div>
-          <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
-            <input
-              readonly
-              value={targetAddressRef.value}
-              class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
-              onClick={(e) => {
-                (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
+            <Input.Base
+              inputRef={inputRef}
+              containerClass="mt-[10px]"
+              startContent={
+                !!exportTokenRef.value && (
+                  <Button.Pill onClick={handleSetMax}>MAX</Button.Pill>
+                )
+              }
+              id="exportAmount"
+              type="number"
+              min="0"
+              style={{
+                textAlign: "right",
+              }}
+              onInput={(e: Event) => {
+                const value = (e.target as HTMLInputElement).value;
+                if (isNaN(parseFloat(value))) {
+                  exportStore.setDraft({
+                    amount: "",
+                  });
+                } else {
+                  exportStore.setDraft({
+                    amount: value,
+                  });
+                }
               }}
             />
-          </div>
-        </section>
 
-        <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">
-          {!!buttonRef.value.icon && (
-            <AssetIcon
-              icon={buttonRef.value.icon}
-              class="w-[20px] h-[20px] mr-[4px]"
-            />
-          )}{" "}
-          {buttonRef.value.name}
-        </Button.CallToAction>
-      </Modal>
-    );
+            <div class="block mt-[10px]">
+              <Form.Label>Network</Form.Label>
+              <SelectDropdown
+                key={optionsRef.value.map((o) => o.value).join("")}
+                options={optionsRef}
+                value={networkRef}
+                onChangeValue={(value) => {
+                  exportStore.setDraft({
+                    network: value as Network,
+                  });
+                }}
+                tooltipProps={{
+                  onShow: () => {
+                    networkOpenRef.value = true;
+                  },
+                  onHide: () => {
+                    networkOpenRef.value = false;
+                  },
+                }}
+              >
+                {exportNetworkButton}
+              </SelectDropdown>
+            </div>
+          </section>
+
+          <section class="bg-gray-base--cancel p-4 rounded mt-[5px]">
+            <div class="text-white capitalize">
+              {exportParams.value.network} Recipient Address
+            </div>
+            <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
+              <input
+                readonly
+                value={targetAddressRef.value}
+                class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
+                onClick={(e) => {
+                  (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
+                }}
+              />
+            </div>
+          </section>
+
+          <section class="bg-gray-base--cancel p-4 rounded mt-[5px]">
+            <Form.Details details={exportData.detailsRef.value} />
+          </section>
+
+          <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">
+            {!!buttonRef.value.icon && (
+              <AssetIcon
+                icon={buttonRef.value.icon}
+                class="w-[20px] h-[20px] mr-[4px]"
+              />
+            )}{" "}
+            {buttonRef.value.name}
+          </Button.CallToAction>
+        </Modal>
+      );
+    };
   },
 });

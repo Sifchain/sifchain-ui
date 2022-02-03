@@ -71,11 +71,10 @@ input::-webkit-search-cancel-button {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 2s;
+  transition: all 250ms;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-  transform: translateY(1%) scale(1);
 }
 
 * {
