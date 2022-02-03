@@ -11,13 +11,13 @@ import {
 } from "@sifchain/sdk";
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
-import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
 import { useAsyncData } from "./useAsyncData";
 import { useChains } from "./useChains";
 import {
   isAssetFlaggedDisabled,
   isChainFlaggedDisabled,
 } from "@/store/modules/flags";
+import { PendingTransferItem } from "@/business/store/tx";
 
 export type TokenListItem = {
   amount: IAssetAmount;

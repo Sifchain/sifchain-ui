@@ -34,7 +34,7 @@ export function _Inline(
             !!content && "mr-[4px]",
             props.iconClass,
           ]}
-          disabled={props.disabled}
+          disabled={Boolean(props.disabled)}
         />
       )}
       {content}
