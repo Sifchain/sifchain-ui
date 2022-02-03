@@ -66,7 +66,7 @@ export default defineComponent({
       {
         name: "Sifchain Balance",
         sortBy: "balance" as BalancePageState["sortBy"],
-        class: "text-right",
+        class: "text-right pl-[42px] whitespace-nowrap",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -147,7 +147,7 @@ export default defineComponent({
                     {columns.map((column, index) => (
                       <div
                         style={colStyles.value[index]}
-                        class={[column.class, "whitespace-nowrap"]}
+                        class={[column.class]}
                         key={column.name}
                       >
                         <div
