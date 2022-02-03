@@ -91,7 +91,6 @@ export const VotingModal = defineComponent({
             (s) => nativeChain.findAssetWithLikeSymbol(s)?.displaySymbol || s,
           )
           .map((s) => s.toUpperCase())
-          .sort((a, b) => a.localeCompare(b))
           .join(",");
       } else {
         memo = this.currentYesNoAnswer ? "YES" : "NO";

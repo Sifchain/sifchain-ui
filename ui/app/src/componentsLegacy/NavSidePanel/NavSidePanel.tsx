@@ -102,7 +102,8 @@ export default defineComponent({
 
     const hasUniversalCompetition = useHasUniversalCompetition();
 
-    const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
+    const connectedNetworkCount =
+      rootStore.accounts.refs.connectedNetworkCount.computed();
 
     const changesData = useAsyncData(() => loadChangesData());
 
@@ -276,9 +277,8 @@ export default defineComponent({
                   ref={moreMenuRef}
                   offset={[0, -2]}
                   onShow={(instance: TooltipInstance) => {
-                    const content = instance.popper.querySelector(
-                      ".tippy-content",
-                    );
+                    const content =
+                      instance.popper.querySelector(".tippy-content");
                     if (content) {
                       content.className +=
                         " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
@@ -299,10 +299,11 @@ export default defineComponent({
                 onClick={() => {
                   votingOpenRef.value = true;
                 }}
+                class="w-full"
               >
                 <div
                   class={[
-                    "mt-[10px] h-[46px] flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
+                    "mt-[10px] h-[46px] w-full flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
                   ]}
                   style={{
                     backgroundImage:
@@ -315,10 +316,11 @@ export default defineComponent({
                       icon="interactive/ticket"
                       style={{ transform: "translateY(-1px)" }}
                     />
-                    <div class="ml-[6px]">
+                    <div class="ml-[6px] whitespace-nowrap">
                       {proposalData.value.proposal.title}
                     </div>
                   </div>
+                  {/* bump */}
                   {!proposalData.value.hasVoted && (
                     <div>
                       <AssetIcon
@@ -469,9 +471,8 @@ export default defineComponent({
                                       (b) => b.asset.symbol.includes("rowan"),
                                     )
                                     .map((asset) => {
-                                      const formatted = formatAssetAmount(
-                                        asset,
-                                      );
+                                      const formatted =
+                                        formatAssetAmount(asset);
                                       if (formatted.length > 6) {
                                         return Intl.NumberFormat("en", {
                                           notation: "compact",

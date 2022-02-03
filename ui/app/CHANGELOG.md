@@ -1,3 +1,6 @@
+## Release 2022.02.03
+* An issue was discovered that caused bonus pool (v4) selections to be sorted alphabetically, misaligning the rank weights. The voting period has been reset & extended until 2/8 at 12pm PST. 
+
 ## Release 2022.01.29
 * Added voting UI for Pools of the People governance
 
