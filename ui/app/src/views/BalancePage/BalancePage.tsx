@@ -1,6 +1,7 @@
 import { RouterView } from "vue-router";
 import { defineComponent, ref, computed, onMounted } from "vue";
 import { effect } from "@vue/reactivity";
+import { Network } from "@sifchain/sdk";
 
 import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetIcon from "@/components/AssetIcon";
@@ -8,19 +9,15 @@ import PageCard from "@/components/PageCard";
 
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
+import RecyclerView from "@/components/RecyclerView";
+import { Button } from "@/components/Button/Button";
 
 import BalanceRow from "./BalanceRow";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";
-import { Button } from "@/components/Button/Button";
 import { getImportLocation } from "./Import/useImportData";
-import { Network } from "@sifchain/sdk";
-import RecyclerView from "@/components/RecyclerView";
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 20;
 const ROW_HEIGHT = 50;
-const BUFFER = ROW_HEIGHT * 2;
-
-const clamp = (max: number, value: number) => (value > max ? max : value);
 
 export default defineComponent({
   name: "BalancePage",
@@ -59,22 +56,6 @@ export default defineComponent({
         : displayedTokenList.value.filter((x) => x.amount.greaterThan("0")),
     );
 
-    const pageEnd = ref(PAGE_SIZE);
-
-    const page = computed(() => allBalances.value.slice(0, pageEnd.value));
-
-    const handleScroll = (e: UIEvent) => {
-      const { scrollTop } = e.target as HTMLElement;
-
-      if (scrollTop <= BUFFER) {
-        pageEnd.value = PAGE_SIZE;
-      } else {
-        const delta = 2 + Math.ceil((scrollTop - BUFFER) / ROW_HEIGHT);
-
-        pageEnd.value = clamp(allBalances.value.length, PAGE_SIZE + delta);
-      }
-    };
-
     const columns = [
       {
         name: "Token",
@@ -97,7 +78,7 @@ export default defineComponent({
     );
 
     return () => (
-      <Layout onScroll={handleScroll}>
+      <Layout>
         <PageCard
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
@@ -215,7 +196,7 @@ export default defineComponent({
                 <td />
               </tr>
             </thead>
-            {!page.value.length && Boolean(state.searchQuery.length) && (
+            {!allBalances.value.length && Boolean(state.searchQuery.length) && (
               <tbody class="w-full relative">
                 <tr>
                   <td class="block pb-4">
@@ -235,8 +216,8 @@ export default defineComponent({
               as="tbody"
               containerClass="w-full relative overflow-y-scroll"
               data={allBalances.value}
-              rowHeight={50}
-              visibleRows={20}
+              rowHeight={ROW_HEIGHT}
+              visibleRows={PAGE_SIZE}
               renderItem={(item) => (
                 <BalanceRow
                   key={item.asset.symbol + item.asset.network}
