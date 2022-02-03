@@ -76,7 +76,7 @@ const proposals: Proposal[] = [
     startDateTime: new Date(1643922000000),
     endDateTime: new Date(1644350400000),
     heading: `Sif's Expansion Bonus (v4)`,
-    title: `(!) Bonus Revote`,
+    title: `! Bonus Revote`,
     description: `Polls are reopened for the Pools of the People v4 - Bonus Coin Vote. An issue was discovered that caused selections to be sorted alphabetically, misaligning the rank weights. The voting period will extend until 2/8 at 12pm PST. Please select 4 bonus coin pools, in order of preference.`,
     voteType: "pools",
     maxBallots: 4,
