@@ -62,7 +62,7 @@ export default defineComponent({
       if (index !== startIndex.value) {
         startIndex.value = index;
       }
-    }, 50);
+    }, 0);
 
     const Container = createElementVNode(props.as ?? "div", {
       class: props.class,

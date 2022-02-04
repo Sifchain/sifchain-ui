@@ -6,6 +6,7 @@ import {
   Transition,
   KeepAlive,
   onMounted,
+  watch,
 } from "vue";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetIcon from "@/components/AssetIcon";
@@ -19,6 +20,7 @@ import router from "@/router";
 import { Button } from "@/components/Button/Button";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
+import { debounce } from "../utils/debounce";
 
 export default defineComponent({
   name: "BalancePage",
@@ -68,8 +70,61 @@ export default defineComponent({
       });
     });
     let isDisabled = false;
+    const rowContainerRef = ref<HTMLDivElement | null>(null);
+    const rowRef = ref<any | null>(null);
+    const scrollProgress = ref(0);
+    const startIndex = ref(0);
+    const renderCount = ref(5);
+    const renderedTokenList = computed(() => {
+      return displayedTokenList.value.slice(
+        startIndex.value,
+        startIndex.value + renderCount.value,
+      );
+    });
+    const rowHeight = ref(0);
+    const rowTop = ref(0);
+    watch([rowRef], () => {
+      if (typeof rowRef.value?.$el?.scrollHeight !== "number") {
+        return;
+      }
+      rowHeight.value = rowRef.value.$el.getBoundingClientRect().height;
+      rowTop.value = rowRef.value.$el.getBoundingClientRect().top;
+    });
+    watch([rowContainerRef], () => {
+      const height = window.innerHeight * 1.2;
+      console.log({ height });
+      if (!height && typeof height !== "number") {
+        return;
+      }
+      renderCount.value = Math.floor(height / rowHeight.value);
+    });
+    const scrollHandler = debounce((e: UIEvent) => {
+      const container = rowContainerRef.value;
+      if (!container) return;
+      const target = e.target as HTMLDivElement;
+      console.log("scrolling");
+      console.log(
+        target.scrollTop,
+        container.offsetTop,
+        container.clientHeight,
+        rowHeight.value,
+        container.scrollTop,
+        container.clientTop,
+      );
+      scrollProgress.value =
+        Math.max(-container.getBoundingClientRect().top / rowHeight.value, 0) /
+        displayedTokenList.value.length;
+      startIndex.value = Math.floor(
+        scrollProgress.value * displayedTokenList.value.length,
+      );
+      console.log(
+        startIndex.value,
+        scrollProgress.value,
+        -container.getBoundingClientRect().top,
+      );
+    }, 200);
     return () => (
-      <Layout>
+      <Layout onScroll={scrollHandler}>
         <PageCard
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
@@ -158,9 +213,18 @@ export default defineComponent({
                 <td></td>
               </tr>
             </thead>
-            <tbody class="w-full relative">
-              {displayedTokenList.value.map((item, index) => (
+            <tbody ref={rowContainerRef} class="w-full relative">
+              <hr
+                style={{
+                  paddingTop: `${startIndex.value * rowHeight.value}px`,
+                  transition: "all 0s linear",
+                }}
+              />
+              {renderedTokenList.value.map((item, index) => (
                 <BalanceRow
+                  ref={
+                    item === displayedTokenList.value[0] ? rowRef : undefined
+                  }
                   key={item.asset.symbol + item.asset.network}
                   tokenItem={item}
                   expandedSymbol={state.expandedSymbol}
@@ -169,6 +233,15 @@ export default defineComponent({
                   }}
                 />
               ))}
+              <hr
+                style={{
+                  paddingTop: `${
+                    displayedTokenList.value.length * rowHeight.value -
+                    (startIndex.value + renderCount.value) * rowHeight.value
+                  }px`,
+                  transition: "all 0s linear",
+                }}
+              />
             </tbody>
           </table>
         </PageCard>
