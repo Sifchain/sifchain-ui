@@ -15,7 +15,11 @@ type Props<T = any> = {
   rowHeight: number;
   visibleRows: number;
   renderItem(item: T): JSX.Element;
+  as?: VNodeTypes;
+  class?: HTMLAttributes["class"];
 };
+
+const DEBOUNCE_TIME = 50;
 
 export default defineComponent({
   props: {
@@ -42,12 +46,12 @@ export default defineComponent({
       type: [String, Array] as PropType<HTMLAttributes["class"]>,
     },
   },
-  setup(props) {
+  setup(props: Props) {
     const startIndex = ref(0);
-    const lastIndex = props.data.length - 1;
+    const lastIndex = computed(() => props.data.length - 1);
     const endIndex = computed(() => {
       const targetIndex = startIndex.value + props.visibleRows;
-      return targetIndex >= lastIndex ? lastIndex : targetIndex;
+      return targetIndex >= lastIndex.value ? lastIndex.value : targetIndex;
     });
 
     const visible = computed(() =>
@@ -62,7 +66,7 @@ export default defineComponent({
       if (index !== startIndex.value) {
         startIndex.value = index;
       }
-    }, 50);
+    }, DEBOUNCE_TIME);
 
     const Container = createElementVNode(props.as ?? "div", {
       class: props.class,
@@ -77,15 +81,17 @@ export default defineComponent({
     return () => (
       // @ts-ignore
       <Container>
-        {startIndex.value > 0 && (
+        {Boolean(startIndex.value) && (
           <div style={{ height: `${props.rowHeight * startIndex.value}px` }} />
         )}
         {visible.value.map(props.renderItem)}
-        {endIndex.value < lastIndex && (
+        {endIndex.value < lastIndex.value && (
           <div
             style={{
               display: "block",
-              height: `${props.rowHeight * (lastIndex - endIndex.value)}px`,
+              height: `${
+                props.rowHeight * (lastIndex.value - endIndex.value)
+              }px`,
             }}
           />
         )}
