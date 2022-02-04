@@ -38,7 +38,7 @@ export default defineComponent({
     as: {
       type: String as PropType<VNodeTypes>,
     },
-    containerClass: {
+    class: {
       type: [String, Array] as PropType<HTMLAttributes["class"]>,
     },
   },
@@ -65,7 +65,7 @@ export default defineComponent({
     }, 50);
 
     const Container = createElementVNode(props.as ?? "div", {
-      class: props.containerClass,
+      class: props.class,
       onScroll: handleScroll,
       style: {
         display: "block",

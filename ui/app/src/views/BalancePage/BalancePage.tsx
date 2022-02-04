@@ -214,7 +214,7 @@ export default defineComponent({
             )}
             <RecyclerView
               as="tbody"
-              containerClass="w-full relative overflow-y-scroll"
+              class="w-full relative overflow-y-scroll"
               data={allBalances.value}
               rowHeight={ROW_HEIGHT}
               visibleRows={PAGE_SIZE}
