@@ -8,6 +8,7 @@ import {
   IAsset,
   toBaseUnits,
 } from "@sifchain/sdk";
+import * as MarginV1Types from "@sifchain/sdk/src/generated/proto/sifnode/margin/v1/types";
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
@@ -39,12 +40,13 @@ export const MarginPool = defineComponent({
       if (!humanAmount) return;
 
       const amount = toBaseUnits(humanAmount, rowan);
-      const txDraft = client.tx.margin.OpenLong(
+      const txDraft = client.tx.margin.Open(
         {
           signer: accountStore.state.sifchain.address,
           collateralAsset: "rowan",
           collateralAmount: amount,
           borrowAsset: this.externalAsset.symbol,
+          position: MarginV1Types.Position.LONG
         },
         accountStore.state.sifchain.address,
       );

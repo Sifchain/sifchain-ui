@@ -97,6 +97,8 @@ export const MarginPosition = defineComponent({
       );
     },
     pnl(): IAssetAmount {
+      if (!marginStore.getters.stablePool) return AssetAmount("cusdt", "0");
+
       const stableAsset = useNativeChain().forceGetAsset(
         marginStore.getters.stablePool.externalAsset!.symbol,
       );

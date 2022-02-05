@@ -1,7 +1,12 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { MTP } from "../../../sifnode/margin/v1/types";
+import {
+  Position,
+  MTP,
+  positionFromJSON,
+  positionToJSON,
+} from "../../../sifnode/margin/v1/types";
 
 export const protobufPackage = "sifnode.margin.v1";
 
@@ -9,6 +14,7 @@ export interface MTPRequest {
   address: string;
   custodyAsset: string;
   collateralAsset: string;
+  position: Position;
 }
 
 export interface MTPResponse {
@@ -24,7 +30,7 @@ export interface PositionsForAddressResponse {
 }
 
 function createBaseMTPRequest(): MTPRequest {
-  return { address: "", custodyAsset: "", collateralAsset: "" };
+  return { address: "", custodyAsset: "", collateralAsset: "", position: 0 };
 }
 
 export const MTPRequest = {
@@ -40,6 +46,9 @@ export const MTPRequest = {
     }
     if (message.collateralAsset !== "") {
       writer.uint32(26).string(message.collateralAsset);
+    }
+    if (message.position !== 0) {
+      writer.uint32(32).int32(message.position);
     }
     return writer;
   },
@@ -60,6 +69,9 @@ export const MTPRequest = {
         case 3:
           message.collateralAsset = reader.string();
           break;
+        case 4:
+          message.position = reader.int32() as any;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -77,6 +89,7 @@ export const MTPRequest = {
       collateralAsset: isSet(object.collateralAsset)
         ? String(object.collateralAsset)
         : "",
+      position: isSet(object.position) ? positionFromJSON(object.position) : 0,
     };
   },
 
@@ -87,6 +100,8 @@ export const MTPRequest = {
       (obj.custodyAsset = message.custodyAsset);
     message.collateralAsset !== undefined &&
       (obj.collateralAsset = message.collateralAsset);
+    message.position !== undefined &&
+      (obj.position = positionToJSON(message.position));
     return obj;
   },
 
@@ -97,6 +112,7 @@ export const MTPRequest = {
     message.address = object.address ?? "";
     message.custodyAsset = object.custodyAsset ?? "";
     message.collateralAsset = object.collateralAsset ?? "";
+    message.position = object.position ?? 0;
     return message;
   },
 };

@@ -4,6 +4,44 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.margin.v1";
 
+export enum Position {
+  UNSPECIFIED = 0,
+  LONG = 1,
+  SHORT = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function positionFromJSON(object: any): Position {
+  switch (object) {
+    case 0:
+    case "UNSPECIFIED":
+      return Position.UNSPECIFIED;
+    case 1:
+    case "LONG":
+      return Position.LONG;
+    case 2:
+    case "SHORT":
+      return Position.SHORT;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return Position.UNRECOGNIZED;
+  }
+}
+
+export function positionToJSON(object: Position): string {
+  switch (object) {
+    case Position.UNSPECIFIED:
+      return "UNSPECIFIED";
+    case Position.LONG:
+      return "LONG";
+    case Position.SHORT:
+      return "SHORT";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 export interface GenesisState {
   params?: Params;
 }
@@ -17,6 +55,7 @@ export interface Params {
   healthGainFactor: string;
   epochLength: Long;
   pools: string[];
+  forceCloseThreshold: string;
 }
 
 export interface MTP {
@@ -29,6 +68,7 @@ export interface MTP {
   custodyAmount: string;
   leverage: string;
   mtpHealth: string;
+  position: Position;
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -99,6 +139,7 @@ function createBaseParams(): Params {
     healthGainFactor: "",
     epochLength: Long.ZERO,
     pools: [],
+    forceCloseThreshold: "",
   };
 }
 
@@ -130,6 +171,9 @@ export const Params = {
     }
     for (const v of message.pools) {
       writer.uint32(66).string(v!);
+    }
+    if (message.forceCloseThreshold !== "") {
+      writer.uint32(74).string(message.forceCloseThreshold);
     }
     return writer;
   },
@@ -165,6 +209,9 @@ export const Params = {
         case 8:
           message.pools.push(reader.string());
           break;
+        case 9:
+          message.forceCloseThreshold = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -197,6 +244,9 @@ export const Params = {
       pools: Array.isArray(object?.pools)
         ? object.pools.map((e: any) => String(e))
         : [],
+      forceCloseThreshold: isSet(object.forceCloseThreshold)
+        ? String(object.forceCloseThreshold)
+        : "",
     };
   },
 
@@ -221,6 +271,8 @@ export const Params = {
     } else {
       obj.pools = [];
     }
+    message.forceCloseThreshold !== undefined &&
+      (obj.forceCloseThreshold = message.forceCloseThreshold);
     return obj;
   },
 
@@ -237,6 +289,7 @@ export const Params = {
         ? Long.fromValue(object.epochLength)
         : Long.ZERO;
     message.pools = object.pools?.map((e) => e) || [];
+    message.forceCloseThreshold = object.forceCloseThreshold ?? "";
     return message;
   },
 };
@@ -252,6 +305,7 @@ function createBaseMTP(): MTP {
     custodyAmount: "",
     leverage: "",
     mtpHealth: "",
+    position: 0,
   };
 }
 
@@ -283,6 +337,9 @@ export const MTP = {
     }
     if (message.mtpHealth !== "") {
       writer.uint32(74).string(message.mtpHealth);
+    }
+    if (message.position !== 0) {
+      writer.uint32(80).int32(message.position);
     }
     return writer;
   },
@@ -321,6 +378,9 @@ export const MTP = {
         case 9:
           message.mtpHealth = reader.string();
           break;
+        case 10:
+          message.position = reader.int32() as any;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -352,6 +412,7 @@ export const MTP = {
         : "",
       leverage: isSet(object.leverage) ? String(object.leverage) : "",
       mtpHealth: isSet(object.mtpHealth) ? String(object.mtpHealth) : "",
+      position: isSet(object.position) ? positionFromJSON(object.position) : 0,
     };
   },
 
@@ -372,6 +433,8 @@ export const MTP = {
       (obj.custodyAmount = message.custodyAmount);
     message.leverage !== undefined && (obj.leverage = message.leverage);
     message.mtpHealth !== undefined && (obj.mtpHealth = message.mtpHealth);
+    message.position !== undefined &&
+      (obj.position = positionToJSON(message.position));
     return obj;
   },
 
@@ -386,6 +449,7 @@ export const MTP = {
     message.custodyAmount = object.custodyAmount ?? "";
     message.leverage = object.leverage ?? "";
     message.mtpHealth = object.mtpHealth ?? "";
+    message.position = object.position ?? 0;
     return message;
   },
 };

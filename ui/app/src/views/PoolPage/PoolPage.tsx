@@ -130,9 +130,7 @@ export default defineComponent({
   render() {
     return (
       <Layout>
-        <RouterView
-          name={!this.isLoaded ? "DISABLED_WHILE_LOADING" : undefined}
-        />
+        <RouterView />
         {!this.isLoaded ? (
           <div class="absolute left-0 top-[180px] w-full flex justify-center">
             <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
