@@ -63,9 +63,10 @@ export function createServices(context: ServiceContext) {
     chains: ChainsService.list(),
   });
   const TokenRegistryService = createTokenRegistry(context);
+
   const liquidityService = new LiquidityClient(
     context,
-    context.chains.find((chain: Chain) => chain.network === Network.SIFCHAIN)!,
+    ChainsService.get(Network.SIFCHAIN),
   )!;
 
   /* 

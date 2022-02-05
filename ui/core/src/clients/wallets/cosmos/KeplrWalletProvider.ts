@@ -1,29 +1,24 @@
 import {
-  StargateClient,
+  Coin,
+  QueryClient,
+  setupAuthExtension,
+  setupBankExtension,
+  setupIbcExtension,
   SigningStargateClient,
-  IndexedTx,
+  StargateClient,
 } from "@cosmjs/stargate";
-import { cosmos, ibc } from "@keplr-wallet/cosmos";
 import { Uint53 } from "@cosmjs/math";
-
-import { Chain, Network } from "@sifchain/sdk";
-import {
-  NativeDexTransaction,
-  NativeDexSignedTransaction,
-  NativeAminoTypes,
-  NativeDexClient,
-} from "@sifchain/sdk/src/clients";
-import {
-  WalletProviderContext,
-  CosmosWalletProvider,
-} from "@sifchain/sdk/src/clients/wallets";
-
+import pLimit from "p-limit";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { Chain, Network } from "../../../entities";
+import { WalletProviderContext } from "../WalletProvider";
 import { toHex } from "@cosmjs/encoding";
 import {
   OfflineSigner,
   OfflineDirectSigner,
   EncodeObject,
 } from "@cosmjs/proto-signing";
+import { CosmosWalletProvider } from "./CosmosWalletProvider";
 import {
   makeSignDoc,
   makeStdTx,
@@ -34,11 +29,13 @@ import {
 } from "@cosmjs/launchpad";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { parseLogs } from "@cosmjs/stargate/build/logs";
-
 import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
-import { getKeplrProvider } from "./getKeplrProvider";
-
-import Long from "long";
+import { getKeplrProvider } from "@sifchain/wallet-keplr";
+import {
+  NativeAminoTypes,
+  NativeDexTransaction,
+  NativeDexSignedTransaction,
+} from "@sifchain/sdk/src/clients/native";
 
 export class KeplrWalletProvider extends CosmosWalletProvider {
   static create(context: WalletProviderContext) {
@@ -131,159 +128,38 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     }
 
     return address;
-    // console.log("txhash!", txhash);
-    // f
   }
 
-  /*
-   * After 0.44 upgrade, external chains don't accept Amino tx broadcasts.
-   * To make this work, we sign an amino tx (since Ledger requires Amino),
-   * then we broadcast a protobuf tx body with the extracted amino signature.
-   * This is ONLY required for IBC imports right now and our protobuf-encoding
-   * IBC function is not working so we manually write it for IBC.
-   */
-  async signIbcImport(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+  async signProtobuf(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
     const chainConfig = this.getIBCChainConfig(chain);
-    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
+    const signer = await this.getSendingSigner(chain);
 
-    const account = await stargate.getAccount(tx.fromAddress || "");
-    const fee = {
-      amount: [tx.fee.price],
-      gas: tx.fee.gas,
-    };
-
-    const converter = new NativeAminoTypes();
-
-    const keplr = (await getKeplrProvider())!;
-    const key = await keplr?.getKey(chainConfig.chainId);
-    const bech32Address = key!.bech32Address;
-
-    const aminoMsgs = tx.msgs.map(converter.toAmino.bind(converter));
-    const aminoMsg = aminoMsgs[0];
-
-    const protoMsg = {
-      type_url: "/ibc.applications.transfer.v1.MsgTransfer",
-      value: ibc.applications.transfer.v1.MsgTransfer.encode({
-        sourcePort: aminoMsg.value.source_port,
-        sourceChannel: aminoMsg.value.source_channel,
-        token: aminoMsg.value.token,
-        sender: aminoMsg.value.sender,
-        receiver: aminoMsg.value.receiver,
-        timeoutHeight: {
-          revisionNumber: Long.fromString(
-            aminoMsg.value.timeout_height.revision_number,
-          ),
-          revisionHeight: Long.fromString(
-            aminoMsg.value.timeout_height.revision_height,
-          ),
-        },
-      }).finish(),
-    };
-
-    if (
-      !account ||
-      (typeof account?.accountNumber !== "number" &&
-        typeof account?.sequence === "number")
-    ) {
-      throw new Error(
-        `This account (${tx.fromAddress}) does not yet exist on-chain. Please send some funds to it before proceeding.`,
-      );
-    }
-
-    const signDoc = makeSignDoc(
-      aminoMsgs,
-      fee,
-      chainConfig.chainId,
-      tx.memo || "",
-      account!.accountNumber.toString(),
-      account!.sequence.toString(),
+    const stargate = await SigningStargateClient.connectWithSigner(
+      chainConfig.rpcUrl,
+      signer,
     );
-    keplr.defaultOptions = {
-      sign: {
-        preferNoSetFee: false,
-        preferNoSetMemo: true,
+
+    const signed = await stargate.sign(
+      tx.fromAddress,
+      tx.msgs,
+      {
+        amount: [tx.fee.price],
+        gas: tx.fee.gas,
       },
-    };
-    const signResponse = await keplr.signAmino(
-      chainConfig.chainId,
-      bech32Address,
-      signDoc,
+      tx.memo,
     );
-
-    const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-      bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-        messages: [protoMsg],
-        memo: signResponse.signed.memo,
-      }).finish(),
-      authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
-        signerInfos: [
-          {
-            publicKey: {
-              type_url: "/cosmos.crypto.secp256k1.PubKey",
-              value: cosmos.crypto.secp256k1.PubKey.encode({
-                key: Buffer.from(
-                  signResponse.signature.pub_key.value,
-                  "base64",
-                ),
-              }).finish(),
-            },
-            modeInfo: {
-              single: {
-                mode: cosmos.tx.signing.v1beta1.SignMode
-                  .SIGN_MODE_LEGACY_AMINO_JSON,
-              },
-            },
-            sequence: Long.fromString(signResponse.signed.sequence),
-          },
-        ],
-        fee: {
-          amount: signResponse.signed.fee.amount as cosmos.base.v1beta1.ICoin[],
-          gasLimit: Long.fromString(signResponse.signed.fee.gas),
-        },
-      }).finish(),
-      signatures: [Buffer.from(signResponse.signature.signature, "base64")],
-    }).finish();
-
-    return new NativeDexSignedTransaction(tx, signedTx);
+    return new NativeDexSignedTransaction(tx, signed);
   }
 
   async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
+    // For IBC imports: use protobuf for now.
+    // Amino messages on external 0.44 chains are having compatibility issues.
     if (
       tx.msgs[0]?.typeUrl === "/ibc.applications.transfer.v1.MsgTransfer" &&
       chain.network !== Network.SIFCHAIN
     ) {
-      if (tx.msgs.length > 1) {
-        throw new Error(
-          "Cannot send batched tx for import, please send only 1 import message as tx",
-        );
-      }
-      return this.signIbcImport(chain, tx);
+      return this.signProtobuf(chain, tx);
     }
-
-    console.log(tx.msgs[0]);
-    // if (tx.msgs[0]?.typeUrl.startsWith("/sifnode.margin")) {
-    //   const chainConfig = this.getIBCChainConfig(chain);
-    //   const signer = await this.getSendingSigner(chain);
-
-    //   const stargate = await SigningStargateClient.connectWithSigner(
-    //     chainConfig.rpcUrl,
-    //     signer,
-    //     {
-    //       registry: NativeDexClient.getNativeRegistry(),
-    //     },
-    //   );
-
-    //   const signed = await stargate.sign(
-    //     tx.fromAddress,
-    //     tx.msgs,
-    //     {
-    //       amount: [tx.fee.price],
-    //       gas: tx.fee.gas,
-    //     },
-    //     tx.memo,
-    //   );
-    //   return new NativeDexSignedTransaction(tx, signed);
-    // }
 
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
@@ -291,13 +167,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const converter = new NativeAminoTypes();
 
     const msgs = tx.msgs.map(converter.toAmino.bind(converter));
-
-    // console.log(msgs);
-    (msgs[0] as any).type = (msgs[0] as any).type.replace(
-      /^margin\//,
-      "margin/Msg",
-    );
-    // msgs[0].value.position = "long";
 
     const fee = {
       amount: [tx.fee.price],
@@ -338,26 +207,23 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     );
     keplr!.defaultOptions = defaultKeplrOpts;
     const signedTx = makeStdTx(signResponse.signed, signResponse.signature);
+
     return new NativeDexSignedTransaction(tx, signedTx);
   }
 
   async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
-    if (1 && false) {
-      console.log(tx);
-      console.log(JSON.stringify({ tx: tx.signed }));
-      const res = await fetch(
-        "http://localhost:3030/api/sifchain-local/rest/txs",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tx: tx.signed, mode: "block" }),
+    if (1) {
+      debugger;
+      const res = await fetch("http://localhost:3030/api/rest/txs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
-      console.log(await res.json());
+        body: JSON.stringify({ tx }),
+      });
+      const json = await res.json();
+      console.log("json", json);
     }
-    // Broadcast EncodeObject
     if ((tx.signed as TxRaw).authInfoBytes) {
       const chainConfig = this.getIBCChainConfig(chain);
       const signer = await this.getSendingSigner(chain);
@@ -366,37 +232,27 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         chainConfig.rpcUrl,
         signer,
       );
-      console.log("stargate broadcastTx", tx.signed);
       const result = await stargate.broadcastTx(
         Uint8Array.from(TxRaw.encode(tx.signed as TxRaw).finish()),
       );
       return result as BroadcastTxResult;
-    } else if (
-      !(tx.signed instanceof Uint8Array) &&
-      !(tx.signed as StdTx).msg
-    ) {
-      throw new Error("Invalid signedTx, must be Uint8Array or TxRaw or StdTx");
+    } else if (!(tx.signed as StdTx).msg) {
+      throw new Error("Invalid signedTx, possibly it was not amino signed.");
     }
 
-    const chainConfig = this.getIBCChainConfig(chain);
-    const keplr = await getKeplrProvider();
+    const signed = tx.signed as StdTx;
 
+    const chainConfig = this.getIBCChainConfig(chain);
+    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
+    const keplr = await getKeplrProvider();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const txHashUInt8Array = await keplr!.sendTx(
       chainConfig.chainId,
-      tx.signed as Uint8Array | StdTx,
+      signed,
       BroadcastMode.Block,
     );
     const txHashHex = toHex(txHashUInt8Array).toUpperCase();
-
-    const stargate = await StargateClient.connect(chainConfig.rpcUrl);
-    let resultRaw: IndexedTx | null = null;
-    let triesRemaining = 5;
-
-    while (!resultRaw && triesRemaining-- > 0) {
-      resultRaw = await stargate.getTx(txHashHex);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-    }
-
+    const resultRaw = await stargate.getTx(txHashHex);
     if (!resultRaw || !resultRaw.hash?.match(/^([0-9A-F][0-9A-F])+$/)) {
       console.error("INVALID TXHASH IN RESULT", resultRaw);
       throw new Error(
