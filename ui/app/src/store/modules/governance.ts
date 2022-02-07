@@ -69,14 +69,14 @@ const proposals: Proposal[] = [
     excludedSymbols: ["rowan", "uatom", "ceth", "cust"],
   },
   {
-    // block height @ Feb 3, 2022 @ 1:43pm MST: 5398299
+    // block height @ Feb 3, 2022 @ 3:06pm MST: 5399148
     id: "4pools_02_03_22",
     address: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
     // startDateTime: new Date(1643472000000),
-    startDateTime: new Date(1643922000000),
+    startDateTime: new Date(1643925932698),
     endDateTime: new Date(1644350400000),
     heading: `Sif's Expansion Bonus (v4)`,
-    title: `(!) Bonus Revote`,
+    title: `! Bonus Revote`,
     description: `Polls are reopened for the Pools of the People v4 - Bonus Coin Vote. An issue was discovered that caused selections to be sorted alphabetically, misaligning the rank weights. The voting period will extend until 2/8 at 12pm PST. Please select 4 bonus coin pools, in order of preference.`,
     voteType: "pools",
     maxBallots: 4,
