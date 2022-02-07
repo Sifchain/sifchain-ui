@@ -3,12 +3,14 @@ import {
   createElementVNode,
   defineComponent,
   HTMLAttributes,
+  onMounted,
   PropType,
   ref,
   VNodeTypes,
 } from "vue";
 
 import debounce from "@/utils/debounce-raf";
+import { Compatible42SigningCosmosClient } from "@sifchain/sdk/src/clients/native/SifClient";
 
 export default defineComponent({
   props: {
@@ -50,8 +52,10 @@ export default defineComponent({
   setup(props) {
     const startIndex = ref(0);
     const lastIndex = computed(() => props.data.length - 1);
+    const visibleRows = ref(props.visibleRows);
+
     const endIndex = computed(() => {
-      const targetIndex = startIndex.value + props.visibleRows;
+      const targetIndex = startIndex.value + visibleRows.value;
       return targetIndex >= lastIndex.value ? lastIndex.value : targetIndex;
     });
 
@@ -67,25 +71,35 @@ export default defineComponent({
       if (index !== startIndex.value) {
         startIndex.value = index;
 
+        // hoist onScroll event
         if (props.onScroll) {
           props.onScroll(e);
         }
       }
     });
 
-    const Container = createElementVNode(props.as ?? "div", {
-      class: props.class,
-      onScroll: handleScroll,
-      style: {
-        display: "block",
-        overflowY: "scroll",
-        maxHeight: `${props.rowHeight * props.visibleRows}px`,
-      },
+    onMounted(() => {
+      if (!visibleRows.value && !props.visibleRows) {
+        // dynamically set visibleRows based on the screen height when a default value isn't present
+        visibleRows.value = Math.floor(
+          (document.body.clientHeight * 0.8) / props.rowHeight,
+        );
+      }
     });
+
+    const maxHeight = computed(() => props.rowHeight * visibleRows.value);
+
+    const Container = createElementVNode(props.as ?? "div");
 
     return () => (
       // @ts-ignore
-      <Container>
+      <Container
+        style={{
+          maxHeight: `${maxHeight.value}px`,
+        }}
+        class={[props.class, "block w-full overflow-y-scroll"]}
+        onScroll={handleScroll}
+      >
         {!visible.value.length ? (
           props.emptyState
         ) : (
@@ -98,8 +112,8 @@ export default defineComponent({
             {visible.value.map(props.renderItem)}
             {endIndex.value < lastIndex.value && (
               <div
+                class="block"
                 style={{
-                  display: "block",
                   height: `${
                     props.rowHeight * (lastIndex.value - endIndex.value)
                   }px`,

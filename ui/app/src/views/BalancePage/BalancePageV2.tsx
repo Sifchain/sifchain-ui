@@ -133,6 +133,7 @@ export default defineComponent({
             <div class="w-full">
               <SearchBox
                 enableKeyBindings
+                id="search-token"
                 value={state.searchQuery}
                 disabled={isDisabled}
                 placeholder="Search Token..."
@@ -196,8 +197,28 @@ export default defineComponent({
                 <td />
               </tr>
             </thead>
-            {!allBalances.value.length && Boolean(state.searchQuery.length) && (
-              <tbody class="w-full relative">
+            <RecyclerView
+              as="tbody"
+              class="w-full relative overflow-y-scroll"
+              data={allBalances.value}
+              rowHeight={ROW_HEIGHT}
+              onScroll={() => {
+                // reset state.expandedSymbol on scroll
+                if (state.expandedSymbol) {
+                  state.expandedSymbol = "";
+                }
+              }}
+              renderItem={(item) => (
+                <BalanceRow
+                  key={item.asset.symbol + item.asset.network}
+                  tokenItem={item}
+                  expandedSymbol={state.expandedSymbol}
+                  onSetExpandedSymbol={(symbol) => {
+                    state.expandedSymbol = symbol;
+                  }}
+                />
+              )}
+              emptyState={
                 <tr>
                   <td class="block pb-4">
                     <div class="p-4 grid place-items-center bg-gray-200 rounded-md">
@@ -210,24 +231,7 @@ export default defineComponent({
                     </div>
                   </td>
                 </tr>
-              </tbody>
-            )}
-            <RecyclerView
-              as="tbody"
-              class="w-full relative overflow-y-scroll"
-              data={allBalances.value}
-              rowHeight={ROW_HEIGHT}
-              visibleRows={PAGE_SIZE}
-              renderItem={(item) => (
-                <BalanceRow
-                  key={item.asset.symbol + item.asset.network}
-                  tokenItem={item}
-                  expandedSymbol={state.expandedSymbol}
-                  onSetExpandedSymbol={(symbol) => {
-                    state.expandedSymbol = symbol;
-                  }}
-                />
-              )}
+              }
             />
           </table>
         </PageCard>
