@@ -91,38 +91,35 @@ export default defineComponent({
 
     const Container = createElementVNode(props.as ?? "div");
 
-    return () => (
-      // @ts-ignore
-      <Container
-        style={{
-          maxHeight: `${maxHeight.value}px`,
-        }}
-        class={[props.class, "block w-full overflow-y-scroll"]}
-        onScroll={handleScroll}
-      >
-        {!visible.value.length ? (
-          props.emptyState
-        ) : (
-          <>
-            {Boolean(startIndex.value) && (
-              <div
-                style={{ height: `${props.rowHeight * startIndex.value}px` }}
-              />
-            )}
-            {visible.value.map(props.renderItem)}
-            {endIndex.value < lastIndex.value && (
-              <div
-                class="block"
-                style={{
-                  height: `${
-                    props.rowHeight * (lastIndex.value - endIndex.value)
-                  }px`,
-                }}
-              />
-            )}
-          </>
-        )}
-      </Container>
-    );
+    return () =>
+      !visible.value.length ? (
+        props.emptyState
+      ) : (
+        // @ts-ignore
+        <Container
+          style={{
+            maxHeight: `${maxHeight.value}px`,
+          }}
+          class={[props.class, "block w-full overflow-y-scroll"]}
+          onScroll={handleScroll}
+        >
+          {Boolean(startIndex.value) && (
+            <div
+              style={{ height: `${props.rowHeight * startIndex.value}px` }}
+            />
+          )}
+          {visible.value.map(props.renderItem)}
+          {endIndex.value < lastIndex.value && (
+            <div
+              class="block"
+              style={{
+                height: `${
+                  props.rowHeight * (lastIndex.value - endIndex.value)
+                }px`,
+              }}
+            />
+          )}
+        </Container>
+      );
   },
 });

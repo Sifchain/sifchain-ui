@@ -199,7 +199,6 @@ export default defineComponent({
             </thead>
             <RecyclerView
               as="tbody"
-              class="w-full relative overflow-y-scroll"
               data={allBalances.value}
               rowHeight={ROW_HEIGHT}
               onScroll={() => {
@@ -219,18 +218,20 @@ export default defineComponent({
                 />
               )}
               emptyState={
-                <tr>
-                  <td class="block pb-4">
-                    <div class="p-4 grid place-items-center bg-gray-200 rounded-md">
-                      <span class="text-lg">
-                        No results matching{" "}
-                        <span class="text-accent-base">
-                          "{state.searchQuery}"
+                <tbody>
+                  <tr>
+                    <td class="block pb-4">
+                      <div class="p-4 grid place-items-center bg-gray-200 rounded-md">
+                        <span class="text-lg">
+                          No results matching{" "}
+                          <span class="text-accent-base">
+                            "{state.searchQuery}"
+                          </span>
                         </span>
-                      </span>
-                    </div>
-                  </td>
-                </tr>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
               }
             />
           </table>
