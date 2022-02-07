@@ -21,6 +21,9 @@ export const SearchBox = defineComponent({
     value: {
       type: String,
     },
+    id: {
+      type: String,
+    },
     placeholder: {
       type: String,
       default: false,
@@ -94,6 +97,7 @@ export const SearchBox = defineComponent({
         <input
           ref={inputRef}
           type="search"
+          id={props.id}
           {...(inputProps as Partial<InputHTMLAttributes>)}
           value={props.value}
           class={[
@@ -102,14 +106,17 @@ export const SearchBox = defineComponent({
           ]}
         />
         {props.enableKeyBindings && (
-          <div class="absolute right-2 flex items-center gap-[6px]">
+          <label
+            for={props.id}
+            class="absolute right-2 flex items-center gap-[6px]"
+          >
             <div class="rounded px-2 py-[6px] text-sm text-accent-muted font-mono bg-gray-base">
               {isMacOs.value ? "Cmd" : "Ctrl"} F
             </div>
             <div class="rounded px-2 py-[6px] text-sm text-accent-muted font-mono bg-gray-base">
               /
             </div>
-          </div>
+          </label>
         )}
       </div>
     );
