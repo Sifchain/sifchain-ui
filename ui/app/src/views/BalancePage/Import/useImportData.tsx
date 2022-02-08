@@ -48,6 +48,7 @@ export const useImportData = () => {
   const router = useRouter();
   const importStore = rootStore.import;
   const importDraft = importStore.refs.draft.computed();
+  const importDrafts = importStore.refs.drafts.computed();
 
   useBoundRoute({
     params: {
@@ -223,6 +224,7 @@ export const useImportData = () => {
 
   return {
     importDraft,
+    importDrafts,
     chainsRef,
     networksRef,
     pickableTokensRef,

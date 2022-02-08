@@ -1,13 +1,6 @@
 import { useChainsList, useChains, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import {
-  AppCookies,
-  Asset,
-  getNetworkEnv,
-  IAssetAmount,
-  Network,
-  NetworkEnv,
-} from "@sifchain/sdk";
+import { Asset, IAssetAmount, Network } from "@sifchain/sdk";
 import {
   BridgeEvent,
   BridgeParams,
@@ -28,6 +21,7 @@ export type ImportDraft = {
 };
 
 type State = {
+  drafts: ImportDraft[];
   draft: ImportDraft;
   pendingPegEvents: [string, BridgeEvent][];
 };
@@ -37,6 +31,14 @@ export const importStore = Vuextra.createStore({
     devtools: true,
   },
   state: {
+    drafts: [
+      {
+        amount: "0",
+        network: Network.ETHEREUM,
+        symbol: "eth",
+        pegEvent: undefined,
+      },
+    ],
     draft: {
       amount: "0",
       network: Network.ETHEREUM,
@@ -148,7 +150,7 @@ export const runTransfer = async (
       tx: {
         state: "failed",
         hash: "",
-        memo: error.message,
+        memo: (error as Error).message,
       },
     });
   }
@@ -168,7 +170,7 @@ export const runTransfer = async (
       tx: {
         hash: "",
         state: "failed",
-        memo: error.message,
+        memo: (error as Error).message,
       },
     });
   }

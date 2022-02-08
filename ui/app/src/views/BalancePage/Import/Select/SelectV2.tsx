@@ -1,4 +1,4 @@
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, PropType, ComputedRef } from "vue";
 import { useRouter } from "vue-router";
 import { AssetAmount, Network, toBaseUnits } from "@sifchain/sdk";
 
@@ -18,25 +18,35 @@ import { getImportLocation, useImportData } from "../useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
-import { importStore } from "@/store/modules/import";
+import { ImportDraft, importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { TokenListItem, useToken } from "@/hooks/useToken";
+
+const MAX_ASSETS = 4;
 
 export default defineComponent({
   name: "ImportSelect",
 
   setup() {
-    const { store } = useCore();
+    const { store, services } = useCore();
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
 
-    const { tokenRef, computedImportAssetAmount, importDraft, exitImport } =
-      useImportData();
+    const {
+      tokenRef,
+      computedImportAssetAmount,
+      networksRef,
+      importDrafts,
+      exitImport,
+    } = useImportData();
+
+    const selectedNetwork = computed(() => importDrafts.value[0].network);
 
     const validationErrorRef = computed(() => {
-      const chain = useChains().get(importDraft.value.network);
+      const chain = useChains().get(selectedNetwork.value);
       if (chain.chainConfig.underMaintenance) {
         return `${chain.displayName} Connection Under Maintenance`;
       }
@@ -109,7 +119,43 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
-    const balances = ref([{}]);
+    const handleAddAssetDraft = () => {
+      importDrafts.value.push({ ...importDrafts.value[0] });
+    };
+
+    const handleDeleteBalanceDraft = (index: number) => {
+      importDrafts.value.splice(index, 1);
+    };
+
+    const createChainSortParam = (network: Network) => {
+      // sort by type, then by network, so types are grouped together
+      // should probably have some grouping mechanism in the selection dropdown in the future
+      return services.chains.get(network).chainConfig.chainType + network;
+    };
+
+    const optionsRef = computed<SelectDropdownOption[]>(
+      () =>
+        networksRef.value
+          ?.map((network) => ({
+            content: useChains().get(network).displayName,
+            value: network,
+          }))
+          .sort((a, b) =>
+            createChainSortParam(a.value).localeCompare(
+              createChainSortParam(b.value),
+            ),
+          ) || [],
+    );
+
+    const balanceAssetsRef = computed(() =>
+      importDrafts.value.map((importDraft) => ({
+        importDraft,
+        token: useToken({
+          network: computed(() => importDraft.network),
+          symbol: computed(() => importDraft.symbol),
+        }),
+      })),
+    );
 
     return () => (
       <Modal
@@ -119,8 +165,23 @@ export default defineComponent({
         showClose
       >
         <div class="grid gap-2">
-          <BalanceSelector />
-
+          {balanceAssetsRef.value.map((asset, i) => (
+            <BalanceSelector
+              key={`${asset.importDraft.network}-${asset.importDraft.symbol}-${i}`}
+              networkDisabled={i !== 0}
+              network={asset.importDraft.network}
+              onDelete={handleDeleteBalanceDraft.bind(null, i)}
+              importDraft={asset.importDraft}
+              optionsRef={optionsRef}
+              tokenRef={asset.token}
+            />
+          ))}
+          <Button.CallToActionSecondary
+            disabled={importDrafts.value.length >= MAX_ASSETS}
+            onClick={handleAddAssetDraft}
+          >
+            + Add another asset
+          </Button.CallToActionSecondary>
           <section class="bg-gray-base p-4 rounded">
             <div class="text-white">Sifchain Recipient Address</div>
             <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
@@ -150,81 +211,90 @@ export default defineComponent({
 });
 
 const BalanceSelector = defineComponent({
-  setup() {
-    const { services } = useCore();
+  props: {
+    networkDisabled: {
+      type: Boolean,
+      default: false,
+    },
+    network: {
+      type: Object as PropType<Network>,
+      default: Network.ETHEREUM,
+    },
+    amount: {
+      type: String,
+    },
+    onDelete: {
+      type: Function as PropType<() => void>,
+      default: () => {},
+    },
+    importDraft: {
+      type: Object as PropType<ImportDraft>,
+    },
+    optionsRef: {
+      type: Object as PropType<ComputedRef<SelectDropdownOption[]>>,
+      default: [],
+    },
+    tokenRef: {
+      type: Object as PropType<ComputedRef<TokenListItem | undefined>>,
+      default: ref(undefined),
+    },
+  },
+  setup(props) {
     const selectIsOpen = ref(false);
 
-    const { tokenRef, networksRef, importDraft, networkBalances } =
-      useImportData();
+    const { networkBalances } = useImportData();
 
     const inputRef = useManagedInputValueRef(
       computed(() =>
-        parseFloat(importDraft.value.amount) === 0
+        !props.importDraft || !parseFloat(props.importDraft?.amount ?? 0)
           ? ""
-          : importDraft.value.amount,
+          : props.importDraft.amount,
       ),
     );
 
     const networkOpenRef = ref(false);
 
-    const networkValue = rootStore.import.refs.draft.network.computed();
-    const amountValue = rootStore.import.refs.draft.amount.computed();
+    const networkValue = ref(props.network);
+    const amountValue = ref(props.amount);
 
-    const createChainSortParam = (network: Network) => {
-      // sort by type, then by network, so types are grouped together
-      // should probably have some grouping mechanism in the selection dropdown in the future
-      return services.chains.get(network).chainConfig.chainType + network;
-    };
-
-    const optionsRef = computed<SelectDropdownOption[]>(
-      () =>
-        networksRef.value
-          ?.map((network) => ({
-            content: useChains().get(network).displayName,
-            value: network,
-          }))
-          .sort((a, b) =>
-            createChainSortParam(a.value).localeCompare(
-              createChainSortParam(b.value),
-            ),
-          ) || [],
-    );
-
-    const boundAsset = computed(() => tokenRef.value?.asset);
+    const boundAsset = computed(() => props.tokenRef.value?.asset);
 
     const handleSetMax = async () => {
-      if (!tokenRef.value) return;
-      const chain = useChains().get(networkValue.value);
+      if (!props.tokenRef.value) return;
+      const chain = useChains().get(networkValue.value ?? Network.ETHEREUM);
       if (chain.chainConfig.chainType === "ibc") {
         const gasAssetAmount = AssetAmount(
           chain.nativeAsset,
           toBaseUnits("0.1", chain.nativeAsset),
         );
-        if (tokenRef.value.asset.symbol === chain.nativeAsset.symbol) {
-          const amount = tokenRef.value.amount.subtract(gasAssetAmount);
+        if (props.tokenRef.value.asset.symbol === chain.nativeAsset.symbol) {
+          const amount = props.tokenRef.value.amount.subtract(gasAssetAmount);
           console.log({
             amount: amount.toString(),
-            balance: tokenRef.value.amount.toString(),
+            balance: props.tokenRef.value.amount.toString(),
             fee: gasAssetAmount.toString(),
           });
           rootStore.import.setDraft({
             amount: amount.lessThan("0")
               ? "0.0"
-              : format(amount, tokenRef.value.asset),
+              : format(amount, props.tokenRef.value.asset),
           });
         } else {
           rootStore.import.setDraft({
-            amount: format(tokenRef.value.amount.amount, tokenRef.value.asset),
+            amount: format(
+              props.tokenRef.value.amount.amount,
+              props.tokenRef.value.asset,
+            ),
           });
         }
       } else {
         rootStore.import.setDraft({
           amount: format(
             getMaxAmount(
-              ref(tokenRef.value.asset.symbol),
-              tokenRef.value.amount,
+              ref(props.tokenRef.value.asset.symbol),
+              props.tokenRef.value.amount,
             ),
-            tokenRef.value.asset,
+            props.tokenRef.value.asset,
           ),
         });
       }
@@ -232,22 +302,27 @@ const BalanceSelector = defineComponent({
 
     const networkBalanceEntry = computed(() =>
       networkBalances.data.value.find(
-        (v) => v.symbol === tokenRef.value?.asset.symbol,
+        (v) => v.symbol === props.tokenRef.value?.asset.symbol,
       ),
     );
 
     return () => (
-      <section class="bg-gray-base p-4 rounded">
+      <section class="bg-gray-base p-4 rounded relative">
+        {props.networkDisabled && (
+          <button class="absolute top-0 right-0 p-2" onClick={props.onDelete}>
+            <AssetIcon icon="interactive/close" size={22} />
+          </button>
+        )}
         <div class="w-full">
           <div class="flex w-full">
             <div class="block flex-1 mr-[5px]">
               Network
               <SelectDropdown
-                key={optionsRef.value.map((o) => o.value).join("")}
-                options={optionsRef}
+                key={props.optionsRef.value.map((o) => o.value).join("")}
+                options={props.optionsRef}
                 value={networkValue}
                 onChangeValue={(value) => {
-                  if (importDraft.value.network)
+                  if (props.importDraft?.network)
                     importStore.setDraft({
                       network: value as Network,
                     });
@@ -264,6 +339,7 @@ const BalanceSelector = defineComponent({
                 <Button.Select
                   class="w-full relative capitalize pl-[16px] mt-[10px]"
                   active={networkOpenRef.value}
+                  disabled={props.networkDisabled}
                 >
                   {useChains().get(networkValue.value).displayName}
                 </Button.Select>
@@ -286,8 +362,8 @@ const BalanceSelector = defineComponent({
                     asset={boundAsset}
                   />
                   <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                    {tokenRef.value?.asset?.displaySymbol ||
-                      tokenRef.value?.asset?.symbol}
+                    {props.tokenRef.value?.asset?.displaySymbol ||
+                      props.tokenRef.value?.asset?.symbol}
                   </div>
                 </div>
               </Button.Select>
@@ -311,9 +387,9 @@ const BalanceSelector = defineComponent({
         </div>
 
         <div class="h-[40px] flex items-end justify-end">
-          {!!tokenRef.value && (
+          {!!props.tokenRef.value && (
             <span
-              class="text-base opacity-50 hover:text-accent-base cursor-pointer flex items-center"
+              class="text-base opacity-50 hover:text-accent-base cursor-pointer flex items-center pb-1"
               onClick={handleSetMax}
             >
               Balance:{" "}
@@ -340,7 +416,7 @@ const BalanceSelector = defineComponent({
             textAlign: "right",
           }}
           startContent={
-            Boolean(tokenRef.value) ? (
+            Boolean(props.tokenRef.value) ? (
               <Button.Pill class="z-[1]" onClick={handleSetMax}>
                 MAX
               </Button.Pill>
