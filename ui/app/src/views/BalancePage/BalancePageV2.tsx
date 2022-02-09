@@ -10,13 +10,13 @@ import PageCard from "@/components/PageCard";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
 import RecyclerView from "@/components/RecyclerView";
-import { Button } from "@/components/Button/Button";
+import Toggle from "@/components/Toggle";
+import Button from "@/components/Button";
 
 import BalanceRow from "./BalanceRow";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { getImportLocation } from "./Import/useImportData";
 
-const PAGE_SIZE = 20;
 const ROW_HEIGHT = 50;
 
 export default defineComponent({
@@ -24,19 +24,21 @@ export default defineComponent({
   props: {},
 
   setup() {
-    const { state, displayedTokenList } = useBalancePageData({
-      searchQuery: "",
-      expandedSymbol: "",
-      sortBy: "symbol",
-      reverse: false,
-    });
+    const { state, displayedTokenList, isLoadingBalances } = useBalancePageData(
+      {
+        searchQuery: "",
+        expandedSymbol: "",
+        sortBy: "symbol",
+        reverse: false,
+      },
+    );
 
     // There's a bug with refreshing while an import child route is open
     // right as balance page loads... this "fixes" it. TODO: find real cause.
     let isReady = ref(false);
     let isDisabled = false;
 
-    const showZeroBalance = ref(true);
+    const showAllBalances = ref(false);
 
     onMounted(() => {
       setTimeout(() => {
@@ -51,7 +53,7 @@ export default defineComponent({
     });
 
     const allBalances = computed(() =>
-      showZeroBalance.value || state.searchQuery.length
+      showAllBalances.value || state.searchQuery.length
         ? displayedTokenList.value
         : displayedTokenList.value.filter((x) => x.amount.greaterThan("0")),
     );
@@ -77,6 +79,10 @@ export default defineComponent({
       })),
     );
 
+    const showTableHeader = computed(
+      () => allBalances.value.length > 0 && !isLoadingBalances.value,
+    );
+
     return () => (
       <Layout>
         <PageCard
@@ -98,19 +104,13 @@ export default defineComponent({
                   size={24}
                 />
               </Tooltip>
-              <label class="flex items-center mr-[16px] opacity-80">
-                <input
-                  type="checkbox"
-                  class="mr-[4px]"
-                  checked={showZeroBalance.value}
-                  onChange={(e) =>
-                    (showZeroBalance.value = (
-                      e.target as HTMLInputElement
-                    ).checked)
-                  }
-                />
-                Show 0 Balances
-              </label>
+              <Toggle
+                label="Show all available"
+                active={showAllBalances.value}
+                onChange={(active) => {
+                  showAllBalances.value = active;
+                }}
+              />
               <Button.Inline
                 onClick={() => {}}
                 class="!h-[40px] px-[17px] text-md relative"
@@ -130,7 +130,7 @@ export default defineComponent({
           class="w-[800px]"
           withOverflowSpace
           headerContent={
-            <div class="w-full">
+            <div class="w-full grid gap-4">
               <SearchBox
                 enableKeyBindings
                 id="search-token"
@@ -141,9 +141,8 @@ export default defineComponent({
                   state.searchQuery = (e.target as HTMLInputElement).value;
                 }}
               />
-              <div class="h-4 w-full" />
-              {displayedTokenList.value.length > 0 && (
-                <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+              {showTableHeader.value && (
+                <div class="pb-1 mb-[-5px] w-full flex flex-row justify-start">
                   <div class="relative w-full flex flex-row justify-start font-medium text-sm align-text-bottom">
                     {columns.map((column, index) => (
                       <div
@@ -184,19 +183,6 @@ export default defineComponent({
           }
         >
           <table class="w-full">
-            <thead>
-              <tr class="block">
-                {columns.map((column) => (
-                  <td
-                    ref={column.ref}
-                    class={[column.class, "whitespace-nowrap"]}
-                    key={column.name}
-                  />
-                ))}
-                <td /> {/* Actions */}
-                <td />
-              </tr>
-            </thead>
             <RecyclerView
               as="tbody"
               data={allBalances.value}
@@ -220,14 +206,23 @@ export default defineComponent({
               emptyState={
                 <tbody>
                   <tr>
-                    <td class="block pb-4">
-                      <div class="p-4 grid place-items-center bg-gray-200 rounded-md">
-                        <span class="text-lg">
-                          No results matching{" "}
-                          <span class="text-accent-base">
-                            "{state.searchQuery}"
+                    <td class="block py-4">
+                      <div class="p-4 grid place-items-center bg-gray-200 rounded-md text-center">
+                        {isLoadingBalances.value ? (
+                          <AssetIcon icon="interactive/anim-circle-spinner" />
+                        ) : state.searchQuery ? (
+                          <span class="text-lg text-accent-base">
+                            We can't seem to find that token.
+                            <br />{" "}
+                            <span class="text-accent-muted">
+                              Search for another token to continue
+                            </span>
                           </span>
-                        </span>
+                        ) : (
+                          <span class="text-lg text-accent-base">
+                            Please import assets to view balances
+                          </span>
+                        )}
                       </div>
                     </td>
                   </tr>

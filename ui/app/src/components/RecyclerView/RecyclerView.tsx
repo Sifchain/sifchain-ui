@@ -1,3 +1,4 @@
+import { debounce } from "@/views/utils/debounce";
 import {
   computed,
   createElementVNode,
@@ -8,9 +9,9 @@ import {
   ref,
   VNodeTypes,
 } from "vue";
+import AssetIcon from "../AssetIcon";
 
-import debounce from "@/utils/debounce-raf";
-import { Compatible42SigningCosmosClient } from "@sifchain/sdk/src/clients/native/SifClient";
+const DEBOUNCE_DELAY = 150; // 0.15s
 
 export default defineComponent({
   props: {
@@ -63,7 +64,9 @@ export default defineComponent({
       props.data.slice(startIndex.value, endIndex.value + props.paddingEnd),
     );
 
-    const handleScroll = debounce((e: UIEvent) => {
+    const isScrolling = ref(false);
+
+    const handleScrollInner = debounce((e: UIEvent) => {
       const index = Math.floor(
         ((e.target as HTMLDivElement)?.scrollTop ?? 0) / props.rowHeight,
       );
@@ -76,7 +79,14 @@ export default defineComponent({
           props.onScroll(e);
         }
       }
-    });
+
+      isScrolling.value = false;
+    }, DEBOUNCE_DELAY);
+
+    const handleScroll = (e: UIEvent) => {
+      isScrolling.value = true;
+      handleScrollInner(e);
+    };
 
     onMounted(() => {
       if (!visibleRows.value && !props.visibleRows) {
@@ -97,6 +107,14 @@ export default defineComponent({
 
     const Container = createElementVNode(props.as ?? "div");
 
+    const spinner = (
+      <AssetIcon
+        icon="interactive/anim-racetrack-spinner"
+        class="ml-[4px] mt-[2px]"
+        size={32}
+      />
+    );
+
     return () =>
       !visible.value.length ? (
         props.emptyState
@@ -111,19 +129,28 @@ export default defineComponent({
         >
           {Boolean(startIndex.value) && (
             <div
+              class="grid items-end"
               style={{ height: `${props.rowHeight * startIndex.value}px` }}
-            />
+            >
+              {isScrolling.value && (
+                <div class="w-full p-4 grid place-items-center">{spinner}</div>
+              )}
+            </div>
           )}
           {visible.value.map(props.renderItem)}
           {endIndex.value < lastIndex.value && (
             <div
-              class="block"
+              class="grid items-start"
               style={{
                 height: `${
                   props.rowHeight * (lastIndex.value - endIndex.value)
                 }px`,
               }}
-            />
+            >
+              {isScrolling.value && (
+                <div class="w-full p-4 grid place-items-center">{spinner}</div>
+              )}
+            </div>
           )}
         </Container>
       );
