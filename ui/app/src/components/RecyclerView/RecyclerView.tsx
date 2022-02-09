@@ -84,6 +84,12 @@ export default defineComponent({
         visibleRows.value = Math.floor(
           (document.body.clientHeight * 0.8) / props.rowHeight,
         );
+
+        window.addEventListener("resize", () => {
+          visibleRows.value = Math.floor(
+            (document.body.clientHeight * 0.8) / props.rowHeight,
+          );
+        });
       }
     });
 
