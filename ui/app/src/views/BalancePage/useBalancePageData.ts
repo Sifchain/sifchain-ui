@@ -36,7 +36,7 @@ export const useBalancePageData = (initialState: BalancePageState) => {
   );
 
   const displayedTokenList = computed<TokenListItem[]>(() => {
-    if (isLoadingBalances.value) return [];
+    if (tokenList.value) return [];
 
     const out = sortAndFilterTokens({
       tokens: tokenList.value,
