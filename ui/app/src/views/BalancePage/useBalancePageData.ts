@@ -32,7 +32,7 @@ export const useBalancePageData = (initialState: BalancePageState) => {
   });
 
   const isLoadingBalances = accountStore.computed(
-    ({ state }) => !state[targetNetwork].balances.length,
+    ({ state }) => !state[targetNetwork].hasLoadedBalancesOnce,
   );
 
   const displayedTokenList = computed<TokenListItem[]>(() => {
