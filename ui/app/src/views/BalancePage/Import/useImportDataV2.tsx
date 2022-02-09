@@ -47,8 +47,9 @@ export function getImportLocation(
 export const useImportData = () => {
   const router = useRouter();
   const importStore = rootStore.import;
-  const importDraft = importStore.refs.draft.computed();
   const importDrafts = importStore.refs.drafts.computed();
+
+  const importDraft = computed(() => importDrafts.value[0]);
 
   useBoundRoute({
     params: {
@@ -77,6 +78,7 @@ export const useImportData = () => {
 
   const exitImport = () => {
     router.replace({ name: "Balances" });
+    importStore.resetDrafts();
   };
 
   const chainsRef = importStore.refs.chains.computed();
@@ -229,7 +231,6 @@ export const useImportData = () => {
   ]);
 
   return {
-    importDraft,
     importDrafts,
     chainsRef,
     networksRef,
@@ -246,5 +247,6 @@ export const useImportData = () => {
     detailsRef,
     pegEventDetails,
     networkBalances,
+    tokenListRef,
   };
 };

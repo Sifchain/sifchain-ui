@@ -112,6 +112,9 @@ export const importStore = Vuextra.createStore({
           : target.network ?? Network.ETHEREUM,
       });
     },
+    resetDrafts() {
+      state.drafts.splice(0, state.drafts.length - 1);
+    },
     setPegEvent(pegEvent: BridgeEvent | undefined) {
       state.draft.pegEvent = pegEvent;
     },

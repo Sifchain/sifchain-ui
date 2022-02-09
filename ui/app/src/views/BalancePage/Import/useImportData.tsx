@@ -48,29 +48,22 @@ export const useImportData = () => {
   const router = useRouter();
   const importStore = rootStore.import;
   const importDraft = importStore.refs.draft.computed();
-  const importDrafts = importStore.refs.drafts.computed();
 
   useBoundRoute({
     params: {
       displaySymbol: computed({
-        get: () => importStore.state.drafts[0].symbol,
-        set: (v) =>
-          importStore.setDraftWithIndex({ index: 0, nextDraft: { symbol: v } }),
+        get: () => importStore.state.draft.symbol,
+        set: (v) => importStore.setDraft({ symbol: v }),
       }),
     },
     query: {
       network: computed({
-        get: () => importStore.state.drafts[0].network,
-        set: (v) =>
-          importStore.setDraftWithIndex({
-            index: 0,
-            nextDraft: { network: v },
-          }),
+        get: () => importStore.state.draft.network,
+        set: (v) => importStore.setDraft({ network: v }),
       }),
       amount: computed({
-        get: () => importStore.state.drafts[0].amount,
-        set: (v) =>
-          importStore.setDraftWithIndex({ index: 0, nextDraft: { amount: v } }),
+        get: () => importStore.state.draft.amount,
+        set: (v) => importStore.setDraft({ amount: v }),
       }),
     },
   });
@@ -230,7 +223,6 @@ export const useImportData = () => {
 
   return {
     importDraft,
-    importDrafts,
     chainsRef,
     networksRef,
     pickableTokensRef,

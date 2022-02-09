@@ -1,24 +1,20 @@
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import AssetIcon from "@/components/AssetIcon";
-import { useCore } from "@/hooks/useCore";
 import {
   computed,
   defineComponent,
-  effect,
   onMounted,
   onUnmounted,
   PropType,
   Ref,
   ref,
   Teleport,
-  TransitionGroup,
   watch,
-  watchEffect,
 } from "vue";
-import { IAsset, Network } from "../../../core/src";
-import { TokenIcon } from "./TokenIcon";
+import { IAsset, Network } from "@sifchain/sdk";
+
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import AssetIcon from "@/components/AssetIcon";
 import { TokenNetworkIcon } from "./TokenNetworkIcon/TokenNetworkIcon";
 
 export const TokenSelectDropdown = defineComponent({
@@ -57,7 +53,6 @@ export const TokenSelectDropdown = defineComponent({
     },
   },
   setup(props) {
-    const core = useCore();
     const selfRoot = ref<HTMLDivElement | null>(null);
     const dropdownRoot = ref<HTMLDivElement | null>(null);
     const iconScrollContainer = ref<HTMLDivElement | null>(null);

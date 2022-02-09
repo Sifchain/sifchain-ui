@@ -14,7 +14,6 @@ import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-import { getImportLocation, useImportData } from "../useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
@@ -24,6 +23,8 @@ import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 import { TokenListItem, useToken } from "@/hooks/useToken";
+
+import { getImportLocation, useImportData } from "../useImportDataV2";
 
 const MAX_ASSETS = 4;
 
@@ -36,14 +37,29 @@ export default defineComponent({
     const router = useRouter();
 
     const {
-      tokenRef,
       computedImportAssetAmount,
+      tokenRef,
       networksRef,
       importDrafts,
+      networkBalances,
+      tokenListRef,
       exitImport,
     } = useImportData();
 
-    const selectedNetwork = computed(() => importDrafts.value[0].network);
+    const firstDraft = computed(() => importDrafts.value[0]);
+
+    const balanceAssetsRef = computed(() =>
+      importDrafts.value.map((importDraft, i, drafts) => ({
+        importDraft,
+        token: useToken({
+          network: computed(() => importDraft.network),
+          symbol: computed(() => importDraft.symbol),
+        }),
+        hiddenTokens: i > 0 ? drafts.map((x) => x.symbol) : [],
+      })),
+    );
+
+    const selectedNetwork = computed(() => firstDraft.value.network);
 
     const validationErrorRef = computed(() => {
       const chain = useChains().get(selectedNetwork.value);
@@ -119,11 +135,24 @@ export default defineComponent({
       return buttons.find((item) => item.condition) || buttons[0];
     });
 
-    const handleAddAssetDraft = () => {
-      const { length } = importDrafts.value;
-      const previous = importDrafts.value[length - 1];
+    const hiddenTokenSymbols = computed(() =>
+      importDrafts.value.map((x) => x.symbol),
+    );
+    const isHidden = (symbol: string) =>
+      hiddenTokenSymbols.value.includes(symbol);
 
-      importDrafts.value.push({ ...previous, amount: "", symbol: "" });
+    const handleAddAssetDraft = () => {
+      const previous = importDrafts.value[importDrafts.value.length - 1];
+
+      const nextTokenSymbol =
+        networkBalances.data.value.find((x) => !isHidden(x.symbol))?.symbol ??
+        tokenListRef.value.find((x) => !isHidden(x.asset.symbol))?.asset.symbol;
+
+      importDrafts.value.push({
+        ...previous,
+        amount: "0.0",
+        symbol: nextTokenSymbol ?? "",
+      });
     };
 
     const handleDeleteBalanceDraft = (index: number) => {
@@ -147,17 +176,6 @@ export default defineComponent({
             createChainSortParam(b.value),
           ),
         ),
-    );
-
-    const balanceAssetsRef = computed(() =>
-      importDrafts.value.map((importDraft, i, drafts) => ({
-        importDraft,
-        token: useToken({
-          network: computed(() => importDraft.network),
-          symbol: computed(() => importDraft.symbol),
-        }),
-        hiddenTokens: i > 0 ? drafts.map((x) => x.symbol) : [],
-      })),
     );
 
     return () => (
