@@ -15,6 +15,7 @@ import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { Tooltip } from "@/components/Tooltip";
 import { effect } from "@vue/reactivity";
 import { Network } from "@sifchain/sdk";
+import Toggle from "@/components/Toggle";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -163,48 +164,14 @@ export default defineComponent({
           icon="interactive/plus"
           showClose
           headingAction={
-            <div
-              onClick={() => {
+            <Toggle
+              label="Pool Equaly"
+              active={data.asyncPooling.value}
+              onChange={(_active) => {
                 data.toggleAsyncPooling();
                 data.handleTokenAFocused();
               }}
-              class="flex items-center justify-start gap-[9px] cursor-pointer"
-            >
-              <button
-                class={[
-                  `cursor-pointer flex transition-all items-center h-[16px] w-[28px] border-solid active:bg-opacity-20  border-[1px] rounded-full`,
-                  data.asyncPooling.value
-                    ? `border-connected-base active:bg-connected-base`
-                    : `border-gray-800 active:bg-gray-800`,
-                ]}
-              >
-                <TransitionGroup name="flip-list--fast">
-                  {data.asyncPooling.value && (
-                    <div
-                      key="pod"
-                      class={[
-                        `transition-all ml-auto  w-[12px] h-[12px] m-[1px] rounded-full`,
-                        data.asyncPooling.value
-                          ? `bg-connected-base`
-                          : `bg-gray-800`,
-                      ]}
-                    ></div>
-                  )}
-                  {!data.asyncPooling.value && (
-                    <div
-                      key="pod"
-                      class={[
-                        `transition-all w-[12px] h-[12px] m-[1px] rounded-full`,
-                        data.asyncPooling.value
-                          ? `bg-[connected-base]`
-                          : `bg-gray-800`,
-                      ]}
-                    />
-                  )}
-                </TransitionGroup>
-              </button>
-              <div class={[`font-medium`]}>Pool Equally</div>
-            </div>
+            />
           }
           onClose={() => close()}
         >
