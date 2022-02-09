@@ -99,6 +99,19 @@ export const importStore = Vuextra.createStore({
         nextDraft.network = nextDraft.network || Network.ETHEREUM;
       Object.assign(state.draft, nextDraft);
     },
+    setDraftWithIndex(payload: {
+      nextDraft: Partial<ImportDraft>;
+      index: number;
+    }) {
+      const target = state.drafts[payload.index];
+
+      Object.assign(state.drafts[payload.index], {
+        ...payload.nextDraft,
+        network: payload.nextDraft.network
+          ? payload.nextDraft.network
+          : target.network ?? Network.ETHEREUM,
+      });
+    },
     setPegEvent(pegEvent: BridgeEvent | undefined) {
       state.draft.pegEvent = pegEvent;
     },

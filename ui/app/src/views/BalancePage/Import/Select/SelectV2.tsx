@@ -120,7 +120,10 @@ export default defineComponent({
     });
 
     const handleAddAssetDraft = () => {
-      importDrafts.value.push({ ...importDrafts.value[0] });
+      const { length } = importDrafts.value;
+      const previous = importDrafts.value[length - 1];
+
+      importDrafts.value.push({ ...previous, amount: "", symbol: "" });
     };
 
     const handleDeleteBalanceDraft = (index: number) => {
@@ -133,27 +136,27 @@ export default defineComponent({
       return services.chains.get(network).chainConfig.chainType + network;
     };
 
-    const optionsRef = computed<SelectDropdownOption[]>(
-      () =>
-        networksRef.value
-          ?.map((network) => ({
-            content: useChains().get(network).displayName,
-            value: network,
-          }))
-          .sort((a, b) =>
-            createChainSortParam(a.value).localeCompare(
-              createChainSortParam(b.value),
-            ),
-          ) || [],
+    const networkOptionsRef = computed<SelectDropdownOption[]>(() =>
+      (networksRef.value ?? [])
+        .map((network) => ({
+          content: useChains().get(network).displayName,
+          value: network,
+        }))
+        .sort((a, b) =>
+          createChainSortParam(a.value).localeCompare(
+            createChainSortParam(b.value),
+          ),
+        ),
     );
 
     const balanceAssetsRef = computed(() =>
-      importDrafts.value.map((importDraft) => ({
+      importDrafts.value.map((importDraft, i, drafts) => ({
         importDraft,
         token: useToken({
           network: computed(() => importDraft.network),
           symbol: computed(() => importDraft.symbol),
         }),
+        hiddenTokens: i > 0 ? drafts.map((x) => x.symbol) : [],
       })),
     );
 
@@ -165,17 +168,22 @@ export default defineComponent({
         showClose
       >
         <div class="grid gap-2">
-          {balanceAssetsRef.value.map((asset, i) => (
-            <BalanceSelector
-              key={`${asset.importDraft.network}-${asset.importDraft.symbol}-${i}`}
-              networkDisabled={i !== 0}
-              network={asset.importDraft.network}
-              onDelete={handleDeleteBalanceDraft.bind(null, i)}
-              importDraft={asset.importDraft}
-              optionsRef={optionsRef}
-              tokenRef={asset.token}
-            />
-          ))}
+          {balanceAssetsRef.value.map((asset, i) => {
+            return (
+              <BalanceSelector
+                key={`${asset.importDraft.network}-${asset.importDraft.symbol}-${i}`}
+                networkDisabled={i !== 0}
+                network={asset.importDraft.network}
+                onDelete={handleDeleteBalanceDraft.bind(null, i)}
+                importDraft={asset.importDraft}
+                networkOptionsRef={networkOptionsRef}
+                tokenRef={asset.token}
+                amount={asset.importDraft.amount}
+                hiddenTokens={asset.hiddenTokens}
+                index={i}
+              />
+            );
+          })}
           <Button.CallToActionSecondary
             disabled={importDrafts.value.length >= MAX_ASSETS}
             onClick={handleAddAssetDraft}
@@ -230,13 +238,21 @@ const BalanceSelector = defineComponent({
     importDraft: {
       type: Object as PropType<ImportDraft>,
     },
-    optionsRef: {
+    networkOptionsRef: {
       type: Object as PropType<ComputedRef<SelectDropdownOption[]>>,
       default: [],
     },
     tokenRef: {
       type: Object as PropType<ComputedRef<TokenListItem | undefined>>,
       default: ref(undefined),
+    },
+    hiddenTokens: {
+      type: Array as PropType<string[]>,
+      default: [],
+    },
+    index: {
+      type: Number,
+      required: true,
     },
   },
   setup(props) {
@@ -254,77 +270,88 @@ const BalanceSelector = defineComponent({
 
     const networkOpenRef = ref(false);
 
-    const networkValue = ref(props.network);
-    const amountValue = ref(props.amount);
+    const networkValue = computed(() => props.network);
 
-    const boundAsset = computed(() => props.tokenRef.value?.asset);
+    const token = computed(() => props.tokenRef.value);
 
-    const handleSetMax = async () => {
-      if (!props.tokenRef.value) return;
-      const chain = useChains().get(networkValue.value ?? Network.ETHEREUM);
+    const boundAsset = computed(() => token.value?.asset);
+
+    const handleSetMax = () => {
+      if (!token.value) {
+        return;
+      }
+
+      const chain = useChains().get(networkValue.value);
+
       if (chain.chainConfig.chainType === "ibc") {
         const gasAssetAmount = AssetAmount(
           chain.nativeAsset,
           toBaseUnits("0.1", chain.nativeAsset),
         );
-        if (props.tokenRef.value.asset.symbol === chain.nativeAsset.symbol) {
-          const amount = props.tokenRef.value.amount.subtract(gasAssetAmount);
-          console.log({
-            amount: amount.toString(),
-            balance: props.tokenRef.value.amount.toString(),
-            fee: gasAssetAmount.toString(),
-          });
-          rootStore.import.setDraft({
+
+        const isNativeToken =
+          token.value.asset.symbol === chain.nativeAsset.symbol;
+
+        const amount = isNativeToken
+          ? token.value.amount.subtract(gasAssetAmount)
+          : token.value.amount;
+
+        rootStore.import.setDraftWithIndex({
+          index: props.index,
+          nextDraft: {
             amount: amount.lessThan("0")
               ? "0.0"
-              : format(amount, props.tokenRef.value.asset),
-          });
-        } else {
-          rootStore.import.setDraft({
-            amount: format(
-              props.tokenRef.value.amount.amount,
-              props.tokenRef.value.asset,
-            ),
-          });
-        }
-      } else {
-        rootStore.import.setDraft({
-          amount: format(
-            getMaxAmount(
-              ref(props.tokenRef.value.asset.symbol),
-              props.tokenRef.value.amount,
-            ),
-            props.tokenRef.value.asset,
-          ),
+              : format(amount, token.value.asset),
+          },
         });
+
+        return;
       }
+
+      // non-ibc flow
+      const maxAmount = getMaxAmount(
+        ref(token.value.asset.symbol),
+        token.value.amount,
+      );
+
+      rootStore.import.setDraftWithIndex({
+        index: props.index,
+        nextDraft: {
+          amount: format(maxAmount, token.value.asset),
+        },
+      });
     };
 
     const networkBalanceEntry = computed(() =>
       networkBalances.data.value.find(
-        (v) => v.symbol === props.tokenRef.value?.asset.symbol,
+        (v) => v.symbol === token.value?.asset.symbol,
       ),
     );
 
+    const excludedSymbols = computed(() => props.hiddenTokens);
+
     return () => (
-      <section class="bg-gray-base p-4 rounded relative">
+      <section class="bg-gray-base p-4 rounded relative animate-fade-in">
         {props.networkDisabled && (
           <button class="absolute top-0 right-0 p-2" onClick={props.onDelete}>
             <AssetIcon icon="interactive/close" size={22} />
           </button>
         )}
         <div class="w-full">
-          <div class="flex w-full">
-            <div class="block flex-1 mr-[5px]">
-              Network
+          <div class="grid grid-cols-2 gap-2">
+            <div class="grid gap-1">
+              <span>Network</span>
               <SelectDropdown
-                key={props.optionsRef.value.map((o) => o.value).join("")}
-                options={props.optionsRef}
+                key={props.networkOptionsRef.value.map((o) => o.value).join("")}
+                options={props.networkOptionsRef}
                 value={networkValue}
                 onChangeValue={(value) => {
                   if (props.importDraft?.network)
-                    importStore.setDraft({
-                      network: value as Network,
+                    importStore.setDraftWithIndex({
+                      index: props.index,
+                      nextDraft: {
+                        network: value as Network,
+                      },
                     });
                 }}
                 tooltipProps={{
@@ -337,7 +364,7 @@ const BalanceSelector = defineComponent({
                 }}
               >
                 <Button.Select
-                  class="w-full relative capitalize pl-[16px] mt-[10px]"
+                  class="w-full relative capitalize pl-[16px]"
                   active={networkOpenRef.value}
                   disabled={props.networkDisabled}
                 >
@@ -345,10 +372,9 @@ const BalanceSelector = defineComponent({
                 </Button.Select>
               </SelectDropdown>
             </div>
-            <div class="block flex-1 ml-[5px]">
-              Token
+            <div class="grid gap-1">
+              <span>Token</span>
               <Button.Select
-                class="w-full mt-[10px]"
                 active={selectIsOpen.value}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -362,24 +388,27 @@ const BalanceSelector = defineComponent({
                     asset={boundAsset}
                   />
                   <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
-                    {props.tokenRef.value?.asset?.displaySymbol ||
-                      props.tokenRef.value?.asset?.symbol}
+                    {boundAsset.value?.displaySymbol ||
+                      boundAsset.value?.symbol}
                   </div>
                 </div>
               </Button.Select>
             </div>
           </div>
-
           <TokenSelectDropdown
             sortBy="balance"
             network={networkValue}
             onCloseIntent={() => {
               selectIsOpen.value = false;
             }}
+            excludeSymbols={excludedSymbols.value}
             onSelectAsset={(asset) => {
               selectIsOpen.value = false;
-              importStore.setDraft({
-                symbol: asset.symbol,
+              importStore.setDraftWithIndex({
+                index: props.index,
+                nextDraft: {
+                  symbol: asset.symbol,
+                },
               });
             }}
             active={selectIsOpen}
@@ -412,11 +441,9 @@ const BalanceSelector = defineComponent({
           inputRef={inputRef}
           type="number"
           min="0"
-          style={{
-            textAlign: "right",
-          }}
+          class="text-right"
           startContent={
-            Boolean(props.tokenRef.value) ? (
+            Boolean(token.value) ? (
               <Button.Pill class="z-[1]" onClick={handleSetMax}>
                 MAX
               </Button.Pill>
@@ -424,17 +451,14 @@ const BalanceSelector = defineComponent({
           }
           onInput={(e) => {
             const value = (e.target as HTMLInputElement).value;
-            if (isNaN(parseFloat(value))) {
-              importStore.setDraft({
-                amount: "",
-              });
-            } else {
-              importStore.setDraft({
-                amount: value,
-              });
-            }
+            importStore.setDraftWithIndex({
+              index: props.index,
+              nextDraft: {
+                amount: isNaN(parseFloat(value)) ? "" : value,
+              },
+            });
           }}
-          value={amountValue.value}
+          value={token.value?.amount.amount}
         />
       </section>
     );
