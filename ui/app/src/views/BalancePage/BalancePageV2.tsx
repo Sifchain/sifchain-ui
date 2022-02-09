@@ -79,6 +79,10 @@ export default defineComponent({
       })),
     );
 
+    const showTableHeader = computed(
+      () => allBalances.value.length > 0 && !isLoadingBalances.value,
+    );
+
     return () => (
       <Layout>
         <PageCard
@@ -126,7 +130,7 @@ export default defineComponent({
           class="w-[800px]"
           withOverflowSpace
           headerContent={
-            <div class="w-full">
+            <div class="w-full grid gap-4">
               <SearchBox
                 enableKeyBindings
                 id="search-token"
@@ -137,9 +141,8 @@ export default defineComponent({
                   state.searchQuery = (e.target as HTMLInputElement).value;
                 }}
               />
-              <div class="h-4 w-full" />
-              {displayedTokenList.value.length > 0 && (
-                <div class="pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+              {showTableHeader.value && (
+                <div class="pb-1 mb-[-5px] w-full flex flex-row justify-start">
                   <div class="relative w-full flex flex-row justify-start font-medium text-sm align-text-bottom">
                     {columns.map((column, index) => (
                       <div
@@ -180,19 +183,6 @@ export default defineComponent({
           }
         >
           <table class="w-full">
-            <thead>
-              <tr class="block">
-                {columns.map((column) => (
-                  <td
-                    ref={column.ref}
-                    class={[column.class, "whitespace-nowrap"]}
-                    key={column.name}
-                  />
-                ))}
-                <td /> {/* Actions */}
-                <td />
-              </tr>
-            </thead>
             <RecyclerView
               as="tbody"
               data={allBalances.value}
@@ -216,7 +206,7 @@ export default defineComponent({
               emptyState={
                 <tbody>
                   <tr>
-                    <td class="block pb-4">
+                    <td class="block py-4">
                       <div class="p-4 grid place-items-center bg-gray-200 rounded-md text-center">
                         {isLoadingBalances.value ? (
                           <AssetIcon icon="interactive/anim-circle-spinner" />
