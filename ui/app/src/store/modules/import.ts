@@ -113,7 +113,9 @@ export const importStore = Vuextra.createStore({
       });
     },
     resetDrafts() {
-      state.drafts.splice(0, state.drafts.length - 1);
+      if (state.drafts.length) {
+        state.drafts = [state.drafts[0]];
+      }
     },
     setPegEvent(pegEvent: BridgeEvent | undefined) {
       state.draft.pegEvent = pegEvent;

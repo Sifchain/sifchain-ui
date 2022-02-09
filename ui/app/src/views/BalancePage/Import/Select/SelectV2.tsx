@@ -206,7 +206,7 @@ export default defineComponent({
             disabled={importDrafts.value.length >= MAX_ASSETS}
             onClick={handleAddAssetDraft}
           >
-            + Add another asset
+            + Add another token
           </Button.CallToActionSecondary>
           <section class="bg-gray-base p-4 rounded">
             <div class="text-white">Sifchain Recipient Address</div>
@@ -434,7 +434,7 @@ const BalanceSelector = defineComponent({
         </div>
 
         <div class="h-[40px] flex items-end justify-end">
-          {!!props.tokenRef.value && (
+          {Boolean(props.tokenRef.value) && (
             <span
               class="text-base opacity-50 hover:text-accent-base cursor-pointer flex items-center pb-1"
               onClick={handleSetMax}

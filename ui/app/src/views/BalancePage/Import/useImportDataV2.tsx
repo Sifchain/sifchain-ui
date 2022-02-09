@@ -77,8 +77,10 @@ export const useImportData = () => {
   });
 
   const exitImport = () => {
-    router.replace({ name: "Balances" });
     importStore.resetDrafts();
+    setTimeout(() => {
+      router.replace({ name: "Balances" });
+    }, 1);
   };
 
   const chainsRef = importStore.refs.chains.computed();
@@ -243,7 +245,7 @@ export const useImportData = () => {
         assetAmount: computedImportAssetAmount.value,
       }),
     pegEventRef: importStore.refs.draft.pegEvent.computed(),
-    exitImport: exitImport,
+    exitImport,
     detailsRef,
     pegEventDetails,
     networkBalances,
