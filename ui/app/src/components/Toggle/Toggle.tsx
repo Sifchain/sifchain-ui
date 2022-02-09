@@ -24,7 +24,7 @@ export default defineComponent({
             ? `border-connected-base active:bg-connected-base`
             : `border-gray-800 active:bg-gray-800`,
         ]}
-        onClick={props.onChange.bind(null, !props.active)}
+        onClick={() => props.onChange(!props.active)}
       >
         <TransitionGroup name="flip-list--fast">
           {props.active && (

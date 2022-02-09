@@ -3,6 +3,7 @@ import { useTokenList, TokenListItem } from "@/hooks/useToken";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { Network } from "@sifchain/sdk";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { accountStore } from "@/store/modules/accounts";
 
 export type BalancePageState = {
   searchQuery: string;
@@ -22,20 +23,27 @@ export const useBalancePageData = (initialState: BalancePageState) => {
       focused: stateRefs.expandedSymbol,
     },
   });
+
+  const targetNetwork = Network.SIFCHAIN;
+
   const tokenList = useTokenList({
-    networks: ref([Network.SIFCHAIN]),
+    networks: ref([targetNetwork]),
     showDecomissionedAssetsWithBalance: true,
   });
 
+  const isLoadingBalances = accountStore.computed(
+    ({ state }) => !state[targetNetwork].balances.length,
+  );
+
   const displayedTokenList = computed<TokenListItem[]>(() => {
-    if (!tokenList.value) return [];
+    if (isLoadingBalances.value) return [];
 
     const out = sortAndFilterTokens({
       tokens: tokenList.value,
       searchQuery: state.searchQuery,
       sortBy: state.sortBy,
       reverse: state.reverse,
-      network: Network.SIFCHAIN,
+      network: targetNetwork,
     });
     return out;
   });
@@ -43,5 +51,6 @@ export const useBalancePageData = (initialState: BalancePageState) => {
   return {
     state,
     displayedTokenList,
+    isLoadingBalances,
   };
 };
