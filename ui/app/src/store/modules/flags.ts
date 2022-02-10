@@ -31,7 +31,7 @@ export const flagsStore = Vuextra.createStore({
     devnetCryptoecon: false,
     tradingCompetitionsEnabled: false,
     allowEmptyLiquidityAdd: false,
-    voting: false,
+    voting: true,
     enableTestChains: {
       band: false,
       likecoin: false,

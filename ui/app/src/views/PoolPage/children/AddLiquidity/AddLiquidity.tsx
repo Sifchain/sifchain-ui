@@ -45,7 +45,7 @@ export default defineComponent({
             impact on this pool, and therefore a significant slip adjustment.
             Please be aware of how this works by reading our documentation{" "}
             <a
-              href="https://docs.sifchain.finance/core-concepts/liquidity-pool#asymmetric-liquidity-pool"
+              href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/pool/sifchain-liquidity-pools#asymmetric-liquidity-pool"
               target="_blank"
               class="underline"
             >
