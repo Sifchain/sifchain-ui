@@ -41,9 +41,14 @@ export default defineComponent({
     class: {
       type: [String, Array] as PropType<HTMLAttributes["class"]>,
     },
+    scrollContainerClass: {
+      type: [String, Array] as PropType<HTMLAttributes["class"]>,
+    },
+    header: {
+      type: Object as PropType<JSX.Element>,
+    },
     emptyState: {
       type: Object as PropType<JSX.Element>,
-      default: <></>,
     },
     paddingEnd: {
       type: Number,
@@ -115,44 +120,48 @@ export default defineComponent({
       />
     );
 
-    return () =>
-      !visible.value.length ? (
-        props.emptyState
-      ) : (
-        // @ts-ignore
-        <Container
-          style={{
-            maxHeight: `${maxHeight.value}px`,
-          }}
-          class={[props.class, "block w-full overflow-y-scroll"]}
-          onScroll={handleScroll}
-        >
-          {Boolean(startIndex.value) && (
+    return () => (
+      // @ts-ignore
+      <Container class={[props.class]}>
+        {!visible.value.length ? (
+          props.emptyState
+        ) : (
+          <>
+            {props.header && props.header}
             <div
-              class="grid items-end"
-              style={{ height: `${props.rowHeight * startIndex.value}px` }}
+              class={["block overflow-y-scroll", props.scrollContainerClass]}
+              style={{ maxHeight: `${maxHeight.value}px` }}
+              onScroll={handleScroll}
             >
-              {isScrolling.value && (
-                <div class="w-full p-4 grid place-items-center">{spinner}</div>
+              {Boolean(startIndex.value) && (
+                <div
+                  class="grid items-end"
+                  style={{ height: `${props.rowHeight * startIndex.value}px` }}
+                >
+                  {isScrolling.value && (
+                    <div class="p-4 grid place-items-center">{spinner}</div>
+                  )}
+                </div>
+              )}
+              {visible.value.map(props.renderItem)}
+              {endIndex.value < lastIndex.value && (
+                <div
+                  class="grid items-start"
+                  style={{
+                    height: `${
+                      props.rowHeight * (lastIndex.value - endIndex.value)
+                    }px`,
+                  }}
+                >
+                  {isScrolling.value && (
+                    <div class="p-4 grid place-items-center">{spinner}</div>
+                  )}
+                </div>
               )}
             </div>
-          )}
-          {visible.value.map(props.renderItem)}
-          {endIndex.value < lastIndex.value && (
-            <div
-              class="grid items-start"
-              style={{
-                height: `${
-                  props.rowHeight * (lastIndex.value - endIndex.value)
-                }px`,
-              }}
-            >
-              {isScrolling.value && (
-                <div class="w-full p-4 grid place-items-center">{spinner}</div>
-              )}
-            </div>
-          )}
-        </Container>
-      );
+          </>
+        )}
+      </Container>
+    );
   },
 });
