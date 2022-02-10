@@ -7,15 +7,23 @@
     <link rel="icon" href="/favicon.svg">
 
     <title>Sifchain</title>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MSGFSQQEJ3"></script>
+    <div id="analytics-container">
+    </div>
     <script>
-      if (window.location.host === "dex.sifchain.finance") {
-        // Only run GA on mainnet
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ window.dataLayer && window.dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-MSGFSQQEJ3');
+      if (window.location.origin.includes('dex.sifchain.finance')) {
+        document.getElementById('analytics-tag-container').innerHTML = `
+          <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-MSGFSQQEJ3"></script>
+            <script>
+                  if (window.location.host === "dex.sifchain.finance") {
+                    // Only run GA on mainnet
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){ window.dataLayer && window.dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', 'G-MSGFSQQEJ3');
+                  }
+            </script>
+        `;
       }
     </script>
     <script>
