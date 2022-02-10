@@ -213,10 +213,7 @@ export default defineComponent({
                         ) : state.searchQuery ? (
                           <span class="text-lg text-accent-base">
                             We can't seem to find that token.
-                            <br />{" "}
-                            <span class="text-accent-muted">
-                              Search for another token to continue
-                            </span>
+                            <br /> Search for another token to continue
                           </span>
                         ) : (
                           <span class="text-lg text-accent-base">
