@@ -13,7 +13,7 @@ import RecyclerView from "@/components/RecyclerView";
 import Toggle from "@/components/Toggle";
 import Button from "@/components/Button";
 
-import BalanceRow from "./BalanceRow";
+import BalanceRow from "./BalanceRowV2";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { getImportLocation } from "./Import/useImportData";
 
@@ -62,13 +62,13 @@ export default defineComponent({
       {
         name: "Token",
         sortBy: "symbol" as BalancePageState["sortBy"],
-        class: "text-left min-w-[150px]",
+        class: "text-left w-[250px]",
         ref: ref<HTMLElement>(),
       },
       {
         name: "Sifchain Balance",
         sortBy: "balance" as BalancePageState["sortBy"],
-        class: "text-right pl-[42px] whitespace-nowrap",
+        class: "text-right whitespace-nowrap",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -141,92 +141,86 @@ export default defineComponent({
                   state.searchQuery = (e.target as HTMLInputElement).value;
                 }}
               />
-              {showTableHeader.value && (
-                <div class="pb-1 mb-[-5px] w-full flex flex-row justify-start">
-                  <div class="relative w-full flex flex-row justify-start font-medium text-sm align-text-bottom">
-                    {columns.map((column, index) => (
-                      <div
-                        style={colStyles.value[index]}
-                        class={[column.class]}
-                        key={column.name}
-                      >
-                        <div
-                          class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
-                          onClick={() => {
-                            if (state.sortBy === column.sortBy) {
-                              state.reverse = !state.reverse;
-                            } else {
-                              state.reverse = false;
-                            }
-                            state.sortBy = column.sortBy;
-                          }}
-                        >
-                          {column.name}
-                          {state.sortBy === column.sortBy && (
-                            <AssetIcon
-                              icon="interactive/arrow-down"
-                              class="transition-all w-[12px] h-[12px]"
-                              style={{
-                                transform: state.reverse
-                                  ? "rotate(0deg)"
-                                  : "rotate(180deg)",
-                              }}
-                            />
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           }
         >
-          <table class="w-full">
-            <RecyclerView
-              as="tbody"
-              data={allBalances.value}
-              rowHeight={ROW_HEIGHT}
-              onScroll={() => {
-                // reset state.expandedSymbol on scroll
-                if (state.expandedSymbol) {
-                  state.expandedSymbol = "";
-                }
-              }}
-              renderItem={(item) => (
-                <BalanceRow
-                  key={item.asset.symbol + item.asset.network}
-                  tokenItem={item}
-                  expandedSymbol={state.expandedSymbol}
-                  onSetExpandedSymbol={(symbol) => {
-                    state.expandedSymbol = symbol;
-                  }}
-                />
-              )}
-              emptyState={
-                <tbody>
-                  <tr>
-                    <td class="block py-4">
-                      <div class="p-4 grid place-items-center bg-gray-200 rounded-md text-center">
-                        {isLoadingBalances.value ? (
-                          <AssetIcon icon="interactive/anim-circle-spinner" />
-                        ) : state.searchQuery ? (
-                          <span class="text-lg text-accent-base">
-                            We can't seem to find that token.
-                            <br /> Search for another token to continue
-                          </span>
-                        ) : (
-                          <span class="text-lg text-accent-base">
-                            Please import assets to view balances
-                          </span>
+          <RecyclerView
+            data={allBalances.value}
+            rowHeight={ROW_HEIGHT}
+            class="w-full block py-2"
+            onScroll={() => {
+              // reset state.expandedSymbol on scroll
+              if (state.expandedSymbol) {
+                state.expandedSymbol = "";
+              }
+            }}
+            header={
+              <div class="w-full flex justify-start bg-black py-1">
+                <div class="relative w-full flex justify-start font-medium text-sm align-text-bottom">
+                  {columns.map((column, index) => (
+                    <div
+                      style={colStyles.value[index]}
+                      class={[column.class]}
+                      key={column.name}
+                    >
+                      <div
+                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                        onClick={() => {
+                          if (state.sortBy === column.sortBy) {
+                            state.reverse = !state.reverse;
+                          } else {
+                            state.reverse = false;
+                          }
+                          state.sortBy = column.sortBy;
+                        }}
+                      >
+                        {column.name}
+                        {state.sortBy === column.sortBy && (
+                          <AssetIcon
+                            icon="interactive/arrow-down"
+                            class="transition-all w-[12px] h-[12px]"
+                            style={{
+                              transform: state.reverse
+                                ? "rotate(0deg)"
+                                : "rotate(180deg)",
+                            }}
+                          />
                         )}
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              }
-            />
-          </table>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            }
+            renderItem={(item) => (
+              <BalanceRow
+                key={item.asset.symbol + item.asset.network}
+                tokenItem={item}
+                expandedSymbol={state.expandedSymbol}
+                onSetExpandedSymbol={(symbol) => {
+                  state.expandedSymbol = symbol;
+                }}
+              />
+            )}
+            emptyState={
+              <div class="block py-2">
+                <div class="p-4 grid place-items-center bg-gray-200 rounded-md text-center">
+                  {isLoadingBalances.value ? (
+                    <AssetIcon icon="interactive/anim-circle-spinner" />
+                  ) : state.searchQuery ? (
+                    <span class="text-lg text-accent-base">
+                      We can't seem to find that token.
+                      <br /> Search for another token to continue
+                    </span>
+                  ) : (
+                    <span class="text-lg text-accent-base">
+                      Please import assets to view balances
+                    </span>
+                  )}
+                </div>
+              </div>
+            }
+          />
         </PageCard>
         <RouterView
           name={!isReady.value ? "DISABLED_WHILE_LOADING" : undefined}
