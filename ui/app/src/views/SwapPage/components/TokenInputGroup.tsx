@@ -14,6 +14,7 @@ import { Button } from "@/components/Button/Button";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
+import { useTokenPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
 
 function required<T>(type: T) {
   return {
@@ -62,6 +63,9 @@ export const TokenInputGroup = defineComponent({
       ),
     );
 
+    const tokenPrice = useTokenPrice({
+      symbol: computed(() => propRefs.asset.value?.symbol || ""),
+    });
     return () => {
       /* Hide browser-native validation error tooltips via form novalidate */
       return (
@@ -89,7 +93,10 @@ export const TokenInputGroup = defineComponent({
               ]}
             >
               Balance:{" "}
-              <span class="text-accent-base">
+              <span
+                class="text-accent-base cursor-pointer"
+                onClick={() => props.onSetToMaxAmount?.()}
+              >
                 <ResourcefulTextTransition
                   class="inline-block"
                   text={
@@ -155,7 +162,24 @@ export const TokenInputGroup = defineComponent({
               inputRef={inputRef}
               class="token-input flex-1 opacity-100"
               disabled={props.inputDisabled}
-              startContent={<>{props.formattedFiatValue || null}</>}
+              startContent={
+                <div class="text-sm bg-blend-multiply font-semibold block whitespace-nowrap z-10 text-[rgb(127,127,127)]">
+                  <ResourcefulTextTransition
+                    text={
+                      "≈$" +
+                      new Intl.NumberFormat("en", {
+                        notation: "compact",
+                        maximumFractionDigits:
+                          tokenPrice.value * +props.amount < 1000
+                            ? 2
+                            : tokenPrice.value * +props.amount < 10_000
+                            ? 1
+                            : 0,
+                      }).format(tokenPrice.value * +props.amount)
+                    }
+                  ></ResourcefulTextTransition>
+                </div>
+              }
               onFocus={props.onFocus}
               onBlur={props.onBlur}
               type="number"

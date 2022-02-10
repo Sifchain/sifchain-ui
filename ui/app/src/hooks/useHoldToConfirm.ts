@@ -21,6 +21,8 @@ export const useHoldToConfirm = (
   const interval = ref<number | undefined>();
   return {
     state,
+    heldForMs,
+    holdDurationMs: params.holdDurationMs,
     onMouseDown() {
       heldForMs.value = 0;
       state.value = "holding";
@@ -28,9 +30,11 @@ export const useHoldToConfirm = (
         heldForMs.value = heldForMs.value + 100;
         if (heldForMs.value >= params.holdDurationMs) {
           state.value = "confirmed";
+          window.clearInterval(interval.value);
           nextTick(() => {
             callback();
-            // state.value = "idle";
+            state.value = "idle";
+            heldForMs.value = 0;
           });
         }
       }, 100);

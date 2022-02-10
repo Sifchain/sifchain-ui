@@ -163,20 +163,47 @@ export default defineComponent({
         </div>
 
         <div class={`mx-[-12px] mt-[20px]`}>
-          <Button.CallToAction
-            onMousedown={holdToConfirm.onMouseDown}
-            onMouseup={holdToConfirm.onMouseUp}
-            // onClick={() => {
-            //   if (!data.nextStepAllowed.value) {
-            //     return appWalletPicker.show();
-            //   }
-            //   data.handleNextStepClicked();
-            // }}
-            disabled={!data.nextStepAllowed.value}
-          >
-            {holdToConfirm.state.value}
-            {/* {data.nextStepMessage.value} */}
-          </Button.CallToAction>
+          {data.nextStepAllowed.value &&
+          +(data.priceImpact.value || 0) > 0.01 ? (
+            <Button.CallToAction
+              onMousedown={holdToConfirm.onMouseDown}
+              onMouseup={holdToConfirm.onMouseUp}
+              // onClick={() => {
+              //   if (!data.nextStepAllowed.value) {
+              //     return appWalletPicker.show();
+              //   }
+              //   data.handleNextStepClicked();
+              // }}
+              disabled={!data.nextStepAllowed.value}
+            >
+              {holdToConfirm.heldForMs.value !== 0 ? (
+                <>
+                  {~~(
+                    (holdToConfirm.holdDurationMs -
+                      holdToConfirm.heldForMs.value) /
+                    1000
+                  ) + 1}
+                </>
+              ) : (
+                <>
+                  Hold to Confirm {~~(+(data.priceImpact.value || 0) * 100)}%
+                  Price Impact
+                </>
+              )}
+            </Button.CallToAction>
+          ) : (
+            <Button.CallToAction
+              onClick={() => {
+                if (!data.nextStepAllowed.value) {
+                  return appWalletPicker.show();
+                }
+                data.handleBeginSwap();
+              }}
+              disabled={!data.nextStepAllowed.value}
+            >
+              {data.nextStepMessage.value}
+            </Button.CallToAction>
+          )}
         </div>
         <RouterView></RouterView>
         <div class="pb-4" />
