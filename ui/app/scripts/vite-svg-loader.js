@@ -53,6 +53,7 @@ module.exports = function svgLoader(options = {}) {
               params: {
                 overrides: {
                   removeViewBox: false,
+                  cleanupIDs: false,
                 },
               },
             },
