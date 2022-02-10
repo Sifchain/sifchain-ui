@@ -1,7 +1,9 @@
 <template>
   <div class="main">
     <SideBar />
-    <router-view />
+    <Layout>
+      <router-view />
+    </Layout>
     <OnboardingModal
       v-if="shouldShowOnboardingModal"
       :onClose="onCloseOnboardingModal"
@@ -14,7 +16,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect, ref, onMounted } from "vue";
+import {
+  defineComponent,
+  watchEffect,
+  ref,
+  onMounted,
+  Transition,
+  TransitionGroup,
+} from "vue";
 import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
 import { useInitialize } from "./hooks/useInitialize";
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
@@ -91,6 +100,9 @@ export default defineComponent({
     SideBar,
     Flags,
     OnboardingModal,
+    Transition,
+    TransitionGroup,
+    Layout,
   },
   computed: {
     key() {
@@ -168,7 +180,7 @@ export default defineComponent({
 
 // Import fonts:
 // @import url("https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Rouge+Script&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono|Source+Sans+Pro:300,400,600");
 
 @import "@/scss/utilities.scss";

@@ -3,6 +3,7 @@ import {
   defineComponent,
   onMounted,
   ref,
+  Transition,
   watch,
 } from "vue";
 import PageCard from "@/components/PageCard";
@@ -17,6 +18,9 @@ import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { RouterView, useRouter } from "vue-router";
 import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
 import { useCore } from "@/hooks/useCore";
+import swapGradientImage from "@/assets/swap-gradient.png";
+import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
+import { useHoldToConfirm } from "@/hooks/useHoldToConfirm";
 
 // This is a little generic but these UI Flows
 // might be different depending on our page functionality
@@ -34,6 +38,14 @@ export default defineComponent({
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
     const isInverted = ref(false);
+    const holdToConfirm = useHoldToConfirm(
+      () => {
+        data.handleNextStepClicked();
+      },
+      {
+        holdDurationMs: 3000,
+      },
+    );
 
     // While swap page is open, ensure pools update
     // pretty frequently so prices stay up to date...
@@ -54,9 +66,9 @@ export default defineComponent({
       }
     });
     return () => (
-      <Layout>
-        <PageCard heading="Swap" iconName="navigation/swap" class="w-[531px]">
-          {/* <TransitionGroup name="flip-list"> */}
+      <PageCard heading="Swap" class="w-[531px]">
+        {/* <TransitionGroup name="flip-list"> */}
+        <div class="px-[8px]">
           <TokenInputGroup
             onSelectAsset={(asset) => {
               data.fromSymbol.value = asset.symbol;
@@ -67,6 +79,9 @@ export default defineComponent({
             onBlur={() => data.handleBlur()}
             heading="From"
             // key={data.fromSymbol.value}
+            onSetToHalfAmount={() => {
+              data.handleFromHalfClicked();
+            }}
             onSetToMaxAmount={() => {
               data.handleFromMaxClicked();
             }}
@@ -79,7 +94,7 @@ export default defineComponent({
           />
           <div
             key="button"
-            class="flex relative items-center justify-center w-full overflow-hidden"
+            class="flex relative items-center justify-center w-full overflow-hidden mt-[7px]"
           >
             <button
               // onMouseover={() => {
@@ -89,7 +104,7 @@ export default defineComponent({
               //   console.log("m1");
               //   isHoveringOverInvertButtonRef.value = false;
               // }}
-              class="origin-center actidve:rotate-180 flex items-center relative bg-gray-base border-gray-input_outline py-[4px] px-[9px] box-content border-[1px] rounded-[10px] hover:border-accent-base"
+              class="origin-center actidve:rotate-180 flex items-center relative"
               key="button"
               onClick={async (e: MouseEvent) => {
                 data.handleArrowClicked();
@@ -97,16 +112,16 @@ export default defineComponent({
               }}
             >
               <div
+                class="text-pink-50"
                 style={{
                   transform: `scaleY(${isInverted.value ? -1 : 1})`,
                 }}
               >
-                <AssetIcon
-                  vectorRef={swapIcon}
-                  size={22}
-                  class=" text-accent-base"
-                  icon="navigation/swap"
-                ></AssetIcon>
+                <img
+                  style="height: 45px;"
+                  src={swapGradientImage}
+                  alt="swap icon"
+                />
               </div>
             </button>
           </div>
@@ -115,7 +130,7 @@ export default defineComponent({
             onSelectAsset={(asset) => {
               data.toSymbol.value = asset.symbol;
             }}
-            class="overflow-hidden mt-[-12px] "
+            class="overflow-hidden mt-[-34px]"
             tokenIconUrl={data.toTokenIconUrl.value ?? ""}
             onFocus={() => data.handleToFocused()}
             onBlur={() => data.handleBlur()}
@@ -128,6 +143,7 @@ export default defineComponent({
             amount={data.toAmount.value}
             asset={data.toAsset.value}
             formattedBalance={data.formattedToTokenBalance.value || undefined}
+            hideBalance={true}
           />
           {/* </TransitionGroup> */}
           <SlippageTolerance
@@ -144,22 +160,54 @@ export default defineComponent({
             liquidityProviderFee={data.providerFee.value ?? ""}
             minimumReceived={data.minimumReceived.value}
           />
-          <Button.CallToAction
-            onClick={() => {
-              if (!data.nextStepAllowed.value) {
-                return appWalletPicker.show();
-              }
-              data.handleNextStepClicked();
-            }}
-            disabled={!data.nextStepAllowed.value}
-            class="mt-[10px]"
-          >
-            {data.nextStepMessage.value}
-          </Button.CallToAction>
-          <RouterView></RouterView>
-          <div class="pb-4" />
-        </PageCard>
-      </Layout>
+        </div>
+
+        <div class={`mx-[-12px] mt-[20px]`}>
+          {data.nextStepAllowed.value &&
+          +(data.priceImpact.value || 0) > 0.01 ? (
+            <Button.CallToAction
+              onMousedown={holdToConfirm.onMouseDown}
+              onMouseup={holdToConfirm.onMouseUp}
+              // onClick={() => {
+              //   if (!data.nextStepAllowed.value) {
+              //     return appWalletPicker.show();
+              //   }
+              //   data.handleNextStepClicked();
+              // }}
+              disabled={!data.nextStepAllowed.value}
+            >
+              {holdToConfirm.heldForMs.value !== 0 ? (
+                <>
+                  {~~(
+                    (holdToConfirm.holdDurationMs -
+                      holdToConfirm.heldForMs.value) /
+                    1000
+                  ) + 1}
+                </>
+              ) : (
+                <>
+                  Hold to Confirm {~~(+(data.priceImpact.value || 0) * 100)}%
+                  Price Impact
+                </>
+              )}
+            </Button.CallToAction>
+          ) : (
+            <Button.CallToAction
+              onClick={() => {
+                if (!data.nextStepAllowed.value) {
+                  return appWalletPicker.show();
+                }
+                data.handleBeginSwap();
+              }}
+              disabled={!data.nextStepAllowed.value}
+            >
+              {data.nextStepMessage.value}
+            </Button.CallToAction>
+          )}
+        </div>
+        <RouterView></RouterView>
+        <div class="pb-4" />
+      </PageCard>
     );
   },
 });

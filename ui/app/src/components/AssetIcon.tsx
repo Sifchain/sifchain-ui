@@ -47,6 +47,7 @@ export type InteractiveIconName =
   | "plus"
   | "search"
   | "swap"
+  | "swap-cool"
   | "tick"
   | "wallet"
   | "warning"

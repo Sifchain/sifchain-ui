@@ -14,7 +14,12 @@ export default defineComponent({
 
     return () => (
       <>
-        <div class="flex absolute justify-center sm:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background overflow-y-scroll bg-black bg-opacity-40">
+        <div
+          style={{
+            background: `linear-gradient(180deg, rgba(0, 0, 0, 0.496) 0%, rgba(0, 0, 0, 0.704) 100%)`,
+          }}
+          class="flex absolute justify-center sm:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background overflow-y-scroll"
+        >
           {context.slots.default?.()}
           <div id="modal-target"></div>
           <BetaWarningBanner />

@@ -165,11 +165,11 @@ export default defineComponent({
           }
         }}
         class={cx(
-          "list-complete-item align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 relative overflow-hidden group",
+          "list-complete-item align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent relative overflow-hidden group",
           showMaskRef.value && "opacity-40",
         )}
       >
-        <td class="text-left align-middle w-[120px] group-hover:opacity-80">
+        <td class="text-left align-middle w-[120px]">
           <div class="flex items-center">
             <TokenNetworkIcon asset={assetRef} />
             {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}

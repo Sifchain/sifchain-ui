@@ -300,6 +300,8 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       bech32Address || "",
       signDoc,
     );
+
+    window.focus();
     keplr!.defaultOptions = defaultKeplrOpts;
     const signedTx = makeStdTx(signResponse.signed, signResponse.signature);
     return new NativeDexSignedTransaction(tx, signedTx);

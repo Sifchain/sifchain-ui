@@ -72,7 +72,7 @@ export const _Details = defineComponent({
               class={[
                 `
               h-[49px] w-full flex justify-between items-center
-              box-border bg-gray-base border-gray-input_outline border-l-[1px] border-b-[1px] border-r-[1px] border-solid`,
+              box-border Dbg-gray-base border-gray-input_outline border-l-[1px] border-b-[1px] border-r-[1px] border-solid`,
                 index == 0 && `rounded-t border-t-[1px]`,
                 index == arr.length - 1 && `rounded-b border-b-[1px]`,
                 data.value.isError
