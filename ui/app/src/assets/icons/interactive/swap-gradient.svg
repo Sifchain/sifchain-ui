@@ -1,32 +1,33 @@
-<svg width="54" height="48" viewBox="0 0 54 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="43" height="48" viewBox="0 0 43 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <g filter="url(#filter0_d_3864_33396)">
-    <mask id="mask0_3864_33396" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="26" y="11" width="11" height="22">
-      <path d="M31.3093 27.4121L31.3093 24.4559" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
+    <mask id="mask0_3864_33396" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="21" y="11" width="11" height="22">
+      <path d="M26.3093 27.4121L26.3093 24.4559" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
         stroke-linejoin="round" />
-      <path d="M31.3093 31.8358L31.2994 31.8467" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
+      <path d="M26.3093 31.8358L26.2994 31.8467" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
         stroke-linejoin="round" />
       <path
-        d="M31.5556 12.6309L35.2509 16.3262M31.5556 20.0215L31.5556 12.6309L31.5556 20.0215ZM31.5556 12.6309L27.8603 16.3262L31.5556 12.6309Z"
+        d="M26.5556 12.6309L30.2509 16.3262M26.5556 20.0215L26.5556 12.6309L26.5556 20.0215ZM26.5556 12.6309L22.8603 16.3262L26.5556 12.6309Z"
         stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round" stroke-linejoin="round" />
     </mask>
     <g mask="url(#mask0_3864_33396)">
-      <rect x="37" y="38" width="11" height="27" transform="rotate(-180 37 38)" fill="url(#paint0_linear_3864_33396)" />
+      <rect x="32" y="38" width="11" height="27" class="swap-arrow-right" transform="rotate(-180 32 38)"
+        fill="url(#paint0_linear_3864_33396)" />
     </g>
-    <mask id="mask1_3864_33396" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="16" y="11" width="11" height="22">
-      <path d="M21.9478 17.0654L21.9478 20.0217" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
+    <mask id="mask1_3864_33396" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="11" y="11" width="11" height="22">
+      <path d="M16.854 17.0654L16.854 20.0217" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
         stroke-linejoin="round" />
-      <path d="M21.9478 12.6417L21.9577 12.6309" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
+      <path d="M16.854 12.6417L16.8639 12.6309" stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round"
         stroke-linejoin="round" />
       <path
-        d="M21.7015 31.8467L18.0062 28.1514M21.7015 24.4561V31.8467V24.4561ZM21.7015 31.8467L25.3968 28.1514L21.7015 31.8467Z"
+        d="M16.6078 31.8467L12.9125 28.1514M16.6078 24.4561V31.8467V24.4561ZM16.6078 31.8467L20.3031 28.1514L16.6078 31.8467Z"
         stroke="#D4B553" stroke-width="2.01562" stroke-linecap="round" stroke-linejoin="round" />
     </mask>
     <g mask="url(#mask1_3864_33396)">
-      <rect x="16" y="5" width="11" height="30" fill="url(#paint1_linear_3864_33396)" />
+      <rect x="10.9062" y="5" width="11" height="30" class="swap-arrow-left" fill="url(#paint1_linear_3864_33396)" />
     </g>
   </g>
   <defs>
-    <filter id="filter0_d_3864_33396" x="-5.375" y="0" width="64.5" height="53.75" filterUnits="userSpaceOnUse"
+    <filter id="filter0_d_3864_33396" x="-5.375" y="0" width="53.75" height="53.75" filterUnits="userSpaceOnUse"
       color-interpolation-filters="sRGB">
       <feFlood flood-opacity="0" result="BackgroundImageFix" />
       <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
@@ -38,12 +39,13 @@
       <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_3864_33396" />
       <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_3864_33396" result="shape" />
     </filter>
-    <linearGradient id="paint0_linear_3864_33396" x1="42.5" y1="39.125" x2="42.5" y2="56"
+    <linearGradient id="paint0_linear_3864_33396" x1="37.5" y1="39.125" x2="37.5" y2="56"
       gradientUnits="userSpaceOnUse">
       <stop stop-color="#D4B553" stop-opacity="0" />
       <stop offset="1" stop-color="#D4B553" />
     </linearGradient>
-    <linearGradient id="paint1_linear_3864_33396" x1="21.5" y1="6.25" x2="21.5" y2="25" gradientUnits="userSpaceOnUse">
+    <linearGradient id="paint1_linear_3864_33396" x1="16.4062" y1="6.25" x2="16.4062" y2="25"
+      gradientUnits="userSpaceOnUse">
       <stop stop-color="#D4B553" stop-opacity="0" />
       <stop offset="1" stop-color="#D4B553" />
     </linearGradient>

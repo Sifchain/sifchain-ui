@@ -34,7 +34,7 @@ export default defineComponent({
   setup() {
     // const data = useSwapPageModule();
     const data = useSwapPageData();
-    const swapIcon = ref<ComponentPublicInstance>();
+    const swapIconRef = ref<ComponentPublicInstance>();
     const appWalletPicker = useAppWalletPicker();
     const router = useRouter();
     const isInverted = ref(false);
@@ -109,8 +109,30 @@ export default defineComponent({
               onClick={async (e: MouseEvent) => {
                 data.handleArrowClicked();
                 isInverted.value = !isInverted.value;
+                const element: HTMLElement = swapIconRef.value?.$el;
+                console.log({ element });
+                if (!element) return;
+                const arrowLeft = element.querySelector(".swap-arrow-left");
+                const arrowRight = element.querySelector(".swap-arrow-right");
+                console.log({ arrowLeft });
+                arrowLeft?.animate(
+                  [
+                    {
+                      transform: "translateY(-40px)",
+                      opacity: 0,
+                    },
+                  ],
+                  {
+                    duration: 1000,
+                  },
+                );
               }}
             >
+              <AssetIcon
+                size={45}
+                ref={swapIconRef}
+                icon="interactive/swap-gradient"
+              ></AssetIcon>
               <div
                 class="text-pink-50"
                 style={{
