@@ -221,7 +221,7 @@ export default defineComponent({
             earnings with{" "}
             <a
               class="underline font-semibold"
-              href="https://docs.sifchain.finance/resources/rewards-programs#block-rewards"
+              href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs#block-rewards"
             >
               Sifchain's block rewards program
             </a>
@@ -233,7 +233,7 @@ export default defineComponent({
             on your currently pooled assets than if you wait to claim until your
             Maturity Date. For more information about our rewards program,{" "}
             <a
-              href="https://docs.sifchain.finance/resources/rewards-programs"
+              href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
               rel="noopener noreferrer"
               target="_blank"
               class="underline"

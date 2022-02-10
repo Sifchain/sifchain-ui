@@ -15,7 +15,7 @@ export default defineComponent({
       },
       {
         name: "Documentation",
-        href: "https://docs.sifchain.finance/resources/sifchain-dex-ui",
+        href: "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step",
       },
       {
         name: "Newsletter",
