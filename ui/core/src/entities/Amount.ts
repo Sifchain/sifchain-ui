@@ -20,6 +20,7 @@ export type IAmount = {
   multiply(other: IAmount | string): IAmount;
   sqrt(): IAmount;
   subtract(other: IAmount | string): IAmount;
+  power(exponent: number): IAmount;
 };
 
 export function Amount(
@@ -108,6 +109,20 @@ export function Amount(
         big.sqrt().times("100000000000000000000000").toFixed(0),
       ) as string;
       return Amount(string).divide("100000000000000000000000");
+    },
+
+    power(exponent) {
+      let initial = toAmount(fraction);
+      let result = Amount("1");
+
+      for (let i = 0; i < Math.abs(exponent); i++) {
+        if (exponent < 0) {
+          result = result.divide(initial);
+        } else {
+          result = result.multiply(initial);
+        }
+      }
+      return result;
     },
 
     // Internal methods need to be exposed here

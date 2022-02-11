@@ -164,7 +164,22 @@ export function calculateSwapResult(x: IAmount, X: IAmount, Y: IAmount) {
     return Amount("0");
   }
   const xPlusX = x.add(X);
-  return x.multiply(X).multiply(Y).divide(xPlusX.multiply(xPlusX));
+  return x.multiply(X).multiply(Y).divide(xPlusX.power(2));
+}
+
+/**
+ * Calculate Swap Result based on formula ( x * X * Y ) / ( x + X ) ^ 2
+ * @param X  External Balance
+ * @param x Swap Amount
+ * @param Y Native Balance
+ * @returns swapAmount
+ */
+export function calculateSwapResult_ptmp(x: IAmount, X: IAmount, Y: IAmount) {
+  if (x.equalTo("0") || X.equalTo("0") || Y.equalTo("0")) {
+    return Amount("0");
+  }
+  const xPlusX = x.add(X);
+  return x.multiply(X).multiply(Y).divide(xPlusX.power(2));
 }
 
 export function calculateExternalExternalSwapResult(
