@@ -82,7 +82,6 @@ export default defineComponent({
     return () => (
       <Layout>
         <PageCard
-          withOverflowSpace={false}
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
             <div class="flex gap-2 items-center">
@@ -142,7 +141,8 @@ export default defineComponent({
           <RecyclerView
             data={allBalances.value}
             rowHeight={ROW_HEIGHT}
-            class="w-full block py-2"
+            offsetTop={130}
+            class="w-full flex flex-col py-2 min-h-[calc(80vh-130px)]"
             onScroll={() => {
               // reset state.expandedSymbol on scroll
               if (state.expandedSymbol) {
@@ -198,7 +198,7 @@ export default defineComponent({
               />
             )}
             emptyState={
-              <div class="min-h-[10vh] mb-1 p-4 grid place-items-center bg-gray-200 rounded-md text-center">
+              <div class="flex-1 p-4 grid place-items-center bg-gray-200 rounded-md text-center mb-1">
                 {isLoadingBalances.value ? (
                   <span class="text-lg text-accent-base flex gap-1 items-center">
                     Loading Balances
