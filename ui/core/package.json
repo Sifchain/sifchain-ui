@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
+  "private": false,
   "scripts": {
     "generate": "npx @openapitools/openapi-generator-cli generate -g typescript-fetch -o generated -i ./swagger.yaml --enable-post-process-file --additional-properties=typescriptThreePlus=true,supportsES6=true",
     "compile": "tsc --noEmit",
