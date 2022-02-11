@@ -9,7 +9,7 @@ export default defineComponent({
 
     return () => (
       <div
-        class="absolute top-0 w-[200px] right-[40px] transition-all z-20 drop-shadow-lg flex flex-col items-end"
+        class="hidden absolute top-0 w-[200px] right-[40px] transition-all z-20 drop-shadow-lg flex flex-col items-end"
         style={{
           transform: `translateY(${
             expandedRef.value ? 0 : "calc(-100% + 40px)"

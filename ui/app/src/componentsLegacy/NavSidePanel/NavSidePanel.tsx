@@ -2,7 +2,8 @@ import { defineComponent, onMounted, ref, useCssModule, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
-import Logo from "@/assets/logo-large.svg";
+// import Logo from "@/assets/logo-large-gold-gradient.png";
+import Logo from "@/assets/logo-small.svg";
 import AssetIcon from "../../components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import WalletPicker from "@/components/WalletPicker/WalletPicker";
@@ -102,7 +103,8 @@ export default defineComponent({
 
     const hasUniversalCompetition = useHasUniversalCompetition();
 
-    const connectedNetworkCount = rootStore.accounts.refs.connectedNetworkCount.computed();
+    const connectedNetworkCount =
+      rootStore.accounts.refs.connectedNetworkCount.computed();
 
     const changesData = useAsyncData(() => loadChangesData());
 
@@ -139,14 +141,43 @@ export default defineComponent({
             isOpenRef.value && "!translate-x-0",
           ]}
         >
+          {/* 
+              font-weight: 700;
+              font-feature-settings: "smcp";
+              font-variant: small-caps;
+              margin-top: 7.5px;
+              color: #b2bcca;
+              text-shadow: 0 0 8px #c1a04f;
+              text-shadow: 0 0 8px var(--accent-gold);
+              letter-spacing: 2px;
+          */}
           <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
             <div class="top">
-              <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
-                <Logo class="w-[119px] shorter:w-[90px]" />
-              </div>
               {/* <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
-                <Logo class="w-full h-[50px]" />
+                <Logo class="w-[119px] shorter:w-[90px]" />
+                <img src={Logo} alt="" class="w-[119px] shorter:w-[90px]" />
               </div> */}
+              <div class="mt-[38px] shorter:mt-[7.5vmin] flex flex-col flex-nowrap justify-center">
+                <div class="w-full">
+                  <Logo class="w-full h-[50px]" />
+                </div>
+                <div
+                  class="w-full"
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    fontFeatureSettings: '"smcp"',
+                    fontVariant: "small-caps",
+                    marginTop: "10px",
+                    color: "#b2bcca",
+                    textShadow: "0 0 8px #c1a04f",
+                    // textShadow: '0 0 8px var(--accent-gold)',
+                    letterSpacing: "2px",
+                  }}
+                >
+                  BETANET
+                </div>
+              </div>
               <div class="mt-[9.3vmin] shorter:mt-[7.5vmin]">
                 <NavSidePanelItem
                   displayName="Dashboard"
@@ -276,9 +307,8 @@ export default defineComponent({
                   ref={moreMenuRef}
                   offset={[0, -2]}
                   onShow={(instance: TooltipInstance) => {
-                    const content = instance.popper.querySelector(
-                      ".tippy-content",
-                    );
+                    const content =
+                      instance.popper.querySelector(".tippy-content");
                     if (content) {
                       content.className +=
                         " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
@@ -469,9 +499,8 @@ export default defineComponent({
                                       (b) => b.asset.symbol.includes("rowan"),
                                     )
                                     .map((asset) => {
-                                      const formatted = formatAssetAmount(
-                                        asset,
-                                      );
+                                      const formatted =
+                                        formatAssetAmount(asset);
                                       if (formatted.length > 6) {
                                         return Intl.NumberFormat("en", {
                                           notation: "compact",

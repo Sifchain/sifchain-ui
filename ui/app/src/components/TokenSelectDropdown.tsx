@@ -5,6 +5,7 @@ import {
   computed,
   defineComponent,
   effect,
+  nextTick,
   onMounted,
   onUnmounted,
   PropType,
@@ -133,13 +134,9 @@ export const TokenSelectDropdown = defineComponent({
       { immediate: true, deep: true },
     );
 
-    watch([activeRef.value], () => {
-      let frameId: number;
-      if (activeRef.value) {
-        frameId = window.requestAnimationFrame(() => {
-          dropdownRoot.value?.querySelector("input")?.focus();
-        });
-      }
+    const inputRef = ref<HTMLInputElement | null>(null);
+    watch([activeRef], () => {
+      console.log("activeRef.value", activeRef.value);
       const rect = selfRoot.value?.getBoundingClientRect();
       if (
         rect?.x !== boundingClientRect.value?.x ||
@@ -147,7 +144,16 @@ export const TokenSelectDropdown = defineComponent({
       ) {
         boundingClientRect.value = rect;
       }
-      return () => window.cancelAnimationFrame(frameId);
+      if (activeRef.value) {
+        nextTick(() => {
+          console.log("running");
+          // dropdownRoot.value?.querySelector("input")?.focus();
+          if (!inputRef.value) return console.log("input ref not found");
+          console.log(document.activeElement);
+          (document.activeElement as any)?.blur?.();
+          inputRef.value.focus();
+        });
+      }
     });
     onMounted(() => {
       resizeListener.value();
@@ -188,6 +194,7 @@ export const TokenSelectDropdown = defineComponent({
                       type="search"
                       placeholder="Search Token..."
                       autocomplete="off"
+                      ref={inputRef}
                       onKeydown={(e: Event) => {
                         if (
                           (e as KeyboardEvent).key === "Enter" &&
@@ -201,7 +208,9 @@ export const TokenSelectDropdown = defineComponent({
                       }}
                       value={searchQuery.value}
                       onInput={(e: Event) => {
-                        searchQuery.value = (e.target as HTMLInputElement).value;
+                        searchQuery.value = (
+                          e.target as HTMLInputElement
+                        ).value;
                       }}
                       class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
                     />

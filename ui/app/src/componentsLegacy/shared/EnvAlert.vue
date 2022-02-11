@@ -32,7 +32,7 @@ export default defineComponent({
     const classNames = classesByNetworkEnv[networkEnv];
 
     return () => (
-      <div class="bottom-0 left-[240px] h-[30px] w-[150px] fixed rounded-t overflow-hidden">
+      <div class="bottom-0 left-[240px] h-[30px] w-[150px] fixed rounded-t hidden overflow-hidden">
         {networkEnv && classNames ? (
           <div class={[styles.panel, classNames]}>
             {

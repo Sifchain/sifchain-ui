@@ -5,7 +5,7 @@ button {
 
 button:hover,
 .button:hover {
-  filter: brightness(90%);
+  /* filter: brightness(90%); */
 }
 button:disabled:hover,
 .button[disabled]:hover {
@@ -28,7 +28,12 @@ input::-webkit-search-cancel-button {
 }
 
 .gradient-image-background {
-  background-image: url("../assets/button-gradient.png");
+  /* transition: all 450ms ease; */
+  background-image: url("../assets/button-gradient-light.png");
+}
+
+.gradient-image-background:hover {
+  /* background-image: url("../assets/button-gradient-light-reverse.png"); */
 }
 
 @keyframes animation-pulse {

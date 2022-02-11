@@ -9,7 +9,6 @@ import {
   onUnmounted,
   ref,
 } from "vue";
-
 const layoutBgKey = "layout_bg";
 const layoutBgDefault = "default";
 
@@ -101,6 +100,26 @@ const LAYOUT_BACKGROUNDS: LayoutBg[] = [
     key: "default",
     src: [getUrl("default")],
     thumb: getUrl("default-thumb"),
+    Cmp: ImageBg,
+  },
+  ...["oQbLeq4nOek", "12R-hVfQ3R8", "-Lc6azmFSk4", "5Ui5glVjUAQ"].map(
+    (name) => ({
+      key: name,
+      src: ["https://source.unsplash.com/" + name],
+      thumb: "https://source.unsplash.com/" + name,
+      Cmp: ImageBg,
+    }),
+  ),
+  {
+    key: "tropical-fern",
+    src: ["https://source.unsplash.com/5TBf16GnHKg"],
+    thumb: "https://source.unsplash.com/5TBf16GnHKg",
+    Cmp: ImageBg,
+  },
+  {
+    key: "tropical-fern-2",
+    src: ["https://source.unsplash.com/7uNro4xWMnk"],
+    thumb: "https://source.unsplash.com/7uNro4xWMnk",
     Cmp: ImageBg,
   },
   {

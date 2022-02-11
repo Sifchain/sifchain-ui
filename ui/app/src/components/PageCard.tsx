@@ -65,6 +65,12 @@ export default defineComponent({
                   {!!props.iconName &&
                     (props.iconType === "AssetIcon" ? (
                       <AssetIcon
+                        style={
+                          {
+                            // color: "#b2bcca",
+                            // filter: `drop-shadow(0 0 3px #c1a04f)`,
+                          }
+                        }
                         icon={props.iconName as IconName}
                         size={32}
                         active
@@ -76,6 +82,12 @@ export default defineComponent({
                       />
                     ))}
                   <span
+                    style={
+                      {
+                        // color: "#b2bcca",
+                        // filter: `drop-shadow(0 0 8px #c1a04f)`,
+                      }
+                    }
                     class={[
                       "text-accent-base font-sans text-[26px] font-semibold",
                       props.iconName && "ml-[10px]",

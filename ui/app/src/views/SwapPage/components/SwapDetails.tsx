@@ -15,6 +15,11 @@ export const SwapDetails = defineComponent({
   },
   setup: (props) => {
     return () => {
+      const priceImpactPercentage = +(
+        (+(props.liquidityProviderFee || 0) /
+          +(props.minimumReceived?.split(" ")[0] || 0)) *
+          100 || "0"
+      );
       const rateOutUnitsPerInUnit = `${
         (props.priceRatio?.value &&
           !!+props.priceRatio.value &&
@@ -74,11 +79,22 @@ export const SwapDetails = defineComponent({
             </div>
             <div class="flex flex-col w-full">
               <div class="flex flex-row justify-end items-start pl-[20px] text-right w-full text-md text-[#9D9F9F] font-mono font-medium">
-                <ResourcefulTextTransition
+                {/* <ResourcefulTextTransition
                   class="inline-block"
                   text={`${
                     props.liquidityProviderFee || "?"
                   } ${props.toAsset?.value.displaySymbol.toUpperCase()}`}
+                ></ResourcefulTextTransition> */}
+                {/* {props.liquidityProviderFee}
+                {props.minimumReceived} */}
+                <ResourcefulTextTransition
+                  class="inline-block"
+                  text={`≈ ${
+                    new Intl.NumberFormat("en-US", {
+                      notation: "standard",
+                      maximumFractionDigits: 4,
+                    }).format(priceImpactPercentage) + "%"
+                  }`}
                 ></ResourcefulTextTransition>
               </div>
             </div>

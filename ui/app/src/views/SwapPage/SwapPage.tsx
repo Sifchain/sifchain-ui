@@ -109,23 +109,23 @@ export default defineComponent({
               onClick={async (e: MouseEvent) => {
                 data.handleArrowClicked();
                 isInverted.value = !isInverted.value;
-                const element: HTMLElement = swapIconRef.value?.$el;
-                console.log({ element });
-                if (!element) return;
-                const arrowLeft = element.querySelector(".swap-arrow-left");
-                const arrowRight = element.querySelector(".swap-arrow-right");
-                console.log({ arrowLeft });
-                arrowLeft?.animate(
-                  [
-                    {
-                      transform: "translateY(-40px)",
-                      opacity: 0,
-                    },
-                  ],
-                  {
-                    duration: 1000,
-                  },
-                );
+                // const element: HTMLElement = swapIconRef.value?.$el;
+                // console.log({ element });
+                // if (!element) return;
+                // const arrowLeft = element.querySelector(".swap-arrow-left");
+                // const arrowRight = element.querySelector(".swap-arrow-right");
+                // console.log({ arrowLeft });
+                // arrowLeft?.animate(
+                //   [
+                //     {
+                //       transform: "translateY(-40px)",
+                //       opacity: 0,
+                //     },
+                //   ],
+                //   {
+                //     duration: 1000,
+                //   },
+                // );
               }}
             >
               <AssetIcon
@@ -133,7 +133,7 @@ export default defineComponent({
                 ref={swapIconRef}
                 icon="interactive/swap-gradient"
               ></AssetIcon>
-              <div
+              {/* <div
                 class="text-pink-50"
                 style={{
                   transform: `scaleY(${isInverted.value ? -1 : 1})`,
@@ -144,7 +144,7 @@ export default defineComponent({
                   src={swapGradientImage}
                   alt="swap icon"
                 />
-              </div>
+              </div> */}
             </button>
           </div>
 
@@ -197,6 +197,7 @@ export default defineComponent({
               //   data.handleNextStepClicked();
               // }}
               disabled={!data.nextStepAllowed.value}
+              style={{}}
             >
               {holdToConfirm.heldForMs.value !== 0 ? (
                 <>
