@@ -82,6 +82,7 @@ export default defineComponent({
     return () => (
       <Layout>
         <PageCard
+          withOverflowSpace={false}
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
             <div class="flex gap-2 items-center">
@@ -123,8 +124,6 @@ export default defineComponent({
             </div>
           }
           iconName="navigation/balances"
-          class="w-[800px]"
-          withOverflowSpace
           headerContent={
             <div class="w-full grid gap-4">
               <SearchBox
