@@ -79,10 +79,6 @@ export default defineComponent({
       })),
     );
 
-    const showTableHeader = computed(
-      () => allBalances.value.length > 0 && !isLoadingBalances.value,
-    );
-
     return () => (
       <Layout>
         <PageCard
