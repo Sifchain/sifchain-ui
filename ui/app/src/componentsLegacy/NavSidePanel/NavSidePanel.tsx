@@ -19,17 +19,14 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import {
   COMPETITION_UNIVERSAL_SYMBOL,
   useHasUniversalCompetition,
   useLeaderboardCompetitions,
 } from "@/views/LeaderboardPage/useCompetitionData";
 import { governanceStore } from "@/store/modules/governance";
-import {
-  useActiveProposal,
-  VotingModal,
-} from "@/components/VotingModal/VotingModal";
+import { VotingModal } from "@/components/VotingModal/VotingModal";
 import { formatAssetAmount } from "../shared/utils";
 
 let VOTE_PARAM_IN_URL = false;
@@ -51,6 +48,15 @@ export default defineComponent({
 
     const changelogOpenRef = ref(false);
     const votingOpenRef = ref(false);
+
+    const router = useRouter();
+
+    watch([router.currentRoute], () => {
+      // add ?vote=anything to any hash route to open the voting modal
+      if (!!router.currentRoute.value?.query?.vote) {
+        votingOpenRef.value = true;
+      }
+    });
 
     watch(
       proposalData,
@@ -293,10 +299,11 @@ export default defineComponent({
                 onClick={() => {
                   votingOpenRef.value = true;
                 }}
+                class="w-full"
               >
                 <div
                   class={[
-                    "mt-[10px] h-[46px] flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
+                    "mt-[10px] h-[46px] w-full flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
                   ]}
                   style={{
                     backgroundImage:
@@ -309,10 +316,11 @@ export default defineComponent({
                       icon="interactive/ticket"
                       style={{ transform: "translateY(-1px)" }}
                     />
-                    <div class="ml-[6px]">
+                    <div class="ml-[6px] whitespace-nowrap">
                       {proposalData.value.proposal.title}
                     </div>
                   </div>
+                  {/* bump */}
                   {!proposalData.value.hasVoted && (
                     <div>
                       <AssetIcon

@@ -58,7 +58,7 @@ export const SearchBox = defineComponent({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
-        (e.key === "f" && (isMacOs ? e.metaKey : e.ctrlKey)) ||
+        (e.key === "f" && (isMacOs.value ? e.metaKey : e.ctrlKey)) ||
         e.key === "/"
       ) {
         e.preventDefault();
