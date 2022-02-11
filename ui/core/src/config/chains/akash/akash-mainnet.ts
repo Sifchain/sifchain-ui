@@ -7,11 +7,11 @@ export const AKASH_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://akash.aneka.io",
   nativeAssetSymbol: "uakt",
   chainId: "akashnet-2",
-  rpcUrl: "https://rpc-akash.keplr.app",
-  restUrl: "https://lcd-akash.keplr.app",
+  rpcUrl: "https://proxies.sifchain.finance/api/akashnet-2/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/akashnet-2/rest",
   keplrChainInfo: {
-    rpc: "https://rpc-akash.keplr.app",
-    rest: "https://lcd-akash.keplr.app",
+    rpc: "https://proxies.sifchain.finance/api/akashnet-2/rpc",
+    rest: "https://proxies.sifchain.finance/api/akashnet-2/rest",
     chainId: "akashnet-2",
     chainName: "Akash",
     stakeCurrency: {
