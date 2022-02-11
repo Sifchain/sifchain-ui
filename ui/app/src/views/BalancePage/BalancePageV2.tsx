@@ -203,21 +203,22 @@ export default defineComponent({
               />
             )}
             emptyState={
-              <div class="block py-2">
-                <div class="p-4 grid place-items-center bg-gray-200 rounded-md text-center">
-                  {isLoadingBalances.value ? (
-                    <AssetIcon icon="interactive/anim-circle-spinner" />
-                  ) : state.searchQuery ? (
-                    <span class="text-lg text-accent-base">
-                      We can't seem to find that token.
-                      <br /> Search for another token to continue
-                    </span>
-                  ) : (
-                    <span class="text-lg text-accent-base">
-                      Please import assets to view balances
-                    </span>
-                  )}
-                </div>
+              <div class="min-h-[10vh] mb-1 p-4 grid place-items-center bg-gray-200 rounded-md text-center">
+                {isLoadingBalances.value ? (
+                  <span class="text-lg text-accent-base flex gap-1 items-center">
+                    Loading Balances
+                    <AssetIcon icon="interactive/anim-racetrack-spinner" />
+                  </span>
+                ) : state.searchQuery ? (
+                  <span class="text-lg text-accent-base">
+                    We can't seem to find that token.
+                    <br /> Search for another token to continue
+                  </span>
+                ) : (
+                  <span class="text-lg text-accent-base">
+                    Please import assets to view balances
+                  </span>
+                )}
               </div>
             }
           />
