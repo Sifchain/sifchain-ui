@@ -82,9 +82,9 @@ export function createServices(context: ServiceContext) {
     if (!globalThis.window) throw "";
     if (localStorage.DO_NOT_SPAM) throw "";
     if (location.hostname !== "dex.sifchain.finance") {
-      setTimeout(() => {
-        IBCService.logIBCNetworkMetadata();
-      }, 8 * 1000);
+      // setTimeout(() => {
+      //   IBCService.logIBCNetworkMetadata();
+      // }, 8 * 1000);
     }
   } catch (e) {}
   return {

@@ -178,6 +178,7 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     if (!denomTraces?.denomTraces) {
       // If RPC fails, it's a real error and will throw.
       denomTraces = await denomTracesRpcPromise;
+      console.log("denomTraces", denomTraces);
     }
 
     const hashToTraceMapping: IBCHashDenomTraceLookup = {};
@@ -312,7 +313,6 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
           );
           assetAmounts.push(assetAmount);
         } catch (error) {
-          console.log("error", error);
           // invalid token, ignore
         }
       } else {
@@ -323,8 +323,13 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
         } else if (!lookupData) {
           // If it's not in the master list of all denom traces, that list may just be outdated...
           // Newly minted tokens aren't added to the master list immediately.
-          // @ts-ignore
-          denomTrace = await this.getDenomTraceCached(chain, coin.denom);
+          try {
+            // @ts-ignore
+            denomTrace = await this.getDenomTraceCached(chain, coin.denom);
+          } catch (error) {
+            console.error(error);
+            continue; // Skip this denom
+          }
         }
 
         if (!denomTrace) {

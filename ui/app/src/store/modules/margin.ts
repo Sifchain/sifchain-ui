@@ -73,29 +73,7 @@ export const marginStore = Vuextra.createStore({
     async fetchPools() {
       const client = await loadNativeDexClient();
       const res = await client.query.clp.GetPools({});
-      if (
-        !res.pools.find((p) =>
-          p.externalAsset?.symbol.toLowerCase().includes("usdt"),
-        )
-      ) {
-        const newPools = res.pools.concat({
-          nativeAssetBalance: "2872432812156104395293623",
-          externalAssetBalance: "238478998483",
-          poolUnits: "745906538481591062324326",
-          externalLiabilities: "0",
-          externalCustody: "0",
-          nativeLiabilities: "0",
-          nativeCustody: "0",
-          health: "0",
-          interestRate: "0",
-          externalAsset: {
-            symbol: "cusdt",
-          },
-        } as CLPV1Types.Pool);
-        marginStore.setPools(newPools);
-      } else {
-        marginStore.setPools(res.pools);
-      }
+      marginStore.setPools(res.pools);
     },
     async fetchAccountPositions() {
       const client = await loadNativeDexClient();
