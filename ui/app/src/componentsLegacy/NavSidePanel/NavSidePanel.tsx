@@ -134,6 +134,7 @@ export default defineComponent({
             }}
           />
         </Button.Inline>
+
         <div
           ref={sidebarRef}
           class={[
@@ -141,6 +142,15 @@ export default defineComponent({
             isOpenRef.value && "!translate-x-0",
           ]}
         >
+          <div
+            class={[
+              `fixed transition-all top-0 py-[8.5px] px-[10px] bg-black h-full opacity-0`,
+              !appWalletPicker.isOpen.value && "hidden",
+              appWalletPicker.isOpen.value && "opacity-100 visible",
+            ]}
+          >
+            <WalletPicker />
+          </div>
           {/* 
               font-weight: 700;
               font-feature-settings: "smcp";
@@ -151,7 +161,7 @@ export default defineComponent({
               text-shadow: 0 0 8px var(--accent-gold);
               letter-spacing: 2px;
           */}
-          <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
+          <div class="w-full bg-black z-10 h-full text-center flex flex-col flex-1 justify-between px-[10px]">
             <div class="top">
               {/* <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
                 <Logo class="w-[119px] shorter:w-[90px]" />
@@ -453,7 +463,7 @@ export default defineComponent({
                 ></NavSidePanelItem>
               </div>
 
-              <Tooltip
+              {/* <Tooltip
                 placement="top-start"
                 animation="scale"
                 arrow={false}
@@ -474,76 +484,74 @@ export default defineComponent({
                 appendTo={() => document.body}
                 content={<WalletPicker />}
                 ref={appWalletPicker.ref}
-              >
-                <NavSidePanelItem
-                  icon="interactive/wallet"
-                  displayName={
-                    connectedNetworkCount.value === 0 ? (
-                      "Connect Wallets"
-                    ) : accountStore.getters.isConnecting ? (
-                      "Connecting..."
-                    ) : (
-                      <>
-                        <div>Connected Wallets</div>
-                        <div class="opacity-50 text-sm font-semibold w-full text-left mt-[-2px]">
-                          {" "}
-                          {!accountStore.state.sifchain.connecting &&
-                            // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
-                            accountStore.state.sifchain
-                              .hasLoadedBalancesOnce && (
+              > */}
+              <NavSidePanelItem
+                icon="interactive/wallet"
+                onClick={() => {
+                  appWalletPicker.isOpen.value = !appWalletPicker.isOpen.value;
+                }}
+                displayName={
+                  connectedNetworkCount.value === 0 ? (
+                    "Connect Wallets"
+                  ) : accountStore.getters.isConnecting ? (
+                    "Connecting..."
+                  ) : (
+                    <>
+                      <div>Connected Wallets</div>
+                      <div class="opacity-50 text-sm font-semibold w-full text-left mt-[-2px]">
+                        {" "}
+                        {!accountStore.state.sifchain.connecting &&
+                          // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
+                          accountStore.state.sifchain.hasLoadedBalancesOnce && (
+                            <>
                               <>
-                                <>
-                                  {accountStore.state.sifchain.balances
-                                    .filter(
-                                      // does not have rowan
-                                      (b) => b.asset.symbol.includes("rowan"),
-                                    )
-                                    .map((asset) => {
-                                      const formatted =
-                                        formatAssetAmount(asset);
-                                      if (formatted.length > 6) {
-                                        return Intl.NumberFormat("en", {
-                                          notation: "compact",
-                                        }).format(+formatted);
-                                      }
-                                    })[0] || 0}{" "}
-                                  ROWAN
-                                </>
+                                {accountStore.state.sifchain.balances
+                                  .filter(
+                                    // does not have rowan
+                                    (b) => b.asset.symbol.includes("rowan"),
+                                  )
+                                  .map((asset) => {
+                                    const formatted = formatAssetAmount(asset);
+                                    if (formatted.length > 6) {
+                                      return Intl.NumberFormat("en", {
+                                        notation: "compact",
+                                      }).format(+formatted);
+                                    }
+                                  })[0] || 0}{" "}
+                                ROWAN
                               </>
-                            )}
-                        </div>
-                      </>
-                    )
-                  }
-                  class={[
-                    "mt-0",
-                    appWalletPicker.isOpen.value && "bg-gray-200",
-                  ]}
-                  action={
-                    connectedNetworkCount.value === 0 ? (
+                            </>
+                          )}
+                      </div>
+                    </>
+                  )
+                }
+                class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-200"]}
+                action={
+                  connectedNetworkCount.value === 0 ? (
+                    <AssetIcon
+                      icon="interactive/chevron-down"
+                      style={{
+                        transform: "rotate(-90deg)",
+                      }}
+                      class="w-[20px] h-[20px]"
+                    />
+                  ) : accountStore.getters.isConnecting ? (
+                    <div class="flex flex-1 justify-end">
                       <AssetIcon
-                        icon="interactive/chevron-down"
-                        style={{
-                          transform: "rotate(-90deg)",
-                        }}
-                        class="w-[20px] h-[20px]"
+                        icon="interactive/anim-racetrack-spinner"
+                        size={20}
+                        class="flex-shrink-0"
                       />
-                    ) : accountStore.getters.isConnecting ? (
-                      <div class="flex flex-1 justify-end">
-                        <AssetIcon
-                          icon="interactive/anim-racetrack-spinner"
-                          size={20}
-                          class="flex-shrink-0"
-                        />
-                      </div>
-                    ) : (
-                      <div class="w-[20px] h-[20px] ml-auto rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
-                        {connectedNetworkCount.value}
-                      </div>
-                    )
-                  }
-                />
-              </Tooltip>
+                    </div>
+                  ) : (
+                    <div class="w-[20px] h-[20px] ml-auto rounded-full text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
+                      {connectedNetworkCount.value}
+                    </div>
+                  )
+                }
+              />
+              {/* </Tooltip> */}
 
               <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px] hover:opacity-100">
                 {/* V.2.0.X © {new Date().getFullYear()} Sifchain */}

@@ -1,4 +1,4 @@
-const SIDEBAR_WIDTH = "210px";
+const SIDEBAR_WIDTH = "265.5px";
 
 module.exports = {
   mode: "jit",

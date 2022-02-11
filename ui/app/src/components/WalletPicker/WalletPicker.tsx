@@ -9,7 +9,7 @@ export default defineComponent({
   props: {},
   setup() {
     return () => (
-      <div class="w-[304px]">
+      <div class="w-full">
         {walletConnections
           .filter((connection) => {
             return !isChainFlaggedDisabled(connection.getChain());
