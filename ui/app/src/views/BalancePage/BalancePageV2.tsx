@@ -16,6 +16,7 @@ import Button from "@/components/Button";
 import BalanceRow from "./BalanceRowV2";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { getImportLocation } from "./Import/useImportData";
+import { TokenListItem } from "@/hooks/useToken";
 
 const ROW_HEIGHT = 50;
 
@@ -52,10 +53,22 @@ export default defineComponent({
       }
     });
 
-    const allBalances = computed(() =>
-      showAllBalances.value || state.searchQuery.length
+    const handleExpandSymbol = (symbol: string) => {
+      state.expandedSymbol = symbol;
+    };
+
+    const allBalances = computed<EnhancedTokenListItem[]>(() =>
+      (showAllBalances.value || state.searchQuery.length
         ? displayedTokenList.value
-        : displayedTokenList.value.filter((x) => x.amount.greaterThan("0")),
+        : displayedTokenList.value.filter((x) => x.amount.greaterThan("0"))
+      ).map((rowItem) => ({
+        ...rowItem,
+        isExpanded: rowItem.asset.symbol === state.expandedSymbol,
+        isMasked: Boolean(
+          state.expandedSymbol && rowItem.asset.symbol !== state.expandedSymbol,
+        ),
+        onExpand: handleExpandSymbol,
+      })),
     );
 
     const columns = [
@@ -187,16 +200,7 @@ export default defineComponent({
                 </div>
               </div>
             }
-            renderItem={(item) => (
-              <BalanceRow
-                key={item.asset.symbol + item.asset.network}
-                tokenItem={item}
-                expandedSymbol={state.expandedSymbol}
-                onSetExpandedSymbol={(symbol) => {
-                  state.expandedSymbol = symbol;
-                }}
-              />
-            )}
+            renderItem={RenderItem}
             emptyState={
               <div class="flex-1 p-4 grid place-items-center bg-gray-200 rounded-md text-center mb-1">
                 {isLoadingBalances.value ? (
@@ -225,3 +229,19 @@ export default defineComponent({
     );
   },
 });
+
+type EnhancedTokenListItem = TokenListItem & {
+  isExpanded: boolean;
+  isMasked: boolean;
+  onExpand(sumbol: string): void;
+};
+
+const RenderItem = (item: EnhancedTokenListItem) => (
+  <BalanceRow
+    key={item.asset.symbol + item.asset.network}
+    tokenItem={item}
+    isExpanded={item.isExpanded}
+    isMasked={item.isMasked}
+    onExpand={item.onExpand}
+  />
+);

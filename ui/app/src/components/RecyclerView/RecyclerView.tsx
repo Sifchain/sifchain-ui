@@ -1,4 +1,4 @@
-import { debounce } from "@/views/utils/debounce";
+import debounce from "@/utils/debounce-raf";
 import {
   computed,
   createElementVNode,
@@ -90,7 +90,7 @@ export default defineComponent({
       }
 
       isScrolling.value = false;
-    }, DEBOUNCE_DELAY);
+    });
 
     const handleScroll = (e: UIEvent) => {
       isScrolling.value = true;
