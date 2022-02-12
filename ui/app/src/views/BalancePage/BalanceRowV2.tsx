@@ -15,10 +15,6 @@ import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
 // import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
-export const SYMBOL_COLUMN_WIDTH = 130;
-
-export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
-
 export default defineComponent({
   name: "BalanceRow",
   props: {
