@@ -98,18 +98,22 @@ const getUrl = (name: string) =>
 const LAYOUT_BACKGROUNDS: LayoutBg[] = [
   {
     key: "default",
+    src: [`https://source.unsplash.com/-Lc6azmFSk4`],
+    thumb: `https://source.unsplash.com/-Lc6azmFSk4`,
+    Cmp: ImageBg,
+  },
+  {
+    key: "default-legacy",
     src: [getUrl("default")],
     thumb: getUrl("default-thumb"),
     Cmp: ImageBg,
   },
-  ...["oQbLeq4nOek", "12R-hVfQ3R8", "-Lc6azmFSk4", "5Ui5glVjUAQ"].map(
-    (name) => ({
-      key: name,
-      src: ["https://source.unsplash.com/" + name],
-      thumb: "https://source.unsplash.com/" + name,
-      Cmp: ImageBg,
-    }),
-  ),
+  ...["oQbLeq4nOek", "12R-hVfQ3R8", "5Ui5glVjUAQ"].map((name) => ({
+    key: name,
+    src: ["https://source.unsplash.com/" + name],
+    thumb: "https://source.unsplash.com/" + name,
+    Cmp: ImageBg,
+  })),
   {
     key: "tropical-fern",
     src: ["https://source.unsplash.com/5TBf16GnHKg"],
