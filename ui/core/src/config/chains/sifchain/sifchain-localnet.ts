@@ -7,13 +7,13 @@ export const SIFCHAIN_LOCALNET: IBCChainConfig = {
   blockExplorerUrl: "https://www.mintscan.io/sifchain",
   nativeAssetSymbol: "rowan",
   chainId: "localnet",
-  rpcUrl: "http://localhost:3030/api/sifchain-local/rpc",
-  restUrl: "http://localhost:3030/api/sifchain-local/rest",
+  rpcUrl: "http://localhost:3000/api/sifchain-local/rpc",
+  restUrl: "http://localhost:3000/api/sifchain-local/rest",
   keplrChainInfo: {
     chainName: "sifchain-local",
     chainId: "localnet",
-    rpc: "http://localhost:3030/api/sifchain-local/rpc",
-    rest: "http://localhost:3030/api/sifchain-local/rest",
+    rpc: "http://localhost:3000/api/sifchain-local/rpc",
+    rest: "http://localhost:3000/api/sifchain-local/rest",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",

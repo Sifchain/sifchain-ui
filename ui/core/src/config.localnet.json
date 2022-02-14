@@ -2,9 +2,9 @@
   "note": "this is needed for tests!",
   "sifAddrPrefix": "sif",
   "sifChainId": "localnet",
-  "sifApiUrl": "http://localhost:3030/api/sifchain-local/rest",
+  "sifApiUrl": "http://localhost:3000/api/sifchain-local/rest",
   "sifWsUrl": "ws://localhost:26657/websocket",
-  "sifRpcUrl": "http://localhost:3030/api/sifchain-local/rpc",
+  "sifRpcUrl": "http://localhost:3000/api/sifchain-local/rpc",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
   "cryptoeconomicsUrl": "http://localhost:3000/api",
@@ -13,8 +13,8 @@
   "keplrChainConfig": {
     "chainName": "SifchainLocal",
     "chainId": "",
-    "rest": "http://localhost:3030/api/sifchain-local/rest",
-    "rpc": "http://localhost:3030/api/sifchain-local/rpc",
+    "rest": "http://localhost:3000/api/sifchain-local/rest",
+    "rpc": "http://localhost:3000/api/sifchain-local/rpc",
     "stakeCurrency": {
       "coinDenom": "ROWAN",
       "coinMinimalDenom": "rowan",

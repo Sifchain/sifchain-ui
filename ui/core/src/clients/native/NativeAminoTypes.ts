@@ -59,6 +59,14 @@ export class NativeAminoTypes extends AminoTypes {
         return originalToAmino(value);
       },
     );
+
+    wrapAdditionToAminoFn(
+      "/sifnode.margin.v1.MsgClose",
+      (value: any, originalToAmino: ToAminoFn) => {
+        value.id = value.id.toString();
+        return originalToAmino(value);
+      },
+    );
   }
 }
 
@@ -77,7 +85,10 @@ const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
       .join("/");
   }
 
-  if (typeUrl.includes("sifnode") && !/MsgBurn|MsgLock/.test(typeUrl)) {
+  if (
+    typeUrl.includes("sifnode") &&
+    !/\.margin|MsgBurn|MsgLock/.test(typeUrl)
+  ) {
     typeUrl = typeUrl.replace("Msg", "");
   }
 
