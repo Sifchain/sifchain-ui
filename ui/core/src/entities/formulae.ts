@@ -168,18 +168,27 @@ export function calculateSwapResult(x: IAmount, X: IAmount, Y: IAmount) {
 }
 
 /**
- * Calculate Swap Result based on formula ( x * X * Y ) / ( x + X ) ^ 2
+ * Calculate Swap Result based on formula ( x * X * Y ) / ( x + X ) ^ (c/w)
  * @param X  External Balance
  * @param x Swap Amount
  * @param Y Native Balance
  * @returns swapAmount
  */
-export function calculateSwapResult_ptmp(x: IAmount, X: IAmount, Y: IAmount) {
+export function calculateSwapResult_ptmp(
+  x: IAmount,
+  X: IAmount,
+  Y: IAmount,
+  wx: number,
+  wy: number,
+) {
   if (x.equalTo("0") || X.equalTo("0") || Y.equalTo("0")) {
     return Amount("0");
   }
   const xPlusX = x.add(X);
-  return x.multiply(X).multiply(Y).divide(xPlusX.power(2));
+  return x
+    .multiply(X)
+    .multiply(Y)
+    .divide(xPlusX.power(wx / wy));
 }
 
 export function calculateExternalExternalSwapResult(
@@ -218,6 +227,31 @@ export function calculateReverseSwapResult(S: IAmount, X: IAmount, Y: IAmount) {
   return x.greaterThanOrEqual(Amount("0")) ? x : Amount("0");
 }
 
+export function calculateReverseSwapResult_pmtp(
+  S: IAmount,
+  X: IAmount,
+  Y: IAmount,
+  wx: IAmount,
+  wy: IAmount,
+) {
+  // Adding a check here because sqrt of a negative number will throw an exception
+  if (
+    S.equalTo("0") ||
+    X.equalTo("0") ||
+    S.multiply(Amount("4")).greaterThan(Y)
+  ) {
+    return Amount("0");
+  }
+  const term1 = Amount("-2").multiply(X).multiply(S);
+  const term2 = X.multiply(Y);
+  const underRoot = Y.multiply(Y.subtract(S.multiply(Amount("4"))));
+  const term3 = X.multiply(underRoot.sqrt());
+  const numerator = term1.add(term2).subtract(term3);
+  const denominator = S.multiply(Amount("2"));
+  const x = numerator.divide(denominator);
+  return x.greaterThanOrEqual(Amount("0")) ? x : Amount("0");
+}
+
 /**
  * Calculate Provider Fee according to the formula: ( x^2 * Y ) / ( x + X )^2
  * @param x Swap Amount
@@ -231,6 +265,31 @@ export function calculateProviderFee(x: IAmount, X: IAmount, Y: IAmount) {
   }
   const xPlusX = x.add(X);
   return x.multiply(x).multiply(Y).divide(xPlusX.multiply(xPlusX));
+}
+
+/**
+ * Calculate Provider Fee according to the formula: ( x^2 * Y ) / ( x + X )^2
+ * @param x Swap Amount
+ * @param X External Balance
+ * @param Y Native Balance
+ * @returns providerFee
+ */
+export function calculateProviderFee_pmtp(
+  x: IAmount,
+  X: IAmount,
+  Y: IAmount,
+  wx: number,
+  wy: number,
+) {
+  if (x.equalTo("0") || X.equalTo("0") || Y.equalTo("0")) {
+    return Amount("0");
+  }
+  const xPlusX = x.add(X);
+
+  return x
+    .multiply(x)
+    .multiply(Y)
+    .divide(xPlusX.power(wx / wy));
 }
 
 /**
