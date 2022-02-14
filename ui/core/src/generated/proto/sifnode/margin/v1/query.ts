@@ -1,20 +1,13 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {
-  Position,
-  MTP,
-  positionFromJSON,
-  positionToJSON,
-} from "../../../sifnode/margin/v1/types";
+import { MTP } from "../../../sifnode/margin/v1/types";
 
 export const protobufPackage = "sifnode.margin.v1";
 
 export interface MTPRequest {
   address: string;
-  custodyAsset: string;
-  collateralAsset: string;
-  position: Position;
+  id: Long;
 }
 
 export interface MTPResponse {
@@ -30,7 +23,7 @@ export interface PositionsForAddressResponse {
 }
 
 function createBaseMTPRequest(): MTPRequest {
-  return { address: "", custodyAsset: "", collateralAsset: "", position: 0 };
+  return { address: "", id: Long.UZERO };
 }
 
 export const MTPRequest = {
@@ -41,14 +34,8 @@ export const MTPRequest = {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
-    if (message.custodyAsset !== "") {
-      writer.uint32(18).string(message.custodyAsset);
-    }
-    if (message.collateralAsset !== "") {
-      writer.uint32(26).string(message.collateralAsset);
-    }
-    if (message.position !== 0) {
-      writer.uint32(32).int32(message.position);
+    if (!message.id.isZero()) {
+      writer.uint32(16).uint64(message.id);
     }
     return writer;
   },
@@ -64,13 +51,7 @@ export const MTPRequest = {
           message.address = reader.string();
           break;
         case 2:
-          message.custodyAsset = reader.string();
-          break;
-        case 3:
-          message.collateralAsset = reader.string();
-          break;
-        case 4:
-          message.position = reader.int32() as any;
+          message.id = reader.uint64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -83,25 +64,15 @@ export const MTPRequest = {
   fromJSON(object: any): MTPRequest {
     return {
       address: isSet(object.address) ? String(object.address) : "",
-      custodyAsset: isSet(object.custodyAsset)
-        ? String(object.custodyAsset)
-        : "",
-      collateralAsset: isSet(object.collateralAsset)
-        ? String(object.collateralAsset)
-        : "",
-      position: isSet(object.position) ? positionFromJSON(object.position) : 0,
+      id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
     };
   },
 
   toJSON(message: MTPRequest): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
-    message.custodyAsset !== undefined &&
-      (obj.custodyAsset = message.custodyAsset);
-    message.collateralAsset !== undefined &&
-      (obj.collateralAsset = message.collateralAsset);
-    message.position !== undefined &&
-      (obj.position = positionToJSON(message.position));
+    message.id !== undefined &&
+      (obj.id = (message.id || Long.UZERO).toString());
     return obj;
   },
 
@@ -110,9 +81,10 @@ export const MTPRequest = {
   ): MTPRequest {
     const message = createBaseMTPRequest();
     message.address = object.address ?? "";
-    message.custodyAsset = object.custodyAsset ?? "";
-    message.collateralAsset = object.collateralAsset ?? "";
-    message.position = object.position ?? 0;
+    message.id =
+      object.id !== undefined && object.id !== null
+        ? Long.fromValue(object.id)
+        : Long.UZERO;
     return message;
   },
 };

@@ -74,7 +74,7 @@ export default defineComponent({
                 ))}
               </div>
               {marginStore.state.positions.map((position, index) => (
-                <MarginPosition key={index} position={position} />
+                <MarginPosition key={position.id} position={position} />
               ))}
             </Card>
           )}

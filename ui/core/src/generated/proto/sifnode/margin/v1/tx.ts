@@ -21,9 +21,7 @@ export interface MsgOpenResponse {}
 
 export interface MsgClose {
   signer: string;
-  collateralAsset: string;
-  borrowAsset: string;
-  position: Position;
+  id: Long;
 }
 
 export interface MsgCloseResponse {}
@@ -31,9 +29,7 @@ export interface MsgCloseResponse {}
 export interface MsgForceClose {
   signer: string;
   mtpAddress: string;
-  collateralAsset: string;
-  borrowAsset: string;
-  position: Position;
+  id: Long;
 }
 
 export interface MsgForceCloseResponse {}
@@ -185,7 +181,7 @@ export const MsgOpenResponse = {
 };
 
 function createBaseMsgClose(): MsgClose {
-  return { signer: "", collateralAsset: "", borrowAsset: "", position: 0 };
+  return { signer: "", id: Long.UZERO };
 }
 
 export const MsgClose = {
@@ -196,14 +192,8 @@ export const MsgClose = {
     if (message.signer !== "") {
       writer.uint32(10).string(message.signer);
     }
-    if (message.collateralAsset !== "") {
-      writer.uint32(18).string(message.collateralAsset);
-    }
-    if (message.borrowAsset !== "") {
-      writer.uint32(26).string(message.borrowAsset);
-    }
-    if (message.position !== 0) {
-      writer.uint32(40).int32(message.position);
+    if (!message.id.isZero()) {
+      writer.uint32(16).uint64(message.id);
     }
     return writer;
   },
@@ -219,13 +209,7 @@ export const MsgClose = {
           message.signer = reader.string();
           break;
         case 2:
-          message.collateralAsset = reader.string();
-          break;
-        case 3:
-          message.borrowAsset = reader.string();
-          break;
-        case 5:
-          message.position = reader.int32() as any;
+          message.id = reader.uint64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -238,32 +222,25 @@ export const MsgClose = {
   fromJSON(object: any): MsgClose {
     return {
       signer: isSet(object.signer) ? String(object.signer) : "",
-      collateralAsset: isSet(object.collateralAsset)
-        ? String(object.collateralAsset)
-        : "",
-      borrowAsset: isSet(object.borrowAsset) ? String(object.borrowAsset) : "",
-      position: isSet(object.position) ? positionFromJSON(object.position) : 0,
+      id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
     };
   },
 
   toJSON(message: MsgClose): unknown {
     const obj: any = {};
     message.signer !== undefined && (obj.signer = message.signer);
-    message.collateralAsset !== undefined &&
-      (obj.collateralAsset = message.collateralAsset);
-    message.borrowAsset !== undefined &&
-      (obj.borrowAsset = message.borrowAsset);
-    message.position !== undefined &&
-      (obj.position = positionToJSON(message.position));
+    message.id !== undefined &&
+      (obj.id = (message.id || Long.UZERO).toString());
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgClose>, I>>(object: I): MsgClose {
     const message = createBaseMsgClose();
     message.signer = object.signer ?? "";
-    message.collateralAsset = object.collateralAsset ?? "";
-    message.borrowAsset = object.borrowAsset ?? "";
-    message.position = object.position ?? 0;
+    message.id =
+      object.id !== undefined && object.id !== null
+        ? Long.fromValue(object.id)
+        : Long.UZERO;
     return message;
   },
 };
@@ -313,13 +290,7 @@ export const MsgCloseResponse = {
 };
 
 function createBaseMsgForceClose(): MsgForceClose {
-  return {
-    signer: "",
-    mtpAddress: "",
-    collateralAsset: "",
-    borrowAsset: "",
-    position: 0,
-  };
+  return { signer: "", mtpAddress: "", id: Long.UZERO };
 }
 
 export const MsgForceClose = {
@@ -333,14 +304,8 @@ export const MsgForceClose = {
     if (message.mtpAddress !== "") {
       writer.uint32(18).string(message.mtpAddress);
     }
-    if (message.collateralAsset !== "") {
-      writer.uint32(26).string(message.collateralAsset);
-    }
-    if (message.borrowAsset !== "") {
-      writer.uint32(34).string(message.borrowAsset);
-    }
-    if (message.position !== 0) {
-      writer.uint32(40).int32(message.position);
+    if (!message.id.isZero()) {
+      writer.uint32(24).uint64(message.id);
     }
     return writer;
   },
@@ -359,13 +324,7 @@ export const MsgForceClose = {
           message.mtpAddress = reader.string();
           break;
         case 3:
-          message.collateralAsset = reader.string();
-          break;
-        case 4:
-          message.borrowAsset = reader.string();
-          break;
-        case 5:
-          message.position = reader.int32() as any;
+          message.id = reader.uint64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -379,11 +338,7 @@ export const MsgForceClose = {
     return {
       signer: isSet(object.signer) ? String(object.signer) : "",
       mtpAddress: isSet(object.mtpAddress) ? String(object.mtpAddress) : "",
-      collateralAsset: isSet(object.collateralAsset)
-        ? String(object.collateralAsset)
-        : "",
-      borrowAsset: isSet(object.borrowAsset) ? String(object.borrowAsset) : "",
-      position: isSet(object.position) ? positionFromJSON(object.position) : 0,
+      id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
     };
   },
 
@@ -391,12 +346,8 @@ export const MsgForceClose = {
     const obj: any = {};
     message.signer !== undefined && (obj.signer = message.signer);
     message.mtpAddress !== undefined && (obj.mtpAddress = message.mtpAddress);
-    message.collateralAsset !== undefined &&
-      (obj.collateralAsset = message.collateralAsset);
-    message.borrowAsset !== undefined &&
-      (obj.borrowAsset = message.borrowAsset);
-    message.position !== undefined &&
-      (obj.position = positionToJSON(message.position));
+    message.id !== undefined &&
+      (obj.id = (message.id || Long.UZERO).toString());
     return obj;
   },
 
@@ -406,9 +357,10 @@ export const MsgForceClose = {
     const message = createBaseMsgForceClose();
     message.signer = object.signer ?? "";
     message.mtpAddress = object.mtpAddress ?? "";
-    message.collateralAsset = object.collateralAsset ?? "";
-    message.borrowAsset = object.borrowAsset ?? "";
-    message.position = object.position ?? 0;
+    message.id =
+      object.id !== undefined && object.id !== null
+        ? Long.fromValue(object.id)
+        : Long.UZERO;
     return message;
   },
 };

@@ -69,6 +69,7 @@ export interface MTP {
   leverage: string;
   mtpHealth: string;
   position: Position;
+  id: Long;
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -306,6 +307,7 @@ function createBaseMTP(): MTP {
     leverage: "",
     mtpHealth: "",
     position: 0,
+    id: Long.UZERO,
   };
 }
 
@@ -340,6 +342,9 @@ export const MTP = {
     }
     if (message.position !== 0) {
       writer.uint32(80).int32(message.position);
+    }
+    if (!message.id.isZero()) {
+      writer.uint32(88).uint64(message.id);
     }
     return writer;
   },
@@ -381,6 +386,9 @@ export const MTP = {
         case 10:
           message.position = reader.int32() as any;
           break;
+        case 11:
+          message.id = reader.uint64() as Long;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -413,6 +421,7 @@ export const MTP = {
       leverage: isSet(object.leverage) ? String(object.leverage) : "",
       mtpHealth: isSet(object.mtpHealth) ? String(object.mtpHealth) : "",
       position: isSet(object.position) ? positionFromJSON(object.position) : 0,
+      id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
     };
   },
 
@@ -435,6 +444,8 @@ export const MTP = {
     message.mtpHealth !== undefined && (obj.mtpHealth = message.mtpHealth);
     message.position !== undefined &&
       (obj.position = positionToJSON(message.position));
+    message.id !== undefined &&
+      (obj.id = (message.id || Long.UZERO).toString());
     return obj;
   },
 
@@ -450,6 +461,10 @@ export const MTP = {
     message.leverage = object.leverage ?? "";
     message.mtpHealth = object.mtpHealth ?? "";
     message.position = object.position ?? 0;
+    message.id =
+      object.id !== undefined && object.id !== null
+        ? Long.fromValue(object.id)
+        : Long.UZERO;
     return message;
   },
 };

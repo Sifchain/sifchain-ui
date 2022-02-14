@@ -36,11 +36,10 @@ export const MarginPosition = defineComponent({
     async closePosition() {
       const client = await NativeDexClient.connectByChain(useNativeChain());
 
-      const txDraft = client.tx.margin.CloseLong(
+      const txDraft = client.tx.margin.Close(
         {
           signer: accountStore.state.sifchain.address,
-          collateralAsset: this.position.collateralAsset,
-          borrowAsset: this.position.custodyAsset,
+          id: this.position.id,
         },
         accountStore.state.sifchain.address,
       );

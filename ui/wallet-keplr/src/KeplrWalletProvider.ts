@@ -297,7 +297,11 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       /^margin\//,
       "margin/Msg",
     );
-    // msgs[0].value.position = "long";
+    // @ts-ignore
+    if (msgs[0].value.id) {
+      // @ts-ignore
+      msgs[0].value.id = msgs[0].value.id.low;
+    }
 
     const fee = {
       amount: [tx.fee.price],
