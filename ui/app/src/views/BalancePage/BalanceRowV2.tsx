@@ -13,7 +13,7 @@ import { getExportLocation } from "./Export/useExportData";
 import { Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
-// import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
   name: "BalanceRow",
@@ -146,7 +146,7 @@ export default defineComponent({
         {/* token info */}
         <div class="text-left align-middle group-hover:opacity-80">
           <div class="flex items-center">
-            {/* <TokenNetworkIcon asset={ref(props.tokenItem.asset)} /> */}
+            <TokenNetworkIcon asset={ref(props.tokenItem.asset)} />
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>
