@@ -1,22 +1,22 @@
 import { Network, IBCChainConfig } from "../../../entities";
 
-export const JUNO_MAINNET: IBCChainConfig = {
+export const JUNO_TESTNET: IBCChainConfig = {
   chainType: "ibc",
   network: Network.JUNO,
   displayName: "Juno",
   blockExplorerUrl: "http://junoscan.com",
   nativeAssetSymbol: "ujuno",
-  chainId: "juno-1",
-  rpcUrl: "https://proxies.sifchain.finance/api/juno-1/rpc",
-  restUrl: "https://proxies.sifchain.finance/api/juno-1/rest",
+  chainId: "junosif-1",
+  rpcUrl: "https://proxies.sifchain.finance/api/junosif-1/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/junosif-1/rest",
   features: {
-    erc20Transfers: false,
+    erc20Transfers: true,
   },
   keplrChainInfo: {
-    rpc: "https://proxies.sifchain.finance/api/juno-1/rpc",
-    rest: "https://proxies.sifchain.finance/api/juno-1/rest",
-    chainId: "juno-1",
-    chainName: "Juno",
+    rpc: "https://proxies.sifchain.finance/api/junosif-1/rpc",
+    rest: "https://proxies.sifchain.finance/api/junosif-1/rest",
+    chainId: "junosif-1",
+    chainName: "Juno Testnet (Sifchain)",
     stakeCurrency: {
       coinDenom: "JUNO",
       coinMinimalDenom: "ujuno",

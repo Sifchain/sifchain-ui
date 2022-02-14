@@ -1,28 +1,47 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="/favicon.svg">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="/favicon.svg" />
 
     <title>Sifchain</title>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MSGFSQQEJ3"></script>
     <script>
-      if (window.location.host === "dex.sifchain.finance") {
-        // Only run GA on mainnet
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ window.dataLayer && window.dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-MSGFSQQEJ3');
+      if (window.location.origin.includes("dex.sifchain.finance")) {
+        var gtmScript = document.createElement("script");
+        gtmScript.async = true;
+        gtmScript.src =
+          "https://www.googletagmanager.com/gtag/js?id=G-MSGFSQQEJ3";
+
+        var analyticsScript = document.createElement("script");
+
+        analyticsScript.src = `
+          if (window.location.host === "dex.sifchain.finance") {
+            // Only run GA on mainnet
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){ window.dataLayer && window.dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-MSGFSQQEJ3');
+          }
+        `;
+
+        document.head.appendChild(gtmScript);
+        document.head.appendChild(analyticsScript);
+      }
+    </script>
+    <script>
+      if (window.location.origin.includes("https://sifchain-ui.vercel.app")) {
+        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
       }
     </script>
   </head>
   <body>
-    
     <noscript>
-      <strong>We're sorry but the Sifchain DEX doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong
+        >We're sorry but the Sifchain DEX doesn't work properly without
+        JavaScript enabled. Please enable it to continue.</strong
+      >
     </noscript>
     <div id="app"></div>
     <div id="portal-target"></div>

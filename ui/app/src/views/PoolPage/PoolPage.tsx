@@ -15,7 +15,7 @@ import {
   usePoolPageData,
 } from "./usePoolPageData";
 import PoolItem from "./PoolItem";
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { SearchBox } from "@/components/SearchBox";
 import { Pool } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
 import {
@@ -130,7 +130,15 @@ export default defineComponent({
   render() {
     return (
       <Layout>
-        <RouterView />
+        <RouterView
+          name={
+            flagsStore.state.allowEmptyLiquidityAdd
+              ? undefined
+              : !this.isLoaded
+              ? "DISABLED_WHILE_LOADING"
+              : undefined
+          }
+        />
         {!this.isLoaded ? (
           <div class="absolute left-0 top-[180px] w-full flex justify-center">
             <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">

@@ -313,6 +313,7 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
           );
           assetAmounts.push(assetAmount);
         } catch (error) {
+          console.log("error", error);
           // invalid token, ignore
         }
       } else {

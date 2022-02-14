@@ -31,19 +31,7 @@ export const TokenRegistry = (context: TokenRegistryContext) => {
         );
         const res = await dex.query?.tokenregistry.Entries({});
         const data = res?.registry?.entries;
-        if (data && !data?.find((d) => d.baseDenom.toLowerCase() === "rowan")) {
-          // Tempnet doesn't have rowan
-          data.push({
-            decimals: Long.fromNumber(18),
-            denom: "rowan",
-            baseDenom: "rowan",
-            displayName: "Rowan",
-            externalSymbol: "eRowan",
-            displaySymbol: "rowan",
-            permissions: [1, 2, 3],
-            unitDenom: "rowan",
-          } as unknown as RegistryEntry);
-        }
+
         if (!data) throw new Error("Whitelist not found");
         return data as RegistryEntry[];
       })();

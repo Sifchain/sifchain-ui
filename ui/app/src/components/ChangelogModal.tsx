@@ -5,7 +5,7 @@ import { PropType } from "vue";
 import { Button } from "./Button/Button";
 
 const VITE_APP_SHA = import.meta.env.VITE_APP_SHA || "master";
-const VITE_APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.0.0.local";
+const VITE_APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.0.1.local";
 
 type ChangelogData = { version: string; changelog: string };
 

@@ -11,7 +11,6 @@ import {
   NativeDexTransaction,
   NativeDexSignedTransaction,
   NativeAminoTypes,
-  NativeDexClient,
 } from "@sifchain/sdk/src/clients";
 import {
   WalletProviderContext,
@@ -259,49 +258,12 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       }
       return this.signIbcImport(chain, tx);
     }
-
-    console.log(tx.msgs[0]);
-    // if (tx.msgs[0]?.typeUrl.startsWith("/sifnode.margin")) {
-    //   const chainConfig = this.getIBCChainConfig(chain);
-    //   const signer = await this.getSendingSigner(chain);
-
-    //   const stargate = await SigningStargateClient.connectWithSigner(
-    //     chainConfig.rpcUrl,
-    //     signer,
-    //     {
-    //       registry: NativeDexClient.getNativeRegistry(),
-    //     },
-    //   );
-
-    //   const signed = await stargate.sign(
-    //     tx.fromAddress,
-    //     tx.msgs,
-    //     {
-    //       amount: [tx.fee.price],
-    //       gas: tx.fee.gas,
-    //     },
-    //     tx.memo,
-    //   );
-    //   return new NativeDexSignedTransaction(tx, signed);
-    // }
-
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
 
     const converter = new NativeAminoTypes();
 
     const msgs = tx.msgs.map(converter.toAmino.bind(converter));
-
-    // console.log(msgs);
-    (msgs[0] as any).type = (msgs[0] as any).type.replace(
-      /^margin\//,
-      "margin/Msg",
-    );
-    // @ts-ignore
-    if (msgs[0].value.id) {
-      // @ts-ignore
-      msgs[0].value.id = msgs[0].value.id.low;
-    }
 
     const fee = {
       amount: [tx.fee.price],
@@ -346,21 +308,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
-    if (1 && false) {
-      console.log(tx);
-      console.log(JSON.stringify({ tx: tx.signed }));
-      const res = await fetch(
-        "http://localhost:3030/api/sifchain-local/rest/txs",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tx: tx.signed, mode: "block" }),
-        },
-      );
-      console.log(await res.json());
-    }
+    console.log("tx", tx);
     // Broadcast EncodeObject
     if ((tx.signed as TxRaw).authInfoBytes) {
       const chainConfig = this.getIBCChainConfig(chain);
@@ -370,7 +318,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         chainConfig.rpcUrl,
         signer,
       );
-      console.log("stargate broadcastTx", tx.signed);
       const result = await stargate.broadcastTx(
         Uint8Array.from(TxRaw.encode(tx.signed as TxRaw).finish()),
       );
@@ -388,7 +335,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const txHashUInt8Array = await keplr!.sendTx(
       chainConfig.chainId,
       tx.signed as Uint8Array | StdTx,
-      BroadcastMode.Block,
+      BroadcastMode.Sync,
     );
     const txHashHex = toHex(txHashUInt8Array).toUpperCase();
 
