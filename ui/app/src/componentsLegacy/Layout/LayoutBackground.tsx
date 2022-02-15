@@ -102,13 +102,7 @@ const LAYOUT_BACKGROUNDS: LayoutBg[] = [
     thumb: `https://source.unsplash.com/-Lc6azmFSk4`,
     Cmp: ImageBg,
   },
-  {
-    key: "default-legacy",
-    src: [getUrl("default")],
-    thumb: getUrl("default-thumb"),
-    Cmp: ImageBg,
-  },
-  ...["oQbLeq4nOek", "12R-hVfQ3R8", "5Ui5glVjUAQ"].map((name) => ({
+  ...["oQbLeq4nOek"].map((name) => ({
     key: name,
     src: ["https://source.unsplash.com/" + name],
     thumb: "https://source.unsplash.com/" + name,
@@ -124,6 +118,12 @@ const LAYOUT_BACKGROUNDS: LayoutBg[] = [
     key: "tropical-fern-2",
     src: ["https://source.unsplash.com/7uNro4xWMnk"],
     thumb: "https://source.unsplash.com/7uNro4xWMnk",
+    Cmp: ImageBg,
+  },
+  {
+    key: "default-legacy",
+    src: [getUrl("default")],
+    thumb: getUrl("default-thumb"),
     Cmp: ImageBg,
   },
   {

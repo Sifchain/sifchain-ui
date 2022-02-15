@@ -1,4 +1,5 @@
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { FancyLoadingSpinner } from "./FancySpinner";
 
 export default function AdvancedProgressRing(props: {
   size: number;
@@ -12,19 +13,21 @@ export default function AdvancedProgressRing(props: {
     <div class={[`relative`, props.class]} style={sizeStyle}>
       <div class="absolute left-0 top-0 text-gray-input" style={sizeStyle}>
         {/* Background ring: faded color, full circle */}
-        <BasicProgressRing
+        {/* <BasicProgressRing
           radius={props.size / 2}
           progress={100}
           ringWidth={ringWidth}
-        />
+        /> */}
+        <FancyLoadingSpinner></FancyLoadingSpinner>
       </div>
       <div class="absolute left-0 top-0 text-gray-600" style={sizeStyle}>
         {/* Foreground ring: not faded, marks progress */}
-        <BasicProgressRing
+        {/* <BasicProgressRing
           radius={props.size / 2}
           progress={props.progress}
           ringWidth={ringWidth}
-        />
+        /> */}
+        <FancyLoadingSpinner></FancyLoadingSpinner>
       </div>
     </div>
   );

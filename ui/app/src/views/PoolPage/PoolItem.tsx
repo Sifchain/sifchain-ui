@@ -235,7 +235,7 @@ export default defineComponent({
               size={22}
               class="ml-[4px]"
             />
-            <div class="ml-[10px] uppercase font-sans">
+            <div class="ml-[10px] font-sans">
               ROWAN / {this.externalAmount.displaySymbol.toUpperCase()}
             </div>
             {this.externalAmount.asset.decommissioned &&

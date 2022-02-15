@@ -10,7 +10,7 @@ import {
 } from "@/componentsLegacy/shared/utils";
 
 import { prettyNumber } from "@/utils/prettyNumber";
-import ProgressRing from "@/components/ProgressRing";
+import ProgressRing from "@/components/ProgressRing/ProgressRing/ProgressRing";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import Tooltip from "@/components/Tooltip";
 import {

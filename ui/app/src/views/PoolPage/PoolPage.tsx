@@ -23,6 +23,10 @@ import {
   CompetitionsBySymbolLookup,
   useLeaderboardCompetitions,
 } from "../LeaderboardPage/useCompetitionData";
+import { FancyLoadingSpinner } from "@/components/ProgressRing/FancySpinner";
+import AdvancedProgressRing, {
+  BasicProgressRing,
+} from "@/components/ProgressRing/ProgressRing";
 
 export default defineComponent({
   name: "PoolsPage",
@@ -140,11 +144,14 @@ export default defineComponent({
         />
         {!this.isLoaded ? (
           <div class="absolute left-0 top-[180px] w-full flex justify-center">
-            <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
-              <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
-            </div>
+            <FancyLoadingSpinner />
           </div>
         ) : (
+          // <div class="absolute left-0 top-[180px] w-full flex justify-center">
+          //   <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+          //     <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
+          //   </div>
+          // </div>
           <PageCard
             class="w-[900px] !max-w-[1000px]"
             heading="Pool"
