@@ -173,9 +173,11 @@ export function calculateSwapResult(x: IAmount, X: IAmount, Y: IAmount) {
  * @param X  External Balance
  * @param x Swap Amount
  * @param Y Native Balance
+ * @param wx
+ * @param wy
  * @returns swapAmount
  */
-export function calculateSwapResult_ptmp(
+export function calculateSwapResult_pmtp(
   x: IAmount,
   X: IAmount,
   Y: IAmount,

@@ -169,6 +169,14 @@ describe("Amount", () => {
     ).toBe(true);
   });
 
+  test("#power", () => {
+    expect(Amount("4").power(0.5).equalTo(Amount("2"))).toBe(true);
+  });
+
+  test("#power", () => {
+    expect(Amount("4").power(2).equalTo(Amount("16"))).toBe(true);
+  });
+
   test("isAmount", () => {
     expect(isAmount("5")).toBe(false);
     expect(isAmount(Amount("5"))).toBe(true);

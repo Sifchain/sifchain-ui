@@ -113,11 +113,10 @@ export function Amount(
     },
 
     power(exponent) {
-      let initial = toAmount(fraction);
+      const dec = new Decimal(fraction.toFixed(24)).pow(new Decimal(exponent));
+      const coeff = new Decimal(10).pow(24).toNumber();
       return toAmount(
-        new Fraction(
-          new Decimal(initial.toString()).pow(new Decimal(exponent)).toString(),
-        ),
+        new Fraction(dec.mul(coeff).toInteger().toString(), coeff.toString()),
       );
     },
 
