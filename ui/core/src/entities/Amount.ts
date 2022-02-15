@@ -112,17 +112,11 @@ export function Amount(
     },
 
     power(exponent) {
-      let initial = toAmount(fraction);
-      let result = Amount("1");
-
-      for (let i = 0; i < Math.abs(exponent); i++) {
-        if (exponent < 0) {
-          result = result.divide(initial);
-        } else {
-          result = result.multiply(initial);
-        }
-      }
-      return result;
+      const big = toBig(fraction);
+      const string = toFraction(
+        big.pow(exponent).times("100000000000000000000000").toFixed(0),
+      ) as string;
+      return Amount(string).divide("100000000000000000000000");
     },
 
     // Internal methods need to be exposed here
