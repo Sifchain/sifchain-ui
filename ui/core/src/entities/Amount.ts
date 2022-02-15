@@ -3,6 +3,7 @@ import { Fraction, IFraction } from "./fraction/Fraction";
 import Big from "big.js";
 import { isAssetAmount } from "./AssetAmount";
 import { decimalShift, floorDecimal } from "../utils/decimalShift";
+import Decimal from "decimal.js-light";
 
 export type IAmount = {
   // for use by display lib and in testing
@@ -113,16 +114,11 @@ export function Amount(
 
     power(exponent) {
       let initial = toAmount(fraction);
-      let result = Amount("1");
-
-      for (let i = 0; i < Math.abs(exponent); i++) {
-        if (exponent < 0) {
-          result = result.divide(initial);
-        } else {
-          result = result.multiply(initial);
-        }
-      }
-      return result;
+      return toAmount(
+        new Fraction(
+          new Decimal(initial.toString()).pow(new Decimal(exponent)).toString(),
+        ),
+      );
     },
 
     // Internal methods need to be exposed here

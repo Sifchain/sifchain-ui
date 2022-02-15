@@ -164,11 +164,12 @@ export function calculateSwapResult(x: IAmount, X: IAmount, Y: IAmount) {
     return Amount("0");
   }
   const xPlusX = x.add(X);
-  return x.multiply(X).multiply(Y).divide(xPlusX.power(2));
+  return x.multiply(X).multiply(Y).divide(xPlusX.multiply(xPlusX));
 }
 
 /**
  * Calculate Swap Result based on formula ( x * X * Y ) / ( x + X ) ^ (c/w)
+ * Calculate Swap Result based on formula Y * (1 - (X / (x + X)) ^ (c/w)) * (1 - (x / (x + X))
  * @param X  External Balance
  * @param x Swap Amount
  * @param Y Native Balance
@@ -184,11 +185,12 @@ export function calculateSwapResult_ptmp(
   if (x.equalTo("0") || X.equalTo("0") || Y.equalTo("0")) {
     return Amount("0");
   }
-  const xPlusX = x.add(X);
-  return x
-    .multiply(X)
-    .multiply(Y)
-    .divide(xPlusX.power(wx / wy));
+  // Y * (1 - (X / (x + X)) ^ (c/w)) * (1 - (x / (x + X))
+  return Y.multiply(
+    Amount("1")
+      .subtract(X.divide(x.add(X)).power(wx / wy))
+      .multiply(Amount("1").subtract(x.divide(x.add(X)))),
+  );
 }
 
 export function calculateExternalExternalSwapResult(
