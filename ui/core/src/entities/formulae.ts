@@ -172,9 +172,11 @@ export function calculateSwapResult(x: IAmount, X: IAmount, Y: IAmount) {
  * @param X  External Balance
  * @param x Swap Amount
  * @param Y Native Balance
+ * @param wx
+ * @param wy
  * @returns swapAmount
  */
-export function calculateSwapResult_ptmp(
+export function calculateSwapResult_pmtp(
   x: IAmount,
   X: IAmount,
   Y: IAmount,
@@ -184,11 +186,15 @@ export function calculateSwapResult_ptmp(
   if (x.equalTo("0") || X.equalTo("0") || Y.equalTo("0")) {
     return Amount("0");
   }
-  const xPlusX = x.add(X);
-  return x
-    .multiply(X)
-    .multiply(Y)
-    .divide(xPlusX.power(wx / wy));
+  // S = x / (x + X)
+  // Y * (1 - (X / (x + X)) ^ (wx / wy)) * S
+  const swapFee = x.divide(x.add(X));
+  const one = Amount("1");
+  const pmtp = wx / wy;
+
+  return Y.multiply(one.subtract(X.divide(x.add(X))))
+    .power(pmtp)
+    .multiply(one.subtract(swapFee));
 }
 
 export function calculateExternalExternalSwapResult(
