@@ -115,9 +115,9 @@ export function Amount(
     power(exponent) {
       const dec = new Decimal(fraction.toFixed(24)).pow(new Decimal(exponent));
       const coeff = new Decimal(10).pow(24).toNumber();
-      return toAmount(
-        new Fraction(dec.mul(coeff).toInteger().toString(), coeff.toString()),
-      );
+      const numerator = dec.mul(coeff).toInteger().toString();
+      const denominator = coeff.toString();
+      return toAmount(new Fraction(numerator, denominator));
     },
 
     // Internal methods need to be exposed here
