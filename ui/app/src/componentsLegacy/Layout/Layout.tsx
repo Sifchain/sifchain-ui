@@ -24,13 +24,14 @@ export default defineComponent({
         >
           {context.slots.default?.()}
           <div id="modal-target"></div>
-          <BetaWarningBanner />
+
           {!!bannerMessageRef.value && (
             <div class="flex absolute top-0 left-0 right-0 items-center justify-center bg-info-base text-white p-[12px] px-[100px] pr-[200px] overflow-visible">
               <p>{bannerMessageRef.value}</p>
             </div>
           )}
         </div>
+        <BetaWarningBanner />
         <LayoutBackground />
       </>
     );

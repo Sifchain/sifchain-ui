@@ -1,3 +1,4 @@
+import { flagsStore } from "@/store/modules/flags";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -40,8 +41,10 @@ export default defineComponent({
       {
         name: "Rewards Calculator",
         href: "#/calculator",
+        hidden: !flagsStore.state.rewardsCalculator,
       },
-    ];
+    ].filter((x) => !x.hidden);
+
     return () => (
       <div onClick={() => props.onAction?.()}>
         {items.map((item) => (

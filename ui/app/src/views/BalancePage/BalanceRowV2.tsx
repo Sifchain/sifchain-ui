@@ -1,4 +1,4 @@
-import { defineComponent, PropType, computed } from "vue";
+import { defineComponent, PropType, computed, ref } from "vue";
 import cx from "clsx";
 import { RouterLink } from "vue-router";
 import { TokenListItem } from "@/hooks/useToken";
@@ -15,10 +15,6 @@ import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
-export const SYMBOL_COLUMN_WIDTH = 130;
-
-export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
-
 export default defineComponent({
   name: "BalanceRow",
   props: {
@@ -26,25 +22,23 @@ export default defineComponent({
       type: Object as PropType<TokenListItem>,
       required: true,
     },
-    expandedSymbol: {
-      type: String,
+    isExpanded: {
+      type: Boolean,
     },
-    onSetExpandedSymbol: {
+    isMasked: {
+      type: Boolean,
+    },
+    onExpand: {
       type: Function as PropType<(symbol: string) => void>,
       required: true,
     },
   },
   setup(props) {
-    const expandedRef = computed(
-      () => props.expandedSymbol === props.tokenItem.asset.symbol,
+    const hasNoBalance = props.tokenItem.amount.amount.toString(false) === "0";
+
+    const { chainConfig, displayName } = useChains().get(
+      props.tokenItem.asset.network,
     );
-    const showMaskRef = computed(
-      () => props.expandedSymbol && !expandedRef.value,
-    );
-    const isNoBalanceRef = computed(
-      () => props.tokenItem.amount.amount.toString(false) === "0",
-    );
-    const assetRef = computed(() => props.tokenItem.asset);
 
     // Always render all buttons, expandedRef.value or not, they will just be hidden.
     const buttonsRef = computed(() => [
@@ -53,17 +47,13 @@ export default defineComponent({
         icon: "interactive/arrow-down",
         name: "Import",
         visible: true,
-        help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
-          .underMaintenance
-          ? `${
-              useChains().get(props.tokenItem.asset.homeNetwork).displayName
-            } Connection Under Maintenance`
+        help: chainConfig.underMaintenance
+          ? `${displayName} Connection Under Maintenance`
           : null,
         props: {
           disabled:
             props.tokenItem.asset.decommissioned ||
-            useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
-              .underMaintenance,
+            chainConfig.underMaintenance,
           replace: false,
           to: getImportLocation("select", {
             symbol: props.tokenItem.asset.symbol,
@@ -74,7 +64,7 @@ export default defineComponent({
           }),
         },
       },
-      isNoBalanceRef.value
+      hasNoBalance
         ? {
             tag: "button",
             icon: "interactive/arrow-up",
@@ -87,11 +77,8 @@ export default defineComponent({
             icon: "interactive/arrow-up",
             name: "Export",
             visible: true,
-            help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
-              .underMaintenance
-              ? `${
-                  useChains().get(props.tokenItem.asset.homeNetwork).displayName
-                } Connection Under Maintenance`
+            help: chainConfig.underMaintenance
+              ? `${displayName} Connection Under Maintenance`
               : null,
             props: {
               disabled: useChains().get(props.tokenItem.asset.homeNetwork)
@@ -110,7 +97,7 @@ export default defineComponent({
         icon: "navigation/pool",
         name: "Pool",
         id: "pool",
-        visible: expandedRef.value,
+        visible: props.isExpanded,
         tag: RouterLink,
         props: {
           disabled: props.tokenItem.asset.decommissioned,
@@ -130,7 +117,7 @@ export default defineComponent({
         name: "Swap",
         id: "swap",
         tag: RouterLink,
-        visible: expandedRef.value,
+        visible: props.isExpanded,
         props: {
           disabled: props.tokenItem.asset.decommissioned,
           to: {
@@ -143,24 +130,23 @@ export default defineComponent({
 
     return () => (
       <div
-        onClick={(e) => {
-          if (showMaskRef.value) {
-            props.onSetExpandedSymbol("");
+        onClick={() => {
+          if (props.isMasked) {
+            props.onExpand("");
           }
         }}
         class={cx(
           "list-complete-item flex items-center align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 ",
           "last:border-transparent hover:opacity-80 relative overflow-hidden group",
           {
-            "opacity-40": showMaskRef.value,
+            "opacity-40": props.isMasked,
           },
         )}
       >
         {/* token info */}
         <div class="text-left align-middle group-hover:opacity-80">
           <div class="flex items-center">
-            <TokenNetworkIcon asset={assetRef} />
-            {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
+            <TokenNetworkIcon asset={ref(props.tokenItem.asset)} />
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>
@@ -176,7 +162,7 @@ export default defineComponent({
         <div class="text-right align-middle flex-1">
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80 group-hover:delay-75">
-              {isNoBalanceRef.value
+              {hasNoBalance
                 ? props.tokenItem.pendingImports.length ||
                   props.tokenItem.pendingExports.length
                   ? "..."
@@ -333,19 +319,19 @@ export default defineComponent({
                 );
               })}
             <button
-              key={"expanded-" + expandedRef.value}
+              key={"expanded-" + props.isExpanded}
               class={cx(
                 "order-last w-5 h-5 items-center justify-center cursor-pointer rounded-full transition-all",
-                !expandedRef.value && "bg-transparent",
-                expandedRef.value && "bg-gray-base",
+                !props.isExpanded && "bg-transparent",
+                props.isExpanded && "bg-gray-base",
               )}
               onClick={() => {
-                props.onSetExpandedSymbol(
-                  expandedRef.value ? "" : props.tokenItem.asset.symbol,
+                props.onExpand(
+                  props.isExpanded ? "" : props.tokenItem.asset.symbol,
                 );
               }}
             >
-              {expandedRef.value ? (
+              {props.isExpanded ? (
                 <div style={{ transform: "rotate(-90deg)" }}>
                   <AssetIcon
                     active

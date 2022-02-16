@@ -54,6 +54,10 @@ export default defineComponent({
       type: Number,
       default: 2,
     },
+    offsetTop: {
+      type: Number,
+      default: 0,
+    },
   },
   setup(props) {
     const startIndex = ref(0);
@@ -96,14 +100,12 @@ export default defineComponent({
     onMounted(() => {
       if (!visibleRows.value && !props.visibleRows) {
         // dynamically set visibleRows based on the screen height when a default value isn't present
-        visibleRows.value = Math.floor(
-          (document.body.clientHeight * 0.8) / props.rowHeight,
-        );
+
+        const maxHeight = document.body.clientHeight * 0.8 - props.offsetTop;
+        visibleRows.value = Math.floor(maxHeight / props.rowHeight);
 
         window.addEventListener("resize", () => {
-          visibleRows.value = Math.floor(
-            (document.body.clientHeight * 0.8) / props.rowHeight,
-          );
+          visibleRows.value = Math.floor(maxHeight / props.rowHeight);
         });
       }
     });
@@ -113,11 +115,7 @@ export default defineComponent({
     const Container = createElementVNode(props.as ?? "div");
 
     const spinner = (
-      <AssetIcon
-        icon="interactive/anim-racetrack-spinner"
-        class="ml-[4px] mt-[2px]"
-        size={32}
-      />
+      <AssetIcon icon="interactive/anim-racetrack-spinner" size={32} />
     );
 
     return () => (
