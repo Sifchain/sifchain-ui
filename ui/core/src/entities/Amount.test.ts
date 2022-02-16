@@ -170,7 +170,7 @@ describe("Amount", () => {
   });
 
   test("#power", () => {
-    expect(Amount("4").power(0.5).equalTo(Amount("2"))).toBe(true);
+    expect(Amount("4").power(0.5).toString()).toEqual(Amount("2").toString());
   });
 
   test("#power", () => {

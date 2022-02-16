@@ -116,10 +116,10 @@ export function Amount(
       // Apply 24 decimals for extra precision and apply the exponentiation
       const dec = new Decimal(fraction.toFixed(24)).pow(new Decimal(exponent));
       // Use a 24 decimal denominator as a buffer for rounding errors
-      const coeff = new Decimal(10).mul(new Decimal(10)).pow(24).toNumber();
+      const coeff = new Decimal(10).mul(new Decimal(10)).pow(24);
       // multiply by the coefficient to get the correct rounding.
-      const numerator = dec.mul(coeff).toInteger().toString();
-      const denominator = coeff.toString();
+      const numerator = dec.mul(coeff).toInteger().toFixed(0);
+      const denominator = coeff.toFixed(0);
       // if the decimal is 1.5 the fraction will be 15000000000000000000000000n / 10000000000000000000000000n
       return toAmount(new Fraction(numerator, denominator));
     },
