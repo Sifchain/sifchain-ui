@@ -1,8 +1,8 @@
-import { calculateSwapResult_pmtp } from "./formulae";
 import { Amount } from "./Amount";
+import { calculateSwapResult_pmtp } from "./formulae";
 import tests from "../../../../test/test-tables/singleswap_result.json";
 
-import { sanitizeNumericString } from "test/utils/sanitizeNumericString";
+import { sanitizeNumericString } from "../test/utils/sanitizeNumericString";
 
 const toAmount = (s: string) => Amount(sanitizeNumericString(s));
 
