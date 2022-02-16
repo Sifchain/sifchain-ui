@@ -125,7 +125,12 @@ export const SearchBox = defineComponent({
             {[`${isMacOs.value ? "Cmd" : "Ctrl"} F`, "/"].map((key) => (
               <div
                 key={key}
-                class="rounded px-2 py-[6px] text-sm font-mono bg-gray-base opacity-60 hover:opacity-80"
+                class={clsx(
+                  "rounded px-2 py-[6px] text-sm font-mono bg-gray-base opacity-60 hover:opacity-80 transition-transform",
+                  {
+                    "translate-x-[-34px]": props.value?.length,
+                  },
+                )}
               >
                 {key}
               </div>
