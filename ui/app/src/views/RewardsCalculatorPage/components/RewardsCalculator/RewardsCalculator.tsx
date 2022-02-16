@@ -36,10 +36,20 @@ type Props = {
   onResetTokenOutFuturePrice?: () => void;
 };
 
+function isValidNumericString(
+  numericString: string,
+  max = Number.MAX_SAFE_INTEGER,
+  min = 0,
+) {
+  const asFloat = parseFloat(numericString);
+
+  return !isNaN(asFloat) && asFloat <= max && asFloat >= min;
+}
+
 export const RewardsCalculator = (props: Props) => {
   return (
     <PageCard heading="Calculator">
-      <section class="grid w-full gap-4 p-2 pb-4">
+      <section class="grid w-full gap-4 p-2 pb-4 overflow-x-clip">
         <header class="grid gap-1">
           <span class="text-md">Estimate your returns</span>
           <div class="grid grid-cols-3 gap-2 p-4 bg-gray-input rounded-lg">
@@ -66,7 +76,7 @@ export const RewardsCalculator = (props: Props) => {
             <InputLabel label={`${props.tokenInSymbol} Amount`}>
               <Input.Base
                 placeholder={"0"}
-                class="text-right"
+                class="text-right overflow-hidden"
                 type="number"
                 min="0"
                 value={props.tokenInAmount}
@@ -78,12 +88,16 @@ export const RewardsCalculator = (props: Props) => {
                   )
                 }
                 onInput={(e) => {
-                  let v = (e.target as HTMLInputElement).value;
-                  if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
-                    v = "0";
+                  if (!props.onTokenInAmountChange) {
+                    return;
                   }
-                  if (props.onTokenInAmountChange) {
-                    props.onTokenInAmountChange(v);
+
+                  const { value } = e.target as HTMLInputElement;
+
+                  if (isValidNumericString(value)) {
+                    props.onTokenInAmountChange(value);
+                  } else {
+                    props.onTokenInAmountChange("0");
                   }
                 }}
               />
@@ -95,6 +109,7 @@ export const RewardsCalculator = (props: Props) => {
                 type="number"
                 name="apr"
                 min="0"
+                max="3000000"
                 value={props.apr}
                 startContent={
                   props.onResetAPR && (
@@ -102,8 +117,18 @@ export const RewardsCalculator = (props: Props) => {
                   )
                 }
                 onInput={(e) => {
-                  if (props.onAPRChange) {
-                    props.onAPRChange((e.target as HTMLInputElement).value);
+                  if (!props.onAPRChange) {
+                    return;
+                  }
+
+                  const { value } = e.target as HTMLInputElement;
+
+                  if (isValidNumericString(value, 999999999)) {
+                    props.onAPRChange(value);
+                  } else if (props.onResetAPR) {
+                    props.onResetAPR();
+                  } else {
+                    props.onAPRChange("0");
                   }
                 }}
               />
@@ -124,10 +149,18 @@ export const RewardsCalculator = (props: Props) => {
                   )
                 }
                 onInput={(e) => {
-                  if (props.onTokenOutPriceAtPurchaseChange) {
-                    props.onTokenOutPriceAtPurchaseChange(
-                      (e.target as HTMLInputElement).value,
-                    );
+                  if (!props.onTokenOutPriceAtPurchaseChange) {
+                    return;
+                  }
+
+                  const { value } = e.target as HTMLInputElement;
+
+                  if (isValidNumericString(value)) {
+                    props.onTokenOutPriceAtPurchaseChange(value);
+                  } else if (props.onResetTokenOutPriceAtPurchase) {
+                    props.onResetTokenOutPriceAtPurchase();
+                  } else {
+                    props.onTokenOutPriceAtPurchaseChange("0");
                   }
                 }}
               />
@@ -150,10 +183,17 @@ export const RewardsCalculator = (props: Props) => {
                   )
                 }
                 onInput={(e) => {
-                  if (props.onTokenOutFuturePriceChange) {
-                    props.onTokenOutFuturePriceChange(
-                      (e.target as HTMLInputElement).value,
-                    );
+                  if (!props.onTokenOutFuturePriceChange) {
+                    return;
+                  }
+
+                  const { value } = e.target as HTMLInputElement;
+                  if (isValidNumericString(value)) {
+                    props.onTokenOutFuturePriceChange(value);
+                  } else if (props.onResetTokenOutFuturePrice) {
+                    props.onResetTokenOutFuturePrice();
+                  } else {
+                    props.onTokenOutFuturePriceChange("0");
                   }
                 }}
               />
@@ -170,9 +210,18 @@ export const RewardsCalculator = (props: Props) => {
               max="100"
               value={props.timeInWeeks}
               onInput={(e) => {
-                if (props.onTimeInWeeksChage) {
-                  const value = Number((e.target as HTMLInputElement).value);
-                  props.onTimeInWeeksChage(value);
+                if (!props.onTimeInWeeksChage) {
+                  return;
+                }
+
+                const { value } = e.target as HTMLInputElement;
+
+                const asFloat = parseFloat(value);
+
+                if (isValidNumericString(value, 100)) {
+                  props.onTimeInWeeksChage(asFloat);
+                } else {
+                  props.onTimeInWeeksChage(12);
                 }
               }}
             />
