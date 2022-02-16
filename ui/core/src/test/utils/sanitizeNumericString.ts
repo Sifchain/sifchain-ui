@@ -3,4 +3,4 @@
  * @param x number string
  * @returns string
  */
-export const sanitizeNumberString = (x: string) => x.replace(/\_/g, "");
+export const sanitizeNumericString = (x: string) => x.replace(/\_/g, "");

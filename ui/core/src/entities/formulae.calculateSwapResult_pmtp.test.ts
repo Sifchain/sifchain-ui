@@ -1,9 +1,10 @@
 import { calculateSwapResult_pmtp } from "./formulae";
 import { Amount } from "./Amount";
 import tests from "../../../../test/test-tables/singleswap_result.json";
-import { sanitizeNumberString } from "test/utils/sanitizeNumberString";
 
-const toAmount = (s: string) => Amount(sanitizeNumberString(s));
+import { sanitizeNumericString } from "test/utils/sanitizeNumericString";
+
+const toAmount = (s: string) => Amount(sanitizeNumericString(s));
 
 describe("calculateSwapResult_pmtp", () => {
   tests.SingleSwapResult_pmtp.forEach(({ x, X, Y, wx, wy, expected }) => {
