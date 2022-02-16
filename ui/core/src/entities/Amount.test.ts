@@ -169,12 +169,30 @@ describe("Amount", () => {
     ).toBe(true);
   });
 
-  test("#power", () => {
+  test("#power - Fractional Square Root", () => {
     expect(Amount("4").power(0.5).toString()).toEqual(Amount("2").toString());
   });
 
-  test("#power", () => {
+  test("#power - High Precision nth Root", () => {
+    expect(
+      Amount("282309")
+        .power(9230 / 90329023901)
+        .toString(),
+    ).toEqual("1.000001282462280181");
+  });
+
+  test("#power - Square power", () => {
     expect(Amount("4").power(2).equalTo(Amount("16"))).toBe(true);
+  });
+
+  test("#power - Negative Square", () => {
+    expect(+Amount("4").power(-2).toString()).toEqual(0.0625);
+  });
+
+  test("#power - Infinitesimal (>24 decimals) defaults to x ^ 0", () => {
+    expect(
+      +Amount("4").power(0.0000000000000000000000000001).toString(),
+    ).toEqual(1);
   });
 
   test("isAmount", () => {
