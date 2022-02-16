@@ -10,6 +10,7 @@ import {
   Ref,
   watch,
 } from "vue";
+import AssetIcon from "../AssetIcon";
 import { TokenIcon } from "../TokenIcon";
 import { Tooltip } from "../Tooltip";
 
@@ -40,6 +41,25 @@ export const TokenNetworkIcon = defineComponent({
         : useChains().get(asset.homeNetwork).nativeAsset;
     });
 
+    let isLoadingRef = ref(true);
+    let loadingCounterIdRef = ref(0);
+
+    watch(
+      [assetRef],
+      () => {
+        let nextCounter = loadingCounterIdRef.value + 1;
+        loadingCounterIdRef.value = nextCounter;
+        isLoadingRef.value = true;
+        setTimeout(() => {
+          if (loadingCounterIdRef.value === nextCounter) {
+            isLoadingRef.value = false;
+          }
+        }, 1000);
+      },
+      {
+        immediate: true,
+      },
+    );
     const homeIconSize = computed(() => Math.max(props.size / 2, 12));
 
     return () => {
@@ -67,7 +87,15 @@ export const TokenNetworkIcon = defineComponent({
               height: props.size,
             }}
           >
-            <TokenIcon asset={assetRef} size={props.size} />
+            {isLoadingRef.value ? (
+              <AssetIcon
+                size={props.size}
+                icon="interactive/anim-racetrack-spinner"
+              ></AssetIcon>
+            ) : (
+              <TokenIcon asset={assetRef} size={props.size} />
+            )}
+
             {!!homeAssetRef.value && (
               <div
                 class="flex items-center justify-center rounded-full bg-gray-100"
@@ -79,10 +107,17 @@ export const TokenNetworkIcon = defineComponent({
                   right: "-4px",
                 }}
               >
-                <TokenIcon
-                  assetValue={homeAssetRef.value}
-                  size={homeIconSize.value}
-                />
+                {isLoadingRef.value ? (
+                  <AssetIcon
+                    size={homeIconSize.value}
+                    icon="interactive/anim-racetrack-spinner"
+                  ></AssetIcon>
+                ) : (
+                  <TokenIcon
+                    assetValue={homeAssetRef.value}
+                    size={homeIconSize.value}
+                  />
+                )}
               </div>
             )}
           </div>

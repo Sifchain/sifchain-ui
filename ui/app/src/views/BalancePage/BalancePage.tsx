@@ -122,7 +122,7 @@ export default defineComponent({
         scrollProgress.value,
         -container.getBoundingClientRect().top,
       );
-    }, 200);
+    }, 0);
     return () => (
       <Layout onScroll={scrollHandler}>
         <PageCard
