@@ -37,7 +37,7 @@ export const flagsStore = Vuextra.createStore({
       likecoin: false,
     },
     balancePageV2: true,
-    rewardsCalculator: false,
+    rewardsCalculator: true,
   },
   getters: (state) => ({}),
   mutations: (state) => ({
