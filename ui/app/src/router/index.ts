@@ -6,7 +6,7 @@ import {
 } from "vue-router";
 
 import Swap from "@/views/SwapPage/SwapPage";
-import Balance from "@/views/BalancePage/BalancePage";
+import Balance from "@/views/BalancePage";
 // import BalanceImport from "@/views/BalancePage/Import";
 // import BalanceExport from "@/views/BalancePage/Export";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
