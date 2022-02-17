@@ -2,7 +2,6 @@ import { RouteLocationRaw, useRouter } from "vue-router";
 import { computed, ref, Ref, watch } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
 import {
-  TokenListItem,
   useAndPollNetworkBalances,
   useToken,
   useTokenList,
@@ -15,14 +14,12 @@ import {
   IAssetAmount,
   Asset,
 } from "@sifchain/sdk";
+import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
 import { ImportDraft } from "@/store/modules/import";
-import { PegEvent } from "../../../../../core/src/usecases/peg/peg";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { accountStore } from "@/store/modules/accounts";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
@@ -123,7 +120,7 @@ export const useImportData = () => {
   const pegEventRef = importStore.refs.draft.pegEvent.computed();
 
   const pegEventDetails = useBridgeEventDetails({
-    bridgeEvent: pegEventRef as Ref<PegEvent>,
+    bridgeEvent: pegEventRef as Ref<BridgeEvent>,
   });
 
   const sifchainBalance = computed(() => nativeToken.value?.amount);
