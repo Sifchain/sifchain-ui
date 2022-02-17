@@ -87,7 +87,7 @@ export default defineComponent({
 
     const isScrolling = ref(false);
 
-    const handleScrollInner = debounce((e: UIEvent) => {
+    const handleScrollInner = (e: UIEvent) => {
       const index = Math.floor(
         ((e.target as HTMLDivElement)?.scrollTop ?? 0) / props.rowHeight,
       );
@@ -102,7 +102,7 @@ export default defineComponent({
       }
 
       isScrolling.value = false;
-    });
+    };
 
     const handleScroll = (e: UIEvent) => {
       isScrolling.value = true;
