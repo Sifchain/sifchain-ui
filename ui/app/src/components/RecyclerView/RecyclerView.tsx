@@ -1,6 +1,7 @@
 import debounce from "@/utils/debounce-raf";
 import {
   computed,
+  ComputedRef,
   createElementVNode,
   defineComponent,
   HTMLAttributes,
@@ -8,13 +9,14 @@ import {
   PropType,
   ref,
   VNodeTypes,
+  watch,
 } from "vue";
 import AssetIcon from "../AssetIcon";
 
 export default defineComponent({
   props: {
     data: {
-      type: Array as PropType<any[]>,
+      type: Object as PropType<ComputedRef<any[]>>,
       default: [],
     },
     rowHeight: {
@@ -59,7 +61,7 @@ export default defineComponent({
   },
   setup(props) {
     const startIndex = ref(0);
-    const lastIndex = computed(() => props.data.length - 1);
+    const lastIndex = computed(() => props.data.value.length - 1);
     const visibleRows = ref(props.visibleRows);
 
     const endIndex = computed(() => {
@@ -67,8 +69,16 @@ export default defineComponent({
       return targetIndex >= lastIndex.value ? lastIndex.value : targetIndex;
     });
 
+    watch(ref(props.data), () => {
+      // reset start index on props.data change
+      startIndex.value = 0;
+    });
+
     const visible = computed(() =>
-      props.data.slice(startIndex.value, endIndex.value + props.paddingEnd),
+      props.data.value.slice(
+        startIndex.value,
+        endIndex.value + props.paddingEnd,
+      ),
     );
 
     const isScrolling = ref(false);

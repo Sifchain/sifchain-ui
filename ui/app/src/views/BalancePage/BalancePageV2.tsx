@@ -152,7 +152,7 @@ export default defineComponent({
           }
         >
           <RecyclerView
-            data={allBalances.value}
+            data={allBalances}
             rowHeight={ROW_HEIGHT}
             offsetTop={130}
             class="w-full flex flex-col py-2 min-h-[calc(80vh-130px)]"
