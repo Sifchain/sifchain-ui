@@ -114,7 +114,9 @@ export default defineComponent({
                 active={showAllBalances.value}
                 onChange={(active) => {
                   showAllBalances.value = active;
-                  state.expandedSymbol = "";
+                  if (state.expandedSymbol) {
+                    state.expandedSymbol = "";
+                  }
                 }}
               />
               <Button.Inline
@@ -143,6 +145,9 @@ export default defineComponent({
                 placeholder="Search Token..."
                 onInput={(e: Event) => {
                   state.searchQuery = (e.target as HTMLInputElement).value;
+                  if (state.expandedSymbol) {
+                    state.expandedSymbol = "";
+                  }
                 }}
               />
             </div>
