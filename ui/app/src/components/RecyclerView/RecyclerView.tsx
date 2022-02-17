@@ -1,4 +1,4 @@
-import { debounce } from "@/views/utils/debounce";
+import debounce from "@/utils/debounce-raf";
 import {
   computed,
   createElementVNode,
@@ -10,8 +10,6 @@ import {
   VNodeTypes,
 } from "vue";
 import AssetIcon from "../AssetIcon";
-
-const DEBOUNCE_DELAY = 150; // 0.15s
 
 export default defineComponent({
   props: {
@@ -90,7 +88,7 @@ export default defineComponent({
       }
 
       isScrolling.value = false;
-    }, DEBOUNCE_DELAY);
+    });
 
     const handleScroll = (e: UIEvent) => {
       isScrolling.value = true;
