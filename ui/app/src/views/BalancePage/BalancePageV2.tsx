@@ -23,7 +23,6 @@ const ROW_HEIGHT = 50;
 export default defineComponent({
   name: "BalancePage",
   props: {},
-
   setup() {
     const { state, displayedTokenList, isLoadingBalances } = useBalancePageData(
       {

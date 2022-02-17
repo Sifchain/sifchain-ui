@@ -7,6 +7,7 @@ import {
   HTMLAttributes,
   onMounted,
   PropType,
+  Ref,
   ref,
   VNodeTypes,
   watch,
@@ -69,13 +70,10 @@ export default defineComponent({
       return targetIndex >= lastIndex.value ? lastIndex.value : targetIndex;
     });
 
-    const previousDataLength = ref(props.data.value.length);
-
     watch(props.data, () => {
-      // reset start index on props.data change
-      if (props.data.value.length !== previousDataLength.value) {
+      setTimeout(() => {
         startIndex.value = 0;
-      }
+      }, 10);
     });
 
     const visible = computed(() =>
@@ -130,48 +128,64 @@ export default defineComponent({
       <AssetIcon icon="interactive/anim-racetrack-spinner" size={32} />
     );
 
+    const padStart = computed(() => {
+      if (!startIndex) {
+        return null;
+      }
+      return (
+        <div
+          class="grid items-end"
+          style={{
+            height: `${props.rowHeight * startIndex.value}px`,
+          }}
+        >
+          {isScrolling.value && (
+            <div class="p-4 grid place-items-center">{spinner}</div>
+          )}
+        </div>
+      );
+    });
+
+    const padEnd = computed(() => {
+      if (endIndex.value > lastIndex.value) {
+        return null;
+      }
+      return (
+        <div
+          class="grid items-start"
+          style={{
+            height: `${props.rowHeight * (lastIndex.value - endIndex.value)}px`,
+          }}
+        >
+          {isScrolling.value && (
+            <div class="p-4 grid place-items-center">{spinner}</div>
+          )}
+        </div>
+      );
+    });
+
+    const content = computed(() =>
+      !visible.value.length ? (
+        props.emptyState
+      ) : (
+        <>
+          {props.header && props.header}
+          <div
+            class={["block overflow-y-scroll", props.scrollContainerClass]}
+            style={{ maxHeight: `${maxHeight.value}px` }}
+            onScroll={handleScroll}
+          >
+            {padStart.value}
+            {visible.value.map(props.renderItem)}
+            {padEnd.value}
+          </div>
+        </>
+      ),
+    );
+
     return () => (
       // @ts-ignore
-      <Container class={[props.class]}>
-        {!visible.value.length ? (
-          props.emptyState
-        ) : (
-          <>
-            {props.header && props.header}
-            <div
-              class={["block overflow-y-scroll", props.scrollContainerClass]}
-              style={{ maxHeight: `${maxHeight.value}px` }}
-              onScroll={handleScroll}
-            >
-              {Boolean(startIndex.value) && (
-                <div
-                  class="grid items-end"
-                  style={{ height: `${props.rowHeight * startIndex.value}px` }}
-                >
-                  {isScrolling.value && (
-                    <div class="p-4 grid place-items-center">{spinner}</div>
-                  )}
-                </div>
-              )}
-              {visible.value.map(props.renderItem)}
-              {endIndex.value < lastIndex.value && (
-                <div
-                  class="grid items-start"
-                  style={{
-                    height: `${
-                      props.rowHeight * (lastIndex.value - endIndex.value)
-                    }px`,
-                  }}
-                >
-                  {isScrolling.value && (
-                    <div class="p-4 grid place-items-center">{spinner}</div>
-                  )}
-                </div>
-              )}
-            </div>
-          </>
-        )}
-      </Container>
+      <Container class={[props.class]}>{content.value}</Container>
     );
   },
 });
