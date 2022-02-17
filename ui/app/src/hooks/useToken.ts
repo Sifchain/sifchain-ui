@@ -132,11 +132,17 @@ export const useToken = (params: {
 
 export const useAndPollNetworkBalances = (params: {
   network: Ref<Network>;
+  priority?: Ref<IAsset | undefined>;
 }) => {
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
+    if (params.priority?.value)
+      await accountStore.updateBalance({
+        network: params.network.value,
+        asset: params.priority.value,
+      });
     await accountStore.updateBalances(params.network.value);
-  }, [params.network]);
+  }, [params.network, params.priority]);
 
   let stopPollingRef = ref<Promise<() => void> | undefined>();
   watch(

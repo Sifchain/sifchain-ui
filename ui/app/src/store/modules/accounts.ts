@@ -1,4 +1,4 @@
-import { IAssetAmount, Network } from "@sifchain/sdk";
+import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
 import { useCore } from "../../hooks/useCore";
 import { Vuextra } from "../Vuextra";
 import { useChains } from "@/hooks/useChains";
@@ -146,6 +146,27 @@ export const accountStore = Vuextra.createStore({
         self.state[chain.network].address,
       );
       self.setBalances({ network, balances });
+    },
+
+    async updateBalance(params: { network: Network; asset: IAsset }) {
+      const { network, asset } = params;
+      if (!self.state[network].connected) return;
+
+      const chain = useChains().get(network);
+      const provider = useCore().services.wallet.getPreferredProvider(chain);
+
+      const balance = await provider.fetchBalance(
+        chain,
+        self.state[chain.network].address,
+        asset.symbol,
+      );
+      const replacedBalances = self.state[network].balances.map((b) =>
+        b.symbol === balance.symbol ? balance : b,
+      );
+      self.setBalances({
+        network,
+        balances: replacedBalances.length ? replacedBalances : [balance],
+      });
     },
 
     async disconnect(network: Network) {
