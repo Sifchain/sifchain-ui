@@ -17,7 +17,7 @@ export default defineComponent({
   props: {
     data: {
       type: Object as PropType<ComputedRef<any[]>>,
-      default: [],
+      required: true,
     },
     rowHeight: {
       type: Number,
@@ -69,9 +69,13 @@ export default defineComponent({
       return targetIndex >= lastIndex.value ? lastIndex.value : targetIndex;
     });
 
-    watch(ref(props.data), () => {
+    const previousDataLength = ref(props.data.value.length);
+
+    watch(props.data, () => {
       // reset start index on props.data change
-      startIndex.value = 0;
+      if (props.data.value.length !== previousDataLength.value) {
+        startIndex.value = 0;
+      }
     });
 
     const visible = computed(() =>

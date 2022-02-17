@@ -63,10 +63,6 @@ export default defineComponent({
         : displayedTokenList.value.filter((x) => x.amount.greaterThan("0"))
       ).map((rowItem) => ({
         ...rowItem,
-        isExpanded: rowItem.asset.symbol === state.expandedSymbol,
-        isMasked: Boolean(
-          state.expandedSymbol && rowItem.asset.symbol !== state.expandedSymbol,
-        ),
         onExpand: handleExpandSymbol,
       })),
     );
@@ -118,6 +114,7 @@ export default defineComponent({
                 active={showAllBalances.value}
                 onChange={(active) => {
                   showAllBalances.value = active;
+                  state.expandedSymbol = "";
                 }}
               />
               <Button.Inline
@@ -200,7 +197,18 @@ export default defineComponent({
                 </div>
               </div>
             }
-            renderItem={RenderItem}
+            renderItem={(item: EnhancedTokenListItem) => (
+              <BalanceRow
+                key={item.asset.symbol + item.asset.network}
+                tokenItem={item}
+                isExpanded={item.asset.symbol === state.expandedSymbol}
+                onExpand={item.onExpand}
+                isMasked={Boolean(
+                  state.expandedSymbol &&
+                    item.asset.symbol !== state.expandedSymbol,
+                )}
+              />
+            )}
             emptyState={
               <div class="flex-1 p-4 grid place-items-center bg-gray-200 rounded-md text-center mb-1">
                 {isLoadingBalances.value ? (
@@ -231,17 +239,5 @@ export default defineComponent({
 });
 
 type EnhancedTokenListItem = TokenListItem & {
-  isExpanded: boolean;
-  isMasked: boolean;
   onExpand(sumbol: string): void;
 };
-
-const RenderItem = (item: EnhancedTokenListItem) => (
-  <BalanceRow
-    key={item.asset.symbol + item.asset.network}
-    tokenItem={item}
-    isExpanded={item.isExpanded}
-    isMasked={item.isMasked}
-    onExpand={item.onExpand}
-  />
-);
