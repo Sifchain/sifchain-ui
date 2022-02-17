@@ -16,7 +16,7 @@
 ### 📖 [Documentation](https://github.com/Sifchain/sifchain-ui/tree/develop/ui/core#getting-started)
 _Learn how to use Sifchain.js._
 
-### 🖼 [Frontend](https://github.com/Sifchain/sifchain-ui) 
+### 🖼 [Frontend](https://github.com/Sifchain/sifchain-ui/tree/develop/ui/app) 
 _Sifchain's User Interface_
 
 &nbsp;
