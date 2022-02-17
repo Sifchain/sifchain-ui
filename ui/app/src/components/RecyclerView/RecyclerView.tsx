@@ -1,6 +1,7 @@
-import { debounce } from "@/views/utils/debounce";
+import debounce from "@/utils/debounce-raf";
 import {
   computed,
+  ComputedRef,
   createElementVNode,
   defineComponent,
   HTMLAttributes,
@@ -8,16 +9,15 @@ import {
   PropType,
   ref,
   VNodeTypes,
+  watch,
 } from "vue";
 import AssetIcon from "../AssetIcon";
-
-const DEBOUNCE_DELAY = 150; // 0.15s
 
 export default defineComponent({
   props: {
     data: {
-      type: Array as PropType<any[]>,
-      default: [],
+      type: Object as PropType<ComputedRef<any[]>>,
+      required: true,
     },
     rowHeight: {
       type: Number,
@@ -61,7 +61,7 @@ export default defineComponent({
   },
   setup(props) {
     const startIndex = ref(0);
-    const lastIndex = computed(() => props.data.length - 1);
+    const lastIndex = computed(() => props.data.value.length - 1);
     const visibleRows = ref(props.visibleRows);
 
     const endIndex = computed(() => {
@@ -69,13 +69,25 @@ export default defineComponent({
       return targetIndex >= lastIndex.value ? lastIndex.value : targetIndex;
     });
 
+    const previousDataLength = ref(props.data.value.length);
+
+    watch(props.data, () => {
+      // reset start index on props.data change
+      if (props.data.value.length !== previousDataLength.value) {
+        startIndex.value = 0;
+      }
+    });
+
     const visible = computed(() =>
-      props.data.slice(startIndex.value, endIndex.value + props.paddingEnd),
+      props.data.value.slice(
+        startIndex.value,
+        endIndex.value + props.paddingEnd,
+      ),
     );
 
     const isScrolling = ref(false);
 
-    const handleScrollInner = debounce((e: UIEvent) => {
+    const handleScrollInner = (e: UIEvent) => {
       const index = Math.floor(
         ((e.target as HTMLDivElement)?.scrollTop ?? 0) / props.rowHeight,
       );
@@ -90,7 +102,7 @@ export default defineComponent({
       }
 
       isScrolling.value = false;
-    }, DEBOUNCE_DELAY);
+    };
 
     const handleScroll = (e: UIEvent) => {
       isScrolling.value = true;
