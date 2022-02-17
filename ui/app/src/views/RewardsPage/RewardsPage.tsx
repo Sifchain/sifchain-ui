@@ -112,7 +112,7 @@ export default defineComponent({
             iconName="navigation/rewards"
             headerAction={
               <div class="flex items-center">
-                <label class="flex items-center mr-[16px] opacity-80">
+                {/* <label class="flex items-center mr-[16px] opacity-80">
                   <input
                     type="checkbox"
                     class="mr-[4px]"
@@ -120,7 +120,7 @@ export default defineComponent({
                     onChange={(e) => (showAllRef.value = e.target.checked)}
                   />
                   Show Inactive
-                </label>
+                </label> */}
               </div>
             }
             headerContent={<>{""}</>}
