@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "2.2.105",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
     "bump": "bump patch --tag --commit 'testnet release '",
@@ -43,12 +43,12 @@
     "p-props": "^5.0.0",
     "process": "^0.11.10",
     "style-loader": "^3.0.0",
+    "tailwindcss": "^3.0.0",
     "tippy.js": "^6.3.1",
     "vue": "^3.2.20",
     "vue-router": "^4.0.12",
     "vue-tippy": "^6.0.0-alpha.30",
-    "vuex": "4.0.2",
-    "tailwindcss": "^3.0.0"
+    "vuex": "4.0.2"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^13.1.0",

@@ -13,7 +13,7 @@
     <Copy class="mb-8">
       Find out
       <a
-        href="https://docs.sifchain.finance/resources/rewards-programs"
+        href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
         target="_blank"
         >more information here</a
       >.

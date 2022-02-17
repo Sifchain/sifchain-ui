@@ -6,7 +6,7 @@ import {
 } from "vue-router";
 
 import Swap from "@/views/SwapPage/SwapPage";
-import Balance from "@/views/BalancePage/BalancePage";
+import Balance from "@/views/BalancePage";
 // import BalanceImport from "@/views/BalancePage/Import";
 // import BalanceExport from "@/views/BalancePage/Export";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
@@ -33,6 +33,7 @@ import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
+import { flagsStore } from "@/store/modules/flags";
 
 type SwapPageMeta = {
   title: string;
@@ -221,16 +222,22 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
   //     title: "Export Asset - Sifchain",
   //   },
   // },
-  {
-    name: "RewardsCalculator",
-    path: "/calculator",
-    component: RewardsCalculatorPage,
-  },
 ] as const;
+
+const finalRoutes = flagsStore.state.rewardsCalculator
+  ? [
+      ...routes,
+      {
+        name: "RewardsCalculator",
+        path: "/calculator",
+        component: RewardsCalculatorPage,
+      },
+    ]
+  : routes;
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
-  routes: [...routes] as Array<RouteRecordRaw>,
+  routes: [...finalRoutes] as Array<RouteRecordRaw>,
 });
 
 router.beforeEach((to, from, next) => {

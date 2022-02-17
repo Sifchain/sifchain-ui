@@ -31,11 +31,13 @@ export const flagsStore = Vuextra.createStore({
     devnetCryptoecon: false,
     tradingCompetitionsEnabled: false,
     allowEmptyLiquidityAdd: false,
-    voting: false,
+    voting: true,
     enableTestChains: {
       band: false,
       likecoin: false,
     },
+    balancePageV2: true,
+    rewardsCalculator: true,
   },
   getters: (state) => ({}),
   mutations: (state) => ({

@@ -155,7 +155,7 @@ export default defineComponent({
       <a
         target="_blank"
         class="underline"
-        href="https://docs.sifchain.finance/resources/rewards-programs"
+        href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
         >current rewards program</a
       >
       and how to become eligible.
@@ -209,7 +209,7 @@ export default defineComponent({
             <Copy class="mb-8">
               Find out
               <a
-                href="https://docs.sifchain.finance/resources/rewards-programs"
+                href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
                 target="_blank"
                 >additional information here</a
               >.

@@ -67,7 +67,7 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       }. Click to learn more.`;
     },
     link: (competition: Competition) =>
-      "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
+      "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs#sifs-fields-of-gold-trading-competition",
   },
   vol: {
     renderValue: (value: number) => `Volume $${prettyNumber(value, 0)}`,
@@ -81,7 +81,7 @@ export const COMPETITION_TYPE_DISPLAY_DATA = {
       } swap volume you have. Click to learn more.`;
     },
     link: (competition: Competition) =>
-      "https://docs.sifchain.finance/resources/rewards-programs#sifs-fields-of-gold-trading-competition",
+      "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs#sifs-fields-of-gold-trading-competition",
   },
 };
 
