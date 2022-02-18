@@ -67,26 +67,25 @@ export default defineComponent({
       })),
     );
 
-    const columns = [
+    const columns = computed(() => [
       {
         name: "Token",
         sortBy: "symbol" as BalancePageState["sortBy"],
-        class: "text-left w-[250px]",
+        class: "text-left w-[200px]",
         ref: ref<HTMLElement>(),
       },
       {
         name: "Sifchain Balance",
         sortBy: "balance" as BalancePageState["sortBy"],
-        class: "text-right whitespace-nowrap",
+        class: "text-right whitespace-nowrap flex-1 w-full",
         ref: ref<HTMLElement>(),
       },
-    ];
-
-    const colStyles = computed(() =>
-      columns.map((col) => ({
-        width: `${col.ref.value?.getBoundingClientRect().width}px`,
-      })),
-    );
+      {
+        name: "",
+        class: "flex-1 w-full min-w-[360px]",
+        ref: ref<HTMLElement>(),
+      },
+    ]);
 
     return () => (
       <Layout>
@@ -167,21 +166,22 @@ export default defineComponent({
             header={
               <div class="w-full flex justify-start bg-black py-1">
                 <div class="relative w-full flex justify-start font-medium text-sm align-text-bottom">
-                  {columns.map((column, index) => (
-                    <div
-                      style={colStyles.value[index]}
-                      class={[column.class]}
-                      key={column.name}
-                    >
+                  {columns.value.map((column) => (
+                    <div class={[column.class]} key={column.name}>
                       <div
-                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                        class={[
+                          "inline-flex items-center cursor-pointer opacity-50 hover:opacity-60",
+                          state.sortBy === column.sortBy ? "" : "pr-2",
+                        ]}
                         onClick={() => {
                           if (state.sortBy === column.sortBy) {
                             state.reverse = !state.reverse;
                           } else {
                             state.reverse = false;
                           }
-                          state.sortBy = column.sortBy;
+                          if (column.sortBy) {
+                            state.sortBy = column.sortBy;
+                          }
                         }}
                       >
                         {column.name}
