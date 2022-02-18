@@ -71,9 +71,11 @@ export default defineComponent({
 
     const previousDataLength = ref(props.data.value.length);
 
-    watch(props.data, () => {
+    watch([props.data], () => {
+      const prevLen = previousDataLength.value;
+      previousDataLength.value = props.data.value.length;
       // reset start index on props.data change
-      if (props.data.value.length !== previousDataLength.value) {
+      if (props.data.value.length !== prevLen) {
         startIndex.value = 0;
       }
     });
