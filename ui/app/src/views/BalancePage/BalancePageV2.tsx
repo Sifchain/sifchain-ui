@@ -63,34 +63,29 @@ export default defineComponent({
         : displayedTokenList.value.filter((x) => x.amount.greaterThan("0"))
       ).map((rowItem) => ({
         ...rowItem,
-        isExpanded: rowItem.asset.symbol === state.expandedSymbol,
-        isMasked: Boolean(
-          state.expandedSymbol && rowItem.asset.symbol !== state.expandedSymbol,
-        ),
         onExpand: handleExpandSymbol,
       })),
     );
 
-    const columns = [
+    const columns = computed(() => [
       {
         name: "Token",
         sortBy: "symbol" as BalancePageState["sortBy"],
-        class: "text-left w-[250px]",
+        class: "text-left w-[200px]",
         ref: ref<HTMLElement>(),
       },
       {
         name: "Sifchain Balance",
         sortBy: "balance" as BalancePageState["sortBy"],
-        class: "text-right whitespace-nowrap",
+        class: "text-right whitespace-nowrap flex-1 w-full",
         ref: ref<HTMLElement>(),
       },
-    ];
-
-    const colStyles = computed(() =>
-      columns.map((col) => ({
-        width: `${col.ref.value?.getBoundingClientRect().width}px`,
-      })),
-    );
+      {
+        name: "",
+        class: "flex-1 w-full min-w-[360px]",
+        ref: ref<HTMLElement>(),
+      },
+    ]);
 
     return () => (
       <Layout>
@@ -118,6 +113,9 @@ export default defineComponent({
                 active={showAllBalances.value}
                 onChange={(active) => {
                   showAllBalances.value = active;
+                  if (state.expandedSymbol) {
+                    state.expandedSymbol = "";
+                  }
                 }}
               />
               <Button.Inline
@@ -146,13 +144,16 @@ export default defineComponent({
                 placeholder="Search Token..."
                 onInput={(e: Event) => {
                   state.searchQuery = (e.target as HTMLInputElement).value;
+                  if (state.expandedSymbol) {
+                    state.expandedSymbol = "";
+                  }
                 }}
               />
             </div>
           }
         >
           <RecyclerView
-            data={allBalances.value}
+            data={allBalances}
             rowHeight={ROW_HEIGHT}
             offsetTop={130}
             class="w-full flex flex-col py-2 min-h-[calc(80vh-130px)]"
@@ -165,21 +166,22 @@ export default defineComponent({
             header={
               <div class="w-full flex justify-start bg-black py-1">
                 <div class="relative w-full flex justify-start font-medium text-sm align-text-bottom">
-                  {columns.map((column, index) => (
-                    <div
-                      style={colStyles.value[index]}
-                      class={[column.class]}
-                      key={column.name}
-                    >
+                  {columns.value.map((column) => (
+                    <div class={[column.class]} key={column.name}>
                       <div
-                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                        class={[
+                          "inline-flex items-center cursor-pointer opacity-50 hover:opacity-60",
+                          state.sortBy === column.sortBy ? "" : "pr-2",
+                        ]}
                         onClick={() => {
                           if (state.sortBy === column.sortBy) {
                             state.reverse = !state.reverse;
                           } else {
                             state.reverse = false;
                           }
-                          state.sortBy = column.sortBy;
+                          if (column.sortBy) {
+                            state.sortBy = column.sortBy;
+                          }
                         }}
                       >
                         {column.name}
@@ -200,7 +202,18 @@ export default defineComponent({
                 </div>
               </div>
             }
-            renderItem={RenderItem}
+            renderItem={(item: EnhancedTokenListItem) => (
+              <BalanceRow
+                key={item.asset.symbol + item.asset.network}
+                tokenItem={item}
+                isExpanded={item.asset.symbol === state.expandedSymbol}
+                onExpand={item.onExpand}
+                isMasked={Boolean(
+                  state.expandedSymbol &&
+                    item.asset.symbol !== state.expandedSymbol,
+                )}
+              />
+            )}
             emptyState={
               <div class="flex-1 p-4 grid place-items-center bg-gray-200 rounded-md text-center mb-1">
                 {isLoadingBalances.value ? (
@@ -231,17 +244,5 @@ export default defineComponent({
 });
 
 type EnhancedTokenListItem = TokenListItem & {
-  isExpanded: boolean;
-  isMasked: boolean;
   onExpand(sumbol: string): void;
 };
-
-const RenderItem = (item: EnhancedTokenListItem) => (
-  <BalanceRow
-    key={item.asset.symbol + item.asset.network}
-    tokenItem={item}
-    isExpanded={item.isExpanded}
-    isMasked={item.isMasked}
-    onExpand={item.onExpand}
-  />
-);

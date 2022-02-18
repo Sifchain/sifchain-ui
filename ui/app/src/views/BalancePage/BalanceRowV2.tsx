@@ -144,7 +144,7 @@ export default defineComponent({
         )}
       >
         {/* token info */}
-        <div class="text-left align-middle group-hover:opacity-80">
+        <div class="text-left align-middle group-hover:opacity-80 w-[200px]">
           <div class="flex items-center">
             <TokenNetworkIcon asset={ref(props.tokenItem.asset)} />
             <span class="ml-1 uppercase">
@@ -296,7 +296,7 @@ export default defineComponent({
           </div>
         </div>
         {/* controls */}
-        <div class="text-right align-middle w-[420px]">
+        <div class={["text-right align-middle flex-1 min-w-[360px]"]}>
           <div class="inline-flex items-center">
             {buttonsRef.value
               .filter((definition) => definition.visible)

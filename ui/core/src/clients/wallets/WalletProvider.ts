@@ -34,6 +34,7 @@ export abstract class WalletProvider<TxType> {
     address: string,
   ): Promise<IAssetAmount[]>;
 
+  // default implementation. This should be overridden
   async fetchBalance(chain: Chain, address: string, symbol: string) {
     const balances = await this.fetchBalances(chain, address);
     return (

@@ -7,34 +7,6 @@
     <link rel="icon" href="/favicon.svg" />
 
     <title>Sifchain</title>
-    <script>
-      if (window.location.origin.includes("dex.sifchain.finance")) {
-        var gtmScript = document.createElement("script");
-        gtmScript.async = true;
-        gtmScript.src =
-          "https://www.googletagmanager.com/gtag/js?id=G-MSGFSQQEJ3";
-
-        var analyticsScript = document.createElement("script");
-
-        analyticsScript.src = `
-          if (window.location.host === "dex.sifchain.finance") {
-            // Only run GA on mainnet
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){ window.dataLayer && window.dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-MSGFSQQEJ3');
-          }
-        `;
-
-        document.head.appendChild(gtmScript);
-        document.head.appendChild(analyticsScript);
-      }
-    </script>
-    <script>
-      if (window.location.origin.includes("https://sifchain-ui.vercel.app")) {
-        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-      }
-    </script>
   </head>
   <body>
     <noscript>

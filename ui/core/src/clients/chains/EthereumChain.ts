@@ -1,4 +1,10 @@
-import { Chain, Network, IAssetAmount, AssetAmount } from "../../entities";
+import {
+  Chain,
+  Network,
+  IAssetAmount,
+  AssetAmount,
+  IAsset,
+} from "../../entities";
 import { BaseChain } from "./_BaseChain";
 import { urlJoin } from "url-join-ts";
 import { isOriginallySifchainNativeToken } from "../bridges/EthBridge/isOriginallySifchainNativeToken";

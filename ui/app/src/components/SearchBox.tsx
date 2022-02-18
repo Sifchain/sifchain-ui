@@ -56,6 +56,8 @@ export const SearchBox = defineComponent({
         navigator.userAgent.includes("Mac"),
     );
 
+    const isFocused = ref(false);
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
         (e.key === "f" && (isMacOs.value ? e.metaKey : e.ctrlKey)) ||
@@ -69,6 +71,15 @@ export const SearchBox = defineComponent({
     onMounted(() => {
       if (enableKeyBindings) {
         document.addEventListener("keydown", handleKeyDown);
+      }
+
+      if (inputRef.value) {
+        inputRef.value.addEventListener("focus", () => {
+          isFocused.value = true;
+        });
+        inputRef.value.addEventListener("blur", () => {
+          isFocused.value = false;
+        });
       }
     });
 
@@ -105,17 +116,25 @@ export const SearchBox = defineComponent({
             props.class,
           ]}
         />
-        {props.enableKeyBindings && (
+
+        {props.enableKeyBindings && isFocused.value && (
           <label
             for={props.id}
-            class="absolute right-2 flex items-center gap-[6px]"
+            class={clsx(
+              "absolute right-2 items-center gap-[6px] flex transition-transform",
+              {
+                "translate-x-[-34px]": props.value?.length,
+              },
+            )}
           >
-            <div class="rounded px-2 py-[6px] text-sm text-accent-muted font-mono bg-gray-base">
-              {isMacOs.value ? "Cmd" : "Ctrl"} F
-            </div>
-            <div class="rounded px-2 py-[6px] text-sm text-accent-muted font-mono bg-gray-base">
-              /
-            </div>
+            {[`${isMacOs.value ? "Cmd" : "Ctrl"} F`, "/"].map((key) => (
+              <div
+                key={key}
+                class="rounded px-2 py-[6px] text-sm font-mono bg-gray-base opacity-60 hover:opacity-80 transition-transform"
+              >
+                {key}
+              </div>
+            ))}
           </label>
         )}
       </div>
