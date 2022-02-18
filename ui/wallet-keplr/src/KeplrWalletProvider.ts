@@ -355,12 +355,17 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         "Received ill-formatted txhash. Must be non-empty upper-case hex",
       );
     }
-    const result: BroadcastTxResult = {
-      ...resultRaw,
-      logs: JSON.parse(resultRaw.rawLog),
-      height: resultRaw.height,
-      transactionHash: resultRaw.hash,
-    };
+    try {
+      const result: BroadcastTxResult = {
+        ...resultRaw,
+        logs: JSON.parse(resultRaw.rawLog),
+        height: resultRaw.height,
+        transactionHash: resultRaw.hash,
+      };
+    } catch (error) {
+      console.error("unknown tx result", resultRaw);
+      throw error;
+    }
     if (isBroadcastTxSuccess(result)) {
       result.logs.forEach((log) => {
         // @ts-ignore
