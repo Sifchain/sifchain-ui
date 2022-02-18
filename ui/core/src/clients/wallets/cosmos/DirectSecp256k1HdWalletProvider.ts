@@ -5,11 +5,16 @@ import { stringToPath } from "@cosmjs/crypto";
 
 import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 
-import { NativeDexTransaction, NativeDexSignedTransaction } from "../../native";
-import { Chain } from "../../../entities";
+import {
+  NativeDexTransaction,
+  NativeDexSignedTransaction,
+  NativeDexClient,
+} from "../../native";
+import { AssetAmount, Chain } from "../../../entities";
 import { WalletProviderContext } from "../../wallets/WalletProvider";
 import { TokenRegistry } from "../../native/TokenRegistry";
 import { CosmosWalletProvider } from "./CosmosWalletProvider";
+import { toBaseUnits } from "../../../utils";
 
 export type DirectSecp256k1HdWalletProviderOptions = {
   mnemonic: string;
@@ -54,17 +59,17 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
     const chainConfig = this.getIBCChainConfig(chain);
 
     // cosmos = m/44'/118'/0'/0
-    const parts = [
-      `m`,
-      `44'`, // bip44,
-      `${chainConfig.keplrChainInfo.bip44.coinType}'`, // coinType
-      `0'`,
-      `0`,
-    ];
+    // const parts = [
+    //   `m`,
+    //   `44'`, // bip44,
+    //   `${chainConfig.keplrChainInfo.bip44.coinType}'`, // coinType
+    //   `0'`,
+    //   `0`,
+    // ];
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
       this.options.mnemonic || "",
       {
-        hdPaths: [stringToPath(parts.join("/")) as any],
+        // hdPaths: [stringToPath(parts.join("/")) as any],
         prefix: chainConfig.keplrChainInfo.bech32Config.bech32PrefixAccAddr,
       },
     );
@@ -84,21 +89,34 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
   async sign(chain: Chain, tx: NativeDexTransaction<EncodeObject>) {
     const chainConfig = this.getIBCChainConfig(chain);
     const signer = await this.getSendingSigner(chain);
+    const nativeRegistry = NativeDexClient.getNativeRegistry();
 
     const stargate = await SigningStargateClient.connectWithSigner(
       chainConfig.rpcUrl,
       signer,
+      {
+        // the nativeRegistry technically returns a different version of the type than expected...
+        // but it's fine. ignore the type error.
+        // @ts-ignore
+        registry: nativeRegistry,
+      },
     );
 
-    const signed = await stargate.sign(
-      tx.fromAddress,
-      tx.msgs,
-      {
-        amount: [tx.fee.price],
-        gas: tx.fee.gas,
-      },
-      tx.memo,
+    const nativeToken = await this.tokenRegistry.findAssetEntryOrThrow(
+      chain.nativeAsset,
     );
+    const fee = {
+      amount: [
+        {
+          // 'uatom' for cosmos, 'rowan' for sifchain, etc
+          denom: nativeToken.denom,
+          amount: toBaseUnits("1", chain.nativeAsset),
+        },
+      ],
+      gas: tx.fee.gas,
+    };
+
+    const signed = await stargate.sign(tx.fromAddress, tx.msgs, fee, tx.memo);
     return new NativeDexSignedTransaction(tx, signed);
   }
 

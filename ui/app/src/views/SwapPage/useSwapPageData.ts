@@ -221,14 +221,12 @@ export const useSwapPageData = () => {
           toAsset: toFieldAmount.value.asset,
           minimumReceived: minimumReceived.value,
         });
-        const signed = await useCore().services.wallet.keplrProvider.sign(
+
+        const provider = useCore().services.wallet.getPreferredCosmosProvider(
           useNativeChain(),
-          tx,
         );
-        const res = await useCore().services.wallet.keplrProvider.broadcast(
-          useNativeChain(),
-          signed,
-        );
+        const signed = await provider.sign(useNativeChain(), tx);
+        const res = await provider.broadcast(useNativeChain(), signed);
         txStatus.value = NativeDexClient.parseTxResult(res);
       } catch (error) {
         txStatus.value = {

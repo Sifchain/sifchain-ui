@@ -78,14 +78,10 @@ export function AddLiquidity(
           address,
         );
 
-    const signedTx = await wallet.keplrProvider.sign(
-      chains.nativeChain,
-      txDraft,
-    );
-    const sentTx = await wallet.keplrProvider.broadcast(
-      chains.nativeChain,
-      signedTx,
-    );
+    const provider = wallet.getPreferredCosmosProvider(chains.nativeChain);
+    const signedTx = await provider.sign(chains.nativeChain, txDraft);
+    const sentTx = await provider.broadcast(chains.nativeChain, signedTx);
+
     const txStatus = client.parseTxResult(sentTx);
     if (txStatus.state !== "accepted") {
       // Edge case where we have run out of native balance and need to represent that
