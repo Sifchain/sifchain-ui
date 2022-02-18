@@ -7,9 +7,11 @@ import { Input } from "@/components/Input/Input";
 import PageCard from "@/components/PageCard";
 
 const formatNumber = (number: number) =>
-  Intl.NumberFormat("en", {
-    notation: "compact",
-  }).format(number);
+  number >= 100 ** 10
+    ? Intl.NumberFormat("en", {
+        notation: "compact",
+      }).format(number)
+    : prettyNumber(number);
 
 type Props = {
   tokenInSymbol: string;
@@ -52,6 +54,10 @@ function isValidNumericString(
 }
 
 export const RewardsCalculator = (props: Props) => {
+  const potentialReturnRate = props.potentialReturn
+    ? props.potentialReturn / props.investment
+    : 0;
+
   return (
     <PageCard heading="Calculator">
       <section class="grid w-full gap-4 p-2 pb-4 overflow-x-clip">
@@ -251,8 +257,8 @@ export const RewardsCalculator = (props: Props) => {
             highlight
             title="Potential return"
             value={`$${formatNumber(props.potentialReturn)} ${
-              props.potentialReturn
-                ? `(${(props.potentialReturn / props.investment).toFixed(2)}x)`
+              potentialReturnRate
+                ? `(${formatNumber(potentialReturnRate)}x)`
                 : ""
             }`}
           />
@@ -278,7 +284,7 @@ const FooterInfoItem = (props: {
     <div class="text-md">{props.title}</div>
     <div
       class={clsx({
-        "text-accent-base font-bold text-lg": props.highlight,
+        "text-accent-base font-bold text-lg text-right": props.highlight,
       })}
     >
       {props.value}
