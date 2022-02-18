@@ -48,10 +48,8 @@ export class WalletService {
     switch (chain.network) {
       case Network.ETHEREUM:
         return this.metamaskProvider;
-      case Network.TERRA:
-        return this.terraProvider;
       default:
-        return this.keplrProvider;
+        return this.getPreferredCosmosProvider(chain);
     }
   }
 
