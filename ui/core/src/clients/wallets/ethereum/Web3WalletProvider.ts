@@ -16,6 +16,7 @@ import {
   NativeDexTransactionResult,
 } from "../../../clients";
 import { EventEmitter } from "events";
+import RateLimitProtector from "../../../utils/RateLimitProtector";
 
 // NOTE(ajoslin): Web3WalletProvider doesn't actually sign anything yet,
 // all it has to do is approve amounts to contracts.
@@ -38,6 +39,9 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
     },
   ) {
     super();
+    this.fetchBalance = new RateLimitProtector({
+      padding: 100,
+    }).buildAsyncShield(this.fetchBalance, this);
   }
 
   async isInstalled(chain: Chain) {
@@ -205,6 +209,7 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
+    console.log("running");
     return Promise.all(
       chain.assets.map(async (asset) =>
         this.fetchBalance(chain, address, asset.symbol),
