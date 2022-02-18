@@ -362,31 +362,31 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         height: resultRaw.height,
         transactionHash: resultRaw.hash,
       };
+      if (isBroadcastTxSuccess(result)) {
+        result.logs.forEach((log) => {
+          // @ts-ignore
+          log.msg_index = 0;
+          // @ts-ignore
+          log.log = "";
+        });
+      }
+
+      return isBroadcastTxFailure(result)
+        ? {
+            height: Uint53.fromString(result.height + "").toNumber(),
+            transactionHash: result.transactionHash,
+            code: result.code,
+            rawLog: result.rawLog || "",
+          }
+        : {
+            logs: result.logs ? parseLogs(result.logs) : [],
+            rawLog: result.rawLog || "",
+            transactionHash: result.transactionHash,
+            data: result.data,
+          };
     } catch (error) {
       console.error("unknown tx result", resultRaw);
       throw error;
     }
-    if (isBroadcastTxSuccess(result)) {
-      result.logs.forEach((log) => {
-        // @ts-ignore
-        log.msg_index = 0;
-        // @ts-ignore
-        log.log = "";
-      });
-    }
-
-    return isBroadcastTxFailure(result)
-      ? {
-          height: Uint53.fromString(result.height + "").toNumber(),
-          transactionHash: result.transactionHash,
-          code: result.code,
-          rawLog: result.rawLog || "",
-        }
-      : {
-          logs: result.logs ? parseLogs(result.logs) : [],
-          rawLog: result.rawLog || "",
-          transactionHash: result.transactionHash,
-          data: result.data,
-        };
   }
 }
