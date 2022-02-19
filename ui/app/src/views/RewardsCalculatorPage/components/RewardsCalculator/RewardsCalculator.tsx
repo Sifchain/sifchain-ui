@@ -60,9 +60,9 @@ export const RewardsCalculator = (props: Props) => {
 
   return (
     <PageCard heading="Rewards Calculator" iconName="navigation/pool-stats">
-      <section class="grid w-full gap-4 p-2 pb-4 overflow-x-clip">
+      <section class="grid w-full gap-4 overflow-x-clip pb-4">
+        <p class="text-gray-850">Estimate your returns</p>
         <header class="grid gap-1">
-          <span class="text-md">Estimate your returns</span>
           <div class="grid grid-cols-3 gap-4 rounded-lg">
             <HeaderInfoItem
               title={`${props.tokenOutSymbol} Price`}
@@ -293,7 +293,7 @@ const FooterInfoItem = (props: {
 );
 
 const InputLabel = (props: { label: string }, ctx: SetupContext) => (
-  <label class="grid gap-1 text-md">
+  <label class="grid gap-1 text-base">
     {props.label}
     {ctx.slots.default && ctx.slots.default()}
   </label>

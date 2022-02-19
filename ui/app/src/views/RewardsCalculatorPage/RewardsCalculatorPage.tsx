@@ -84,12 +84,15 @@ export default defineComponent({
     },
     rewardsEstimate(): number {
       const apr = parseFloat(this.apr) / 100;
+      const tokenInAmount = parseFloat(this.tokenInAmount);
 
-      return calculateFutureValue(
-        parseFloat(this.tokenInAmount),
-        this.timeInWeeks / COMPOUNDING_FACTOR.weekly,
-        apr,
-        COMPOUNDING_FACTOR.weekly,
+      return (
+        calculateFutureValue(
+          tokenInAmount,
+          this.timeInWeeks / COMPOUNDING_FACTOR.weekly,
+          apr,
+          COMPOUNDING_FACTOR.weekly,
+        ) - tokenInAmount
       );
     },
     potentialReturn(): number {
