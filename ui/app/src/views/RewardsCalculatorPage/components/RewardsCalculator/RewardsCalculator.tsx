@@ -59,11 +59,11 @@ export const RewardsCalculator = (props: Props) => {
     : 0;
 
   return (
-    <PageCard heading="Calculator">
+    <PageCard heading="Rewards Calculator" iconName="navigation/pool-stats">
       <section class="grid w-full gap-4 p-2 pb-4 overflow-x-clip">
         <header class="grid gap-1">
           <span class="text-md">Estimate your returns</span>
-          <div class="grid grid-cols-3 gap-2 p-4 bg-gray-input rounded-lg">
+          <div class="grid grid-cols-3 gap-4 rounded-lg">
             <HeaderInfoItem
               title={`${props.tokenOutSymbol} Price`}
               value={
@@ -269,8 +269,8 @@ export const RewardsCalculator = (props: Props) => {
 };
 
 const HeaderInfoItem = (props: { title: string; value: string }) => (
-  <div class={"text-center grid gap-1"}>
-    <div class="text-md">{props.title}</div>
+  <div class={"text-center grid gap-1 bg-gray-input/80 rounded-lg flex-1 p-4"}>
+    <div class="text-md text-accent-base font-semibold">{props.title}</div>
     <div class="font-bold text-xl">{props.value}</div>
   </div>
 );
