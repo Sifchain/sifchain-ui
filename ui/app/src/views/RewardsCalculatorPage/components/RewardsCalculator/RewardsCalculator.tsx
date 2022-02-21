@@ -6,6 +6,11 @@ import { Button } from "@/components/Button/Button";
 import { Input } from "@/components/Input/Input";
 import PageCard from "@/components/PageCard";
 
+const formatNumber = (number: number) =>
+  Intl.NumberFormat("en", {
+    notation: "compact",
+  }).format(number);
+
 type Props = {
   tokenInSymbol: string;
   tokenInBalance: string;
@@ -230,22 +235,22 @@ export const RewardsCalculator = (props: Props) => {
         <footer class="grid gap-1">
           <FooterInfoItem
             title="Your initial investment"
-            value={`$${prettyNumber(props.investment)}`}
+            value={`$${formatNumber(props.investment)}`}
           />
           <FooterInfoItem
             title="Current wealth"
-            value={`$${prettyNumber(props.currentWealth)}`}
+            value={`$${formatNumber(props.currentWealth)}`}
           />
           <FooterInfoItem
             title={`${props.tokenOutSymbol} rewards estimation`}
-            value={`${prettyNumber(props.rewardsEstimate)} ${
+            value={`${formatNumber(props.rewardsEstimate)} ${
               props.tokenOutSymbol
             }`}
           />
           <FooterInfoItem
             highlight
             title="Potential return"
-            value={`$${prettyNumber(props.potentialReturn)} ${
+            value={`$${formatNumber(props.potentialReturn)} ${
               props.potentialReturn
                 ? `(${(props.potentialReturn / props.investment).toFixed(2)}x)`
                 : ""
