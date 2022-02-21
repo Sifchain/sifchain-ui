@@ -22,7 +22,9 @@ import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
 import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
 import { ApproveSwap } from "@/views/SwapPage/children/Approve";
 import LeaderboardPage from "@/views/LeaderboardPage/LeaderboardPage";
-import ImportSelect from "@/views/BalancePage/Import/Select";
+import ImportSelect, {
+  SelectV2 as ImportSelectV2,
+} from "@/views/BalancePage/Import/Select";
 import ImportConfirm from "@/views/BalancePage/Import/Confirm";
 import ImportProcessing from "@/views/BalancePage/Import/Processing";
 import ExportSelect from "@/views/BalancePage/Export/Select";
@@ -40,11 +42,11 @@ type SwapPageMeta = {
   swapState: SwapPageState;
 };
 
-type RouteName<T> = T extends { name?: string }[]
-  ? RouteName<T[number]>
-  : T extends { name: string }
-  ? T["name"]
-  : "";
+// type RouteName<T> = T extends { name?: string }[]
+//   ? RouteName<T[number]>
+//   : T extends { name: string }
+//   ? T["name"]
+//   : "";
 
 // type RouteName<T> = T extends RouteRecordRaw
 //   ? RouteName<T[keyof T]>
@@ -163,11 +165,17 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         path: "install-wallet/:walletId",
         component: WalletInstallModal,
       },
-      {
-        name: "Import",
-        path: "import/:displaySymbol/select",
-        component: ImportSelect,
-      },
+      flagsStore.state.importBalancesV2
+        ? {
+            name: "Import",
+            path: "import/select",
+            component: ImportSelectV2,
+          }
+        : {
+            name: "Import",
+            path: "import/:displaySymbol/select",
+            component: ImportSelect,
+          },
       {
         name: "ConfirmImport",
         path: "import/:displaySymbol/confirm",

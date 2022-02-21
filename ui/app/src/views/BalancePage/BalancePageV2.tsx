@@ -16,7 +16,9 @@ import Button from "@/components/Button";
 import BalanceRow from "./BalanceRowV2";
 import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 import { getImportLocation } from "./Import/useImportData";
+import { getImportLocation as getImportLocationV2 } from "./Import/useImportDataV2";
 import { TokenListItem } from "@/hooks/useToken";
+import { flagsStore } from "@/store/modules/flags";
 
 const ROW_HEIGHT = 50;
 
@@ -123,10 +125,17 @@ export default defineComponent({
                 class="!h-[40px] px-[17px] text-md relative"
                 icon="interactive/plus"
                 iconClass="!w-[24px] !h-[24px] transform translate-y-[1px]"
-                to={getImportLocation("select", {
-                  symbol: "rowan",
-                  network: Network.COSMOSHUB,
-                })}
+                to={
+                  flagsStore.state.importBalancesV2
+                    ? getImportLocationV2("select", {
+                        symbols: ["rowan"],
+                        network: Network.COSMOSHUB,
+                      })
+                    : getImportLocation("select", {
+                        symbol: "rowan",
+                        network: Network.COSMOSHUB,
+                      })
+                }
                 active
               >
                 Import

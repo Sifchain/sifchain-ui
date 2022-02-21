@@ -18,14 +18,14 @@ import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { Button } from "@/components/Button/Button";
 import { rootStore } from "@/store";
 import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
-import { ImportDraft } from "@/store/modules/import";
+import { MultiImportDraft } from "@/store/modules/import";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 
 export type ImportStep = "select" | "confirm" | "processing";
 
 export function getImportLocation(
   step: ImportStep,
-  params: Partial<ImportDraft & { txHash?: string }>,
+  params: Partial<MultiImportDraft & { txHash?: string }>,
 ): RouteLocationRaw {
   return {
     name:
@@ -34,12 +34,11 @@ export function getImportLocation(
         : step === "confirm"
         ? "ConfirmImport"
         : "ProcessingImport",
-    params: {
-      displaySymbol: params.symbol || "",
-    },
+    params: {},
     query: {
       network: params.network || "",
-      amount: params.amount || "",
+      displaySymbols: params.symbols ?? [],
+      amount: params.amounts ?? [],
     },
   };
 }
@@ -50,31 +49,6 @@ export const useImportData = () => {
   const importDrafts = importStore.refs.drafts.computed();
 
   const importDraft = computed(() => importDrafts.value[0]);
-
-  useBoundRoute({
-    params: {
-      displaySymbol: computed({
-        get: () => importStore.state.drafts[0].symbol,
-        set: (v) =>
-          importStore.setDraftWithIndex({ index: 0, nextDraft: { symbol: v } }),
-      }),
-    },
-    query: {
-      network: computed({
-        get: () => importStore.state.drafts[0].network,
-        set: (v) =>
-          importStore.setDraftWithIndex({
-            index: 0,
-            nextDraft: { network: v },
-          }),
-      }),
-      amount: computed({
-        get: () => importStore.state.drafts[0].amount,
-        set: (v) =>
-          importStore.setDraftWithIndex({ index: 0, nextDraft: { amount: v } }),
-      }),
-    },
-  });
 
   const exitImport = () => {
     importStore.resetDrafts();

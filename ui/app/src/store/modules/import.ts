@@ -20,6 +20,13 @@ export type ImportDraft = {
   pegEvent: BridgeEvent | undefined;
 };
 
+export type MultiImportDraft = {
+  symbols: string[];
+  amounts: string[];
+  network: Network;
+  pegEvent: BridgeEvent | undefined;
+};
+
 type State = {
   drafts: ImportDraft[];
   draft: ImportDraft;
