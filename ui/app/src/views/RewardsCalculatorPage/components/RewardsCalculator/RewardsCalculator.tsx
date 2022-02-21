@@ -7,9 +7,11 @@ import { Input } from "@/components/Input/Input";
 import PageCard from "@/components/PageCard";
 
 const formatNumber = (number: number) =>
-  Intl.NumberFormat("en", {
-    notation: "compact",
-  }).format(number);
+  number >= 100 ** 10
+    ? Intl.NumberFormat("en", {
+        notation: "compact",
+      }).format(number)
+    : prettyNumber(number);
 
 type Props = {
   tokenInSymbol: string;
@@ -52,12 +54,16 @@ function isValidNumericString(
 }
 
 export const RewardsCalculator = (props: Props) => {
+  const potentialReturnRate = props.potentialReturn
+    ? props.potentialReturn / props.investment
+    : 0;
+
   return (
-    <PageCard heading="Calculator">
-      <section class="grid w-full gap-4 p-2 pb-4 overflow-x-clip">
+    <PageCard heading="Rewards Calculator" iconName="navigation/pool-stats">
+      <section class="grid w-full gap-4 overflow-x-clip pb-4">
+        <p class="text-gray-850">Estimate your returns</p>
         <header class="grid gap-1">
-          <span class="text-md">Estimate your returns</span>
-          <div class="grid grid-cols-3 gap-2 p-4 bg-gray-input rounded-lg">
+          <div class="grid grid-cols-3 gap-4 rounded-lg">
             <HeaderInfoItem
               title={`${props.tokenOutSymbol} Price`}
               value={
@@ -251,8 +257,8 @@ export const RewardsCalculator = (props: Props) => {
             highlight
             title="Potential return"
             value={`$${formatNumber(props.potentialReturn)} ${
-              props.potentialReturn
-                ? `(${(props.potentialReturn / props.investment).toFixed(2)}x)`
+              potentialReturnRate
+                ? `(${formatNumber(potentialReturnRate)}x)`
                 : ""
             }`}
           />
@@ -263,8 +269,8 @@ export const RewardsCalculator = (props: Props) => {
 };
 
 const HeaderInfoItem = (props: { title: string; value: string }) => (
-  <div class={"text-center grid gap-1"}>
-    <div class="text-md">{props.title}</div>
+  <div class={"text-center grid gap-1 bg-gray-input/80 rounded-lg flex-1 p-4"}>
+    <div class="text-md text-accent-base font-semibold">{props.title}</div>
     <div class="font-bold text-xl">{props.value}</div>
   </div>
 );
@@ -278,7 +284,7 @@ const FooterInfoItem = (props: {
     <div class="text-md">{props.title}</div>
     <div
       class={clsx({
-        "text-accent-base font-bold text-lg": props.highlight,
+        "text-accent-base font-bold text-lg text-right": props.highlight,
       })}
     >
       {props.value}
@@ -287,7 +293,7 @@ const FooterInfoItem = (props: {
 );
 
 const InputLabel = (props: { label: string }, ctx: SetupContext) => (
-  <label class="grid gap-1 text-md">
+  <label class="grid gap-1 text-base">
     {props.label}
     {ctx.slots.default && ctx.slots.default()}
   </label>
