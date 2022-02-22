@@ -8,7 +8,7 @@ import { RewardsCalculator } from "./components/RewardsCalculator";
 import { useRewardsCalculatorData } from "./hooks";
 
 const DEFAULT_TOKEN_SYMBOL = "ROWAN";
-const DEFAULT_APR = "300";
+const DEFAULT_APR = "200";
 const DEFAULT_TIME_IN_WEEKS = 12;
 const COMPOUNDING_FACTOR = {
   daily: 365,
