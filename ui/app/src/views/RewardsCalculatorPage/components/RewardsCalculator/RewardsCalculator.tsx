@@ -63,7 +63,7 @@ export const RewardsCalculator = (props: Props) => {
       <section class="grid w-full gap-4 overflow-x-clip pb-4">
         <p class="text-gray-850">Estimate your returns</p>
         <header class="grid gap-1">
-          <div class="grid grid-cols-3 gap-4 rounded-lg">
+          <div class="grid grid-cols-2 gap-4 rounded-lg">
             <HeaderInfoItem
               title={`${props.tokenOutSymbol} Price`}
               value={
@@ -72,10 +72,10 @@ export const RewardsCalculator = (props: Props) => {
                   : "..."
               }
             />
-            <HeaderInfoItem
+            {/* <HeaderInfoItem
               title="Current APR"
               value={`${props.currentAPR}%`}
-            />
+            /> */}
             <HeaderInfoItem
               title={`Your ${props.tokenInSymbol} Balance`}
               value={prettyNumber(parseFloat(props.tokenInBalance))}
