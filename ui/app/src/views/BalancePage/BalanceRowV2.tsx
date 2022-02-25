@@ -34,7 +34,9 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const hasNoBalance = props.tokenItem.amount.amount.toString(false) === "0";
+    const hasNoBalance = computed(
+      () => props.tokenItem.amount.amount.toString(false) === "0",
+    );
 
     const { chainConfig, displayName } = useChains().get(
       props.tokenItem.asset.network,
@@ -64,7 +66,7 @@ export default defineComponent({
           }),
         },
       },
-      hasNoBalance
+      hasNoBalance.value
         ? {
             tag: "button",
             icon: "interactive/arrow-up",
@@ -162,7 +164,7 @@ export default defineComponent({
         <div class="text-right align-middle flex-1">
           <div class="inline-flex items-center relative">
             <span class="group-hover:opacity-80 group-hover:delay-75">
-              {hasNoBalance
+              {hasNoBalance.value
                 ? props.tokenItem.pendingImports.length ||
                   props.tokenItem.pendingExports.length
                   ? "..."
