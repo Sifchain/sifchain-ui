@@ -4,6 +4,7 @@ import { createStore } from "vuex";
 import { exportStore } from "./modules/export";
 import { flagsStore } from "./modules/flags";
 import { governanceStore } from "./modules/governance";
+import { marginStore } from "./modules/margin";
 
 export const vuexStore = createStore({
   devtools: true,
@@ -13,6 +14,7 @@ importStore.register(vuexStore);
 exportStore.register(vuexStore);
 flagsStore.register(vuexStore);
 governanceStore.register(vuexStore);
+marginStore.register(vuexStore);
 export const rootStore = {
   accounts: accountStore,
   import: importStore,

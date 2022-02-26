@@ -1,19 +1,19 @@
 import { Network, IBCChainConfig } from "../../../entities";
 
-export const SIFCHAIN_DEVNET: IBCChainConfig = {
+export const SIFCHAIN_LOCALNET: IBCChainConfig = {
   network: Network.SIFCHAIN,
   chainType: "ibc",
-  displayName: "sifchain-tempnet-d3a9d94",
+  displayName: "sifchain-local",
   blockExplorerUrl: "https://www.mintscan.io/sifchain",
   nativeAssetSymbol: "rowan",
-  chainId: "sifchain-tempnet-d3a9d94",
-  rpcUrl: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
-  restUrl: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
+  chainId: "localnet",
+  rpcUrl: "http://localhost:3000/api/sifchain-local/rpc",
+  restUrl: "http://localhost:3000/api/sifchain-local/rest",
   keplrChainInfo: {
-    chainName: "sifchain-tempnet-d3a9d94",
-    chainId: "sifchain-tempnet-d3a9d94",
-    rpc: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
-    rest: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
+    chainName: "sifchain-local",
+    chainId: "localnet",
+    rpc: "http://localhost:3000/api/sifchain-local/rpc",
+    rest: "http://localhost:3000/api/sifchain-local/rest",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",

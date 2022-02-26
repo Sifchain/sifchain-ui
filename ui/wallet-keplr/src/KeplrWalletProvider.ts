@@ -258,6 +258,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       }
       return this.signIbcImport(chain, tx);
     }
+    console.log("tx", tx);
     const chainConfig = this.getIBCChainConfig(chain);
     const stargate = await StargateClient.connect(chainConfig.rpcUrl);
 
@@ -354,33 +355,38 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         "Received ill-formatted txhash. Must be non-empty upper-case hex",
       );
     }
-    const result: BroadcastTxResult = {
-      ...resultRaw,
-      logs: JSON.parse(resultRaw.rawLog),
-      height: resultRaw.height,
-      transactionHash: resultRaw.hash,
-    };
-    if (isBroadcastTxSuccess(result)) {
-      result.logs.forEach((log) => {
-        // @ts-ignore
-        log.msg_index = 0;
-        // @ts-ignore
-        log.log = "";
-      });
-    }
+    try {
+      const result: BroadcastTxResult = {
+        ...resultRaw,
+        logs: JSON.parse(resultRaw.rawLog),
+        height: resultRaw.height,
+        transactionHash: resultRaw.hash,
+      };
+      if (isBroadcastTxSuccess(result)) {
+        result.logs.forEach((log) => {
+          // @ts-ignore
+          log.msg_index = 0;
+          // @ts-ignore
+          log.log = "";
+        });
+      }
 
-    return isBroadcastTxFailure(result)
-      ? {
-          height: Uint53.fromString(result.height + "").toNumber(),
-          transactionHash: result.transactionHash,
-          code: result.code,
-          rawLog: result.rawLog || "",
-        }
-      : {
-          logs: result.logs ? parseLogs(result.logs) : [],
-          rawLog: result.rawLog || "",
-          transactionHash: result.transactionHash,
-          data: result.data,
-        };
+      return isBroadcastTxFailure(result)
+        ? {
+            height: Uint53.fromString(result.height + "").toNumber(),
+            transactionHash: result.transactionHash,
+            code: result.code,
+            rawLog: result.rawLog || "",
+          }
+        : {
+            logs: result.logs ? parseLogs(result.logs) : [],
+            rawLog: result.rawLog || "",
+            transactionHash: result.transactionHash,
+            data: result.data,
+          };
+    } catch (error) {
+      console.error("unknown tx result", resultRaw);
+      throw error;
+    }
   }
 }

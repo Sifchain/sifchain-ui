@@ -50,7 +50,9 @@ export interface QueryClaimsResponse {
   height: Long;
 }
 
-const baseQueryAllDistributionsRequest: object = {};
+function createBaseQueryAllDistributionsRequest(): QueryAllDistributionsRequest {
+  return {};
+}
 
 export const QueryAllDistributionsRequest = {
   encode(
@@ -66,9 +68,7 @@ export const QueryAllDistributionsRequest = {
   ): QueryAllDistributionsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryAllDistributionsRequest,
-    } as QueryAllDistributionsRequest;
+    const message = createBaseQueryAllDistributionsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -81,10 +81,7 @@ export const QueryAllDistributionsRequest = {
   },
 
   fromJSON(_: any): QueryAllDistributionsRequest {
-    const message = {
-      ...baseQueryAllDistributionsRequest,
-    } as QueryAllDistributionsRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryAllDistributionsRequest): unknown {
@@ -92,17 +89,17 @@ export const QueryAllDistributionsRequest = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<QueryAllDistributionsRequest>,
+  fromPartial<I extends Exact<DeepPartial<QueryAllDistributionsRequest>, I>>(
+    _: I,
   ): QueryAllDistributionsRequest {
-    const message = {
-      ...baseQueryAllDistributionsRequest,
-    } as QueryAllDistributionsRequest;
+    const message = createBaseQueryAllDistributionsRequest();
     return message;
   },
 };
 
-const baseQueryAllDistributionsResponse: object = { height: Long.ZERO };
+function createBaseQueryAllDistributionsResponse(): QueryAllDistributionsResponse {
+  return { distributions: [], height: Long.ZERO };
+}
 
 export const QueryAllDistributionsResponse = {
   encode(
@@ -124,10 +121,7 @@ export const QueryAllDistributionsResponse = {
   ): QueryAllDistributionsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryAllDistributionsResponse,
-    } as QueryAllDistributionsResponse;
-    message.distributions = [];
+    const message = createBaseQueryAllDistributionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -148,21 +142,12 @@ export const QueryAllDistributionsResponse = {
   },
 
   fromJSON(object: any): QueryAllDistributionsResponse {
-    const message = {
-      ...baseQueryAllDistributionsResponse,
-    } as QueryAllDistributionsResponse;
-    message.distributions = [];
-    if (object.distributions !== undefined && object.distributions !== null) {
-      for (const e of object.distributions) {
-        message.distributions.push(Distribution.fromJSON(e));
-      }
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = Long.fromString(object.height);
-    } else {
-      message.height = Long.ZERO;
-    }
-    return message;
+    return {
+      distributions: Array.isArray(object?.distributions)
+        ? object.distributions.map((e: any) => Distribution.fromJSON(e))
+        : [],
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+    };
   },
 
   toJSON(message: QueryAllDistributionsResponse): unknown {
@@ -179,31 +164,23 @@ export const QueryAllDistributionsResponse = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryAllDistributionsResponse>,
+  fromPartial<I extends Exact<DeepPartial<QueryAllDistributionsResponse>, I>>(
+    object: I,
   ): QueryAllDistributionsResponse {
-    const message = {
-      ...baseQueryAllDistributionsResponse,
-    } as QueryAllDistributionsResponse;
-    message.distributions = [];
-    if (object.distributions !== undefined && object.distributions !== null) {
-      for (const e of object.distributions) {
-        message.distributions.push(Distribution.fromPartial(e));
-      }
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = object.height as Long;
-    } else {
-      message.height = Long.ZERO;
-    }
+    const message = createBaseQueryAllDistributionsResponse();
+    message.distributions =
+      object.distributions?.map((e) => Distribution.fromPartial(e)) || [];
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
 
-const baseQueryRecordsByDistributionNameRequest: object = {
-  distributionName: "",
-  status: 0,
-};
+function createBaseQueryRecordsByDistributionNameRequest(): QueryRecordsByDistributionNameRequest {
+  return { distributionName: "", status: 0 };
+}
 
 export const QueryRecordsByDistributionNameRequest = {
   encode(
@@ -225,9 +202,7 @@ export const QueryRecordsByDistributionNameRequest = {
   ): QueryRecordsByDistributionNameRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryRecordsByDistributionNameRequest,
-    } as QueryRecordsByDistributionNameRequest;
+    const message = createBaseQueryRecordsByDistributionNameRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -246,23 +221,14 @@ export const QueryRecordsByDistributionNameRequest = {
   },
 
   fromJSON(object: any): QueryRecordsByDistributionNameRequest {
-    const message = {
-      ...baseQueryRecordsByDistributionNameRequest,
-    } as QueryRecordsByDistributionNameRequest;
-    if (
-      object.distributionName !== undefined &&
-      object.distributionName !== null
-    ) {
-      message.distributionName = String(object.distributionName);
-    } else {
-      message.distributionName = "";
-    }
-    if (object.status !== undefined && object.status !== null) {
-      message.status = distributionStatusFromJSON(object.status);
-    } else {
-      message.status = 0;
-    }
-    return message;
+    return {
+      distributionName: isSet(object.distributionName)
+        ? String(object.distributionName)
+        : "",
+      status: isSet(object.status)
+        ? distributionStatusFromJSON(object.status)
+        : 0,
+    };
   },
 
   toJSON(message: QueryRecordsByDistributionNameRequest): unknown {
@@ -274,32 +240,19 @@ export const QueryRecordsByDistributionNameRequest = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryRecordsByDistributionNameRequest>,
-  ): QueryRecordsByDistributionNameRequest {
-    const message = {
-      ...baseQueryRecordsByDistributionNameRequest,
-    } as QueryRecordsByDistributionNameRequest;
-    if (
-      object.distributionName !== undefined &&
-      object.distributionName !== null
-    ) {
-      message.distributionName = object.distributionName;
-    } else {
-      message.distributionName = "";
-    }
-    if (object.status !== undefined && object.status !== null) {
-      message.status = object.status;
-    } else {
-      message.status = 0;
-    }
+  fromPartial<
+    I extends Exact<DeepPartial<QueryRecordsByDistributionNameRequest>, I>,
+  >(object: I): QueryRecordsByDistributionNameRequest {
+    const message = createBaseQueryRecordsByDistributionNameRequest();
+    message.distributionName = object.distributionName ?? "";
+    message.status = object.status ?? 0;
     return message;
   },
 };
 
-const baseQueryRecordsByDistributionNameResponse: object = {
-  height: Long.ZERO,
-};
+function createBaseQueryRecordsByDistributionNameResponse(): QueryRecordsByDistributionNameResponse {
+  return { distributionRecords: undefined, height: Long.ZERO };
+}
 
 export const QueryRecordsByDistributionNameResponse = {
   encode(
@@ -324,9 +277,7 @@ export const QueryRecordsByDistributionNameResponse = {
   ): QueryRecordsByDistributionNameResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryRecordsByDistributionNameResponse,
-    } as QueryRecordsByDistributionNameResponse;
+    const message = createBaseQueryRecordsByDistributionNameResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -348,25 +299,12 @@ export const QueryRecordsByDistributionNameResponse = {
   },
 
   fromJSON(object: any): QueryRecordsByDistributionNameResponse {
-    const message = {
-      ...baseQueryRecordsByDistributionNameResponse,
-    } as QueryRecordsByDistributionNameResponse;
-    if (
-      object.distributionRecords !== undefined &&
-      object.distributionRecords !== null
-    ) {
-      message.distributionRecords = DistributionRecords.fromJSON(
-        object.distributionRecords,
-      );
-    } else {
-      message.distributionRecords = undefined;
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = Long.fromString(object.height);
-    } else {
-      message.height = Long.ZERO;
-    }
-    return message;
+    return {
+      distributionRecords: isSet(object.distributionRecords)
+        ? DistributionRecords.fromJSON(object.distributionRecords)
+        : undefined,
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+    };
   },
 
   toJSON(message: QueryRecordsByDistributionNameResponse): unknown {
@@ -380,32 +318,26 @@ export const QueryRecordsByDistributionNameResponse = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryRecordsByDistributionNameResponse>,
-  ): QueryRecordsByDistributionNameResponse {
-    const message = {
-      ...baseQueryRecordsByDistributionNameResponse,
-    } as QueryRecordsByDistributionNameResponse;
-    if (
+  fromPartial<
+    I extends Exact<DeepPartial<QueryRecordsByDistributionNameResponse>, I>,
+  >(object: I): QueryRecordsByDistributionNameResponse {
+    const message = createBaseQueryRecordsByDistributionNameResponse();
+    message.distributionRecords =
       object.distributionRecords !== undefined &&
       object.distributionRecords !== null
-    ) {
-      message.distributionRecords = DistributionRecords.fromPartial(
-        object.distributionRecords,
-      );
-    } else {
-      message.distributionRecords = undefined;
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = object.height as Long;
-    } else {
-      message.height = Long.ZERO;
-    }
+        ? DistributionRecords.fromPartial(object.distributionRecords)
+        : undefined;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
 
-const baseQueryRecordsByRecipientAddrRequest: object = { address: "" };
+function createBaseQueryRecordsByRecipientAddrRequest(): QueryRecordsByRecipientAddrRequest {
+  return { address: "" };
+}
 
 export const QueryRecordsByRecipientAddrRequest = {
   encode(
@@ -424,9 +356,7 @@ export const QueryRecordsByRecipientAddrRequest = {
   ): QueryRecordsByRecipientAddrRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryRecordsByRecipientAddrRequest,
-    } as QueryRecordsByRecipientAddrRequest;
+    const message = createBaseQueryRecordsByRecipientAddrRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -442,15 +372,9 @@ export const QueryRecordsByRecipientAddrRequest = {
   },
 
   fromJSON(object: any): QueryRecordsByRecipientAddrRequest {
-    const message = {
-      ...baseQueryRecordsByRecipientAddrRequest,
-    } as QueryRecordsByRecipientAddrRequest;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+    };
   },
 
   toJSON(message: QueryRecordsByRecipientAddrRequest): unknown {
@@ -459,22 +383,18 @@ export const QueryRecordsByRecipientAddrRequest = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryRecordsByRecipientAddrRequest>,
-  ): QueryRecordsByRecipientAddrRequest {
-    const message = {
-      ...baseQueryRecordsByRecipientAddrRequest,
-    } as QueryRecordsByRecipientAddrRequest;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
+  fromPartial<
+    I extends Exact<DeepPartial<QueryRecordsByRecipientAddrRequest>, I>,
+  >(object: I): QueryRecordsByRecipientAddrRequest {
+    const message = createBaseQueryRecordsByRecipientAddrRequest();
+    message.address = object.address ?? "";
     return message;
   },
 };
 
-const baseQueryRecordsByRecipientAddrResponse: object = { height: Long.ZERO };
+function createBaseQueryRecordsByRecipientAddrResponse(): QueryRecordsByRecipientAddrResponse {
+  return { distributionRecords: undefined, height: Long.ZERO };
+}
 
 export const QueryRecordsByRecipientAddrResponse = {
   encode(
@@ -499,9 +419,7 @@ export const QueryRecordsByRecipientAddrResponse = {
   ): QueryRecordsByRecipientAddrResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryRecordsByRecipientAddrResponse,
-    } as QueryRecordsByRecipientAddrResponse;
+    const message = createBaseQueryRecordsByRecipientAddrResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -523,25 +441,12 @@ export const QueryRecordsByRecipientAddrResponse = {
   },
 
   fromJSON(object: any): QueryRecordsByRecipientAddrResponse {
-    const message = {
-      ...baseQueryRecordsByRecipientAddrResponse,
-    } as QueryRecordsByRecipientAddrResponse;
-    if (
-      object.distributionRecords !== undefined &&
-      object.distributionRecords !== null
-    ) {
-      message.distributionRecords = DistributionRecords.fromJSON(
-        object.distributionRecords,
-      );
-    } else {
-      message.distributionRecords = undefined;
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = Long.fromString(object.height);
-    } else {
-      message.height = Long.ZERO;
-    }
-    return message;
+    return {
+      distributionRecords: isSet(object.distributionRecords)
+        ? DistributionRecords.fromJSON(object.distributionRecords)
+        : undefined,
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+    };
   },
 
   toJSON(message: QueryRecordsByRecipientAddrResponse): unknown {
@@ -555,32 +460,26 @@ export const QueryRecordsByRecipientAddrResponse = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryRecordsByRecipientAddrResponse>,
-  ): QueryRecordsByRecipientAddrResponse {
-    const message = {
-      ...baseQueryRecordsByRecipientAddrResponse,
-    } as QueryRecordsByRecipientAddrResponse;
-    if (
+  fromPartial<
+    I extends Exact<DeepPartial<QueryRecordsByRecipientAddrResponse>, I>,
+  >(object: I): QueryRecordsByRecipientAddrResponse {
+    const message = createBaseQueryRecordsByRecipientAddrResponse();
+    message.distributionRecords =
       object.distributionRecords !== undefined &&
       object.distributionRecords !== null
-    ) {
-      message.distributionRecords = DistributionRecords.fromPartial(
-        object.distributionRecords,
-      );
-    } else {
-      message.distributionRecords = undefined;
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = object.height as Long;
-    } else {
-      message.height = Long.ZERO;
-    }
+        ? DistributionRecords.fromPartial(object.distributionRecords)
+        : undefined;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
 
-const baseQueryClaimsByTypeRequest: object = { userClaimType: 0 };
+function createBaseQueryClaimsByTypeRequest(): QueryClaimsByTypeRequest {
+  return { userClaimType: 0 };
+}
 
 export const QueryClaimsByTypeRequest = {
   encode(
@@ -599,9 +498,7 @@ export const QueryClaimsByTypeRequest = {
   ): QueryClaimsByTypeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryClaimsByTypeRequest,
-    } as QueryClaimsByTypeRequest;
+    const message = createBaseQueryClaimsByTypeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -617,15 +514,11 @@ export const QueryClaimsByTypeRequest = {
   },
 
   fromJSON(object: any): QueryClaimsByTypeRequest {
-    const message = {
-      ...baseQueryClaimsByTypeRequest,
-    } as QueryClaimsByTypeRequest;
-    if (object.userClaimType !== undefined && object.userClaimType !== null) {
-      message.userClaimType = distributionTypeFromJSON(object.userClaimType);
-    } else {
-      message.userClaimType = 0;
-    }
-    return message;
+    return {
+      userClaimType: isSet(object.userClaimType)
+        ? distributionTypeFromJSON(object.userClaimType)
+        : 0,
+    };
   },
 
   toJSON(message: QueryClaimsByTypeRequest): unknown {
@@ -635,22 +528,18 @@ export const QueryClaimsByTypeRequest = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<QueryClaimsByTypeRequest>,
+  fromPartial<I extends Exact<DeepPartial<QueryClaimsByTypeRequest>, I>>(
+    object: I,
   ): QueryClaimsByTypeRequest {
-    const message = {
-      ...baseQueryClaimsByTypeRequest,
-    } as QueryClaimsByTypeRequest;
-    if (object.userClaimType !== undefined && object.userClaimType !== null) {
-      message.userClaimType = object.userClaimType;
-    } else {
-      message.userClaimType = 0;
-    }
+    const message = createBaseQueryClaimsByTypeRequest();
+    message.userClaimType = object.userClaimType ?? 0;
     return message;
   },
 };
 
-const baseQueryClaimsResponse: object = { height: Long.ZERO };
+function createBaseQueryClaimsResponse(): QueryClaimsResponse {
+  return { claims: [], height: Long.ZERO };
+}
 
 export const QueryClaimsResponse = {
   encode(
@@ -669,8 +558,7 @@ export const QueryClaimsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryClaimsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQueryClaimsResponse } as QueryClaimsResponse;
-    message.claims = [];
+    const message = createBaseQueryClaimsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -689,19 +577,12 @@ export const QueryClaimsResponse = {
   },
 
   fromJSON(object: any): QueryClaimsResponse {
-    const message = { ...baseQueryClaimsResponse } as QueryClaimsResponse;
-    message.claims = [];
-    if (object.claims !== undefined && object.claims !== null) {
-      for (const e of object.claims) {
-        message.claims.push(UserClaim.fromJSON(e));
-      }
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = Long.fromString(object.height);
-    } else {
-      message.height = Long.ZERO;
-    }
-    return message;
+    return {
+      claims: Array.isArray(object?.claims)
+        ? object.claims.map((e: any) => UserClaim.fromJSON(e))
+        : [],
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+    };
   },
 
   toJSON(message: QueryClaimsResponse): unknown {
@@ -718,19 +599,15 @@ export const QueryClaimsResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryClaimsResponse>): QueryClaimsResponse {
-    const message = { ...baseQueryClaimsResponse } as QueryClaimsResponse;
-    message.claims = [];
-    if (object.claims !== undefined && object.claims !== null) {
-      for (const e of object.claims) {
-        message.claims.push(UserClaim.fromPartial(e));
-      }
-    }
-    if (object.height !== undefined && object.height !== null) {
-      message.height = object.height as Long;
-    } else {
-      message.height = Long.ZERO;
-    }
+  fromPartial<I extends Exact<DeepPartial<QueryClaimsResponse>, I>>(
+    object: I,
+  ): QueryClaimsResponse {
+    const message = createBaseQueryClaimsResponse();
+    message.claims = object.claims?.map((e) => UserClaim.fromPartial(e)) || [];
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
@@ -829,10 +706,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -841,7 +720,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

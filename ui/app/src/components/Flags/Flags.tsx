@@ -73,6 +73,8 @@ export const Flags = defineComponent({
           ([n, enabled]) => {
             const network = n as unknown as Network;
             const chain = useChains().get(network);
+            console.log({ network, chain, enabled });
+            if (!chain.nativeAsset) return;
 
             chain.chainConfig.hidden = !enabled;
             chain.nativeAsset.decommissioned = enabled ? undefined : true;

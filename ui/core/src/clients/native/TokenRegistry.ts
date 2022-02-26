@@ -10,6 +10,7 @@ import {
 } from "@sifchain/sdk";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import { RegistryEntry } from "@sifchain/sdk/src/generated/proto/sifnode/tokenregistry/v1/types";
+import Long from "long";
 
 export type TokenRegistryContext = {
   sifRpcUrl: string;
@@ -30,6 +31,7 @@ export const TokenRegistry = (context: TokenRegistryContext) => {
         );
         const res = await dex.query?.tokenregistry.Entries({});
         const data = res?.registry?.entries;
+
         if (!data) throw new Error("Whitelist not found");
         return data as RegistryEntry[];
       })();

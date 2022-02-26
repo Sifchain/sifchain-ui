@@ -144,7 +144,13 @@ export interface UserClaims {
   userClaims: UserClaim[];
 }
 
-const baseGenesisState: object = {};
+function createBaseGenesisState(): GenesisState {
+  return {
+    distributionRecords: undefined,
+    distributions: undefined,
+    claims: undefined,
+  };
+}
 
 export const GenesisState = {
   encode(
@@ -172,7 +178,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGenesisState } as GenesisState;
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -197,28 +203,17 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    if (
-      object.distributionRecords !== undefined &&
-      object.distributionRecords !== null
-    ) {
-      message.distributionRecords = DistributionRecords.fromJSON(
-        object.distributionRecords,
-      );
-    } else {
-      message.distributionRecords = undefined;
-    }
-    if (object.distributions !== undefined && object.distributions !== null) {
-      message.distributions = Distributions.fromJSON(object.distributions);
-    } else {
-      message.distributions = undefined;
-    }
-    if (object.claims !== undefined && object.claims !== null) {
-      message.claims = UserClaims.fromJSON(object.claims);
-    } else {
-      message.claims = undefined;
-    }
-    return message;
+    return {
+      distributionRecords: isSet(object.distributionRecords)
+        ? DistributionRecords.fromJSON(object.distributionRecords)
+        : undefined,
+      distributions: isSet(object.distributions)
+        ? Distributions.fromJSON(object.distributions)
+        : undefined,
+      claims: isSet(object.claims)
+        ? UserClaims.fromJSON(object.claims)
+        : undefined,
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -238,41 +233,39 @@ export const GenesisState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    if (
+  fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(
+    object: I,
+  ): GenesisState {
+    const message = createBaseGenesisState();
+    message.distributionRecords =
       object.distributionRecords !== undefined &&
       object.distributionRecords !== null
-    ) {
-      message.distributionRecords = DistributionRecords.fromPartial(
-        object.distributionRecords,
-      );
-    } else {
-      message.distributionRecords = undefined;
-    }
-    if (object.distributions !== undefined && object.distributions !== null) {
-      message.distributions = Distributions.fromPartial(object.distributions);
-    } else {
-      message.distributions = undefined;
-    }
-    if (object.claims !== undefined && object.claims !== null) {
-      message.claims = UserClaims.fromPartial(object.claims);
-    } else {
-      message.claims = undefined;
-    }
+        ? DistributionRecords.fromPartial(object.distributionRecords)
+        : undefined;
+    message.distributions =
+      object.distributions !== undefined && object.distributions !== null
+        ? Distributions.fromPartial(object.distributions)
+        : undefined;
+    message.claims =
+      object.claims !== undefined && object.claims !== null
+        ? UserClaims.fromPartial(object.claims)
+        : undefined;
     return message;
   },
 };
 
-const baseDistributionRecord: object = {
-  distributionStatus: 0,
-  distributionType: 0,
-  distributionName: "",
-  recipientAddress: "",
-  distributionStartHeight: Long.ZERO,
-  distributionCompletedHeight: Long.ZERO,
-  authorizedRunner: "",
-};
+function createBaseDistributionRecord(): DistributionRecord {
+  return {
+    distributionStatus: 0,
+    distributionType: 0,
+    distributionName: "",
+    recipientAddress: "",
+    coins: [],
+    distributionStartHeight: Long.ZERO,
+    distributionCompletedHeight: Long.ZERO,
+    authorizedRunner: "",
+  };
+}
 
 export const DistributionRecord = {
   encode(
@@ -309,8 +302,7 @@ export const DistributionRecord = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DistributionRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDistributionRecord } as DistributionRecord;
-    message.coins = [];
+    const message = createBaseDistributionRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -347,78 +339,32 @@ export const DistributionRecord = {
   },
 
   fromJSON(object: any): DistributionRecord {
-    const message = { ...baseDistributionRecord } as DistributionRecord;
-    message.coins = [];
-    if (
-      object.distributionStatus !== undefined &&
-      object.distributionStatus !== null
-    ) {
-      message.distributionStatus = distributionStatusFromJSON(
-        object.distributionStatus,
-      );
-    } else {
-      message.distributionStatus = 0;
-    }
-    if (
-      object.distributionType !== undefined &&
-      object.distributionType !== null
-    ) {
-      message.distributionType = distributionTypeFromJSON(
-        object.distributionType,
-      );
-    } else {
-      message.distributionType = 0;
-    }
-    if (
-      object.distributionName !== undefined &&
-      object.distributionName !== null
-    ) {
-      message.distributionName = String(object.distributionName);
-    } else {
-      message.distributionName = "";
-    }
-    if (
-      object.recipientAddress !== undefined &&
-      object.recipientAddress !== null
-    ) {
-      message.recipientAddress = String(object.recipientAddress);
-    } else {
-      message.recipientAddress = "";
-    }
-    if (object.coins !== undefined && object.coins !== null) {
-      for (const e of object.coins) {
-        message.coins.push(Coin.fromJSON(e));
-      }
-    }
-    if (
-      object.distributionStartHeight !== undefined &&
-      object.distributionStartHeight !== null
-    ) {
-      message.distributionStartHeight = Long.fromString(
-        object.distributionStartHeight,
-      );
-    } else {
-      message.distributionStartHeight = Long.ZERO;
-    }
-    if (
-      object.distributionCompletedHeight !== undefined &&
-      object.distributionCompletedHeight !== null
-    ) {
-      message.distributionCompletedHeight = Long.fromString(
-        object.distributionCompletedHeight,
-      );
-    } else {
-      message.distributionCompletedHeight = Long.ZERO;
-    }
-    if (
-      object.authorizedRunner !== undefined &&
-      object.authorizedRunner !== null
-    ) {
-      message.authorizedRunner = String(object.authorizedRunner);
-    } else {
-      message.authorizedRunner = "";
-    }
-    return message;
+    return {
+      distributionStatus: isSet(object.distributionStatus)
+        ? distributionStatusFromJSON(object.distributionStatus)
+        : 0,
+      distributionType: isSet(object.distributionType)
+        ? distributionTypeFromJSON(object.distributionType)
+        : 0,
+      distributionName: isSet(object.distributionName)
+        ? String(object.distributionName)
+        : "",
+      recipientAddress: isSet(object.recipientAddress)
+        ? String(object.recipientAddress)
+        : "",
+      coins: Array.isArray(object?.coins)
+        ? object.coins.map((e: any) => Coin.fromJSON(e))
+        : [],
+      distributionStartHeight: isSet(object.distributionStartHeight)
+        ? Long.fromString(object.distributionStartHeight)
+        : Long.ZERO,
+      distributionCompletedHeight: isSet(object.distributionCompletedHeight)
+        ? Long.fromString(object.distributionCompletedHeight)
+        : Long.ZERO,
+      authorizedRunner: isSet(object.authorizedRunner)
+        ? String(object.authorizedRunner)
+        : "",
+    };
   },
 
   toJSON(message: DistributionRecord): unknown {
@@ -451,76 +397,33 @@ export const DistributionRecord = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<DistributionRecord>): DistributionRecord {
-    const message = { ...baseDistributionRecord } as DistributionRecord;
-    message.coins = [];
-    if (
-      object.distributionStatus !== undefined &&
-      object.distributionStatus !== null
-    ) {
-      message.distributionStatus = object.distributionStatus;
-    } else {
-      message.distributionStatus = 0;
-    }
-    if (
-      object.distributionType !== undefined &&
-      object.distributionType !== null
-    ) {
-      message.distributionType = object.distributionType;
-    } else {
-      message.distributionType = 0;
-    }
-    if (
-      object.distributionName !== undefined &&
-      object.distributionName !== null
-    ) {
-      message.distributionName = object.distributionName;
-    } else {
-      message.distributionName = "";
-    }
-    if (
-      object.recipientAddress !== undefined &&
-      object.recipientAddress !== null
-    ) {
-      message.recipientAddress = object.recipientAddress;
-    } else {
-      message.recipientAddress = "";
-    }
-    if (object.coins !== undefined && object.coins !== null) {
-      for (const e of object.coins) {
-        message.coins.push(Coin.fromPartial(e));
-      }
-    }
-    if (
+  fromPartial<I extends Exact<DeepPartial<DistributionRecord>, I>>(
+    object: I,
+  ): DistributionRecord {
+    const message = createBaseDistributionRecord();
+    message.distributionStatus = object.distributionStatus ?? 0;
+    message.distributionType = object.distributionType ?? 0;
+    message.distributionName = object.distributionName ?? "";
+    message.recipientAddress = object.recipientAddress ?? "";
+    message.coins = object.coins?.map((e) => Coin.fromPartial(e)) || [];
+    message.distributionStartHeight =
       object.distributionStartHeight !== undefined &&
       object.distributionStartHeight !== null
-    ) {
-      message.distributionStartHeight = object.distributionStartHeight as Long;
-    } else {
-      message.distributionStartHeight = Long.ZERO;
-    }
-    if (
+        ? Long.fromValue(object.distributionStartHeight)
+        : Long.ZERO;
+    message.distributionCompletedHeight =
       object.distributionCompletedHeight !== undefined &&
       object.distributionCompletedHeight !== null
-    ) {
-      message.distributionCompletedHeight =
-        object.distributionCompletedHeight as Long;
-    } else {
-      message.distributionCompletedHeight = Long.ZERO;
-    }
-    if (
-      object.authorizedRunner !== undefined &&
-      object.authorizedRunner !== null
-    ) {
-      message.authorizedRunner = object.authorizedRunner;
-    } else {
-      message.authorizedRunner = "";
-    }
+        ? Long.fromValue(object.distributionCompletedHeight)
+        : Long.ZERO;
+    message.authorizedRunner = object.authorizedRunner ?? "";
     return message;
   },
 };
 
-const baseDistributionRecords: object = {};
+function createBaseDistributionRecords(): DistributionRecords {
+  return { distributionRecords: [] };
+}
 
 export const DistributionRecords = {
   encode(
@@ -536,8 +439,7 @@ export const DistributionRecords = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DistributionRecords {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDistributionRecords } as DistributionRecords;
-    message.distributionRecords = [];
+    const message = createBaseDistributionRecords();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -555,17 +457,13 @@ export const DistributionRecords = {
   },
 
   fromJSON(object: any): DistributionRecords {
-    const message = { ...baseDistributionRecords } as DistributionRecords;
-    message.distributionRecords = [];
-    if (
-      object.distributionRecords !== undefined &&
-      object.distributionRecords !== null
-    ) {
-      for (const e of object.distributionRecords) {
-        message.distributionRecords.push(DistributionRecord.fromJSON(e));
-      }
-    }
-    return message;
+    return {
+      distributionRecords: Array.isArray(object?.distributionRecords)
+        ? object.distributionRecords.map((e: any) =>
+            DistributionRecord.fromJSON(e),
+          )
+        : [],
+    };
   },
 
   toJSON(message: DistributionRecords): unknown {
@@ -580,22 +478,21 @@ export const DistributionRecords = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<DistributionRecords>): DistributionRecords {
-    const message = { ...baseDistributionRecords } as DistributionRecords;
-    message.distributionRecords = [];
-    if (
-      object.distributionRecords !== undefined &&
-      object.distributionRecords !== null
-    ) {
-      for (const e of object.distributionRecords) {
-        message.distributionRecords.push(DistributionRecord.fromPartial(e));
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<DistributionRecords>, I>>(
+    object: I,
+  ): DistributionRecords {
+    const message = createBaseDistributionRecords();
+    message.distributionRecords =
+      object.distributionRecords?.map((e) =>
+        DistributionRecord.fromPartial(e),
+      ) || [];
     return message;
   },
 };
 
-const baseDistributions: object = {};
+function createBaseDistributions(): Distributions {
+  return { distributions: [] };
+}
 
 export const Distributions = {
   encode(
@@ -611,8 +508,7 @@ export const Distributions = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Distributions {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDistributions } as Distributions;
-    message.distributions = [];
+    const message = createBaseDistributions();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -630,14 +526,11 @@ export const Distributions = {
   },
 
   fromJSON(object: any): Distributions {
-    const message = { ...baseDistributions } as Distributions;
-    message.distributions = [];
-    if (object.distributions !== undefined && object.distributions !== null) {
-      for (const e of object.distributions) {
-        message.distributions.push(Distribution.fromJSON(e));
-      }
-    }
-    return message;
+    return {
+      distributions: Array.isArray(object?.distributions)
+        ? object.distributions.map((e: any) => Distribution.fromJSON(e))
+        : [],
+    };
   },
 
   toJSON(message: Distributions): unknown {
@@ -652,23 +545,19 @@ export const Distributions = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Distributions>): Distributions {
-    const message = { ...baseDistributions } as Distributions;
-    message.distributions = [];
-    if (object.distributions !== undefined && object.distributions !== null) {
-      for (const e of object.distributions) {
-        message.distributions.push(Distribution.fromPartial(e));
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<Distributions>, I>>(
+    object: I,
+  ): Distributions {
+    const message = createBaseDistributions();
+    message.distributions =
+      object.distributions?.map((e) => Distribution.fromPartial(e)) || [];
     return message;
   },
 };
 
-const baseDistribution: object = {
-  distributionType: 0,
-  distributionName: "",
-  runner: "",
-};
+function createBaseDistribution(): Distribution {
+  return { distributionType: 0, distributionName: "", runner: "" };
+}
 
 export const Distribution = {
   encode(
@@ -690,7 +579,7 @@ export const Distribution = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Distribution {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseDistribution } as Distribution;
+    const message = createBaseDistribution();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -712,31 +601,15 @@ export const Distribution = {
   },
 
   fromJSON(object: any): Distribution {
-    const message = { ...baseDistribution } as Distribution;
-    if (
-      object.distributionType !== undefined &&
-      object.distributionType !== null
-    ) {
-      message.distributionType = distributionTypeFromJSON(
-        object.distributionType,
-      );
-    } else {
-      message.distributionType = 0;
-    }
-    if (
-      object.distributionName !== undefined &&
-      object.distributionName !== null
-    ) {
-      message.distributionName = String(object.distributionName);
-    } else {
-      message.distributionName = "";
-    }
-    if (object.runner !== undefined && object.runner !== null) {
-      message.runner = String(object.runner);
-    } else {
-      message.runner = "";
-    }
-    return message;
+    return {
+      distributionType: isSet(object.distributionType)
+        ? distributionTypeFromJSON(object.distributionType)
+        : 0,
+      distributionName: isSet(object.distributionName)
+        ? String(object.distributionName)
+        : "",
+      runner: isSet(object.runner) ? String(object.runner) : "",
+    };
   },
 
   toJSON(message: Distribution): unknown {
@@ -749,38 +622,20 @@ export const Distribution = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Distribution>): Distribution {
-    const message = { ...baseDistribution } as Distribution;
-    if (
-      object.distributionType !== undefined &&
-      object.distributionType !== null
-    ) {
-      message.distributionType = object.distributionType;
-    } else {
-      message.distributionType = 0;
-    }
-    if (
-      object.distributionName !== undefined &&
-      object.distributionName !== null
-    ) {
-      message.distributionName = object.distributionName;
-    } else {
-      message.distributionName = "";
-    }
-    if (object.runner !== undefined && object.runner !== null) {
-      message.runner = object.runner;
-    } else {
-      message.runner = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<Distribution>, I>>(
+    object: I,
+  ): Distribution {
+    const message = createBaseDistribution();
+    message.distributionType = object.distributionType ?? 0;
+    message.distributionName = object.distributionName ?? "";
+    message.runner = object.runner ?? "";
     return message;
   },
 };
 
-const baseUserClaim: object = {
-  userAddress: "",
-  userClaimType: 0,
-  userClaimTime: "",
-};
+function createBaseUserClaim(): UserClaim {
+  return { userAddress: "", userClaimType: 0, userClaimTime: "" };
+}
 
 export const UserClaim = {
   encode(
@@ -802,7 +657,7 @@ export const UserClaim = {
   decode(input: _m0.Reader | Uint8Array, length?: number): UserClaim {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseUserClaim } as UserClaim;
+    const message = createBaseUserClaim();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -824,23 +679,15 @@ export const UserClaim = {
   },
 
   fromJSON(object: any): UserClaim {
-    const message = { ...baseUserClaim } as UserClaim;
-    if (object.userAddress !== undefined && object.userAddress !== null) {
-      message.userAddress = String(object.userAddress);
-    } else {
-      message.userAddress = "";
-    }
-    if (object.userClaimType !== undefined && object.userClaimType !== null) {
-      message.userClaimType = distributionTypeFromJSON(object.userClaimType);
-    } else {
-      message.userClaimType = 0;
-    }
-    if (object.userClaimTime !== undefined && object.userClaimTime !== null) {
-      message.userClaimTime = String(object.userClaimTime);
-    } else {
-      message.userClaimTime = "";
-    }
-    return message;
+    return {
+      userAddress: isSet(object.userAddress) ? String(object.userAddress) : "",
+      userClaimType: isSet(object.userClaimType)
+        ? distributionTypeFromJSON(object.userClaimType)
+        : 0,
+      userClaimTime: isSet(object.userClaimTime)
+        ? String(object.userClaimTime)
+        : "",
+    };
   },
 
   toJSON(message: UserClaim): unknown {
@@ -854,28 +701,20 @@ export const UserClaim = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<UserClaim>): UserClaim {
-    const message = { ...baseUserClaim } as UserClaim;
-    if (object.userAddress !== undefined && object.userAddress !== null) {
-      message.userAddress = object.userAddress;
-    } else {
-      message.userAddress = "";
-    }
-    if (object.userClaimType !== undefined && object.userClaimType !== null) {
-      message.userClaimType = object.userClaimType;
-    } else {
-      message.userClaimType = 0;
-    }
-    if (object.userClaimTime !== undefined && object.userClaimTime !== null) {
-      message.userClaimTime = object.userClaimTime;
-    } else {
-      message.userClaimTime = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<UserClaim>, I>>(
+    object: I,
+  ): UserClaim {
+    const message = createBaseUserClaim();
+    message.userAddress = object.userAddress ?? "";
+    message.userClaimType = object.userClaimType ?? 0;
+    message.userClaimTime = object.userClaimTime ?? "";
     return message;
   },
 };
 
-const baseUserClaims: object = {};
+function createBaseUserClaims(): UserClaims {
+  return { userClaims: [] };
+}
 
 export const UserClaims = {
   encode(
@@ -891,8 +730,7 @@ export const UserClaims = {
   decode(input: _m0.Reader | Uint8Array, length?: number): UserClaims {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseUserClaims } as UserClaims;
-    message.userClaims = [];
+    const message = createBaseUserClaims();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -908,14 +746,11 @@ export const UserClaims = {
   },
 
   fromJSON(object: any): UserClaims {
-    const message = { ...baseUserClaims } as UserClaims;
-    message.userClaims = [];
-    if (object.userClaims !== undefined && object.userClaims !== null) {
-      for (const e of object.userClaims) {
-        message.userClaims.push(UserClaim.fromJSON(e));
-      }
-    }
-    return message;
+    return {
+      userClaims: Array.isArray(object?.userClaims)
+        ? object.userClaims.map((e: any) => UserClaim.fromJSON(e))
+        : [],
+    };
   },
 
   toJSON(message: UserClaims): unknown {
@@ -930,14 +765,12 @@ export const UserClaims = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<UserClaims>): UserClaims {
-    const message = { ...baseUserClaims } as UserClaims;
-    message.userClaims = [];
-    if (object.userClaims !== undefined && object.userClaims !== null) {
-      for (const e of object.userClaims) {
-        message.userClaims.push(UserClaim.fromPartial(e));
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<UserClaims>, I>>(
+    object: I,
+  ): UserClaims {
+    const message = createBaseUserClaims();
+    message.userClaims =
+      object.userClaims?.map((e) => UserClaim.fromPartial(e)) || [];
     return message;
   },
 };
@@ -949,10 +782,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -961,7 +796,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

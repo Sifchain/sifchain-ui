@@ -186,6 +186,18 @@ export default defineComponent({
                   href="/rewards"
                 />
                 <NavSidePanelItem
+                  displayName="Margin"
+                  icon="navigation/harvest"
+                  href="/margin"
+                />
+                <NavSidePanelItem
+                  displayName="Stake"
+                  icon="navigation/stake"
+                  href="https://wallet.keplr.app/#/sifchain/stake"
+                  class="group"
+                />
+
+                <NavSidePanelItem
                   icon="navigation/changelog"
                   onClick={() => (changelogOpenRef.value = true)}
                   displayName={<div class="flex items-center">Changelog</div>}
@@ -217,7 +229,6 @@ export default defineComponent({
                       />
                     </div>
                   }
-<<<<<<< HEAD
                 />
                 <NavSidePanelItem
                   icon="navigation/changelog"
@@ -230,7 +241,6 @@ export default defineComponent({
                       </div>
                     )
                   }
-                />
                 /> */}
 
                 {votingOpenRef.value && (

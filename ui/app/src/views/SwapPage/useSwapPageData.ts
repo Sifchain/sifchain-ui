@@ -231,6 +231,7 @@ export const useSwapPageData = () => {
         );
         txStatus.value = NativeDexClient.parseTxResult(res);
       } catch (error) {
+        console.error(error);
         txStatus.value = {
           state: "failed",
           hash: "",
