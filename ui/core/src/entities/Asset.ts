@@ -29,11 +29,18 @@ function isAsset(value: any): value is IAsset {
 export function Asset(assetOrSymbol: IAsset | string): ReadonlyAsset {
   // If it is an asset then cache it and return it
   if (isAsset(assetOrSymbol)) {
-    const asset = assetOrSymbol as IAsset;
-    assetMap.set(assetOrSymbol.symbol.toLowerCase(), {
-      ...asset,
-      displaySymbol: asset.displaySymbol || asset.symbol,
-    } as ReadonlyAsset);
+    const key = assetOrSymbol.symbol.toLowerCase();
+
+    if (assetMap.has(key)) {
+      // already cached, return it
+      return assetOrSymbol;
+    }
+
+    assetMap.set(key, {
+      ...assetOrSymbol,
+      displaySymbol: assetOrSymbol.displaySymbol || assetOrSymbol.symbol,
+    });
+
     return assetOrSymbol;
   }
 
@@ -41,6 +48,7 @@ export function Asset(assetOrSymbol: IAsset | string): ReadonlyAsset {
   const found = assetOrSymbol
     ? assetMap.get(assetOrSymbol.toLowerCase())
     : false;
+
   if (!found) {
     throw new Error(
       `Attempt to retrieve the asset with key "${assetOrSymbol}" before it had been cached.`,
