@@ -109,7 +109,10 @@ export const accountStore = Vuextra.createStore({
       try {
         const address = await provider.connect(chain);
         self.setConnected({ network, connected: true });
-        self.setAddress({ network, address });
+
+        if (typeof address === "string") {
+          self.setAddress({ network, address });
+        }
       } catch (error) {
         console.error(network, "wallet connect error", error);
       } finally {
@@ -163,6 +166,7 @@ export const accountStore = Vuextra.createStore({
       const replacedBalances = self.state[network].balances.map((b) =>
         b.symbol === balance.symbol ? balance : b,
       );
+
       self.setBalances({
         network,
         balances: replacedBalances.length ? replacedBalances : [balance],

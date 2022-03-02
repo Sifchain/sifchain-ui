@@ -6,7 +6,6 @@ export function useField(amount: Ref<string>, symbol: Ref<string | null>) {
   const asset = computed(() => {
     if (!symbol.value) return null;
     try {
-      console.log(symbol.value);
       return Asset(symbol.value);
     } catch (error) {
       // Not ready yet

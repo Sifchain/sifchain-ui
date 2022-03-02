@@ -1,12 +1,12 @@
 import { Ref, computed, effect, ref } from "@vue/reactivity";
 import {
-  Asset,
   AssetAmount,
   IPool,
   CompositePool,
   IAssetAmount,
   Amount,
   format,
+  IAsset,
 } from "@sifchain/sdk";
 
 import { useField } from "./useField";
@@ -45,7 +45,7 @@ export function useSwapCalculator(input: {
   balances: Ref<IAssetAmount[]>;
   selectedField: Ref<"from" | "to" | null>;
   slippage: Ref<string>;
-  poolFinder: (a: Asset | string, b: Asset | string) => Ref<IPool> | null;
+  poolFinder: (a: IAsset | string, b: IAsset | string) => Ref<IPool> | null;
 }) {
   // extracting selectedField so we can use it without tracking its change
   let selectedField: "from" | "to" | null = null;
@@ -104,7 +104,7 @@ export function useSwapCalculator(input: {
         mantissa: 6,
       });
     } catch (error) {
-      if (/division by zero/i.test(error.message)) {
+      if (/division by zero/i.test((error as Error).message)) {
         formatted = "0.0";
       } else {
         throw error;

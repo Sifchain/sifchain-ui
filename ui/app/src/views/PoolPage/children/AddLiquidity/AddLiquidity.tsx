@@ -1,21 +1,21 @@
+import { computed, defineComponent } from "vue";
+import { useRouter } from "vue-router";
+import { Network } from "@sifchain/sdk";
+
+import { useTransactionDetails } from "@/hooks/useTransactionDetails";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { Button } from "@/components/Button/Button";
 import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
+import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { Tooltip } from "@/components/Tooltip";
+import Toggle from "@/components/Toggle";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 
-import { computed, defineComponent, TransitionGroup } from "vue";
-import { useRouter } from "vue-router";
 import { useAddLiquidityData } from "./useAddLiquidityData";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import { Tooltip } from "@/components/Tooltip";
-import { effect } from "@vue/reactivity";
-import { Network } from "@sifchain/sdk";
-import Toggle from "@/components/Toggle";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -24,8 +24,9 @@ export default defineComponent({
     const router = useRouter();
     const formattedFromTokenBalance = useFormattedTokenBalance(data.fromSymbol);
     const formattedToTokenBalance = useFormattedTokenBalance(data.toSymbol);
-    //data.fromAmount.value = "1";
+
     data.handleTokenAFocused();
+
     const appWalletPicker = useAppWalletPicker();
 
     const transactionDetails = useTransactionDetails({
@@ -192,7 +193,7 @@ export default defineComponent({
             onSelectAsset={(asset) => {
               data.fromSymbol.value = asset.symbol;
             }}
-          ></TokenInputGroup>
+          />
           <div class="flex justify-center my-[4px]">
             <AssetIcon size={20} class=" text-white" icon="interactive/plus" />
           </div>
@@ -214,7 +215,7 @@ export default defineComponent({
             onSelectAsset={(asset) => {
               data.toSymbol.value = asset.symbol;
             }}
-          ></TokenInputGroup>
+          />
           <Form.Details
             class="mt-[10px]"
             details={{
@@ -345,7 +346,6 @@ export default defineComponent({
               onClick={() => appWalletPicker.show()}
               class="mt-[10px]"
             >
-              {/* <AssetIcon icon={"interactive/arrows-in"} class="mr-[4px]" />{" "} */}
               {data.hasActiveSafetyLag.value ? (
                 <AssetIcon
                   size={22}

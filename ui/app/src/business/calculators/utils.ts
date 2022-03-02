@@ -28,6 +28,7 @@ export function useBalances(balances: Ref<IAssetAmount[]>) {
     for (const item of balances.value) {
       map.set(item.asset.symbol, item);
     }
+
     return map;
   });
 }
