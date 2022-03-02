@@ -31,8 +31,8 @@ export function Asset(assetOrSymbol: IAsset | string): ReadonlyAsset {
   if (isAsset(assetOrSymbol)) {
     const key = assetOrSymbol.symbol.toLowerCase();
 
-    if (assetMap.has(key)) {
-      // already cached, return it
+    // prevent overriding of existing rowan asset
+    if (assetMap.has(key) && key === "rowan") {
       return assetOrSymbol;
     }
 

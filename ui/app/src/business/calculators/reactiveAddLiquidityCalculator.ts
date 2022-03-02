@@ -98,11 +98,6 @@ export function useReactivePoolCalculator(input: {
     const fieldAmount = tokenAField.fieldAmount.value;
     const balance = tokenABalance.value;
 
-    console.log({
-      balance_requested: fieldAmount.toString(),
-      balance_available: balance.toString(),
-    });
-
     return fieldAmount.greaterThan(balance);
   });
 
@@ -361,8 +356,6 @@ export function useReactivePoolCalculator(input: {
     if (aAmountIsZeroOrFalsy && bAmountIsZeroOrFalsy) {
       return PoolState.ZERO_AMOUNTS;
     }
-
-    console.log({ fromBalanceOverdrawn: fromBalanceOverdrawn.value });
 
     // Insufficient Funds
     if (fromBalanceOverdrawn.value || toBalanceOverdrawn.value) {
