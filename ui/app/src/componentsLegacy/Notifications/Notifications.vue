@@ -1,6 +1,6 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
-import { reactive, ref, Ref } from "@vue/reactivity"; /* eslint-disable-line */
+import { reactive, ref, Ref } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
 import { AppEvent } from "@sifchain/sdk/src/services/EventBusService";
 import { INotification } from "./INotification";

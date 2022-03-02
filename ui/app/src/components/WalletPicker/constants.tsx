@@ -7,7 +7,6 @@ import router from "@/router";
 import { accountStore } from "@/store/modules/accounts";
 import { isChainFlaggedDisabled } from "@/store/modules/flags";
 import { Chain, IBCChainConfig, Network } from "@sifchain/sdk";
-import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
 
 export type WalletConnection = {
   walletName: string;
@@ -15,14 +14,12 @@ export type WalletConnection = {
   getChain: () => Chain;
   connect: () => any;
   disconnect?: () => any;
-  cta?: string;
 };
 
 export type WalletConfig = {
   id: "keplr" | "metamask" | "terraStation";
   walletName: string;
   walletIconSrc: string;
-  cta?: string;
   instructions: any;
 };
 export const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
@@ -79,7 +76,6 @@ export const walletConfigLookup: Record<WalletConfig["id"], WalletConfig> = {
   terraStation: {
     id: "terraStation",
     walletName: "Terra Station",
-    cta: "Connect\n(No Ledger)",
     walletIconSrc: terraStationSrc,
     instructions: (
       <>

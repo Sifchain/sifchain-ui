@@ -45,7 +45,7 @@ type Fn = (...args: any[]) => any;
 
 function createInvocablePromise<
   PromiseReturnType,
-  FunctionType extends Fn = Fn
+  FunctionType extends Fn = Fn,
 >(
   fn: FunctionType,
   promiseCb: ConstructorParameters<typeof Promise>[0],
@@ -55,10 +55,9 @@ function createInvocablePromise<
   );
   const promiseInstance = new Promise(promiseCb);
   for (const thing in promiseDescriptors) {
-    promiseDescriptors[thing].value = promiseDescriptors[thing].value.bind(
-      promiseInstance,
-    );
+    promiseDescriptors[thing].value =
+      promiseDescriptors[thing].value.bind(promiseInstance);
   }
   Object.defineProperties(fn, promiseDescriptors);
-  return (fn as unknown) as Promise<PromiseReturnType> & Fn;
+  return fn as unknown as Promise<PromiseReturnType> & Fn;
 }

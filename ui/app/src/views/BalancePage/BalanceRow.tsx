@@ -1,32 +1,16 @@
-import { defineComponent, PropType, computed, BaseTransition } from "vue";
+import { defineComponent, PropType, computed } from "vue";
 import cx from "clsx";
-import { ref, toRefs } from "@vue/reactivity";
 import { RouterLink } from "vue-router";
-import { useBalancePageData } from "./useBalancePageData";
 import { TokenListItem } from "@/hooks/useToken";
-import {
-  formatAssetAmount,
-  getPeggedSymbol,
-} from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 
-import { prettyNumber } from "@/utils/prettyNumber";
-import ProgressRing from "@/components/ProgressRing";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import Tooltip from "@/components/Tooltip";
-import {
-  getBlockExplorerUrl,
-  shortenHash,
-} from "@/componentsLegacy/shared/utils";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import {
-  getAssetLabel,
-  getUnpeggedSymbol,
-} from "@/componentsLegacy/shared/utils";
+import { shortenHash } from "@/componentsLegacy/shared/utils";
+import { getAssetLabel } from "@/componentsLegacy/shared/utils";
 import { getImportLocation } from "./Import/useImportData";
-import { TokenIcon } from "@/components/TokenIcon";
 import { getExportLocation } from "./Export/useExportData";
-import { useCore } from "@/hooks/useCore";
-import { Asset, Network } from "@sifchain/sdk";
+import { Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
@@ -283,7 +267,7 @@ export default defineComponent({
                       <p class="mb-1">
                         You have the following pending export transactions. The
                         exported tokens will usually be available for use on
-                        their target chain within 20 minutes, sometimes upwards
+                        their target chain within 10 minutes, sometimes upwards
                         of 60 minutes.
                       </p>
                       <ul class="list-disc list-inside">

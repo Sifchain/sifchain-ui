@@ -13,7 +13,7 @@ import Modal from "../Modal";
 import { TokenIcon } from "../TokenIcon";
 import { TokenSelectDropdown } from "../TokenSelectDropdown";
 import { useNativeChain } from "@/hooks/useChains";
-import { ReportTransactionError } from "@sifchain/sdk/src/usecases/utils";
+import { ReportTransactionError } from "@/business/usecases/utils";
 
 import { PoolsSelector } from "./PoolsSelector";
 import { YesNoSelector } from "./YesNoSelector";

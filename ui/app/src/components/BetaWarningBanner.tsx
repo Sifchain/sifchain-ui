@@ -1,15 +1,14 @@
-import { defineComponent, onMounted, onUnmounted, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 import AssetIcon from "./AssetIcon";
 
 export default defineComponent({
   name: "BetaWarningBanner",
-  props: {},
   setup() {
     const expandedRef = ref(false);
 
     return () => (
       <div
-        class="absolute top-0 w-[200px] right-[40px] transition-all z-20 drop-shadow-lg flex flex-col items-end"
+        class="absolute top-0 w-48 right-14 transition-all z-20 drop-shadow-lg flex flex-col items-end"
         style={{
           transform: `translateY(${
             expandedRef.value ? 0 : "calc(-100% + 40px)"

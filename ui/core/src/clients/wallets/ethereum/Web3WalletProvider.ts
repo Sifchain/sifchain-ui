@@ -4,6 +4,7 @@ import {
   IAssetAmount,
   EthChainConfig,
   AssetAmount,
+  IAsset,
 } from "../../../entities";
 import { provider, WebsocketProvider, IpcProvider } from "web3-core";
 import Web3 from "web3";
@@ -13,8 +14,9 @@ import {
   NativeDexTransaction,
   NativeDexSignedTransaction,
   NativeDexTransactionResult,
-} from "../../../services/utils/SifClient/NativeDexTransaction";
+} from "../../../clients";
 import { EventEmitter } from "events";
+import RateLimitProtector from "../../../utils/RateLimitProtector";
 
 // NOTE(ajoslin): Web3WalletProvider doesn't actually sign anything yet,
 // all it has to do is approve amounts to contracts.
@@ -37,6 +39,9 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
     },
   ) {
     super();
+    this.fetchBalance = new RateLimitProtector({
+      padding: 100,
+    }).buildAsyncShield(this.fetchBalance, this);
   }
 
   async isInstalled(chain: Chain) {
@@ -52,7 +57,7 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
 
     web3.currentProvider.on(eventName, () => callback());
     return () =>
-      ((web3.currentProvider as unknown) as EventEmitter)?.off(
+      (web3.currentProvider as unknown as EventEmitter)?.off(
         eventName,
         callback,
       );
@@ -176,29 +181,39 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
   }
   async disconnect(chain: Chain): Promise<void> {}
 
-  async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
+  async fetchBalance(
+    chain: Chain,
+    address: string,
+    symbol: string,
+  ): Promise<IAssetAmount> {
+    const asset = chain.findAssetWithLikeSymbolOrThrow(symbol);
     const web3 = await this.getWeb3();
 
+    if (asset.symbol === chain.nativeAsset.symbol) {
+      return AssetAmount(asset, await web3.eth.getBalance(address));
+    }
+    if (!asset.address) {
+      return AssetAmount(asset, "0");
+    }
+    const contract = new web3.eth.Contract(
+      erc20TokenAbi,
+      asset.address.toLowerCase(),
+    );
+    let amount = "0";
+    try {
+      amount = await contract.methods.balanceOf(address).call();
+    } catch (error) {
+      console.error("token fetch error", asset);
+    }
+    return AssetAmount(asset, amount);
+  }
+
+  async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
+    console.log("running");
     return Promise.all(
-      chain.assets.map(async (asset) => {
-        if (asset.symbol === chain.nativeAsset.symbol) {
-          return AssetAmount(asset, await web3.eth.getBalance(address));
-        }
-        if (!asset.address) {
-          return AssetAmount(asset, "0");
-        }
-        const contract = new web3.eth.Contract(
-          erc20TokenAbi,
-          asset.address.toLowerCase(),
-        );
-        let amount = "0";
-        try {
-          amount = await contract.methods.balanceOf(address).call();
-        } catch (error) {
-          console.error("token fetch error", asset);
-        }
-        return AssetAmount(asset, amount);
-      }),
+      chain.assets.map(async (asset) =>
+        this.fetchBalance(chain, address, asset.symbol),
+      ),
     );
   }
 }

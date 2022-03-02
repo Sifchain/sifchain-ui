@@ -1,17 +1,15 @@
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { IAsset } from "@sifchain/sdk";
 import {
-  VNode,
   Component,
   defineComponent,
   HTMLAttributes,
   PropType,
   SetupContext,
-  Transition,
   onMounted,
   ref,
 } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { TokenIcon } from "./TokenIcon";
 
 export default defineComponent({
@@ -45,7 +43,7 @@ export default defineComponent({
     });
 
     return () => (
-      <div class="block shorter:pt-[90px] pt-[90px] 2xl:pt-[130px] pb-[530px]">
+      <div class="absolute top-[90px] 2xl:top-[130px]">
         <div
           key="view-layer"
           class={[
