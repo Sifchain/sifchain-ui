@@ -5,5 +5,20 @@
   "routes": [
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/index.html" }
+  ],
+  "redirects": [
+      {
+          "source": "/(.*)",
+          "destination": "https://sifchain.finance/legal-disclamer",
+          "statusCode": 302,
+          "has": [
+            {
+              "type": "header",
+              "key": "x-vercel-ip-country",
+              "value": "US"
+            }
+          ],
+          "permanent": false
+      }
   ]
 }
