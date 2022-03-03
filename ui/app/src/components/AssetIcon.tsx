@@ -8,16 +8,17 @@ import {
   SVGAttributes,
   computed,
 } from "vue";
+
 const navIcons = ((results) => {
-  return Object.entries(results).reduce((acc, [key, value], index) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const iconName = key.replace(/^.*?\/icons\//g, "").replace(/\.svg$/, "");
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    acc[iconName] = value;
-    return acc;
-  }, {});
+  return Object.entries(results).reduce<Record<string, Record<string, any>>>(
+    (acc, [key, value]) => {
+      const iconName = key.replace(/^.*?\/icons\//g, "").replace(/\.svg$/, "");
+      acc[iconName] = value;
+
+      return acc;
+    },
+    {},
+  );
 })(import.meta.globEager("/src/assets/icons/**/*.svg")) as Record<
   string,
   {
@@ -55,7 +56,8 @@ export type InteractiveIconName =
   | "check"
   | "wreath"
   | "ticket"
-  | "saturday";
+  | "saturday"
+  | "edit";
 
 export type NavIconName =
   | "balances"
@@ -109,7 +111,6 @@ export default defineComponent({
           height={props.size}
           class={[
             "font-normal",
-            // "stroke-current",
             props.active ? "text-accent-base" : "",
             props.disabled ? "text-gray-500" : "",
             props.class,

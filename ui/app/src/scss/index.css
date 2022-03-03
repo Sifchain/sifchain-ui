@@ -74,10 +74,6 @@ input::-webkit-search-cancel-button {
   transform: translateY(1%) scale(1);
 }
 
-* {
-  letter-spacing: -3% !important;
-}
-
 body {
   @apply font-sans bg-black text-white text-base font-medium;
   letter-spacing: -0.03em;

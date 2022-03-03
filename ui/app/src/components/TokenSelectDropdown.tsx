@@ -4,24 +4,24 @@ import { useCore } from "@/hooks/useCore";
 import {
   computed,
   defineComponent,
-  effect,
   onMounted,
   onUnmounted,
   PropType,
   Ref,
   ref,
   Teleport,
-  TransitionGroup,
   watch,
-  watchEffect,
 } from "vue";
-import { IAsset, Network } from "../../../core/src";
-import { TokenIcon } from "./TokenIcon";
+import { IAsset, Network } from "@sifchain/sdk";
+
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
 import { TokenNetworkIcon } from "./TokenNetworkIcon/TokenNetworkIcon";
+import clsx from "clsx";
+import { flagsStore } from "@/store/modules/flags";
 
 export const TokenSelectDropdown = defineComponent({
+  name: "TokenSelectDropdown",
   props: {
     active: {
       type: Object as PropType<Ref<boolean> | boolean>,
@@ -140,7 +140,9 @@ export const TokenSelectDropdown = defineComponent({
           dropdownRoot.value?.querySelector("input")?.focus();
         });
       }
+
       const rect = selfRoot.value?.getBoundingClientRect();
+
       if (
         rect?.x !== boundingClientRect.value?.x ||
         rect?.y !== boundingClientRect.value?.y
@@ -149,107 +151,127 @@ export const TokenSelectDropdown = defineComponent({
       }
       return () => window.cancelAnimationFrame(frameId);
     });
+
     onMounted(() => {
       resizeListener.value();
       window.addEventListener("resize", resizeListener.value);
     });
+
     onUnmounted(() => {
       window.removeEventListener("resize", resizeListener.value);
     });
 
+    const isManageTokenListEnabled = flagsStore.state.manageTokenList;
+
+    const customTokenListOpenRef = ref(false);
+
     return () => (
       <div ref={selfRoot} class="w-full h-0">
-        {
-          <Teleport to="#portal-target">
-            {activeRef.value && (
+        <Teleport to="#portal-target">
+          {activeRef.value && (
+            <div
+              ref={dropdownRoot}
+              style={{
+                boxShadow: "0px 20px 20px 0px #00000080",
+                position: "absolute",
+                top: (boundingClientRect.value?.y ?? 0) + "px",
+                left: (boundingClientRect.value?.x ?? 0) + "px",
+              }}
+              class="overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[440px] mt-[7px] z-50 rounded-[4px]"
+            >
               <div
-                ref={dropdownRoot}
-                style={{
-                  boxShadow: "0px 20px 20px 0px #00000080",
-                  position: "absolute",
-                  top: (boundingClientRect.value?.y ?? 0) + "px",
-                  left:
-                    (boundingClientRect.value?.x ?? 0) +
-                    // (boundingClientRect.value?.width ?? 0) +
-                    "px",
-                }}
-                class=" overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[440px] mt-[7px] z-50 rounded-[4px]"
+                class={clsx("w-full h-full py-[20px] px-[15px]", {
+                  "pb-16":
+                    isManageTokenListEnabled && !customTokenListOpenRef.value,
+                })}
               >
-                <div class="w-full h-full py-[20px] px-[15px]">
-                  <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">
-                    <AssetIcon
-                      size={20}
-                      icon="interactive/search"
-                      class={[`ml-3 w-4 h-4`, false ? "text-[#6E6E6E]" : ""]}
-                    />
-                    <input
-                      id="token-search"
-                      autofocus
-                      type="search"
-                      placeholder="Search Token..."
-                      autocomplete="off"
-                      onKeydown={(e: Event) => {
-                        if (
-                          (e as KeyboardEvent).key === "Enter" &&
-                          sortedAndFilteredTokens.value.length > 0
-                        ) {
-                          props.onSelectAsset(
-                            sortedAndFilteredTokens.value[0].asset,
-                          );
-                          searchQuery.value = "";
-                        }
-                      }}
-                      value={searchQuery.value}
-                      onInput={(e: Event) => {
-                        searchQuery.value = (
-                          e.target as HTMLInputElement
-                        ).value;
-                      }}
-                      class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
-                    />
+                <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">
+                  <AssetIcon
+                    size={20}
+                    icon="interactive/search"
+                    class="ml-3 w-4 h-4"
+                  />
+                  <input
+                    id="token-search"
+                    autofocus
+                    type="search"
+                    placeholder="Search Token..."
+                    autocomplete="off"
+                    onKeydown={(e: Event) => {
+                      if (
+                        (e as KeyboardEvent).key === "Enter" &&
+                        sortedAndFilteredTokens.value.length > 0
+                      ) {
+                        props.onSelectAsset(
+                          sortedAndFilteredTokens.value[0].asset,
+                        );
+                        searchQuery.value = "";
+                      }
+                    }}
+                    value={searchQuery.value}
+                    onInput={(e: Event) => {
+                      searchQuery.value = (e.target as HTMLInputElement).value;
+                    }}
+                    class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
+                  />
+                </div>
+                <div
+                  ref={iconScrollContainer}
+                  class="w-full overflow-hidden relative"
+                >
+                  <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
+                    <div>Token Name</div>
+                    <div>{!props.hideBalances && "Balance"}</div>
                   </div>
-                  <div
-                    ref={iconScrollContainer}
-                    class="w-full overflow-hidden relative"
-                  >
-                    <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
-                      <div>Token Name</div>
-                      <div>{!props.hideBalances && "Balance"}</div>
-                    </div>
-                    <div class="w-full h-[302px] relative mr-[-15px]">
-                      <div class="absolute inset-0 w-full h-full overflow-y-scroll">
-                        {sortedAndFilteredTokens.value.map((token) => {
-                          return (
-                            <div
-                              onClick={(e: MouseEvent) => {
-                                props.onSelectAsset(token.asset);
-                                (e as any).handled = true;
-                              }}
+                  <div class="w-full h-[302px] relative mr-[-15px]">
+                    <div class="absolute inset-0 w-full h-full overflow-y-scroll">
+                      {sortedAndFilteredTokens.value.map((token) => {
+                        return (
+                          <div
+                            onClick={(e: MouseEvent) => {
+                              props.onSelectAsset(token.asset);
+                              (e as any).handled = true;
+                            }}
+                            key={token.asset.symbol}
+                            class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
+                          >
+                            <TokenNetworkIcon
                               key={token.asset.symbol}
-                              class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
-                            >
-                              <TokenNetworkIcon
-                                key={token.asset.symbol}
-                                size={20}
-                                assetValue={token.asset}
-                                class="mr-[8px]"
-                              />
-                              {token.asset.displaySymbol || token.asset.symbol}
-                              <div class="flex-1 ml-[8px]" />
-                              {props.hideBalances
-                                ? ""
-                                : formatAssetAmount(token.amount)}
-                            </div>
-                          );
-                        })}
-                      </div>
+                              size={20}
+                              assetValue={token.asset}
+                              class="mr-[8px]"
+                            />
+                            {token.asset.displaySymbol || token.asset.symbol}
+                            <div class="flex-1 ml-[8px]" />
+                            {props.hideBalances
+                              ? ""
+                              : formatAssetAmount(token.amount)}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
+                {isManageTokenListEnabled && !customTokenListOpenRef.value ? (
+                  <div class="p-4 text-center bg-gray-700/40 absolute bottom-0 left-0 right-0">
+                    <button
+                      class="border-b border-white flex items-center justify-center gap-1"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        customTokenListOpenRef.value = true;
+                      }}
+                    >
+                      <AssetIcon size={16} icon="interactive/edit" /> Manage
+                      Tokens List
+                    </button>
+                  </div>
+                ) : (
+                  <div>fooo</div>
+                )}
               </div>
-            )}
-          </Teleport>
-        }
+            </div>
+          )}
+        </Teleport>
       </div>
     );
   },
