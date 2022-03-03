@@ -1,9 +1,8 @@
 ## Release 2022.03.03
 * SDK/Sifchain.js
-  - not working on NPM yet so not ready to market this for BD purposes yet
 * Balance page updates
   - Defaults to only show balances > 0, new toggle to show all vs hide 0 balances, improved searching and scrolling
-* Rewards Calculator
+* Rewards calculator
   - Available within the More section of the menu, allows users to view potential returns over time with inputs for rowan principle amount, current rowan price, apr, future rowan price, and time (weeks)
 
 ## Release 2022.02.03
