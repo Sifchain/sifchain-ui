@@ -2,8 +2,19 @@
   "github": {
     "enabled": true
   },
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://sifchain.finance/legal-disclamer",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-vercel-ip-country",
+          "value": "US"
+        }
+      ],
+      "permanent": false
+    }
   ]
 }
