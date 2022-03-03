@@ -17,9 +17,8 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const stateRef = accountStore.refs[
-      props.connection.getChain().network
-    ].computed();
+    const stateRef =
+      accountStore.refs[props.connection.getChain().network].computed();
     const instanceRef = ref<TooltipInstance>();
 
     const handleClick = async () => {
@@ -94,12 +93,12 @@ export default defineComponent({
                 src={props.connection.walletIconSrc}
                 class={"w-[20px] max-w-[20px] h-[20px] rounded"}
               />
-              <div class="flex items-center whitespace-pre">
+              <div class="flex items-center">
                 {stateRef.value.connected
                   ? shortenHash(stateRef.value.address, 6, 4)
                   : stateRef.value.connecting
                   ? "Connecting..."
-                  : props.connection.cta || "Connect"}
+                  : "Connect"}
                 {stateRef.value.connecting ? (
                   <AssetIcon
                     icon="interactive/anim-racetrack-spinner"

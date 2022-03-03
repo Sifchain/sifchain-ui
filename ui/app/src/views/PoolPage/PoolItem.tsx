@@ -1,33 +1,28 @@
+import { computed, defineComponent, PropType } from "vue";
+import { AssetAmount, IAssetAmount, Network } from "@sifchain/sdk";
+
+import { prettyNumber } from "@/utils/prettyNumber";
+import { useChains, useNativeChain } from "@/hooks/useChains";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { prettyNumber } from "@/utils/prettyNumber";
-import {
-  Amount,
-  AssetAmount,
-  format,
-  IAssetAmount,
-  Network,
-} from "@sifchain/sdk";
-import { computed, defineComponent, PropType, ref } from "vue";
-import { usePoolCalculator } from "@sifchain/sdk/src/usecases/clp/calculators/addLiquidityCalculator";
+import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { Tooltip } from "@/components/Tooltip";
+
 import {
   COLUMNS_LOOKUP,
   PoolDataItem,
   PoolRewardProgram,
 } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
-import { useChains, useNativeChain } from "@/hooks/useChains";
-import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
 import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
-import { Tooltip } from "@/components/Tooltip";
 import {
   CompetitionsLookup,
   Competition,
   COMPETITION_TYPE_DISPLAY_DATA,
 } from "../LeaderboardPage/useCompetitionData";
-import { flagsStore } from "@/store/modules/flags";
+
 import { RouterLink } from "vue-router";
 import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
@@ -327,10 +322,7 @@ export default defineComponent({
             )}
           </div>
           <div
-            class={[
-              COLUMNS_LOOKUP.poolAPY.class,
-              "font-mono flex items-center",
-            ]}
+            class={[COLUMNS_LOOKUP.apy.class, "font-mono flex items-center"]}
           >
             {this.$props.poolStat?.poolAPY != null
               ? `${parseFloat(this.$props.poolStat?.poolAPY || "0").toFixed(
@@ -340,7 +332,7 @@ export default defineComponent({
           </div>
           <div
             class={[
-              COLUMNS_LOOKUP.rewardAPY.class,
+              COLUMNS_LOOKUP.rewardApy.class,
               "font-mono flex items-center",
             ]}
           >

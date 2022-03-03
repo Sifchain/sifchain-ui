@@ -1,12 +1,12 @@
+import { RouterView } from "vue-router";
+import { defineComponent } from "vue";
+
+import { useNativeChain } from "@/hooks/useChains";
+import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import PageCard from "@/components/PageCard";
-import Layout from "@/componentsLegacy/Layout/Layout";
-import { useChains, useNativeChain } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
-import { Network } from "@sifchain/sdk";
-import { defineComponent } from "vue";
-import { RouterView } from "vue-router";
+import { SearchBox } from "@/components/SearchBox";
 import {
   COLUMNS,
   PoolDataItem,
@@ -15,11 +15,9 @@ import {
   usePoolPageData,
 } from "./usePoolPageData";
 import PoolItem from "./PoolItem";
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
-import { SearchBox } from "@/components/SearchBox";
-import { Pool } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
+import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
+
 import {
-  Competition,
   CompetitionsBySymbolLookup,
   useLeaderboardCompetitions,
 } from "../LeaderboardPage/useCompetitionData";
@@ -28,6 +26,7 @@ export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
+      allPoolsData: [] as PoolDataItem[],
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
@@ -79,12 +78,7 @@ export default defineComponent({
 
           if (
             this.searchQuery.length > 0 &&
-            !asset.symbol
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase()) &&
-            !asset.displaySymbol
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
+            !asset.symbol.toLowerCase().includes(this.searchQuery)
           ) {
             return false;
           }
@@ -101,7 +95,7 @@ export default defineComponent({
             const aAsset = a.pool.externalAmount!.asset;
             const bAsset = b.pool.externalAmount!.asset;
             return aAsset.displaySymbol.localeCompare(bAsset.displaySymbol);
-          } else if (this.$data.sortBy === "rewardApy") {
+          } else if (this.$data.sortBy === "rewardAPY") {
             return (
               parseFloat(b.poolStat?.rewardAPY || "0") -
               parseFloat(a.poolStat?.rewardAPY || "0")
@@ -136,7 +130,13 @@ export default defineComponent({
     return (
       <Layout>
         <RouterView
-          name={!this.isLoaded ? "DISABLED_WHILE_LOADING" : undefined}
+          name={
+            flagsStore.state.allowEmptyLiquidityAdd
+              ? undefined
+              : !this.isLoaded
+              ? "DISABLED_WHILE_LOADING"
+              : undefined
+          }
         />
         {!this.isLoaded ? (
           <div class="absolute left-0 top-[180px] w-full flex justify-center">
@@ -171,7 +171,7 @@ export default defineComponent({
                     this.searchQuery = (e.target as HTMLInputElement).value;
                   }}
                 />
-                <div class="w-full pb-[5px] mb-[-5px] w-full flex flex-row justify-start">
+                <div class="w-full pb-[5px] mb-[-5px] flex flex-row justify-start">
                   {COLUMNS.map((column, index) => (
                     <div
                       key={column.name}

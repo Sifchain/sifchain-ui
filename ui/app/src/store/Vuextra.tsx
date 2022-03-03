@@ -49,7 +49,7 @@ interface VuextraOptions<
   Mutations extends MutationsBase<State>,
   Getters extends GettersBase<State>,
   Modules extends VuextraOptions<any, any, any, any, any, any>[],
-  VuextraContext extends ReturnType<Actions> & ActionContext<State, State>
+  VuextraContext extends ReturnType<Actions> & ActionContext<State, State>,
 > {
   name: string;
   actions: Actions;
@@ -85,7 +85,7 @@ function createStore<
   Mutations extends MutationsBase<State>,
   Getters extends GettersBase<State>,
   Modules extends VuextraOptions<any, any, any, any, any, any>[],
-  VuextraContext extends ReturnType<Actions> & ActionContext<State, State>
+  VuextraContext extends ReturnType<Actions> & ActionContext<State, State>,
 >(
   config: Readonly<
     VuextraOptions<State, Actions, Mutations, Getters, Modules, VuextraContext>
@@ -113,8 +113,8 @@ function createStore<
         ),
     ]),
   );
-  const wrappedMutations = (Object.fromEntries(
-    Object.entries(mutationComposer(({} as unknown) as State)).map(([k, v]) => {
+  const wrappedMutations = Object.fromEntries(
+    Object.entries(mutationComposer({} as unknown as State)).map(([k, v]) => {
       return [
         k,
         (payload: any) => {
@@ -122,10 +122,10 @@ function createStore<
         },
       ];
     }),
-  ) as unknown) as ReturnType<typeof mutationComposer>;
+  ) as unknown as ReturnType<typeof mutationComposer>;
 
-  const wrappedActions = (Object.fromEntries(
-    Object.entries(actionComposer(({} as unknown) as VuextraContext)).map(
+  const wrappedActions = Object.fromEntries(
+    Object.entries(actionComposer({} as unknown as VuextraContext)).map(
       ([k, v]) => {
         return [
           k,
@@ -135,18 +135,18 @@ function createStore<
         ];
       },
     ),
-  ) as unknown) as ReturnType<typeof actionComposer>;
+  ) as unknown as ReturnType<typeof actionComposer>;
 
   const actions = Object.fromEntries(
     Object.entries(actionComposer({} as any)).map(([key, fn]) => [
       key,
       function (context: ActionContext<State, State>, payload: any) {
-        return (actionComposer({
-          ...context,
-          ...wrappedActions,
-        } as VuextraContext) as Record<string, (payload: any) => any>)[key](
-          payload,
-        );
+        return (
+          actionComposer({
+            ...context,
+            ...wrappedActions,
+          } as VuextraContext) as Record<string, (payload: any) => any>
+        )[key](payload);
       }.bind({}),
     ]),
   );

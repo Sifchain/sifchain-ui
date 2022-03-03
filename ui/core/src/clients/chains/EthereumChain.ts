@@ -1,9 +1,9 @@
 import {
   Chain,
   Network,
-  getChainsService,
   IAssetAmount,
   AssetAmount,
+  IAsset,
 } from "../../entities";
 import { BaseChain } from "./_BaseChain";
 import { urlJoin } from "url-join-ts";

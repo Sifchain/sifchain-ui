@@ -1,23 +1,13 @@
-import { useCore } from "./useCore";
 import { computed, onUnmounted, ref, Ref, watch } from "vue";
-import { getUnpeggedSymbol } from "@/componentsLegacy/shared/utils";
-import {
-  AssetAmount,
-  Network,
-  IAsset,
-  IAssetAmount,
-  TransactionStatus,
-  isAssetAmount,
-} from "@sifchain/sdk";
+import { AssetAmount, Network, IAsset, IAssetAmount } from "@sifchain/sdk";
+
 import { isLikeSymbol } from "@/utils/symbol";
 import { accountStore } from "@/store/modules/accounts";
-import { PendingTransferItem } from "@sifchain/sdk/src/store/tx";
+import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { PendingTransferItem } from "@/business/store/tx";
+
 import { useAsyncData } from "./useAsyncData";
-import { useChains } from "./useChains";
-import {
-  isAssetFlaggedDisabled,
-  isChainFlaggedDisabled,
-} from "@/store/modules/flags";
+import { useCore } from "./useCore";
 
 export type TokenListItem = {
   amount: IAssetAmount;
@@ -33,7 +23,7 @@ export type TokenListParams = {
 };
 
 export const useTokenList = (params: TokenListParams) => {
-  const { store, config, usecases } = useCore();
+  const { store, config } = useCore();
 
   const tokenList = computed<TokenListItem[]>(() => {
     const pendingTransfers = Object.values(store.tx.pendingTransfers);
@@ -132,11 +122,17 @@ export const useToken = (params: {
 
 export const useAndPollNetworkBalances = (params: {
   network: Ref<Network>;
+  priority?: Ref<IAsset | undefined>;
 }) => {
   const res = useAsyncData(async () => {
     if (!params.network.value) return;
+    if (params.priority?.value)
+      await accountStore.updateBalance({
+        network: params.network.value,
+        asset: params.priority.value,
+      });
     await accountStore.updateBalances(params.network.value);
-  }, [params.network]);
+  }, [params.network, params.priority]);
 
   let stopPollingRef = ref<Promise<() => void> | undefined>();
   watch(

@@ -1,13 +1,7 @@
 import { defineComponent, ref, watch, onMounted } from "vue";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
-import {
-  LiquidityProvider,
-  Network,
-  PoolState,
-  TransactionStatus,
-  useRemoveLiquidityCalculator,
-} from "@sifchain/sdk";
+import { LiquidityProvider, Network, TransactionStatus } from "@sifchain/sdk";
 import { useCore } from "@/hooks/useCore";
 import { useRoute, useRouter } from "vue-router";
 import { computed, effect, Ref, toRef } from "@vue/reactivity";
@@ -15,6 +9,8 @@ import { formatAssetAmount, getLMData } from "@/componentsLegacy/shared/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { debounce } from "@/views/utils/debounce";
 import { accountStore } from "@/store/modules/accounts";
+import { useRemoveLiquidityCalculator } from "@/business/calculators";
+import { PoolState } from "@/business/calculators/addLiquidityCalculator";
 
 export function useRemoveLiquidityData() {
   const { usecases, poolFinder, services, config } = useCore();

@@ -9,6 +9,9 @@ export const JUNO_MAINNET: IBCChainConfig = {
   chainId: "juno-1",
   rpcUrl: "https://proxies.sifchain.finance/api/juno-1/rpc",
   restUrl: "https://proxies.sifchain.finance/api/juno-1/rest",
+  features: {
+    erc20Transfers: false,
+  },
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/juno-1/rpc",
     rest: "https://proxies.sifchain.finance/api/juno-1/rest",

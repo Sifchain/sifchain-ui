@@ -1,28 +1,18 @@
-import { defineComponent, PropType, ref, computed, Ref } from "vue";
-import { Form } from "@/components/Form";
+import { defineComponent, PropType, ref, computed } from "vue";
 import Modal from "@/components/Modal";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { Network, TransactionStatus } from "@sifchain/sdk";
-import {
-  CryptoeconomicsRewardType,
-  CryptoeconomicsUserData,
-} from "@sifchain/sdk/src/services/CryptoeconomicsService";
+import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
+
 import { TokenIcon } from "@/components/TokenIcon";
-import { Amount, format, Asset } from "@sifchain/sdk";
+import { Asset } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { useCore } from "@/hooks/useCore";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import { DistributionType } from "../../../../../core/src/generated/proto/sifnode/dispensation/v1/types";
-import { RewardsChart } from "./RewardsChart";
-import AssetIcon from "@/components/AssetIcon";
-import { flagsStore } from "@/store/modules/flags";
-import { RewardProgram, RewardProgramParticipant } from "../useRewardsPageData";
-import { getClaimableAmountString } from "../getClaimableAmountString";
+import { CryptoeconomicsRewardType } from "@/business/services/CryptoeconomicsService";
 
-const claimTypeMap = {
-  lm: "2",
-  vs: "3",
-};
+import { RewardProgram } from "../useRewardsPageData";
+import { getClaimableAmountString } from "../getClaimableAmountString";
 
 export default defineComponent({
   name: "ClaimRewardsModal",
@@ -77,7 +67,7 @@ export default defineComponent({
         }
         transactionStatusRef.value = status;
       } catch (error) {
-        const rejected = /rejected/i.test(error.message || "");
+        const rejected = /rejected/i.test((error as Error).message || "");
         transactionStatusRef.value = {
           hash: "",
           state: rejected ? "rejected" : "failed",
@@ -85,19 +75,6 @@ export default defineComponent({
         };
       }
     };
-
-    const rewardsAtMaturityAfterClaim = computed(() => {
-      return (
-        (props.summaryAPY || 0) *
-        0.01 *
-        (props.rewardPrograms.reduce((prev, curr) => {
-          return Math.max(prev, curr.participant?.yearsToMaturity || 0);
-        }, 0) || 0) *
-        (props.rewardPrograms.reduce((prev, curr) => {
-          return prev + (curr.participant?.totalDepositedAmount || 0);
-        }, 0) || 0)
-      );
-    });
 
     const transactionDetails = useTransactionDetails({
       tx: transactionStatusRef,

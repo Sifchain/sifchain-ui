@@ -1,11 +1,4 @@
-import {
-  computed,
-  defineComponent,
-  onUnmounted,
-  PropType,
-  ref,
-  watch,
-} from "vue";
+import { defineComponent, onUnmounted, PropType, ref } from "vue";
 import { effect } from "@vue/reactivity";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
@@ -13,7 +6,7 @@ import { accountStore } from "@/store/modules/accounts";
 import {
   CryptoeconomicsTimeseriesItem,
   CryptoeconomicsUserData,
-} from "@sifchain/sdk/src/services/CryptoeconomicsService/CryptoeconomicsService";
+} from "@/business/services/CryptoeconomicsService";
 import { loadAllChartDeps } from "./loadDeps";
 
 // NOTE(ajoslin): Do not import the values of these libs, only the types.
@@ -36,6 +29,7 @@ export const RewardsChart = defineComponent({
     const timeseriesData = useAsyncData(() => {
       return useCore().services.cryptoeconomics.fetchTimeseriesData({
         address: accountStore.state.sifchain.address,
+        devnet: false,
       });
     });
 
@@ -99,7 +93,10 @@ function calculateRewardProgramDates(
   const startDate = new Date(Date.now() - timestampDiffWithNow * ONE_MINUTE);
 
   // Give end date a buffer to show flattening curve.
-  const endDate = new Date(userData.user.maturityDate);
+  const endDate = userData.user
+    ? new Date(userData.user.maturityDate)
+    : new Date();
+
   const endTimestamp =
     userData.timestamp +
     Math.floor(endDate.getTime() - Date.now()) / ONE_MINUTE;

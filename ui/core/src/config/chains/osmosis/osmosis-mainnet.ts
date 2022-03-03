@@ -9,6 +9,9 @@ export const OSMOSIS_MAINNET: IBCChainConfig = {
   chainId: "osmosis-1",
   rpcUrl: "https://proxies.sifchain.finance/api/osmosis-1/rpc",
   restUrl: "https://proxies.sifchain.finance/api/osmosis-1/rest",
+  features: {
+    erc20Transfers: false,
+  },
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/osmosis-1/rpc",
     rest: "https://proxies.sifchain.finance/api/osmosis-1/rest",

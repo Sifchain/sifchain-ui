@@ -1,5 +1,4 @@
 .idea
-.vscode
 .coverage.txt
 frontend/node_modules
 frontend/dist

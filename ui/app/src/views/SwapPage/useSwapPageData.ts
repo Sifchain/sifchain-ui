@@ -1,16 +1,7 @@
-import { onMounted, watch, watchEffect } from "vue";
-import { computed, effect, reactive, ref } from "@vue/reactivity";
+import { ref, watch, watchEffect } from "vue";
+import { computed } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import {
-  IAsset,
-  Network,
-  SwapState,
-  TransactionStatus,
-  useSwapCalculator,
-  ServiceContext,
-  Asset,
-  toBaseUnits,
-} from "@sifchain/sdk";
+import { IAsset, Network, TransactionStatus, toBaseUnits } from "@sifchain/sdk";
 import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { getMaxAmount } from "../utils/getMaxAmount";
 import { format } from "@sifchain/sdk/src/utils/format";
@@ -21,6 +12,9 @@ import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { accountStore } from "@/store/modules/accounts";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { ServiceContext } from "@/business";
+import { SwapState, useSwapCalculator } from "@/business/calculators";
+import { NativeDexClient } from "@sifchain/sdk/src/clients";
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 export const SWAP_MIN_BALANCE = toBaseUnits(
@@ -64,7 +58,7 @@ const getRouteSymbol = (
 };
 
 export const useSwapPageData = () => {
-  const { usecases, poolFinder, store, config } = useCore();
+  const { poolFinder, store, config } = useCore();
   const router = useRouter();
   const route = useRoute();
 
@@ -187,11 +181,6 @@ export const useSwapPageData = () => {
     poolFinder,
   });
 
-  function clearAmounts() {
-    fromAmount.value = "0.0";
-    toAmount.value = "0.0";
-  }
-
   function handleNextStepClicked() {
     if (!fromFieldAmount.value)
       throw new Error("from field amount is not defined");
@@ -225,11 +214,32 @@ export const useSwapPageData = () => {
         hash: "",
       };
 
-      txStatus.value = await usecases.clp.swap(
-        fromFieldAmount.value,
-        toFieldAmount.value.asset,
-        minimumReceived.value,
-      );
+      try {
+        const tx = await useCore().services.liquidity.swap.prepareSwapTx({
+          address: accountStore.state.sifchain.address,
+          fromAmount: fromFieldAmount.value,
+          toAsset: toFieldAmount.value.asset,
+          minimumReceived: minimumReceived.value,
+        });
+        const signed = await useCore().services.wallet.keplrProvider.sign(
+          useNativeChain(),
+          tx,
+        );
+        const res = await useCore().services.wallet.keplrProvider.broadcast(
+          useNativeChain(),
+          signed,
+        );
+        txStatus.value = NativeDexClient.parseTxResult(res);
+      } catch (error) {
+        const errorMessage =
+          typeof error === "string" ? error : (error as Error).message;
+
+        txStatus.value = {
+          state: "failed",
+          hash: "",
+          memo: errorMessage,
+        };
+      }
       if (txStatus.value.state === "accepted") {
         useCore().services.bus.dispatch({
           type: "SuccessEvent",
@@ -241,10 +251,10 @@ export const useSwapPageData = () => {
             )} ${toFieldAmount.value.displaySymbol.toUpperCase()}`,
           },
         });
+        setTimeout(() => {
+          accountStore.updateBalances(Network.SIFCHAIN);
+        }, 1000);
       }
-      setTimeout(() => {
-        accountStore.updateBalances(Network.SIFCHAIN);
-      }, 1000);
     }
   }
 

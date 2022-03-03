@@ -17,7 +17,7 @@ export default defineComponent({
   props: {},
   setup() {
     const { res, statsRef, state } = useStatsPageData({
-      sortBy: "volume",
+      sortBy: "rewardApy",
       sortDirection: "desc",
     } as StatsPageState);
 
@@ -61,7 +61,7 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Pool APR",
+        name: "Pool APY",
         sortBy: "poolApy",
         class: "min-w-[100px] text-right",
         ref: ref<HTMLElement>(),
@@ -89,7 +89,7 @@ export default defineComponent({
       {
         name: "Total APR",
         sortBy: "totalApy",
-        class: "min-w-[100px] text-right",
+        class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
       },
     ];
@@ -105,14 +105,7 @@ export default defineComponent({
     const finalStats = computed(() => {
       if (!searchQuery.value) return statsRef.value;
       return statsRef.value?.filter((item) => {
-        return (
-          item.asset.symbol
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase()) ||
-          item.asset.displaySymbol
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase())
-        );
+        return item.asset.symbol.toLowerCase().includes(searchQuery.value);
       });
     });
 
@@ -159,24 +152,21 @@ export default defineComponent({
                             state.sortDirection =
                               state.sortDirection === "asc" ? "desc" : "asc";
                           } else {
-                            state.sortDirection = "desc";
+                            state.sortDirection = "asc";
                           }
                           state.sortBy = column.sortBy;
                         }}
                       >
                         {column.message ? (
-                          <div class="flex items-center">
+                          <Tooltip content={<>{column.message}</>}>
                             {column.name}
-                            <Button.InlineHelp>
-                              {column.message}
-                            </Button.InlineHelp>
-                          </div>
+                          </Tooltip>
                         ) : (
                           column.name
                         )}
                         {state.sortBy === column.sortBy && (
                           <AssetIcon
-                            icon="interactive/arrow-up"
+                            icon="interactive/arrow-down"
                             class="transition-all w-[12px] h-[12px]"
                             style={{
                               transform:
@@ -248,7 +238,7 @@ export default defineComponent({
                         ${prettyNumber(item.volume)}
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {item.poolApy.toFixed(2)}%
+                        {item.poolApy}%
                       </td>
                       <td class="align-middle text-right text-mono">
                         {(+item.rewardApy || 0).toFixed(0)}% (
@@ -258,7 +248,7 @@ export default defineComponent({
                         %)
                       </td>
                       <td class="align-middle text-right text-mono">
-                        {(+item.poolApy + +item.rewardApy || 0).toFixed(2)}%
+                        {item.totalApy}%
                       </td>
                     </tr>
                   );

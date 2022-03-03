@@ -1,0 +1,97 @@
+name: "Frontend: Docker: Build"
+
+on:
+  push:
+    branches:
+      - 'dockerfile'
+
+jobs:
+  test_build_push:
+    runs-on: ubuntu-latest
+    env:
+      image: "sifchain/frontend"
+    defaults:
+      run:
+        working-directory: ui
+
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: "14.x"
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: |
+          set +x
+          echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache Node.js modules
+        id: yarn-cache
+        uses: actions/cache@v2.1.3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+
+      - name: Set env vars
+        shell: bash
+        run: |
+          set +x
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          TAG_NAME=$(git tag --points-at HEAD)
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
+          echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
+
+          if [[ $BRANCH_NAME == 'master' ]]
+          then
+            echo "SUBDOMAIN=staging" >> $GITHUB_ENV
+            echo "VITE_APP_DEPLOYMENT=production" >> $GITHUB_ENV
+          elif [[ "$TAG_NAME" != '' ]]
+          then
+            echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
+            echo "VITE_APP_DEPLOYMENT=staging" >> $GITHUB_ENV
+          else
+            echo "SUBDOMAIN=devnet" >> $GITHUB_ENV
+            echo "VITE_APP_DEPLOYMENT=develop" >> $GITHUB_ENV
+          fi
+          echo $(cat $GITHUB_ENV)
+
+      - name: "Install Dependencies & Build Frontend Application"
+        run: |
+          set +x
+          yarn install --frozen-lockfile --silent
+          yarn build --tag $BRANCH_NAME --no-setup
+
+      - name: Test Frontend
+        env:
+          CI: true
+        run: |
+          set +x
+          yarn test
+
+      - name: "Testing: upload coverage report"
+        uses: codecov/codecov-action@v1
+        if: ${{ always() }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./ui/core/coverage
+          flags: ui
+          verbose: true
+
+      - name: "Build & Push Docker Image"
+        shell: bash
+        env:
+          DOCKER_USERNAME: "${{ secrets.DOCKER_USERNAME }}"
+          DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
+        run: |
+          set +x
+          mv Dockerfile.staticonly Dockerfile
+          docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+          docker build -t ${image}:${TAG_NAME} .
+          docker push ${image}:${TAG_NAME}

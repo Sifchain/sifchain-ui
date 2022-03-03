@@ -1,11 +1,6 @@
 import { IAsset, WalletType, IAssetAmount } from "../";
 import { Network } from "./Network";
-import { ChainsService } from "../services/ChainsService";
 import { ChainInfo } from "@keplr-wallet/types";
-
-let chainsService: ChainsService;
-export const getChainsService = () => chainsService;
-export const setChainsService = (c: ChainsService) => (chainsService = c);
 
 export type BaseChainConfig = {
   network: Network;
@@ -25,6 +20,9 @@ export type IBCChainConfig = BaseChainConfig & {
   rpcUrl: string;
   restUrl: string;
   keplrChainInfo: ChainInfo;
+  features?: {
+    erc20Transfers: boolean;
+  };
 };
 
 export type ChainConfig = IBCChainConfig | EthChainConfig;
@@ -38,6 +36,8 @@ export interface Chain {
   nativeAsset: IAsset;
   assets: IAsset[];
   assetMap: Map<string, IAsset>;
+
+  forceGetAsset: (symbol: string) => IAsset;
 
   lookupAsset(symbol: string): IAsset | undefined;
   lookupAssetOrThrow(symbol: string): IAsset;

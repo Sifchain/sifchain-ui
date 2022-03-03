@@ -2,12 +2,8 @@ const SIDEBAR_WIDTH = "210px";
 
 module.exports = {
   mode: "jit",
-  // purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
-  purge: {
-    enabled: true,
-    content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
-  },
-  darkMode: false, // or 'media' or 'class'
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
+  darkMode: "media",
   theme: {
     extend: {
       backgroundImage: {

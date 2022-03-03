@@ -20,9 +20,6 @@ export type IAsset = {
 type ReadonlyAsset = Readonly<IAsset>;
 const assetMap = new Map<string, ReadonlyAsset>();
 
-// XXX:Legacy
-export type Asset = IAsset;
-
 function isAsset(value: any): value is IAsset {
   return (
     typeof value?.symbol === "string" && typeof value?.decimals === "number"
@@ -32,11 +29,18 @@ function isAsset(value: any): value is IAsset {
 export function Asset(assetOrSymbol: IAsset | string): ReadonlyAsset {
   // If it is an asset then cache it and return it
   if (isAsset(assetOrSymbol)) {
-    const asset = assetOrSymbol as IAsset;
-    assetMap.set(assetOrSymbol.symbol.toLowerCase(), {
-      ...asset,
-      displaySymbol: asset.displaySymbol || asset.symbol,
-    } as ReadonlyAsset);
+    const key = assetOrSymbol.symbol.toLowerCase();
+
+    // prevent overriding of existing rowan asset
+    if (assetMap.has(key) && key === "rowan") {
+      return assetOrSymbol;
+    }
+
+    assetMap.set(key, {
+      ...assetOrSymbol,
+      displaySymbol: assetOrSymbol.displaySymbol || assetOrSymbol.symbol,
+    });
+
     return assetOrSymbol;
   }
 
@@ -44,6 +48,7 @@ export function Asset(assetOrSymbol: IAsset | string): ReadonlyAsset {
   const found = assetOrSymbol
     ? assetMap.get(assetOrSymbol.toLowerCase())
     : false;
+
   if (!found) {
     throw new Error(
       `Attempt to retrieve the asset with key "${assetOrSymbol}" before it had been cached.`,
@@ -53,12 +58,21 @@ export function Asset(assetOrSymbol: IAsset | string): ReadonlyAsset {
   return found;
 }
 
-// XXX:Legacy
-Asset.set = (symbol: string, asset: Asset) => {
+/**
+ * @ignore
+ */
+Asset.set = (symbol: string, asset: IAsset) => {
   Asset(asset); // assuming symbol is same
 };
 
-// XXX:Legacy
+/**
+ * A quick way to look up an asset by symbol.
+ * Pass in a string, and it will attempt to look up the asset and return it. Throws an error if the asset is not found.
+ *
+ * Pass in an IAsset, and it will save it for future lookups.
+ *
+ * @remarks This lookup is only a shortcut and does not allow you to lookup an asset by chain. For that, use Chain#lookupAsset.
+ */
 Asset.get = (symbol: string) => {
   return Asset(symbol);
 };

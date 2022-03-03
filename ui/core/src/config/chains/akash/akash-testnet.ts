@@ -6,14 +6,14 @@ export const AKASH_TESTNET: IBCChainConfig = {
   displayName: "Akash",
   blockExplorerUrl: "https://testnet.akash.aneka.io",
   nativeAssetSymbol: "uakt",
-  chainId: "akash-testnet-6",
-  rpcUrl: "https://proxies.sifchain.finance/api/akash-testnet-6/rpc",
-  restUrl: "https://proxies.sifchain.finance/api/akash-testnet-6/rest",
+  chainId: "akashsif-1",
+  rpcUrl: "https://proxies.sifchain.finance/api/akashsif-1/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/akashsif-1/rest",
   keplrChainInfo: {
-    rpc: "https://proxies.sifchain.finance/api/akash-testnet-6/rpc",
-    rest: "https://proxies.sifchain.finance/api/akash-testnet-6/rest",
-    chainId: "akash-testnet-6",
-    chainName: "Akash Testnet",
+    rpc: "https://proxies.sifchain.finance/api/akashsif-1/rpc",
+    rest: "https://proxies.sifchain.finance/api/akashsif-1/rest",
+    chainId: "akashsif-1",
+    chainName: "Akash Testnet (Sifchain)",
     stakeCurrency: {
       coinDenom: "AKT",
       coinMinimalDenom: "uakt",
@@ -24,6 +24,11 @@ export const AKASH_TESTNET: IBCChainConfig = {
     walletUrlForStaking: "https://wallet.keplr.app/#/akash/stake",
     bip44: {
       coinType: 118,
+    },
+    gasPriceStep: {
+      low: 6250,
+      average: 9375,
+      high: 12500,
     },
     bech32Config: {
       bech32PrefixAccAddr: "akash",

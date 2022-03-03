@@ -6,7 +6,7 @@ import {
 } from "vue-router";
 
 import Swap from "@/views/SwapPage/SwapPage";
-import Balance from "@/views/BalancePage/BalancePage";
+import Balance from "@/views/BalancePage";
 // import BalanceImport from "@/views/BalancePage/Import";
 // import BalanceExport from "@/views/BalancePage/Export";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
@@ -28,10 +28,12 @@ import ImportProcessing from "@/views/BalancePage/Import/Processing";
 import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
+import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import OnboardingModal from "@/components/OnboardingModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
+import { flagsStore } from "@/store/modules/flags";
 
 type SwapPageMeta = {
   title: string;
@@ -222,9 +224,20 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
   // },
 ] as const;
 
+const finalRoutes = flagsStore.state.rewardsCalculator
+  ? [
+      ...routes,
+      {
+        name: "RewardsCalculator",
+        path: "/calculator",
+        component: RewardsCalculatorPage,
+      },
+    ]
+  : routes;
+
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
-  routes: [...routes] as Array<RouteRecordRaw>,
+  routes: [...finalRoutes] as Array<RouteRecordRaw>,
 });
 
 router.beforeEach((to, from, next) => {
