@@ -7,7 +7,6 @@
       {
           "source": "/(.*)",
           "destination": "https://sifchain.finance/legal-disclamer",
-          "statusCode": 302,
           "has": [
             {
               "type": "header",
