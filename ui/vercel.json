@@ -1,8 +1,14 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "github": {
     "enabled": true
   },
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
   "redirects": [
     {
       "source": "/(.*)",
@@ -11,7 +17,7 @@
         {
           "type": "header",
           "key": "x-vercel-ip-country",
-          "value": "US"
+          "value": "AL|US|BA|ME|MK|XK|RS|BY|MM|CI|CU|CD|CF|IR|IQ|LR|KP|SD|SY|ZW|YE|VE|NI|ML|BI|LB|LY|SO|AS|GU|MP|PR|UM|VI|NZ"
         }
       ],
       "permanent": false
