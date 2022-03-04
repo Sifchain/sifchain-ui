@@ -1,9 +1,26 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "github": {
     "enabled": true
   },
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://sifchain.finance/legal-disclamer",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-vercel-ip-country",
+          "value": "AL|US|BA|ME|MK|XK|RS|BY|MM|CI|CU|CD|CF|IR|IQ|LR|KP|SD|SY|ZW|YE|VE|NI|ML|BI|LB|LY|SO|AS|GU|MP|PR|UM|VI"
+        }
+      ],
+      "permanent": false
+    }
   ]
 }
