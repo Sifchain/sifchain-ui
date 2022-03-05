@@ -82,3 +82,13 @@ jobs:
           fi
           docker build -t ${image}:${TAG_NAME} .
           docker push ${image}:${TAG_NAME}
+
+      - name: "Forble Tag Update"
+        shell: bash
+        env:
+          FORBLE_USERNAME: "${{ secrets.FORBLE_USERNAME }}"
+          FORBLE_PASSWORD: "${{ secrets.FORBLE_PASSWORD }}"
+        run: |
+          set +x
+          curl -X POST -H "Content-Type: application/json" -d "\{\"parameters\":{\"tag\"\:\"${TAG_NAME}\"\}\}" https://sifchain-deploy.forbole.com/akash/deploysifchain -u "${FORBLE_USERNAME}:${FORBLE_PASSWORD}"
+
