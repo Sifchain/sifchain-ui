@@ -36,6 +36,7 @@ const BLOCKED_COUNTRY_CODES = [
   "PR",
   "UM",
   "VI",
+  "RU",
 ];
 
 async function main() {
