@@ -75,13 +75,18 @@ jobs:
           DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
         run: |
           set +x
+
           mv Dockerfile.staticonly Dockerfile
+
           docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
-          if [ -z "${TAG_NAME}" ]; then
-            TAG_NAME=$(cat app/package.json | jq .version | sed 's/"//g')
-          fi
-          docker build -t ${image}:${TAG_NAME} .
-          docker push ${image}:${TAG_NAME}
+
+          DOCKER_TAG=$(cat ./ui/app/package.json | jq .version | sed 's/"//g')
+
+          echo "DOCKER_TAG=$DOCKER_TAG" >> $GITHUB_ENV
+
+          docker build -t ${image}:${DOCKER_TAG} .
+
+          docker push ${image}:${DOCKER_TAG}
 
       - name: "Forble Tag Update"
         shell: bash
@@ -90,7 +95,7 @@ jobs:
           FORBLE_PASSWORD: "${{ secrets.FORBLE_PASSWORD }}"
         run: |
           set +x
-          data_payload='{"parameters":{"tag":"'${TAG_NAME}'"}}'
+          data_payload="{\"parameters\":{\"tag\":\"${DOCKER_TAG}\"}}"
           echo "${data_payload}"
           curl -X POST -H "Content-Type: application/json" -d "${data_payload}" https://sifchain-deploy.forbole.com/akash/deploysifchain -u "${FORBLE_USERNAME}:${FORBLE_PASSWORD}"
 
