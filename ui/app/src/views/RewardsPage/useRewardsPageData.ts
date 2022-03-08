@@ -1,4 +1,4 @@
-import { computed, ComputedRef, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, ComputedRef, onMounted, onUnmounted, ref } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
@@ -160,14 +160,13 @@ function calculateDateOfNextDispensation(currentDate: Date) {
     date.setHours(date.getHours() + 1);
     // output format: Friday, December 31, 2021 at 4:17:29 PM PST
     const formattedDate = new Intl.DateTimeFormat("en-US", {
-      timeZone: "PST",
       dateStyle: "full",
       timeStyle: "long",
     }).format(date);
     // dispensations are on Mondays at 8:00 AM PST
     if (
       formattedDate.includes("Monday") &&
-      formattedDate.includes("8:00:00 AM PST")
+      formattedDate.includes("8:00:00 AM")
     )
       return date;
   }
