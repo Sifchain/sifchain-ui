@@ -34,6 +34,7 @@ export type InteractiveIconName =
   | "arrows-in"
   | "chevron-down"
   | "chevron-up"
+  | "chevron-left"
   | "circle-question"
   | "circle-info"
   | "close"

@@ -179,8 +179,7 @@ export const TokenSelectDropdown = defineComponent({
             >
               <div
                 class={clsx("w-full h-full py-[20px] px-[15px]", {
-                  "pb-16":
-                    isManageTokenListEnabled && !customTokenListOpenRef.value,
+                  "pb-2": isManageTokenListEnabled,
                 })}
               >
                 <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">
@@ -249,12 +248,21 @@ export const TokenSelectDropdown = defineComponent({
                       })}
                     </div>
                   </div>
-                  <div class="p-4 text-center bg-gray-700/40">
-                    <a class="border-b border-white flex items-center justify-center gap-1">
-                      <AssetIcon size={16} icon="interactive/edit" />
-                      Manage Tokens List
-                    </a>
-                  </div>
+                  {isManageTokenListEnabled && (
+                    <div class="text-center py-2">
+                      <a
+                        class="border-b border-white flex items-center justify-center gap-1 translate-y-2 hover:underline"
+                        href="/#/tokens"
+                      >
+                        <AssetIcon
+                          size={16}
+                          icon="interactive/edit"
+                          class="text-accent-base"
+                        />
+                        Manage Tokens List
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
