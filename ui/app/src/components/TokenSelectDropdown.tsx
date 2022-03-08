@@ -1,6 +1,5 @@
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 import AssetIcon from "@/components/AssetIcon";
-import { useCore } from "@/hooks/useCore";
 import {
   computed,
   defineComponent,
@@ -12,12 +11,12 @@ import {
   Teleport,
   watch,
 } from "vue";
+import clsx from "clsx";
 import { IAsset, Network } from "@sifchain/sdk";
 
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
 import { TokenNetworkIcon } from "./TokenNetworkIcon/TokenNetworkIcon";
-import clsx from "clsx";
 import { flagsStore } from "@/store/modules/flags";
 
 export const TokenSelectDropdown = defineComponent({
@@ -57,7 +56,6 @@ export const TokenSelectDropdown = defineComponent({
     },
   },
   setup(props) {
-    const core = useCore();
     const selfRoot = ref<HTMLDivElement | null>(null);
     const dropdownRoot = ref<HTMLDivElement | null>(null);
     const iconScrollContainer = ref<HTMLDivElement | null>(null);
@@ -251,23 +249,13 @@ export const TokenSelectDropdown = defineComponent({
                       })}
                     </div>
                   </div>
-                </div>
-                {isManageTokenListEnabled && !customTokenListOpenRef.value ? (
-                  <div class="p-4 text-center bg-gray-700/40 absolute bottom-0 left-0 right-0">
-                    <button
-                      class="border-b border-white flex items-center justify-center gap-1"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        customTokenListOpenRef.value = true;
-                      }}
-                    >
-                      <AssetIcon size={16} icon="interactive/edit" /> Manage
-                      Tokens List
-                    </button>
+                  <div class="p-4 text-center bg-gray-700/40">
+                    <a class="border-b border-white flex items-center justify-center gap-1">
+                      <AssetIcon size={16} icon="interactive/edit" />
+                      Manage Tokens List
+                    </a>
                   </div>
-                ) : (
-                  <div>fooo</div>
-                )}
+                </div>
               </div>
             </div>
           )}
