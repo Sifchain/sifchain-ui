@@ -2,11 +2,9 @@ import {
   defineComponent,
   PropType,
   SetupContext,
-  Teleport,
   HTMLAttributes,
   onMounted,
   onUnmounted,
-  onBeforeUnmount,
 } from "vue";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 

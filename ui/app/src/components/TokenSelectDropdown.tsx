@@ -18,6 +18,7 @@ import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
 import { TokenNetworkIcon } from "./TokenNetworkIcon/TokenNetworkIcon";
 import { flagsStore } from "@/store/modules/flags";
+import ManageTokenListModal from "./ManageTokenListModal";
 
 export const TokenSelectDropdown = defineComponent({
   name: "TokenSelectDropdown",
@@ -165,6 +166,17 @@ export const TokenSelectDropdown = defineComponent({
 
     return () => (
       <div ref={selfRoot} class="w-full h-0">
+        {isManageTokenListEnabled && customTokenListOpenRef.value && (
+          <ManageTokenListModal
+            onClose={() => {
+              if (typeof props.active !== "boolean") {
+                // show dropdown
+                props.active.value = true;
+              }
+              customTokenListOpenRef.value = false;
+            }}
+          />
+        )}
         <Teleport to="#portal-target">
           {activeRef.value && (
             <div
@@ -253,6 +265,14 @@ export const TokenSelectDropdown = defineComponent({
                       <a
                         class="border-b border-white flex items-center justify-center gap-1 translate-y-2 hover:underline"
                         href="/#/tokens"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (typeof props.active !== "boolean") {
+                            // hide dropdown
+                            props.active.value = false;
+                          }
+                          customTokenListOpenRef.value = true;
+                        }}
                       >
                         <AssetIcon
                           size={16}

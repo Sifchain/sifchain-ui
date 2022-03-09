@@ -1,4 +1,4 @@
-import { defineComponent, ref, computed, watch } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -37,7 +37,6 @@ export default defineComponent({
       tokenRef,
       computedImportAssetAmount,
       networksRef,
-      chainsRef,
       importDraft,
       exitImport,
       networkBalances,
@@ -303,11 +302,11 @@ export default defineComponent({
               textAlign: "right",
             }}
             startContent={
-              !!tokenRef.value && (
+              tokenRef.value ? (
                 <Button.Pill class="z-[1]" onClick={handleSetMax}>
                   MAX
                 </Button.Pill>
-              )
+              ) : null
             }
             onInput={(e) => {
               const value = (e.target as HTMLInputElement).value;

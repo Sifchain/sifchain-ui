@@ -24,7 +24,6 @@ import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
 import { flagsStore } from "@/store/modules/flags";
-import ManageTokenListModal from "@/components/ManageTokenListModal";
 
 type SwapPageMeta = {
   title: string;
@@ -176,11 +175,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     name: "Leaderboard",
     path: "/leaderboard/:type/:symbol?",
     component: LeaderboardPage,
-  },
-  {
-    name: "tokens",
-    path: "/tokens",
-    component: ManageTokenListModal,
   },
 ] as const;
 
