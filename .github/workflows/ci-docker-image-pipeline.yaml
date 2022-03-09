@@ -104,6 +104,8 @@ jobs:
         run: |
           set +x
           zip -r release-${DOCKER_TAG}.zip app/dist
+          change_log=$(cat app/CHANGELOG.md)
+          echo "${change_log}" >> ${GITHUB_ENV}
 
       - name: Create release
         id: create_release
@@ -114,7 +116,8 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: |
-            ${{ github.event.head_commit.message }}
+            Change Log:
+              ${{ env.change_log }}
           draft: true
           prerelease: false
 
@@ -132,3 +135,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
+
+      - uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "${{ env.DOCKER_TAG }}"
+          message: "${{ env.DOCKER_TAG }}"
