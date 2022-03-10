@@ -1,15 +1,23 @@
 import { useCore } from "@/hooks/useCore";
-import { Asset } from "@sifchain/sdk";
+import { IAsset } from "@sifchain/sdk";
+
+declare global {
+  interface Window {
+    /**
+     * This is injected by vite
+     */
+    TOKEN_SVG_PATH_LOOKUP?: Record<string, string>;
+  }
+}
 
 // All token svg icons are passed in as a <symbol, path> lookup via vite.config.ts.
 // We don't use import.meta.glob because it gives warnings about the public dir, where these are stored...
 const tokenSrcMap = new Map<string, string>(
-  // @ts-ignore
-  Object.entries(TOKEN_SVG_PATH_LOOKUP),
+  Object.entries(window.TOKEN_SVG_PATH_LOOKUP ?? {}),
 );
 
 export const getTokenIconUrl = (
-  asset: Asset,
+  asset: IAsset,
   baseUrl = "",
 ): string | undefined => {
   const core = useCore();

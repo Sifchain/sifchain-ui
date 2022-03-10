@@ -85,7 +85,7 @@ async function main() {
           {
             type: "header",
             key: "x-vercel-ip-country-region",
-            value: "13",
+            value: "43",
           },
         ],
         permanent: false,
