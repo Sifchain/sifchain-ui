@@ -106,6 +106,7 @@ jobs:
           zip -r release-${DOCKER_TAG}.zip app/dist
           change_log=$(cat app/CHANGELOG.md)
           echo "change_log=$(echo ${change_log} | tr -d '\n' | sed -e 's/\#//g')" >> ${GITHUB_ENV}
+          ls -lah
 
       - name: Create release
         id: create_release
