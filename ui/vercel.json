@@ -16,12 +16,12 @@
       "has": [
         {
           "type": "host",
-          "value": "https://(dex|staging).sifchain.finance"
+          "value": "*(dex|staging).sifchain.finance"
         },
         {
           "type": "header",
           "key": "x-vercel-ip-country",
-          "value": "AL|US|BA|ME|MK|XK|RS|BY|MM|CI|CU|CD|CF|IR|IQ|LR|KP|SD|SY|ZW|YE|VE|NI|ML|BI|LB|LY|SO|AS|GU|MP|PR|UM|VI|RU"
+          "value": "AL|US|BA|ME|MK|XK|RS|BY|MM|CI|CU|CD|CF|IR|IQ|LR|KP|SD|SY|ZW|YE|VE|NI|ML|BI|LB|LY|SO|AS|GU|MP|PR|UM|VI"
         }
       ],
       "permanent": false
@@ -32,7 +32,7 @@
       "has": [
         {
           "type": "host",
-          "value": "https://(dex|staging).sifchain.finance"
+          "value": "*(dex|staging).sifchain.finance"
         },
         {
           "type": "header",
@@ -43,23 +43,6 @@
           "type": "header",
           "key": "x-vercel-ip-country-region",
           "value": "13"
-        }
-      ],
-      "permanent": false
-    },
-    {
-      "source": "/(.*)",
-      "destination": "https://www.youtube.com/watch?v=np-gqrLTfQA",
-      "has": [
-        {
-          "type": "header",
-          "key": "x-vercel-ip-country",
-          "value": "NZ"
-        },
-        {
-          "type": "header",
-          "key": "x-vercel-ip-country-region",
-          "value": "AUK"
         }
       ],
       "permanent": false

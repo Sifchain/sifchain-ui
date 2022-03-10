@@ -36,7 +36,6 @@ const BLOCKED_COUNTRY_CODES = [
   "PR",
   "UM",
   "VI",
-  "RU",
 ];
 
 async function main() {
@@ -55,7 +54,7 @@ async function main() {
         has: [
           {
             type: "host",
-            value: "(dex|staging).sifchain.finance",
+            value: "*(dex|staging).sifchain.finance",
           },
           {
             type: "header",
@@ -72,7 +71,7 @@ async function main() {
         has: [
           {
             type: "host",
-            value: "(dex|staging).sifchain.finance",
+            value: "*(dex|staging).sifchain.finance",
           },
           {
             type: "header",
@@ -83,28 +82,6 @@ async function main() {
             type: "header",
             key: "x-vercel-ip-country-region",
             value: "13",
-          },
-        ],
-        permanent: false,
-      },
-      // Redirect NZ-AUK (test).
-      {
-        source: "/(.*)",
-        destination: "https://www.youtube.com/watch?v=np-gqrLTfQA",
-        has: [
-          {
-            type: "host",
-            value: "(devnet|testnet).sifchain.finance",
-          },
-          {
-            type: "header",
-            key: "x-vercel-ip-country",
-            value: "NZ",
-          },
-          {
-            type: "header",
-            key: "x-vercel-ip-country-region",
-            value: "AUK",
           },
         ],
         permanent: false,
