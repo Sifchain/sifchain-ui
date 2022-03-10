@@ -54,7 +54,7 @@ async function main() {
         has: [
           {
             type: "host",
-            value: "*(dex|staging).sifchain.finance",
+            value: "dex.sifchain.finance",
           },
           {
             type: "header",
@@ -71,7 +71,7 @@ async function main() {
         has: [
           {
             type: "host",
-            value: "*(dex|staging).sifchain.finance",
+            value: "dex.sifchain.finance",
           },
           {
             type: "header",
