@@ -104,8 +104,10 @@ jobs:
         run: |
           set +x
           zip -r release-${DOCKER_TAG}.zip app/dist
+          sudo chmod 766 release-${DOCKER_TAG}.zip
           change_log=$(cat app/CHANGELOG.md)
           echo "change_log=$(echo ${change_log} | tr -d '\n' | sed -e 's/\#//g')" >> ${GITHUB_ENV}
+          pwd
           ls -lah
 
       - name: Create release
@@ -123,6 +125,7 @@ jobs:
           prerelease: false
 
       - uses: actions/upload-release-asset@v1.0.1
+        working-directory: ui
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
