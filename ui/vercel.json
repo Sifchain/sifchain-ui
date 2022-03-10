@@ -16,8 +16,8 @@
       "has": [
         {
           "type": "header",
-          "key": "x-vercel-deployment-url",
-          "value": "sifchain-ui-(staging|master)-sifchain.vercel.app"
+          "key": "host",
+          "value": "(dex|staging).sifchain.finance"
         },
         {
           "type": "header",
@@ -33,8 +33,8 @@
       "has": [
         {
           "type": "header",
-          "key": "x-vercel-deployment-url",
-          "value": "sifchain-ui-(staging|master)-sifchain.vercel.app"
+          "key": "host",
+          "value": "(dex|staging).sifchain.finance"
         },
         {
           "type": "header",
