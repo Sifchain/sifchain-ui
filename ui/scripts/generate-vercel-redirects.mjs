@@ -38,6 +38,9 @@ const BLOCKED_COUNTRY_CODES = [
   "VI",
 ];
 
+const PRODUCTION_DEPLOYMENT_URL =
+  "sifchain-ui-(staging|master)-sifchain.vercel.app";
+
 async function main() {
   const vercelConfigPath = path.resolve("./vercel.json");
   const vercelConfigText = await fs.readFile(vercelConfigPath, "utf8");
@@ -53,8 +56,9 @@ async function main() {
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
           {
-            type: "host",
-            value: "*(dex|staging).sifchain.finance",
+            type: "header",
+            key: "x-vercel-deployment-url",
+            value: PRODUCTION_DEPLOYMENT_URL,
           },
           {
             type: "header",
@@ -70,8 +74,9 @@ async function main() {
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
           {
-            type: "host",
-            value: "*(dex|staging).sifchain.finance",
+            type: "header",
+            key: "x-vercel-deployment-url",
+            value: PRODUCTION_DEPLOYMENT_URL,
           },
           {
             type: "header",
