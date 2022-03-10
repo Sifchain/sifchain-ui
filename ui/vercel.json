@@ -11,7 +11,7 @@
   ],
   "redirects": [
     {
-      "source": "https://(dex|staging).sifchain.finance",
+      "source": "/(.*)",
       "destination": "https://sifchain.finance/legal-disclamer",
       "has": [
         {
