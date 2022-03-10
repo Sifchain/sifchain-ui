@@ -1,12 +1,5 @@
-import { useCore } from "@/hooks/useCore";
-import { computed, ref, Ref } from "@vue/reactivity";
-import {
-  defineComponent,
-  onMounted,
-  PropType,
-  watch,
-  HTMLAttributes,
-} from "vue";
+import { ref, Ref } from "@vue/reactivity";
+import { defineComponent, PropType, watch, HTMLAttributes } from "vue";
 import { IAsset } from "@sifchain/sdk";
 import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
 
@@ -28,7 +21,6 @@ export const TokenIcon = defineComponent({
   },
 
   setup(props) {
-    const core = useCore();
     const url = ref<string | void>();
 
     watch(
