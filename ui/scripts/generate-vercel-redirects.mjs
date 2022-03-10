@@ -36,8 +36,10 @@ const BLOCKED_COUNTRY_CODES = [
   "PR",
   "UM",
   "VI",
-  "RU",
 ];
+
+const PRODUCTION_DEPLOYMENT_URL =
+  "sifchain-ui-(staging|master)-sifchain.vercel.app";
 
 async function main() {
   const vercelConfigPath = path.resolve("./vercel.json");
@@ -48,14 +50,43 @@ async function main() {
   const nextVercelConfig = {
     ...vercelConfig,
     redirects: [
+      // Redirect all blocked countries to the root of the site.
       {
         source: "/(.*)",
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
           {
             type: "header",
+            key: "x-vercel-deployment-url",
+            value: PRODUCTION_DEPLOYMENT_URL,
+          },
+          {
+            type: "header",
             key: "x-vercel-ip-country",
             value: BLOCKED_COUNTRY_CODES.join("|"),
+          },
+        ],
+        permanent: false,
+      },
+      // Redirect Crimea.
+      {
+        source: "/(.*)",
+        destination: "https://sifchain.finance/legal-disclamer",
+        has: [
+          {
+            type: "header",
+            key: "x-vercel-deployment-url",
+            value: PRODUCTION_DEPLOYMENT_URL,
+          },
+          {
+            type: "header",
+            key: "x-vercel-ip-country",
+            value: "UA",
+          },
+          {
+            type: "header",
+            key: "x-vercel-ip-country-region",
+            value: "13",
           },
         ],
         permanent: false,
