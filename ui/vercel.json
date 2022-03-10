@@ -17,7 +17,7 @@
         {
           "type": "header",
           "key": "x-vercel-deployment-url",
-          "value": "sifchain-ui-(master|staging)-sifchain.vercel.app"
+          "value": "sifchain-ui-(staging|master)-sifchain.vercel.app"
         },
         {
           "type": "header",
@@ -34,7 +34,7 @@
         {
           "type": "header",
           "key": "x-vercel-deployment-url",
-          "value": "sifchain-ui-(master|staging)-sifchain.vercel.app"
+          "value": "sifchain-ui-(staging|master)-sifchain.vercel.app"
         },
         {
           "type": "header",
