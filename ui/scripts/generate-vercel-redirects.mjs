@@ -53,8 +53,9 @@ async function main() {
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
           {
-            type: "host",
-            value: "dex.sifchain.finance",
+            type: "header",
+            key: "x-vercel-deployment-url",
+            value: "sifchain-ui-(master|staging)-sifchain.vercel.app",
           },
           {
             type: "header",
@@ -70,8 +71,9 @@ async function main() {
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
           {
-            type: "host",
-            value: "dex.sifchain.finance",
+            type: "header",
+            key: "x-vercel-deployment-url",
+            value: "sifchain-ui-(master|staging)-sifchain.vercel.app",
           },
           {
             type: "header",
