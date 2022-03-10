@@ -38,8 +38,7 @@ const BLOCKED_COUNTRY_CODES = [
   "VI",
 ];
 
-const PRODUCTION_DEPLOYMENT_URL =
-  "sifchain-ui-(staging|master)-sifchain.vercel.app";
+const PRODUCTION_DEPLOYMENT_URL = "(dex|staging).sifchain.finance";
 
 async function main() {
   const vercelConfigPath = path.resolve("./vercel.json");
@@ -57,7 +56,7 @@ async function main() {
         has: [
           {
             type: "header",
-            key: "x-vercel-deployment-url",
+            key: "host",
             value: PRODUCTION_DEPLOYMENT_URL,
           },
           {
@@ -75,7 +74,7 @@ async function main() {
         has: [
           {
             type: "header",
-            key: "x-vercel-deployment-url",
+            key: "host",
             value: PRODUCTION_DEPLOYMENT_URL,
           },
           {
