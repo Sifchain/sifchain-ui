@@ -48,10 +48,15 @@ async function main() {
   const nextVercelConfig = {
     ...vercelConfig,
     redirects: [
+      // Redirect all blocked countries to the root of the site.
       {
-        source: "https://(dex|staging).sifchain.finance",
+        source: "/(.*)",
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
+          {
+            type: "host",
+            value: "(dex|staging).sifchain.finance",
+          },
           {
             type: "header",
             key: "x-vercel-ip-country",
@@ -60,10 +65,15 @@ async function main() {
         ],
         permanent: false,
       },
+      // Redirect Crimea.
       {
         source: "/(.*)",
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
+          {
+            type: "host",
+            value: "(dex|staging).sifchain.finance",
+          },
           {
             type: "header",
             key: "x-vercel-ip-country",
@@ -77,10 +87,15 @@ async function main() {
         ],
         permanent: false,
       },
+      // Redirect NZ-AUK (test).
       {
         source: "/(.*)",
         destination: "https://www.youtube.com/watch?v=np-gqrLTfQA",
         has: [
+          {
+            type: "host",
+            value: "(devnet|testnet).sifchain.finance",
+          },
           {
             type: "header",
             key: "x-vercel-ip-country",

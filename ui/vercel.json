@@ -15,8 +15,8 @@
       "destination": "https://sifchain.finance/legal-disclamer",
       "has": [
         {
-          "type": "header",
-          "key": "x-forwarded-proto"
+          "type": "host",
+          "value": "https://(dex|staging).sifchain.finance"
         },
         {
           "type": "header",
@@ -29,8 +29,11 @@
     {
       "source": "/(.*)",
       "destination": "https://sifchain.finance/legal-disclamer",
-
       "has": [
+        {
+          "type": "host",
+          "value": "https://(dex|staging).sifchain.finance"
+        },
         {
           "type": "header",
           "key": "x-vercel-ip-country",
@@ -48,10 +51,6 @@
       "source": "/(.*)",
       "destination": "https://www.youtube.com/watch?v=np-gqrLTfQA",
       "has": [
-        {
-          "type": "host",
-          "value": "https://(dex|stagin).sifchain.finance"
-        },
         {
           "type": "header",
           "key": "x-vercel-ip-country",
