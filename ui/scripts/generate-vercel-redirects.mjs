@@ -36,7 +36,6 @@ const BLOCKED_COUNTRY_CODES = [
   "PR",
   "UM",
   "VI",
-  "RU",
 ];
 
 async function main() {
@@ -48,14 +47,41 @@ async function main() {
   const nextVercelConfig = {
     ...vercelConfig,
     redirects: [
+      // Redirect all blocked countries to the root of the site.
       {
         source: "/(.*)",
         destination: "https://sifchain.finance/legal-disclamer",
         has: [
           {
+            type: "host",
+            value: "*(dex|staging).sifchain.finance",
+          },
+          {
             type: "header",
             key: "x-vercel-ip-country",
             value: BLOCKED_COUNTRY_CODES.join("|"),
+          },
+        ],
+        permanent: false,
+      },
+      // Redirect Crimea.
+      {
+        source: "/(.*)",
+        destination: "https://sifchain.finance/legal-disclamer",
+        has: [
+          {
+            type: "host",
+            value: "*(dex|staging).sifchain.finance",
+          },
+          {
+            type: "header",
+            key: "x-vercel-ip-country",
+            value: "UA",
+          },
+          {
+            type: "header",
+            key: "x-vercel-ip-country-region",
+            value: "13",
           },
         ],
         permanent: false,
