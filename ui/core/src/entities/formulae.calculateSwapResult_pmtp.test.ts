@@ -7,19 +7,16 @@ import { sanitizeNumericString } from "../test/utils/sanitizeNumericString";
 const toAmount = (s: string) => Amount(sanitizeNumericString(s));
 
 describe("calculateSwapResult_pmtp", () => {
-  tests.SingleSwapResult_pmtp.forEach(({ x, X, Y, wx, wy, expected }) => {
+  tests.SingleSwapResult_pmtp.forEach(({ x, X, Y, A, expected }) => {
     test(`Swapping ${x}, expecting ${expected}`, () => {
-      const $x = toAmount(x); // Swap Amount
-      const $X = toAmount(X); // External Balance
-      const $Y = toAmount(Y); // Native Balance
+      const [$x, $X, $Y, $A] = [x, X, Y, A].map(toAmount);
 
       const output = calculateSwapResult_pmtp(
         // External -> Native pool
-        $x, // Swap Amount
         $X, // External Balance
+        $x, // Swap Amount
         $Y, // Native Balance,
-        wx,
-        wy,
+        $A, // PMTP adjustment (increased purchasing power)
       );
       expect(output.toBigInt().toString()).toBe(expected);
     });

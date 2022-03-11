@@ -154,8 +154,8 @@ export function calculateWithdrawal({
 
 /**
  * Calculate Swap Result based on formula ( x * X * Y ) / ( x + X ) ^ 2
- * @param X  External Balance
  * @param x Swap Amount
+ * @param X  External Balance
  * @param Y Native Balance
  * @returns swapAmount
  */
@@ -168,30 +168,29 @@ export function calculateSwapResult(x: IAmount, X: IAmount, Y: IAmount) {
 }
 
 /**
- * Calculate Swap Result based on formula ( x * X * Y ) / ( x + X ) ^ (c/w)
- * Calculate Swap Result based on formula Y * (1 - (X / (x + X)) ^ (c/w)) * (1 - (x / (x + X))
- * @param X  External Balance
+ * Calculate Swap Result based on formula (( x * X * Y ) / ( x + X ) ^ 2) * (1 + adjustment / 100)
  * @param x Swap Amount
+ * @param X  External Balance
  * @param Y Native Balance
- * @param wx
- * @param wy
+ * @param adjustment PMTP purchasing power adjustment
  * @returns swapAmount
  */
 export function calculateSwapResult_pmtp(
   x: IAmount,
   X: IAmount,
   Y: IAmount,
-  wx: number,
-  wy: number,
+  adjustment: IAmount,
 ) {
   if (x.equalTo("0") || X.equalTo("0") || Y.equalTo("0")) {
     return Amount("0");
   }
-  // Y * (1 - (X / (x + X)) ^ (c/w)) * (1 - (x / (x + X))
-  return Y.multiply(
-    Amount("1")
-      .subtract(X.divide(x.add(X)).power(wx / wy))
-      .multiply(Amount("1").subtract(x.divide(x.add(X)))),
+
+  const adjustmentPercentage = adjustment.divide(
+    Amount("100".concat("0".repeat(18))),
+  );
+
+  return calculateSwapResult(x, X, Y).multiply(
+    Amount("1").add(adjustmentPercentage),
   );
 }
 
