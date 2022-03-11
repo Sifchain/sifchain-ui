@@ -131,9 +131,9 @@ export default defineComponent({
           />
           {/* </TransitionGroup> */}
           <SlippageTolerance
-            slippage={data.slippage.value}
+            slippage={data.slippage.value || "0"}
             onUpdate={(v) => {
-              data.slippage.value = v;
+              data.slippage.value = v || "0";
             }}
           ></SlippageTolerance>
           <SwapDetails

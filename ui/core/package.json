@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
+  "private": false,
   "scripts": {
     "generate": "npx @openapitools/openapi-generator-cli generate -g typescript-fetch -o generated -i ./swagger.yaml --enable-post-process-file --additional-properties=typescriptThreePlus=true,supportsES6=true",
     "compile": "tsc --noEmit",
@@ -12,8 +13,8 @@
     "watch": "tsc -p ./tsconfig.compile.json -w",
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
-    "test": "yarn jest --passWithNoTests --projects jest-unit.config.js",
-    "test:integration": "yarn jest --projects jest-integration.config.js"
+    "test": "yarn jest --passWithNoTests --collect-coverage --projects jest-unit.config.js",
+    "test:integration": "yarn jest --projects --collect-coverage jest-integration.config.js"
   },
   "files": [
     "lib/**/*"
@@ -62,8 +63,8 @@
     "vercel": "^21.0.1",
     "vite-compatible-readable-stream": "^3.6.0",
     "wait-on": "^5.2.1",
-    "web3": "^1.3.0",
-    "web3-core": "^1.3.0",
+    "web3": "1.3.0",
+    "web3-core": "1.3.0",
     "zx": "^4.3.0"
   },
   "devDependencies": {

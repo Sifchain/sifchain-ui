@@ -1,3 +1,10 @@
+## Release 2022.03.03
+* SDK/Sifchain.js
+* Balance page updates
+  - Defaults to only show balances > 0, new toggle to show all vs hide 0 balances, improved searching and scrolling
+* Rewards calculator
+  - Available within the More section of the menu, allows users to view potential returns over time with inputs for rowan principle amount, current rowan price, apr, future rowan price, and time (weeks)
+
 ## Release 2022.02.03
 * An issue was discovered that caused bonus pool (v4) selections to be sorted alphabetically, misaligning the rank weights. The voting period has been reset & extended until 2/8 at 12pm PST. 
 

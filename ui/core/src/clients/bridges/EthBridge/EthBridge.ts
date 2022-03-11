@@ -167,10 +167,8 @@ export class EthBridge extends BaseBridge<
 
       try {
         const hash = await new Promise<string>((resolve, reject) => {
-          let hash = "";
           pegTx.onError((error) => reject(error.payload));
-          pegTx.onTxHash((ev) => (hash = ev.payload));
-          pegTx.onEthTxConfirmed(() => resolve(hash));
+          pegTx.onTxHash((ev) => resolve(ev.payload));
         });
 
         return {

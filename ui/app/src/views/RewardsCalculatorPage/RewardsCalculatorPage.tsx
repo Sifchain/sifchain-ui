@@ -8,7 +8,7 @@ import { RewardsCalculator } from "./components/RewardsCalculator";
 import { useRewardsCalculatorData } from "./hooks";
 
 const DEFAULT_TOKEN_SYMBOL = "ROWAN";
-const DEFAULT_APR = "300";
+const DEFAULT_APR = "200";
 const DEFAULT_TIME_IN_WEEKS = 12;
 const COMPOUNDING_FACTOR = {
   daily: 365,
@@ -84,12 +84,15 @@ export default defineComponent({
     },
     rewardsEstimate(): number {
       const apr = parseFloat(this.apr) / 100;
+      const tokenInAmount = parseFloat(this.tokenInAmount);
 
-      return calculateFutureValue(
-        parseFloat(this.tokenInAmount),
-        this.timeInWeeks / COMPOUNDING_FACTOR.weekly,
-        apr,
-        COMPOUNDING_FACTOR.weekly,
+      return (
+        calculateFutureValue(
+          tokenInAmount,
+          this.timeInWeeks / COMPOUNDING_FACTOR.weekly,
+          apr,
+          COMPOUNDING_FACTOR.weekly,
+        ) - tokenInAmount
       );
     },
     potentialReturn(): number {

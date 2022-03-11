@@ -100,6 +100,7 @@ export const useImportData = () => {
 
   const networkBalances = useAndPollNetworkBalances({
     network: computed(() => importDraft.value.network),
+    priority: computed(() => tokenRef.value?.asset),
   });
 
   const nativeToken = useToken({

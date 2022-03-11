@@ -1,7 +1,5 @@
-// TODO remove refs dependency and move to `actions/clp/calculateAddLiquidity`
-
 import { computed, effect, Ref } from "@vue/reactivity";
-// import { fromBaseUnits } from "../../utils";
+
 import {
   Asset,
   AssetAmount,
@@ -9,6 +7,7 @@ import {
   LiquidityProvider,
   Pool,
   Amount,
+  IAsset,
 } from "@sifchain/sdk";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { useField } from "./useField";
@@ -32,12 +31,13 @@ export function useReactivePoolCalculator(input: {
   tokenBSymbol: Ref<string | null>;
   balances: Ref<IAssetAmount[]>;
   liquidityProvider: Ref<LiquidityProvider | null>;
-  poolFinder: (a: Asset | string, b: Asset | string) => Ref<Pool> | null;
   asyncPooling: Ref<boolean>;
   lastFocusedTokenField: Ref<"A" | "B" | null>;
+  poolFinder: (a: IAsset | string, b: IAsset | string) => Ref<Pool> | null;
 }) {
   const tokenAField = useField(input.tokenAAmount, input.tokenASymbol);
   const tokenBField = useField(input.tokenBAmount, input.tokenBSymbol);
+
   const balanceMap = useBalances(input.balances);
 
   const preExistingPool = computed(() => {
@@ -84,6 +84,7 @@ export function useReactivePoolCalculator(input: {
         : null;
     }
   });
+
   const tokenBBalance = computed(() => {
     return input.tokenBSymbol.value
       ? balanceMap.value.get(input.tokenBSymbol.value) ?? null
@@ -91,7 +92,13 @@ export function useReactivePoolCalculator(input: {
   });
 
   const fromBalanceOverdrawn = computed(() => {
-    return tokenABalance.value?.lessThan(tokenAField.fieldAmount.value || "0");
+    if (!tokenABalance.value) return false;
+    if (!tokenAField.fieldAmount.value) return false;
+
+    const fieldAmount = tokenAField.fieldAmount.value;
+    const balance = tokenABalance.value;
+
+    return fieldAmount.greaterThan(balance);
   });
 
   const toBalanceOverdrawn = computed(() => {
@@ -354,11 +361,11 @@ export function useReactivePoolCalculator(input: {
     if (fromBalanceOverdrawn.value || toBalanceOverdrawn.value) {
       if (fromBalanceOverdrawn.value && toBalanceOverdrawn.value) {
         return PoolState.INSUFFICIENT_FUNDS;
-      } else if (fromBalanceOverdrawn.value) {
-        return PoolState.INSUFFICIENT_FUNDS_FROM;
-      } else {
-        return PoolState.INSUFFICIENT_FUNDS_TO;
       }
+      if (fromBalanceOverdrawn.value) {
+        return PoolState.INSUFFICIENT_FUNDS_FROM;
+      }
+      return PoolState.INSUFFICIENT_FUNDS_TO;
     }
 
     return PoolState.VALID_INPUT;

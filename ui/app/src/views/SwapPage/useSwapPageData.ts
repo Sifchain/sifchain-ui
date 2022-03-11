@@ -231,10 +231,13 @@ export const useSwapPageData = () => {
         );
         txStatus.value = NativeDexClient.parseTxResult(res);
       } catch (error) {
+        const errorMessage =
+          typeof error === "string" ? error : (error as Error).message;
+
         txStatus.value = {
           state: "failed",
           hash: "",
-          memo: error.message as string,
+          memo: errorMessage,
         };
       }
       if (txStatus.value.state === "accepted") {

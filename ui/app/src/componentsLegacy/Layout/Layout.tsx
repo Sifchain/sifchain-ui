@@ -1,4 +1,4 @@
-import { defineComponent, HtmlHTMLAttributes } from "vue";
+import { defineComponent, HtmlHTMLAttributes, PropType } from "vue";
 
 import { useCurrentRouteBannerMessage } from "@/hooks/useCurrentRouteBannerMessage";
 import BetaWarningBanner from "@/components/BetaWarningBanner";
@@ -9,7 +9,7 @@ export default defineComponent({
   name: "Layout",
   props: {
     onScroll: {
-      type: Function,
+      type: Function as PropType<HtmlHTMLAttributes["onScroll"]>,
       default: () => {},
     },
   },

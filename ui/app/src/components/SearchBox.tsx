@@ -120,17 +120,17 @@ export const SearchBox = defineComponent({
         {props.enableKeyBindings && isFocused.value && (
           <label
             for={props.id}
-            class="absolute right-2 items-center gap-[6px] flex"
+            class={clsx(
+              "absolute right-2 items-center gap-[6px] flex transition-transform",
+              {
+                "translate-x-[-34px]": props.value?.length,
+              },
+            )}
           >
             {[`${isMacOs.value ? "Cmd" : "Ctrl"} F`, "/"].map((key) => (
               <div
                 key={key}
-                class={clsx(
-                  "rounded px-2 py-[6px] text-sm font-mono bg-gray-base opacity-60 hover:opacity-80 transition-transform",
-                  {
-                    "translate-x-[-34px]": props.value?.length,
-                  },
-                )}
+                class="rounded px-2 py-[6px] text-sm font-mono bg-gray-base opacity-60 hover:opacity-80 transition-transform"
               >
                 {key}
               </div>

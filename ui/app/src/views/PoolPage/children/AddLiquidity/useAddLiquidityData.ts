@@ -122,18 +122,10 @@ export const useAddLiquidityData = () => {
       tokenAFieldAmount.value,
       nativeBalance,
       externalBalance,
-      Amount(totalPoolUnits.value),
     );
     return rFactor.subtract(slipAdjustmentCalc);
   });
 
-  function setTokenAAmount(amount: string) {
-    fromAmount.value = amount;
-  }
-
-  function setTokenBAmount(amount: string) {
-    toAmount.value = amount;
-  }
   const hasActiveSafetyLag = ref(false);
 
   // WARNING: DO NOT MIGRATE TO NON-REACTIVE UTILITY WITHIN `useEffect`
@@ -146,7 +138,6 @@ export const useAddLiquidityData = () => {
     bPerARatioProjectedMessage,
     shareOfPoolPercent,
     totalLiquidityProviderUnits,
-    totalPoolUnits,
     poolAmounts,
     tokenAFieldAmount,
     tokenBFieldAmount,
@@ -248,6 +239,7 @@ export const useAddLiquidityData = () => {
       if (!accountStore.state.sifchain.connected) {
         return "Connect Sifchain Wallet";
       }
+
       switch (state.value) {
         case PoolState.SELECT_TOKENS:
           return "Select Tokens";
