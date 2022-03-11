@@ -36,12 +36,13 @@ export default defineConfig({
   define: {
     TOKEN_SVG_PATH_LOOKUP: fs
       .readdirSync(path.resolve(__dirname, "./public/images/tokens"))
-      .reduce((acc, svgFilename) => {
-        acc[
-          svgFilename.replace(/\.svg$/i, "")
-        ] = `/images/tokens/${svgFilename}`;
-        return acc;
-      }, {}),
+      .reduce(
+        (acc, svgFilename) => ({
+          ...acc,
+          [svgFilename.replace(/\.svg$/i, "")]: `/images/tokens/${svgFilename}`,
+        }),
+        {},
+      ),
   },
 
   optimizeDeps: {

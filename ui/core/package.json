@@ -13,8 +13,8 @@
     "watch": "tsc -p ./tsconfig.compile.json -w",
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
-    "test": "yarn jest --passWithNoTests --projects jest-unit.config.js",
-    "test:integration": "yarn jest --projects jest-integration.config.js"
+    "test": "yarn jest --passWithNoTests --collect-coverage --projects jest-unit.config.js",
+    "test:integration": "yarn jest --projects --collect-coverage jest-integration.config.js"
   },
   "files": [
     "lib/**/*"
