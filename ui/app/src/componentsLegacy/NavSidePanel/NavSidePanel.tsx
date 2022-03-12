@@ -1,17 +1,17 @@
-import { defineComponent, onMounted, ref, useCssModule, watch } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import { computed } from "@vue/reactivity";
-import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import NavSidePanelItem from "./NavSidePanelItem";
-import Logo from "@/assets/logo-large.svg";
-import AssetIcon from "../../components/AssetIcon";
+
 import { prettyNumber } from "@/utils/prettyNumber";
-import WalletPicker from "@/components/WalletPicker/WalletPicker";
-import MoreMenu from "./NavMoreMenu";
+import { rootStore } from "@/store";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
+import { governanceStore } from "@/store/modules/governance";
+import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
+import AssetIcon from "@/components/AssetIcon";
+import { VotingModal } from "@/components/VotingModal/VotingModal";
+import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import ChangelogModal, {
   changelogViewedVersion,
 } from "@/components/ChangelogModal";
@@ -19,15 +19,13 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import { RouterLink, useRoute, useRouter } from "vue-router";
-import {
-  COMPETITION_UNIVERSAL_SYMBOL,
-  useHasUniversalCompetition,
-  useLeaderboardCompetitions,
-} from "@/views/LeaderboardPage/useCompetitionData";
-import { governanceStore } from "@/store/modules/governance";
-import { VotingModal } from "@/components/VotingModal/VotingModal";
+import { RouterLink, useRouter } from "vue-router";
+import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
+import Logo from "@/assets/logo-large.svg";
 import { formatAssetAmount } from "../shared/utils";
+import NavSidePanelItem from "./NavSidePanelItem";
+import MoreMenu from "./NavMoreMenu";
+import usePTMP from "@/hooks/usePMTP";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -50,6 +48,10 @@ export default defineComponent({
     const votingOpenRef = ref(false);
 
     const router = useRouter();
+
+    const pmtp = usePTMP();
+
+    const isPMTPEnabled = flagsStore.state.pmtp;
 
     watch([router.currentRoute], () => {
       // add ?vote=anything to any hash route to open the voting modal
@@ -145,9 +147,6 @@ export default defineComponent({
               <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
                 <Logo class="w-[119px] shorter:w-[90px]" />
               </div>
-              {/* <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
-                <Logo class="w-full h-[50px]" />
-              </div> */}
               <div class="mt-[9.3vmin] shorter:mt-[7.5vmin]">
                 <NavSidePanelItem
                   displayName="Dashboard"
@@ -202,37 +201,6 @@ export default defineComponent({
                     onClose={() => (changelogOpenRef.value = false)}
                   />
                 )}
-
-                {/* <NavSidePanelItem
-                  displayName="Documents"
-                  icon="navigation/documents"
-                  href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
-                  class="group"
-                  action={
-                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                      <AssetIcon
-                        icon="interactive/open-external"
-                        size={16}
-                        class="opacity-50"
-                      />
-                    </div>
-                  }
-<<<<<<< HEAD
-                />
-                <NavSidePanelItem
-                  icon="navigation/changelog"
-                  onClick={() => (changelogOpenRef.value = true)}
-                  displayName={<div class="flex items-center">Changelog</div>}
-                  action={
-                    changelogViewedVersion.isLatest() ? undefined : (
-                      <div class="flex flex-1 justify-end">
-                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
-                      </div>
-                    )
-                  }
-                />
-                /> */}
-
                 {votingOpenRef.value && (
                   <VotingModal onClose={() => (votingOpenRef.value = false)} />
                 )}
@@ -410,19 +378,33 @@ export default defineComponent({
                     <>{tvl.value ? `$${prettyNumber(tvl.value)}` : "..."} TVL</>
                   }
                   icon="interactive/lock"
-                ></NavSidePanelItem>
+                />
+                {isPMTPEnabled && (
+                  <NavSidePanelItem
+                    class={"opacity-50 mt-[0px]"}
+                    displayName={
+                      <>
+                        PMTP{" "}
+                        {pmtp.isLoading.value
+                          ? "..."
+                          : `${pmtp.data.value?.currentModifier}%`}
+                      </>
+                    }
+                    icon="interactive/policy"
+                  />
+                )}
                 <NavSidePanelItem
                   class={"opacity-50 mt-[0px]"}
                   displayName={
                     <>
                       {rowanPrice.value
-                        ? `$${(+rowanPrice.value).toFixed(5)}`
+                        ? `$${Number(rowanPrice.value).toFixed(5)}`
                         : "..."}{" "}
                       / ROWAN
                     </>
                   }
                   icon="navigation/rowan"
-                ></NavSidePanelItem>
+                />
               </div>
 
               <Tooltip
