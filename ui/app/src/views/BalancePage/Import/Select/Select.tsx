@@ -1,4 +1,4 @@
-import { defineComponent, ref, computed, watch } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
@@ -8,16 +8,15 @@ import {
   SelectDropdownOption,
 } from "@/components/SelectDropdown";
 import { useCore } from "@/hooks/useCore";
-import { TokenIcon } from "@/components/TokenIcon";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
-import { getImportLocation, useImportData } from "./useImportData";
+import { getImportLocation, useImportData } from "../useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useRouter } from "vue-router";
-import { rootStore } from "../../../store";
+import { rootStore } from "@/store";
 import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { accountStore } from "@/store/modules/accounts";

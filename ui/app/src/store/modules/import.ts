@@ -1,13 +1,6 @@
 import { useChainsList, useChains, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import {
-  AppCookies,
-  Asset,
-  getNetworkEnv,
-  IAssetAmount,
-  Network,
-  NetworkEnv,
-} from "@sifchain/sdk";
+import { Asset, IAssetAmount, Network } from "@sifchain/sdk";
 import {
   BridgeEvent,
   BridgeParams,
@@ -27,7 +20,15 @@ export type ImportDraft = {
   pegEvent: BridgeEvent | undefined;
 };
 
+export type MultiImportDraft = {
+  symbols: string[];
+  amounts: string[];
+  network: Network;
+  pegEvent: BridgeEvent | undefined;
+};
+
 type State = {
+  drafts: ImportDraft[];
   draft: ImportDraft;
   pendingPegEvents: [string, BridgeEvent][];
 };
@@ -37,6 +38,14 @@ export const importStore = Vuextra.createStore({
     devtools: true,
   },
   state: {
+    drafts: [
+      {
+        amount: "0",
+        network: Network.ETHEREUM,
+        symbol: "eth",
+        pegEvent: undefined,
+      },
+    ],
     draft: {
       amount: "0",
       network: Network.ETHEREUM,
@@ -97,6 +106,24 @@ export const importStore = Vuextra.createStore({
         nextDraft.network = nextDraft.network || Network.ETHEREUM;
       Object.assign(state.draft, nextDraft);
     },
+    setDraftWithIndex(payload: {
+      nextDraft: Partial<ImportDraft>;
+      index: number;
+    }) {
+      const target = state.drafts[payload.index];
+
+      Object.assign(state.drafts[payload.index], {
+        ...payload.nextDraft,
+        network: payload.nextDraft.network
+          ? payload.nextDraft.network
+          : target.network ?? Network.ETHEREUM,
+      });
+    },
+    resetDrafts() {
+      if (state.drafts.length) {
+        state.drafts = [state.drafts[0]];
+      }
+    },
     setPegEvent(pegEvent: BridgeEvent | undefined) {
       state.draft.pegEvent = pegEvent;
     },
@@ -148,7 +175,7 @@ export const runTransfer = async (
       tx: {
         state: "failed",
         hash: "",
-        memo: error.message,
+        memo: (error as Error).message,
       },
     });
   }
@@ -168,7 +195,7 @@ export const runTransfer = async (
       tx: {
         hash: "",
         state: "failed",
-        memo: error.message,
+        memo: (error as Error).message,
       },
     });
   }
