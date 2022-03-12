@@ -1062,12 +1062,12 @@ const assets: {
       imageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/13143.png",
     },
     {
-      symbol: "ngm",
+      symbol: "ungm",
       displaySymbol: "ngm",
       decimals: 6,
       name: "ngm",
       network: "sifchain",
-      homeNetwork: "ethereum",
+      homeNetwork: "emoney",
       label: "ngm",
       imageUrl:
         "https://assets.coingecko.com/coins/images/13722/small/logo-200x200.jpg?1626095888",
@@ -1078,7 +1078,7 @@ const assets: {
       decimals: 6,
       name: "e-Money EUR",
       network: "sifchain",
-      homeNetwork: "ethereum",
+      homeNetwork: "emoney",
       label: "e-Money EUR",
       imageUrl:
         "https://assets.coingecko.com/coins/images/18817/small/eeur.jpg?1633508407",

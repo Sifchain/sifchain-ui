@@ -1,4 +1,4 @@
-import { createServices, createUsecases } from "@/business";
+import { createServices, createUsecases, ServiceContext } from "@/business";
 import {
   createAccountPoolFinder,
   createPoolFinder,
@@ -11,7 +11,7 @@ switchEnv({ location: window.location });
 const { tag, sifAssetTag, ethAssetTag } = getEnv({
   location: window.location,
 });
-console.log("getEnv", tag, sifAssetTag, ethAssetTag);
+console.log("getEnv", { tag, sifAssetTag, ethAssetTag });
 const config = getConfig(tag, sifAssetTag, ethAssetTag);
 const services = createServices(config);
 const store = createStore();

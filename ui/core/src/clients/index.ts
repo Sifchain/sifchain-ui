@@ -14,6 +14,7 @@ import {
   IxoChain,
   BandChain,
   LikecoinChain,
+  EmoneyChain,
 } from "@sifchain/sdk/src/clients/chains";
 import { Network } from "..";
 
@@ -33,6 +34,7 @@ export const networkChainCtorLookup = {
   [Network.IXO]: IxoChain,
   [Network.BAND]: BandChain,
   [Network.LIKECOIN]: LikecoinChain,
+  [Network.EMONEY]: EmoneyChain,
 };
 
 export * from "./chains";
