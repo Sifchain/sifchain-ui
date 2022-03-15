@@ -34,6 +34,7 @@ export type LiquidityParams = {
   external_asset_amount: string;
   signer: string;
 };
+
 export type RemoveLiquidityParams = {
   base_req: {
     from: string;
@@ -81,6 +82,7 @@ type LiquidityDetailsResponse = {
 type ClpCmdSwap = (params: SwapParams) => Promise<Msg>;
 type ClpQueryPools = () => Promise<RawPool[]>;
 type ClpQueryPool = (params: { ticker: string }) => Promise<RawPool>;
+type ClpQueryPmtpParams = (params: { ticker: string }) => Promise<string>;
 type ClpQueryAssets = (address: string) => Promise<{ symbol: string }[]>;
 type ClpAddLiquidity = (params: LiquidityParams) => Promise<any>;
 type ClpCreatePool = (params: LiquidityParams) => Promise<any>;
@@ -101,6 +103,7 @@ export interface ClpExtension {
     getLiquidityProvider: ClpGetLiquidityProvider;
     removeLiquidity: ClpRemoveLiquidity;
     getPool: ClpQueryPool;
+    getPmtpParams: ClpQueryPmtpParams;
   };
 }
 
@@ -139,6 +142,10 @@ export function setupClpExtension(base: LcdClient): ClpExtension {
 
       getPool: async ({ ticker }) => {
         return (await base.get(`/clp/getPool?ticker=${ticker}`)).result;
+      },
+
+      getPmtpParams: async () => {
+        return await base.get(`/clp/getPmtpParams`);
       },
     },
   };
