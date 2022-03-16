@@ -13,14 +13,12 @@ export type RewardsProgramConfig = {
   tokens: string;
 };
 
-export type RewardsProgramsReponse = {
-  Rewards: {
-    reward_program: string;
-    config: RewardsProgramConfig;
-    last_updated: string;
-    comment: string;
-    preflight_on: boolean;
-  }[];
+export type RewardsProgram = {
+  reward_program: string;
+  last_updated: string;
+  comment: string;
+  preflight_on: boolean;
+  config: RewardsProgramConfig;
 };
 
 export type UserRewardsSummaryResponse = {
@@ -35,13 +33,7 @@ export type UserRewardsSummaryResponse = {
 }[];
 
 const fetchJSON = <T>(endpoint: string, options: RequestInit = {}) =>
-  fetch(endpoint, {
-    ...options,
-    headers: {
-      ...options.headers,
-      "Content-Type": "application/json",
-    },
-  }).then((x) => x.json() as Promise<T>);
+  fetch(endpoint, options).then((x) => x.json() as Promise<T>);
 
 export default class DataService {
   constructor(private baseUrl: string = BASE_URL) {
@@ -49,23 +41,38 @@ export default class DataService {
   }
 
   async getTokenStats() {
-    const res = await fetchJSON<PoolStatsResponseData>(
-      `${this.baseUrl}/beta/asset/tokenStats`,
-    );
-    return res;
+    try {
+      const res = await fetchJSON<PoolStatsResponseData>(
+        `${this.baseUrl}/beta/asset/tokenStats`,
+      );
+      return res;
+    } catch (error) {
+      return {} as PoolStatsResponseData;
+    }
   }
 
   async getRewardsPrograms() {
-    const res = await fetchJSON<{ rewardPrograms: RewardsProgramsReponse[] }>(
-      `${this.baseUrl}/beta/asset/rewardPrograms`,
-    );
-    return res.rewardPrograms;
+    try {
+      const res = await fetchJSON<{ Rewards: RewardsProgram[] }>(
+        `${this.baseUrl}/beta/rewardconfig/all`,
+      );
+
+      console.log({ res });
+
+      return res.Rewards;
+    } catch (error) {
+      return [] as RewardsProgram[];
+    }
   }
 
   async getUserRewards(address: string) {
-    const res = await fetchJSON<{ rewardPrograms: RewardsProgramsReponse[] }>(
-      `${this.baseUrl}/beta/network/rewardconfig/${address}`,
-    );
-    return res.rewardPrograms;
+    try {
+      const res = await fetchJSON<{ Rewards: RewardsProgram[] }>(
+        `${this.baseUrl}/beta/network/rewardconfig/${address}`,
+      );
+      return res.Rewards;
+    } catch (error) {
+      return [] as RewardsProgram[];
+    }
   }
 }

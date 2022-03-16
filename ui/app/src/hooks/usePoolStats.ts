@@ -37,12 +37,9 @@ export interface Headers {
 const hasLoggedError: Record<string, boolean> = {};
 
 export const usePoolStats = () => {
-  const { store } = useCore();
+  const { store, services } = useCore();
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
-    const res = await fetch(
-      "https://data.sifchain.finance/beta/asset/tokenStats",
-    );
     const gql = createCryptoeconGqlClient();
 
     const query = /* GraphQL */ `
@@ -58,9 +55,9 @@ export const usePoolStats = () => {
     const { rewardPrograms } = await gql`
       ${query}
     `;
-    const json = (await res.json()) as PoolStatsResponseData;
 
-    const poolData = json.body;
+    const { body: poolData } = await services.data.getTokenStats();
+
     const response = {
       poolData: {
         ...poolData,
