@@ -1,4 +1,4 @@
-import { ComputedRef, computed, watchEffect, watch } from "vue";
+import { watch } from "vue";
 import { useAsyncData, AsyncDataState } from "./useAsyncData";
 
 const cache = new Map<string, any>();

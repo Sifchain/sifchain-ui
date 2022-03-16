@@ -1,17 +1,18 @@
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { watchEffect } from "vue";
 
+import { useCore } from "@/hooks/useCore";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+
 export const useRowanPrice = (params?: { shouldReload: boolean }) => {
+  const { services } = useCore();
+
   const price = useAsyncDataCached("rowanPrice", async () => {
-    function isNumeric(s: any) {
-      return s - 0 == s && ("" + s).trim().length > 0;
+    function isNumeric(s: string): boolean {
+      return Number(s) - 0 === Number(s) && ("" + s).trim().length > 0;
     }
-    const data = await fetch(
-      "https://data.sifchain.finance/beta/asset/tokenStats",
-    );
-    const json = await data.json();
-    const rowanPriceInUSDT = json.body ? json.body.rowanUSD : "";
+
+    const { body: stats } = await services.data.getTokenStats();
+    const rowanPriceInUSDT = stats.rowanUSD ?? "";
 
     if (isNumeric(rowanPriceInUSDT)) {
       return parseFloat(rowanPriceInUSDT).toPrecision(6);

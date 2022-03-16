@@ -15,7 +15,7 @@ export interface PoolStatsResponseData {
 
 interface Body {
   liqAPY: string;
-  rowanUSD: number;
+  rowanUSD: string;
   pools: PoolStat[];
 }
 
