@@ -1,20 +1,9 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  RouteRecord,
-  RouteRecordRaw,
-} from "vue-router";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage";
-// import BalanceImport from "@/views/BalancePage/Import";
-// import BalanceExport from "@/views/BalancePage/Export";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
 import StatsPage from "@/views/StatsPage/StatsPage";
-import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
-import RemoveLiquidity from "@/views/RemoveLiquidityPage.vue";
-import SinglePool from "@/views/SinglePool.vue";
-// import PegAssetPage from "@/views/PegAssetPage.vue";
 import Pool from "@/views/PoolPage/PoolPage";
 import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
 import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/RemoveLiquidity";
@@ -31,7 +20,6 @@ import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
 import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
-import OnboardingModal from "@/components/OnboardingModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
 import { flagsStore } from "@/store/modules/flags";
 
@@ -68,11 +56,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     path: "/rewards",
     name: "Rewards",
     component: RewardsPage,
-  },
-  {
-    path: "/stake-delegate",
-    name: "StakeDelegatePage",
-    component: StakeDelegatePage,
   },
   {
     path: "/swap",
@@ -136,14 +119,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         },
       },
     ],
-  },
-  {
-    path: "/pool/:externalAsset",
-    name: "SinglePool",
-    component: SinglePool,
-    meta: {
-      title: "Single Pool - Sifchain",
-    },
   },
   {
     path: "/balances",
@@ -262,6 +237,7 @@ router.beforeEach((to, from, next) => {
 
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle) {
+    // @ts-ignore
     document.title = nearestWithTitle.meta.title;
     // Let's log the page view to Google Analytics manually
     (window as any).gtag("event", "page_view", {

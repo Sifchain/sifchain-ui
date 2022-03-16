@@ -7,21 +7,17 @@ import {
 } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
-import ClaimRewardsModal from "./components/ClaimRewardsModal";
 import { CryptoeconomicsRewardType } from "@/business/services/CryptoeconomicsService";
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
-import { AppCookies, NetworkEnv } from "@sifchain/sdk";
-import { flagsStore } from "@/store/modules/flags";
-import { getClaimableAmountString } from "./getClaimableAmountString";
 import { prettyNumber } from "@/utils/prettyNumber";
 
 // This one is for the chads
 export default defineComponent({
   name: "RewardsPage",
   props: {},
-  setup(props) {
+  setup() {
     const data = useRewardsPageData();
     const {
       isLoading,
@@ -79,53 +75,13 @@ export default defineComponent({
           0,
         );
       });
-      const totalClaimableRef = computed(() => {
-        return rewardProgramResponse.data.value?.rewardPrograms.reduce(
-          (prev, curr) => {
-            return (
-              prev +
-              (curr.participant?.totalClaimableCommissionsAndClaimableRewards ||
-                0)
-            );
-          },
-          0,
-        );
-      });
 
-      const disabledClaim = !flagsStore.state.rewardClaims || !!lmClaim.value;
-
-      /*
-        Utilize if there is large rollover between distribution times 
-        & claims need to be disabled during distributions
-         ||
-        !rewardProgramResponse.data.value?.rewardPrograms.some(
-          (p) => p.participant?.totalClaimableCommissionsAndClaimableRewards,
-        );
-      */
       return (
         <Layout>
           <PageCard
             class="w-[1000px]"
             heading="Rewards"
             iconName="navigation/rewards"
-            headerAction={
-              <div class="flex items-center">
-                {/* <label class="flex items-center mr-[16px] opacity-80">
-                  <input
-                    type="checkbox"
-                    class="mr-[4px]"
-                    checked={showAllRef.value}
-                    onChange={(e) =>
-                      (showAllRef.value = (
-                        e.target as HTMLInputElement
-                      ).checked)
-                    }
-                  />
-                  Show Inactive
-                </label> */}
-              </div>
-            }
-            headerContent={<>{""}</>}
           >
             <>
               <p class="mt-[0px] ml-[5px] text-gray-850 ">
@@ -221,26 +177,6 @@ export default defineComponent({
                 </div>
                 <div class={rewardColumnsLookup.expand.class} />
               </div>
-              {isClaimModalOpened.value &&
-                rewardProgramResponse.data.value?.rewardPrograms.some(
-                  (p) => p.summaryAPY !== null,
-                ) && (
-                  <ClaimRewardsModal
-                    address={address.value}
-                    rewardType={
-                      claimRewardType.value as CryptoeconomicsRewardType
-                    }
-                    summaryAPY={summaryApyRef.value}
-                    rewardPrograms={
-                      rewardProgramResponse.data.value.rewardPrograms
-                    }
-                    onClose={() => {
-                      isClaimModalOpened.value = false;
-                      reloadClaims();
-                    }}
-                  />
-                )}
-
               <div>
                 {rewardProgramResponse.data.value?.rewardPrograms
                   .filter((program) => {
@@ -264,7 +200,7 @@ export default defineComponent({
                     const bIsCurrent = new Date() < new Date(b.endDateTimeISO);
                     return +bIsCurrent - +aIsCurrent;
                   })
-                  .map((program, index, items) => {
+                  .map((program) => {
                     return (
                       <RewardSection
                         key={program.rewardProgramName}

@@ -37,15 +37,15 @@ export interface Headers {
 const hasLoggedError: Record<string, boolean> = {};
 
 export const usePoolStats = () => {
-  const { store, services } = useCore();
+  const { store } = useCore();
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
     const res = await fetch(
       "https://data.sifchain.finance/beta/asset/tokenStats",
     );
-    const cegql = createCryptoeconGqlClient();
+    const gql = createCryptoeconGqlClient();
 
-    const { rewardPrograms } = await cegql/* GraphQL */ `
+    const query = /* GraphQL */ `
       {
         rewardPrograms {
           isUniversal
@@ -54,9 +54,14 @@ export const usePoolStats = () => {
         }
       }
     `;
-    const json: PoolStatsResponseData = await res.json();
+
+    const { rewardPrograms } = await gql`
+      ${query}
+    `;
+    const json = (await res.json()) as PoolStatsResponseData;
+
     const poolData = json.body;
-    return {
+    const response = {
       poolData: {
         ...poolData,
         pools: poolData.pools.map((p) => {
@@ -83,6 +88,8 @@ export const usePoolStats = () => {
       liqAPY: 0,
       rowanUsd: poolData.rowanUSD,
     };
+
+    return response;
   });
 
   const isLoading = computed(() => {

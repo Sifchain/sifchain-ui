@@ -69,8 +69,10 @@ export default defineComponent({
     sanitizedPoolData() {
       if (!this.isLoaded) return [];
 
-      const result = this.allPoolsData
-        .filter((item: PoolDataItem) => {
+      const poolDataItems = this.allPoolsData as any;
+
+      const result = (poolDataItems as PoolDataItem[])
+        .filter((item) => {
           const asset = item.pool.externalAmount?.asset;
           if (!asset) return;
 
@@ -95,7 +97,7 @@ export default defineComponent({
             const aAsset = a.pool.externalAmount!.asset;
             const bAsset = b.pool.externalAmount!.asset;
             return aAsset.displaySymbol.localeCompare(bAsset.displaySymbol);
-          } else if (this.$data.sortBy === "rewardAPY") {
+          } else if (this.$data.sortBy === "rewardApy") {
             return (
               parseFloat(b.poolStat?.rewardAPY || "0") -
               parseFloat(a.poolStat?.rewardAPY || "0")

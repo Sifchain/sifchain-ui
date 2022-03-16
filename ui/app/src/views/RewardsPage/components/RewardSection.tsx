@@ -93,28 +93,6 @@ export const RewardSection = defineComponent({
           tooltip: "Rewards that have already been dispensed.",
           amount: this.rewardProgram.participant?.dispensed,
         },
-        // {
-        //   name: "Program Start",
-        //   value: `${new Date(
-        //     this.rewardProgram.startDateTimeISO,
-        //   ).toLocaleDateString()}, ${new Date(
-        //     this.rewardProgram.startDateTimeISO,
-        //   ).toLocaleTimeString("en-US", {
-        //     hour12: true,
-        //     timeZoneName: "short",
-        //   })}`,
-        // },
-        // {
-        //   name: "Program End",
-        //   value: `${new Date(
-        //     this.rewardProgram.endDateTimeISO,
-        //   ).toLocaleDateString()}, ${new Date(
-        //     this.rewardProgram.endDateTimeISO,
-        //   ).toLocaleTimeString("en-US", {
-        //     hour12: true,
-        //     timeZoneName: "short",
-        //   })}`,
-        // },
       ].filter((item) => !item.hide);
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
@@ -129,7 +107,6 @@ export const RewardSection = defineComponent({
     };
   },
   render() {
-    const { store } = useCore();
     const sifConnected = this.sifConnected;
 
     const isEarning =
@@ -264,6 +241,7 @@ export const RewardSection = defineComponent({
                     {detail.amount != null
                       ? getClaimableAmountString(detail.amount)
                       : // TODO: what's this value supposed to be? it doesn't exist in the type definition
+                        // @ts-ignore
                         detail.value}
                   </span>
                 </div>
@@ -282,32 +260,6 @@ export const RewardSection = defineComponent({
                 >
                   Learn More
                 </Button.Inline>{" "}
-                {/* <Button.Inline
-                onClick={() => {
-                  if (
-                    window.location.hostname !== "dex.sifchain.finance" &&
-                    AppCookies().getEnv() === NetworkEnv.MAINNET &&
-                    !window.confirm(
-                      "Are you sure you want to claim rewards on your mainnet account? It seems like you're testing this feature. If so, please be sure to do this on a dedicated betanet test wallet. Press 'cancel' to exit or 'ok' to continue",
-                    )
-                  ) {
-                    alert("claim canceled.");
-                    return;
-                  }
-                  props.onClaimIntent();
-                }}
-                class="w-full mt-[6px]"
-                icon="navigation/rewards"
-                active
-                disabled={
-                  !flagsStore.state.rewardClaims ||
-                  props.alreadyClaimed ||
-                  !props.data?.user
-                    ?.totalClaimableCommissionsAndClaimableRewards
-                }
-              >
-                {props.alreadyClaimed ? "Pending Claim" : "Claim Reward"}
-              </Button.Inline> */}
               </div>
             </div>
           </section>
