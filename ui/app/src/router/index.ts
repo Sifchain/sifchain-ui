@@ -1,5 +1,7 @@
+import { DeepReadonly } from "vue";
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
+import { flagsStore } from "@/store/modules/flags";
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
@@ -18,29 +20,13 @@ import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
-import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
-import { flagsStore } from "@/store/modules/flags";
 
 type SwapPageMeta = {
   title: string;
   swapState: SwapPageState;
 };
-
-type RouteName<T> = T extends { name?: string }[]
-  ? RouteName<T[number]>
-  : T extends { name: string }
-  ? T["name"]
-  : "";
-
-// type RouteName<T> = T extends RouteRecordRaw
-//   ? RouteName<T[keyof T]>
-//   : T extends { name: string; children: any[] }
-//   ? T["name"] | RouteName<T["children"][number]>
-//   : T extends { name: string }
-//   ? T["name"]
-//   : "";
 
 const routes: DeepReadonly<RouteRecordRaw[]> = [
   {
@@ -168,11 +154,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         path: "export/:symbol/processing",
         component: ExportProcessing,
       },
-      // {
-      //   name: "Export",
-      //   path: "export/:symbol/:step",
-      //   component: BalanceExport,
-      // },
     ],
   },
   {
@@ -180,23 +161,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     path: "/leaderboard/:type/:symbol?",
     component: LeaderboardPage,
   },
-
-  // {
-  //   path: "/balances/import/:assetFrom/:assetTo",
-  //   name: "ImportListingPage",
-  //   component: PegAssetPage,
-  //   meta: {
-  //     title: "Import Asset - Sifchain",
-  //   },
-  // },
-  // {
-  //   path: "/balances/export/:assetFrom/:assetTo",
-  //   name: "UnpegAssetPage",
-  //   component: PegAssetPage,
-  //   meta: {
-  //     title: "Export Asset - Sifchain",
-  //   },
-  // },
 ] as const;
 
 const finalRoutes = flagsStore.state.rewardsCalculator
@@ -215,7 +179,7 @@ const router = createRouter({
   routes: [...finalRoutes] as Array<RouteRecordRaw>,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const win = window as any;
   if (!win.gtag) {
     return next();
@@ -230,10 +194,10 @@ router.beforeEach((to, from, next) => {
     .find((r) => r.meta && r.meta.title);
 
   // Find the nearest route element with meta tags.
-  const nearestWithMeta = to.matched
-    .slice()
-    .reverse()
-    .find((r) => r.meta && r.meta.metaTags);
+  // const nearestWithMeta = to.matched
+  //   .slice()
+  //   .reverse()
+  //   .find((r) => r.meta && r.meta.metaTags);
 
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle) {
