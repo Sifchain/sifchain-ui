@@ -58,6 +58,8 @@ export const usePoolStats = () => {
 
     const { body: poolData } = await services.data.getTokenStats();
 
+    // const rewardsPrograms2 = await services.data.getRewardsPrograms();
+
     const response = {
       poolData: {
         ...poolData,

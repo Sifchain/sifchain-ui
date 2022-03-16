@@ -51,15 +51,29 @@ export default class DataService {
     }
   }
 
-  async getRewardsPrograms() {
+  async getRewardsPrograms(activeOnly?: boolean) {
     try {
       const res = await fetchJSON<{ Rewards: RewardsProgram[] }>(
-        `${this.baseUrl}/beta/rewardconfig/all`,
+        `${this.baseUrl}/beta/network/rewardconfig/all`,
       );
 
-      console.log({ res });
+      const raw = res.Rewards;
 
-      return res.Rewards;
+      const sorted = raw.sort(
+        (a, b) => (a.config.end_height || 0) - (b.config.end_height || 0),
+      );
+
+      return sorted.map((x) => {
+        const isUniversal = x.config.tokens === "ALL";
+        return {
+          ...x,
+          isUniversal,
+          summaryAPY: isUniversal ? 100 : 0,
+          incentivizedPoolSymbols: isUniversal
+            ? ["*"]
+            : x.config.tokens.split(",").map((x) => x.trim()),
+        };
+      });
     } catch (error) {
       return [] as RewardsProgram[];
     }
