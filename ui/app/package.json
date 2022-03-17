@@ -19,7 +19,7 @@
     ]
   },
   "dependencies": {
-    "@sifchain/sdk": "^1.0.0",
+    "@sifchain/sdk": "*",
     "@sifchain/wallet-keplr": "^1.0.0",
     "@sifchain/wallet-terra-station": "^1.0.0",
     "@sifchain/wallet-metamask": "^1.0.0",
