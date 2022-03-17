@@ -7,7 +7,7 @@ import {
 } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
-import { CryptoeconomicsRewardType } from "@/business/services/CryptoeconomicsService";
+
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";

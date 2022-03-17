@@ -63,15 +63,13 @@ const useExistingClaimsData = (
 };
 
 export type RewardProgramParticipant = {
-  // currentAPYOnTickets: number;
+  // can be removed
+  totalCommissionsAndRewardsAtMaturity: number;
+
+  // used
   totalClaimableCommissionsAndClaimableRewards: number;
-  maturityDateMs: string;
-  yearsToMaturity: number;
-  totalDepositedAmount: number;
-  currentTotalCommissionsOnClaimableDelegatorRewards: number;
   claimedCommissionsAndRewardsAwaitingDispensation: number;
   dispensed: number;
-  totalCommissionsAndRewardsAtMaturity: number;
 };
 export type RewardProgram = {
   participant?: RewardProgramParticipant;
@@ -107,7 +105,6 @@ export const useRewardsPageData = () => {
           currentAPYOnTickets
           totalClaimableCommissionsAndClaimableRewards
           currentTotalCommissionsOnClaimableDelegatorRewards
-          maturityDateMs
           yearsToMaturity
           totalDepositedAmount
           claimedCommissionsAndRewardsAwaitingDispensation

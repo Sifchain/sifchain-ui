@@ -23,8 +23,6 @@ export type RewardsProgram = {
 
 export type UserRewardsSummaryResponse = {
   totalClaimableCommissionsAndClaimableRewards: number;
-  maturityDateMs: string;
-  yearsToMaturity: number;
   totalDepositedAmount: number;
   currentTotalCommissionsOnClaimableDelegatorRewards: number;
   claimedCommissionsAndRewardsAwaitingDispensation: number;
@@ -51,7 +49,7 @@ export default class DataService {
     }
   }
 
-  async getRewardsPrograms(activeOnly?: boolean) {
+  async getRewardsPrograms() {
     try {
       const res = await fetchJSON<{ Rewards: RewardsProgram[] }>(
         `${this.baseUrl}/beta/network/rewardconfig/all`,
