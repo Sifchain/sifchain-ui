@@ -757,5 +757,16 @@ export default {
       imageUrl:
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
     },
+    {
+      symbol: "uiov",
+      displaySymbol: "iov",
+      decimals: 6,
+      name: "iov",
+      network: "sifchain",
+      homeNetwork: "starname",
+      label: "starname",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12660/small/iov.png?1601862353",
+    },
   ],
 };
