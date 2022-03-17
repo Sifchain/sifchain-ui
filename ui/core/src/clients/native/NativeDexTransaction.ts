@@ -1,6 +1,4 @@
 import { StdTx, BroadcastTxResult } from "@cosmjs/launchpad";
-import { EncodeObject } from "@cosmjs/proto-signing";
-import { IAssetAmount } from "@sifchain/sdk";
 import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
 
 export interface NativeDexTransactionFee {

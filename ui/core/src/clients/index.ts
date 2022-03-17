@@ -15,8 +15,7 @@ import {
   BandChain,
   LikecoinChain,
   EmoneyChain,
-  StarnameChain,
-} from "@sifchain/sdk/src/clients/chains";
+} from "../clients/chains";
 import { Network } from "..";
 
 export const networkChainCtorLookup = {

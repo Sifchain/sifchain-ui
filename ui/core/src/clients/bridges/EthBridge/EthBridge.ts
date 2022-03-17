@@ -12,11 +12,8 @@ import Web3 from "web3";
 import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
-} from "@sifchain/sdk/src/clients/bridges/EthBridge/PegTxEventEmitter";
-import {
-  confirmTx,
-  getConfirmations,
-} from "@sifchain/sdk/src/clients/bridges/EthBridge/confirmTx";
+} from "../../bridges/EthBridge/PegTxEventEmitter";
+import { confirmTx, getConfirmations } from "../../bridges/EthBridge/confirmTx";
 import { Contract } from "web3-eth-contract";
 import { erc20TokenAbi } from "../../wallets/ethereum/erc20TokenAbi";
 import { getBridgeBankContract } from "./bridgebankContract";
@@ -26,7 +23,7 @@ import Long from "long";
 import {
   parseTxFailure,
   parseEthereumTxFailure,
-} from "@sifchain/sdk/src/utils/parseTxFailure";
+} from "../../../utils/parseTxFailure";
 import { isBroadcastTxFailure } from "@cosmjs/launchpad";
 import { Web3WalletProvider, Web3Transaction } from "../../wallets/ethereum";
 import { NativeDexTransaction, NativeDexClient } from "../../native";

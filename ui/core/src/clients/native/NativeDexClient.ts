@@ -1,11 +1,11 @@
-import * as TokenRegistryV1Query from "@sifchain/sdk/src/generated/proto/sifnode/tokenregistry/v1/query";
-import * as TokenRegistryV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/tokenregistry/v1/tx";
-import * as CLPV1Query from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/querier";
-import * as CLPV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/tx";
-import * as DispensationV1Query from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/query";
-import * as DispensationV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/tx";
-import * as EthbridgeV1Query from "@sifchain/sdk/src/generated/proto/sifnode/ethbridge/v1/query";
-import * as EthbridgeV1Tx from "@sifchain/sdk/src/generated/proto/sifnode/ethbridge/v1/tx";
+import * as TokenRegistryV1Query from "../../generated/proto/sifnode/tokenregistry/v1/query";
+import * as TokenRegistryV1Tx from "../../generated/proto/sifnode/tokenregistry/v1/tx";
+import * as CLPV1Query from "../../generated/proto/sifnode/clp/v1/querier";
+import * as CLPV1Tx from "../../generated/proto/sifnode/clp/v1/tx";
+import * as DispensationV1Query from "../../generated/proto/sifnode/dispensation/v1/query";
+import * as DispensationV1Tx from "../../generated/proto/sifnode/dispensation/v1/tx";
+import * as EthbridgeV1Query from "../../generated/proto/sifnode/ethbridge/v1/query";
+import * as EthbridgeV1Tx from "../../generated/proto/sifnode/ethbridge/v1/tx";
 import * as IBCTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
 import * as CosmosBankV1Tx from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
 import * as CosmosStakingV1Tx from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx";
@@ -36,8 +36,8 @@ import {
 } from "./NativeDexTransaction";
 import { isBroadcastTxFailure } from "@cosmjs/launchpad";
 import { OfflineSigner as OfflineLaunchpadSigner } from "@cosmjs/launchpad";
-import { parseTxFailure } from "@sifchain/sdk/src/utils/parseTxFailure";
-import { TransactionStatus, Chain, IBCChainConfig } from "@sifchain/sdk";
+import { parseTxFailure } from "../../utils/parseTxFailure";
+import { TransactionStatus, Chain, IBCChainConfig } from "../../";
 import { BroadcastTxResult } from "@cosmjs/launchpad/build/cosmosclient";
 
 type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;

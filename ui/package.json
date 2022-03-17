@@ -10,12 +10,13 @@
     "dev": "zx ./scripts/dev.mjs",
     "e2e": "zx ./scripts/e2e.mjs",
     "lint": "zx ./scripts/lint.mjs",
-    "prepare": "cd .. && husky install ./ui/.husky",
+    "prepare": "yarn bootstrap && cd .. && husky install ./ui/.husky",
     "stack": "zx ./scripts/stack.mjs",
     "start": "zx ./scripts/start.mjs",
     "storybook": "zx ./scripts/storybook.mjs",
     "docs": "serve -p 4444 ../docs",
-    "test": "zx ./scripts/test.mjs --tag feature__cosmos-0.42"
+    "test": "zx ./scripts/test.mjs --tag feature__cosmos-0.42",
+    "bootstrap": "yarn --cwd core build"
   },
   "devDependencies": {
     "arg": "^5.0.0",
