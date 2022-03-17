@@ -16,6 +16,7 @@ import ixo from "./ixo";
 import band from "./band";
 import likecoin from "./likecoin";
 import emoney from "./emoney";
+import starname from "./starname";
 
 export const chainConfigByNetworkEnv = Object.fromEntries(
   Object.values(NetworkEnv).map((env) => {
@@ -39,6 +40,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         // [Network.BITSONG]: bitsong[env],
         [Network.LIKECOIN]: likecoin[env],
         [Network.EMONEY]: emoney[env],
+        [Network.STARNAME]: starname[env],
       },
     ];
   }),
