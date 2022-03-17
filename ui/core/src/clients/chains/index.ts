@@ -15,3 +15,4 @@ export * from "./IxoChain";
 export * from "./BandChain";
 export * from "./LikecoinChain";
 export * from "./EmoneyChain";
+export * from "./StarnameChain";
