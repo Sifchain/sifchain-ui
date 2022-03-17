@@ -65,7 +65,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "/src"),
-      "@sifchain/sdk": path.resolve(__dirname, "../core"),
       stream: "stream-browserify",
     },
   },
