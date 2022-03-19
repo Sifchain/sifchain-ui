@@ -3,7 +3,7 @@ name: "Frontend: Docker: Build"
 on:
   push:
     branches:
-      - 'dockerfile'
+      - "dockerfile"
 
 jobs:
   test_build_push:
@@ -65,7 +65,7 @@ jobs:
       - name: "Install Dependencies & Build Frontend Application"
         run: |
           set +x
-          yarn install --frozen-lockfile --silent
+          yarn install --immutable --silent
           yarn build --tag $BRANCH_NAME --no-setup
 
       - name: Test Frontend

@@ -34,11 +34,13 @@ import {
   NativeDexTransaction,
   NativeDexTransactionFee,
 } from "./NativeDexTransaction";
-import { isBroadcastTxFailure } from "@cosmjs/launchpad";
-import { OfflineSigner as OfflineLaunchpadSigner } from "@cosmjs/launchpad";
+import {
+  BroadcastTxResult,
+  isBroadcastTxFailure,
+  OfflineSigner as OfflineLaunchpadSigner,
+} from "@cosmjs/launchpad";
 import { parseTxFailure } from "../../utils/parseTxFailure";
 import { TransactionStatus, Chain, IBCChainConfig } from "../../";
-import { BroadcastTxResult } from "@cosmjs/launchpad/build/cosmosclient";
 
 type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;
 type TxGroup =

@@ -1,7 +1,4 @@
-import {
-  BroadcastTxResult,
-  isBroadcastTxFailure,
-} from "@cosmjs/launchpad/build/cosmosclient";
+import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import {
   IndexedTx,

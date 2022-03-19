@@ -18,7 +18,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@sifchain/sdk": "*",
+    "@sifchain/sdk": "workspace:*",
     "@tippyjs/react": "^4.2.5",
     "buffer": "^6.0.3",
     "process": "^0.11.10",
