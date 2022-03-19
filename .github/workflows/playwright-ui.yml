@@ -37,20 +37,20 @@ jobs:
         run: docker pull $(cat scripts/latest)
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --silent
+        run: yarn install --immutable --silent
 
       - uses: microsoft/playwright-github-action@v1
 
       - name: Build e2e App
-        run: cd e2e && yarn install --frozen-lockfile
+        run: cd e2e && yarn install --immutable
 
       - name: Run e2e Tests
         run: yarn build && yarn e2e
         env:
           CI: true
-      
+
       - name: Upload artifacts
-        if: ${{ failure() }}  # runs when previous step failed
+        if: ${{ failure() }} # runs when previous step failed
         uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}

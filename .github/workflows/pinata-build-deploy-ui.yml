@@ -49,7 +49,7 @@ jobs:
 
       - name: Build App
         run: |
-          cd ui && yarn install --frozen-lockfile && yarn build --tag $BRANCH_NAME --no-setup
+          cd ui && yarn install --immutable && yarn build --tag $BRANCH_NAME --no-setup
 
       - name: Deploy App to IPFS/Pinata
         id: pinata

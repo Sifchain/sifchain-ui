@@ -45,7 +45,7 @@ jobs:
           echo VITE_APP_SHA=$VITE_APP_SHA >> ./ui/app/.env
 
       - name: Build App
-        run: cd ./ui && yarn install --frozen-lockfile --silent
+        run: cd ./ui && yarn install --immutable --silent
 
       - uses: amondnet/vercel-action@v20
         with:

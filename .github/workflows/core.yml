@@ -37,7 +37,7 @@ jobs:
         run: docker pull $(cat scripts/latest)
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --silent
+        run: yarn install --immutable --silent
 
       - name: Test Frontend
         run: yarn test

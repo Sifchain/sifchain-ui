@@ -14,10 +14,7 @@
     "baseUrl": ".",
     "types": ["vite/client", "jest"],
     "paths": {
-      "@/*": ["src/*"],
-      "@sifchain/wallet-keplr": ["../wallet-keplr/src"],
-      "@sifchain/wallet-terra-station": ["../wallet-terra-station/src"],
-      "@sifchain/wallet-metamask": ["../wallet-metamask/src"]
+      "@/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
