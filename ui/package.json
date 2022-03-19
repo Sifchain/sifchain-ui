@@ -45,7 +45,8 @@
     ]
   },
   "resolutions": {
-    "url-parse": "1.5.0"
+    "url-parse": "1.5.0",
+    "@zondax/filecoin-signing-tools": "^0.20.1"
   },
   "dependencies": {
     "@storybook/preset-scss": "^1.0.3",

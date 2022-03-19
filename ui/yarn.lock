@@ -2635,6 +2635,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ipld/dag-cbor@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "@ipld/dag-cbor@npm:7.0.1"
+  dependencies:
+    cborg: ^1.6.0
+    multiformats: ^9.5.4
+  checksum: 54690acf434160a5bb7e92f435dbccc9fdf244c183040e38342de8ccf57e461fbcbc53caad73d19d99d23da5758c72001d7309ca3c899092bcdef137125ac05a
+  languageName: node
+  linkType: hard
+
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
@@ -6241,21 +6251,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zondax/filecoin-signing-tools@github:Digital-MOB-Filecoin/filecoin-signing-tools-js":
-  version: 0.2.0
-  resolution: "@zondax/filecoin-signing-tools@https://github.com/Digital-MOB-Filecoin/filecoin-signing-tools-js.git#commit=8f8e92157cac2556d35cab866779e9a8ea8a4e25"
+"@zondax/filecoin-signing-tools@npm:^0.20.1":
+  version: 0.20.1
+  resolution: "@zondax/filecoin-signing-tools@npm:0.20.1"
   dependencies:
-    axios: ^0.20.0
+    "@ipld/dag-cbor": ^7.0.0
+    axios: ^0.24.0
     base32-decode: ^1.0.0
-    base32-encode: ^1.1.1
-    bip32: ^2.0.5
-    bip39: ^3.0.2
-    blakejs: ^1.1.0
+    base32-encode: 1.2.0
+    bip32: 2.0.6
+    bip39: ^3.0.4
+    blakejs: ^1.1.1
     bn.js: ^5.1.2
-    ipld-dag-cbor: ^0.17.0
     leb128: 0.0.5
-    secp256k1: ^4.0.1
-  checksum: d571ccfe251e50d5b977048d5a60c2582ae6a6206d6500f7718f49c57c3eb7af8e24b87ceee8c804e187da3fd6bd9a9ecb0d5ce84c4938aa7dd4c72b3e179010
+    secp256k1: ^4.0.3
+  checksum: 00fdb61b3d56b3717391807cab22bafe50063850c041c2fc1876f02c653a40615027b36dde1272cdc26e49da671596da1ebf019649a25f0894f82a5aee4de31e
   languageName: node
   linkType: hard
 
@@ -7507,21 +7517,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:0.24.0":
+"axios@npm:0.24.0, axios@npm:^0.24.0":
   version: 0.24.0
   resolution: "axios@npm:0.24.0"
   dependencies:
     follow-redirects: ^1.14.4
   checksum: 468cf496c08a6aadfb7e699bebdac02851e3043d4e7d282350804ea8900e30d368daa6e3cd4ab83b8ddb5a3b1e17a5a21ada13fc9cebd27b74828f47a4236316
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.20.0":
-  version: 0.20.0
-  resolution: "axios@npm:0.20.0"
-  dependencies:
-    follow-redirects: ^1.10.0
-  checksum: aee664d2811822ff64edc94fae328a15d82f0a8a8ca02a17931cb3348b03cd1574314aaf8f895d9949f045238df40491c7315de893649e06abc213a71b3963fa
   languageName: node
   linkType: hard
 
@@ -7842,7 +7843,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base32-encode@npm:^1.1.1":
+"base32-encode@npm:1.2.0":
   version: 1.2.0
   resolution: "base32-encode@npm:1.2.0"
   dependencies:
@@ -7988,7 +7989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bip32@npm:^2.0.5, bip32@npm:^2.0.6":
+"bip32@npm:2.0.6, bip32@npm:^2.0.6":
   version: 2.0.6
   resolution: "bip32@npm:2.0.6"
   dependencies:
@@ -8003,7 +8004,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bip39@npm:^3.0.2, bip39@npm:^3.0.3":
+"bip39@npm:^3.0.2, bip39@npm:^3.0.3, bip39@npm:^3.0.4":
   version: 3.0.4
   resolution: "bip39@npm:3.0.4"
   dependencies:
@@ -8058,6 +8059,13 @@ __metadata:
   version: 1.1.1
   resolution: "blakejs@npm:1.1.1"
   checksum: 77a0875af41fe0a6b15feacc69a4a730063df697b2932adbde15aa2c9c58a592870cd511a494ceee59cc8143ae64964dfa1bf301dab275b330debcd12c2b3db9
+  languageName: node
+  linkType: hard
+
+"blakejs@npm:^1.1.1":
+  version: 1.2.1
+  resolution: "blakejs@npm:1.2.1"
+  checksum: d699ba116cfa21d0b01d12014a03e484dd76d483133e6dc9eb415aa70a119f08beb3bcefb8c71840106a00b542cba77383f8be60cd1f0d4589cb8afb922eefbe
   languageName: node
   linkType: hard
 
@@ -8881,6 +8889,15 @@ __metadata:
     bignumber.js: ^9.0.1
     nofilter: ^1.0.4
   checksum: b3c39dae64370f361526dbec88f51d0f1b47027224cdd21dbd64c228f0fe7eaa945932d349ec5324068a6c6dcdbb1e3b46242852524fd53c526d14cb60514bdc
+  languageName: node
+  linkType: hard
+
+"cborg@npm:^1.6.0":
+  version: 1.8.1
+  resolution: "cborg@npm:1.8.1"
+  bin:
+    cborg: cli.js
+  checksum: 5932e77b6ed8e3d02690a5fac6644e9d27169356db4ea9b349df6983447e710e0f769344cf79ba02bf01b9c25dbeaeb763b9dd41ad0f4c638427ec27dc645a6a
   languageName: node
   linkType: hard
 
@@ -19949,6 +19966,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"multiformats@npm:^9.5.4":
+  version: 9.6.4
+  resolution: "multiformats@npm:9.6.4"
+  checksum: b3b8e481112379d6f3aace199a06e6974dfe3ed4e2100a0effe19fef936ba31704382356df6278a3922b5cb47fcfefe3e5bc54e5bebef35272e3503bad3c62ba
+  languageName: node
+  linkType: hard
+
 "multihashes@npm:3.1.2, multihashes@npm:^3.0.1":
   version: 3.1.2
   resolution: "multihashes@npm:3.1.2"
@@ -24046,7 +24070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"secp256k1@npm:^4.0.0, secp256k1@npm:^4.0.1, secp256k1@npm:^4.0.2":
+"secp256k1@npm:^4.0.0, secp256k1@npm:^4.0.1, secp256k1@npm:^4.0.2, secp256k1@npm:^4.0.3":
   version: 4.0.3
   resolution: "secp256k1@npm:4.0.3"
   dependencies:
