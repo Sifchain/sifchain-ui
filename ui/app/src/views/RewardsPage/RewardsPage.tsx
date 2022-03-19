@@ -19,17 +19,10 @@ export default defineComponent({
   props: {},
   setup() {
     const data = useRewardsPageData();
-    const {
-      isLoading,
-      error,
-      rewardProgramResponse,
-      lmClaim,
-      address,
-      reloadClaims,
-    } = data;
+    const { isLoading, error, rewardProgramResponse, lmClaim } = data;
     const timeUntilNextDispensation = useTimeUntilNextDispensation();
     const rewardTotals = computed(() => {
-      return rewardProgramResponse.data.value?.rewardPrograms.reduce(
+      return rewardProgramResponse.data.value?.reduce(
         (acc, program) => {
           if (program.participant) {
             acc.pendingRewards +=
@@ -68,12 +61,9 @@ export default defineComponent({
         return <div>Error! {error.value.message}</div>;
       }
       const summaryApyRef = computed(() => {
-        return rewardProgramResponse.data.value?.rewardPrograms.reduce(
-          (prev, curr) => {
-            return prev + curr.summaryAPY;
-          },
-          0,
-        );
+        return rewardProgramResponse.data.value?.reduce((prev, curr) => {
+          return prev + curr.summaryAPY;
+        }, 0);
       });
 
       return (
@@ -178,13 +168,15 @@ export default defineComponent({
                 <div class={rewardColumnsLookup.expand.class} />
               </div>
               <div>
-                {rewardProgramResponse.data.value?.rewardPrograms
+                {(rewardProgramResponse.data.value ?? [])
                   .filter((program) => {
                     if (showAllRef.value) return true;
 
                     const isCurrent =
+                      !program.endDateTimeISO ||
                       new Date().getTime() <
-                      new Date(program.endDateTimeISO).getTime();
+                        new Date(program.endDateTimeISO).getTime();
+
                     if (isCurrent) return true;
 
                     return (
@@ -196,8 +188,12 @@ export default defineComponent({
                     );
                   })
                   .sort((a, b) => {
-                    const aIsCurrent = new Date() < new Date(a.endDateTimeISO);
-                    const bIsCurrent = new Date() < new Date(b.endDateTimeISO);
+                    const aIsCurrent =
+                      !a.endDateTimeISO ||
+                      new Date() < new Date(a.endDateTimeISO);
+                    const bIsCurrent =
+                      !b.endDateTimeISO ||
+                      new Date() < new Date(b.endDateTimeISO);
                     return +bIsCurrent - +aIsCurrent;
                   })
                   .map((program) => {

@@ -11,7 +11,7 @@ import {
   useUserPoolsSubscriber,
   usePublicPoolsSubscriber,
 } from "@/hooks/usePoolsSubscriber";
-import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
+
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
 import { AccountPool } from "@/business/store/pools";
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
@@ -105,6 +105,7 @@ export type PoolDataItem = {
 
 export const usePoolPageData = () => {
   const statsRes = usePoolStats();
+  const { services } = useCore();
 
   useUserPoolsSubscriber({});
   usePublicPoolsSubscriber({});
@@ -119,26 +120,8 @@ export const usePoolPageData = () => {
     [accountStore.refs.sifchain.connected.computed()],
   );
 
-  const gql = createCryptoeconGqlClient();
-  const rewardProgramsRes = useAsyncData(
-    (): Promise<{
-      rewardPrograms: PoolRewardProgram[];
-    }> => {
-      return gql`
-        query {
-          rewardPrograms {
-            isUniversal
-            summaryAPY
-            rewardProgramName
-            displayName
-            incentivizedPoolSymbols
-            description
-            startDateTimeISO
-            endDateTimeISO
-          }
-        }
-      `;
-    },
+  const rewardProgramsRes = useAsyncData(() =>
+    services.data.getRewardsPrograms(),
   );
 
   const allPoolsData = computed<PoolDataItem[]>(() => {

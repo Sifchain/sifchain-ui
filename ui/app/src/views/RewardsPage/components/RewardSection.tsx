@@ -50,10 +50,10 @@ export const RewardSection = defineComponent({
   },
   computed: {
     programStarted(): boolean {
-      return new Date() > new Date(this.rewardProgram.startDateTimeISO);
+      return new Date() > new Date(this.rewardProgram.startDateTimeISO ?? "");
     },
     programEnded(): boolean {
-      return new Date() > new Date(this.rewardProgram.endDateTimeISO);
+      return new Date() > new Date(this.rewardProgram.endDateTimeISO ?? "");
     },
     programActive(): boolean {
       return this.programStarted && !this.programEnded;
@@ -106,10 +106,12 @@ export const RewardSection = defineComponent({
           class="text flex items-center cursor-pointer"
           onClick={() => (this.expanded = !this.expanded)}
           style={{
-            opacity:
-              new Date(this.rewardProgram.endDateTimeISO).getTime() < Date.now()
+            opacity: this.rewardProgram.endDateTimeISO
+              ? new Date(this.rewardProgram.endDateTimeISO).getTime() <
+                Date.now()
                 ? 0.5
-                : 1,
+                : 1
+              : 1,
           }}
         >
           <div
@@ -146,16 +148,12 @@ export const RewardSection = defineComponent({
             ]}
           >
             {/* Full Amount */}
-            {this.rewardProgram.distributionPattern === "GEYSER" ? null : (
-              <>
-                {["expansion_bonus", "expansion_v2_bonus"].includes(
-                  this.rewardProgram.rewardProgramName,
-                )
-                  ? "+ "
-                  : ""}
-                {this.rewardProgram.summaryAPY.toFixed(4)} %
-              </>
-            )}
+            {["expansion_bonus", "expansion_v2_bonus"].includes(
+              this.rewardProgram.rewardProgramName,
+            )
+              ? "+ "
+              : ""}
+            {this.rewardProgram.summaryAPY.toFixed(4)} %
           </div>
           <div
             class={[

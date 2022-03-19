@@ -3,7 +3,6 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
 
-import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
 
@@ -63,75 +62,51 @@ const useExistingClaimsData = (
 };
 
 export type RewardProgramParticipant = {
-  // can be removed
-  totalCommissionsAndRewardsAtMaturity: number;
-
   // used
   totalClaimableCommissionsAndClaimableRewards: number;
   claimedCommissionsAndRewardsAwaitingDispensation: number;
   dispensed: number;
 };
+
 export type RewardProgram = {
   participant?: RewardProgramParticipant;
   incentivizedPoolSymbols: string[];
   isUniversal: boolean;
   summaryAPY: number;
   rewardProgramName: string;
-  rewardProgramType: string;
   startDateTimeISO: string;
-  endDateTimeISO: string;
-  distributionPattern: string;
+  endDateTimeISO: string | null;
   documentationURL: string;
   displayName: string;
   description: string;
 };
+
 export const useRewardsPageData = () => {
-  const { config } = useCore();
+  const { config, services } = useCore();
   const address = accountStore.refs.sifchain.address.computed();
 
-  const gql = createCryptoeconGqlClient();
+  const rewardProgramResponse = useAsyncData(async (): Promise<
+    RewardProgram[]
+  > => {
+    const rewardPrograms = await services.data.getRewardsPrograms();
 
-  const rewardProgramResponse = useAsyncData(async (): Promise<{
-    rewardPrograms: RewardProgram[];
-  }> => {
-    const query = `
-    query ${address.value ? `($participantAddress: String!)` : ``} {
-      rewardPrograms {
-        ${
-          address.value
-            ? `
-        participant(address: $participantAddress) {
-          totalCommissionsAndRewardsAtMaturity
-          currentAPYOnTickets
-          totalClaimableCommissionsAndClaimableRewards
-          currentTotalCommissionsOnClaimableDelegatorRewards
-          yearsToMaturity
-          totalDepositedAmount
-          claimedCommissionsAndRewardsAwaitingDispensation
-          dispensed
-        }`
-            : ``
-        }
-        displayName
-        description
-        documentationURL
-        incentivizedPoolSymbols
-        isUniversal
-        summaryAPY
-        rewardProgramName
-        rewardProgramType
-        startDateTimeISO
-        endDateTimeISO
-        distributionPattern
-      }
+    if (address.value) {
+      // const participandRewardsResponse = await services.data.getUserRewards(
+      //   address.value,
+      // );
+      // console.log({ participandRewardsResponse });
+
+      return rewardPrograms.map((program, _i) => ({
+        ...program,
+        participant: {
+          claimedCommissionsAndRewardsAwaitingDispensation: 0,
+          dispensed: 0,
+          totalClaimableCommissionsAndClaimableRewards: 0,
+        },
+      }));
+    } else {
+      return rewardPrograms;
     }
-    `;
-
-    const gqlResponse = await gql`
-      ${query}
-    `({ participantAddress: address.value });
-
-    return gqlResponse;
   }, [address]);
 
   const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);

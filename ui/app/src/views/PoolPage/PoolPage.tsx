@@ -44,11 +44,11 @@ export default defineComponent({
   computed: {
     poolRewardProgramLookup(): Record<string, PoolRewardProgram[]> {
       const lookup: Record<string, PoolRewardProgram[]> = {};
-      this.rewardProgramsRes.data.value?.rewardPrograms.forEach((program) => {
+      this.rewardProgramsRes.data.value?.forEach((program) => {
         if (program.isUniversal) return;
         if (
-          new Date() < new Date(program.startDateTimeISO) ||
-          new Date() > new Date(program.endDateTimeISO)
+          new Date() < new Date(program.startDateTimeISO ?? "") ||
+          new Date() > new Date(program.endDateTimeISO ?? "")
         )
           return;
 

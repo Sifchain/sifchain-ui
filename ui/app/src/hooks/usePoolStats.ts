@@ -1,5 +1,4 @@
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
-import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { symbolWithoutPrefix } from "@/utils/symbol";
 import { IAsset } from "@sifchain/sdk";
 import { computed } from "vue";
@@ -40,25 +39,9 @@ export const usePoolStats = () => {
   const { store, services } = useCore();
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
-    const gql = createCryptoeconGqlClient();
-
-    const query = /* GraphQL */ `
-      {
-        rewardPrograms {
-          isUniversal
-          incentivizedPoolSymbols
-          summaryAPY
-        }
-      }
-    `;
-
-    const { rewardPrograms } = await gql`
-      ${query}
-    `;
-
     const { body: poolData } = await services.data.getTokenStats();
 
-    // const rewardsPrograms2 = await services.data.getRewardsPrograms();
+    const rewardPrograms = await services.data.getRewardsPrograms();
 
     const response = {
       poolData: {
@@ -69,7 +52,7 @@ export const usePoolStats = () => {
             100;
 
           let rewardAPY = 0;
-          rewardPrograms.forEach((program: any) => {
+          rewardPrograms.forEach((program) => {
             const isIndividuallyIncentivized =
               program.incentivizedPoolSymbols?.includes(p.symbol);
             if (program.isUniversal || isIndividuallyIncentivized) {
