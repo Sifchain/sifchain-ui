@@ -18,7 +18,7 @@ coverage:
         target: 50%
         flags:
         paths:
-          - "ui/"
+          - "."
     changes: false
 
 comment:

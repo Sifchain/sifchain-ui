@@ -1,6 +1,6 @@
 import { calculatePoolUnits } from "./formulae";
 
-import tables from "../../../../test/test-tables/pool_units_after_upgrade.json";
+import tables from "../../../test/test-tables/pool_units_after_upgrade.json";
 import { Amount, IAmount } from "./Amount";
 
 // Use this list to only run specific tests

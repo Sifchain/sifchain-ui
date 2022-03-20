@@ -1,5 +1,5 @@
 import { calculatePriceImpact } from "./formulae";
-import { SingleSwapStandardSlip } from "../../../../test/test-tables/singleswap_standardslip.json";
+import { SingleSwapStandardSlip } from "../../../test/test-tables/singleswap_standardslip.json";
 import { Amount } from "./Amount";
 
 SingleSwapStandardSlip.forEach(({ x, X, expected }: any) => {

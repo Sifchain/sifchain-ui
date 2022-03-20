@@ -5,9 +5,6 @@ on: [pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
 
     steps:
       - name: Use Node.js
@@ -49,6 +46,6 @@ jobs:
         if: ${{ always() }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./ui/core/coverage
+          directory: ./core/coverage
           flags: ui
           verbose: true

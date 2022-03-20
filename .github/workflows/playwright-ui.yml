@@ -5,9 +5,6 @@ on: [pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
 
     steps:
       - name: Use Node.js
@@ -48,20 +45,20 @@ jobs:
         run: yarn build && yarn e2e
         env:
           CI: true
-      
+
       - name: Upload artifacts
-        if: ${{ failure() }}  # runs when previous step failed
+        if: ${{ failure() }} # runs when previous step failed
         uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
           path: |
-            ./ui/e2e/screenshots
-            ./ui/e2e/logs
+            ./e2e/screenshots
+            ./e2e/logs
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./ui/e2e/coverage
+          directory: ./e2e/coverage
           flags: ui
           verbose: true

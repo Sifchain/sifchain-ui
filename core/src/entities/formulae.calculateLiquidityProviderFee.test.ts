@@ -1,5 +1,5 @@
 import { calculateProviderFee } from "./formulae";
-import tests from "../../../../test/test-tables/singleswap_liquidityfees.json";
+import tests from "../../../test/test-tables/singleswap_liquidityfees.json";
 
 import { Amount } from "./Amount";
 

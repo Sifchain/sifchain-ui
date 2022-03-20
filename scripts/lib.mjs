@@ -9,7 +9,7 @@ export async function lint() {
 }
 
 export async function lintQuick() {
-  return $`yarn pretty-quick --staged --pattern 'ui/**/*.{vue,ts,tsx,js,json}'`;
+  return $`yarn pretty-quick --staged --pattern '**/*.{vue,ts,tsx,js,json}'`;
 }
 
 // NOTE: not making this fn async as we need access to the child

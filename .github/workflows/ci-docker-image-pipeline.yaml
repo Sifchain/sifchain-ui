@@ -3,16 +3,13 @@ name: "Frontend: Docker: Build"
 on:
   push:
     branches:
-      - 'master'
+      - "master"
 
 jobs:
   test_build_push:
     runs-on: ubuntu-latest
     env:
       image: "sifchain/frontend"
-    defaults:
-      run:
-        working-directory: ui
 
     steps:
       - name: Use Node.js
@@ -45,7 +42,7 @@ jobs:
           TAG_NAME=$(git tag --points-at HEAD)
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-          echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
+          echo "VITE_APP_VERSION=$(cat ./app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
           echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
           if [[ $BRANCH_NAME == 'master' ]]
           then

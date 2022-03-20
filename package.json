@@ -10,7 +10,7 @@
     "dev": "zx ./scripts/dev.mjs",
     "e2e": "zx ./scripts/e2e.mjs",
     "lint": "zx ./scripts/lint.mjs",
-    "prepare": "yarn bootstrap && cd .. && husky install ./ui/.husky",
+    "prepare": "yarn bootstrap && husky install",
     "stack": "zx ./scripts/stack.mjs",
     "start": "zx ./scripts/start.mjs",
     "storybook": "zx ./scripts/storybook.mjs",

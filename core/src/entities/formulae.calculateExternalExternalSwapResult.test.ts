@@ -1,6 +1,6 @@
 import { calculateExternalExternalSwapResult } from "./formulae";
 import { Amount } from "./Amount";
-import tests from "../../../../test/test-tables/doubleswap_result.json";
+import tests from "../../../test/test-tables/doubleswap_result.json";
 
 tests.DoubleSwap.forEach(({ ax, aX, aY, bX, bY, expected }: any) => {
   test(`Swapping ${ax}, expecting ${expected}`, () => {

@@ -4,7 +4,7 @@ fetch("https://api.sifchain.finance/tokenregistry/entries")
   })
   .then(async (r) => {
     const { assets } = await fetch(
-      "https://raw.githubusercontent.com/Sifchain/sifchain-ui/develop/ui/core/src/assets.sifchain.mainnet.json",
+      "https://raw.githubusercontent.com/Sifchain/sifchain-ui/develop/core/src/assets.sifchain.mainnet.json",
     ).then((r) => r.json());
     const whitelist = [];
     for (let entry of r.result.registry.entries) {
@@ -29,7 +29,7 @@ fetch("https://api.sifchain.finance/tokenregistry/entries")
           console.error("could not find asset for symbol: " + entry.denom);
           continue;
         }
-        const vectorUrl = `https://raw.githubusercontent.com/Sifchain/sifchain-ui/develop/ui/app/public/images/tokens/${rawDenom.toUpperCase()}.svg`;
+        const vectorUrl = `https://raw.githubusercontent.com/Sifchain/sifchain-ui/develop/app/public/images/tokens/${rawDenom.toUpperCase()}.svg`;
         const logoUris = await fetch(vectorUrl)
           .then((r) => r.text())
           .then((r) => {
