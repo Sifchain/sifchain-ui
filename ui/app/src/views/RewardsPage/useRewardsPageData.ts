@@ -91,19 +91,21 @@ export const useRewardsPageData = () => {
     const rewardPrograms = await services.data.getRewardsPrograms();
 
     if (address.value) {
-      // const participandRewardsResponse = await services.data.getUserRewards(
-      //   address.value,
-      // );
-      // console.log({ participandRewardsResponse });
+      const userRewards = await services.data.getUserRewards(address.value);
 
-      return rewardPrograms.map((program, _i) => ({
-        ...program,
-        participant: {
-          claimedCommissionsAndRewardsAwaitingDispensation: 0,
-          dispensed: 0,
-          totalClaimableCommissionsAndClaimableRewards: 0,
-        },
-      }));
+      return rewardPrograms.map((program, _i) => {
+        const summary = userRewards[program.rewardProgramName];
+        return {
+          ...program,
+          participant: {
+            claimedCommissionsAndRewardsAwaitingDispensation:
+              summary.claimedCommissionsAndRewardsAwaitingDispensation,
+            dispensed: summary.dispensed,
+            totalClaimableCommissionsAndClaimableRewards:
+              summary.totalClaimableCommissionsAndClaimableRewards,
+          },
+        };
+      });
     } else {
       return rewardPrograms;
     }

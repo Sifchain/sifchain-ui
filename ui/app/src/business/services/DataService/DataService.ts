@@ -32,7 +32,15 @@ export type UserRewardsSummaryResponse = {
   reward_allocation: number;
   pool_unit: string;
   total_pool: string;
-  perc_pool: 0.00010346942052193494;
+  perc_pool: number;
+  pool_balance: string;
+  pool_balance_native: string;
+  pool_balance_external: string;
+  network_pool_native: string;
+  network_pool_external: string;
+  reward_dispensed_total: string;
+  pending_rewards: string;
+  next_remaining_time_to_dispense: string;
 };
 
 type ProgramConfigMap = Record<
@@ -125,21 +133,48 @@ export default class DataService {
 
       const groups = groupBy(Rewards, (x) => x.reward_program);
 
-      return Object.keys(groups).map((groupName) => {
-        const group = groups[groupName];
+      return Object.keys(groups).reduce(
+        (acc, groupName) => {
+          const group: UserRewardsSummaryResponse[] = groups[groupName];
 
-        // totalClaimableCommissionsAndClaimableRewards: number;
-        // claimedCommissionsAndRewardsAwaitingDispensation: number;
-        // dispensed: number;
+          const uniquePendingRewards = [
+            ...new Set(group.map((x) => Number(x.pending_rewards))),
+          ];
 
-        return {
-          totalClaimableCommissionsAndClaimableRewards: 0,
-          claimedCommissionsAndRewardsAwaitingDispensation: 0,
-          dispensed: 0,
-        };
-      });
+          const uniqueDispensedTotals = [
+            ...new Set(group.map((x) => Number(x.reward_dispensed_total))),
+          ];
+
+          return {
+            ...acc,
+            [groupName]: {
+              totalClaimableCommissionsAndClaimableRewards:
+                group[0].reward_allocation,
+              claimedCommissionsAndRewardsAwaitingDispensation:
+                uniquePendingRewards.reduce((acc, x) => acc + x, 0),
+              dispensed: uniqueDispensedTotals.reduce((acc, x) => acc + x, 0),
+              pools: group,
+            },
+          };
+        },
+        {} as Record<
+          string,
+          {
+            totalClaimableCommissionsAndClaimableRewards: number;
+            claimedCommissionsAndRewardsAwaitingDispensation: number;
+            dispensed: number;
+          }
+        >,
+      );
     } catch (error) {
-      return [];
+      return {} as Record<
+        string,
+        {
+          totalClaimableCommissionsAndClaimableRewards: number;
+          claimedCommissionsAndRewardsAwaitingDispensation: number;
+          dispensed: number;
+        }
+      >;
     }
   }
 }
