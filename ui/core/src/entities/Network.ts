@@ -17,4 +17,5 @@ export enum Network {
   SENTINEL = "sentinel",
   TERRA = "terra",
   EMONEY = "emoney",
+  STARNAME = "starname",
 }

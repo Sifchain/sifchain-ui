@@ -11,9 +11,9 @@ import createChainsService, {
 import createDispensationService, {
   IDispensationServiceContext,
 } from "./DispensationService";
-import cryptoeconomicsService, {
-  CryptoeconomicsServiceContext,
-} from "./CryptoeconomicsService";
+
+import createDataService from "./DataService";
+
 import storageService, { StorageServiceContext } from "./StorageService";
 import createWalletService, { WalletServiceContext } from "./WalletService";
 import createTokenRegistry, {
@@ -40,7 +40,6 @@ export type ServiceContext = {
   ClpServiceContext &
   EventBusServiceContext &
   IDispensationServiceContext & // add contexts from other APIs
-  CryptoeconomicsServiceContext &
   StorageServiceContext &
   IBCServiceContext &
   ChainsServiceContext &
@@ -56,7 +55,7 @@ export function createServices(context: ServiceContext) {
   const ClpService = clpService(context);
   const EventBusService = eventBusService(context);
   const DispensationService = createDispensationService(context);
-  const CryptoeconomicsService = cryptoeconomicsService(context);
+  const DataService = createDataService();
   const StorageService = storageService(context);
   const WalletService = createWalletService({
     ...context,
@@ -86,6 +85,7 @@ export function createServices(context: ServiceContext) {
       }, 8 * 1000);
     }
   } catch (e) {}
+
   return {
     Web3: Web3,
     chains: ChainsService,
@@ -95,10 +95,10 @@ export function createServices(context: ServiceContext) {
     ethbridge: EthbridgeService,
     bus: EventBusService,
     dispensation: DispensationService,
-    cryptoeconomics: CryptoeconomicsService,
     storage: StorageService,
     wallet: WalletService,
     tokenRegistry: TokenRegistryService,
     liquidity: liquidityService,
+    data: DataService,
   };
 }

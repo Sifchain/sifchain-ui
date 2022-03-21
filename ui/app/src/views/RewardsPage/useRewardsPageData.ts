@@ -63,7 +63,7 @@ const useExistingClaimsData = (
 };
 
 export type RewardProgramParticipant = {
-  currentAPYOnTickets: number;
+  // currentAPYOnTickets: number;
   totalClaimableCommissionsAndClaimableRewards: number;
   maturityDateMs: string;
   yearsToMaturity: number;
@@ -88,50 +88,54 @@ export type RewardProgram = {
   description: string;
 };
 export const useRewardsPageData = () => {
-  const { config, services } = useCore();
+  const { config } = useCore();
   const address = accountStore.refs.sifchain.address.computed();
 
   const gql = createCryptoeconGqlClient();
 
-  const rewardProgramResponse = useAsyncData(
-    (): Promise<{
-      rewardPrograms: RewardProgram[];
-    }> =>
-      gql`
-        query ${address.value ? `($participantAddress: String!)` : ``} {
-          rewardPrograms {
-            ${
-              address.value
-                ? `
-            participant(address: $participantAddress) {
-              totalCommissionsAndRewardsAtMaturity
-              currentAPYOnTickets
-              totalClaimableCommissionsAndClaimableRewards
-              currentTotalCommissionsOnClaimableDelegatorRewards
-              maturityDateMs
-              yearsToMaturity
-              totalDepositedAmount
-              claimedCommissionsAndRewardsAwaitingDispensation
-              dispensed
-            }`
-                : ``
-            }
-            displayName
-            description
-            documentationURL
-            incentivizedPoolSymbols
-            isUniversal
-            summaryAPY
-            rewardProgramName
-            rewardProgramType
-            startDateTimeISO
-            endDateTimeISO
-            distributionPattern
-          }
+  const rewardProgramResponse = useAsyncData(async (): Promise<{
+    rewardPrograms: RewardProgram[];
+  }> => {
+    const query = `
+    query ${address.value ? `($participantAddress: String!)` : ``} {
+      rewardPrograms {
+        ${
+          address.value
+            ? `
+        participant(address: $participantAddress) {
+          totalCommissionsAndRewardsAtMaturity
+          currentAPYOnTickets
+          totalClaimableCommissionsAndClaimableRewards
+          currentTotalCommissionsOnClaimableDelegatorRewards
+          maturityDateMs
+          yearsToMaturity
+          totalDepositedAmount
+          claimedCommissionsAndRewardsAwaitingDispensation
+          dispensed
+        }`
+            : ``
         }
-      `({ participantAddress: address.value }),
-    [address],
-  );
+        displayName
+        description
+        documentationURL
+        incentivizedPoolSymbols
+        isUniversal
+        summaryAPY
+        rewardProgramName
+        rewardProgramType
+        startDateTimeISO
+        endDateTimeISO
+        distributionPattern
+      }
+    }
+    `;
+
+    const gqlResponse = await gql`
+      ${query}
+    `({ participantAddress: address.value });
+
+    return gqlResponse;
+  }, [address]);
 
   const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);
 

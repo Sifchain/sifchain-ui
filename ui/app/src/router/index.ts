@@ -1,20 +1,11 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  RouteRecord,
-  RouteRecordRaw,
-} from "vue-router";
+import { DeepReadonly } from "vue";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
+import { flagsStore } from "@/store/modules/flags";
 import Swap from "@/views/SwapPage/SwapPage";
 import Balance from "@/views/BalancePage";
-// import BalanceImport from "@/views/BalancePage/Import";
-// import BalanceExport from "@/views/BalancePage/Export";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
 import StatsPage from "@/views/StatsPage/StatsPage";
-import StakeDelegatePage from "@/views/StakeDelegatePage.vue";
-import RemoveLiquidity from "@/views/RemoveLiquidityPage.vue";
-import SinglePool from "@/views/SinglePool.vue";
-// import PegAssetPage from "@/views/PegAssetPage.vue";
 import Pool from "@/views/PoolPage/PoolPage";
 import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
 import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/RemoveLiquidity";
@@ -29,30 +20,13 @@ import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
-import { DeepReadonly } from "vue";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
-import OnboardingModal from "@/components/OnboardingModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
-import { flagsStore } from "@/store/modules/flags";
 
 type SwapPageMeta = {
   title: string;
   swapState: SwapPageState;
 };
-
-type RouteName<T> = T extends { name?: string }[]
-  ? RouteName<T[number]>
-  : T extends { name: string }
-  ? T["name"]
-  : "";
-
-// type RouteName<T> = T extends RouteRecordRaw
-//   ? RouteName<T[keyof T]>
-//   : T extends { name: string; children: any[] }
-//   ? T["name"] | RouteName<T["children"][number]>
-//   : T extends { name: string }
-//   ? T["name"]
-//   : "";
 
 const routes: DeepReadonly<RouteRecordRaw[]> = [
   {
@@ -68,11 +42,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     path: "/rewards",
     name: "Rewards",
     component: RewardsPage,
-  },
-  {
-    path: "/stake-delegate",
-    name: "StakeDelegatePage",
-    component: StakeDelegatePage,
   },
   {
     path: "/swap",
@@ -138,14 +107,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     ],
   },
   {
-    path: "/pool/:externalAsset",
-    name: "SinglePool",
-    component: SinglePool,
-    meta: {
-      title: "Single Pool - Sifchain",
-    },
-  },
-  {
     path: "/balances",
     name: "Balances",
     component: Balance,
@@ -193,11 +154,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
         path: "export/:symbol/processing",
         component: ExportProcessing,
       },
-      // {
-      //   name: "Export",
-      //   path: "export/:symbol/:step",
-      //   component: BalanceExport,
-      // },
     ],
   },
   {
@@ -205,23 +161,6 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     path: "/leaderboard/:type/:symbol?",
     component: LeaderboardPage,
   },
-
-  // {
-  //   path: "/balances/import/:assetFrom/:assetTo",
-  //   name: "ImportListingPage",
-  //   component: PegAssetPage,
-  //   meta: {
-  //     title: "Import Asset - Sifchain",
-  //   },
-  // },
-  // {
-  //   path: "/balances/export/:assetFrom/:assetTo",
-  //   name: "UnpegAssetPage",
-  //   component: PegAssetPage,
-  //   meta: {
-  //     title: "Export Asset - Sifchain",
-  //   },
-  // },
 ] as const;
 
 const finalRoutes = flagsStore.state.rewardsCalculator
@@ -240,7 +179,7 @@ const router = createRouter({
   routes: [...finalRoutes] as Array<RouteRecordRaw>,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const win = window as any;
   if (!win.gtag) {
     return next();
@@ -255,13 +194,14 @@ router.beforeEach((to, from, next) => {
     .find((r) => r.meta && r.meta.title);
 
   // Find the nearest route element with meta tags.
-  const nearestWithMeta = to.matched
-    .slice()
-    .reverse()
-    .find((r) => r.meta && r.meta.metaTags);
+  // const nearestWithMeta = to.matched
+  //   .slice()
+  //   .reverse()
+  //   .find((r) => r.meta && r.meta.metaTags);
 
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle) {
+    // @ts-ignore
     document.title = nearestWithTitle.meta.title;
     // Let's log the page view to Google Analytics manually
     (window as any).gtag("event", "page_view", {

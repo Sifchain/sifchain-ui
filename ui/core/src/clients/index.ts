@@ -15,7 +15,9 @@ import {
   BandChain,
   LikecoinChain,
   EmoneyChain,
+  StarnameChain,
 } from "../clients/chains";
+
 import { Network } from "..";
 
 export const networkChainCtorLookup = {
@@ -35,6 +37,7 @@ export const networkChainCtorLookup = {
   [Network.BAND]: BandChain,
   [Network.LIKECOIN]: LikecoinChain,
   [Network.EMONEY]: EmoneyChain,
+  [Network.STARNAME]: StarnameChain,
 };
 
 export * from "./chains";

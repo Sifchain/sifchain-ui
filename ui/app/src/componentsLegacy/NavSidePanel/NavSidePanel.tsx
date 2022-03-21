@@ -1,13 +1,12 @@
-import { defineComponent, onMounted, ref, useCssModule, watch } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
 import Logo from "@/assets/logo-large.svg";
 import AssetIcon from "../../components/AssetIcon";
-import { prettyNumber } from "@/utils/prettyNumber";
 import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import MoreMenu from "./NavMoreMenu";
-import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
+import { usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
@@ -19,15 +18,12 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { loadChangesData } from "@/hooks/informational-modals";
 import { flagsStore } from "@/store/modules/flags";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import { RouterLink, useRoute, useRouter } from "vue-router";
-import {
-  COMPETITION_UNIVERSAL_SYMBOL,
-  useHasUniversalCompetition,
-  useLeaderboardCompetitions,
-} from "@/views/LeaderboardPage/useCompetitionData";
+import { RouterLink, useRouter } from "vue-router";
+import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
 import { governanceStore } from "@/store/modules/governance";
 import { VotingModal } from "@/components/VotingModal/VotingModal";
 import { formatAssetAmount } from "../shared/utils";
+import { useTVL } from "../TVL/useTVL";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -88,14 +84,7 @@ export default defineComponent({
     });
 
     const poolStats = usePoolStats();
-    const tvl = computed(() => {
-      return poolStats.data.value?.poolData?.pools.reduce(
-        (tvl: number, pool: PoolStat) => {
-          return tvl + (parseFloat(pool.poolDepth) || 0) * 2;
-        },
-        0,
-      );
-    });
+    const tvl = useTVL();
     const rowanPrice = computed(() => {
       return poolStats.data.value?.rowanUsd;
     });
@@ -202,36 +191,6 @@ export default defineComponent({
                     onClose={() => (changelogOpenRef.value = false)}
                   />
                 )}
-
-                {/* <NavSidePanelItem
-                  displayName="Documents"
-                  icon="navigation/documents"
-                  href="https://docs.sifchain.finance/resources/sifchain-dex-ui"
-                  class="group"
-                  action={
-                    <div class="hidden group-hover:flex flex-1 justify-end items-center">
-                      <AssetIcon
-                        icon="interactive/open-external"
-                        size={16}
-                        class="opacity-50"
-                      />
-                    </div>
-                  }
-<<<<<<< HEAD
-                />
-                <NavSidePanelItem
-                  icon="navigation/changelog"
-                  onClick={() => (changelogOpenRef.value = true)}
-                  displayName={<div class="flex items-center">Changelog</div>}
-                  action={
-                    changelogViewedVersion.isLatest() ? undefined : (
-                      <div class="flex flex-1 justify-end">
-                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
-                      </div>
-                    )
-                  }
-                />
-                /> */}
 
                 {votingOpenRef.value && (
                   <VotingModal onClose={() => (votingOpenRef.value = false)} />
@@ -407,7 +366,10 @@ export default defineComponent({
                 <NavSidePanelItem
                   class={"opacity-50 mt-[0px]"}
                   displayName={
-                    <>{tvl.value ? `$${prettyNumber(tvl.value)}` : "..."} TVL</>
+                    <>
+                      {tvl.data.value ? `${tvl.data.value.formatted}` : "..."}{" "}
+                      TVL
+                    </>
                   }
                   icon="interactive/lock"
                 ></NavSidePanelItem>
@@ -444,7 +406,12 @@ export default defineComponent({
                     ?.classList.add("!origin-bottom-left");
                 }}
                 appendTo={() => document.body}
-                content={<WalletPicker />}
+                content={
+                  <>
+                    {/* @ts-ignore */}
+                    <WalletPicker />
+                  </>
+                }
                 ref={appWalletPicker.ref}
               >
                 <NavSidePanelItem
