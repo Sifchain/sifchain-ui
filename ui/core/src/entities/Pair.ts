@@ -1,6 +1,6 @@
 import { Asset, IAsset } from "./Asset";
 import { IAssetAmount } from "./AssetAmount";
-import { createPoolKey } from "@sifchain/sdk";
+import { createPoolKey } from "../";
 
 export type Pair = ReturnType<typeof Pair>;
 

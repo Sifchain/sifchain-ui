@@ -1,5 +1,4 @@
-import { BroadcastTxFailure } from "@cosmjs/launchpad";
-import { TransactionStatus, ErrorCode, getErrorMessage } from "@sifchain/sdk";
+import { TransactionStatus, ErrorCode, getErrorMessage } from "../";
 
 // returns contextual inflrmation based on ethereum tx failure
 export function parseEthereumTxFailure(txFailure: {

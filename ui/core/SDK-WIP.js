@@ -45,27 +45,27 @@ const sifchain = Sifchain.createClient({
   rpc: "http://localhost:8545",
 });
 
-import { Client } from "@sifchain/sdk";
+import { Client } from "./src";
 
 const sifchain = new Client({
   network: "testnet",
   rpc: "http://localhost:8545",
 });
 
-import Sifchain, { EthereumProvider } from "@sifchain/sdk";
+import Sifchain, { EthereumProvider } from "./src";
 
 const sifchain = new Sifchain.Client({
   environment: "testnet",
   rpc: "http://localhost:8545",
 });
 
-import { Sif } from "@sifchain/sdk";
+import { Sif } from "./src";
 
 const sifchain = new Sif.Chain({
   environment: "testnet",
   rpc: "http://localhost:8545",
 });
 
-import { NativeDexClient } from "@sifchain/sdk";
+import { NativeDexClient } from "./src";
 
 const client = await NativeDexClient.connect();

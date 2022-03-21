@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "declaration": false,
+    "outDir": "lib/module"
+  },
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts"]
+}

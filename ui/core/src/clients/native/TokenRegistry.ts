@@ -7,9 +7,9 @@ import {
   AssetAmount,
   fromBaseUnits,
   toBaseUnits,
-} from "@sifchain/sdk";
-import { NativeDexClient } from "@sifchain/sdk/src/clients";
-import { RegistryEntry } from "@sifchain/sdk/src/generated/proto/sifnode/tokenregistry/v1/types";
+} from "../../";
+import { NativeDexClient } from "../../clients";
+import { RegistryEntry } from "../../generated/proto/sifnode/tokenregistry/v1/types";
 
 export type TokenRegistryContext = {
   sifRpcUrl: string;

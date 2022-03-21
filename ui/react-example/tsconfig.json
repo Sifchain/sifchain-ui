@@ -14,10 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react",
-    "paths": {
-      "@sifchain/sdk": ["../core/src"]
-    }
+    "jsx": "react"
   },
   "include": ["./src"]
 }

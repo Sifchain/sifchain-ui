@@ -1,5 +1,5 @@
 import { LcdClient, Msg } from "@cosmjs/launchpad";
-import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
+import { DistributionType } from "../../../../../generated/proto/sifnode/dispensation/v1/types";
 
 type BaseReq = {
   from: string;
