@@ -2,15 +2,14 @@
   "license": "SIF",
   "name": "@sifchain/sdk",
   "version": "1.0.0",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
-  "private": false,
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
   "scripts": {
+    "prepare": "yarn build",
     "generate": "npx @openapitools/openapi-generator-cli generate -g typescript-fetch -o generated -i ./swagger.yaml --enable-post-process-file --additional-properties=typescriptThreePlus=true,supportsES6=true",
     "compile": "tsc --noEmit",
-    "build": "tsc --noEmit && tsc -p ./tsconfig.compile.json",
-    "watch": "tsc -p ./tsconfig.compile.json -w",
+    "build": "rm -rf lib && tsc -p tsconfig.commonjs.json && tsc -p tsconfig.module.json && tsc -p tsconfig.declaration.json",
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
     "test": "yarn jest --passWithNoTests --collect-coverage --projects jest-unit.config.js",
@@ -19,9 +18,6 @@
   "files": [
     "lib/**/*"
   ],
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "dependencies": {
     "@cosmjs/launchpad": "^0.23.0",
     "@cosmjs/stargate": "^0.25.5",
