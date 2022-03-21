@@ -4,14 +4,14 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { Plugin } from "vite";
-import { viteSingleFile } from "vite-plugin-singlefile";
-import svgLoader from "./scripts/vite-svg-loader";
-import { minifyHtml } from "vite-plugin-html";
+import { createHtmlPlugin } from "vite-plugin-html";
 import { visualizer } from "rollup-plugin-visualizer";
+import liveReload from "vite-plugin-live-reload";
+
+import svgLoader from "./scripts/vite-svg-loader";
 import { vitePolyfills } from "./scripts/vite-polyfills";
 
 // We turned off vite hmr because it's buggy, so we gotta add livereload.
-import liveReload from "vite-plugin-live-reload";
 const LR_EXTENSIONS = "js,json,ts,tsx,css,scss,html,vue,webp,jpg";
 
 export default defineConfig({
@@ -29,8 +29,7 @@ export default defineConfig({
       ],
       {},
     ),
-    // viteSingleFile(),
-    minifyHtml(),
+    createHtmlPlugin(),
   ].filter(Boolean),
 
   define: {
@@ -53,7 +52,6 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       output: {
-        // inlineDynamicImports: true,
         manualChunks: () => "everything.js",
       },
       plugins: [visualizer()],
