@@ -1,4 +1,5 @@
 import groupBy from "lodash/groupBy";
+import { uniq } from "lodash/fp";
 
 import { PoolStatsResponseData } from "@/hooks/usePoolStats";
 
@@ -71,6 +72,27 @@ export const REWARDS_PROGRAMS_CONFIG: ProgramConfigMap = {
   },
 };
 
+const MINUTE = 60;
+const HOUR = MINUTE * 60;
+const DAY = HOUR * 24;
+
+/**
+ * formats time in seconds to DDd HHh MMm
+ * @param seconds time in seconds
+ * @returns
+ */
+function formatTimeInSeconds(seconds = 0) {
+  const days = Math.floor(seconds / DAY);
+  const hours = Math.floor((seconds % DAY) / HOUR);
+  const minutes = Math.floor((seconds % HOUR) / MINUTE);
+
+  const qualifiers = ["d", "h", "m"];
+
+  return [days, hours, minutes]
+    .map((value, index) => `${value}${qualifiers[index]}`)
+    .join(" ");
+}
+
 const fetchJSON = <T>(endpoint: string, options: RequestInit = {}) =>
   fetch(endpoint, options).then((x) => x.json() as Promise<T>);
 
@@ -133,26 +155,38 @@ export default class DataService {
 
       const groups = groupBy(Rewards, (x) => x.reward_program);
 
-      return Object.keys(groups).reduce(
+      let timeToNextDispensation = "";
+
+      const programs = Object.keys(groups).reduce(
         (acc, groupName) => {
           const group: UserRewardsSummaryResponse[] = groups[groupName];
 
-          const uniquePendingRewards = [
-            ...new Set(group.map((x) => Number(x.pending_rewards))),
-          ];
+          if (!timeToNextDispensation) {
+            timeToNextDispensation = formatTimeInSeconds(
+              Math.floor(Number(group[0].next_remaining_time_to_dispense)),
+            );
+          }
 
-          const uniqueDispensedTotals = [
-            ...new Set(group.map((x) => Number(x.reward_dispensed_total))),
-          ];
+          const pendingRewards = uniq(
+            group.map((x) => Number(x.pending_rewards)),
+          );
+
+          const dispensedTotals = uniq(
+            group.map((x) => Number(x.reward_dispensed_total)),
+          );
+
+          const totalPendingRewards = pendingRewards.reduce(
+            (acc, x) => acc + x,
+            0,
+          );
 
           return {
             ...acc,
             [groupName]: {
-              totalClaimableCommissionsAndClaimableRewards:
-                group[0].reward_allocation,
+              totalClaimableCommissionsAndClaimableRewards: totalPendingRewards,
               claimedCommissionsAndRewardsAwaitingDispensation:
-                uniquePendingRewards.reduce((acc, x) => acc + x, 0),
-              dispensed: uniqueDispensedTotals.reduce((acc, x) => acc + x, 0),
+                totalPendingRewards,
+              dispensed: dispensedTotals[0] / 2,
               pools: group,
             },
           };
@@ -166,15 +200,22 @@ export default class DataService {
           }
         >,
       );
+
+      return {
+        programs,
+        timeRemaining: timeToNextDispensation,
+      };
     } catch (error) {
-      return {} as Record<
-        string,
-        {
-          totalClaimableCommissionsAndClaimableRewards: number;
-          claimedCommissionsAndRewardsAwaitingDispensation: number;
-          dispensed: number;
-        }
-      >;
+      return {
+        programs: {} as Record<
+          string,
+          {
+            totalClaimableCommissionsAndClaimableRewards: number;
+            claimedCommissionsAndRewardsAwaitingDispensation: number;
+            dispensed: number;
+          }
+        >,
+      };
     }
   }
 }

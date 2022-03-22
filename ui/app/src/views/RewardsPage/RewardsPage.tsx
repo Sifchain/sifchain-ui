@@ -1,10 +1,6 @@
 import { defineComponent, ref, computed } from "vue";
 import PageCard from "@/components/PageCard";
-import {
-  rewardColumnsLookup,
-  useRewardsPageData,
-  useTimeUntilNextDispensation,
-} from "./useRewardsPageData";
+import { rewardColumnsLookup, useRewardsPageData } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
 
@@ -20,9 +16,12 @@ export default defineComponent({
   setup() {
     const data = useRewardsPageData();
     const { isLoading, error, rewardProgramResponse, lmClaim } = data;
-    const timeUntilNextDispensation = useTimeUntilNextDispensation();
+    const timeUntilNextDispensation = computed(
+      () => rewardProgramResponse.data.value?.timeRemaining ?? "",
+    );
     const rewardTotals = computed(() => {
-      return rewardProgramResponse.data.value?.reduce(
+      const programs = rewardProgramResponse.data.value?.rewardPrograms;
+      return programs?.reduce(
         (acc, program) => {
           if (program.participant) {
             acc.pendingRewards +=
@@ -60,11 +59,6 @@ export default defineComponent({
       if (error.value) {
         return <div>Error! {error.value.message}</div>;
       }
-      const summaryApyRef = computed(() => {
-        return rewardProgramResponse.data.value?.reduce((prev, curr) => {
-          return prev + curr.summaryAPY;
-        }, 0);
-      });
 
       return (
         <Layout>
@@ -127,7 +121,7 @@ export default defineComponent({
                     Claim deadline for weekly dispensation
                   </div>
                   <div class="pt-[7px] text-xl whitespace-pre">
-                    {timeUntilNextDispensation.value.timeUntilNextDispensation}
+                    {timeUntilNextDispensation.value}
                   </div>
                 </div>
               </div>
@@ -168,7 +162,7 @@ export default defineComponent({
                 <div class={rewardColumnsLookup.expand.class} />
               </div>
               <div>
-                {(rewardProgramResponse.data.value ?? [])
+                {(rewardProgramResponse.data.value?.rewardPrograms ?? [])
                   .filter((program) => {
                     if (showAllRef.value) return true;
 

@@ -81,20 +81,28 @@ export type RewardProgram = {
   description: string;
 };
 
-export const useRewardsPageData = () => {
+export function useRewardsPageData() {
   const { config, services } = useCore();
   const address = accountStore.refs.sifchain.address.computed();
 
-  const rewardProgramResponse = useAsyncData(async (): Promise<
-    RewardProgram[]
-  > => {
+  const rewardProgramResponse = useAsyncData(async (): Promise<{
+    rewardPrograms: RewardProgram[];
+    timeRemaining: string;
+  }> => {
     const rewardPrograms = await services.data.getRewardsPrograms();
+    let timeRemaining = "";
 
     if (address.value) {
-      const userRewards = await services.data.getUserRewards(address.value);
+      const participantRewards = await services.data.getUserRewards(
+        address.value,
+      );
 
-      return rewardPrograms.map((program, _i) => {
-        const summary = userRewards[program.rewardProgramName];
+      if (participantRewards.timeRemaining) {
+        timeRemaining = participantRewards.timeRemaining;
+      }
+
+      const programs = rewardPrograms.map((program, _i) => {
+        const summary = participantRewards.programs[program.rewardProgramName];
         return {
           ...program,
           participant: {
@@ -106,8 +114,10 @@ export const useRewardsPageData = () => {
           },
         };
       });
+
+      return { rewardPrograms: programs, timeRemaining };
     } else {
-      return rewardPrograms;
+      return { rewardPrograms, timeRemaining };
     }
   }, [address]);
 
@@ -128,7 +138,7 @@ export const useRewardsPageData = () => {
     lmClaim: computed(() => claimsRes.data.value?.lm),
     reloadClaims: () => claimsRes.reload.value(),
   };
-};
+}
 
 function calculateDateOfNextDispensation(currentDate: Date) {
   const date = currentDate;
