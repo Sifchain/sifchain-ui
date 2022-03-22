@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: "16.x"
           cache: yarn
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: "**/yarn.lock"
 
       # These env variables may only be used in next step
       - name: Set env vars
