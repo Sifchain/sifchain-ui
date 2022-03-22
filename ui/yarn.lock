@@ -5419,13 +5419,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^15.7.7":
-  version: 15.7.7
-  resolution: "@types/react@npm:15.7.7"
-  checksum: 6e253b63734674d9d03624894aabc82ad8482dee3b47b9f65dc87a3b900ee21539774e3438c9e2d105603e24dd6b8e168992736144a3e1751e4e2e856047f4f0
-  languageName: node
-  linkType: hard
-
 "@types/resolve@npm:1.17.1":
   version: 1.17.1
   resolution: "@types/resolve@npm:1.17.1"
@@ -6074,6 +6067,18 @@ __metadata:
   peerDependencies:
     vue: ^3.0.1
   checksum: 23b02701193b0d10ce5d06c9c1bf1ef7916cb874b39143fb1651d7ad12dff5c48ea8a7a0d953dc25cea709062aab96fdbfd0355176cbaed811b0e087da2ae49f
+  languageName: node
+  linkType: hard
+
+"@vue/tsconfig@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@vue/tsconfig@npm:0.1.3"
+  peerDependencies:
+    "@types/node": "*"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 8150a24497a5348bc342c27afb38ad989de2ce8e94c349020628065d2a8df6837cb8bb3012f9161eea716487832612ac71b5f910d95bac41539ac6021d6bd88d
   languageName: node
   linkType: hard
 
@@ -7018,7 +7023,6 @@ __metadata:
     "@types/color-hash": ^1.0.0
     "@types/dat.gui": ^0.7.7
     "@types/jest": ^24.0.19
-    "@types/react": ^15.7.7
     "@typescript-eslint/eslint-plugin": ^4.5.0
     "@typescript-eslint/parser": ^4.5.0
     "@vitejs/plugin-vue": ^2.1.0
@@ -7026,6 +7030,7 @@ __metadata:
     "@vue/compiler-sfc": ^3.2.31
     "@vue/eslint-config-typescript": ^10.0.0
     "@vue/test-utils": ^2.0.0-0
+    "@vue/tsconfig": ^0.1.3
     autoprefixer: ^10.4.4
     buffer: ^6.0.3
     chart.js: ^3.5.1
