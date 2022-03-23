@@ -1,0 +1,6 @@
+lib
+build
+coverage
+package-lock.json
+yarn-error.log
+.env

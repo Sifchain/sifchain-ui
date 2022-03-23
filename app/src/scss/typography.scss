@@ -1,0 +1,20 @@
+$f_default: "PT Serif", serif;
+$f_special: "Rouge Script", cursive;
+
+// font sizes:
+$fs_xs: 10px;
+$fs_sm: 12px;
+$fs: 14px;
+$fs_md: 15px;
+$fs_lg: 20px;
+
+$fs_xl: 40px; // Rouge Script titles
+
+// lineheight
+$lh: 22px;
+$lh_btn: 30px;
+
+@font-face {
+  font-family: "Noatan";
+  src: url("/fonts/Noatun v2.woff") format("woff");
+}

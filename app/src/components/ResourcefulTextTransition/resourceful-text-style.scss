@@ -1,0 +1,25 @@
+.list-horizontal-complete-item {
+  transition-timing-function: ease-in-out;
+  transition: all 0.5s;
+  display: inline-block;
+  white-space: pre;
+  transform-origin: center center;
+  transform: rotate(0deg);
+  opacity: 1;
+  // margin-right: 10px;
+}
+.list-horizontal-complete-enter-active {
+  // transition: all 0.1s ease !important;
+  // transform: translateY(2px) rotateX(90deg);
+  // opacity: 0;
+}
+
+.list-horizontal-complete-enter, .list-horizontal-complete-leave-to
+/* .list-complete-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
+  transform: rotate(-180deg);
+}
+.list-horizontal-complete-leave-active {
+  position: absolute;
+}

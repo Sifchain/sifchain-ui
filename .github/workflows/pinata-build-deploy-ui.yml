@@ -31,7 +31,7 @@ jobs:
           TAG_NAME=$(git tag --points-at HEAD)
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-          echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
+          echo "VITE_APP_VERSION=$(cat ./app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
           echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
 
           if [[ $BRANCH_NAME == 'master' ]]
@@ -49,15 +49,14 @@ jobs:
           echo $(cat $GITHUB_ENV)
 
       - name: Build App
-        run: |
-          cd ui && yarn install --immutable && yarn build --tag $BRANCH_NAME --no-setup
+        run: yarn install --immutable && yarn build --tag $BRANCH_NAME --no-setup
 
       - name: Deploy App to IPFS/Pinata
         id: pinata
         uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
         with:
           pin-name: "Sifchain ${{ github.sha }}"
-          path: "./ui/app/dist"
+          path: "./app/dist"
           pinata-api-key: ${{ secrets.PINATA_API_KEY }}
           pinata-secret-api-key: ${{ secrets.PINATA_SECRET_KEY }}
           verbose: true
