@@ -84,11 +84,11 @@ const DAY = HOUR * 24;
 function formatTimeInSeconds(seconds = 0) {
   const days = Math.floor(seconds / DAY);
   const hours = Math.floor((seconds % DAY) / HOUR);
-  const minutes = Math.floor((seconds % HOUR) / MINUTE);
+  // const minutes = Math.floor((seconds % HOUR) / MINUTE);
 
-  const qualifiers = ["d", "h", "m"];
+  const qualifiers = ["d", "h"];
 
-  return [days, hours, minutes]
+  return [days, hours]
     .map((value, index) => `${value}${qualifiers[index]}`)
     .join(" ");
 }

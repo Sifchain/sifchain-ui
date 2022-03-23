@@ -83,7 +83,7 @@ export default defineComponent({
               <div class="flex w-full items-center gap-[12px] mt-[10px] whitespace-nowrap">
                 <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
                   <div class="font-lg text-accent-base font-semibold">
-                    Claimed - Pending Dispensation
+                    Total pending rewards
                   </div>
                   <div class="pt-[4px] text-sm opacity-50">
                     Dispensed by Tuesday morning PST
@@ -115,10 +115,10 @@ export default defineComponent({
                 </div>
                 <div class="bg-white bg-opacity-5 px-[20px] py-[10px] rounded flex-1">
                   <div class="font-lg text-accent-base font-semibold">
-                    Time Remaining to Claim
+                    Time until next dispensation
                   </div>
                   <div class="pt-[4px] text-sm opacity-50 whitespace-nowrap">
-                    Claim deadline for weekly dispensation
+                    Estimated time until next dispensation
                   </div>
                   <div class="pt-[7px] text-xl whitespace-pre">
                     {timeUntilNextDispensation.value}
