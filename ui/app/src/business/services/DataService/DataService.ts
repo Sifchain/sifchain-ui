@@ -3,7 +3,7 @@ import uniq from "lodash/fp/uniq";
 
 import { PoolStatsResponseData } from "@/hooks/usePoolStats";
 
-const BASE_URL = "https://data.sifchain.finance";
+export const BASE_URL = "https://data.sifchain.finance";
 
 export type RewardsProgramConfig = {
   start_height: number;
