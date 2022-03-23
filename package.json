@@ -41,7 +41,8 @@
       "e2e",
       "wallet-keplr",
       "wallet-terra-station",
-      "wallet-metamask"
+      "wallet-metamask",
+      "ui"
     ]
   },
   "resolutions": {
