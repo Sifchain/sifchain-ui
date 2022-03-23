@@ -2,21 +2,21 @@
   "license": "SIF",
   "name": "@sifchain/sdk",
   "version": "1.0.0",
-  "main": "lib/commonjs/index.js",
-  "module": "lib/module/index.js",
-  "types": "lib/typescript/index.d.ts",
+  "main": "build/commonjs/index.js",
+  "module": "build/module/index.js",
+  "types": "build/typescript/index.d.ts",
   "scripts": {
-    "prepare": "yarn build",
     "generate": "npx @openapitools/openapi-generator-cli generate -g typescript-fetch -o generated -i ./swagger.yaml --enable-post-process-file --additional-properties=typescriptThreePlus=true,supportsES6=true",
     "compile": "tsc --noEmit",
-    "build": "rm -rf lib && tsc -p tsconfig.commonjs.json && tsc -p tsconfig.module.json && tsc -p tsconfig.declaration.json",
+    "build": "rm -rf build && tsc -b tsconfig.commonjs.json tsconfig.module.json tsconfig.declaration.json",
+    "dev": "tsc -b --watch tsconfig.commonjs.json tsconfig.module.json tsconfig.declaration.json",
     "unit": "./scripts/unit.sh",
     "integration": "./scripts/integration.sh",
     "test": "yarn jest --passWithNoTests --collect-coverage --projects jest-unit.config.js",
     "test:integration": "yarn jest --projects --collect-coverage jest-integration.config.js"
   },
   "files": [
-    "lib/**/*"
+    "build"
   ],
   "dependencies": {
     "@cosmjs/launchpad": "^0.23.0",
@@ -61,6 +61,7 @@
     "wait-on": "^5.2.1",
     "web3": "1.3.0",
     "web3-core": "1.3.0",
+    "web3-eth-contract": "1.3.0",
     "zx": "^4.3.0"
   },
   "devDependencies": {
@@ -84,7 +85,6 @@
     "jest": "^27.3.0",
     "jest-environment-jsdom": "^27.3.0",
     "jest-websocket-mock": "^2.2.0",
-    "patch-package": "^6.4.7",
     "tinyify": "^3.0.0",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.2.0",

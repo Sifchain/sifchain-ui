@@ -1,23 +1,15 @@
 {
+  "extends": "@vue/tsconfig/tsconfig.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true,
-    "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "importsNotUsedAsValues": "remove",
+    "preserveValueImports": false,
     "sourceMap": true,
     "baseUrl": ".",
     "types": ["vite/client", "jest"],
     "paths": {
-      "@/*": ["src/*"],
-      "@sifchain/wallet-keplr": ["../wallet-keplr/src"],
-      "@sifchain/wallet-terra-station": ["../wallet-terra-station/src"],
-      "@sifchain/wallet-metamask": ["../wallet-metamask/src"]
+      "@/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
