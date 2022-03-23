@@ -100,7 +100,7 @@ export default defineComponent({
                 </div>
                 <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
                   <div class="font-lg text-accent-base font-semibold">
-                    Dispensed Rewards
+                    Dispensed rewards
                   </div>
                   <div class="pt-[4px] text-sm opacity-50">
                     Amount already claimed and received
@@ -133,31 +133,9 @@ export default defineComponent({
                 <div class={rewardColumnsLookup.duration.class}>
                   {/* Duration */}
                 </div>
-                <div class={rewardColumnsLookup.apy.class}>
-                  Program APR
-                  <Tooltip
-                    content={
-                      <div class="mb-2">
-                        Current overall program summary APR. This is also
-                        displayed in Pools and Pool Stats.
-                      </div>
-                    }
-                  >
-                    <Button.InlineHelp></Button.InlineHelp>
-                  </Tooltip>
-                </div>
+                <div class={rewardColumnsLookup.apy.class}>Program APR</div>
                 <div class={rewardColumnsLookup.claimableAmount.class}>
-                  Claimable Amount
-                  <Tooltip
-                    content={
-                      <div class="mb-2">
-                        Current overall program summary APR. This is also
-                        displayed in Pools and Pool Stats.
-                      </div>
-                    }
-                  >
-                    <Button.InlineHelp></Button.InlineHelp>
-                  </Tooltip>
+                  Pending Rewards
                 </div>
                 <div class={rewardColumnsLookup.expand.class} />
               </div>
