@@ -85,6 +85,17 @@ const proposals: Proposal[] = [
     // add home network in future (consider omnievm)
     // change address to deprecate old voting method (manual)
   },
+  {
+    id: "4pools_01_29_22",
+    address: "sif1seftxu8l6v7d50ltm3v7hl55jlyxrps53rmjl8",
+    // startDateTime: new Date(1643472000000),
+    startDateTime: new Date(Date.now() - 100000000),
+    endDateTime: new Date(1643472000000 + 72 * 60 * 60 * 1000),
+    title: `EDIT START DATE BEFORE SHIPPING!! Sif's Expansion`,
+    heading: `Pools of the People (v4, Stable)`,
+    description: `Stable Coin - Voting is open until 1/31 at 8am PST`,
+    voteType: "pools",
+  },
 ];
 
 export const governanceStore = Vuextra.createStore({
