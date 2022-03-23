@@ -72,7 +72,7 @@ export const RewardSection = defineComponent({
     }[] {
       return [
         {
-          name: "Pending Dispensation",
+          name: "Pending Rewards",
           tooltip:
             "This is the amount that will be dispensed on Tuesday. Any new claimable amounts will need to be claimed after the next dispensation.",
           amount:
