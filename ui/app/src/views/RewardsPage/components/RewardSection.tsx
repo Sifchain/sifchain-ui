@@ -26,6 +26,9 @@ const REWARD_TYPE_DISPLAY_DATA: Record<string, { icon: IconName }> = {
   expansion_v2_bonus: {
     icon: "navigation/people",
   },
+  expansion_v4_bonus: {
+    icon: "navigation/people",
+  },
 };
 
 export const getRewardProgramDisplayData = (rewardProgramName: string) => {
@@ -198,8 +201,11 @@ export const RewardSection = defineComponent({
                         return (
                           <div class={`p-[4px] pt-[16px] `}>
                             <TokenIcon
-                              assetValue={this.poolAssets[poolSymbol]}
-                            ></TokenIcon>
+                              assetValue={
+                                this.poolAssets[poolSymbol] ??
+                                this.poolAssets[poolSymbol.slice(1)]
+                              }
+                            />
                           </div>
                         );
                       },

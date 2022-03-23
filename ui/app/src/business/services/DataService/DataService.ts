@@ -13,7 +13,8 @@ export type RewardsProgramConfig = {
   /**
    * comma separated list of token denoms
    */
-  tokens: string;
+  tokens: string[];
+  symbol: string[];
 };
 
 export type RewardsProgram = {
@@ -128,7 +129,7 @@ export default class DataService {
         );
 
       return sorted.map((program) => {
-        const isUniversal = program.config.tokens === "ALL";
+        const isUniversal = program.config.tokens[0] === "ALL";
 
         const config = REWARDS_PROGRAMS_CONFIG[program.reward_program];
 
@@ -137,9 +138,7 @@ export default class DataService {
           rewardProgramName: program.reward_program,
           startDateTimeISO: program.config.start_date_utc,
           endDateTimeISO: program.config.end_date_utc,
-          incentivizedPoolSymbols: isUniversal
-            ? ["*"]
-            : program.config.tokens.split(",").map((x) => x.trim()),
+          incentivizedPoolSymbols: isUniversal ? ["*"] : program.config.symbol,
           ...(config || {}),
         };
       });
