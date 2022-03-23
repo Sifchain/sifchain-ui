@@ -1,0 +1,37 @@
+{
+  "folders": [
+    {
+      "name": "root",
+      "path": "../"
+    },
+    {
+      "name": "app",
+      "path": "./app"
+    },
+    {
+      "name": "core",
+      "path": "./core"
+    },
+    {
+      "name": "ui",
+      "path": "."
+    }
+  ],
+  "settings": {},
+  "launch": {
+    "configurations": [ 
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "vuejs: chrome",
+        "url": "http://localhost:8080",
+        "webRoot": "${workspaceFolder:app}/src",
+        "breakOnLoad": true,
+        "sourceMapPathOverrides": {
+          "webpack:///src/*": "${webRoot}/*"
+        }
+      }
+  ],
+    "compounds": []
+  }
+}

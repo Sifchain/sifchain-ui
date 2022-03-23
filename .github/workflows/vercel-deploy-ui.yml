@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "VITE_APP_SHA=$GITHUB_SHA" >> $GITHUB_ENV
           echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "VITE_APP_VERSION=$(cat ./ui/app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
+          echo "VITE_APP_VERSION=$(cat ./app/package.json | jq '.version' | tr -d '"')" >> $GITHUB_ENV
 
         id: extract_env
 
@@ -45,10 +45,10 @@ jobs:
             echo "BRANCH_NAME=develop" >> $GITHUB_ENV
           fi
 
-          echo VITE_APP_SHA=$VITE_APP_SHA >> ./ui/app/.env
+          echo VITE_APP_SHA=$VITE_APP_SHA >> ./app/.env
 
       - name: Build App
-        run: cd ./ui && yarn install --immutable
+        run: yarn install --immutable
 
       - uses: amondnet/vercel-action@v20
         with:
@@ -57,6 +57,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.ORG_ID}}
           vercel-project-id: ${{ secrets.PROJECT_ID}}
-          working-directory: .
           alias-domains: |
             {{BRANCH}}.sifchain.vercel.app
