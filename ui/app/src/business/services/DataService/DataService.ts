@@ -1,5 +1,5 @@
 import groupBy from "lodash/groupBy";
-import { uniq } from "lodash/fp";
+import uniq from "lodash/fp/uniq";
 
 import { PoolStatsResponseData } from "@/hooks/usePoolStats";
 
@@ -42,6 +42,7 @@ export type UserRewardsSummaryResponse = {
   reward_dispensed_total: string;
   pending_rewards: string;
   next_remaining_time_to_dispense: string;
+  dispensed_rewards: string;
 };
 
 type ProgramConfigMap = Record<
