@@ -63,7 +63,11 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
-          payload: "{\"pinata_url\":\"${{ steps.pinata.outputs.hash }}\",
-          \"branch\":\"${{ env.BRANCH_NAME }}\",\"github_hash\": \"${{ github.sha }}\""
+          payload: |
+            {
+              "pinata_url": "${{ steps.pinata.outputs.hash }}",
+              "branch": "${{ env.BRANCH_NAME }}",
+              "github_hash": "${{ github.sha }}"
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
