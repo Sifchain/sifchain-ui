@@ -99,6 +99,30 @@ function formatTimeInSeconds(seconds = 0) {
 const fetchJSON = <T>(endpoint: string, options: RequestInit = {}) =>
   fetch(endpoint, options).then((x) => x.json() as Promise<T>);
 
+type CacheEntry<T> = {
+  value: T;
+  expires: number;
+};
+
+const CACHE = new Map<string, CacheEntry<any>>();
+
+async function cached<T>(
+  key: string | string[],
+  fn: () => Promise<T>,
+  ttl = 1000,
+) {
+  const flatKey = Array.isArray(key) ? key.join("-") : key;
+  const cached = CACHE.get(flatKey);
+
+  if (cached && cached.expires > Date.now()) {
+    return Promise.resolve(cached.value as T);
+  }
+
+  const value = await fn();
+  CACHE.set(flatKey, { value, expires: Date.now() + ttl });
+  return value;
+}
+
 export default class DataService {
   constructor(private baseUrl: string = BASE_URL) {
     this.baseUrl = baseUrl;
@@ -106,8 +130,13 @@ export default class DataService {
 
   async getTokenStats() {
     try {
-      const res = await fetchJSON<PoolStatsResponseData>(
-        `${this.baseUrl}/beta/asset/tokenStats`,
+      const res = await cached(
+        "tokenStats",
+        () =>
+          fetchJSON<PoolStatsResponseData>(
+            `${this.baseUrl}/beta/asset/tokenStats`,
+          ),
+        60000 * 5, // cache for 5 minutes
       );
       return res;
     } catch (error) {
@@ -117,11 +146,16 @@ export default class DataService {
 
   async getRewardsPrograms() {
     try {
-      const res = await fetchJSON<{ Rewards: RewardsProgram[] }>(
-        `${this.baseUrl}/beta/network/rewardconfig/all`,
+      const { Rewards } = await cached(
+        "rewardsPrograms",
+        () =>
+          fetchJSON<{ Rewards: RewardsProgram[] }>(
+            `${this.baseUrl}/beta/network/rewardconfig/all`,
+          ),
+        60000 * 60, // cache for 1 hour
       );
 
-      const raw = res.Rewards;
+      const raw = Rewards;
 
       const sorted = raw
         .filter((x) => !x.config.end_height)
@@ -150,9 +184,14 @@ export default class DataService {
 
   async getUserRewards(address: string) {
     try {
-      const { Rewards } = await fetchJSON<{
-        Rewards: UserRewardsSummaryResponse[];
-      }>(`${this.baseUrl}/beta/network/rewardPay/${address}`);
+      const { Rewards } = await cached(
+        ["userRewards", address],
+        () =>
+          fetchJSON<{
+            Rewards: UserRewardsSummaryResponse[];
+          }>(`${this.baseUrl}/beta/network/rewardPay/${address}`),
+        60000 * 5, // cache for 5 minute
+      );
 
       const groups = groupBy(Rewards, (x) => x.reward_program);
 
