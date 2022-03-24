@@ -195,11 +195,11 @@ export default defineComponent({
           </span>,
         ],
         [
-          "Pool Depth USD",
+          "Pool TVL (USD)",
           <span class="font-mono">
             {this.$props.poolStat?.poolDepth != null
               ? `${prettyNumber(
-                  parseFloat(this.$props.poolStat?.poolDepth || "0"),
+                  parseFloat(this.$props.poolStat?.poolDepth || "0") * 2,
                 )}`
               : "..."}
           </span>,
