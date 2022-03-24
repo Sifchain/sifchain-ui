@@ -26,6 +26,9 @@ const REWARD_TYPE_DISPLAY_DATA: Record<string, { icon: IconName }> = {
   expansion_v2_bonus: {
     icon: "navigation/people",
   },
+  expansion_v4_bonus: {
+    icon: "navigation/people",
+  },
 };
 
 export const getRewardProgramDisplayData = (rewardProgramName: string) => {
@@ -50,10 +53,10 @@ export const RewardSection = defineComponent({
   },
   computed: {
     programStarted(): boolean {
-      return new Date() > new Date(this.rewardProgram.startDateTimeISO);
+      return new Date() > new Date(this.rewardProgram.startDateTimeISO ?? "");
     },
     programEnded(): boolean {
-      return new Date() > new Date(this.rewardProgram.endDateTimeISO);
+      return new Date() > new Date(this.rewardProgram.endDateTimeISO ?? "");
     },
     programActive(): boolean {
       return this.programStarted && !this.programEnded;
@@ -72,16 +75,7 @@ export const RewardSection = defineComponent({
     }[] {
       return [
         {
-          hide: this.rewardProgram.rewardProgramType !== "vs",
-          name: "Reserved Commission Rewards",
-          tooltip:
-            "These are rewards you have earned from your delegators, but are not yet claimable due to either: a) your delegators not claiming their portion of these rewards yet or b) those rewards for your delegators not reaching full maturity yet.  Once one of these actions happen, these rewards will be considered claimable for you.",
-          amount:
-            this.rewardProgram.participant
-              ?.currentTotalCommissionsOnClaimableDelegatorRewards,
-        },
-        {
-          name: "Pending Dispensation",
+          name: "Pending Rewards",
           tooltip:
             "This is the amount that will be dispensed on Tuesday. Any new claimable amounts will need to be claimed after the next dispensation.",
           amount:
@@ -93,7 +87,7 @@ export const RewardSection = defineComponent({
           tooltip: "Rewards that have already been dispensed.",
           amount: this.rewardProgram.participant?.dispensed,
         },
-      ].filter((item) => !item.hide);
+      ];
     },
     displayData(): typeof REWARD_TYPE_DISPLAY_DATA[keyof typeof REWARD_TYPE_DISPLAY_DATA] {
       return getRewardProgramDisplayData(this.rewardProgram.rewardProgramName);
@@ -109,20 +103,18 @@ export const RewardSection = defineComponent({
   render() {
     const sifConnected = this.sifConnected;
 
-    const isEarning =
-      !this.rewardProgram?.participant
-        ?.totalClaimableCommissionsAndClaimableRewards &&
-      this.rewardProgram?.participant?.totalCommissionsAndRewardsAtMaturity;
     return (
       <article class="align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 py-[16px]">
         <section
           class="text flex items-center cursor-pointer"
           onClick={() => (this.expanded = !this.expanded)}
           style={{
-            opacity:
-              new Date(this.rewardProgram.endDateTimeISO).getTime() < Date.now()
+            opacity: this.rewardProgram.endDateTimeISO
+              ? new Date(this.rewardProgram.endDateTimeISO).getTime() <
+                Date.now()
                 ? 0.5
-                : 1,
+                : 1
+              : 1,
           }}
         >
           <div
@@ -159,16 +151,12 @@ export const RewardSection = defineComponent({
             ]}
           >
             {/* Full Amount */}
-            {this.rewardProgram.distributionPattern === "GEYSER" ? null : (
-              <>
-                {["expansion_bonus", "expansion_v2_bonus"].includes(
-                  this.rewardProgram.rewardProgramName,
-                )
-                  ? "+ "
-                  : ""}
-                {this.rewardProgram.summaryAPY.toFixed(4)} %
-              </>
-            )}
+            {["expansion_bonus", "expansion_v2_bonus"].includes(
+              this.rewardProgram.rewardProgramName,
+            )
+              ? "+ "
+              : ""}
+            {this.rewardProgram.summaryAPY.toFixed(4)} %
           </div>
           <div
             class={[
@@ -177,12 +165,10 @@ export const RewardSection = defineComponent({
             ]}
           >
             {/* Claimable Amount */}
-            {isEarning
-              ? "Earning..."
-              : getClaimableAmountString(
-                  this.rewardProgram?.participant
-                    ?.totalClaimableCommissionsAndClaimableRewards,
-                )}
+            {getClaimableAmountString(
+              this.rewardProgram?.participant
+                ?.totalClaimableCommissionsAndClaimableRewards,
+            )}
             <TokenIcon
               assetValue={Asset.get("rowan")}
               size={20}
@@ -215,8 +201,11 @@ export const RewardSection = defineComponent({
                         return (
                           <div class={`p-[4px] pt-[16px] `}>
                             <TokenIcon
-                              assetValue={this.poolAssets[poolSymbol]}
-                            ></TokenIcon>
+                              assetValue={
+                                this.poolAssets[poolSymbol] ??
+                                this.poolAssets[poolSymbol.slice(1)]
+                              }
+                            />
                           </div>
                         );
                       },

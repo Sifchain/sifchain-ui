@@ -1,0 +1,1 @@
+{"version":3,"file":"ibcExportFees.js","sourceRoot":"","sources":["../../../src/utils/ibcExportFees.ts"],"names":[],"mappings":"AAAA,OAAO,EAAW,WAAW,EAAgB,MAAM,aAAa,CAAC;AAEjE,MAAM,UAAU,qBAAqB,CAAC,cAA4B;IAChE,OAAO,WAAW,CAAC,OAAO,EAAE,oBAAoB,CAAC,CAAC;AACpD,CAAC;AAED,MAAM,CAAC,MAAM,sBAAsB,GACjC,4CAA4C,CAAC"}

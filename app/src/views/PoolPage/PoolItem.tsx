@@ -221,7 +221,7 @@ export default defineComponent({
       <div class="w-full py-[10px] align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 last:border-none group">
         <div
           onClick={() => this.toggleExpanded()}
-          class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] font-sans group-hover:opacity-80"
+          class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
             <TokenIcon assetValue={this.nativeAmount.asset} size={22} />
@@ -246,8 +246,6 @@ export default defineComponent({
                   <div class="text-sm">
                     <span class="font-semibold">{program.displayName}</span>: +
                     {program.summaryAPY.toFixed(2)}% APR
-                    {/* until{" "}
-                    {new Date(program.endDateTimeISO).toLocaleDateString()}. */}
                     <br />
                     <div class="mt-[6px]">{program.description}</div>
                   </div>
@@ -263,63 +261,6 @@ export default defineComponent({
                 />
               </Tooltip>
             ))}
-            {this.competitions.length > 0 && (
-              <Tooltip
-                content={
-                  <div class="text-sm">
-                    <div class="font-semibold text-md">
-                      {this.competitions[0].displayName}
-                    </div>
-
-                    {this.competitions.map((competition) => (
-                      <>
-                        <div class="mt-[6px]">
-                          {COMPETITION_TYPE_DISPLAY_DATA[
-                            competition.type
-                          ].title(competition)}{" "}
-                          Competition
-                        </div>
-                        <ul
-                          class="list-disc list-inside mt-[4px]"
-                          style={{ listStyleType: "disc" }}
-                        >
-                          <li>
-                            {prettyNumber(competition.rewardBucket, 0)}{" "}
-                            {competition.rewardAsset.displaySymbol.toUpperCase()}{" "}
-                            prize pool
-                          </li>
-                          <li>
-                            Ends {competition.endDateTime.toLocaleDateString()}
-                          </li>
-                        </ul>
-                      </>
-                    ))}
-                    <div class="mt-[6px]">
-                      Click to see your ranking and prizes.
-                    </div>
-                  </div>
-                }
-              >
-                <RouterLink
-                  // @ts-ignore
-                  onClick={(e: Event) => {
-                    e.stopPropagation();
-                  }}
-                  to={{
-                    name: "Leaderboard",
-                    params: {
-                      type: this.competitions[0].type,
-                      symbol: this.competitions[0].symbol,
-                    },
-                  }}
-                >
-                  <AssetIcon
-                    class="h-[16px] text-accent-base"
-                    icon="interactive/wreath"
-                  />
-                </RouterLink>
-              </Tooltip>
-            )}
           </div>
           <div
             class={[COLUMNS_LOOKUP.apy.class, "font-mono flex items-center"]}
@@ -375,7 +316,7 @@ export default defineComponent({
                   this.expanded ? "rotate-180" : "rotate-0",
                 ]}
                 icon="interactive/chevron-down"
-              ></AssetIcon>
+              />
             </button>
           </div>
         </div>
@@ -383,7 +324,7 @@ export default defineComponent({
           <section
             id={`expandable-${this.pool.symbol()}`}
             class={[
-              "mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-none pointer-events-auto",
+              "mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-auto",
               this.accountPool ? "h-[216px]" : "h-[193px]",
             ]}
           >

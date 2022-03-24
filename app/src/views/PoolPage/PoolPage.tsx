@@ -44,16 +44,20 @@ export default defineComponent({
   computed: {
     poolRewardProgramLookup(): Record<string, PoolRewardProgram[]> {
       const lookup: Record<string, PoolRewardProgram[]> = {};
-      this.rewardProgramsRes.data.value?.rewardPrograms.forEach((program) => {
+
+      this.rewardProgramsRes.data.value?.forEach((program) => {
         if (program.isUniversal) return;
+
         if (
-          new Date() < new Date(program.startDateTimeISO) ||
-          new Date() > new Date(program.endDateTimeISO)
-        )
+          new Date() < new Date(program.startDateTimeISO ?? "") ||
+          new Date() > new Date(program.endDateTimeISO ?? "")
+        ) {
           return;
+        }
 
         program.incentivizedPoolSymbols.forEach((symbol) => {
           const asset = useNativeChain().findAssetWithLikeSymbol(symbol);
+
           if (asset) {
             let list = lookup[asset.symbol];
             if (!list) list = lookup[asset.symbol] = [];
@@ -61,6 +65,11 @@ export default defineComponent({
           }
         });
       });
+
+      for (const symbol in lookup) {
+        lookup[symbol.slice(1)] = lookup[symbol];
+      }
+
       return lookup;
     },
     symbolCompetitionsLookup(): CompetitionsBySymbolLookup | null {
@@ -69,9 +78,9 @@ export default defineComponent({
     sanitizedPoolData() {
       if (!this.isLoaded) return [];
 
-      const poolDataItems = this.allPoolsData as any;
+      const poolDataItems = this.allPoolsData as PoolDataItem[];
 
-      const result = (poolDataItems as PoolDataItem[])
+      const result = poolDataItems
         .filter((item) => {
           const asset = item.pool.externalAmount?.asset;
           if (!asset) return;
@@ -121,6 +130,7 @@ export default defineComponent({
           if (b.accountPool && !a.accountPool) return 1;
           return 0;
         });
+
       if (this.$data.sortReverse) {
         result.reverse();
       }
@@ -212,13 +222,13 @@ export default defineComponent({
             }
           >
             {this.sanitizedPoolData.map((item: PoolDataItem) => {
+              const rewardsPrograms =
+                this.poolRewardProgramLookup[
+                  item.pool.externalAmount!.symbol
+                ] ?? [];
               return (
                 <PoolItem
-                  bonusRewardPrograms={
-                    this.poolRewardProgramLookup[
-                      item.pool.externalAmount!.symbol
-                    ] ?? []
-                  }
+                  bonusRewardPrograms={rewardsPrograms}
                   competitionsLookup={
                     this.symbolCompetitionsLookup?.[
                       item.pool.externalAmount!.symbol

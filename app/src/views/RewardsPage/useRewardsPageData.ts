@@ -3,7 +3,6 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
 
-import { createCryptoeconGqlClient } from "@/utils/createCryptoeconGqlClient";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
 
@@ -63,78 +62,73 @@ const useExistingClaimsData = (
 };
 
 export type RewardProgramParticipant = {
-  // currentAPYOnTickets: number;
+  // used
   totalClaimableCommissionsAndClaimableRewards: number;
-  maturityDateMs: string;
-  yearsToMaturity: number;
-  totalDepositedAmount: number;
-  currentTotalCommissionsOnClaimableDelegatorRewards: number;
   claimedCommissionsAndRewardsAwaitingDispensation: number;
   dispensed: number;
-  totalCommissionsAndRewardsAtMaturity: number;
 };
+
 export type RewardProgram = {
   participant?: RewardProgramParticipant;
   incentivizedPoolSymbols: string[];
   isUniversal: boolean;
   summaryAPY: number;
   rewardProgramName: string;
-  rewardProgramType: string;
   startDateTimeISO: string;
-  endDateTimeISO: string;
-  distributionPattern: string;
+  endDateTimeISO: string | null;
   documentationURL: string;
   displayName: string;
   description: string;
 };
-export const useRewardsPageData = () => {
-  const { config } = useCore();
-  const address = accountStore.refs.sifchain.address.computed();
 
-  const gql = createCryptoeconGqlClient();
+export function useRewardsPageData() {
+  const { config, services } = useCore();
+  const address = accountStore.refs.sifchain.address.computed();
 
   const rewardProgramResponse = useAsyncData(async (): Promise<{
     rewardPrograms: RewardProgram[];
+    timeRemaining: string;
   }> => {
-    const query = `
-    query ${address.value ? `($participantAddress: String!)` : ``} {
-      rewardPrograms {
-        ${
-          address.value
-            ? `
-        participant(address: $participantAddress) {
-          totalCommissionsAndRewardsAtMaturity
-          currentAPYOnTickets
-          totalClaimableCommissionsAndClaimableRewards
-          currentTotalCommissionsOnClaimableDelegatorRewards
-          maturityDateMs
-          yearsToMaturity
-          totalDepositedAmount
-          claimedCommissionsAndRewardsAwaitingDispensation
-          dispensed
-        }`
-            : ``
-        }
-        displayName
-        description
-        documentationURL
-        incentivizedPoolSymbols
-        isUniversal
-        summaryAPY
-        rewardProgramName
-        rewardProgramType
-        startDateTimeISO
-        endDateTimeISO
-        distributionPattern
+    const rewardPrograms = await services.data.getRewardsPrograms();
+    let timeRemaining = "";
+
+    if (address.value) {
+      const participantRewards = await services.data.getUserRewards(
+        address.value,
+      );
+
+      if (participantRewards.timeRemaining) {
+        timeRemaining = participantRewards.timeRemaining;
       }
+
+      const programs = rewardPrograms.map((program, _i) => {
+        const summary = participantRewards.programs[program.rewardProgramName];
+        return {
+          ...program,
+          participant: {
+            claimedCommissionsAndRewardsAwaitingDispensation:
+              summary?.claimedCommissionsAndRewardsAwaitingDispensation ?? 0,
+            dispensed: (summary?.dispensed ?? 0) / rewardPrograms.length,
+            totalClaimableCommissionsAndClaimableRewards:
+              summary?.totalClaimableCommissionsAndClaimableRewards ?? 0,
+          },
+        };
+      });
+
+      return { rewardPrograms: programs, timeRemaining };
+    } else {
+      const programs = rewardPrograms.map((program, _i) => {
+        return {
+          ...program,
+          participant: {
+            dispensed: 0,
+            claimedCommissionsAndRewardsAwaitingDispensation: 0,
+            totalClaimableCommissionsAndClaimableRewards: 0,
+          },
+        };
+      });
+      return { rewardPrograms: programs, timeRemaining };
     }
-    `;
-
-    const gqlResponse = await gql`
-      ${query}
-    `({ participantAddress: address.value });
-
-    return gqlResponse;
   }, [address]);
 
   const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);
@@ -154,7 +148,7 @@ export const useRewardsPageData = () => {
     lmClaim: computed(() => claimsRes.data.value?.lm),
     reloadClaims: () => claimsRes.reload.value(),
   };
-};
+}
 
 function calculateDateOfNextDispensation(currentDate: Date) {
   const date = currentDate;

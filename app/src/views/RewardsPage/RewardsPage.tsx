@@ -1,13 +1,9 @@
 import { defineComponent, ref, computed } from "vue";
 import PageCard from "@/components/PageCard";
-import {
-  rewardColumnsLookup,
-  useRewardsPageData,
-  useTimeUntilNextDispensation,
-} from "./useRewardsPageData";
+import { rewardColumnsLookup, useRewardsPageData } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
-import { CryptoeconomicsRewardType } from "@/business/services/CryptoeconomicsService";
+
 import Layout from "@/componentsLegacy/Layout/Layout";
 import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
@@ -19,17 +15,13 @@ export default defineComponent({
   props: {},
   setup() {
     const data = useRewardsPageData();
-    const {
-      isLoading,
-      error,
-      rewardProgramResponse,
-      lmClaim,
-      address,
-      reloadClaims,
-    } = data;
-    const timeUntilNextDispensation = useTimeUntilNextDispensation();
+    const { isLoading, error, rewardProgramResponse, lmClaim } = data;
+    const timeUntilNextDispensation = computed(
+      () => rewardProgramResponse.data.value?.timeRemaining ?? "",
+    );
     const rewardTotals = computed(() => {
-      return rewardProgramResponse.data.value?.rewardPrograms.reduce(
+      const programs = rewardProgramResponse.data.value?.rewardPrograms;
+      return programs?.reduce(
         (acc, program) => {
           if (program.participant) {
             acc.pendingRewards +=
@@ -67,14 +59,6 @@ export default defineComponent({
       if (error.value) {
         return <div>Error! {error.value.message}</div>;
       }
-      const summaryApyRef = computed(() => {
-        return rewardProgramResponse.data.value?.rewardPrograms.reduce(
-          (prev, curr) => {
-            return prev + curr.summaryAPY;
-          },
-          0,
-        );
-      });
 
       return (
         <Layout>
@@ -99,7 +83,7 @@ export default defineComponent({
               <div class="flex w-full items-center gap-[12px] mt-[10px] whitespace-nowrap">
                 <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
                   <div class="font-lg text-accent-base font-semibold">
-                    Claimed - Pending Dispensation
+                    Total pending rewards
                   </div>
                   <div class="pt-[4px] text-sm opacity-50">
                     Dispensed by Tuesday morning PST
@@ -116,7 +100,7 @@ export default defineComponent({
                 </div>
                 <div class="bg-white bg-opacity-5  px-[20px] py-[10px] rounded flex-1">
                   <div class="font-lg text-accent-base font-semibold">
-                    Dispensed Rewards
+                    Dispensed rewards
                   </div>
                   <div class="pt-[4px] text-sm opacity-50">
                     Amount already claimed and received
@@ -131,13 +115,13 @@ export default defineComponent({
                 </div>
                 <div class="bg-white bg-opacity-5 px-[20px] py-[10px] rounded flex-1">
                   <div class="font-lg text-accent-base font-semibold">
-                    Time Remaining to Claim
+                    Time until next dispensation
                   </div>
                   <div class="pt-[4px] text-sm opacity-50 whitespace-nowrap">
-                    Claim deadline for weekly dispensation
+                    Estimated time until next dispensation
                   </div>
                   <div class="pt-[7px] text-xl whitespace-pre">
-                    {timeUntilNextDispensation.value.timeUntilNextDispensation}
+                    {timeUntilNextDispensation.value || "..."}
                   </div>
                 </div>
               </div>
@@ -149,42 +133,22 @@ export default defineComponent({
                 <div class={rewardColumnsLookup.duration.class}>
                   {/* Duration */}
                 </div>
-                <div class={rewardColumnsLookup.apy.class}>
-                  Program APR
-                  <Tooltip
-                    content={
-                      <div class="mb-2">
-                        Current overall program summary APR. This is also
-                        displayed in Pools and Pool Stats.
-                      </div>
-                    }
-                  >
-                    <Button.InlineHelp></Button.InlineHelp>
-                  </Tooltip>
-                </div>
+                <div class={rewardColumnsLookup.apy.class}>Program APR</div>
                 <div class={rewardColumnsLookup.claimableAmount.class}>
-                  Claimable Amount
-                  <Tooltip
-                    content={
-                      <div class="mb-2">
-                        Current overall program summary APR. This is also
-                        displayed in Pools and Pool Stats.
-                      </div>
-                    }
-                  >
-                    <Button.InlineHelp></Button.InlineHelp>
-                  </Tooltip>
+                  Pending Rewards
                 </div>
                 <div class={rewardColumnsLookup.expand.class} />
               </div>
               <div>
-                {rewardProgramResponse.data.value?.rewardPrograms
+                {(rewardProgramResponse.data.value?.rewardPrograms ?? [])
                   .filter((program) => {
                     if (showAllRef.value) return true;
 
                     const isCurrent =
+                      !program.endDateTimeISO ||
                       new Date().getTime() <
-                      new Date(program.endDateTimeISO).getTime();
+                        new Date(program.endDateTimeISO).getTime();
+
                     if (isCurrent) return true;
 
                     return (
@@ -196,8 +160,12 @@ export default defineComponent({
                     );
                   })
                   .sort((a, b) => {
-                    const aIsCurrent = new Date() < new Date(a.endDateTimeISO);
-                    const bIsCurrent = new Date() < new Date(b.endDateTimeISO);
+                    const aIsCurrent =
+                      !a.endDateTimeISO ||
+                      new Date() < new Date(a.endDateTimeISO);
+                    const bIsCurrent =
+                      !b.endDateTimeISO ||
+                      new Date() < new Date(b.endDateTimeISO);
                     return +bIsCurrent - +aIsCurrent;
                   })
                   .map((program) => {
