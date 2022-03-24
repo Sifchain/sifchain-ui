@@ -171,8 +171,8 @@ export default class DataService {
             group.map((x) => Number(x.pending_rewards)),
           );
 
-          const dispensedRewards = uniq(
-            group.map((x) => Number(x.dispensed_rewards)),
+          const totalDispensedRewards = uniq(
+            group.map((x) => Number(x.reward_dispensed_total)),
           );
 
           const totalPendingRewards = pendingRewards.reduce(
@@ -186,7 +186,7 @@ export default class DataService {
               totalClaimableCommissionsAndClaimableRewards: totalPendingRewards,
               claimedCommissionsAndRewardsAwaitingDispensation:
                 totalPendingRewards,
-              dispensed: dispensedRewards[0],
+              dispensed: totalDispensedRewards[0],
               pools: group,
             },
           };

@@ -108,7 +108,7 @@ export function useRewardsPageData() {
           participant: {
             claimedCommissionsAndRewardsAwaitingDispensation:
               summary?.claimedCommissionsAndRewardsAwaitingDispensation ?? 0,
-            dispensed: summary?.dispensed ?? 0,
+            dispensed: (summary?.dispensed ?? 0) / rewardPrograms.length,
             totalClaimableCommissionsAndClaimableRewards:
               summary?.totalClaimableCommissionsAndClaimableRewards ?? 0,
           },
