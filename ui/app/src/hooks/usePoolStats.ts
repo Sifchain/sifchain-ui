@@ -53,8 +53,14 @@ export const usePoolStats = () => {
 
           let rewardAPY = 0;
           rewardPrograms.forEach((program) => {
+            const incentivisedSymbols = program.incentivizedPoolSymbols.map(
+              (x) => x.slice(1),
+            );
+
             const isIndividuallyIncentivized =
-              program.incentivizedPoolSymbols?.includes(p.symbol);
+              program.incentivizedPoolSymbols?.includes(p.symbol) ||
+              incentivisedSymbols.includes(p.symbol);
+
             if (program.isUniversal || isIndividuallyIncentivized) {
               rewardAPY += program.summaryAPY;
             }
