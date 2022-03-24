@@ -36,20 +36,17 @@ jobs:
 
           if [[ $BRANCH_NAME == 'master' ]]
           then
-            echo "SUBDOMAIN=staging" >> $GITHUB_ENV
             echo "VITE_APP_DEPLOYMENT=production" >> $GITHUB_ENV
           elif [[ "$TAG_NAME" != '' ]]
           then
-            echo "SUBDOMAIN=testnet" >> $GITHUB_ENV
             echo "VITE_APP_DEPLOYMENT=staging" >> $GITHUB_ENV
           else
-            echo "SUBDOMAIN=devnet" >> $GITHUB_ENV
             echo "VITE_APP_DEPLOYMENT=develop" >> $GITHUB_ENV
           fi
           echo $(cat $GITHUB_ENV)
 
       - name: Build App
-        run: yarn install --immutable && yarn build --tag $BRANCH_NAME --no-setup
+        run: yarn install --immutable && yarn build
 
       - name: Deploy App to IPFS/Pinata
         id: pinata
@@ -62,43 +59,11 @@ jobs:
           verbose: true
           remove-old: true
 
-      - name: Set environment for dnslink
-        run: |
-          echo $SUBDOMAIN
-
-          if [[ $SUBDOMAIN == 'devnet' ]]; then
-            echo "Config set for DevNet deployment"
-            echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.devnet" >> $GITHUB_ENV
-          fi
-
-          if [[ $SUBDOMAIN == 'testnet' ]]; then
-            echo "Config set for TestNet deployment"
-            echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.testnet" >> $GITHUB_ENV
-          fi
-
-          if [[ $SUBDOMAIN == 'staging' ]]; then
-            echo "Config set for Staging deployment"
-            echo "RECORD_DOMAIN=sifchain.finance" >> $GITHUB_ENV
-            echo "RECORD_NAME=_dnslink.staging" >> $GITHUB_ENV
-          fi
-
-      - name: Update cloudflare DNSLink
-        env:
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_TOKEN_ZONE_ID }}
-        id: dnslink
-        uses: textileio/cloudflare-update-dnslink@master
-        with:
-          cid: ${{ steps.pinata.outputs.hash }}
-
       - name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.14.0
         with:
           payload: "{\"pinata_url\":\"${{ steps.pinata.outputs.hash }}\",
-          \"branch\":\"${{env.SUBDOMAIN}}\",\"github_hash\": \"${{ github.sha }}\",
-          \"sif_url\": \"https://${{env.SUBDOMAIN}}.sifchain.finance\" }"
+          \"branch\":\"${{ env.BRANCH_NAME }}\",\"github_hash\": \"${{ github.sha }}\""
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
