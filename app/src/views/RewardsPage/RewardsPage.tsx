@@ -121,7 +121,7 @@ export default defineComponent({
                     Estimated time until next dispensation
                   </div>
                   <div class="pt-[7px] text-xl whitespace-pre">
-                    {timeUntilNextDispensation.value}
+                    {timeUntilNextDispensation.value || "..."}
                   </div>
                 </div>
               </div>

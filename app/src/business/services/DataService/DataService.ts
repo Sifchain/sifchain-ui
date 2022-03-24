@@ -67,7 +67,7 @@ export const REWARDS_PROGRAMS_CONFIG: ProgramConfigMap = {
   expansion_v4_bonus: {
     displayName: "Pools of the People (v4)",
     description:
-      "300% total APR (Expansion included). 7 pools. Selected by the community.",
+      "300% total APR (Expansion included). 5 pools. Selected by the community.",
     documentationURL:
       "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs",
     summaryAPY: 200,
@@ -85,7 +85,8 @@ const DAY = HOUR * 24;
  */
 function formatTimeInSeconds(seconds = 0) {
   const days = Math.floor(seconds / DAY);
-  const hours = Math.floor((seconds % DAY) / HOUR);
+  const remainderFromDays = seconds % DAY;
+  const hours = Math.floor(remainderFromDays / HOUR);
   // const minutes = Math.floor((seconds % HOUR) / MINUTE);
 
   const qualifiers = ["d", "h"];
