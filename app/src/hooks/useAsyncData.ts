@@ -1,6 +1,4 @@
-import { computed, ComputedRef, ref, Ref } from "@vue/reactivity";
-import { onMounted, reactive, readonly, toRefs, watch, watchEffect } from "vue";
-const cache: Record<string, any> = {};
+import { onMounted, watch, ref, Ref } from "vue";
 
 export type AsyncDataState<F extends () => Promise<any>> = {
   data: Ref<Await<ReturnType<F>> | null>;
@@ -11,14 +9,21 @@ export type AsyncDataState<F extends () => Promise<any>> = {
   reload: Ref<() => void>;
 };
 
+const DEFAULT_OPTIONS = {
+  maxRetries: 3,
+  retryDelay: 1000,
+};
+
 type Await<T> = T extends {
   then(onfulfilled?: (value: infer U) => unknown): unknown;
 }
   ? U
   : T;
+
 export const useAsyncData = <F extends () => Promise<any>>(
   fn: F,
   deps: any[] = [],
+  options = DEFAULT_OPTIONS,
 ) => {
   const publicState: AsyncDataState<F> = {
     data: ref(null),
@@ -29,33 +34,44 @@ export const useAsyncData = <F extends () => Promise<any>>(
     reload: ref(loadData),
   };
 
-  function loadData() {
-    publicState.isLoading.value = true;
-    return fn()
-      .then((data) => {
-        publicState.data.value = data;
-        publicState.isSuccess.value = true;
-        publicState.isLoading.value = false;
-      })
-      .catch((e) => {
-        console.error("useAsyncData error", e);
-        publicState.isError.value = true;
-        publicState.isLoading.value = false;
-        publicState.error.value = e;
-      });
-  }
   const privateState = {
     hasRun: ref(false),
+    retryCount: ref(0),
   };
 
+  async function loadData() {
+    publicState.isLoading.value = true;
+
+    try {
+      const data = await fn();
+      publicState.data.value = data;
+      publicState.isSuccess.value = true;
+      publicState.isLoading.value = false;
+      privateState.retryCount.value = 0;
+    } catch (error) {
+      if (privateState.retryCount.value < options.maxRetries) {
+        privateState.retryCount.value++;
+
+        if (process.env.NODE_ENV === "development") {
+          console.log("useAsyncData retry:", privateState.retryCount.value);
+        }
+        setTimeout(
+          loadData,
+          options.retryDelay * privateState.retryCount.value,
+        );
+        return;
+      }
+      if (process.env.NODE_ENV === "development") {
+        console.error("useAsyncData error", error);
+      }
+      publicState.isError.value = true;
+      publicState.isLoading.value = false;
+      publicState.error.value = error as Error;
+    }
+  }
+
   if (deps.length > 0) {
-    watch(
-      deps,
-      () => {
-        loadData();
-      },
-      { immediate: true },
-    );
+    watch(deps, loadData, { immediate: true });
   }
 
   onMounted(() => {
