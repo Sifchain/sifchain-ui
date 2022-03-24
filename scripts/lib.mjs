@@ -133,41 +133,6 @@ async function getBestCommitFromBranch(tagName) {
 }
 
 export async function setupStack(tagName) {
-  if (tagName && ["develop", "master"].includes(tagName)) {
-    // Check if the latest commit in GHs develop branch matches what is in the registry
-
-    console.log("Getting latest commits...");
-
-    const commit = await getBestCommitFromBranch(tagName);
-    // const commit = await getLatestCommitForBranch(tagName);
-    console.log("Checking latest commit exists in registry...");
-    const imageExists = await dockerImageExistsWithTag(commit);
-
-    if (!imageExists) {
-      console.error(
-        `
-
-=========================
-|     HOW ERRONEOUS!    |
-=========================
-
-It appears that the latest commit hash from '${tagName}' cannot be found in the registry. 
-We were looking for the following commit hash: 
-
-  ${commit}
-
-This could happen because something went wrong while preparing the image.
-
-We suggest you investigate over in the sifnode repo then try running this script again.
-
-  https://github.com/Sifchain/sifnode/tree/${tagName}
-        
-        `,
-      );
-      process.exit(1);
-    }
-  }
-
   const defaultImageName = `${await fs.readFile(
     resolve(__dirname, "./latest"),
   )}`;
