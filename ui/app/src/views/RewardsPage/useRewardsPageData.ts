@@ -107,17 +107,27 @@ export function useRewardsPageData() {
           ...program,
           participant: {
             claimedCommissionsAndRewardsAwaitingDispensation:
-              summary.claimedCommissionsAndRewardsAwaitingDispensation,
-            dispensed: summary.dispensed,
+              summary?.claimedCommissionsAndRewardsAwaitingDispensation ?? 0,
+            dispensed: summary?.dispensed ?? 0,
             totalClaimableCommissionsAndClaimableRewards:
-              summary.totalClaimableCommissionsAndClaimableRewards,
+              summary?.totalClaimableCommissionsAndClaimableRewards ?? 0,
           },
         };
       });
 
       return { rewardPrograms: programs, timeRemaining };
     } else {
-      return { rewardPrograms, timeRemaining };
+      const programs = rewardPrograms.map((program, _i) => {
+        return {
+          ...program,
+          participant: {
+            dispensed: 0,
+            claimedCommissionsAndRewardsAwaitingDispensation: 0,
+            totalClaimableCommissionsAndClaimableRewards: 0,
+          },
+        };
+      });
+      return { rewardPrograms: programs, timeRemaining };
     }
   }, [address]);
 
