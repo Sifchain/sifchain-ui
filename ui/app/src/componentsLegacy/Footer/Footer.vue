@@ -89,13 +89,13 @@ export default defineComponent({
             >
             <a
               target="_blank"
-              href="https://sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf"
+              href="https://www.sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf"
               >Privacy Policy</a
             >
-            <a target="_blank" href="https://sifchain.finance/#roadmap"
+            <a target="_blank" href="https://www.sifchain.finance/#roadmap"
               >Roadmap</a
             >
-            <a target="_blank" href="https://sifchain.finance/legal-disclamer/"
+            <a target="_blank" href="https://www.sifchain.finance/legal-disclamer/"
               >Legal Disclaimer</a
             >
           </div>

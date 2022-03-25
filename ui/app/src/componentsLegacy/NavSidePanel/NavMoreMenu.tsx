@@ -20,15 +20,15 @@ export default defineComponent({
       },
       {
         name: "Newsletter",
-        href: "https://sifchain.finance/#newsletter",
+        href: "https://www.sifchain.finance/#newsletter",
       },
       {
         name: "Legal Disclaimer",
-        href: "https://sifchain.finance/legal-disclamer/",
+        href: "https://www.sifchain.finance/legal-disclamer/",
       },
       {
         name: "Roadmap",
-        href: "https://sifchain.finance/#roadmap",
+        href: "https://www.sifchain.finance/#roadmap",
       },
       {
         name: "Tutorials",
@@ -36,7 +36,7 @@ export default defineComponent({
       },
       {
         name: "Privacy Policy",
-        href: "https://sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf",
+        href: "https://www.sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf",
       },
       {
         name: "Rewards Calculator",
