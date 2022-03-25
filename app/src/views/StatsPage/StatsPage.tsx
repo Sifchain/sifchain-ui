@@ -1,14 +1,11 @@
 import { defineComponent, computed, Ref, ref } from "vue";
-import { Asset, IAsset } from "@sifchain/sdk";
 import PageCard from "@/components/PageCard";
 import Layout from "@/componentsLegacy/Layout/Layout";
-import { TokenIcon } from "@/components/TokenIcon";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
-import { Button } from "@/components/Button/Button";
 import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
