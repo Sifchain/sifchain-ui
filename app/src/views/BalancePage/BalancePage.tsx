@@ -1,24 +1,14 @@
-import {
-  defineComponent,
-  TransitionGroup,
-  ref,
-  computed,
-  Transition,
-  KeepAlive,
-  onMounted,
-} from "vue";
+import { defineComponent, ref, computed, effect, onMounted } from "vue";
+import { RouterView } from "vue-router";
+
 import Layout from "@/componentsLegacy/Layout/Layout";
 import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
-import BalanceRow from "./BalanceRow";
-import { BalancePageState, useBalancePageData } from "./useBalancePageData";
-import { RouterView } from "vue-router";
-
-import { effect } from "@vue/reactivity";
-import router from "@/router";
-import { Button } from "@/components/Button/Button";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
+
+import BalanceRow from "./BalanceRow";
+import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 
 export default defineComponent({
   name: "BalancePage",
