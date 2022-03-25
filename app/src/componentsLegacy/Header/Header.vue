@@ -22,7 +22,7 @@ export default defineComponent({
       all times.
       <a
         target="_blank"
-        href="https://docs.sifchain.finance/resources/betanet-launch"
+        href="https://docs.sifchain.finance/network-security/betanet-launch"
         >Here's a list of security measures taken</a
       >, but please note that all transactions conducted are at your own risk.
       This platform is not open to US users.
