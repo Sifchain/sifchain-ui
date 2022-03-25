@@ -1,4 +1,3 @@
-import { DefaultProps } from "tippy.js";
 import { SetupContext } from "vue";
 import { Tippy, TippyOptions } from "vue-tippy";
 

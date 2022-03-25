@@ -1,10 +1,9 @@
-import { useCore } from "@/hooks/useCore";
 import { defineComponent, PropType, computed, ref, onUnmounted } from "vue";
-
-import { WalletConnection } from "./constants";
 import copy from "copy-to-clipboard";
+
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { accountStore } from "@/store/modules/accounts";
+import { WalletConnection } from "./constants";
 
 export default defineComponent({
   name: "WalletConnectionDropdown",
@@ -19,7 +18,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { config } = useCore();
     const stateRef =
       accountStore.refs[props.connection.getChain().network].computed();
     const addressExplorerUrl = computed(() => {

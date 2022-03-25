@@ -1,6 +1,5 @@
 import { effect } from "@vue/reactivity";
 import {
-  watch,
   defineComponent,
   onMounted,
   onUnmounted,

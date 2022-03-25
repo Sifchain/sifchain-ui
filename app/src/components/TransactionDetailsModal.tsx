@@ -1,15 +1,14 @@
 import { defineComponent, PropType, Ref } from "vue";
+import { Network } from "@sifchain/sdk";
+
 import { TransactionDetails } from "@/hooks/useTransactionDetails";
-import AssetIcon, { IconName } from "./AssetIcon";
 import { Form } from "./Form";
 import Modal from "./Modal";
 import { useCore } from "@/hooks/useCore";
-import { Button } from "./Button/Button";
-import { getBlockExplorerUrl } from "@/componentsLegacy/shared/utils";
-import { FormDetailsType } from "./Form";
-import { Network } from "@sifchain/sdk";
-import { getImportLocation } from "@/views/BalancePage/Import/useImportData";
 import { useChains } from "@/hooks/useChains";
+import AssetIcon, { IconName } from "./AssetIcon";
+import { FormDetailsType } from "./Form";
+import Button from "./Button";
 
 export default defineComponent({
   name: "TransactionDetailsModal",
