@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import "./scss/index.css";
-import { rootStore, vuexStore } from "./store/index";
+import { vuexStore } from "./store/index";
 
 const app = createApp(App);
 
