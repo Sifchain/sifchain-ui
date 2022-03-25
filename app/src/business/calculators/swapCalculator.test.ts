@@ -1,5 +1,5 @@
 import { Ref, ref } from "@vue/reactivity";
-import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
+import { AssetAmount, IAssetAmount, Pool } from "@sifchain/sdk";
 import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
 import { SwapState, useSwapCalculator } from "./swapCalculator";
 
