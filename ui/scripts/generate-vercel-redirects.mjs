@@ -52,7 +52,7 @@ async function main() {
       // Redirect all blocked countries to the root of the site.
       {
         source: "/(.*)",
-        destination: "https://sifchain.finance/legal-disclamer",
+        destination: "https://www.sifchain.finance/legal-disclamer",
         has: [
           {
             type: "header",
@@ -70,7 +70,7 @@ async function main() {
       // Redirect Crimea.
       {
         source: "/(.*)",
-        destination: "https://sifchain.finance/legal-disclamer",
+        destination: "https://www.sifchain.finance/legal-disclamer",
         has: [
           {
             type: "header",
