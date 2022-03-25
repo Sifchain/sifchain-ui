@@ -12,7 +12,7 @@
   "redirects": [
     {
       "source": "/(.*)",
-      "destination": "https://sifchain.finance/legal-disclamer",
+      "destination": "https://www.sifchain.finance/legal-disclamer",
       "has": [
         {
           "type": "header",
@@ -29,7 +29,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "https://sifchain.finance/legal-disclamer",
+      "destination": "https://www.sifchain.finance/legal-disclamer",
       "has": [
         {
           "type": "header",
