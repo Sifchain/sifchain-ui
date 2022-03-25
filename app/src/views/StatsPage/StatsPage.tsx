@@ -49,7 +49,7 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Pool Depth (USD)",
+        name: "Pool TVL (USD)",
         sortBy: "depth",
         class: "min-w-[120px] text-right",
         ref: ref<HTMLElement>(),
@@ -232,7 +232,7 @@ export default defineComponent({
                           : `${prettyNumber(Math.abs(item.arbitrage))}%`}
                       </td>
                       <td class="align-middle text-right text-mono">
-                        ${prettyNumber(item.depth)}
+                        ${prettyNumber(item.depth * 2)}
                       </td>
                       <td class="align-middle text-right text-mono">
                         ${prettyNumber(item.volume)}
