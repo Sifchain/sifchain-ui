@@ -28,7 +28,6 @@ import {
   SelectDropdown,
   SelectDropdownOption,
 } from "@/components/SelectDropdown";
-import { Asset } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
 import { useNativeChain } from "@/hooks/useChains";
 import { TokenIcon } from "@/components/TokenIcon";
 import { IAsset } from "@sifchain/sdk";
@@ -299,7 +298,7 @@ export default defineComponent({
             !this.hasAgreed && "filter blur-md",
           ]}
           headerAction={
-            !!this.currentCompetition && (
+            Boolean(this.currentCompetition) ? (
               <div class="flex items-center">
                 <div class="mr-[84px] flex items-center">
                   <div class="text-accent-base">Days Remaining</div>
@@ -327,13 +326,13 @@ export default defineComponent({
                   Swap
                 </Button.Inline>
               </div>
-            )
+            ) : undefined
           }
           withOverflowSpace
         >
           <div
             class={[
-              "flex absolute bottom-[100%] left-0 right-0 flex items-center justify-between",
+              "absolute bottom-[100%] left-0 right-0 flex items-center justify-between",
             ]}
           >
             <div
@@ -375,13 +374,14 @@ export default defineComponent({
                     ].description(competition)}
                   >
                     <Button.InlineHelp
-                      onClick={() =>
+                      // @ts-ignore
+                      onClick={() => {
                         window.open(
                           COMPETITION_TYPE_DISPLAY_DATA[competition.type].link(
                             competition,
                           ),
-                        )
-                      }
+                        );
+                      }}
                     />
                   </Tooltip>
                 </RouterLink>

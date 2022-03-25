@@ -14,11 +14,7 @@ export default defineComponent({
     const importData = useImportData();
     importData.detailsRef.value;
     const { runImport, exitImport } = toRefs(importData);
-    const {
-      importDraft: importDraft,
-      computedImportAssetAmount,
-      detailsRef,
-    } = importData;
+    const { importDraft: importDraft, detailsRef } = importData;
     return () => (
       <Modal
         heading="Import Token to Sifchain"
