@@ -1,7 +1,7 @@
 import { defineComponent, ref, computed, effect, onMounted } from "vue";
 import { RouterView } from "vue-router";
 
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
 import { Tooltip } from "@/components/Tooltip";

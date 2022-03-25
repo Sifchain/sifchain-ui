@@ -2,7 +2,7 @@ import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import PageCard from "@/components/PageCard";
 import { Tooltip } from "@/components/Tooltip";
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import {
   defineComponent,

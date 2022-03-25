@@ -1,6 +1,6 @@
 import { defineComponent, computed, Ref, ref } from "vue";
 import PageCard from "@/components/PageCard";
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
