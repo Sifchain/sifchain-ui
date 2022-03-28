@@ -1,3 +1,8 @@
+## Release 2022.03.30
+* Performance improvements of pools, pool stats, and rewards pages
+  * Updated field names for clarity around auto-claims (Total pending rewards vs Claimed - pending dispensation, Time until next dispensation vs Time remaining to claim, and Pending rewards vs claimable reward)
+  * Pool TVL now displayed in place of Pool Depth (displays total value of all assets in the pool instead of only displaying the non-ROWAN asset)
+
 ## Release 2022.03.03
 * SDK/Sifchain.js
 * Balance page updates
