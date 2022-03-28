@@ -1,0 +1,119 @@
+{
+  "name": "app",
+  "version": "2.5.0",
+  "private": true,
+  "scripts": {
+    "bump": "bump patch --tag --commit 'testnet release '",
+    "bump:minor": "bump minor --tag --commit 'testnet release '",
+    "dev": "vite --host --port 8080",
+    "build": "vite build",
+    "test": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@sifchain/sdk": "workspace:*",
+    "@sifchain/wallet-keplr": "workspace:*",
+    "@sifchain/wallet-metamask": "workspace:*",
+    "@sifchain/wallet-terra-station": "workspace:*",
+    "buffer": "^6.0.3",
+    "chart.js": "^3.5.1",
+    "chartjs-adapter-moment": "^1.0.0",
+    "clsx": "^1.1.1",
+    "color-hash": "^1.0.3",
+    "copy-to-clipboard": "^3.3.1",
+    "core-js": "^3.6.5",
+    "dat.gui": "^0.7.9",
+    "flip-toolkit": "^7.0.13",
+    "load-script": "^1.0.0",
+    "normalize-scss": "^7.0.1",
+    "p-limit": "^4.0.0",
+    "p-props": "^5.0.0",
+    "process": "^0.11.10",
+    "react-dom": "^17.0.2",
+    "tippy.js": "^6.3.7",
+    "vue": "^3.2.31",
+    "vue-router": "^4.0.14",
+    "vue-tippy": "^6.0.0-alpha.30",
+    "vuex": "4.0.2"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^16.2.1",
+    "@jsdevtools/version-bump-prompt": "^6.1.0",
+    "@types/color-hash": "^1.0.0",
+    "@types/dat.gui": "^0.7.7",
+    "@types/jest": "^24.0.19",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
+    "@vitejs/plugin-vue": "^2.1.0",
+    "@vitejs/plugin-vue-jsx": "^1.3.3",
+    "@vue/compiler-sfc": "^3.2.31",
+    "@vue/eslint-config-typescript": "^10.0.0",
+    "@vue/test-utils": "^2.0.0-0",
+    "@vue/tsconfig": "^0.1.3",
+    "autoprefixer": "^10.4.4",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^8.5.0",
+    "postcss": "^8.3.6",
+    "rollup-plugin-analyzer": "^4.0.0",
+    "rollup-plugin-visualizer": "^5.6.0",
+    "sass": "^1.38.2",
+    "style-loader": "^3.3.1",
+    "svgo": "^2.8.0",
+    "tailwindcss": "^3.0.23",
+    "typescript": "~4.2.4",
+    "vite": "^2.8.6",
+    "vite-compatible-readable-stream": "^3.6.0",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-live-reload": "^2.1.0",
+    "vite-plugin-singlefile": "^0.7.1",
+    "vite-svg-loader": "^2.2.0",
+    "vue-jest": "^5.0.0-0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended",
+      "@vue/typescript/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2020
+    },
+    "rules": {
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off"
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)",
+          "**/*.test.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "jest": {
+    "testMatch": [
+      "**/**.test.ts",
+      "**/tests/unit/*.js"
+    ],
+    "preset": "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
+    "transform": {
+      "^.+\\.vue$": "vue-jest"
+    }
+  }
+}
