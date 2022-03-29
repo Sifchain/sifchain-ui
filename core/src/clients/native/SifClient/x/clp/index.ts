@@ -90,6 +90,7 @@ type ClpGetLiquidityProvider = (params: {
 }) => Promise<LiquidityDetailsResponse>;
 
 type ClpRemoveLiquidity = (param: RemoveLiquidityParams) => Promise<any>;
+type ClpQueryPmtpParams = (params: { ticker: string }) => Promise<string>;
 
 export interface ClpExtension {
   readonly clp: {
@@ -101,6 +102,7 @@ export interface ClpExtension {
     getLiquidityProvider: ClpGetLiquidityProvider;
     removeLiquidity: ClpRemoveLiquidity;
     getPool: ClpQueryPool;
+    getPmtpParams: ClpQueryPmtpParams;
   };
 }
 
