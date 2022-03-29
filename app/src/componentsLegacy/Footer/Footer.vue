@@ -89,7 +89,7 @@ export default defineComponent({
             >
             <a
               target="_blank"
-              href="https://sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf"
+              href="https://assets.website-files.com/60ec70152eafa8dd30cb2fb5/610027e2774f5414365608b0_Sifchain-Website-Privacy-Policy.pdf"
               >Privacy Policy</a
             >
             <a target="_blank" href="https://sifchain.finance/#roadmap"
