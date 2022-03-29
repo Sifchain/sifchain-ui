@@ -8,6 +8,7 @@ import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import MoreMenu from "./NavMoreMenu";
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import usePTMP from "@/hooks/usePTMP";
 import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
 import { Button } from "@/components/Button/Button";
@@ -46,6 +47,10 @@ export default defineComponent({
     const votingOpenRef = ref(false);
 
     const router = useRouter();
+
+    const pmtp = usePTMP();
+
+    const isPMTPEnabled = flagsStore.state.pmtp;
 
     watch([router.currentRoute], () => {
       // add ?vote=anything to any hash route to open the voting modal
@@ -372,7 +377,21 @@ export default defineComponent({
                     </>
                   }
                   icon="interactive/lock"
-                ></NavSidePanelItem>
+                />
+                {isPMTPEnabled && (
+                  <NavSidePanelItem
+                    class={"opacity-50 mt-[0px]"}
+                    displayName={
+                      <>
+                        PMTP{" "}
+                        {pmtp.isLoading.value
+                          ? "..."
+                          : `${pmtp.data.value?.currentModifier}%`}
+                      </>
+                    }
+                    icon="interactive/policy"
+                  />
+                )}
                 <NavSidePanelItem
                   class={"opacity-50 mt-[0px]"}
                   displayName={
@@ -384,7 +403,7 @@ export default defineComponent({
                     </>
                   }
                   icon="navigation/rowan"
-                ></NavSidePanelItem>
+                />
               </div>
 
               <Tooltip
