@@ -426,23 +426,20 @@ export default defineComponent({
                             accountStore.state.sifchain
                               .hasLoadedBalancesOnce && (
                               <>
-                                <>
-                                  {accountStore.state.sifchain.balances
-                                    .filter(
-                                      // does not have rowan
-                                      (b) => b.asset.symbol.includes("rowan"),
-                                    )
-                                    .map((asset) => {
-                                      const formatted =
-                                        formatAssetAmount(asset);
-                                      if (formatted.length > 6) {
-                                        return Intl.NumberFormat("en", {
-                                          notation: "compact",
-                                        }).format(+formatted);
-                                      }
-                                    })[0] || 0}{" "}
-                                  ROWAN
-                                </>
+                                {accountStore.state.sifchain.balances
+                                  .filter(
+                                    // does not have rowan
+                                    (b) => b.asset.symbol.includes("rowan"),
+                                  )
+                                  .map((asset) => {
+                                    const formatted = formatAssetAmount(asset);
+                                    if (formatted.length > 6) {
+                                      return Intl.NumberFormat("en", {
+                                        notation: "compact",
+                                      }).format(+formatted);
+                                    }
+                                  })[0] || 0}{" "}
+                                ROWAN
                               </>
                             )}
                         </div>
