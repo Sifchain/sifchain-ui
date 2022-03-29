@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "outDir": "build/typescript"
+  },
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts"]
+}

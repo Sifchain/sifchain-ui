@@ -5,30 +5,16 @@ on: [pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Use Node.js
-        uses: actions/setup-node@v2.1.4
+        uses: actions/setup-node@v2
         with:
-          node-version: "14.x"
-
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Cache Node.js modules
-        id: yarn-cache
-        uses: actions/cache@v2.1.3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
+          node-version: "16.x"
+          cache: yarn
+          cache-dependency-path: "**/yarn.lock"
 
       - name: Log into registry
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -36,32 +22,25 @@ jobs:
       - name: Pull instant stack image
         run: docker pull $(cat scripts/latest)
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --silent
-
-      - uses: microsoft/playwright-github-action@v1
-
-      - name: Build e2e App
-        run: cd e2e && yarn install --frozen-lockfile
-
-      - name: Run e2e Tests
-        run: yarn build && yarn e2e
+      - run: yarn install --immutable
+      - run: npx playwright install-deps
+      - run: yarn build && yarn e2e
         env:
           CI: true
-      
+
       - name: Upload artifacts
-        if: ${{ failure() }}  # runs when previous step failed
+        if: ${{ failure() }} # runs when previous step failed
         uses: actions/upload-artifact@master
         with:
           name: fe-build-artifact-${{ github.sha }}
           path: |
-            ./ui/e2e/screenshots
-            ./ui/e2e/logs
+            ./e2e/screenshots
+            ./e2e/logs
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./ui/e2e/coverage
+          directory: ./e2e/coverage
           flags: ui
           verbose: true
