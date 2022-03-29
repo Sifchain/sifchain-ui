@@ -142,6 +142,10 @@ export function setupClpExtension(base: LcdClient): ClpExtension {
       getPool: async ({ ticker }) => {
         return (await base.get(`/clp/getPool?ticker=${ticker}`)).result;
       },
+
+      getPmtpParams: async () => {
+        return await base.get(`/clp/getPmtpParams`);
+      },
     },
   };
 }
