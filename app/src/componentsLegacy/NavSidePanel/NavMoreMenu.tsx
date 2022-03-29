@@ -20,15 +20,15 @@ export default defineComponent({
       },
       {
         name: "Newsletter",
-        href: "https://sifchain.finance/#newsletter",
+        href: "https://www.sifchain.finance/#newsletter",
       },
       {
         name: "Legal Disclaimer",
-        href: "https://sifchain.finance/legal-disclamer/",
+        href: "https://www.sifchain.finance/legal-disclamer/",
       },
       {
         name: "Roadmap",
-        href: "https://sifchain.finance/#roadmap",
+        href: "https://www.sifchain.finance/#roadmap",
       },
       {
         name: "Tutorials",

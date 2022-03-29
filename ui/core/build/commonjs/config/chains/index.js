@@ -1,7 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.chainConfigByNetworkEnv = void 0;
 const getEnv_1 = require("../getEnv");
@@ -23,29 +25,31 @@ const band_1 = __importDefault(require("./band"));
 const likecoin_1 = __importDefault(require("./likecoin"));
 const emoney_1 = __importDefault(require("./emoney"));
 const starname_1 = __importDefault(require("./starname"));
-exports.chainConfigByNetworkEnv = Object.fromEntries(Object.values(getEnv_1.NetworkEnv).map((env) => {
+exports.chainConfigByNetworkEnv = Object.fromEntries(
+  Object.values(getEnv_1.NetworkEnv).map((env) => {
     return [
-        env,
-        {
-            [entities_1.Network.SIFCHAIN]: sifchain_1.default[env],
-            [entities_1.Network.COSMOSHUB]: cosmoshub_1.default[env],
-            [entities_1.Network.IRIS]: iris_1.default[env],
-            [entities_1.Network.AKASH]: akash_1.default[env],
-            [entities_1.Network.SENTINEL]: sentinel_1.default[env],
-            [entities_1.Network.ETHEREUM]: ethereum_1.default[env],
-            [entities_1.Network.CRYPTO_ORG]: crypto_org_1.default[env],
-            [entities_1.Network.OSMOSIS]: osmosis_1.default[env],
-            [entities_1.Network.PERSISTENCE]: persistence_1.default[env],
-            [entities_1.Network.REGEN]: regen_1.default[env],
-            [entities_1.Network.TERRA]: terra_1.default[env],
-            [entities_1.Network.JUNO]: juno_1.default[env],
-            [entities_1.Network.IXO]: ixo_1.default[env],
-            [entities_1.Network.BAND]: band_1.default[env],
-            // [Network.BITSONG]: bitsong[env],
-            [entities_1.Network.LIKECOIN]: likecoin_1.default[env],
-            [entities_1.Network.EMONEY]: emoney_1.default[env],
-            [entities_1.Network.STARNAME]: starname_1.default[env],
-        },
+      env,
+      {
+        [entities_1.Network.SIFCHAIN]: sifchain_1.default[env],
+        [entities_1.Network.COSMOSHUB]: cosmoshub_1.default[env],
+        [entities_1.Network.IRIS]: iris_1.default[env],
+        [entities_1.Network.AKASH]: akash_1.default[env],
+        [entities_1.Network.SENTINEL]: sentinel_1.default[env],
+        [entities_1.Network.ETHEREUM]: ethereum_1.default[env],
+        [entities_1.Network.CRYPTO_ORG]: crypto_org_1.default[env],
+        [entities_1.Network.OSMOSIS]: osmosis_1.default[env],
+        [entities_1.Network.PERSISTENCE]: persistence_1.default[env],
+        [entities_1.Network.REGEN]: regen_1.default[env],
+        [entities_1.Network.TERRA]: terra_1.default[env],
+        [entities_1.Network.JUNO]: juno_1.default[env],
+        [entities_1.Network.IXO]: ixo_1.default[env],
+        [entities_1.Network.BAND]: band_1.default[env],
+        // [Network.BITSONG]: bitsong[env],
+        [entities_1.Network.LIKECOIN]: likecoin_1.default[env],
+        [entities_1.Network.EMONEY]: emoney_1.default[env],
+        [entities_1.Network.STARNAME]: starname_1.default[env],
+      },
     ];
-}));
+  }),
+);
 //# sourceMappingURL=index.js.map

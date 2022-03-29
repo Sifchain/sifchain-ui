@@ -1,4 +1,4 @@
 export class Client {
-    constructor(options) { }
+  constructor(options) {}
 }
 //# sourceMappingURL=setup.js.map

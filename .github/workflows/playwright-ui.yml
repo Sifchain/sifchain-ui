@@ -22,16 +22,9 @@ jobs:
       - name: Pull instant stack image
         run: docker pull $(cat scripts/latest)
 
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - uses: microsoft/playwright-github-action@v1
-
-      - name: Build e2e App
-        run: cd e2e && yarn install --immutable
-
-      - name: Run e2e Tests
-        run: yarn build && yarn e2e
+      - run: yarn install --immutable
+      - run: npx playwright install-deps
+      - run: yarn build && yarn e2e
         env:
           CI: true
 

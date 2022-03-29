@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.humanUnitsToAssetAmount = exports.getMantissaLength = exports.floorDecimal = exports.fromBaseUnits = exports.toBaseUnits = exports.decimalShift = void 0;
+exports.humanUnitsToAssetAmount =
+  exports.getMantissaLength =
+  exports.floorDecimal =
+  exports.fromBaseUnits =
+  exports.toBaseUnits =
+  exports.decimalShift =
+    void 0;
 const entities_1 = require("../entities");
 const format_1 = require("./format");
 /**
@@ -11,27 +17,30 @@ const format_1 = require("./format");
  * @returns string decimal
  */
 function decimalShift(decimal, shift) {
-    if (!decimal.match(/^[+-]?(\d+)?\.?\d+$/)) {
-        throw new Error(`Cannot recognise number format: ${decimal}`);
-    }
-    // Extract the sign(+-) and the unsigned content from the decimal
-    const [, sign = "", unsignedDecimal = decimal] = decimal.match(/^([+-]?)(.+)$/) || [];
-    // Eg, "12.34" > ['12','34']
-    const [origCharacter, origMantissa] = unsignedDecimal.split(".");
-    const dotIndex = origCharacter.length;
-    const targetIndex = dotIndex + shift;
-    // Significand is all the digits "1234"
-    const significand = [origCharacter, origMantissa].join("");
-    const character = targetIndex >= 0
-        ? significand
-            .slice(0, targetIndex)
-            .padEnd(targetIndex, "0")
-            .replace(/^0+/, "") || "0"
-        : "0";
-    const mantissa = targetIndex >= 0
-        ? significand.slice(targetIndex)
-        : significand.padStart(Math.abs(targetIndex) + significand.length, "0");
-    return `${sign}${[character, mantissa].filter(Boolean).join(".")}`;
+  if (!decimal.match(/^[+-]?(\d+)?\.?\d+$/)) {
+    throw new Error(`Cannot recognise number format: ${decimal}`);
+  }
+  // Extract the sign(+-) and the unsigned content from the decimal
+  const [, sign = "", unsignedDecimal = decimal] =
+    decimal.match(/^([+-]?)(.+)$/) || [];
+  // Eg, "12.34" > ['12','34']
+  const [origCharacter, origMantissa] = unsignedDecimal.split(".");
+  const dotIndex = origCharacter.length;
+  const targetIndex = dotIndex + shift;
+  // Significand is all the digits "1234"
+  const significand = [origCharacter, origMantissa].join("");
+  const character =
+    targetIndex >= 0
+      ? significand
+          .slice(0, targetIndex)
+          .padEnd(targetIndex, "0")
+          .replace(/^0+/, "") || "0"
+      : "0";
+  const mantissa =
+    targetIndex >= 0
+      ? significand.slice(targetIndex)
+      : significand.padStart(Math.abs(targetIndex) + significand.length, "0");
+  return `${sign}${[character, mantissa].filter(Boolean).join(".")}`;
 }
 exports.decimalShift = decimalShift;
 /**
@@ -41,7 +50,7 @@ exports.decimalShift = decimalShift;
  * @returns amount as a string
  */
 function toBaseUnits(decimal, asset) {
-    return decimalShift(decimal, asset.decimals);
+  return decimalShift(decimal, asset.decimals);
 }
 exports.toBaseUnits = toBaseUnits;
 /**
@@ -51,7 +60,7 @@ exports.toBaseUnits = toBaseUnits;
  * @returns amount as a string
  */
 function fromBaseUnits(integer, asset) {
-    return decimalShift(integer, -1 * asset.decimals);
+  return decimalShift(integer, -1 * asset.decimals);
 }
 exports.fromBaseUnits = fromBaseUnits;
 /**
@@ -60,7 +69,7 @@ exports.fromBaseUnits = fromBaseUnits;
  * @returns string with everything before the decimal point
  */
 function floorDecimal(decimal) {
-    return decimal.split(".")[0];
+  return decimal.split(".")[0];
 }
 exports.floorDecimal = floorDecimal;
 /**
@@ -69,12 +78,15 @@ exports.floorDecimal = floorDecimal;
  * @returns length of mantissa
  */
 function getMantissaLength(amount) {
-    const number = (0, format_1.format)(amount, { mantissa: 18, trimMantissa: true });
-    return number.length - number.indexOf(".") - 1;
+  const number = (0, format_1.format)(amount, {
+    mantissa: 18,
+    trimMantissa: true,
+  });
+  return number.length - number.indexOf(".") - 1;
 }
 exports.getMantissaLength = getMantissaLength;
 function humanUnitsToAssetAmount(asset, amount) {
-    return (0, entities_1.AssetAmount)(asset, toBaseUnits(String(amount), asset));
+  return (0, entities_1.AssetAmount)(asset, toBaseUnits(String(amount), asset));
 }
 exports.humanUnitsToAssetAmount = humanUnitsToAssetAmount;
 //# sourceMappingURL=decimalShift.js.map

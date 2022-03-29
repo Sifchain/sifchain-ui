@@ -7,16 +7,16 @@ const COOKIE_NAME_SIF_ENV = "__sif_env";
  * @returns app cookie manager
  */
 export function AppCookies(service = Cookies) {
-    return {
-        getEnv() {
-            return service.get(COOKIE_NAME_SIF_ENV);
-        },
-        setEnv(env) {
-            service.set(COOKIE_NAME_SIF_ENV, env.toString());
-        },
-        clearEnv() {
-            service.remove(COOKIE_NAME_SIF_ENV);
-        },
-    };
+  return {
+    getEnv() {
+      return service.get(COOKIE_NAME_SIF_ENV);
+    },
+    setEnv(env) {
+      service.set(COOKIE_NAME_SIF_ENV, env.toString());
+    },
+    clearEnv() {
+      service.remove(COOKIE_NAME_SIF_ENV);
+    },
+  };
 }
 //# sourceMappingURL=AppCookies.js.map

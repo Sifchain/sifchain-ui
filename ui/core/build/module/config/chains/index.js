@@ -17,29 +17,31 @@ import band from "./band";
 import likecoin from "./likecoin";
 import emoney from "./emoney";
 import starname from "./starname";
-export const chainConfigByNetworkEnv = Object.fromEntries(Object.values(NetworkEnv).map((env) => {
+export const chainConfigByNetworkEnv = Object.fromEntries(
+  Object.values(NetworkEnv).map((env) => {
     return [
-        env,
-        {
-            [Network.SIFCHAIN]: sifchain[env],
-            [Network.COSMOSHUB]: cosmoshub[env],
-            [Network.IRIS]: iris[env],
-            [Network.AKASH]: akash[env],
-            [Network.SENTINEL]: sentinel[env],
-            [Network.ETHEREUM]: ethereum[env],
-            [Network.CRYPTO_ORG]: cryptoOrg[env],
-            [Network.OSMOSIS]: osmosis[env],
-            [Network.PERSISTENCE]: persistence[env],
-            [Network.REGEN]: regen[env],
-            [Network.TERRA]: terra[env],
-            [Network.JUNO]: juno[env],
-            [Network.IXO]: ixo[env],
-            [Network.BAND]: band[env],
-            // [Network.BITSONG]: bitsong[env],
-            [Network.LIKECOIN]: likecoin[env],
-            [Network.EMONEY]: emoney[env],
-            [Network.STARNAME]: starname[env],
-        },
+      env,
+      {
+        [Network.SIFCHAIN]: sifchain[env],
+        [Network.COSMOSHUB]: cosmoshub[env],
+        [Network.IRIS]: iris[env],
+        [Network.AKASH]: akash[env],
+        [Network.SENTINEL]: sentinel[env],
+        [Network.ETHEREUM]: ethereum[env],
+        [Network.CRYPTO_ORG]: cryptoOrg[env],
+        [Network.OSMOSIS]: osmosis[env],
+        [Network.PERSISTENCE]: persistence[env],
+        [Network.REGEN]: regen[env],
+        [Network.TERRA]: terra[env],
+        [Network.JUNO]: juno[env],
+        [Network.IXO]: ixo[env],
+        [Network.BAND]: band[env],
+        // [Network.BITSONG]: bitsong[env],
+        [Network.LIKECOIN]: likecoin[env],
+        [Network.EMONEY]: emoney[env],
+        [Network.STARNAME]: starname[env],
+      },
     ];
-}));
+  }),
+);
 //# sourceMappingURL=index.js.map

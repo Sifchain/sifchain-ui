@@ -5,11 +5,11 @@ import { SIFCHAIN_DEVNET } from "./sifchain-devnet";
 import { SIFCHAIN_TESTNET } from "./sifchain-testnet";
 import { SIFCHAIN_MAINNET } from "./sifchain-mainnet";
 export default {
-    [NetworkEnv.LOCALNET]: SIFCHAIN_TESTNET_042,
-    [NetworkEnv.TESTNET_042_IBC]: SIFCHAIN_TESTNET_042,
-    [NetworkEnv.DEVNET_042]: SIFCHAIN_DEVNET_042,
-    [NetworkEnv.DEVNET]: SIFCHAIN_DEVNET,
-    [NetworkEnv.TESTNET]: SIFCHAIN_TESTNET,
-    [NetworkEnv.MAINNET]: SIFCHAIN_MAINNET,
+  [NetworkEnv.LOCALNET]: SIFCHAIN_TESTNET_042,
+  [NetworkEnv.TESTNET_042_IBC]: SIFCHAIN_TESTNET_042,
+  [NetworkEnv.DEVNET_042]: SIFCHAIN_DEVNET_042,
+  [NetworkEnv.DEVNET]: SIFCHAIN_DEVNET,
+  [NetworkEnv.TESTNET]: SIFCHAIN_TESTNET,
+  [NetworkEnv.MAINNET]: SIFCHAIN_MAINNET,
 };
 //# sourceMappingURL=index.js.map

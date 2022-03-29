@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 import { resolve } from "path";
-import { serveBuiltApp, setupStack, race, waitOn } from "./lib.mjs";
+import { serveBuiltApp, setupStack, waitOn } from "./lib.mjs";
 import { arg } from "./lib.mjs";
 
 const args = arg(
@@ -67,4 +67,4 @@ try {
 }
 
 // Run server and test script concurrently
-await race(serveBuiltApp(), runTests(tagName));
+await Promise.all([serveBuiltApp(), runTests(tagName)]);
