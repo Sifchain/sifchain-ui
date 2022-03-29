@@ -406,12 +406,7 @@ export default defineComponent({
                     ?.classList.add("!origin-bottom-left");
                 }}
                 appendTo={() => document.body}
-                content={
-                  <>
-                    {/* @ts-ignore */}
-                    <WalletPicker />
-                  </>
-                }
+                content={<WalletPicker />}
                 ref={appWalletPicker.ref}
               >
                 <NavSidePanelItem
