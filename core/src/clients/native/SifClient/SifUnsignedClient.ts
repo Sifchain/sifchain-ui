@@ -5,7 +5,7 @@ import {
   LcdClient,
   setupAuthExtension,
 } from "@cosmjs/launchpad";
-import { NativeDexClient } from "@sifchain/sdk/src/clients";
+import { NativeDexClient } from "../NativeDexClient";
 
 import { ClpExtension, setupClpExtension } from "./x/clp";
 import {
