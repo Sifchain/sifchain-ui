@@ -65,7 +65,7 @@ export function createServices(context: ServiceContext) {
   const liquidityService = new LiquidityClient(
     context,
     ChainsService.get(Network.SIFCHAIN),
-  )!;
+  );
 
   /* 
 
@@ -84,7 +84,9 @@ export function createServices(context: ServiceContext) {
         IBCService.logIBCNetworkMetadata();
       }, 8 * 1000);
     }
-  } catch (e) {}
+  } catch (e) {
+    // do nothing
+  }
 
   return {
     Web3: Web3,
