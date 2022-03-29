@@ -36,7 +36,7 @@ export default defineComponent({
       },
       {
         name: "Privacy Policy",
-        href: "https://www.sifchain.finance/wp-content/uploads/2020/12/Sifchain-Website-Privacy-Policy.pdf",
+        href: "https://assets.website-files.com/60ec70152eafa8dd30cb2fb5/610027e2774f5414365608b0_Sifchain-Website-Privacy-Policy.pdf",
       },
       {
         name: "Rewards Calculator",
