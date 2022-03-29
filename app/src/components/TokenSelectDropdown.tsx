@@ -1,22 +1,19 @@
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import AssetIcon from "@/components/AssetIcon";
-import { useCore } from "@/hooks/useCore";
+import { IAsset, Network } from "@sifchain/sdk";
 import {
   computed,
   defineComponent,
-  effect,
   onMounted,
   onUnmounted,
   PropType,
   Ref,
   ref,
   Teleport,
-  TransitionGroup,
   watch,
-  watchEffect,
 } from "vue";
-import { IAsset, Network } from "../../../core/src";
-import { TokenIcon } from "./TokenIcon";
+
+import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import AssetIcon from "@/components/AssetIcon";
+import { useCore } from "@/hooks/useCore";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { TokenListItem, useTokenList } from "@/hooks/useToken";
 import { TokenNetworkIcon } from "./TokenNetworkIcon/TokenNetworkIcon";

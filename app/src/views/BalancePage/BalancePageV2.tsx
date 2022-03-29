@@ -3,7 +3,7 @@ import { defineComponent, ref, computed, onMounted } from "vue";
 import { effect } from "@vue/reactivity";
 import { Network } from "@sifchain/sdk";
 
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import AssetIcon from "@/components/AssetIcon";
 import PageCard from "@/components/PageCard";
 

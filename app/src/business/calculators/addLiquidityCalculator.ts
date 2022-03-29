@@ -14,8 +14,9 @@ import {
   LiquidityProvider,
   Pool,
   Amount,
+  IAsset,
+  format,
 } from "@sifchain/sdk";
-import { format } from "@sifchain/sdk/src/utils/format";
 
 export enum PoolState {
   SELECT_TOKENS,
@@ -71,7 +72,7 @@ export function usePoolCalculator(input: {
   tokenBSymbol: string | null;
   balances: IAssetAmount[];
   liquidityProvider: LiquidityProvider | null;
-  poolFinder: (a: Asset | string, b: Asset | string) => Pool | null;
+  poolFinder: (a: IAsset | string, b: IAsset | string) => Pool | null;
   guidedMode: boolean;
   lastFocusedTokenField: "A" | "B" | null;
   setTokenAAmount: (amount: string) => void;

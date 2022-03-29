@@ -6,10 +6,12 @@ import {
   IAssetAmount,
   LiquidityProvider,
   Pool,
-} from "../../../entities";
-import { IAmount } from "../../../entities/Amount";
-import { akasha } from "../../../test/utils/accounts";
-import { getTestingTokens } from "../../../test/utils/getTestingToken";
+  IAmount,
+} from "@sifchain/sdk";
+
+import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
+import { akasha } from "@sifchain/sdk/src/test/utils/accounts";
+
 import { PoolState, usePoolCalculator } from "./addLiquidityCalculator";
 
 const [ATK, ROWAN, CTEST] = getTestingTokens(["ATK", "ROWAN", "CTEST"]);
@@ -31,16 +33,16 @@ describe("addLiquidityCalculator", () => {
   const setTokenBAmount = jest.fn();
 
   // output
-  let aPerBRatioMessage: Ref<string> = ref("");
-  let bPerARatioMessage: Ref<string> = ref("");
-  let shareOfPool: Ref<IAmount> = ref(Amount("0"));
-  let aPerBRatioProjectedMessage: Ref<string> = ref("");
-  let bPerARatioProjectedMessage: Ref<string> = ref("");
-  let totalLiquidityProviderUnits: Ref<string> = ref("");
-  let totalPoolUnits: Ref<string> = ref("");
-  let shareOfPoolPercent: Ref<string> = ref("");
-  let state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
-  let liquidityProvider = ref(
+  const aPerBRatioMessage: Ref<string> = ref("");
+  const bPerARatioMessage: Ref<string> = ref("");
+  const shareOfPool: Ref<IAmount> = ref(Amount("0"));
+  const aPerBRatioProjectedMessage: Ref<string> = ref("");
+  const bPerARatioProjectedMessage: Ref<string> = ref("");
+  const totalLiquidityProviderUnits: Ref<string> = ref("");
+  const totalPoolUnits: Ref<string> = ref("");
+  const shareOfPoolPercent: Ref<string> = ref("");
+  const state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
+  const liquidityProvider = ref(
     LiquidityProvider(ATK, ZERO, akasha.address, ZERO, ZERO),
   ) as Ref<LiquidityProvider | null>; // ? not sure why we need to cast
 

@@ -1,5 +1,4 @@
-import { defineComponent } from "@vue/runtime-core";
-import { PropType } from "vue";
+import { PropType, defineComponent } from "vue";
 
 export const YesNoSelector = defineComponent({
   name: "YesNoSelector",

@@ -1,12 +1,13 @@
 import { computed, defineComponent, Ref, ref } from "vue";
-import { useExportData } from "./useExportData";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { Asset, Network } from "@sifchain/sdk";
-import { Button } from "@/components/Button/Button";
-import { useCore } from "@/hooks/useCore";
-import { exportStore } from "@/store/modules/export";
+import { Network } from "@sifchain/sdk";
+
 import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
 import { convertImageUrlToDataUrl } from "@/utils/convertImageUrlToDataUrl";
+import { useCore } from "@/hooks/useCore";
+import { exportStore } from "@/store/modules/export";
+import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+import { Button } from "@/components/Button/Button";
+import { useExportData } from "./useExportData";
 
 export default defineComponent({
   name: "ExportProcessingModal",

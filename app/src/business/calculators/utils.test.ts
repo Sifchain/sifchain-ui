@@ -1,5 +1,6 @@
-import { AssetAmount, Pool, Network, Asset } from "../../../entities";
-import { getTestingTokens } from "../../../test/utils/getTestingToken";
+import { AssetAmount, Pool, Network, Asset } from "@sifchain/sdk";
+import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
+
 import { assetPriceMessage } from "./utils";
 
 describe("assets with decimals", () => {

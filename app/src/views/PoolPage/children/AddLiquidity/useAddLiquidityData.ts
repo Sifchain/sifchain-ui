@@ -1,27 +1,24 @@
-import { onMounted, ref, watch, watchEffect } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
+  format,
   Amount,
-  IAsset,
-  IAssetAmount,
   Network,
   Pool,
   TransactionStatus,
 } from "@sifchain/sdk";
+
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { useCore } from "@/hooks/useCore";
 import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
-import { computed, Ref } from "@vue/reactivity";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import {
   formatAssetAmount,
   formatNumber,
 } from "@/componentsLegacy/shared/utils";
-import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { accountStore } from "@/store/modules/accounts";
-import { debounce } from "@/views/utils/debounce";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
 
 export const useAddLiquidityData = () => {
@@ -180,7 +177,12 @@ export const useAddLiquidityData = () => {
       tokenAFieldAmount.value,
     );
 
-    const pool = Pool(tokenAFieldAmount.value!, tokenBFieldAmount.value!);
+    if (!tokenAFieldAmount.value || !tokenBFieldAmount.value) {
+      throw new Error("Token A or Token B field amount is not defined");
+    }
+
+    const pool = Pool(tokenAFieldAmount.value, tokenBFieldAmount.value);
+
     if (transactionStatus.value.state === "accepted") {
       useCore().services.bus.dispatch({
         type: "SuccessEvent",
@@ -255,6 +257,8 @@ export const useAddLiquidityData = () => {
           return `Insufficient ${toAsset.value?.displaySymbol.toUpperCase()} Balance`;
         case PoolState.VALID_INPUT:
           return preExistingPool.value ? "Add liquidity" : "Create Pool";
+        default:
+          return "";
       }
     }),
     toggleLabel: computed(() => {
