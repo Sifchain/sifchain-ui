@@ -3,13 +3,13 @@ import { calculateSwapResult_pmtp } from "./formulae";
 
 import tests from "../../../test/test-tables/singleswap_result.json";
 
-import { sanitizeNumericString } from "test/utils/sanitizeNumericString";
+import { sanitizeNumericString } from "../test/utils/sanitizeNumericString";
 
 const toAmount = (s: string) => Amount(sanitizeNumericString(s));
 
 describe("calculateSwapResult_pmtp", () => {
   tests.SingleSwapResult_pmtp.forEach(({ x, X, Y, A, expected }) => {
-    test(`Swapping ${x}, expecting ${expected}`, () => {
+    test(`Swapping (${x}), expecting (${expected})`, () => {
       const [$x, $X, $Y, $A] = [x, X, Y, A].map(toAmount);
 
       const output = calculateSwapResult_pmtp(
