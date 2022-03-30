@@ -1,5 +1,6 @@
-import groupBy from "lodash/groupBy";
+import groupBy from "lodash//fp/groupBy";
 import uniq from "lodash/fp/uniq";
+import add from "lodash/fp/add";
 
 import { PoolStatsResponseData } from "@/hooks/usePoolStats";
 
@@ -24,6 +25,15 @@ export type RewardsProgram = {
   preflight_on: boolean;
   config: RewardsProgramConfig;
 };
+
+export type UserProgramsMap = Record<
+  string,
+  {
+    totalClaimableCommissionsAndClaimableRewards: number;
+    claimedCommissionsAndRewardsAwaitingDispensation: number;
+    dispensed: number;
+  }
+>;
 
 export type UserRewardsSummaryResponse = {
   reward_program: string;
@@ -115,12 +125,18 @@ async function cached<T>(
   const cached = CACHE.get(flatKey);
 
   if (cached && cached.expires > Date.now()) {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[cached] returning cached value for:", flatKey);
+    }
     return Promise.resolve(cached.value as T);
   }
 
-  const value = await fn();
-  CACHE.set(flatKey, { value, expires: Date.now() + ttl });
-  return value;
+  const result = await fn();
+  const expires = Date.now() + ttl;
+
+  CACHE.set(flatKey, { value: result, expires });
+
+  return result;
 }
 
 export default class DataService {
@@ -193,53 +209,47 @@ export default class DataService {
         60000 * 5, // cache for 5 minute
       );
 
-      const groups = groupBy(Rewards, (x) => x.reward_program);
+      const groups = groupBy((x) => x.reward_program, Rewards);
 
       let timeToNextDispensation = "";
 
-      const programs = Object.keys(groups).reduce(
-        (acc, groupName) => {
-          const group: UserRewardsSummaryResponse[] = groups[groupName];
+      const programs = Object.keys(groups).reduce((acc, groupName) => {
+        const group: UserRewardsSummaryResponse[] = groups[groupName];
 
-          if (!timeToNextDispensation) {
-            timeToNextDispensation = formatTimeInSeconds(
-              Math.floor(Number(group[0].next_remaining_time_to_dispense)),
-            );
-          }
+        const timeToDispense = Math.floor(
+          Number(group[0].next_remaining_time_to_dispense),
+        );
 
-          const pendingRewards = uniq(
-            group.map((x) => Number(x.pending_rewards)),
-          );
+        if (!timeToNextDispensation) {
+          timeToNextDispensation = formatTimeInSeconds(timeToDispense);
+        }
 
-          const totalDispensedRewards = uniq(
-            group.map((x) => Number(x.reward_dispensed_total)),
-          );
+        const pendingRewards = uniq(
+          group.map((x) => Number(x.pending_rewards)),
+        );
 
-          const totalPendingRewards = pendingRewards.reduce(
-            (acc, x) => acc + x,
-            0,
-          );
+        const totalDispensedRewards = uniq(
+          group.map((x) => Number(x.reward_dispensed_total)),
+        );
 
-          return {
-            ...acc,
-            [groupName]: {
-              totalClaimableCommissionsAndClaimableRewards: totalPendingRewards,
-              claimedCommissionsAndRewardsAwaitingDispensation:
-                totalPendingRewards,
-              dispensed: totalDispensedRewards[0],
-              pools: group,
-            },
-          };
-        },
-        {} as Record<
-          string,
-          {
-            totalClaimableCommissionsAndClaimableRewards: number;
-            claimedCommissionsAndRewardsAwaitingDispensation: number;
-            dispensed: number;
-          }
-        >,
-      );
+        const totalPendingRewards = pendingRewards.reduce(add, 0);
+
+        const conditionalPendingRewards = !timeToDispense
+          ? 0
+          : totalPendingRewards;
+
+        return {
+          ...acc,
+          [groupName]: {
+            totalClaimableCommissionsAndClaimableRewards:
+              conditionalPendingRewards,
+            claimedCommissionsAndRewardsAwaitingDispensation:
+              totalPendingRewards,
+            dispensed: totalDispensedRewards[0],
+            pools: group,
+          },
+        };
+      }, {} as UserProgramsMap);
 
       return {
         programs,
@@ -247,14 +257,7 @@ export default class DataService {
       };
     } catch (error) {
       return {
-        programs: {} as Record<
-          string,
-          {
-            totalClaimableCommissionsAndClaimableRewards: number;
-            claimedCommissionsAndRewardsAwaitingDispensation: number;
-            dispensed: number;
-          }
-        >,
+        programs: {} as UserProgramsMap,
       };
     }
   }
