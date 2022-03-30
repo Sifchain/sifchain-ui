@@ -90,6 +90,7 @@ type ClpGetLiquidityProvider = (params: {
 }) => Promise<LiquidityDetailsResponse>;
 
 type ClpRemoveLiquidity = (param: RemoveLiquidityParams) => Promise<any>;
+type ClpQueryPmtpParams = (params: { ticker: string }) => Promise<string>;
 
 export interface ClpExtension {
   readonly clp: {
@@ -101,6 +102,7 @@ export interface ClpExtension {
     getLiquidityProvider: ClpGetLiquidityProvider;
     removeLiquidity: ClpRemoveLiquidity;
     getPool: ClpQueryPool;
+    getPmtpParams: ClpQueryPmtpParams;
   };
 }
 
@@ -139,6 +141,10 @@ export function setupClpExtension(base: LcdClient): ClpExtension {
 
       getPool: async ({ ticker }) => {
         return (await base.get(`/clp/getPool?ticker=${ticker}`)).result;
+      },
+
+      getPmtpParams: async () => {
+        return await base.get(`/clp/getPmtpParams`);
       },
     },
   };
