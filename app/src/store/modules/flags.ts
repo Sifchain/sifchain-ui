@@ -38,7 +38,9 @@ export const flagsStore = Vuextra.createStore({
     },
     balancePageV2: true,
     rewardsCalculator: true,
-    pmtp: true,
+    pmtp:
+      process.env.NODE_ENV === "development" ||
+      window.location.hostname.endsWith("vercel.app"),
   },
   getters: (state) => ({}),
   mutations: (state) => ({
