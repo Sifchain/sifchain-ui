@@ -5378,20 +5378,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@truffle/source-map-utils@npm:^1.3.76":
-  version: 1.3.76
-  resolution: "@truffle/source-map-utils@npm:1.3.76"
-  dependencies:
-    "@truffle/code-utils": ^1.2.32
-    "@truffle/codec": ^0.12.4
-    debug: ^4.3.1
-    json-pointer: ^0.6.1
-    node-interval-tree: ^1.3.3
-    web3-utils: 1.5.3
-  checksum: d9bd8fdcb67ab355366c309b76b4ac6fc0c4c3d8d9be9bc6d6f070a6f7878ce60b6a03bb210cf8eeaf2417fdbd7767fe5562fbb0c3b766ff23db2ba4b051e12e
-  languageName: node
-  linkType: hard
-
 "@trufflesuite/bigint-buffer@npm:1.1.9":
   version: 1.1.9
   resolution: "@trufflesuite/bigint-buffer@npm:1.1.9"
@@ -7714,17 +7700,6 @@ __metadata:
   peerDependencies:
     graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
   checksum: 9db78d0a1d2d9debe32d7e0584a4e180341e095a1df22b71470f3a457bc488ef2580687e06bc59eba1483bdb2e5bcad7f050f57d05632441800ea8953c272a95
-  languageName: node
-  linkType: hard
-
-"apollo-server-plugin-base@npm:^3.5.2":
-  version: 3.5.2
-  resolution: "apollo-server-plugin-base@npm:3.5.2"
-  dependencies:
-    apollo-server-types: ^3.5.2
-  peerDependencies:
-    graphql: ^15.3.0 || ^16.0.0
-  checksum: 0798d064a2a955467385606c7faed5b9c3c00aa27fb35c612c00b63118fdf7936648c529f3efdbfe8931289f61da31008096d04d28b21ece18f41672c6c76c30
   languageName: node
   linkType: hard
 
@@ -14953,29 +14928,6 @@ __metadata:
     ganache: dist/node/cli.js
     ganache-cli: dist/node/cli.js
   checksum: 5568f0ee2cece9dfb8ae40883ac9f76cfb998f7b50dcce8132c7a77ee0f6cdd84440f49456309ee85ea1714b568733264eb7d9d4a88aeee59d2d639d3013547b
-  languageName: node
-  linkType: hard
-
-"ganache@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "ganache@npm:7.0.3"
-  dependencies:
-    "@trufflesuite/bigint-buffer": 1.1.9
-    bufferutil: 4.0.5
-    emittery: 0.10.0
-    keccak: 3.0.1
-    leveldown: 6.1.0
-    secp256k1: 4.0.2
-    utf-8-validate: 5.0.7
-  dependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  bin:
-    ganache: dist/node/cli.js
-    ganache-cli: dist/node/cli.js
-  checksum: 4e1a478150e08c9f1a269529fb040fcec60109a10724695ea5d321aa2184438ad30899a7b40361764da82cbc9de389bce960872ae5cff6718db78c2e98882e29
   languageName: node
   linkType: hard
 
@@ -27958,13 +27910,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"v8-compile-cache-lib@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "v8-compile-cache-lib@npm:3.0.0"
-  checksum: 674e312bbca796584b61dc915f33c7e7dc4e06d196e0048cb772c8964493a1ec723f1dd014d9419fd55c24a6eae148f60769da23f622e05cd13268063fa1ed6b
-  languageName: node
-  linkType: hard
-
 "v8-compile-cache@npm:^2.0.3":
   version: 2.3.0
   resolution: "v8-compile-cache@npm:2.3.0"
@@ -28028,7 +27973,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vercel@npm:^21.0.1, vercel@npm:^21.3.3":
+"vercel@npm:^21.0.1":
   version: 21.3.3
   resolution: "vercel@npm:21.3.3"
   dependencies:
