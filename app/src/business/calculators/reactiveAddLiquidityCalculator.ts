@@ -383,7 +383,7 @@ export function useReactivePoolCalculator(input: {
     totalLiquidityProviderUnits,
     totalPoolUnits,
     poolAmounts,
-    tokenAFieldAmount: tokenAField.value.fieldAmount,
-    tokenBFieldAmount: tokenBField.value.fieldAmount,
+    tokenAField: tokenAField,
+    tokenBField: tokenBField,
   };
 }
