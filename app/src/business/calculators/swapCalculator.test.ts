@@ -24,14 +24,14 @@ describe("swapCalculator", () => {
 
   test("calculate swap usecase", () => {
     const pool1 = ref(
-      Pool(
+      new Pool(
         AssetAmount(ATK, "2000000000000000000000000000000"),
         AssetAmount(ROWAN, "1000000000000000000000000000000"),
       ),
     ) as Ref<Pool | null>;
 
     const pool2 = ref(
-      Pool(
+      new Pool(
         AssetAmount(BTK, "1000000000000000000000000000000"),
         AssetAmount(ROWAN, "1000000000000000000000000000000"),
       ),
@@ -82,7 +82,7 @@ describe("swapCalculator", () => {
     expect(fromAmount.value).toBe("100.0");
 
     // Check background update
-    pool1.value = Pool(
+    pool1.value = new Pool(
       AssetAmount(ATK, "1000000000000000000000000000000"),
       AssetAmount(ROWAN, "1000000000000000000000000000000"),
     );
@@ -93,7 +93,7 @@ describe("swapCalculator", () => {
 
     expect(toAmount.value).toBe("999.999996");
 
-    pool1.value = Pool(
+    pool1.value = new Pool(
       AssetAmount(ATK, "2000000000000000000000000000000"),
       AssetAmount(ROWAN, "1000000000000000000000000000000"),
     );
@@ -124,14 +124,14 @@ describe("swapCalculator", () => {
 
   test("Avoid division by zero", () => {
     const pool1 = ref(
-      Pool(
+      new Pool(
         AssetAmount(ATK, "1000000000000000000000000"),
         AssetAmount(ROWAN, "1000000000000000000000000"),
       ),
     ) as Ref<Pool | null>;
 
     const pool2 = ref(
-      Pool(
+      new Pool(
         AssetAmount(BTK, "2000000000000000000000000"),
         AssetAmount(ROWAN, "1000000000000000000000000"),
       ),

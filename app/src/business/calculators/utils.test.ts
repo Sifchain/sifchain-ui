@@ -12,7 +12,7 @@ describe("assets with decimals", () => {
   test("assetPriceMessage", () => {
     const msg = assetPriceMessage(
       AssetAmount(ASSETS.atk, "100"),
-      Pool(
+      new Pool(
         AssetAmount(ASSETS.atk, "1000000"),
         AssetAmount(ASSETS.btk, "2000000"),
       ),
@@ -25,7 +25,7 @@ describe("assets with decimals", () => {
   test("with zero amounts message should be nothing", () => {
     const msg = assetPriceMessage(
       AssetAmount(ASSETS.atk, "0"),
-      Pool(AssetAmount(ASSETS.atk, "1"), AssetAmount(ASSETS.btk, "1")),
+      new Pool(AssetAmount(ASSETS.atk, "1"), AssetAmount(ASSETS.btk, "1")),
       4,
     );
     expect(msg).toBe("");
@@ -55,7 +55,7 @@ describe("assets with zero decimals", () => {
   test("with 1 as an amount", () => {
     const msg = assetPriceMessage(
       AssetAmount(ASSETS.atk, "1"),
-      Pool(
+      new Pool(
         AssetAmount(ASSETS.atk, "1000000"),
         AssetAmount(ASSETS.btk, "1000000"),
       ),
@@ -67,7 +67,7 @@ describe("assets with zero decimals", () => {
   test("with 12 as an amount", () => {
     const msg = assetPriceMessage(
       AssetAmount(ASSETS.atk, "12"),
-      Pool(
+      new Pool(
         AssetAmount(ASSETS.atk, "1000000"),
         AssetAmount(ASSETS.btk, "1000000"),
       ),

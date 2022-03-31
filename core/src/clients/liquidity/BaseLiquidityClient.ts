@@ -58,7 +58,7 @@ export class BaseLiquidityClient {
           console.log(entry, externalSymbol);
         }
         if (!asset) return null;
-        return Pool(
+        return new Pool(
           AssetAmount(this.nativeChain.nativeAsset, pool.nativeAssetBalance),
           AssetAmount(asset, pool.externalAssetBalance),
           Amount(pool.poolUnits),
@@ -79,7 +79,7 @@ export class BaseLiquidityClient {
     });
 
     if (!poolRes?.pool) return;
-    const pool = Pool(
+    const pool = new Pool(
       AssetAmount(
         this.nativeChain.nativeAsset,
         poolRes.pool.nativeAssetBalance || "0",

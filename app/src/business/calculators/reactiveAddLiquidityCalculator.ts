@@ -118,7 +118,7 @@ export function useReactivePoolCalculator(input: {
       return null;
     }
 
-    return Pool(
+    return new Pool(
       AssetAmount(tokenAField.asset.value, "0"),
       AssetAmount(tokenBField.asset.value, "0"),
     );
