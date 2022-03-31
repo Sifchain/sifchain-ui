@@ -41,14 +41,14 @@ export function useReactivePoolCalculator(input: {
   const balanceMap = useBalances(input.balances);
 
   const preExistingPool = computed(() => {
-    if (!tokenAField.asset.value || !tokenBField.asset.value) {
+    if (!tokenAField.value.asset || !tokenBField.value.asset) {
       return null;
     }
 
     // Find pool from poolFinder
     const pool = input.poolFinder(
-      tokenAField.asset.value.symbol,
-      tokenBField.asset.value.symbol,
+      tokenAField.value.asset.symbol,
+      tokenBField.value.asset.symbol,
     );
 
     return pool?.value || null;
@@ -69,14 +69,14 @@ export function useReactivePoolCalculator(input: {
   });
 
   const tokenABalance = computed(() => {
-    if (!tokenAField.fieldAmount.value || !tokenAField.asset.value) {
+    if (!tokenAField.value.fieldAmount || !tokenAField.value.asset) {
       return null;
     }
 
     if (preExistingPool.value) {
       return input.tokenASymbol.value
         ? balanceMap.value.get(input.tokenASymbol.value) ??
-            AssetAmount(tokenAField.asset.value, "0")
+            AssetAmount(tokenAField.value.asset, "0")
         : null;
     } else {
       return input.tokenASymbol.value
@@ -93,16 +93,16 @@ export function useReactivePoolCalculator(input: {
 
   const fromBalanceOverdrawn = computed(() => {
     if (!tokenABalance.value) return false;
-    if (!tokenAField.fieldAmount.value) return false;
+    if (!tokenAField.value.fieldAmount) return false;
 
-    const fieldAmount = tokenAField.fieldAmount.value;
+    const fieldAmount = tokenAField.value.fieldAmount;
     const balance = tokenABalance.value;
 
     return fieldAmount.greaterThan(balance);
   });
 
   const toBalanceOverdrawn = computed(() => {
-    return tokenBBalance.value?.lessThan(tokenBField.fieldAmount.value || "0");
+    return tokenBBalance.value?.lessThan(tokenBField.value.fieldAmount || "0");
   });
 
   const liquidityPool = computed(() => {
@@ -110,17 +110,17 @@ export function useReactivePoolCalculator(input: {
       return preExistingPool.value;
     }
     if (
-      !tokenAField.fieldAmount.value ||
-      !tokenBField.fieldAmount.value ||
-      !tokenAField.asset.value ||
-      !tokenBField.asset.value
+      !tokenAField.value.fieldAmount ||
+      !tokenBField.value.fieldAmount ||
+      !tokenAField.value.asset ||
+      !tokenBField.value.asset
     ) {
       return null;
     }
 
     return new Pool(
-      AssetAmount(tokenAField.asset.value, "0"),
-      AssetAmount(tokenBField.asset.value, "0"),
+      AssetAmount(tokenAField.value.asset, "0"),
+      AssetAmount(tokenBField.value.asset, "0"),
     );
   });
 
@@ -128,15 +128,15 @@ export function useReactivePoolCalculator(input: {
   const provisionedPoolUnitsArray = computed(() => {
     if (
       !liquidityPool.value ||
-      !tokenBField.fieldAmount.value ||
-      !tokenAField.fieldAmount.value
+      !tokenBField.value.fieldAmount ||
+      !tokenAField.value.fieldAmount
     ) {
       return [Amount("0"), Amount("0")];
     }
 
     return liquidityPool.value.calculatePoolUnits(
-      tokenBField.fieldAmount.value,
-      tokenAField.fieldAmount.value,
+      tokenBField.value.fieldAmount,
+      tokenAField.value.fieldAmount,
     );
   });
 
@@ -183,13 +183,13 @@ export function useReactivePoolCalculator(input: {
   });
 
   const poolAmounts = computed(() => {
-    if (!preExistingPool.value || !tokenAField.asset.value) {
+    if (!preExistingPool.value || !tokenAField.value.asset) {
       return null;
     }
 
-    if (!preExistingPool.value.contains(tokenAField.asset.value)) return null;
+    if (!preExistingPool.value.contains(tokenAField.value.asset)) return null;
     const externalBalance = preExistingPool.value.getAmount(
-      tokenAField.asset.value,
+      tokenAField.value.asset,
     );
     const nativeBalance = preExistingPool.value.getAmount("rowan");
 
@@ -239,16 +239,16 @@ export function useReactivePoolCalculator(input: {
   const aPerBRatioProjected = computed(() => {
     if (
       !poolAmounts.value ||
-      !tokenAField.fieldAmount.value ||
-      !tokenBField.fieldAmount.value
+      !tokenAField.value.fieldAmount ||
+      !tokenBField.value.fieldAmount
     )
       return null;
 
     const [native, external] = poolAmounts.value;
     const derivedNative = native.toDerived();
     const derivedExternal = external.toDerived();
-    const externalAdded = tokenAField.fieldAmount.value.toDerived();
-    const nativeAdded = tokenBField.fieldAmount.value.toDerived();
+    const externalAdded = tokenAField.value.fieldAmount.toDerived();
+    const nativeAdded = tokenBField.value.fieldAmount.toDerived();
 
     return derivedExternal
       .add(externalAdded)
@@ -268,16 +268,16 @@ export function useReactivePoolCalculator(input: {
   const bPerARatioProjected = computed(() => {
     if (
       !poolAmounts.value ||
-      !tokenAField.fieldAmount.value ||
-      !tokenBField.fieldAmount.value
+      !tokenAField.value.fieldAmount ||
+      !tokenBField.value.fieldAmount
     )
       return null;
 
     const [native, external] = poolAmounts.value;
     const derivedNative = native.toDerived();
     const derivedExternal = external.toDerived();
-    const externalAdded = tokenAField.fieldAmount.value.toDerived();
-    const nativeAdded = tokenBField.fieldAmount.value.toDerived();
+    const externalAdded = tokenAField.value.fieldAmount.toDerived();
+    const nativeAdded = tokenBField.value.fieldAmount.toDerived();
     return derivedNative
       .add(nativeAdded)
       .divide(derivedExternal.add(externalAdded));
@@ -312,11 +312,11 @@ export function useReactivePoolCalculator(input: {
       }
       const assetAmountA = AssetAmount(
         assetA.value,
-        tokenAField.fieldAmount?.value || "0",
+        tokenAField.value.fieldAmount || "0",
       );
       const assetAmountB = AssetAmount(
         assetB.value,
-        tokenBField.fieldAmount?.value || "0",
+        tokenBField.value.fieldAmount || "0",
       );
       if (input.lastFocusedTokenField.value === "A") {
         input.tokenBAmount.value = format(
@@ -341,8 +341,8 @@ export function useReactivePoolCalculator(input: {
     }
 
     // Zero amounts
-    const aAmount = tokenAField.fieldAmount.value;
-    const bAmount = tokenBField.fieldAmount.value;
+    const aAmount = tokenAField.value.fieldAmount;
+    const bAmount = tokenBField.value.fieldAmount;
     const aAmountIsZeroOrFalsy = !aAmount || aAmount.equalTo("0");
     const bAmountIsZeroOrFalsy = !bAmount || bAmount.equalTo("0");
 
@@ -383,7 +383,7 @@ export function useReactivePoolCalculator(input: {
     totalLiquidityProviderUnits,
     totalPoolUnits,
     poolAmounts,
-    tokenAFieldAmount: tokenAField.fieldAmount,
-    tokenBFieldAmount: tokenBField.fieldAmount,
+    tokenAFieldAmount: tokenAField.value.fieldAmount,
+    tokenBFieldAmount: tokenBField.value.fieldAmount,
   };
 }
