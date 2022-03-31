@@ -182,18 +182,16 @@ export const useSwapPageData = () => {
   });
 
   function handleNextStepClicked() {
-    if (!fromFieldAmount.value)
-      throw new Error("from field amount is not defined");
-    if (!toFieldAmount.value) throw new Error("to field amount is not defined");
+    if (!fromFieldAmount) throw new Error("from field amount is not defined");
+    if (!toFieldAmount) throw new Error("to field amount is not defined");
     router.replace({
       name: "ConfirmSwap",
     });
   }
 
   function checkSwapInputs() {
-    if (!fromFieldAmount.value)
-      throw new Error("from field amount is not defined");
-    if (!toFieldAmount.value) throw new Error("to field amount is not defined");
+    if (!fromFieldAmount) throw new Error("from field amount is not defined");
+    if (!toFieldAmount) throw new Error("to field amount is not defined");
     if (!minimumReceived.value)
       throw new Error("minimumReceived amount is not defined");
   }
@@ -208,7 +206,7 @@ export const useSwapPageData = () => {
     checkSwapInputs();
 
     // This condition is just to make typescript happy:
-    if (fromFieldAmount.value && toFieldAmount.value && minimumReceived.value) {
+    if (fromFieldAmount && toFieldAmount && minimumReceived.value) {
       txStatus.value = {
         state: "requested",
         hash: "",
@@ -217,8 +215,8 @@ export const useSwapPageData = () => {
       try {
         const tx = await useCore().services.liquidity.swap.prepareSwapTx({
           address: accountStore.state.sifchain.address,
-          fromAmount: fromFieldAmount.value,
-          toAsset: toFieldAmount.value.asset,
+          fromAmount: fromFieldAmount,
+          toAsset: toFieldAmount.asset,
           minimumReceived: minimumReceived.value,
         });
         const signed = await useCore().services.wallet.keplrProvider.sign(
@@ -245,10 +243,10 @@ export const useSwapPageData = () => {
           type: "SuccessEvent",
           payload: {
             message: `Swapped ${formatAssetAmount(
-              fromFieldAmount.value,
-            )} ${fromFieldAmount.value.displaySymbol.toUpperCase()} for ${formatAssetAmount(
-              toFieldAmount.value,
-            )} ${toFieldAmount.value.displaySymbol.toUpperCase()}`,
+              fromFieldAmount,
+            )} ${fromFieldAmount.displaySymbol.toUpperCase()} for ${formatAssetAmount(
+              toFieldAmount,
+            )} ${toFieldAmount.displaySymbol.toUpperCase()}`,
           },
         });
         setTimeout(() => {
@@ -285,7 +283,7 @@ export const useSwapPageData = () => {
       );
       if (
         nativeBalance?.amount
-          .subtract(fromFieldAmount.value || "0")
+          .subtract(fromFieldAmount || "0")
           .lessThan(SWAP_MIN_BALANCE)
       ) {
         return swapValidityMessage(

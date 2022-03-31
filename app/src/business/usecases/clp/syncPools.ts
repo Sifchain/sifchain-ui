@@ -61,7 +61,7 @@ export function SyncPools(
         }
         if (!asset) return null;
 
-        return Pool(
+        return new Pool(
           AssetAmount(nativeAsset, pool.nativeAssetBalance),
           AssetAmount(asset, pool.externalAssetBalance),
           Amount(pool.poolUnits),

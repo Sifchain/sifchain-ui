@@ -1,19 +1,14 @@
-import { useCore } from "@/hooks/useCore";
+import { PropType } from "vue";
+import { defineComponent } from "@vue/runtime-core";
+import { Asset, IAsset } from "@sifchain/sdk";
+
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { TokenListItem } from "@/hooks/useToken";
-import { accountStore } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
 import { TokenSortBy } from "@/utils/sortAndFilterTokens";
-import { Asset, IAsset, toBaseUnits } from "@sifchain/sdk";
-import { defineComponent } from "@vue/runtime-core";
-import { computed, PropType, ref } from "vue";
+
 import AssetIcon from "../AssetIcon";
-import { Button } from "../Button/Button";
-import Modal from "../Modal";
 import { TokenIcon } from "../TokenIcon";
 import { TokenSelectDropdown } from "../TokenSelectDropdown";
-import { useNativeChain } from "@/hooks/useChains";
-import { ReportTransactionError } from "@sifchain/sdk/src/usecases/utils";
 
 export const PoolsSelector = defineComponent({
   name: "PoolsSelector",
@@ -80,7 +75,6 @@ export const PoolsSelector = defineComponent({
     return (
       <div class={["relative", this.class]}>
         <section
-          active={this.dropdownOpen}
           onClick={() => {
             if (this.symbols.length === this.maxSymbols) {
               this.dropdownOpen = false;
@@ -89,7 +83,7 @@ export const PoolsSelector = defineComponent({
             this.dropdownOpen = !this.dropdownOpen;
           }}
           class={[
-            "transition-all duration-200 relative py-[8px] px-[10px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border border-solid border-gray-input_outline disabled:bg-transparent text-lg font-medium flex flex-wrap items-center min-h-[60px]",
+            "transition-all duration-200 relative py-[8px] px-[10px] pr-0 rounded-[4px] bg-gray-input border border-gray-input_outline disabled:bg-transparent text-lg font-medium flex flex-wrap items-center min-h-[60px]",
             this.dropdownOpen && "border-white",
           ]}
         >
@@ -97,8 +91,8 @@ export const PoolsSelector = defineComponent({
             return (
               <div
                 key={symbol}
-                tabIndex={-1}
-                onKeyPress={(e) => {
+                tabindex={-1}
+                onKeypress={(e) => {
                   if (e.key === "Backspace" || e.key === "Delete") {
                     this.onChangeSymbols(
                       this.symbols.filter((s) => s !== symbol.toLowerCase()),

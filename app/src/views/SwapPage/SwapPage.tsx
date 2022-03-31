@@ -8,7 +8,7 @@ import {
 import PageCard from "@/components/PageCard";
 import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import { SlippageTolerance } from "./components/SlippageTolerance";
 import { SwapDetails } from "./components/SwapDetails";
 import AssetIcon from "@/components/AssetIcon";

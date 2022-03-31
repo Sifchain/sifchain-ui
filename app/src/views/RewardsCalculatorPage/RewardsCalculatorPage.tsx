@@ -1,7 +1,7 @@
 import { defineComponent } from "vue";
 
 import { accountStore } from "@/store/modules/accounts";
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
 
 import { RewardsCalculator } from "./components/RewardsCalculator";

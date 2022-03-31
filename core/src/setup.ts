@@ -11,15 +11,16 @@ export function createSdk(options: { environment: NetworkEnv }) {
   const chains = Object.fromEntries(
     Object.keys(networkChainCtorLookup).map((network) => {
       const n = network as Network;
-      return [
-        n,
-        new networkChainCtorLookup[n]({
-          assets: config.assets,
-          chainConfig: config.chainConfigsByNetwork[network as Network],
-        }),
+      const Ctor = networkChainCtorLookup[n];
+      const chainConfig = config.chainConfigsByNetwork[n];
+
+      return [n, new Ctor({ assets: config.assets, chainConfig })] as [
+        Network,
+        Chain,
       ];
     }),
-  ) as unknown as Record<Network, Chain>;
+  );
+
   return {
     context: config,
     chains,

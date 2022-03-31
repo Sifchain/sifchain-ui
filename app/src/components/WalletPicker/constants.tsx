@@ -1,12 +1,12 @@
+import { Chain, Network } from "@sifchain/sdk";
+
 import keplrSrc from "@/assets/keplr.jpg";
 import metamaskSrc from "@/assets/metamask.png";
 import terraStationSrc from "@/assets/terra_station.png";
-import { useChains, useChainsList } from "@/hooks/useChains";
+import { useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import router from "@/router";
 import { accountStore } from "@/store/modules/accounts";
-import { isChainFlaggedDisabled } from "@/store/modules/flags";
-import { Chain, IBCChainConfig, Network } from "@sifchain/sdk";
 
 export type WalletConnection = {
   walletName: string;

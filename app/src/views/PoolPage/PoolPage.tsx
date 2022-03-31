@@ -2,7 +2,7 @@ import { RouterView } from "vue-router";
 import { defineComponent } from "vue";
 
 import { useNativeChain } from "@/hooks/useChains";
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import PageCard from "@/components/PageCard";

@@ -1,12 +1,14 @@
+import { defineComponent, PropType, ref } from "vue";
+
 import { shortenHash } from "@/componentsLegacy/shared/utils";
 import AssetIcon from "@/components/AssetIcon";
-import { defineComponent, PropType, ref } from "vue";
-import { WalletConnection } from "./constants";
-import WalletConnectionDropdown from "./WalletConnectionDropdown";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import { TokenIcon } from "../TokenIcon";
 import { accountStore } from "@/store/modules/accounts";
 import { useCore } from "@/hooks/useCore";
+
+import { WalletConnection } from "./constants";
+import WalletConnectionDropdown from "./WalletConnectionDropdown";
+import { TokenIcon } from "../TokenIcon";
 
 export default defineComponent({
   name: "WalletConnection",
@@ -29,7 +31,7 @@ export default defineComponent({
         useCore().services.bus.dispatch({
           type: "ErrorEvent",
           payload: {
-            message: "Wallet Connect Error: " + error.message,
+            message: "Wallet Connect Error: " + (error as Error).message,
           },
         });
       }

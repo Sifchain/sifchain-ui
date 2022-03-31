@@ -1,10 +1,10 @@
-import { onMounted, onUnmounted, computed, Ref, ref, watch } from "vue";
+import { computed, Ref, ref, watch } from "vue";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { accountStore } from "@/store/modules/accounts";
-import { Asset, AssetAmount, IAsset } from "@sifchain/sdk";
+import { Asset, IAsset } from "@sifchain/sdk";
 import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
-import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { flagsStore } from "@/store/modules/flags";
 import { IconName } from "@/components/AssetIcon";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
@@ -143,7 +143,9 @@ async function fetchJsonWithError<T>(url: string) {
     let message = "Fetch Error";
     try {
       message = await res.text();
-    } catch (_) {}
+    } catch (_) {
+      // ignore
+    }
     throw new Error(message);
   }
   const json = await res.json();
@@ -204,7 +206,7 @@ export const useHasUniversalCompetition = () => {
   // without a flicker while it waits for response
   const key = "has_universal_comp";
   const hasUniversalRef = ref(
-    useCore().services.storage.getJSONItem<Boolean>(key) ?? false,
+    useCore().services.storage.getJSONItem<boolean>(key) ?? false,
   );
 
   const competitionsRes = useLeaderboardCompetitions();
@@ -216,7 +218,7 @@ export const useHasUniversalCompetition = () => {
         Object.values(competitionsRes.data.value?.ALL || {}).filter(Boolean)
           .length > 0;
       hasUniversalRef.value = hasUniversal;
-      useCore().services.storage.setJSONItem<Boolean>(key, hasUniversal);
+      useCore().services.storage.setJSONItem<boolean>(key, hasUniversal);
     },
     { deep: true },
   );

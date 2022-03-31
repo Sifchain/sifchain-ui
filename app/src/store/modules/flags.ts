@@ -38,6 +38,7 @@ export const flagsStore = Vuextra.createStore({
     },
     balancePageV2: true,
     rewardsCalculator: true,
+    pmtp: process.env.NODE_ENV === "development",
   },
   getters: (state) => ({}),
   mutations: (state) => ({
@@ -49,23 +50,6 @@ export const flagsStore = Vuextra.createStore({
         json = {} as typeof state;
       }
 
-      const copyPersistedJsonToState = (json: any, target: any): void => {
-        for (const key in json) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          if (typeof target[key] === "object") {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            copyPersistedJsonToState(json[key], target[key]);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-          } else if (typeof target[key] !== "undefined") {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            target[key] = json[key];
-          }
-        }
-      };
       copyPersistedJsonToState(json, state);
     },
   }),
@@ -81,3 +65,16 @@ export const flagsStore = Vuextra.createStore({
 });
 
 const self = flagsStore;
+
+function copyPersistedJsonToState(
+  json: Record<string, any>,
+  target: Record<string, any>,
+) {
+  for (const key in json) {
+    if (typeof target[key] === "object") {
+      copyPersistedJsonToState(json[key], target[key]);
+    } else if (typeof target[key] !== "undefined") {
+      target[key] = json[key];
+    }
+  }
+}

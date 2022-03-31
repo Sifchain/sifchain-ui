@@ -84,13 +84,13 @@ export function useSwapCalculator(input: {
   const toField = useField(input.toAmount, input.toSymbol);
 
   const priceRatio = computed(() => {
-    if (!fromField.fieldAmount.value || !pool.value) {
+    if (!fromField.value.fieldAmount || !pool.value) {
       return "0.0";
     }
 
-    const amount = fromField.fieldAmount.value.equalTo("0")
-      ? AssetAmount(fromField.fieldAmount.value.asset, "1")
-      : fromField.fieldAmount.value;
+    const amount = fromField.value.fieldAmount.equalTo("0")
+      ? AssetAmount(fromField.value.fieldAmount.asset, "1")
+      : fromField.value.fieldAmount;
 
     const pair = pool.value;
     const swapResult = pair.calcSwapResult(amount);
@@ -116,9 +116,9 @@ export function useSwapCalculator(input: {
     if (!+priceRatio.value) return "";
     return [
       priceRatio.value,
-      fromField.asset.value?.displaySymbol.toUpperCase(),
+      fromField.value.asset?.displaySymbol.toUpperCase(),
       "per",
-      toField.asset.value?.displaySymbol.toUpperCase(),
+      toField.value.asset?.displaySymbol.toUpperCase(),
     ].join(" ");
   });
 
@@ -131,12 +131,12 @@ export function useSwapCalculator(input: {
   effect(() => {
     if (
       pool.value &&
-      fromField.asset.value &&
-      fromField.fieldAmount.value &&
-      pool.value.contains(fromField.asset.value) &&
+      fromField.value.asset &&
+      fromField.value.fieldAmount &&
+      pool.value.contains(fromField.value.asset) &&
       selectedField === "from"
     ) {
-      swapResult.value = pool.value.calcSwapResult(fromField.fieldAmount.value);
+      swapResult.value = pool.value.calcSwapResult(fromField.value.fieldAmount);
 
       const toAmountValue = format(
         swapResult.value.amount,
@@ -156,13 +156,13 @@ export function useSwapCalculator(input: {
   effect(() => {
     if (
       pool.value &&
-      toField.asset.value &&
-      toField.fieldAmount.value &&
-      pool.value.contains(toField.asset.value) &&
+      toField.value.asset &&
+      toField.value.fieldAmount &&
+      pool.value.contains(toField.value.asset) &&
       selectedField === "to"
     ) {
       reverseSwapResult.value = pool.value.calcReverseSwapResult(
-        toField.fieldAmount.value,
+        toField.value.fieldAmount,
       );
 
       // Internally trigger calulations based off swapResult as this is how we
@@ -196,43 +196,43 @@ export function useSwapCalculator(input: {
 
   // Cache pool contains asset for reuse as is a little
   const poolContainsFromAsset = computed(() => {
-    if (!fromField.asset.value || !pool.value) return false;
-    return pool.value.contains(fromField.asset.value);
+    if (!fromField.value.asset || !pool.value) return false;
+    return pool.value.contains(fromField.value.asset);
   });
 
   const priceImpact = computed(() => {
     if (
       !pool.value ||
-      !fromField.asset.value ||
-      !fromField.fieldAmount.value ||
+      !fromField.value.asset ||
+      !fromField.value.fieldAmount ||
       !poolContainsFromAsset.value
     )
       return null;
 
     return calculateFormattedPriceImpact(
       pool.value as IPool,
-      fromField.fieldAmount.value,
+      fromField.value.fieldAmount,
     );
   });
 
   const providerFee = computed(() => {
     if (
       !pool.value ||
-      !fromField.asset.value ||
-      !fromField.fieldAmount.value ||
+      !fromField.value.asset ||
+      !fromField.value.fieldAmount ||
       !poolContainsFromAsset.value
     )
       return null;
 
     return calculateFormattedProviderFee(
       pool.value as IPool,
-      fromField.fieldAmount.value,
+      fromField.value.fieldAmount,
     );
   });
 
   // minimumReceived
   const minimumReceived = computed(() => {
-    if (!input.slippage.value || !toField.asset.value || !swapResult.value)
+    if (!input.slippage.value || !toField.value.asset || !swapResult.value)
       return null;
 
     const slippage = Amount(input.slippage.value);
@@ -241,7 +241,7 @@ export function useSwapCalculator(input: {
       .subtract(slippage.divide(Amount("100")))
       .multiply(swapResult.value);
 
-    return AssetAmount(toField.asset.value, minAmount);
+    return AssetAmount(toField.value.asset, minAmount);
   });
 
   // Derive state
@@ -249,36 +249,36 @@ export function useSwapCalculator(input: {
     // SwapState.INSUFFICIENT_LIQUIDITY is probably better here
     if (!pool.value) return SwapState.INSUFFICIENT_LIQUIDITY;
     const fromTokenLiquidity = (pool.value as IPool).amounts.find(
-      (amount) => amount.asset.symbol === fromField.asset.value?.symbol,
+      (amount) => amount.asset.symbol === fromField.value.asset?.symbol,
     );
     const toTokenLiquidity = (pool.value as IPool).amounts.find(
-      (amount) => amount.asset.symbol === toField.asset.value?.symbol,
+      (amount) => amount.asset.symbol === toField.value.asset?.symbol,
     );
 
     if (
       !fromTokenLiquidity ||
       !toTokenLiquidity ||
-      !fromField.fieldAmount.value ||
-      !toField.fieldAmount.value ||
-      (fromField.fieldAmount.value?.equalTo("0") &&
-        toField.fieldAmount.value?.equalTo("0"))
+      !fromField.value.fieldAmount ||
+      !toField.value.fieldAmount ||
+      (fromField.value.fieldAmount?.equalTo("0") &&
+        toField.value.fieldAmount?.equalTo("0"))
     ) {
       return SwapState.ZERO_AMOUNTS;
     }
 
     if (
-      toField.fieldAmount.value.greaterThan("0") &&
-      fromField.fieldAmount.value.equalTo("0")
+      toField.value.fieldAmount.greaterThan("0") &&
+      fromField.value.fieldAmount.equalTo("0")
     ) {
       return SwapState.INVALID_AMOUNT;
     }
 
-    if (!balance.value?.greaterThanOrEqual(fromField.fieldAmount.value || "0"))
+    if (!balance.value?.greaterThanOrEqual(fromField.value.fieldAmount || "0"))
       return SwapState.INSUFFICIENT_FUNDS;
 
     if (
-      fromTokenLiquidity.lessThan(fromField.fieldAmount.value) ||
-      toTokenLiquidity.lessThan(toField.fieldAmount.value)
+      fromTokenLiquidity.lessThan(fromField.value.fieldAmount) ||
+      toTokenLiquidity.lessThan(toField.value.fieldAmount)
     ) {
       return SwapState.INSUFFICIENT_LIQUIDITY;
     }
@@ -302,8 +302,8 @@ export function useSwapCalculator(input: {
 
   return {
     state,
-    fromFieldAmount: fromField.fieldAmount,
-    toFieldAmount: toField.fieldAmount,
+    fromFieldAmount: fromField.value.fieldAmount,
+    toFieldAmount: toField.value.fieldAmount,
     toAmount: input.toAmount,
     fromAmount: input.fromAmount,
     priceImpact,
