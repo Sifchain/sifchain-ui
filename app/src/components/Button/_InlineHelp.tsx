@@ -5,7 +5,7 @@ import {
   mergeProps,
   SetupContext,
 } from "vue";
-import { Tooltip, TooltipInstance } from "../Tooltip";
+import { Tooltip } from "../Tooltip";
 
 export const _InlineHelp = defineComponent({
   setup(

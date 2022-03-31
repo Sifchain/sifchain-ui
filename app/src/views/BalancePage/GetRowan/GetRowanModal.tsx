@@ -1,37 +1,17 @@
-import { defineComponent, PropType, ref, computed, Ref } from "vue";
-import { Form } from "@/components/Form";
-import Modal from "@/components/Modal";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { TransactionStatus } from "@sifchain/sdk";
-import {
-  CryptoeconomicsRewardType,
-  CryptoeconomicsUserData,
-} from "@sifchain/sdk/src/services/CryptoeconomicsService";
-import { TokenIcon } from "@/components/TokenIcon";
-import { Amount, format, Asset } from "@sifchain/sdk";
-import { Button } from "@/components/Button/Button";
-import { useCore } from "@/hooks/useCore";
-import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import { accountStore } from "@/store/modules/accounts";
+import { defineComponent, PropType, ref } from "vue";
 import { useRouter } from "vue-router";
-import { tryFundingAccount } from "@/hooks/useFaucet";
 
-const formatRowanNumber = (n?: number) => {
-  if (n == null) return "0";
-  return (
-    format(Amount(String(n.toFixed(18))), {
-      mantissa: 4,
-      zeroFormat: "0",
-    }) || "0"
-  );
-};
+import { accountStore } from "@/store/modules/accounts";
+import { tryFundingAccount } from "@/hooks/useFaucet";
+import Modal from "@/components/Modal";
+import { Button } from "@/components/Button/Button";
 
 export default defineComponent({
   name: "GetRowanModal",
   props: {
     onClose: { type: Function as PropType<() => void>, required: true },
   },
-  setup(props) {
+  setup() {
     const router = useRouter();
     const isLoading = ref(false);
     const error = ref<Error | undefined>(undefined);
@@ -44,7 +24,7 @@ export default defineComponent({
         await tryFundingAccount();
         success.value = true;
       } catch (e) {
-        error.value = e;
+        error.value = e as Error;
       } finally {
         isLoading.value = false;
       }

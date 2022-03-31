@@ -6,10 +6,12 @@ import {
   IAssetAmount,
   LiquidityProvider,
   Pool,
-} from "../../../entities";
-import { IAmount } from "../../../entities/Amount";
-import { akasha } from "../../../test/utils/accounts";
-import { getTestingTokens } from "../../../test/utils/getTestingToken";
+  IAmount,
+} from "@sifchain/sdk";
+
+import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
+import { akasha } from "@sifchain/sdk/src/test/utils/accounts";
+
 import { PoolState, usePoolCalculator } from "./addLiquidityCalculator";
 
 const [ATK, ROWAN, CTEST] = getTestingTokens(["ATK", "ROWAN", "CTEST"]);
@@ -31,16 +33,16 @@ describe("addLiquidityCalculator", () => {
   const setTokenBAmount = jest.fn();
 
   // output
-  let aPerBRatioMessage: Ref<string> = ref("");
-  let bPerARatioMessage: Ref<string> = ref("");
-  let shareOfPool: Ref<IAmount> = ref(Amount("0"));
-  let aPerBRatioProjectedMessage: Ref<string> = ref("");
-  let bPerARatioProjectedMessage: Ref<string> = ref("");
-  let totalLiquidityProviderUnits: Ref<string> = ref("");
-  let totalPoolUnits: Ref<string> = ref("");
-  let shareOfPoolPercent: Ref<string> = ref("");
-  let state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
-  let liquidityProvider = ref(
+  const aPerBRatioMessage: Ref<string> = ref("");
+  const bPerARatioMessage: Ref<string> = ref("");
+  const shareOfPool: Ref<IAmount> = ref(Amount("0"));
+  const aPerBRatioProjectedMessage: Ref<string> = ref("");
+  const bPerARatioProjectedMessage: Ref<string> = ref("");
+  const totalLiquidityProviderUnits: Ref<string> = ref("");
+  const totalPoolUnits: Ref<string> = ref("");
+  const shareOfPoolPercent: Ref<string> = ref("");
+  const state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
+  const liquidityProvider = ref(
     LiquidityProvider(ATK, ZERO, akasha.address, ZERO, ZERO),
   ) as Ref<LiquidityProvider | null>; // ? not sure why we need to cast
 
@@ -402,7 +404,7 @@ describe("addLiquidityCalculator", () => {
               );
 
           poolFinder.mockImplementation(() => {
-            const pool = Pool(
+            const pool = new Pool(
               AssetAmount(ROWAN, poolNative),
               AssetAmount(Asset.get(externalSymbol), poolExternal),
               Amount(poolUnits),
@@ -447,11 +449,12 @@ describe("addLiquidityCalculator", () => {
   });
 
   test("poolCalculator ratio messages", () => {
-    poolFinder.mockImplementation(() =>
-      Pool(
-        AssetAmount(ATK, "2000000000000000000000000"),
-        AssetAmount(ROWAN, "1000000000000000000000000"),
-      ),
+    poolFinder.mockImplementation(
+      () =>
+        new Pool(
+          AssetAmount(ATK, "2000000000000000000000000"),
+          AssetAmount(ROWAN, "1000000000000000000000000"),
+        ),
     );
 
     tokenAAmount.value = "100000";
@@ -468,12 +471,13 @@ describe("addLiquidityCalculator", () => {
 
   test("poolCalculator with preexisting pool", () => {
     // Pool exists with 1001000 preexisting units 1000 of which are owned by this lp
-    poolFinder.mockImplementation(() =>
-      Pool(
-        AssetAmount(ATK, "1000000000000000000000000"),
-        AssetAmount(ROWAN, "1000000000000000000000000"),
-        Amount("1000000000000000000000000"),
-      ),
+    poolFinder.mockImplementation(
+      () =>
+        new Pool(
+          AssetAmount(ATK, "1000000000000000000000000"),
+          AssetAmount(ROWAN, "1000000000000000000000000"),
+          Amount("1000000000000000000000000"),
+        ),
     );
 
     // Liquidity provider already owns 1000 pool units (1000000 from another investor)
@@ -507,12 +511,13 @@ describe("addLiquidityCalculator", () => {
 
   test("poolCalculator with preexisting pool but no preexisting liquidity", () => {
     // Pool exists with 1001000 preexisting units 1000 of which are owned by this lp
-    poolFinder.mockImplementation(() =>
-      Pool(
-        AssetAmount(ATK, "1000000000000000000000000"),
-        AssetAmount(ROWAN, "1000000000000000000000000"),
-        Amount("1000000000000000000000000"),
-      ),
+    poolFinder.mockImplementation(
+      () =>
+        new Pool(
+          AssetAmount(ATK, "1000000000000000000000000"),
+          AssetAmount(ROWAN, "1000000000000000000000000"),
+          Amount("1000000000000000000000000"),
+        ),
     );
 
     // Liquidity provider is null
@@ -582,11 +587,12 @@ describe("addLiquidityCalculator", () => {
       AssetAmount(ATK, "1000000000000000000000"),
       AssetAmount(ROWAN, "1000000000000000000000"),
     ];
-    poolFinder.mockImplementation(() =>
-      Pool(
-        AssetAmount(ATK, "1000000000000000000000000"),
-        AssetAmount(ROWAN, "1000000000000000000000000"),
-      ),
+    poolFinder.mockImplementation(
+      () =>
+        new Pool(
+          AssetAmount(ATK, "1000000000000000000000000"),
+          AssetAmount(ROWAN, "1000000000000000000000000"),
+        ),
     );
     tokenAAmount.value = "1000";
     tokenBAmount.value = "0";
@@ -604,11 +610,12 @@ describe("addLiquidityCalculator", () => {
       AssetAmount(ATK, "1000000000000000000000"),
       AssetAmount(ROWAN, "1000000000000000000000"),
     ];
-    poolFinder.mockImplementation(() =>
-      Pool(
-        AssetAmount(ATK, "1000000000000000000000000"),
-        AssetAmount(ROWAN, "1000000000000000000000000"),
-      ),
+    poolFinder.mockImplementation(
+      () =>
+        new Pool(
+          AssetAmount(ATK, "1000000000000000000000000"),
+          AssetAmount(ROWAN, "1000000000000000000000000"),
+        ),
     );
     tokenAAmount.value = "0";
     tokenBAmount.value = "1000";

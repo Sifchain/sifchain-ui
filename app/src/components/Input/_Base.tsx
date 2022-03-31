@@ -1,4 +1,4 @@
-import { defineComponent, HTMLAttributes, InputHTMLAttributes, Ref } from "vue";
+import { HTMLAttributes, InputHTMLAttributes, Ref } from "vue";
 
 export function _Base(
   props: InputHTMLAttributes & {

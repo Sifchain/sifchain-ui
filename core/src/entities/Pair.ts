@@ -2,45 +2,46 @@ import { Asset, IAsset } from "./Asset";
 import { IAssetAmount } from "./AssetAmount";
 import { createPoolKey } from "../";
 
-export type Pair = ReturnType<typeof Pair>;
+export class Pair {
+  amounts: [IAssetAmount, IAssetAmount];
 
-export function Pair(nativeAsset: IAssetAmount, externalAsset: IAssetAmount) {
-  const amounts: [IAssetAmount, IAssetAmount] = [nativeAsset, externalAsset];
+  constructor(
+    private nativeAsset: IAssetAmount,
+    private externalAsset: IAssetAmount,
+  ) {
+    this.amounts = [nativeAsset, externalAsset];
+  }
 
-  return {
-    amounts,
+  otherAsset(asset: IAsset) {
+    const otherAsset = this.amounts.find(
+      (amount) => amount.symbol !== asset.symbol,
+    );
+    if (!otherAsset) throw new Error("Asset doesnt exist in pair");
+    return otherAsset;
+  }
 
-    otherAsset(asset: IAsset) {
-      const otherAsset = amounts.find(
-        (amount) => amount.symbol !== asset.symbol,
-      );
-      if (!otherAsset) throw new Error("Asset doesnt exist in pair");
-      return otherAsset;
-    },
+  symbol() {
+    return createPoolKey(this.externalAsset, this.nativeAsset);
+  }
 
-    symbol() {
-      return createPoolKey(externalAsset, nativeAsset);
-    },
+  contains(...assets: IAsset[]) {
+    const local = this.amounts.map((a) => a.symbol);
 
-    contains(...assets: IAsset[]) {
-      const local = amounts.map((a) => a.symbol);
+    const other = assets.map((a) => a.symbol);
 
-      const other = assets.map((a) => a.symbol);
+    return !!local.find((s) => other.includes(s));
+  }
 
-      return !!local.find((s) => other.includes(s));
-    },
+  getAmount(asset: IAsset | string) {
+    const assetSymbol = typeof asset === "string" ? asset : asset.symbol;
+    const found = this.amounts.find((amount) => {
+      return amount.symbol === assetSymbol;
+    });
+    if (!found) throw new Error(`Asset ${assetSymbol} doesnt exist in pair`);
+    return found;
+  }
 
-    getAmount(asset: IAsset | string) {
-      const assetSymbol = typeof asset === "string" ? asset : asset.symbol;
-      const found = this.amounts.find((amount) => {
-        return amount.symbol === assetSymbol;
-      });
-      if (!found) throw new Error(`Asset ${assetSymbol} doesnt exist in pair`);
-      return found;
-    },
-
-    toString() {
-      return amounts.map((a) => a.toString()).join(" | ");
-    },
-  };
+  toString() {
+    return this.amounts.map((a) => a.toString()).join(" | ");
+  }
 }

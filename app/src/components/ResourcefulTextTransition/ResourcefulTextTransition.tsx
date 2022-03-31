@@ -1,17 +1,9 @@
-import AssetIcon, { IconName } from "@/components/AssetIcon";
 import {
-  VNode,
-  Component,
   defineComponent,
   HTMLAttributes,
   PropType,
-  SetupContext,
-  Transition,
-  onMounted,
   TransitionGroup,
-  ref,
 } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import "./resourceful-text-style.scss";
 
 export default defineComponent({

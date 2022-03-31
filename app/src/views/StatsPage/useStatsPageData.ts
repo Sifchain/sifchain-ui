@@ -1,5 +1,6 @@
 import { reactive, computed, onMounted, onUnmounted } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
+
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useCore } from "@/hooks/useCore";
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
@@ -72,7 +73,7 @@ export function useStatsPageData(initialState: StatsPageState) {
             b.asset.displaySymbol || b.asset.symbol,
           );
         }
-        return +a[state.sortBy] - +b[state.sortBy];
+        return Number(a[state.sortBy] || "0") - Number(b[state.sortBy] || "0");
       });
 
     if (state.sortDirection === "desc") {

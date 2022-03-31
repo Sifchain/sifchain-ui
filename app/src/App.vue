@@ -15,15 +15,16 @@
 
 <script lang="ts">
 import { defineComponent, watchEffect, ref, onMounted } from "vue";
-import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
-import { useInitialize } from "./hooks/useInitialize";
+import { useRouter } from "vue-router";
+import { Amount } from "@sifchain/sdk";
+
 import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
 import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
-import Layout from "@/componentsLegacy/Layout/Layout";
-import { Flags } from "@/components/Flags/Flags";
-import { useRoute, useRouter } from "vue-router";
+import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
+import { useInitialize } from "./hooks/useInitialize";
+
+import Flags from "@/components/Flags";
 import { accountStore } from "./store/modules/accounts";
-import { Amount } from "@sifchain/sdk";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import OnboardingModal from "@/components/OnboardingModal";
 import { ExpansionIntro } from "@/components/ExpansionIntro";

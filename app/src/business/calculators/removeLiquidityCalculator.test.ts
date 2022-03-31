@@ -1,12 +1,8 @@
 import { ref, Ref } from "@vue/reactivity";
 
-import {
-  Amount,
-  AssetAmount,
-  LiquidityProvider,
-  Pool,
-} from "../../../entities";
-import { getTestingTokens } from "../../../test/utils/getTestingToken";
+import { Amount, AssetAmount, LiquidityProvider, Pool } from "@sifchain/sdk";
+import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
+
 import { PoolState } from "./addLiquidityCalculator";
 import { useRemoveLiquidityCalculator } from "./removeLiquidityCalculator";
 
@@ -25,9 +21,9 @@ describe("useRemoveLiquidityCalculator", () => {
   const poolFinder = jest.fn<Ref<Pool> | null, any>(() => null);
 
   // output
-  let withdrawExternalAssetAmount: Ref<string | null> = ref(null);
-  let withdrawNativeAssetAmount: Ref<string | null> = ref(null);
-  let state: Ref<PoolState> = ref(0);
+  const withdrawExternalAssetAmount: Ref<string | null> = ref(null);
+  const withdrawNativeAssetAmount: Ref<string | null> = ref(null);
+  const state: Ref<PoolState> = ref(0);
 
   // watch fires when certain wBasisPoints, asymmetry, or liquidityProvider changes
   function simulateWatch() {
@@ -61,7 +57,7 @@ describe("useRemoveLiquidityCalculator", () => {
     poolFinder.mockImplementation(
       () =>
         ref(
-          Pool(
+          new Pool(
             AssetAmount(CATK, "1000000000000000000000000"),
             AssetAmount(ROWAN, "1000000000000000000000000"),
             Amount("1000000000000000000000000"),

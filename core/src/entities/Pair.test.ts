@@ -45,18 +45,18 @@ describe("Pair", () => {
   });
 
   test("contains()", () => {
-    const pair = Pair(AssetAmount(ATK, "10"), AssetAmount(BTK, "10"));
+    const pair = new Pair(AssetAmount(ATK, "10"), AssetAmount(BTK, "10"));
 
     expect(pair.contains(ATK)).toBe(true);
     expect(pair.contains(BTK)).toBe(true);
     expect(pair.contains(ROWAN)).toBe(false);
   });
   test("other asset", () => {
-    const pair = Pair(AssetAmount(ATK, "10"), AssetAmount(BTK, "10"));
+    const pair = new Pair(AssetAmount(ATK, "10"), AssetAmount(BTK, "10"));
     expect(pair.otherAsset(ATK).symbol).toBe("btk");
   });
   describe("when half", () => {
-    const pair = Pair(AssetAmount(ATK, "5"), AssetAmount(BTK, "10"));
+    const pair = new Pair(AssetAmount(ATK, "5"), AssetAmount(BTK, "10"));
 
     test("pair has symbol", () => {
       expect(pair.symbol()).toEqual("atk_btk");

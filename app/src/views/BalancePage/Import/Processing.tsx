@@ -1,7 +1,8 @@
 import { defineComponent, watchEffect } from "vue";
 import { useRouter } from "vue-router";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
+
 import { importStore } from "@/store/modules/import";
+import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 
 import { useImportData } from "./useImportData";
 
