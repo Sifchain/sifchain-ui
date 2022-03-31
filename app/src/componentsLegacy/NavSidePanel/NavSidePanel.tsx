@@ -8,7 +8,7 @@ import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import MoreMenu from "./NavMoreMenu";
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import usePTMP from "@/hooks/usePTMP";
+import usePMTP from "@/hooks/usePMTP";
 import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
 import { Button } from "@/components/Button/Button";
@@ -48,7 +48,7 @@ export default defineComponent({
 
     const router = useRouter();
 
-    const pmtp = usePTMP();
+    const pmtp = usePMTP();
 
     const isPMTPEnabled = flagsStore.state.pmtp;
 
@@ -386,7 +386,9 @@ export default defineComponent({
                         PMTP{" "}
                         {pmtp.isLoading.value
                           ? "..."
-                          : `${pmtp.data.value?.currentModifier}%`}
+                          : `${Number(
+                              pmtp.data.value?.pmtp_period_governance_rate,
+                            ).toFixed(4)}%`}
                       </>
                     }
                     icon="interactive/policy"
