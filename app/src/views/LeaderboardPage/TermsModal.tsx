@@ -27,8 +27,9 @@ export default defineComponent({
       <Modal
         showClose={false}
         backdropClickToClose={false}
-        heading={<div class="ml-[-5px]">Competition Terms and Conditions</div>}
+        heading="Competition Terms and Conditions"
         icon="interactive/check"
+        onClose={() => {}}
       >
         <p class="text-md">
           <a

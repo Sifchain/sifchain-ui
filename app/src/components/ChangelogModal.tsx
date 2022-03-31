@@ -1,8 +1,9 @@
+import { defineComponent, onMounted, PropType } from "vue";
+
 import Modal from "@/components/Modal";
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { defineComponent, onMounted } from "vue";
-import { PropType } from "vue";
-import { Button } from "./Button/Button";
+
+import Button from "./Button";
 
 const VITE_APP_SHA = import.meta.env.VITE_APP_SHA || "master";
 const VITE_APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.0.1.local";

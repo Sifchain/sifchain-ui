@@ -1,26 +1,25 @@
-import { defineComponent, ref, computed, watch } from "vue";
+import { defineComponent, ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { AssetAmount, Network, toBaseUnits, format } from "@sifchain/sdk";
+
+import { importStore } from "@/store/modules/import";
+import { accountStore } from "@/store/modules/accounts";
+
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { AssetAmount, Network, toBaseUnits } from "@sifchain/sdk";
 import {
   SelectDropdown,
   SelectDropdownOption,
 } from "@/components/SelectDropdown";
 import { useCore } from "@/hooks/useCore";
-import { TokenIcon } from "@/components/TokenIcon";
-import { format } from "@sifchain/sdk/src/utils/format";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import { getImportLocation, useImportData } from "./useImportData";
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { useRouter } from "vue-router";
-import { rootStore } from "../../../store";
-import { importStore } from "@/store/modules/import";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
-import { accountStore } from "@/store/modules/accounts";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
@@ -37,7 +36,6 @@ export default defineComponent({
       tokenRef,
       computedImportAssetAmount,
       networksRef,
-      chainsRef,
       importDraft,
       exitImport,
       networkBalances,
@@ -116,7 +114,7 @@ export default defineComponent({
             disabled: !!validationErrorRef.value,
             onClick: () => {
               router.replace(
-                getImportLocation("confirm", rootStore.import.state.draft),
+                getImportLocation("confirm", importStore.state.draft),
               );
             },
           },
@@ -145,8 +143,8 @@ export default defineComponent({
     );
     const networkOpenRef = ref(false);
 
-    const networkValue = rootStore.import.refs.draft.network.computed();
-    const amountValue = rootStore.import.refs.draft.amount.computed();
+    const networkValue = importStore.refs.draft.network.computed();
+    const amountValue = importStore.refs.draft.amount.computed();
 
     const handleSetMax = async () => {
       if (!tokenRef.value) return;
@@ -163,18 +161,18 @@ export default defineComponent({
             balance: tokenRef.value.amount.toString(),
             fee: gasAssetAmount.toString(),
           });
-          rootStore.import.setDraft({
+          importStore.setDraft({
             amount: amount.lessThan("0")
               ? "0.0"
               : format(amount, tokenRef.value.asset),
           });
         } else {
-          rootStore.import.setDraft({
+          importStore.setDraft({
             amount: format(tokenRef.value.amount.amount, tokenRef.value.asset),
           });
         }
       } else {
-        rootStore.import.setDraft({
+        importStore.setDraft({
           amount: format(
             getMaxAmount(
               ref(tokenRef.value.asset.symbol),
@@ -303,11 +301,11 @@ export default defineComponent({
               textAlign: "right",
             }}
             startContent={
-              !!tokenRef.value && (
+              Boolean(tokenRef.value) ? (
                 <Button.Pill class="z-[1]" onClick={handleSetMax}>
                   MAX
                 </Button.Pill>
-              )
+              ) : null
             }
             onInput={(e) => {
               const value = (e.target as HTMLInputElement).value;

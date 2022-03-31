@@ -1,20 +1,14 @@
-import AssetIcon from "@/components/AssetIcon";
 import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 import { TokenIcon } from "@/components/TokenIcon";
-import { Tooltip } from "@/components/Tooltip";
-import { useNativeChain } from "@/hooks/useChains";
-import { accountStore } from "@/store/modules/accounts";
-import { animateFireflies } from "@/utils/animateFireflies";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
   Competition,
-  CompetitionType,
   COMPETITION_TYPE_DISPLAY_DATA,
   LeaderboardItem,
 } from "../useCompetitionData";
 import { LeaderboardAvatar } from "./LeaderboardAvatar";
-// animateFireflies();
+
 export const LeaderboardRow = defineComponent({
   props: {
     item: {

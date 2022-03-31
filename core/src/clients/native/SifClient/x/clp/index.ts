@@ -78,6 +78,23 @@ type LiquidityDetailsResponse = {
   height: string;
 };
 
+type PMTPParamsResponse = {
+  height: string;
+  result: {
+    params: {
+      min_create_pool_threshold: string;
+      pmtp_period_governance_rate: string;
+      pmtp_period_epoch_length: string;
+    };
+    pmtp_rate_params: {
+      pmtp_period_block_rate: string;
+      pmtp_current_running_rate: string;
+    };
+    pmtp_epoch: Record<string, any>;
+    height: string;
+  };
+};
+
 type ClpCmdSwap = (params: SwapParams) => Promise<Msg>;
 type ClpQueryPools = () => Promise<RawPool[]>;
 type ClpQueryPool = (params: { ticker: string }) => Promise<RawPool>;
@@ -90,6 +107,9 @@ type ClpGetLiquidityProvider = (params: {
 }) => Promise<LiquidityDetailsResponse>;
 
 type ClpRemoveLiquidity = (param: RemoveLiquidityParams) => Promise<any>;
+type ClpQueryPmtpParams = (params?: {
+  ticker: string;
+}) => Promise<PMTPParamsResponse>;
 
 export interface ClpExtension {
   readonly clp: {
@@ -101,6 +121,7 @@ export interface ClpExtension {
     getLiquidityProvider: ClpGetLiquidityProvider;
     removeLiquidity: ClpRemoveLiquidity;
     getPool: ClpQueryPool;
+    getPmtpParams: ClpQueryPmtpParams;
   };
 }
 
@@ -139,6 +160,10 @@ export function setupClpExtension(base: LcdClient): ClpExtension {
 
       getPool: async ({ ticker }) => {
         return (await base.get(`/clp/getPool?ticker=${ticker}`)).result;
+      },
+
+      getPmtpParams: async () => {
+        return await base.get(`/clp/getPmtpParams`);
       },
     },
   };

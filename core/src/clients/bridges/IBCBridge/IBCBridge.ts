@@ -5,11 +5,7 @@ import {
   SigningStargateClient,
   StargateClient,
 } from "@cosmjs/stargate";
-import {
-  findAttribute,
-  parseRawLog,
-  parseLogs,
-} from "@cosmjs/stargate/build/logs";
+import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
 import {
   QueryClient,
   setupAuthExtension,
@@ -19,19 +15,14 @@ import {
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { fetch } from "cross-fetch";
 import {
-  Asset,
   IBCChainConfig,
   Network,
   NetworkChainConfigLookup,
-  TransactionStatus,
   AssetAmount,
   Chain,
   IAsset,
 } from "../../../entities";
-import {
-  calculateIBCExportFee,
-  IBC_EXPORT_FEE_ADDRESS,
-} from "../../../utils/ibcExportFees";
+import { calculateIBCExportFee } from "../../../utils/ibcExportFees";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import { BaseBridge, BridgeParams, IBCBridgeTx, BridgeTx } from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";

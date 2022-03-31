@@ -1,14 +1,14 @@
+import { computed, defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
+import { Network } from "@sifchain/sdk";
+
 import { Button } from "@/components/Button/Button";
 import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { computed, defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
-import { Network } from "@sifchain/sdk";
 import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import { useCore } from "@/hooks/useCore";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { accountStore } from "@/store/modules/accounts";
 import { PoolState } from "@/business/calculators";

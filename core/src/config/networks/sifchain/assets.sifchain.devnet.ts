@@ -1,5 +1,3 @@
-import { Network } from "../../../entities";
-
 export default {
   assets: [
     {

@@ -1,26 +1,19 @@
+import { PropType } from "vue";
+
 import { useCore } from "@/hooks/useCore";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { TokenListItem } from "@/hooks/useToken";
 import { accountStore } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
 import { TokenSortBy } from "@/utils/sortAndFilterTokens";
-import { Asset, IAsset, toBaseUnits } from "@sifchain/sdk";
 import { defineComponent } from "@vue/runtime-core";
-import { computed, PropType, Ref, ref } from "vue";
-import AssetIcon from "../AssetIcon";
-import { Button } from "../Button/Button";
-import Modal from "../Modal";
-import { TokenIcon } from "../TokenIcon";
-import { TokenSelectDropdown } from "../TokenSelectDropdown";
 import { useNativeChain } from "@/hooks/useChains";
 import { ReportTransactionError } from "@/business/usecases/utils";
+import { governanceStore } from "@/store/modules/governance";
 
+import Modal from "../Modal";
+import { Button } from "../Button/Button";
 import { PoolsSelector } from "./PoolsSelector";
 import { YesNoSelector } from "./YesNoSelector";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
-import { governanceStore } from "@/store/modules/governance";
-import getKeplrProvider from "@sifchain/sdk/src/services/SifService/getKeplrProvider";
 
 export const VotingModal = defineComponent({
   name: "VotingModal",
@@ -134,7 +127,7 @@ export const VotingModal = defineComponent({
         reportTransactionError({
           hash: "",
           state: "rejected",
-          memo: error.message || "Request rejected",
+          memo: (error as Error).message || "Request rejected",
         });
       }
 
@@ -158,7 +151,7 @@ export const VotingModal = defineComponent({
         showClose={true}
         class="max-w-[700px] w-[70vw] mt-[-300px]"
       >
-        <div className="text-lg text-left">{this.proposal.heading}</div>
+        <div class="text-lg text-left">{this.proposal.heading}</div>
         <p class="text-left mt-[20px]">
           <div class="whitespace-pre-wrap">{this.proposal.description}</div>
           <a

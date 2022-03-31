@@ -1,7 +1,6 @@
-import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
+import { RouteLocationRaw, useRouter } from "vue-router";
 import { Button } from "@/components/Button/Button";
-import { ref, computed, watch, onMounted, Ref } from "vue";
-import router from "@/router";
+import { ref, computed, Ref } from "vue";
 import { TokenIcon } from "@/components/TokenIcon";
 import { useToken } from "@/hooks/useToken";
 import {
@@ -10,13 +9,13 @@ import {
 } from "@/componentsLegacy/shared/utils";
 import { useCore } from "@/hooks/useCore";
 import { toBaseUnits, Network, AssetAmount } from "@sifchain/sdk";
-import { exportStore, ExportDraft } from "@/store/modules/export";
-import { UnpegEvent } from "../../../../../core/src/usecases/peg/unpeg";
+
 import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
 import { rootStore } from "@/store";
 import { useBoundRoute } from "@/hooks/useBoundRoute";
 import { useChains } from "@/hooks/useChains";
 import { accountStore } from "@/store/modules/accounts";
+import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 
 export type ExportParams = {
   amount?: string;
@@ -47,11 +46,8 @@ export function getExportLocation(
 }
 
 export const useExportData = () => {
-  const { store, usecases } = useCore();
-  const route = useRoute();
   const router = useRouter();
   const exportStore = rootStore.export;
-  const exportDraft = exportStore.refs.draft.computed();
   const exportParams = exportStore.refs.draft.computed();
 
   useBoundRoute({
@@ -146,7 +142,7 @@ export const useExportData = () => {
 
   const unpegEventRef = exportStore.refs.draft.unpegEvent.computed();
   const unpegEventDetails = useBridgeEventDetails({
-    bridgeEvent: unpegEventRef as Ref<UnpegEvent>,
+    bridgeEvent: unpegEventRef as Ref<BridgeEvent>,
   });
 
   // underscored to signify that it is not to be used across the app.

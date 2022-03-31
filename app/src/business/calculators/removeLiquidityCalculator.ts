@@ -4,6 +4,7 @@ import {
   Amount,
   Asset,
   AssetAmount,
+  IAsset,
   LiquidityProvider,
   Pool,
 } from "@sifchain/sdk";
@@ -16,7 +17,7 @@ export function useRemoveLiquidityCalculator(input: {
   nativeAssetSymbol: Ref<string | null>;
   wBasisPoints: Ref<string | null>;
   asymmetry: Ref<string | null>;
-  poolFinder: (a: Asset | string, b: Asset | string) => Ref<Pool> | null;
+  poolFinder: (a: IAsset | string, b: IAsset | string) => Ref<Pool> | null;
   liquidityProvider: Ref<LiquidityProvider | null>;
   sifAddress: Ref<string>;
 }) {

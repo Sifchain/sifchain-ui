@@ -5,7 +5,6 @@ import { getExportLocation, useExportData } from "./useExportData";
 import { Form } from "@/components/Form";
 import { Button } from "@/components/Button/Button";
 import { exportStore } from "@/store/modules/export";
-import { Network } from "@sifchain/sdk";
 
 export default defineComponent({
   name: "ExportConfirmModal",

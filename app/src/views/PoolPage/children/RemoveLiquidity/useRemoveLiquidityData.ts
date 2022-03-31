@@ -1,12 +1,10 @@
-import { defineComponent, ref, watch, onMounted } from "vue";
-import Layout from "@/componentsLegacy/Layout/Layout";
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
+import { ref, watch, computed, effect, Ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { LiquidityProvider, Network, TransactionStatus } from "@sifchain/sdk";
+
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { useCore } from "@/hooks/useCore";
-import { useRoute, useRouter } from "vue-router";
-import { computed, effect, Ref, toRef } from "@vue/reactivity";
-import { formatAssetAmount, getLMData } from "@/componentsLegacy/shared/utils";
-import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
+import { getLMData } from "@/componentsLegacy/shared/utils";
 import { debounce } from "@/views/utils/debounce";
 import { accountStore } from "@/store/modules/accounts";
 import { useRemoveLiquidityCalculator } from "@/business/calculators";
@@ -98,6 +96,8 @@ export function useRemoveLiquidityData() {
           return "Insufficient funds in this pool";
         case PoolState.VALID_INPUT:
           return "Remove Liquidity";
+        default:
+          return "";
       }
     }),
     nextStepAllowed: computed(() => {

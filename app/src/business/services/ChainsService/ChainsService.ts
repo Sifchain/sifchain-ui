@@ -47,14 +47,14 @@ export class ChainsService {
 
   constructor(private context: ChainsServiceContext) {
     Object.keys(networkChainCtorLookup).forEach((network) => {
-      const n = network as Network;
-      const Ctor = networkChainCtorLookup[n];
-      this.addChain(
-        new Ctor({
-          assets: this.context.assets,
-          chainConfig: this.context.chainConfigsByNetwork[n],
-        }),
-      );
+      const Ctor = networkChainCtorLookup[network as Network];
+
+      const chainConfig =
+        this.context.chainConfigsByNetwork[network as Network];
+
+      const chain = new Ctor({ assets: this.context.assets, chainConfig });
+
+      this.addChain(chain);
     });
   }
 

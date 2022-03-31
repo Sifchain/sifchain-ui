@@ -167,6 +167,33 @@ export function calculateSwapResult(x: IAmount, X: IAmount, Y: IAmount) {
   return x.multiply(X).multiply(Y).divide(xPlusX.multiply(xPlusX));
 }
 
+/**
+ * Calculate Swap Result based on formula (( x * X * Y ) / ( x + X ) ^ 2) * (1 + adjustment / 100)
+ * @param x Swap Amount
+ * @param X  External Balance
+ * @param Y Native Balance
+ * @param adjustment PMTP purchasing power adjustment
+ * @returns swapAmount
+ */
+export function calculateSwapResult_pmtp(
+  x: IAmount,
+  X: IAmount,
+  Y: IAmount,
+  adjustment: IAmount,
+) {
+  if (x.equalTo("0") || X.equalTo("0") || Y.equalTo("0")) {
+    return Amount("0");
+  }
+
+  const adjustmentPercentage = adjustment.divide(
+    Amount("100".concat("0".repeat(18))),
+  );
+
+  return calculateSwapResult(x, X, Y).multiply(
+    Amount("1").add(adjustmentPercentage),
+  );
+}
+
 export function calculateExternalExternalSwapResult(
   // External -> Native pool
   ax: IAmount, // Swap Amount

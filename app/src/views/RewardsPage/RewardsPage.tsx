@@ -4,7 +4,7 @@ import { rewardColumnsLookup, useRewardsPageData } from "./useRewardsPageData";
 import AssetIcon from "@/components/AssetIcon";
 import { RewardSection } from "./components/RewardSection";
 
-import Layout from "@/componentsLegacy/Layout/Layout";
+import Layout from "@/components/Layout";
 import { Tooltip } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
 import { prettyNumber } from "@/utils/prettyNumber";

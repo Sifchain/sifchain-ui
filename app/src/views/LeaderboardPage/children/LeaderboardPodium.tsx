@@ -1,11 +1,9 @@
 import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 import { TokenIcon } from "@/components/TokenIcon";
-import { useNativeChain } from "@/hooks/useChains";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
   Competition,
-  CompetitionType,
   COMPETITION_TYPE_DISPLAY_DATA,
   LeaderboardItem,
 } from "../useCompetitionData";

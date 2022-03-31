@@ -1,11 +1,21 @@
-import { defineComponent, ref, computed, PropType, Ref } from "vue";
+import { defineComponent, ref, computed, Ref } from "vue";
+
+import { Amount, Network, format } from "@sifchain/sdk";
+
+import { exportStore } from "@/store/modules/export";
+import { accountStore } from "@/store/modules/accounts";
+
+import { useChains } from "@/hooks/useChains";
+import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
+import { useCore } from "@/hooks/useCore";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+
+import { getMaxAmount } from "@/views/utils/getMaxAmount";
+
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { Amount, AssetAmount, Network, toBaseUnits } from "@sifchain/sdk";
-import { useCore } from "@/hooks/useCore";
-import { format } from "@sifchain/sdk/src/utils/format";
-import { getMaxAmount } from "@/views/utils/getMaxAmount";
+
 import {
   SelectDropdown,
   SelectDropdownOption,
@@ -15,13 +25,6 @@ import { Button } from "@/components/Button/Button";
 import router from "@/router";
 import { getExportLocation, useExportData } from "./useExportData";
 import { Form } from "@/components/Form";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { rootStore } from "@/store";
-import { exportStore } from "@/store/modules/export";
-import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
-import { effect } from "@vue/reactivity";
-import { accountStore } from "@/store/modules/accounts";
-import { useChains } from "@/hooks/useChains";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -59,7 +62,7 @@ export default defineComponent({
       if (
         feeAmountRef.value?.asset.symbol === exportTokenRef.value.asset.symbol
       ) {
-        maxAmount = maxAmount.subtract(feeAmountRef.value.amount.toString());
+        maxAmount = maxAmount.subtract(feeAmountRef.value?.amount.toString());
       }
       if (maxAmount.lessThan("0")) {
         maxAmount = Amount("0.0");
@@ -215,12 +218,15 @@ export default defineComponent({
             class={"flex relative items-center justify-between"}
           >
             <span>Amount</span>
-            {!!exportTokenRef.value && (
+            {Boolean(exportTokenRef.value) && (
               <span
                 class="text-base opacity-50 hover:text-accent-base cursor-pointer self-end"
                 onClick={handleSetMax}
               >
-                Balance: {formatAssetAmount(exportTokenRef.value?.amount)}
+                Balance:{" "}
+                {exportTokenRef.value?.amount
+                  ? formatAssetAmount(exportTokenRef.value?.amount)
+                  : "0"}
               </span>
             )}
           </label>
@@ -229,9 +235,9 @@ export default defineComponent({
             inputRef={inputRef}
             containerClass="mt-[10px]"
             startContent={
-              !!exportTokenRef.value && (
+              Boolean(exportTokenRef.value) ? (
                 <Button.Pill onClick={handleSetMax}>MAX</Button.Pill>
-              )
+              ) : null
             }
             id="exportAmount"
             type="number"

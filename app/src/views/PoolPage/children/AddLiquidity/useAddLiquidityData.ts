@@ -1,27 +1,24 @@
-import { onMounted, ref, watch, watchEffect } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import {
+  format,
   Amount,
-  IAsset,
-  IAssetAmount,
   Network,
   Pool,
   TransactionStatus,
 } from "@sifchain/sdk";
+
+import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
 import { useCore } from "@/hooks/useCore";
 import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
-import { computed, Ref } from "@vue/reactivity";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import {
   formatAssetAmount,
   formatNumber,
 } from "@/componentsLegacy/shared/utils";
-import { format } from "@sifchain/sdk";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { accountStore } from "@/store/modules/accounts";
-import { debounce } from "@/views/utils/debounce";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
 
 export const useAddLiquidityData = () => {
@@ -109,8 +106,8 @@ export const useAddLiquidityData = () => {
   const riskFactor = computed(() => {
     const rFactor = Amount("1");
     if (
-      !tokenAFieldAmount.value ||
-      !tokenBFieldAmount.value ||
+      !tokenAField.value.fieldAmount ||
+      !tokenBField.value.fieldAmount ||
       !poolAmounts.value
     ) {
       return rFactor;
@@ -118,8 +115,8 @@ export const useAddLiquidityData = () => {
     const nativeBalance = poolAmounts?.value[0];
     const externalBalance = poolAmounts?.value[1];
     const slipAdjustmentCalc = slipAdjustment(
-      tokenBFieldAmount.value,
-      tokenAFieldAmount.value,
+      tokenBField.value.fieldAmount,
+      tokenAField.value.fieldAmount,
       nativeBalance,
       externalBalance,
     );
@@ -139,8 +136,8 @@ export const useAddLiquidityData = () => {
     shareOfPoolPercent,
     totalLiquidityProviderUnits,
     poolAmounts,
-    tokenAFieldAmount,
-    tokenBFieldAmount,
+    tokenAField,
+    tokenBField,
     preExistingPool,
     state,
   } = useReactivePoolCalculator({
@@ -156,18 +153,18 @@ export const useAddLiquidityData = () => {
   });
 
   function handleNextStepClicked() {
-    if (!tokenAFieldAmount.value)
+    if (!tokenAField.value.fieldAmount)
       throw new Error("from field amount is not defined");
-    if (!tokenBFieldAmount.value)
+    if (!tokenBField.value.fieldAmount)
       throw new Error("to field amount is not defined");
 
     modalStatus.value = "confirm";
   }
 
   async function handleAskConfirmClicked() {
-    if (!tokenAFieldAmount.value)
+    if (!tokenAField.value.fieldAmount)
       throw new Error("Token A field amount is not defined");
-    if (!tokenBFieldAmount.value)
+    if (!tokenBField.value.fieldAmount)
       throw new Error("Token B field amount is not defined");
 
     modalStatus.value = "processing";
@@ -176,11 +173,19 @@ export const useAddLiquidityData = () => {
       hash: "",
     };
     transactionStatus.value = await usecases.clp.addLiquidity(
-      tokenBFieldAmount.value,
-      tokenAFieldAmount.value,
+      tokenBField.value.fieldAmount,
+      tokenAField.value.fieldAmount,
     );
 
-    const pool = Pool(tokenAFieldAmount.value!, tokenBFieldAmount.value!);
+    if (!tokenAField.value.fieldAmount || !tokenBField.value.fieldAmount) {
+      throw new Error("Token A or Token B field amount is not defined");
+    }
+
+    const pool = new Pool(
+      tokenAField.value.fieldAmount,
+      tokenBField.value.fieldAmount,
+    );
+
     if (transactionStatus.value.state === "accepted") {
       useCore().services.bus.dispatch({
         type: "SuccessEvent",
@@ -188,14 +193,14 @@ export const useAddLiquidityData = () => {
           message:
             `Added ` +
             [
-              tokenAFieldAmount.value.greaterThan("0") &&
+              tokenAField.value.fieldAmount.greaterThan("0") &&
                 `${formatAssetAmount(
-                  tokenAFieldAmount.value,
-                )} ${tokenAFieldAmount.value?.displaySymbol.toUpperCase()}`,
-              tokenBFieldAmount.value.greaterThan("0") &&
+                  tokenAField.value.fieldAmount,
+                )} ${tokenAField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
+              tokenBField.value.fieldAmount.greaterThan("0") &&
                 `${formatAssetAmount(
-                  tokenBFieldAmount.value,
-                )} ${tokenBFieldAmount.value?.displaySymbol.toUpperCase()}`,
+                  tokenBField.value.fieldAmount,
+                )} ${tokenBField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
             ]
               .filter(Boolean)
               .join(" and ") +
@@ -255,6 +260,8 @@ export const useAddLiquidityData = () => {
           return `Insufficient ${toAsset.value?.displaySymbol.toUpperCase()} Balance`;
         case PoolState.VALID_INPUT:
           return preExistingPool.value ? "Add liquidity" : "Create Pool";
+        default:
+          return "";
       }
     }),
     toggleLabel: computed(() => {
@@ -307,8 +314,6 @@ export const useAddLiquidityData = () => {
     modalStatus,
 
     requestTransactionModalClose,
-    tokenAFieldAmount,
-    tokenBFieldAmount,
     toggleAsyncPooling,
     asyncPooling,
     handleBlur() {

@@ -1,14 +1,15 @@
 import { reactive } from "@vue/reactivity";
-import { CryptoeconomicsUserData } from "../services/CryptoeconomicsService";
-import { Address, IAssetAmount, Network } from "../entities";
+
+import { Address, IAssetAmount, Network } from "@sifchain/sdk";
 
 export type WalletStoreEntry = {
   chainId?: string;
   balances: IAssetAmount[];
   isConnected: boolean;
   address: Address;
-  lmUserData?: CryptoeconomicsUserData;
-  vsUserData?: CryptoeconomicsUserData;
+  // TODO: restore missing CryptoEconomicsUserData
+  lmUserData?: any;
+  vsUserData?: any;
 };
 
 const initWalletStore = () => ({
