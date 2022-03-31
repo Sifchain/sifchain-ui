@@ -1,12 +1,4 @@
-import {
-  Amount,
-  Asset,
-  IAsset,
-  IAssetAmount,
-  LiquidityProvider,
-  Network,
-  Pool,
-} from "@sifchain/sdk";
+import { Amount, IAsset, IAssetAmount, LiquidityProvider } from "@sifchain/sdk";
 
 import TokenRegistryService from "../../services/TokenRegistryService";
 import { PoolsRes } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/querier";
@@ -32,7 +24,7 @@ type IClpService = {
   swap: (params: {
     fromAddress: string;
     sentAmount: IAssetAmount;
-    receivedAsset: Asset;
+    receivedAsset: IAsset;
     minimumReceived: IAssetAmount;
   }) => any;
   addLiquidity: (params: {
@@ -55,6 +47,11 @@ type IClpService = {
     asset: IAsset;
     fromAddress: string;
   }) => any;
+  getPmtpParams: (params?: { ticker: string }) => Promise<{
+    min_create_pool_threshold: string;
+    pmtp_period_governance_rate: string;
+    pmtp_period_epoch_length: string;
+  }>;
 };
 
 // TS not null type guard
@@ -64,7 +61,6 @@ function notNull<T>(val: T | null): val is T {
 
 export default function createClpService({
   sifApiUrl,
-  nativeAsset,
   sifChainId,
   sifWsUrl,
   sifRpcUrl,
@@ -211,6 +207,11 @@ export default function createClpService({
         signer: params.fromAddress,
         w_basis_points: params.wBasisPoints,
       });
+    },
+
+    async getPmtpParams(params) {
+      const { result } = await client.getPmtpParams(params);
+      return result.params;
     },
   };
 

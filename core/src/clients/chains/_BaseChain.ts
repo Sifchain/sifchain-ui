@@ -1,13 +1,7 @@
-import {
-  Chain,
-  IAsset,
-  Network,
-  ChainConfig,
-  IAssetAmount,
-  AssetAmount,
-} from "../../entities";
-import { isLikeSymbol } from "../../utils/isLikeSymbol";
 import { urlJoin } from "url-join-ts";
+
+import { Chain, IAsset, ChainConfig } from "../../entities";
+import { isLikeSymbol } from "../../utils/isLikeSymbol";
 
 export type ChainContext = { assets: IAsset[]; chainConfig: ChainConfig };
 

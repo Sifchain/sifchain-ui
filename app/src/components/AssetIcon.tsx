@@ -55,7 +55,8 @@ export type InteractiveIconName =
   | "check"
   | "wreath"
   | "ticket"
-  | "saturday";
+  | "saturday"
+  | "policy";
 
 export type NavIconName =
   | "balances"

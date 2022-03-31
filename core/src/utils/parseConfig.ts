@@ -1,14 +1,5 @@
-import {
-  Network,
-  ChainConfig,
-  NetworkChainConfigLookup,
-  IAsset,
-  Asset,
-} from "../entities";
+import { Network, NetworkChainConfigLookup, IAsset, Asset } from "../entities";
 import { getMetamaskProvider } from "../clients/wallets/ethereum/getMetamaskProvider";
-import { NetEnvChainConfigLookup } from "../config/chains/NetEnvChainConfigLookup";
-import { WalletProviderContext } from "../clients/wallets";
-import { CosmosWalletProvider } from "../clients/wallets/cosmos/CosmosWalletProvider";
 
 type TokenConfig = {
   symbol: string;

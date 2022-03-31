@@ -8,6 +8,7 @@ import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import MoreMenu from "./NavMoreMenu";
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import usePMTP from "@/hooks/usePMTP";
 import { rootStore } from "@/store";
 import { accountStore } from "@/store/modules/accounts";
 import { Button } from "@/components/Button/Button";
@@ -46,6 +47,10 @@ export default defineComponent({
     const votingOpenRef = ref(false);
 
     const router = useRouter();
+
+    const pmtp = usePMTP();
+
+    const isPMTPEnabled = flagsStore.state.pmtp;
 
     watch([router.currentRoute], () => {
       // add ?vote=anything to any hash route to open the voting modal
@@ -372,7 +377,23 @@ export default defineComponent({
                     </>
                   }
                   icon="interactive/lock"
-                ></NavSidePanelItem>
+                />
+                {isPMTPEnabled && (
+                  <NavSidePanelItem
+                    class={"opacity-50 mt-[0px]"}
+                    displayName={
+                      <>
+                        PMTP{" "}
+                        {pmtp.isLoading.value
+                          ? "..."
+                          : `${Number(
+                              pmtp.data.value?.pmtp_period_governance_rate,
+                            ).toFixed(4)}%`}
+                      </>
+                    }
+                    icon="interactive/policy"
+                  />
+                )}
                 <NavSidePanelItem
                   class={"opacity-50 mt-[0px]"}
                   displayName={
@@ -384,7 +405,7 @@ export default defineComponent({
                     </>
                   }
                   icon="navigation/rowan"
-                ></NavSidePanelItem>
+                />
               </div>
 
               <Tooltip
@@ -406,12 +427,7 @@ export default defineComponent({
                     ?.classList.add("!origin-bottom-left");
                 }}
                 appendTo={() => document.body}
-                content={
-                  <>
-                    {/* @ts-ignore */}
-                    <WalletPicker />
-                  </>
-                }
+                content={<WalletPicker />}
                 ref={appWalletPicker.ref}
               >
                 <NavSidePanelItem
@@ -431,23 +447,20 @@ export default defineComponent({
                             accountStore.state.sifchain
                               .hasLoadedBalancesOnce && (
                               <>
-                                <>
-                                  {accountStore.state.sifchain.balances
-                                    .filter(
-                                      // does not have rowan
-                                      (b) => b.asset.symbol.includes("rowan"),
-                                    )
-                                    .map((asset) => {
-                                      const formatted =
-                                        formatAssetAmount(asset);
-                                      if (formatted.length > 6) {
-                                        return Intl.NumberFormat("en", {
-                                          notation: "compact",
-                                        }).format(+formatted);
-                                      }
-                                    })[0] || 0}{" "}
-                                  ROWAN
-                                </>
+                                {accountStore.state.sifchain.balances
+                                  .filter(
+                                    // does not have rowan
+                                    (b) => b.asset.symbol.includes("rowan"),
+                                  )
+                                  .map((asset) => {
+                                    const formatted = formatAssetAmount(asset);
+                                    if (formatted.length > 6) {
+                                      return Intl.NumberFormat("en", {
+                                        notation: "compact",
+                                      }).format(+formatted);
+                                    }
+                                  })[0] || 0}{" "}
+                                ROWAN
                               </>
                             )}
                         </div>

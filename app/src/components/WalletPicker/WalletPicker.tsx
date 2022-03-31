@@ -6,7 +6,6 @@ import { walletConnections } from "./constants";
 
 export default defineComponent({
   name: "WalletPicker",
-  props: {},
   setup() {
     return () => (
       <div class="w-[304px]">

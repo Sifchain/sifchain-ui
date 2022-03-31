@@ -5,8 +5,8 @@ import {
   LcdClient,
   setupAuthExtension,
 } from "@cosmjs/launchpad";
-import { NativeDexClient } from "../../../clients";
 
+import { NativeDexClient } from "../NativeDexClient";
 import { ClpExtension, setupClpExtension } from "./x/clp";
 import {
   DispensationExtension,
@@ -37,12 +37,12 @@ type IClpApi = ClpExtension["clp"];
 type IEthbridgeApi = EthbridgeExtension["ethbridge"];
 type IDispensationApi = DispensationExtension["dispensation"];
 
-type HandlerFn<T> = (a: T) => void;
 export class SifUnSignedClient
   extends CosmosClient
   implements IClpApi, IEthbridgeApi
 {
   protected readonly lcdClient: CustomLcdClient;
+  wsUrl: string;
   rpcUrl: string;
   apiUrl: string;
   private nativeDexClientPromise: Promise<NativeDexClient>;
@@ -53,6 +53,7 @@ export class SifUnSignedClient
     broadcastMode?: BroadcastMode,
   ) {
     super(apiUrl, broadcastMode);
+    this.wsUrl = wsUrl;
     this.rpcUrl = rpcUrl;
     this.apiUrl = apiUrl;
     this.lcdClient = createLcdClient(apiUrl, broadcastMode);
@@ -63,6 +64,7 @@ export class SifUnSignedClient
     this.createPool = this.lcdClient.clp.createPool;
     this.getLiquidityProvider = this.lcdClient.clp.getLiquidityProvider;
     this.removeLiquidity = this.lcdClient.clp.removeLiquidity;
+    this.getPmtpParams = this.lcdClient.clp.getPmtpParams;
     this.getPool = this.lcdClient.clp.getPool;
     this.burn = this.lcdClient.ethbridge.burn;
     this.lock = this.lcdClient.ethbridge.lock;
@@ -87,6 +89,7 @@ export class SifUnSignedClient
   getLiquidityProvider: IClpApi["getLiquidityProvider"];
   removeLiquidity: IClpApi["removeLiquidity"];
   getPool: IClpApi["getPool"];
+  getPmtpParams: IClpApi["getPmtpParams"];
 
   // Ethbridge Extension
   burn: IEthbridgeApi["burn"];
