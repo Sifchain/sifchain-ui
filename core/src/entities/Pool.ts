@@ -13,7 +13,7 @@ import { Amount, IAmount } from "./Amount";
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
 export class Pool extends Pair {
-  private poolUnits: IAmount;
+  poolUnits: IAmount;
 
   constructor(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
     super(a, b);
@@ -101,7 +101,7 @@ export class Pool extends Pair {
     return AssetAmount(otherAsset, x);
   }
 
-  private calculatePoolUnits(
+  calculatePoolUnits(
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
   ) {
