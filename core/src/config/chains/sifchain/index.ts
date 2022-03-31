@@ -5,6 +5,7 @@ import { SIFCHAIN_TESTNET_042 } from "./sifchain-testnet-042-ibc";
 import { SIFCHAIN_DEVNET } from "./sifchain-devnet";
 import { SIFCHAIN_TESTNET } from "./sifchain-testnet";
 import { SIFCHAIN_MAINNET } from "./sifchain-mainnet";
+import { SIFCHAIN_TEMPNET_PMTP } from "./sifchain-tempnet-pmtp";
 
 export default <NetEnvChainConfigLookup>{
   [NetworkEnv.LOCALNET]: SIFCHAIN_TESTNET_042,
@@ -13,4 +14,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: SIFCHAIN_DEVNET,
   [NetworkEnv.TESTNET]: SIFCHAIN_TESTNET,
   [NetworkEnv.MAINNET]: SIFCHAIN_MAINNET,
+  [NetworkEnv.TEMPNET_PMTP]: SIFCHAIN_TEMPNET_PMTP,
 };

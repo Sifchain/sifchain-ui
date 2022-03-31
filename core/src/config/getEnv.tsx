@@ -1,4 +1,3 @@
-import { Network } from "../entities";
 import { AppCookies } from "./AppCookies";
 
 export enum NetworkEnv {
@@ -8,6 +7,7 @@ export enum NetworkEnv {
   LOCALNET = "localnet",
   DEVNET_042 = "devnet_042",
   TESTNET_042_IBC = "testnet_042_ibc",
+  TEMPNET_PMTP = "tempnet_pmtp",
 }
 
 // NOTE(ajoslin): support legacy `?_env=n` urls, from
@@ -19,6 +19,7 @@ export const networkEnvsByIndex = [
   NetworkEnv.LOCALNET,
   NetworkEnv.DEVNET_042,
   NetworkEnv.TESTNET_042_IBC,
+  NetworkEnv.TEMPNET_PMTP,
 ];
 
 // type AssetTag = `${Network}.${NetworkEnv}`;
@@ -78,6 +79,15 @@ export const profileLookup: ProfileLookup = {
   },
   get [3]() {
     return this[NetworkEnv.LOCALNET];
+  },
+  [NetworkEnv.TEMPNET_PMTP]: {
+    tag: NetworkEnv.TEMPNET_PMTP,
+    ethAssetTag: "ethereum.localnet",
+    sifAssetTag: "sifchain.localnet",
+    cosmoshubAssetTag: "cosmoshub.testnet",
+  },
+  get [4]() {
+    return this[NetworkEnv.TEMPNET_PMTP];
   },
 } as const;
 
