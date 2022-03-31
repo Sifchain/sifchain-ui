@@ -20,7 +20,7 @@ describe("Pool", () => {
   // Swap Result = ( x * X * Y ) / ( x + X )^2
 
   test("It calculates the correct swap amount", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "10000000000000000000"),
       AssetAmount(BTK, "10000000000000000000"),
     );
@@ -41,7 +41,7 @@ describe("Pool", () => {
   });
 
   test("calculate swap amount 1:1", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "1000000000000000000000000000000"),
       AssetAmount(BTK, "1000000000000000000000000000000"),
     );
@@ -61,7 +61,7 @@ describe("Pool", () => {
     );
   });
   test("calculate swap amount 2:1", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "2000000000000000000000000000000"),
       AssetAmount(BTK, "1000000000000000000000000000000"),
     );
@@ -82,7 +82,7 @@ describe("Pool", () => {
   });
 
   test("swap of 0", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "10000000000000000000"),
       AssetAmount(BTK, "10000000000000000000"),
     );
@@ -93,7 +93,7 @@ describe("Pool", () => {
   });
 
   test("Reverse swap", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "1000000000000000000000000"),
       AssetAmount(BTK, "1000000000000000000000000"),
     );
@@ -106,7 +106,7 @@ describe("Pool", () => {
   });
 
   test("Reverse swap of 0", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "10000000000000000000"),
       AssetAmount(BTK, "10000000000000000000"),
     );
@@ -117,7 +117,7 @@ describe("Pool", () => {
   });
 
   test("Cannot calulate swap result for an asset that does not exist within the pair", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "10000000000000000000"),
       AssetAmount(BTK, "10000000000000000000"),
     );
@@ -128,14 +128,14 @@ describe("Pool", () => {
   });
 
   test("contains()", () => {
-    const pair = Pool(AssetAmount(ATK, "10"), AssetAmount(BTK, "10"));
+    const pair = new Pool(AssetAmount(ATK, "10"), AssetAmount(BTK, "10"));
     expect(pair.contains(ATK)).toBe(true);
     expect(pair.contains(BTK)).toBe(true);
     expect(pair.contains(ROWAN)).toBe(false);
   });
 
   describe("when half", () => {
-    const pair = Pool(
+    const pair = new Pool(
       AssetAmount(ATK, "5000000000000000000"),
       AssetAmount(BTK, "10000000000000000000"),
     );
@@ -162,7 +162,7 @@ describe("Pool", () => {
 
   describe("poolUnits", () => {
     test("poolUnits", () => {
-      const pool = Pool(
+      const pool = new Pool(
         AssetAmount(ATK, "1000000"),
         AssetAmount(BTK, "1000000"),
       );
@@ -171,7 +171,7 @@ describe("Pool", () => {
     });
 
     test("addLiquidity:calculate pool units", () => {
-      const pool = Pool(
+      const pool = new Pool(
         AssetAmount(ATK, "1000000"),
         AssetAmount(BTK, "1000000"),
       );
@@ -188,12 +188,12 @@ describe("Pool", () => {
 
   describe("CompositePool", () => {
     test("Cannot create composite pair with pairs that have no shared asset", () => {
-      const pair1 = Pool(
+      const pair1 = new Pool(
         AssetAmount(ATK, "1000000"),
         AssetAmount(BTK, "1000000"),
       );
 
-      const pair2 = Pool(
+      const pair2 = new Pool(
         AssetAmount(ROWAN, "1000000"),
         AssetAmount(ETH, "1000000"),
       );
@@ -203,12 +203,12 @@ describe("Pool", () => {
     });
 
     test("CompositePool contains", () => {
-      const pair1 = Pool(
+      const pair1 = new Pool(
         AssetAmount(ATK, "1000000000000"),
         AssetAmount(ROWAN, "1000000000000"),
       );
 
-      const pair2 = Pool(
+      const pair2 = new Pool(
         AssetAmount(ROWAN, "1000000000000"),
         AssetAmount(BTK, "1000000000000"),
       );
@@ -221,12 +221,12 @@ describe("Pool", () => {
     });
 
     test("CompositePool getAmount()", () => {
-      const pair1 = Pool(
+      const pair1 = new Pool(
         AssetAmount(ATK, "2000000000000"),
         AssetAmount(ROWAN, "1000000000000"),
       );
 
-      const pair2 = Pool(
+      const pair2 = new Pool(
         AssetAmount(ROWAN, "1000000000000"),
         AssetAmount(BTK, "1000000000000"),
       );
@@ -247,12 +247,12 @@ describe("Pool", () => {
     });
 
     test("CompositePool does two swaps", () => {
-      const pair1 = Pool(
+      const pair1 = new Pool(
         AssetAmount(ATK, "1000000000000000000000000000000"),
         AssetAmount(ROWAN, "1000000000000000000000000000000"),
       );
 
-      const pair2 = Pool(
+      const pair2 = new Pool(
         AssetAmount(ROWAN, "1000000000000000000000000000000"),
         AssetAmount(BTK, "1000000000000000000000000000000"),
       );
@@ -273,12 +273,12 @@ describe("Pool", () => {
     });
 
     test("CompositePool 2:1", () => {
-      const pair1 = Pool(
+      const pair1 = new Pool(
         AssetAmount(ATK, "2000000000000000000000000000000"),
         AssetAmount(ROWAN, "1000000000000000000000000000000"),
       );
 
-      const pair2 = Pool(
+      const pair2 = new Pool(
         AssetAmount(ROWAN, "1000000000000000000000000000000"),
         AssetAmount(BTK, "1000000000000000000000000000000"),
       );
@@ -333,12 +333,12 @@ describe("Pool", () => {
           homeNetwork: Network.ETHEREUM,
         }),
       };
-      const pair1 = Pool(
+      const pair1 = new Pool(
         AssetAmount(TOKENS.atk, "2000000000000000000000000000000"),
         AssetAmount(TOKENS.rowan, "1000000000000000000000000000000"),
       );
 
-      const pair2 = Pool(
+      const pair2 = new Pool(
         AssetAmount(TOKENS.btk, "1000000000000000000000000000000"),
         AssetAmount(TOKENS.rowan, "1000000000000000000000000000000"),
       );

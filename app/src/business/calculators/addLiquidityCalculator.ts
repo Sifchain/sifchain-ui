@@ -153,7 +153,7 @@ export function usePoolCalculator(input: {
       return null;
     }
 
-    return Pool(
+    return new Pool(
       AssetAmount(tokenAField.asset, "0"),
       AssetAmount(tokenBField.asset, "0"),
     );

@@ -57,7 +57,7 @@ describe("useRemoveLiquidityCalculator", () => {
     poolFinder.mockImplementation(
       () =>
         ref(
-          Pool(
+          new Pool(
             AssetAmount(CATK, "1000000000000000000000000"),
             AssetAmount(ROWAN, "1000000000000000000000000"),
             Amount("1000000000000000000000000"),

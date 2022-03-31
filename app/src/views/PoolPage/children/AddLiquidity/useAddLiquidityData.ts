@@ -181,7 +181,7 @@ export const useAddLiquidityData = () => {
       throw new Error("Token A or Token B field amount is not defined");
     }
 
-    const pool = Pool(tokenAFieldAmount.value, tokenBFieldAmount.value);
+    const pool = new Pool(tokenAFieldAmount.value, tokenBFieldAmount.value);
 
     if (transactionStatus.value.state === "accepted") {
       useCore().services.bus.dispatch({
