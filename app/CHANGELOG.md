@@ -1,3 +1,6 @@
+## Release 2022.03.31
+* Fixed issue with swap modal disappearing
+
 ## Release 2022.03.30
 * Performance improvements of pools, pool stats, and rewards pages
   * Updated field names for clarity around auto-claims (Total pending rewards vs Claimed - pending dispensation, Time until next dispensation vs Time remaining to claim, and Pending rewards vs claimable reward)
