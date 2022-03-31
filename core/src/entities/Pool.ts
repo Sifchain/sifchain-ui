@@ -14,23 +14,24 @@ export type Pool = ReturnType<typeof Pool>;
 
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
-export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
-  const pair = Pair(a, b);
-  const amounts: [IAssetAmount, IAssetAmount] = pair.amounts;
-
+export const Pool = (a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) => {
+  // TODO: can't do object spread here for some reason,
+  // when spreading, none of Pair property get added
+  // could be due to error with Vite compiling/tree-shaking
+  const base = Pair(a, b);
   return {
-    amounts,
-    get externalAmount() {
-      return amounts.find((amount) => amount.symbol !== "rowan")!;
+    amounts: base.amounts,
+    otherAsset: base.otherAsset,
+    symbol: base.symbol,
+    contains: base.contains,
+    toString: base.toString,
+    getAmount: base.getAmount,
+    get externalAmount(): IAssetAmount {
+      return this.amounts.find((amount) => amount.symbol !== "rowan")!;
     },
-    get nativeAmount() {
-      return amounts.find((amount) => amount.symbol === "rowan")!;
+    get nativeAmount(): IAssetAmount {
+      return this.amounts.find((amount) => amount.symbol === "rowan")!;
     },
-    otherAsset: pair.otherAsset,
-    symbol: pair.symbol,
-    contains: pair.contains,
-    toString: pair.toString,
-    getAmount: pair.getAmount,
     poolUnits:
       poolUnits ||
       calculatePoolUnits(
@@ -45,21 +46,21 @@ export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
     },
 
     calcProviderFee(x: IAssetAmount) {
-      const X = amounts.find((a) => a.symbol === x.symbol);
+      const X = this.amounts.find((a) => a.symbol === x.symbol);
       if (!X)
         throw new Error(
           `Sent amount with symbol ${
             x.symbol
           } does not exist in this pair: ${this.toString()}`,
         );
-      const Y = amounts.find((a) => a.symbol !== x.symbol);
+      const Y = this.amounts.find((a) => a.symbol !== x.symbol);
       if (!Y) throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
       const providerFee = calculateProviderFee(x, X, Y);
       return AssetAmount(this.otherAsset(x), providerFee);
     },
 
     calcPriceImpact(x: IAssetAmount) {
-      const X = amounts.find((a) => a.symbol === x.symbol);
+      const X = this.amounts.find((a) => a.symbol === x.symbol);
       if (!X)
         throw new Error(
           `Sent amount with symbol ${
@@ -72,28 +73,28 @@ export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
     // https://github.com/Sifchain/sifnode/blob/develop/docs/1.Liquidity%20Pools%20Architecture.md
     // Formula: swapAmount = (x * X * Y) / (x + X) ^ 2
     calcSwapResult(x: IAssetAmount) {
-      const X = amounts.find((a) => a.symbol === x.symbol);
+      const X = this.amounts.find((a) => a.symbol === x.symbol);
       if (!X)
         throw new Error(
           `Sent amount with symbol ${
             x.symbol
           } does not exist in this pair: ${this.toString()}`,
         );
-      const Y = amounts.find((a) => a.symbol !== x.symbol);
+      const Y = this.amounts.find((a) => a.symbol !== x.symbol);
       if (!Y) throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
       const swapAmount = calculateSwapResult(x, X, Y);
       return AssetAmount(this.otherAsset(x), swapAmount);
     },
 
     calcReverseSwapResult(Sa: IAssetAmount): IAssetAmount {
-      const Ya = amounts.find((a) => a.symbol === Sa.symbol);
+      const Ya = this.amounts.find((a) => a.symbol === Sa.symbol);
       if (!Ya)
         throw new Error(
           `Sent amount with symbol ${
             Sa.symbol
           } does not exist in this pair: ${this.toString()}`,
         );
-      const Xa = amounts.find((a) => a.symbol !== Sa.symbol);
+      const Xa = this.amounts.find((a) => a.symbol !== Sa.symbol);
       if (!Xa) throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
       const otherAsset = this.otherAsset(Sa);
       if (Sa.equalTo("0")) {
@@ -109,7 +110,7 @@ export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
       nativeAssetAmount: IAssetAmount,
       externalAssetAmount: IAssetAmount,
     ) {
-      const [nativeBalanceBefore, externalBalanceBefore] = amounts;
+      const [nativeBalanceBefore, externalBalanceBefore] = this.amounts;
 
       // Calculate current units created by this potential liquidity provision
       const lpUnits = calculatePoolUnits(
@@ -124,7 +125,7 @@ export function Pool(a: IAssetAmount, b: IAssetAmount, poolUnits?: IAmount) {
       return [newTotalPoolUnits, lpUnits];
     },
   };
-}
+};
 
 export function CompositePool(pair1: IPool, pair2: IPool): IPool {
   // The combined asset is the
