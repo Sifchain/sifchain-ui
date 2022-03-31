@@ -105,14 +105,18 @@ export const useAddLiquidityData = () => {
 
   const riskFactor = computed(() => {
     const rFactor = Amount("1");
-    if (!tokenAFieldAmount || !tokenBFieldAmount || !poolAmounts.value) {
+    if (
+      !tokenAField.value.fieldAmount ||
+      !tokenBField.value.fieldAmount ||
+      !poolAmounts.value
+    ) {
       return rFactor;
     }
     const nativeBalance = poolAmounts?.value[0];
     const externalBalance = poolAmounts?.value[1];
     const slipAdjustmentCalc = slipAdjustment(
-      tokenBFieldAmount,
-      tokenAFieldAmount,
+      tokenBField.value.fieldAmount,
+      tokenAField.value.fieldAmount,
       nativeBalance,
       externalBalance,
     );
@@ -132,8 +136,8 @@ export const useAddLiquidityData = () => {
     shareOfPoolPercent,
     totalLiquidityProviderUnits,
     poolAmounts,
-    tokenAFieldAmount,
-    tokenBFieldAmount,
+    tokenAField,
+    tokenBField,
     preExistingPool,
     state,
   } = useReactivePoolCalculator({
@@ -149,16 +153,18 @@ export const useAddLiquidityData = () => {
   });
 
   function handleNextStepClicked() {
-    if (!tokenAFieldAmount) throw new Error("from field amount is not defined");
-    if (!tokenBFieldAmount) throw new Error("to field amount is not defined");
+    if (!tokenAField.value.fieldAmount)
+      throw new Error("from field amount is not defined");
+    if (!tokenBField.value.fieldAmount)
+      throw new Error("to field amount is not defined");
 
     modalStatus.value = "confirm";
   }
 
   async function handleAskConfirmClicked() {
-    if (!tokenAFieldAmount)
+    if (!tokenAField.value.fieldAmount)
       throw new Error("Token A field amount is not defined");
-    if (!tokenBFieldAmount)
+    if (!tokenBField.value.fieldAmount)
       throw new Error("Token B field amount is not defined");
 
     modalStatus.value = "processing";
@@ -167,15 +173,18 @@ export const useAddLiquidityData = () => {
       hash: "",
     };
     transactionStatus.value = await usecases.clp.addLiquidity(
-      tokenBFieldAmount,
-      tokenAFieldAmount,
+      tokenBField.value.fieldAmount,
+      tokenAField.value.fieldAmount,
     );
 
-    if (!tokenAFieldAmount || !tokenBFieldAmount) {
+    if (!tokenAField.value.fieldAmount || !tokenBField.value.fieldAmount) {
       throw new Error("Token A or Token B field amount is not defined");
     }
 
-    const pool = new Pool(tokenAFieldAmount, tokenBFieldAmount);
+    const pool = new Pool(
+      tokenAField.value.fieldAmount,
+      tokenBField.value.fieldAmount,
+    );
 
     if (transactionStatus.value.state === "accepted") {
       useCore().services.bus.dispatch({
@@ -184,14 +193,14 @@ export const useAddLiquidityData = () => {
           message:
             `Added ` +
             [
-              tokenAFieldAmount.greaterThan("0") &&
+              tokenAField.value.fieldAmount.greaterThan("0") &&
                 `${formatAssetAmount(
-                  tokenAFieldAmount,
-                )} ${tokenAFieldAmount?.displaySymbol.toUpperCase()}`,
-              tokenBFieldAmount.greaterThan("0") &&
+                  tokenAField.value.fieldAmount,
+                )} ${tokenAField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
+              tokenBField.value.fieldAmount.greaterThan("0") &&
                 `${formatAssetAmount(
-                  tokenBFieldAmount,
-                )} ${tokenBFieldAmount?.displaySymbol.toUpperCase()}`,
+                  tokenBField.value.fieldAmount,
+                )} ${tokenBField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
             ]
               .filter(Boolean)
               .join(" and ") +
@@ -305,8 +314,6 @@ export const useAddLiquidityData = () => {
     modalStatus,
 
     requestTransactionModalClose,
-    tokenAFieldAmount,
-    tokenBFieldAmount,
     toggleAsyncPooling,
     asyncPooling,
     handleBlur() {
