@@ -37,11 +37,11 @@ type IBCHashDenomTraceLookup = Record<
 >;
 
 export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> {
-  tokenRegistry: ReturnType<typeof TokenRegistry>;
+  tokenRegistry: TokenRegistry;
 
   constructor(public context: WalletProviderContext) {
     super();
-    this.tokenRegistry = TokenRegistry(context);
+    this.tokenRegistry = new TokenRegistry(context);
   }
 
   isChainSupported(chain: Chain) {

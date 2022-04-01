@@ -46,7 +46,7 @@ export type IBCBridgeContext = {
 };
 
 export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
-  tokenRegistry = TokenRegistry(this.context);
+  tokenRegistry = new TokenRegistry(this.context);
 
   public transferTimeoutMinutes = 45;
 

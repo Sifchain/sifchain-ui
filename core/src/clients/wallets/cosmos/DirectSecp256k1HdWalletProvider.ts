@@ -32,7 +32,7 @@ export class DirectSecp256k1HdWalletProvider extends CosmosWalletProvider {
     private options: DirectSecp256k1HdWalletProviderOptions,
   ) {
     super(context);
-    this.tokenRegistry = TokenRegistry(context);
+    this.tokenRegistry = new TokenRegistry(context);
   }
 
   async hasConnected(chain: Chain) {
