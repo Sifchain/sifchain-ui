@@ -6,7 +6,11 @@ export type PoolStore = {
   [s: string]: Pool;
 };
 
-export type AccountPool = { lp: LiquidityProvider; pool: string };
+export type AccountPool = {
+  lp: LiquidityProvider;
+  pool: string;
+};
+
 export type AccountPoolStore = {
   [address: string]: {
     [pool: string]: AccountPool;

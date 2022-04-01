@@ -30,7 +30,9 @@ export function parseTxFailure(txFailure: {
   transactionHash: string;
   rawLog?: string;
 }): TransactionStatus {
-  console.log({ "txFailure.rawLog": txFailure.rawLog });
+  if (txFailure.rawLog) {
+    console.log({ "txFailure.rawLog": txFailure.rawLog });
+  }
   // TODO: synchronise with backend and use error codes at the service level
   // and provide a localized error lookup on frontend for messages
   if (txFailure.rawLog?.toLowerCase().includes("below expected")) {
@@ -103,19 +105,6 @@ export function parseTxFailure(txFailure: {
       state: "failed",
     };
   }
-
-  // if (
-  //   txFailure.rawLog?.toLowerCase().includes("status code 500") ||
-  //   txFailure.rawLog?.toLowerCase().includes("network error")
-  // ) {
-  //   return {
-  //     code: ErrorCode.UNKNOWN_FAILURE,
-  //     hash: txFailure.transactionHash,
-  //     memo:
-  //       "There was a network error when signing the transaction in your wallet. Please try again.",
-  //     state: "failed",
-  //   };
-  // }
 
   return {
     code: ErrorCode.UNKNOWN_FAILURE,

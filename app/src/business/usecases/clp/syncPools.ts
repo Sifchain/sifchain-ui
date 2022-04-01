@@ -1,5 +1,3 @@
-import { Services } from "../../services";
-import { Store } from "../../store";
 import {
   Pool,
   AssetAmount,
@@ -7,19 +5,25 @@ import {
   Network,
   LiquidityProvider,
 } from "@sifchain/sdk";
+
+import { Services } from "@/business/services";
+import { Store } from "@/business/store";
 import { createPoolKey } from "@sifchain/sdk/src/utils";
-import { AccountPool } from "../../store/pools";
+import { AccountPool } from "@/business/store/pools";
 
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<
   Services["clp"],
   "getAccountLiquidityProviderData" | "getRawPools"
 >;
+
 type PickChains = Pick<
   Services["chains"],
   "get" | "findChainAssetMatch" | "findChainAssetMatch"
 >;
+
 type PickTokenRegistry = Pick<Services["tokenRegistry"], "load">;
+
 type SyncPoolsArgs = {
   sif: PickSif;
   clp: PickClp;
@@ -30,7 +34,7 @@ type SyncPoolsArgs = {
 type SyncPoolsStore = Pick<Store, "accountpools" | "pools">;
 
 export function SyncPools(
-  { sif, clp, chains, tokenRegistry }: SyncPoolsArgs,
+  { clp, chains, tokenRegistry }: SyncPoolsArgs,
   store: SyncPoolsStore,
 ) {
   return {
@@ -69,7 +73,7 @@ export function SyncPools(
       })
       .filter((val) => val != null) as Pool[];
 
-    for (let pool of pools) {
+    for (const pool of pools) {
       store.pools[pool.symbol()] = pool;
     }
   }
@@ -80,6 +84,7 @@ export function SyncPools(
     // This is a hot method when there are a heap of pools
     // Ideally we would have a better rest endpoint design
     const currentAccountPools: Record<string, AccountPool> = {};
+
     if (!store.accountpools[address]) {
       store.accountpools[address] = {};
     }
@@ -93,18 +98,34 @@ export function SyncPools(
       if (!symbol) return;
 
       const entry = registry.find(
-        (item) => item.denom === symbol || item.baseDenom === symbol,
+        ({ denom, baseDenom }) => denom === symbol || baseDenom === symbol,
       );
-      if (!entry) return;
+
+      if (!entry) {
+        console.warn(
+          `Could not find entry in tokenRegistry for symbol: ${symbol}`,
+        );
+        return;
+      }
 
       const asset = chains
         .get(Network.SIFCHAIN)
         .findAssetWithLikeSymbol(entry.baseDenom);
-      if (!asset) return;
+
+      if (!asset) {
+        console.warn(
+          `Could not find asset in chain gonfig for baseDenom: ${entry.baseDenom}`,
+        );
+        return;
+      }
+
+      if (!lpItem.liquidityProvider) {
+        throw new Error("Missing liquidity provider");
+      }
 
       const lp = LiquidityProvider(
         asset,
-        Amount(lpItem.liquidityProvider!.liquidityProviderUnits),
+        Amount(lpItem.liquidityProvider.liquidityProviderUnits),
         address,
         Amount(lpItem.nativeAssetBalance),
         Amount(lpItem.externalAssetBalance),
@@ -117,11 +138,12 @@ export function SyncPools(
     });
 
     Object.keys(store.accountpools[address]).forEach((poolId) => {
-      // If pool is gone now, delete. Ie user remioved all liquidity
+      // If pool is gone now, delete. Ie user removed all liquidity
       if (!currentAccountPools[poolId]) {
         delete store.accountpools[address][poolId];
       }
     });
+
     Object.keys(currentAccountPools).forEach((poolId) => {
       store.accountpools[address][poolId] = currentAccountPools[poolId];
     });
