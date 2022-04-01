@@ -5,8 +5,6 @@ import {
   Network,
   IAssetAmount,
   AssetAmount,
-  IAsset,
-  Asset,
 } from "../../../entities";
 import fetch from "cross-fetch";
 import {

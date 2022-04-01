@@ -1,4 +1,4 @@
-import { Amount, Asset, IAmount, IAsset, AssetAmount } from "../entities";
+import { IAmount, IAsset, AssetAmount } from "../entities";
 import { AmountNotAssetAmount, format, trimMantissa } from "./format";
 
 /**
