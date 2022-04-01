@@ -84,7 +84,7 @@ export class EthBridge extends BaseBridge<
     }
   }
 
-  tokenRegistry = TokenRegistry(this.context);
+  tokenRegistry = new TokenRegistry(this.context);
 
   // Pull this out to a util?
   // How to handle context/dependency injection?

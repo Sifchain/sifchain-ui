@@ -73,7 +73,7 @@ export default function createClpService({
     sifChainId,
   );
 
-  const tokenRegistry = TokenRegistryService({
+  const tokenRegistry = new TokenRegistryService({
     sifRpcUrl,
     sifApiUrl,
     sifChainId,
