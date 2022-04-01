@@ -1,10 +1,11 @@
 import { Amount, IAsset, IAssetAmount, LiquidityProvider } from "@sifchain/sdk";
 
-import TokenRegistryService from "../../services/TokenRegistryService";
 import { PoolsRes } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/querier";
 import { LiquidityProviderData } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/types";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import { SifUnSignedClient } from "@sifchain/sdk/src/clients/native/SifClient";
+
+import TokenRegistryService from "@/business/services/TokenRegistryService";
 
 export type ClpServiceContext = {
   nativeAsset: IAsset;
