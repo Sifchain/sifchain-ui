@@ -10,19 +10,13 @@ import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
 import Layout from "@/components/Layout";
 import { SlippageTolerance } from "./components/SlippageTolerance";
-import { SwapDetails } from "./components/SwapDetails";
+import { SwapDetails } from "./components/SwapDetailsV2";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { RouterView, useRouter } from "vue-router";
 import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
 import { useCore } from "@/hooks/useCore";
-
-// This is a little generic but these UI Flows
-// might be different depending on our page functionality
-// It would be better not to share them but instead derive state based on them in this file/domain.
-// Currently some of these are used in down tree components but until we convert to JSX
-// We will need to manage these manually
 
 export default defineComponent({
   name: "SwapPage",
@@ -81,13 +75,6 @@ export default defineComponent({
             class="flex relative items-center justify-center w-full overflow-hidden"
           >
             <button
-              // onMouseover={() => {
-              //   console.log("m2");
-              // }}
-              // onMouseout={() => {
-              //   console.log("m1");
-              //   isHoveringOverInvertButtonRef.value = false;
-              // }}
               class="origin-center actidve:rotate-180 flex items-center relative bg-gray-base border-gray-input_outline py-[4px] px-[9px] box-content border-[1px] rounded-[10px] hover:border-accent-base"
               key="button"
               onClick={async (e: MouseEvent) => {
@@ -105,11 +92,10 @@ export default defineComponent({
                   size={22}
                   class=" text-accent-base"
                   icon="navigation/swap"
-                ></AssetIcon>
+                />
               </div>
             </button>
           </div>
-
           <TokenInputGroup
             onSelectAsset={(asset) => {
               data.toSymbol.value = asset.symbol;
@@ -119,8 +105,6 @@ export default defineComponent({
             onFocus={() => data.handleToFocused()}
             onBlur={() => data.handleBlur()}
             heading="To"
-            // key={data.toSymbol.value}
-            // key={data.modules.fromTokenInputGroup.state.symbol}
             onInputAmount={(val) => {
               data.toAmount.value = val;
             }}
@@ -134,7 +118,7 @@ export default defineComponent({
             onUpdate={(v) => {
               data.slippage.value = v || "0";
             }}
-          ></SlippageTolerance>
+          />
           <SwapDetails
             fromAsset={data.fromAsset}
             toAsset={data.toAsset}
@@ -155,7 +139,7 @@ export default defineComponent({
           >
             {data.nextStepMessage.value}
           </Button.CallToAction>
-          <RouterView></RouterView>
+          <RouterView />
           <div class="pb-4" />
         </PageCard>
       </Layout>

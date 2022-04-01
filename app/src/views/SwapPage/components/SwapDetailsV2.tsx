@@ -61,27 +61,6 @@ export const SwapDetails = defineComponent({
         `}
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
-            Minimum Received
-            <Button.InlineHelp>
-              This is the minimum amount of the to token you will receive,
-              taking into consideration the acceptable slippage percentage you
-              are willing to take on. This amount also already takes into
-              consideration liquidity provider fees as well.
-            </Button.InlineHelp>
-          </div>
-          <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium capitalize">
-            <span class="mr-[4px]">{props.minimumReceived}</span>
-            <TokenIcon asset={props.toAsset} size={18}></TokenIcon>
-          </div>
-        </div>
-        <div
-          class={`
-          h-[49px] w-full flex justify-center items-center box-border
-          bg-gray-base border-gray-input_outline
-          border-[1px] border-b-[1px] border-t-0 border-solid 
-        `}
-        >
-          <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
             Price Impact
             <Button.InlineHelp key={props.toAsset?.value.displaySymbol}>
               This is the percentage impact to the amount of{" "}
