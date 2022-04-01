@@ -26,7 +26,6 @@ import { useCore } from "@/hooks/useCore";
 
 export default defineComponent({
   name: "SwapPage",
-  props: {},
   setup() {
     // const data = useSwapPageModule();
     const data = useSwapPageData();

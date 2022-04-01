@@ -2,7 +2,7 @@ import { DeepReadonly } from "vue";
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
 import { flagsStore } from "@/store/modules/flags";
-import Swap from "@/views/SwapPage/SwapPage";
+import Swap from "@/views/SwapPage";
 import Balance from "@/views/BalancePage";
 import RewardsPage from "@/views/RewardsPage/RewardsPage";
 import StatsPage from "@/views/StatsPage/StatsPage";
@@ -201,6 +201,7 @@ router.beforeEach((to, _from, next) => {
 
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     document.title = nearestWithTitle.meta.title;
     // Let's log the page view to Google Analytics manually
