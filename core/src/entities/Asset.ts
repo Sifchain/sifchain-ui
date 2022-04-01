@@ -17,8 +17,10 @@ export type IAsset = {
   decommissioned?: true;
   decommissionReason?: string;
 };
+
 type ReadonlyAsset = Readonly<IAsset>;
-const assetMap = new Map<string, ReadonlyAsset>();
+
+const ASSET_MAP_STORAGE_KEY = "@@assetMap";
 
 function isAsset(value: any): value is IAsset {
   return (
@@ -28,27 +30,33 @@ function isAsset(value: any): value is IAsset {
 
 export const Asset = Object.assign(
   (assetOrSymbol: IAsset | string): ReadonlyAsset => {
+    const rawMapString = sessionStorage.getItem(ASSET_MAP_STORAGE_KEY);
+    const assetMap = JSON.parse(rawMapString ?? JSON.stringify({})) as Record<
+      string,
+      ReadonlyAsset
+    >;
+
     // If it is an asset then cache it and return it
     if (isAsset(assetOrSymbol)) {
       const key = assetOrSymbol.symbol.toLowerCase();
 
       // prevent overriding of existing rowan asset
-      if (assetMap.has(key) && key === "rowan") {
+      if (key in assetMap && key === "rowan") {
         return assetOrSymbol;
       }
 
-      assetMap.set(key, {
+      assetMap[key] = {
         ...assetOrSymbol,
         displaySymbol: assetOrSymbol.displaySymbol || assetOrSymbol.symbol,
-      });
+      };
+
+      sessionStorage.setItem(ASSET_MAP_STORAGE_KEY, JSON.stringify(assetMap));
 
       return assetOrSymbol;
     }
 
     // Return it from cache
-    const found = assetOrSymbol
-      ? assetMap.get(assetOrSymbol.toLowerCase())
-      : false;
+    const found = assetOrSymbol ? assetMap[assetOrSymbol.toLowerCase()] : false;
 
     if (!found) {
       throw new Error(

@@ -69,7 +69,7 @@ Object.defineProperty(window, "store", {
 // hack to cache the assets
 // TODO: this is a very poor pattern
 // need to do caching at network layer
-config.assets.map(Asset);
+config.assets.forEach((x) => Asset.set(x.symbol, x));
 
 export function useCore() {
   return {
