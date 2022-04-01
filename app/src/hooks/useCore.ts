@@ -4,7 +4,7 @@ import {
   createPoolFinder,
   createStore,
 } from "@/business/store";
-import { getConfig, getEnv, switchEnv } from "@sifchain/sdk";
+import { Asset, getConfig, getEnv, switchEnv } from "@sifchain/sdk";
 
 switchEnv({ location: window.location });
 
@@ -65,6 +65,11 @@ Object.defineProperty(window, "store", {
     return storeSafe;
   },
 });
+
+// hack to cache the assets
+// TODO: this is a very poor pattern
+// need to do caching at network layer
+config.assets.map(Asset);
 
 export function useCore() {
   return {
