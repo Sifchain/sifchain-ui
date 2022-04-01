@@ -55,11 +55,7 @@ type IClpService = {
   }>;
 };
 
-// TS not null type guard
-function notNull<T>(val: T | null): val is T {
-  return val !== null;
-}
-
+// TODO: refactor into class
 export default function createClpService({
   sifApiUrl,
   sifChainId,
