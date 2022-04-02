@@ -1,3 +1,5 @@
+import { vitest, describe, test, expect, beforeEach } from "vitest";
+
 import { ref, Ref } from "@vue/reactivity";
 
 import { Amount, AssetAmount, LiquidityProvider, Pool } from "@sifchain/sdk";
@@ -18,7 +20,7 @@ describe("useRemoveLiquidityCalculator", () => {
   const sifAddress: Ref<string> = ref("12345678asFDSghkjg");
   const wBasisPoints: Ref<string> = ref("5000");
   const liquidityProvider: Ref<LiquidityProvider | null> = ref(null);
-  const poolFinder = jest.fn<Ref<Pool> | null, any>(() => null);
+  const poolFinder: any = vitest.fn(() => null);
 
   // output
   const withdrawExternalAssetAmount: Ref<string | null> = ref(null);

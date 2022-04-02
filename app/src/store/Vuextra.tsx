@@ -1,12 +1,5 @@
-import { ComputedGetter, ComputedRef } from "@vue/reactivity";
-import Vue, { computed } from "vue";
-import {
-  createStore as createVuexStore,
-  ActionContext,
-  StoreOptions,
-  Getter,
-  Store,
-} from "vuex";
+import { ComputedRef, computed } from "vue";
+import { ActionContext, StoreOptions, Store } from "vuex";
 
 /* 
 
@@ -14,7 +7,7 @@ import {
 
 */
 
-type PathImpl<T, Key extends keyof T> = Key extends string
+export type PathImpl<T, Key extends keyof T> = Key extends string
   ? T[Key] extends Record<string, any>
     ?
         | `${Key}.${PathImpl<T[Key], Exclude<keyof T[Key], keyof any[]>> &
@@ -23,25 +16,13 @@ type PathImpl<T, Key extends keyof T> = Key extends string
     : never
   : never;
 
-type PathImpl2<T> = PathImpl<T, keyof T> | keyof T;
+export type PathImpl2<T> = PathImpl<T, keyof T> | keyof T;
 
-type Path<T> = PathImpl2<T> extends string | keyof T ? PathImpl2<T> : keyof T;
+export type Path<T> = PathImpl2<T> extends string | keyof T
+  ? PathImpl2<T>
+  : keyof T;
 
-type PathValue<T, P extends Path<T>> = P extends `${infer Key}.${infer Rest}`
-  ? Key extends keyof T
-    ? Rest extends Path<T[Key]>
-      ? PathValue<T[Key], Rest>
-      : never
-    : never
-  : P extends keyof T
-  ? T[P]
-  : never;
-
-// function getFromPath<T, P extends Path<T>>(obj: T, path: P): PathValue<T, P>;
-
-export const Vuextra = {
-  createStore,
-};
+export const Vuextra = { createStore };
 
 interface VuextraOptions<
   State,
@@ -138,7 +119,7 @@ function createStore<
   ) as unknown as ReturnType<typeof actionComposer>;
 
   const actions = Object.fromEntries(
-    Object.entries(actionComposer({} as any)).map(([key, fn]) => [
+    Object.entries(actionComposer({} as any)).map(([key, _fn]) => [
       key,
       function (context: ActionContext<State, State>, payload: any) {
         return (
@@ -190,11 +171,6 @@ function createStore<
           return getters[typeof p === "string" ? config.name + "/" + p : p];
         },
       }) as GettersType;
-
-      //   Record<
-      //   keyof ComposerReturnType,
-      //   ReturnType<ComposerReturnType[keyof ComposerReturnType]>
-      // >;
     },
     get state() {
       return getStore().state[config.name] as State;
@@ -213,13 +189,6 @@ function createStore<
       }
     },
   };
-
-  // type GettersType = Readonly<
-  //   Record<
-  //     keyof ComposerReturnType,
-  //     ReturnType<ComposerReturnType[keyof ComposerReturnType]>
-  //   >
-  // >;
 
   function vuextraComputed<T>(
     arg: (state: DeepReadonly<typeof storeProxy>) => T,
@@ -258,9 +227,7 @@ function createStore<
     targets: T[],
     path: any[] = [],
   ): DeepComputedProxy<Pick<typeof storeProxy, "state" | "getters">> {
-    // @ts-ignore
     const p = new Proxy(
-      // @ts-ignore
       {} as DeepComputedProxy<Pick<typeof storeProxy, "state" | "getters">>,
       {
         get(target, p, receiver) {
@@ -293,18 +260,12 @@ function createStore<
       if (p === "refs") {
         return createDeepRefProxy([vuextraStore.state, vuextraStore.getters]);
       }
-      // if (p in getStore().getters) {
-      //   return getStore().getters[p];
-      // }
-      // if (p in store.state) {
-      //   // @ts-ignore
-      //   return store.state[p];
-      // }
       return Reflect.get(vuextraStore, p, vuextraStore);
     },
   }) as typeof vuextraStore & { getters: GettersType };
 
   type StoreProxyType = typeof storeProxy;
+
   return storeProxy as Readonly<
     typeof storeProxy & {
       computed: typeof vuextraComputed;

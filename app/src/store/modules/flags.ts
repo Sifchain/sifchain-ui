@@ -1,7 +1,6 @@
 import { useChains } from "@/hooks/useChains";
-import { Asset, Chain, IAsset } from "@sifchain/sdk";
-import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { Chain, IAsset } from "@sifchain/sdk";
+
 import { Vuextra } from "../Vuextra";
 
 export const isChainFlaggedDisabled = (chain: Chain) => {

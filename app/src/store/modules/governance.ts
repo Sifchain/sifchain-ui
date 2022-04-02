@@ -1,17 +1,12 @@
+import { watch } from "vue";
+import { Asset, toBaseUnits } from "@sifchain/sdk";
+
 import { useCore } from "@/hooks/useCore";
-import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
-import { TokenListItem } from "@/hooks/useToken";
 import { accountStore } from "@/store/modules/accounts";
 import { flagsStore } from "@/store/modules/flags";
-import { TokenSortBy } from "@/utils/sortAndFilterTokens";
-import { Asset, IAsset, toBaseUnits } from "@sifchain/sdk";
-import { defineComponent } from "@vue/runtime-core";
-import { computed, PropType, Ref, ref, watch } from "vue";
-import { useNativeChain } from "@/hooks/useChains";
-import { ReportTransactionError } from "@sifchain/sdk/src/usecases/utils";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+
 import { Vuextra } from "../Vuextra";
+
 const getVotesKey = () => {
   if (!accountStore.state.sifchain.address) {
     return null;

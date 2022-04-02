@@ -2,7 +2,7 @@ import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Network } from "@sifchain/sdk";
 
-import { Button } from "@/components/Button/Button";
+import Button from "@/components/Button";
 import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
@@ -222,26 +222,6 @@ export default defineComponent({
                   </div>
                 </div>
               </div>
-              {/* <div class="relative text-[20px] flex items-center w-[100px] ml-[20px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
-              <input
-                type="number"
-                step="1"
-                min="0"
-                max="100"
-                class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none  text-right"
-                value={(
-                  ((+data.asymmetry.value + 10000) / (10000 * 2)) *
-                  100
-                ).toFixed(0)}
-                onInput={(e) => {
-                  data.wBasisPoints.value = (
-                    (+(e.target as HTMLInputElement).value / 100) *
-                    10000
-                  ).toString();
-                }}
-              />
-              <div class="pr-[10px] pointer-events-none select-none">%</div>
-            </div> */}
             </div>
           </Form.FieldSet>
           <Form.Details class="mt-[10px]" details={detailsRef.value} />

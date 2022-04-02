@@ -11,8 +11,8 @@ export function useRewardsPrograms() {
   return useAsyncDataCached("rewardsPrograms", dataService.getRewardsPrograms);
 }
 
-export function useUserRewards(address: `string`) {
-  return useAsyncDataCached(`rewardsPrograms-${address}`, () =>
+export function useUserRewards(address: string) {
+  return useAsyncDataCached(`userRewards-${address}`, () =>
     dataService.getUserRewards(address),
   );
 }
