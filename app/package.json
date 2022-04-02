@@ -7,8 +7,7 @@
     "bump:minor": "bump minor --tag --commit 'testnet release '",
     "dev": "vite --host --port 8080",
     "build": "vite build",
-    "test": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "test": "vitest run"
   },
   "dependencies": {
     "@sifchain/sdk": "workspace:*",
@@ -53,6 +52,7 @@
     "autoprefixer": "^10.4.4",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^8.5.0",
+    "happy-dom": "^2.55.0",
     "postcss": "^8.3.6",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-visualizer": "^5.6.0",
@@ -67,6 +67,7 @@
     "vite-plugin-live-reload": "^2.1.0",
     "vite-plugin-singlefile": "^0.7.1",
     "vite-svg-loader": "^2.2.0",
+    "vitest": "^0.8.2",
     "vue-jest": "^5.0.0-0"
   },
   "eslintConfig": {
