@@ -175,6 +175,5 @@ export function useRemoveLiquidityData() {
     externalAssetSymbol,
     transactionStatus,
     modalStatus,
-    lmRewards,
   };
 }

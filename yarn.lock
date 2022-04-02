@@ -7281,8 +7281,6 @@ __metadata:
     "@vue/tsconfig": ^0.1.3
     autoprefixer: ^10.4.4
     buffer: ^6.0.3
-    chart.js: ^3.5.1
-    chartjs-adapter-moment: ^1.0.0
     clsx: ^1.1.1
     color-hash: ^1.0.3
     copy-to-clipboard: ^3.3.1
@@ -7292,7 +7290,6 @@ __metadata:
     eslint-plugin-vue: ^8.5.0
     flip-toolkit: ^7.0.13
     happy-dom: ^2.55.0
-    load-script: ^1.0.0
     normalize-scss: ^7.0.1
     p-limit: ^4.0.0
     p-props: ^5.0.0
@@ -9227,23 +9224,6 @@ __metadata:
   version: 0.0.2
   resolution: "charenc@npm:0.0.2"
   checksum: 81dcadbe57e861d527faf6dd3855dc857395a1c4d6781f4847288ab23cffb7b3ee80d57c15bba7252ffe3e5e8019db767757ee7975663ad2ca0939bb8fcaf2e5
-  languageName: node
-  linkType: hard
-
-"chart.js@npm:^3.5.1":
-  version: 3.7.0
-  resolution: "chart.js@npm:3.7.0"
-  checksum: 050d675d15742e873ec10aa3c77fecd43d16062a5f188615795a08158b8aed591f98f2f067adf5d3f6b710093ea3a754977b2418fb30ff0babdeabbcf6898e5e
-  languageName: node
-  linkType: hard
-
-"chartjs-adapter-moment@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "chartjs-adapter-moment@npm:1.0.0"
-  peerDependencies:
-    chart.js: ^3.0.0
-    moment: ^2.10.2
-  checksum: d1efe7d9d7b08e93111db93e684cf3b3aa656144b2e0d4cd9efcaaf62a7493799762d6467c85a6410dda21438ccaad5d1e887243ce8130f8bc384e775a9edd00
   languageName: node
   linkType: hard
 
@@ -18330,13 +18310,6 @@ __metadata:
     pify: ^2.0.0
     strip-bom: ^3.0.0
   checksum: 7f212bbf08a8c9aab087ead07aa220d1f43d83ec1c4e475a00a8d9bf3014eb29ebe901db8554627dcfb70184c274d05b7379f1e9678fe8297ae74dc495212049
-  languageName: node
-  linkType: hard
-
-"load-script@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "load-script@npm:1.0.0"
-  checksum: 8458e3f07b4a86f8d9d66e47a987811491a5d013af23ba7b371c6d3c9dc899885b072ccf65abf7874c10cb197d4975eacd8a7a125bfb38dbbcb267539f5dc1e9
   languageName: node
   linkType: hard
 
