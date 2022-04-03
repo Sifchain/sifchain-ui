@@ -83,7 +83,7 @@ export const PoolsSelector = defineComponent({
             this.dropdownOpen = !this.dropdownOpen;
           }}
           class={[
-            "transition-all duration-200 relative py-[8px] px-[10px] pr-0 rounded-[4px] bg-gray-input border border-gray-input_outline disabled:bg-transparent text-lg font-medium flex flex-wrap items-center min-h-[60px]",
+            "bg-gray-input border-gray-input_outline relative flex min-h-[60px] flex-wrap items-center rounded-[4px] border py-[8px] px-[10px] pr-0 text-lg font-medium transition-all duration-200 disabled:bg-transparent",
             this.dropdownOpen && "border-white",
           ]}
         >
@@ -101,7 +101,7 @@ export const PoolsSelector = defineComponent({
                   }
                 }}
                 onClick={(e) => e.stopPropagation()}
-                class="mr-[6px] my-[4px] bg-gray-input_outline p-[5px] px-[7px] rounded-lg flex items-center cursor-none focus:bg-gray-600"
+                class="bg-gray-input_outline my-[4px] mr-[6px] flex cursor-none items-center rounded-lg p-[5px] px-[7px] focus:bg-gray-600"
               >
                 <TokenIcon
                   assetValue={Asset("rowan")}
@@ -115,7 +115,7 @@ export const PoolsSelector = defineComponent({
                 />
                 ROWAN / {Asset(symbol).displaySymbol.toUpperCase()}
                 <button
-                  class="cursor-pointer ml-[4px] opacity-50 py-[4px]"
+                  class="ml-[4px] cursor-pointer py-[4px] opacity-50"
                   onClick={() => {
                     this.onChangeSymbols(
                       this.symbols.filter((s) => s !== symbol.toLowerCase()),
@@ -134,7 +134,7 @@ export const PoolsSelector = defineComponent({
                 e.stopPropagation();
               }}
               class={[
-                "cursor-pointer ml-[6px] h-[36px] flex items-center",
+                "ml-[6px] flex h-[36px] cursor-pointer items-center",
                 this.dropdownOpen && "opacity-50",
               ]}
             >

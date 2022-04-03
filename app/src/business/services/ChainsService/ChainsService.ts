@@ -32,6 +32,7 @@ export class ChainsService {
       }
     }
   }
+
   findChainAssetMatchOrThrow(match: Partial<IAsset>): {
     chain: Chain;
     asset: IAsset;
@@ -47,14 +48,24 @@ export class ChainsService {
 
   constructor(private context: ChainsServiceContext) {
     Object.keys(networkChainCtorLookup).forEach((network) => {
-      const Ctor = networkChainCtorLookup[network as Network];
+      try {
+        const ChainCtor = networkChainCtorLookup[network as Network];
 
-      const chainConfig =
-        this.context.chainConfigsByNetwork[network as Network];
+        const chainConfig =
+          this.context.chainConfigsByNetwork[network as Network];
 
-      const chain = new Ctor({ assets: this.context.assets, chainConfig });
+        const chain = new ChainCtor({
+          assets: this.context.assets,
+          chainConfig,
+        });
 
-      this.addChain(chain);
+        this.addChain(chain);
+      } catch (error) {
+        console.warn(
+          `failed to initialize chain for network "${network}"`,
+          error,
+        );
+      }
     });
   }
 

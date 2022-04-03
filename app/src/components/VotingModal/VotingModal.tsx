@@ -149,14 +149,14 @@ export const VotingModal = defineComponent({
         heading={this.proposal.title}
         icon="interactive/ticket"
         showClose={true}
-        class="max-w-[700px] w-[70vw] mt-[-300px]"
+        class="mt-[-300px] w-[70vw] max-w-[700px]"
       >
-        <div class="text-lg text-left">{this.proposal.heading}</div>
-        <p class="text-left mt-[20px]">
+        <div class="text-left text-lg">{this.proposal.heading}</div>
+        <p class="mt-[20px] text-left">
           <div class="whitespace-pre-wrap">{this.proposal.description}</div>
           <a
             href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs"
-            class="underline cursor-pointer text-accent-base"
+            class="text-accent-base cursor-pointer underline"
             target="_blank"
           >
             Learn More

@@ -1,20 +1,7 @@
+import { onMounted, ref, Ref, watch } from "vue";
 import {
-  computed,
-  ComputedRef,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  proxyRefs,
-  ref,
-  Ref,
-  watch,
-} from "vue";
-import {
-  onBeforeRouteUpdate,
   RouteLocationNormalized,
-  RouteLocationOptions,
   RouteLocationRaw,
-  useRoute,
   useRouter,
 } from "vue-router";
 

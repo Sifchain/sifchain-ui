@@ -36,7 +36,6 @@ import { parseTxFailure } from "../../../utils/parseTxFailure";
 import { SifUnSignedClient } from "../../native/SifClient";
 
 export type IBCBridgeContext = {
-  // applicationNetworkEnvironment: NetworkEnv;
   sifRpcUrl: string;
   sifApiUrl: string;
   sifChainId: string;
@@ -56,8 +55,8 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
   static create(context: IBCBridgeContext) {
     return new this(context);
   }
+
   public loadChainConfigByChainId(chainId: string): IBCChainConfig {
-    // @ts-ignore
     const chainConfig = Object.values(this.context.chainConfigsByNetwork).find(
       (c) => c?.chainId === chainId,
     );
@@ -66,8 +65,8 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     }
     return chainConfig;
   }
+
   public loadChainConfigByNetwork(network: Network): IBCChainConfig {
-    // @ts-ignore
     const chainConfig = this.context.chainConfigsByNetwork[network];
     if (chainConfig?.chainType !== "ibc") {
       throw new Error(`No IBC chain config for network ${network}`);

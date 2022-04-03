@@ -8,15 +8,12 @@ import {
   TransactionStatus,
 } from "@sifchain/sdk";
 
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
+import { useWalletButton } from "@/hooks/useWalletButton";
 import { useCore } from "@/hooks/useCore";
 import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
-import {
-  formatAssetAmount,
-  formatNumber,
-} from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount, formatNumber } from "@/components/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { accountStore } from "@/store/modules/accounts";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";

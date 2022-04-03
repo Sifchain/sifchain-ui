@@ -36,7 +36,7 @@ export const ExpansionIntro = defineComponent({
             height: "100vh",
             opacity: this.textIsVisible ? 1 : 0,
           }}
-          class={`flex-col transition-all duration-500 fixed inset-0 overflow-hidden z-[100000000] text-white flex items-center justify-center `}
+          class={`fixed inset-0 z-[100000000] flex flex-col items-center justify-center overflow-hidden text-white transition-all duration-500 `}
         >
           <span
             style={{ fontSize: "1.5rem", fontWeight: "100", lineHeight: 1 }}

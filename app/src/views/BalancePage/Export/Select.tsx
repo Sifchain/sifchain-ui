@@ -14,7 +14,7 @@ import { getMaxAmount } from "@/views/utils/getMaxAmount";
 
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 
 import {
   SelectDropdown,

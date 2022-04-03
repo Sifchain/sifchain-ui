@@ -2,7 +2,7 @@ import { ref, watch, computed, effect, Ref } from "vue";
 import { useRoute } from "vue-router";
 import { LiquidityProvider, Network, TransactionStatus } from "@sifchain/sdk";
 
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
+import { useWalletButton } from "@/hooks/useWalletButton";
 import { useCore } from "@/hooks/useCore";
 import { debounce } from "@/views/utils/debounce";
 import { accountStore } from "@/store/modules/accounts";
@@ -10,7 +10,7 @@ import { useRemoveLiquidityCalculator } from "@/business/calculators";
 import { PoolState } from "@/business/calculators/addLiquidityCalculator";
 
 export function useRemoveLiquidityData() {
-  const { usecases, poolFinder, services, config } = useCore();
+  const { usecases, poolFinder, services } = useCore();
   const route = useRoute();
 
   const transactionStatus = ref<TransactionStatus | null>(null);
@@ -20,7 +20,7 @@ export function useRemoveLiquidityData() {
   const asymmetry = ref("0");
   const wBasisPoints = ref("0");
   const nativeAssetSymbol = ref("rowan");
-  const lmRewards = ref<any>();
+
   const externalAssetSymbol = ref<string | null>(
     route.params.externalAsset ? route.params.externalAsset.toString() : null,
   );

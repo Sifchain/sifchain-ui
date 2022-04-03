@@ -1,8 +1,8 @@
+import { ref, watch } from "vue";
+import { AppCookies, getNetworkEnv } from "@sifchain/sdk";
+
 import { accountStore, IWalletServiceState } from "@/store/modules/accounts";
 import { createFaucetGraphqlClient } from "@/utils/createFaucetGraphqlClient";
-import { AppCookies, getNetworkEnv } from "@sifchain/sdk";
-import { watch } from "@vue/runtime-core";
-import { ref } from "vue";
 import { useCore } from "./useCore";
 
 const key = "faucet_signature";
@@ -52,7 +52,6 @@ export const shouldAllowFaucetFunding = () => {
 };
 
 export const useFaucet = () => {
-  const { services } = useCore();
   const faucetGql = createFaucetGraphqlClient();
   const graphqlNetworkEnv = getGraphqlNetworkEnv();
 

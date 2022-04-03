@@ -8,7 +8,7 @@ export const _CallToActionSecondary = (
     <button
       {...props}
       class={[
-        `w-full h-[62px] rounded-[4px] bg-gray-action_button text-accent-base flex items-center justify-center font-sans text-[18px] font-semibold disabled:bg-gray-disabled disabled:text-gray-800 disabled:bg-none`,
+        `bg-gray-action_button text-accent-base disabled:bg-gray-disabled flex h-[62px] w-full items-center justify-center rounded-[4px] font-sans text-[18px] font-semibold disabled:bg-none disabled:text-gray-800`,
         props.class,
       ]}
       style={

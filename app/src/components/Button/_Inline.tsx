@@ -19,10 +19,10 @@ export function _Inline(
     <Cmp
       {...props}
       class={[
-        "button flex items-center rounded text-sm font-semibold h-[32px] px-[8px] text-accent-base bg-gray-action_button active:bg-accent-gradient active:text-white",
+        "button text-accent-base bg-gray-action_button active:bg-accent-gradient flex h-[32px] items-center rounded px-[8px] text-sm font-semibold active:text-white",
         props.class,
         props.disabled &&
-          "pointer-events-none !text-gray-disabled !bg-transparent",
+          "!text-gray-disabled pointer-events-none !bg-transparent",
         props.active && !props.disabled && "bg-accent-gradient text-white",
       ]}
     >
@@ -30,7 +30,7 @@ export function _Inline(
         <AssetIcon
           icon={props.icon}
           class={[
-            "w-[20px] h-[20px]",
+            "h-[20px] w-[20px]",
             !!content && "mr-[4px]",
             props.iconClass,
           ]}

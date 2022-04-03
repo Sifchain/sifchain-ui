@@ -1,4 +1,3 @@
-import debounce from "@/utils/debounce-raf";
 import {
   computed,
   ComputedRef,
@@ -151,7 +150,7 @@ export default defineComponent({
                   style={{ height: `${props.rowHeight * startIndex.value}px` }}
                 >
                   {isScrolling.value && (
-                    <div class="p-4 grid place-items-center">{spinner}</div>
+                    <div class="grid place-items-center p-4">{spinner}</div>
                   )}
                 </div>
               )}
@@ -166,7 +165,7 @@ export default defineComponent({
                   }}
                 >
                   {isScrolling.value && (
-                    <div class="p-4 grid place-items-center">{spinner}</div>
+                    <div class="grid place-items-center p-4">{spinner}</div>
                   )}
                 </div>
               )}

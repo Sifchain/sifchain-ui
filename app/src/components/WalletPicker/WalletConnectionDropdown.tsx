@@ -84,12 +84,12 @@ export default defineComponent({
               key={item.name}
               {...item.props}
               class={[
-                "height-[20px] cursor-pointer px-[4px] w-full flex justify-between items-center text-gray-800 hover:text-white active:text-accent-base font-normal text-sm mt-[4px] first:mt-0",
+                "height-[20px] active:text-accent-base mt-[4px] flex w-full cursor-pointer items-center justify-between px-[4px] text-sm font-normal text-gray-800 first:mt-0 hover:text-white",
                 item.props.class,
               ]}
             >
               <span>{item.name}</span>
-              <AssetIcon icon={item.icon} class="w-[16px] h-[16px]" />
+              <AssetIcon icon={item.icon} class="h-[16px] w-[16px]" />
             </Cmp>
           );
         })}

@@ -1,7 +1,8 @@
+import { defineComponent, PropType, Ref } from "vue";
+import { IAsset } from "@sifchain/sdk";
+
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
-import { defineComponent, PropType, Ref } from "vue";
-import { IAsset } from "../../../../../core/src";
 
 export const SwapDetails = defineComponent({
   props: {

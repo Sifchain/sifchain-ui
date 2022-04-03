@@ -1,4 +1,3 @@
-import Tippy from "@/components/Tooltip";
 import { ref } from "vue";
 import { TippyComponent } from "vue-tippy";
 

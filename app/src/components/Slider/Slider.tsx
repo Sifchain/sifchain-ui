@@ -31,10 +31,10 @@ export const Slider = defineComponent({
       const amountRatio =
         (+props.value - +props.min) / (+props.max - +props.min);
       return (
-        <div class="w-full relative">
+        <div class="relative w-full">
           {!!props.message && <p class="text-left">{props.message}</p>}
-          <div class="w-full relative h-[18px]">
-            <div class="w-full pointer-events-none absolute inset-0 flex flex-row items-center">
+          <div class="relative h-[18px] w-full">
+            <div class="pointer-events-none absolute inset-0 flex w-full flex-row items-center">
               <div
                 style={{
                   width: `calc(${amountRatio * 100}%)`,
@@ -42,7 +42,7 @@ export const Slider = defineComponent({
                   marginRight: "-9px",
                 }}
                 class={[
-                  `h-[6px] rounded-full bg-accent-base`,
+                  `bg-accent-base h-[6px] rounded-full`,
                   props.hideIndicatorBarAccent
                     ? `bg-[#373737]`
                     : `bg-accent-base`,
@@ -52,7 +52,7 @@ export const Slider = defineComponent({
                 style={{
                   boxShadow: "0px 2px 2px rgba(0, 0, 0, 0.2)",
                 }}
-                class={[`rounded-full z-10 w-[18px] h-[18px] bg-accent-base`]}
+                class={[`bg-accent-base z-10 h-[18px] w-[18px] rounded-full`]}
               ></button>
               <div
                 style={{
@@ -63,7 +63,7 @@ export const Slider = defineComponent({
                     ? `scale(125%)`
                     : "",
                 }}
-                class="h-[6px] rounded-full w-1/2 bg-[#373737]"
+                class="h-[6px] w-1/2 rounded-full bg-[#373737]"
               ></div>
               <div></div>
             </div>
@@ -79,28 +79,28 @@ export const Slider = defineComponent({
               onBlur={(e) => {
                 shouldDisplayFocusedState.value = false;
               }}
-              class="absolute block inset-0 w-full opacity-0"
+              class="absolute inset-0 block w-full opacity-0"
               min={props.min}
               max={props.max}
               type="range"
               step={props.step}
             />
           </div>
-          <div class="mt-[1px] text-[14px] flex flex-row w-full justify-between">
+          <div class="mt-[1px] flex w-full flex-row justify-between text-[14px]">
             <label
-              class="text-white text-left text-opacity-50 cursor-pointer hover:text-opacity-70 w-[33.333%]"
+              class="w-[33.333%] cursor-pointer text-left text-white text-opacity-50 hover:text-opacity-70"
               onClick={() => props.onLeftClicked?.()}
             >
               {props.leftLabel}
             </label>
             <label
-              class="text-white text-center text-opacity-50 cursor-pointer hover:text-opacity-70 w-[33.333%]"
+              class="w-[33.333%] cursor-pointer text-center text-white text-opacity-50 hover:text-opacity-70"
               onClick={() => props.onMiddleClicked?.()}
             >
               {props.middleLabel}
             </label>
             <label
-              class="text-white text-right text-opacity-50 cursor-pointer hover:text-opacity-70 w-[33.333%]"
+              class="w-[33.333%] cursor-pointer text-right text-white text-opacity-50 hover:text-opacity-70"
               onClick={() => props.onRightClicked?.()}
             >
               {props.rightLabel}
