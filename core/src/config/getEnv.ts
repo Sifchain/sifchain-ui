@@ -82,8 +82,8 @@ export const profileLookup: ProfileLookup = {
   },
   [NetworkEnv.TEMPNET_PMTP]: {
     tag: NetworkEnv.TEMPNET_PMTP,
-    ethAssetTag: "ethereum.localnet",
-    sifAssetTag: "sifchain.localnet",
+    ethAssetTag: "ethereum.testnet",
+    sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
   get [4]() {
@@ -134,16 +134,16 @@ export function getEnv({
   if (cookieEnv != null && networkEnvsByIndex[+cookieEnv]) {
     sifEnv = networkEnvsByIndex[+cookieEnv];
   } else if (isNetworkEnvSymbol(cookieEnv)) {
-    sifEnv = cookieEnv as NetworkEnv;
+    sifEnv = cookieEnv;
   } else {
     sifEnv = defaultNetworkEnv;
   }
 
-  // console.log("sifEnv", profileLookup[sifEnv as NetworkEnv]);
-
   if (sifEnv != null && profileLookup[sifEnv]) {
     return profileLookup[sifEnv];
   }
+
   console.error(new Error(`Cannot render environment ${sifEnv} ${cookieEnv}`));
+
   return profileLookup[NetworkEnv.MAINNET];
 }
