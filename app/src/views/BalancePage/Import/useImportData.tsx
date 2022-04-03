@@ -6,7 +6,7 @@ import {
   useToken,
   useTokenList,
 } from "@/hooks/useToken";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 import {
   Network,
   AssetAmount,

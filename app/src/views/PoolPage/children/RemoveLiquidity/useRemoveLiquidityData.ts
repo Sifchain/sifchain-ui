@@ -2,7 +2,7 @@ import { ref, watch, computed, effect, Ref } from "vue";
 import { useRoute } from "vue-router";
 import { LiquidityProvider, Network, TransactionStatus } from "@sifchain/sdk";
 
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
+import { useWalletButton } from "@/hooks/useWalletButton";
 import { useCore } from "@/hooks/useCore";
 import { debounce } from "@/views/utils/debounce";
 import { accountStore } from "@/store/modules/accounts";

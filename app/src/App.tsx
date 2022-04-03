@@ -1,34 +1,21 @@
-<template>
-  <div class="main">
-    <SideBar />
-    <router-view />
-    <OnboardingModal
-      v-if="shouldShowOnboardingModal"
-      :onClose="onCloseOnboardingModal"
-    />
-    <Notifications />
-    <EnvAlert />
-    <Flags />
-    <ExpansionIntro v-if="!hasShownExpansionIntro" />
-  </div>
-</template>
-
-<script lang="ts">
 import { defineComponent, watchEffect, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Amount } from "@sifchain/sdk";
 
-import EnvAlert from "@/componentsLegacy/shared/EnvAlert.vue";
-import SideBar from "@/componentsLegacy/NavSidePanel/NavSidePanel";
-import Notifications from "./componentsLegacy/Notifications/Notifications.vue";
-import { useInitialize } from "./hooks/useInitialize";
+import { useInitialize } from "@/hooks/useInitialize";
 
+import EnvAlert from "@/components/EnvAlert";
+import SideBar from "@/components/NavSidePanel";
+import Notifications from "@/components/Notifications";
 import Flags from "@/components/Flags";
-import { accountStore } from "./store/modules/accounts";
+import { ExpansionIntro } from "@/components/ExpansionIntro";
+
+import { accountStore } from "@/store/modules/accounts";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import OnboardingModal from "@/components/OnboardingModal";
-import { ExpansionIntro } from "@/components/ExpansionIntro";
-import { animateFireflies } from "./utils/animateFireflies";
+
+import "./App.scss";
+
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
   let hiddenCount = 0;
@@ -68,20 +55,6 @@ let hasShownOnboardingModal = (() => {
     return true;
   }
 })();
-const hasShownExpansionIntro = (() => {
-  try {
-    if (Date.now() > new Date(`2021-11-29T05:04:40.941Z`).getTime()) {
-      return true;
-    }
-    const val = !!localStorage.getItem("hasShownExpansionRewardsIntro");
-    return val;
-  } catch (e) {
-    return true;
-  }
-})();
-try {
-  localStorage.setItem("hasShownExpansionRewardsIntro", "true");
-} catch (e) {}
 
 export default defineComponent({
   name: "App",
@@ -95,11 +68,7 @@ export default defineComponent({
   },
   computed: {
     key() {
-      console.log(this.$route.path);
       return this.$route.path;
-    },
-    hasShownExpansionIntro() {
-      return hasShownExpansionIntro;
     },
   },
   setup() {
@@ -112,14 +81,6 @@ export default defineComponent({
       }, 3000);
     });
     watchEffect(() => {
-      // easter egg
-      if (
-        accountStore.state.sifchain.address ===
-        "sif1cp3y0wpn0qt6sjdgjmam7dstpjunlk3hanqlx5"
-      ) {
-        animateFireflies();
-      }
-      //
       const balances = accountStore.state.sifchain.balances;
       const hasSufficientRowanToTrade = balances.find(
         (b) =>
@@ -154,51 +115,22 @@ export default defineComponent({
     });
     /// Initialize app
     useInitialize();
-    return {
-      shouldShowOnboardingModal,
-      onCloseOnboardingModal: () => {
-        shouldShowOnboardingModal.value = false;
-      },
+
+    const onCloseOnboardingModal = () => {
+      shouldShowOnboardingModal.value = false;
     };
+
+    return () => (
+      <div class="min-h-screen">
+        <SideBar />
+        <router-view />
+        {shouldShowOnboardingModal.value && (
+          <OnboardingModal onClose={onCloseOnboardingModal} />
+        )}
+        <Notifications />
+        <EnvAlert />
+        <Flags />
+      </div>
+    );
   },
 });
-</script>
-
-<style lang="scss">
-// @import "normalize-scss";
-
-// Import fonts:
-// @import url("https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Rouge+Script&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css?family=Roboto+Mono|Source+Sans+Pro:300,400,600");
-
-@import "@/scss/utilities.scss";
-@import "@/scss/reset.scss";
-
-#app,
-#portal-target,
-#tooltip-target {
-  // font: normal bold 14px/22px $f_default;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-.main {
-  min-height: 100vh;
-}
-
-.connected-button {
-  cursor: pointer;
-}
-</style>
