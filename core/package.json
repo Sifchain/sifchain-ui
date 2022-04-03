@@ -14,15 +14,18 @@
     "integration": "./scripts/integration.sh",
     "test": "yarn jest --passWithNoTests --collect-coverage --projects jest-unit.config.js",
     "test:integration": "yarn jest --projects --collect-coverage jest-integration.config.js",
-    "codegen": "./scripts/ts-protogen"
+    "syncProto": "rm -rf proto && degit Sifchain/sifnode/proto/sifnode#${TAG:-'develop'} proto/sifnode && degit Sifchain/sifnode/third_party/proto#${TAG:-'develop'} proto/third_party",
+    "codegen": "protoc -I=proto -I=proto/third_party proto/sifnode/**/*.proto --plugin=../node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=src/generated --ts_proto_opt='esModuleInterop=true,forceLong=long,useOptionals=true'"
   },
   "files": [
     "build"
   ],
   "dependencies": {
-    "@cosmjs/launchpad": "^0.23.2",
-    "@cosmjs/stargate": "^0.25.6",
-    "@cosmjs/tendermint-rpc": "^0.25.6",
+    "@cosmjs/launchpad": "^0.27.1",
+    "@cosmjs/math": "^0.28.1",
+    "@cosmjs/proto-signing": "^0.28.1",
+    "@cosmjs/stargate": "^0.28.1",
+    "@cosmjs/tendermint-rpc": "^0.28.1",
     "@keplr-wallet/types": "^0.9.12",
     "@metamask/detect-provider": "^1.2.0",
     "big.js": "^6.1.1",
@@ -60,6 +63,7 @@
     "@types/jsonp": "^0.2.1",
     "@types/lodash": "^4.14.180",
     "babel-jest": "^26.6.3",
+    "degit": "^2.8.4",
     "jest": "^27.5.1",
     "jest-environment-jsdom": "^27.5.1",
     "jest-websocket-mock": "^2.3.0",
