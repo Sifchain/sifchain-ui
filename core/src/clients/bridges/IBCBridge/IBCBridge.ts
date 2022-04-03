@@ -11,8 +11,7 @@ import {
   setupAuthExtension,
   setupBankExtension,
   setupIbcExtension,
-} from "@cosmjs/stargate/build/queries";
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+} from "@cosmjs/stargate";
 import { fetch } from "cross-fetch";
 import {
   IBCChainConfig,
@@ -34,6 +33,7 @@ import {
 } from "../../native";
 import { parseTxFailure } from "../../../utils/parseTxFailure";
 import { SifUnSignedClient } from "../../native/SifClient";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 
 export type IBCBridgeContext = {
   sifRpcUrl: string;
@@ -229,16 +229,6 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
           // we create amino additions, but these will not be used, because IBC types are already included & assigned
           // on top of the amino additions by default
           aminoTypes: new NativeAminoTypes(),
-          gasLimits: {
-            send: 80000,
-            transfer: 360000,
-            delegate: 250000,
-            undelegate: 250000,
-            redelegate: 250000,
-            // The gas multiplication per rewards.
-            withdrawRewards: 140000,
-            govVote: 250000,
-          },
         },
       );
 

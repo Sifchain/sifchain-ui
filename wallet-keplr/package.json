@@ -5,10 +5,10 @@
   "module": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
-    "@cosmjs/launchpad": "^0.23.0",
-    "@cosmjs/proto-signing": "^0.25.6",
-    "@cosmjs/stargate": "^0.25.5",
-    "@cosmjs/tendermint-rpc": "^0.25.5",
+    "@cosmjs/launchpad": "^0.27.1",
+    "@cosmjs/proto-signing": "^0.28.1",
+    "@cosmjs/stargate": "^0.28.1",
+    "@cosmjs/tendermint-rpc": "^0.28.1",
     "@keplr-wallet/cosmos": "^0.9.16",
     "@keplr-wallet/stores": "^0.9.18",
     "@sifchain/sdk": "workspace:*"
