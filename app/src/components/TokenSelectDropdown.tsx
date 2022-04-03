@@ -11,7 +11,7 @@ import {
   watch,
 } from "vue";
 
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 import AssetIcon from "@/components/AssetIcon";
 import { useCore } from "@/hooks/useCore";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";

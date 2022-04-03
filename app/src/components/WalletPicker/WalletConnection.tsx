@@ -1,6 +1,6 @@
 import { defineComponent, PropType, ref } from "vue";
 
-import { shortenHash } from "@/componentsLegacy/shared/utils";
+import { shortenHash } from "@/components/utils";
 import AssetIcon from "@/components/AssetIcon";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import { accountStore } from "@/store/modules/accounts";
