@@ -47,13 +47,13 @@ export default defineComponent({
         <div
           key="view-layer"
           class={[
-            `shadow-2xl transition-all justify-start flex-col items-center bg-black relative w-[50vw] max-w-[800px] min-w-[531px] rounded-[10px] text-white px-4`,
+            `relative w-[50vw] min-w-[531px] max-w-[800px] flex-col items-center justify-start rounded-[10px] bg-black px-4 text-white shadow-2xl transition-all`,
             props.class,
           ]}
         >
-          <div class="sticky top-0 w-full bg-black z-10 pt-4">
+          <div class="sticky top-0 z-10 w-full bg-black pt-4">
             {!!props.heading && (
-              <div class="w-full flex-row flex justify-between items-center pb-[10px]">
+              <div class="flex w-full flex-row items-center justify-between pb-[10px]">
                 <div class="flex items-center">
                   {!!props.iconName &&
                     (props.iconType === "AssetIcon" ? (
@@ -70,7 +70,7 @@ export default defineComponent({
                     ))}
                   <span
                     class={[
-                      "text-accent-base font-sans text-[26px] ml-[10px] font-semibold",
+                      "text-accent-base ml-[10px] font-sans text-[26px] font-semibold",
                       props.headingClass,
                     ]}
                   >

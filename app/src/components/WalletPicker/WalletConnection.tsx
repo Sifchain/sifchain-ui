@@ -70,13 +70,13 @@ export default defineComponent({
             role="button"
             onClick={handleClick}
             class={[
-              "h-[42px] flex items-center px-[10px] w-full border border-solid rounded cursor-pointer focus:bg-black hover:bg-black transition-all",
+              "flex h-[42px] w-full cursor-pointer items-center rounded border border-solid px-[10px] transition-all hover:bg-black focus:bg-black",
               stateRef.value.connected
                 ? `border-connected-base`
                 : `border-transparent`,
             ]}
           >
-            <div class="flex-1 items-center flex text-left">
+            <div class="flex flex-1 items-center text-left">
               <TokenIcon
                 assetValue={props.connection.getChain().nativeAsset}
                 class="w-[22px]"
@@ -85,15 +85,15 @@ export default defineComponent({
                 <div class="text-sm font-bold leading-none">
                   {props.connection.getChain().displayName}
                 </div>
-                <div class="text-sm opacity-50 capitalize text-left">
+                <div class="text-left text-sm capitalize opacity-50">
                   {props.connection.walletName}
                 </div>
               </div>
             </div>
-            <div class="flex-1 cursor-pointer text-sm flex justify-between items-center w-full">
+            <div class="flex w-full flex-1 cursor-pointer items-center justify-between text-sm">
               <img
                 src={props.connection.walletIconSrc}
-                class={"w-[20px] max-w-[20px] h-[20px] rounded"}
+                class={"h-[20px] w-[20px] max-w-[20px] rounded"}
               />
               <div class="flex items-center">
                 {stateRef.value.connected
@@ -104,12 +104,12 @@ export default defineComponent({
                 {stateRef.value.connecting ? (
                   <AssetIcon
                     icon="interactive/anim-racetrack-spinner"
-                    class="ml-[10px] w-[15px] h-[15px] transition-all"
+                    class="ml-[10px] h-[15px] w-[15px] transition-all"
                   />
                 ) : (
                   <AssetIcon
                     icon="interactive/chevron-down"
-                    class="ml-[10px] w-[15px] h-[15px] transition-all"
+                    class="ml-[10px] h-[15px] w-[15px] transition-all"
                     style={{
                       transform: !instanceRef.value
                         ? "rotate(-90deg)"

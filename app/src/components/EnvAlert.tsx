@@ -43,15 +43,15 @@ export default defineComponent({
     )?.[0];
 
     return () => (
-      <div class="fixed bottom-0 left-64 h-8 w-36 rounded-t overflow-hidden">
+      <div class="fixed bottom-0 left-64 h-8 w-36 overflow-hidden rounded-t">
         {networkEnv && classNames ? (
-          <div class={["font-semibold p-1 text-center", classNames]}>
+          <div class={["p-1 text-center font-semibold", classNames]}>
             {Object.entries(NetworkEnv).find((e) => e[1] === networkEnv)?.[0]}
           </div>
         ) : null}
         <select
           value={networkEnv}
-          class={["absolute left-0 top-0 w-full h-full opacity-0"]}
+          class={["absolute left-0 top-0 h-full w-full opacity-0"]}
           onInput={(e) => {
             appCookies.setEnv(
               (e.target as HTMLInputElement).value as NetworkEnv,

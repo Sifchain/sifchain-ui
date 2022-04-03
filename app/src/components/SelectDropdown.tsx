@@ -94,7 +94,7 @@ export const SelectDropdown = defineComponent({
           <div
             onClick={() => tooltipInstance.value?.hide()}
             class={[
-              "bg-gray-input_outline border-gray-500 border-solid border rounded-sm overflow-hidden",
+              "bg-gray-input_outline overflow-hidden rounded-sm border border-solid border-gray-500",
               props.class,
             ]}
           >
@@ -102,7 +102,7 @@ export const SelectDropdown = defineComponent({
               <div
                 key={option.value}
                 class={[
-                  "flex items-center w-full pl-[12px] pr-[16px] text-md h-[48px] hover:bg-gray-input cursor-pointer font-normal whitespace-nowrap",
+                  "text-md hover:bg-gray-input flex h-[48px] w-full cursor-pointer items-center whitespace-nowrap pl-[12px] pr-[16px] font-normal",
                 ]}
                 onClick={() => {
                   props.onChangeValue(option.value);

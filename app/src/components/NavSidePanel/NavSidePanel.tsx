@@ -1,5 +1,5 @@
-import { defineComponent, onMounted, ref, watch } from "vue";
-import { computed } from "@vue/reactivity";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
+
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import NavSidePanelItem from "./NavSidePanelItem";
 import Logo from "@/assets/logo-large.svg";
@@ -111,7 +111,7 @@ export default defineComponent({
         <Button.Inline
           id="open-button"
           class={[
-            "hidden sm:block fixed top-[8px] rounded-bl-none rounded-tl-none left-0 z-40 transition-all transform duration-500",
+            "fixed top-[8px] left-0 z-40 hidden transform rounded-bl-none rounded-tl-none transition-all duration-500 sm:block",
             isOpenRef.value ? "translate-x-[-100%]" : "translate-x-none",
             isOpenRef.value ? "ml-sidebar left-[-8px]" : "ml-0",
             isOpenRef.value ? "!rounded-sm" : "",
@@ -129,25 +129,25 @@ export default defineComponent({
         <div
           ref={sidebarRef}
           class={[
-            "overflow-y-scroll font-sans flex-row align-center justify-center container w-sidebar h-full z-30 bg-black text-white fixed left-0 top-0 bottom-0 transition-transform sm:translate-x-[-100%] sm:duration-500",
+            "align-center w-sidebar container fixed left-0 top-0 bottom-0 z-30 h-full flex-row justify-center overflow-y-scroll bg-black font-sans text-white transition-transform sm:translate-x-[-100%] sm:duration-500",
             isOpenRef.value && "!translate-x-0",
           ]}
         >
-          <div class="w-full h-full text-center flex flex-col flex-1 justify-between px-[10px]">
+          <div class="flex h-full w-full flex-1 flex-col justify-between px-[10px] text-center">
             <div class="top">
-              <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
-                <Logo class="w-[119px] shorter:w-[90px]" />
+              <div class="shorter:mt-[7.5vmin] mt-[38px] flex justify-center">
+                <Logo class="shorter:w-[90px] w-[119px]" />
               </div>
               {/* <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
                 <Logo class="w-full h-[50px]" />
               </div> */}
-              <div class="mt-[9.3vmin] shorter:mt-[7.5vmin]">
+              <div class="shorter:mt-[7.5vmin] mt-[9.3vmin]">
                 <NavSidePanelItem
                   displayName="Dashboard"
                   icon="navigation/dashboard"
-                  class="opacity-50 pointer-events-none"
+                  class="pointer-events-none opacity-50"
                   action={
-                    <div class="py-[2px] px-[6px] text-sm text-info-base border-solid border-[1px] rounded-full border-info-base mr-[8px] justify-self-end">
+                    <div class="text-info-base border-info-base mr-[8px] justify-self-end rounded-full border-[1px] border-solid py-[2px] px-[6px] text-sm">
                       Soon
                     </div>
                   }
@@ -185,7 +185,7 @@ export default defineComponent({
                   action={
                     changelogViewedVersion.isLatest() ? undefined : (
                       <div class="flex flex-1 justify-end">
-                        <div class="w-[8px] h-[8px] mr-[2px] bg-accent-base rounded-full" />
+                        <div class="bg-accent-base mr-[2px] h-[8px] w-[8px] rounded-full" />
                       </div>
                     )
                   }
@@ -221,7 +221,7 @@ export default defineComponent({
                       href="https://stakely.io/faucet/sifchain-rowan"
                       class="group"
                       action={
-                        <div class="hidden group-hover:flex flex-1 justify-end items-center">
+                        <div class="hidden flex-1 items-center justify-end group-hover:flex">
                           <AssetIcon
                             icon="interactive/open-external"
                             size={16}
@@ -266,7 +266,7 @@ export default defineComponent({
               >
                 <div
                   class={[
-                    "mt-[10px] h-[46px] w-full flex items-center cursor-pointer justify-between px-[16px] text-black rounded-t-[10px] font-semibold",
+                    "mt-[10px] flex h-[46px] w-full cursor-pointer items-center justify-between rounded-t-[10px] px-[16px] font-semibold text-black",
                   ]}
                   style={{
                     backgroundImage:
@@ -294,8 +294,8 @@ export default defineComponent({
                     </div>
                   )}
                 </div>
-                <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
-                  <div class="text-sm whitespace-pre">
+                <div class="bg-gray-250 text-accent-base rounded-b-[10px] p-[12px] text-left font-medium">
+                  <div class="whitespace-pre text-sm">
                     Voting open until{" "}
                     {new Date(
                       proposalData.value.proposal.endDateTime,
@@ -317,7 +317,7 @@ export default defineComponent({
                         type: "vol",
                       },
                     }}
-                    class="h-[46px] flex items-center justify-between px-[16px] cursor-pointer text-black rounded-t-[20px] font-semibold"
+                    class="flex h-[46px] cursor-pointer items-center justify-between rounded-t-[20px] px-[16px] font-semibold text-black"
                     style={{
                       backgroundImage:
                         "linear-gradient(93.61deg, #C79E3A 0.77%, #EBCA62 100%)",
@@ -335,9 +335,9 @@ export default defineComponent({
                       />
                     </div>
                   </RouterLink>
-                  <div class="p-[12px] bg-gray-250 rounded-b-[10px] text-accent-base font-medium text-left">
+                  <div class="bg-gray-250 text-accent-base rounded-b-[10px] p-[12px] text-left font-medium">
                     <div class="text-sm">View the Leaderboards</div>
-                    <div class="flex items-center mt-[8px]">
+                    <div class="mt-[8px] flex items-center">
                       {["vol", "txn"].map((type) => (
                         <RouterLink
                           to={{
@@ -348,7 +348,7 @@ export default defineComponent({
                           }}
                           key={type}
                         >
-                          <div class="pl-[8px] pr-[6px] h-[22px] border-solid border border-accent-base rounded-xs flex items-center text-sm hover:bg-gray-500 mr-[10px] whitespace-nowrap">
+                          <div class="border-accent-base rounded-xs mr-[10px] flex h-[22px] items-center whitespace-nowrap border border-solid pl-[8px] pr-[6px] text-sm hover:bg-gray-500">
                             {type === "vol" ? "Volume" : "Tx Count"}
                             <AssetIcon
                               icon="interactive/chevron-down"
@@ -366,9 +366,9 @@ export default defineComponent({
                 </div>
               )}
             <div class="bottom mt-[10px]">
-              <div class="transition-all w-full text-left mb-[2.2vh]">
+              <div class="mb-[2.2vh] w-full text-left transition-all">
                 <NavSidePanelItem
-                  class={"opacity-50 mt-[0px]"}
+                  class={"mt-[0px] opacity-50"}
                   displayName={
                     <>
                       {tvl.data.value ? `${tvl.data.value.formatted}` : "..."}{" "}
@@ -379,7 +379,7 @@ export default defineComponent({
                 />
                 {isPMTPEnabled && (
                   <NavSidePanelItem
-                    class={"opacity-50 mt-[0px]"}
+                    class={"mt-[0px] opacity-50"}
                     displayName={
                       <>
                         PMTP{" "}
@@ -394,7 +394,7 @@ export default defineComponent({
                   />
                 )}
                 <NavSidePanelItem
-                  class={"opacity-50 mt-[0px]"}
+                  class={"mt-[0px] opacity-50"}
                   displayName={
                     <>
                       {rowanPrice.value
@@ -439,7 +439,7 @@ export default defineComponent({
                     ) : (
                       <>
                         <div>Connected Wallets</div>
-                        <div class="opacity-50 text-sm font-semibold w-full text-left mt-[-2px]">
+                        <div class="mt-[-2px] w-full text-left text-sm font-semibold opacity-50">
                           {!accountStore.state.sifchain.connecting &&
                             accountStore.state.sifchain
                               .hasLoadedBalancesOnce && (
@@ -475,7 +475,7 @@ export default defineComponent({
                         style={{
                           transform: "rotate(-90deg)",
                         }}
-                        class="w-[20px] h-[20px]"
+                        class="h-[20px] w-[20px]"
                       />
                     ) : accountStore.getters.isConnecting ? (
                       <div class="flex flex-1 justify-end">
@@ -486,7 +486,7 @@ export default defineComponent({
                         />
                       </div>
                     ) : (
-                      <div class="w-[20px] h-[20px] ml-auto rounded-full border-connected-base text-connected-base flex items-center justify-center border border-solid flex-shrink-0">
+                      <div class="border-connected-base text-connected-base ml-auto flex h-[20px] w-[20px] flex-shrink-0 items-center justify-center rounded-full border border-solid">
                         {connectedNetworkCount.value}
                       </div>
                     )
@@ -494,7 +494,7 @@ export default defineComponent({
                 />
               </Tooltip>
 
-              <div class="opacity-20 font-mono mt-[24px] text-sm pb-[10px] hover:opacity-100">
+              <div class="mt-[24px] pb-[10px] font-mono text-sm opacity-20 hover:opacity-100">
                 {/* V.2.0.X © {new Date().getFullYear()} Sifchain */}
                 {changesData.isSuccess.value &&
                   "V." + changesData.data.value?.version?.toUpperCase()}{" "}

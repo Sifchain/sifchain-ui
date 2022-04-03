@@ -14,7 +14,7 @@ export const YesNoSelector = defineComponent({
   },
   render() {
     return (
-      <div class="flex items-center text-lg pl-[8px]">
+      <div class="flex items-center pl-[8px] text-lg">
         <label class="flex items-center">
           <input
             style={{ width: "16px", height: "16px" }}
@@ -24,7 +24,7 @@ export const YesNoSelector = defineComponent({
           />
           <span class="ml-[4px]">Yes</span>
         </label>
-        <label class="flex items-center ml-[24px]">
+        <label class="ml-[24px] flex items-center">
           <input
             type="radio"
             style={{ width: "16px", height: "16px" }}

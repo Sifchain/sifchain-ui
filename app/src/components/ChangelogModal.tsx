@@ -68,12 +68,12 @@ export default defineComponent({
           showClose
           onClose={props.onClose}
         >
-          <div class="max-h-[70vh] overflow-y-scroll w-[calc(100% + 4px)]">
+          <div class="w-[calc(100% + 4px)] max-h-[70vh] overflow-y-scroll">
             <div
               class="css-unreset text-left"
               innerHTML={res.data.value?.changelog || ""}
             />
-            <div class="w-full h-[16px]" />
+            <div class="h-[16px] w-full" />
           </div>
           <Button.CallToAction onClick={props.onClose}>
             Close

@@ -73,10 +73,10 @@ export default defineComponent({
     });
     return () => (
       <div class="fixed inset-0 z-20">
-        <div class="overflow-hidden fixed h-screen bg-white bg-opacity-25 z-20 inset-0 animate-fade-in duration-300" />
+        <div class="animate-fade-in fixed inset-0 z-20 h-screen overflow-hidden bg-white bg-opacity-25 duration-300" />
         <div
           class={[
-            "overflow-y-scroll h-screen fixed left-sidebar sm:left-0 inset-0 flex items-center shorter:py-[4vh] justify-center z-20 animate-fade-in duration-500 animate-fade-in-up",
+            "left-sidebar shorter:py-[4vh] animate-fade-in animate-fade-in-up fixed inset-0 z-20 flex h-screen items-center justify-center overflow-y-scroll duration-500 sm:left-0",
             props.containerClass,
           ]}
           onClick={() => {
@@ -84,18 +84,18 @@ export default defineComponent({
           }}
         >
           <div
-            class={`justify-start flex-col items-center bg-black relative w-[530px] rounded-[10px] text-white p-4 ${
+            class={`relative w-[530px] flex-col items-center justify-start rounded-[10px] bg-black p-4 text-white ${
               props.class || ""
             }`}
             onClick={(e) => e.stopPropagation()}
           >
             {!!props.heading && (
-              <div class="w-full flex-row flex justify-between items-center pb-4">
+              <div class="flex w-full flex-row items-center justify-between pb-4">
                 <div class="flex items-center">
                   {props.icon ? (
                     <AssetIcon icon={props.icon} active size={32} />
                   ) : null}
-                  <span class="text-accent-base font-sans text-[26px] ml-[10px] font-semibold">
+                  <span class="text-accent-base ml-[10px] font-sans text-[26px] font-semibold">
                     {props.heading}
                   </span>
                 </div>

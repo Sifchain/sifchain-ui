@@ -19,14 +19,14 @@ export default defineComponent({
     return () => (
       <>
         <div
-          class="flex absolute justify-center sm:left-0 left-sidebar top-0 right-0 bottom-0 bg-gray-background overflow-y-scroll bg-black bg-opacity-40"
+          class="left-sidebar bg-gray-background absolute top-0 right-0 bottom-0 flex justify-center overflow-y-scroll bg-black bg-opacity-40 sm:left-0"
           onScroll={props.onScroll as HtmlHTMLAttributes["onScroll"]}
         >
           {context.slots.default?.()}
           <div id="modal-target"></div>
 
           {!!bannerMessageRef.value && (
-            <div class="flex absolute top-0 left-0 right-0 items-center justify-center bg-info-base text-white p-[12px] px-[100px] pr-[200px] overflow-visible">
+            <div class="bg-info-base absolute top-0 left-0 right-0 flex items-center justify-center overflow-visible p-[12px] px-[100px] pr-[200px] text-white">
               <p>{bannerMessageRef.value}</p>
             </div>
           )}

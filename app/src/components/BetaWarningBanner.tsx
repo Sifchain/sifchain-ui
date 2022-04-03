@@ -8,14 +8,14 @@ export default defineComponent({
 
     return () => (
       <div
-        class="absolute top-0 w-48 right-14 transition-all z-20 drop-shadow-lg flex flex-col items-end"
+        class="absolute top-0 right-14 z-20 flex w-48 flex-col items-end drop-shadow-lg transition-all"
         style={{
           transform: `translateY(${
             expandedRef.value ? 0 : "calc(-100% + 40px)"
           })`,
         }}
       >
-        <div class="p-[20px] bg-accent-gradient text-sm w-[80vw] max-w-[990px] rounded-bl">
+        <div class="bg-accent-gradient w-[80vw] max-w-[990px] rounded-bl p-[20px] text-sm">
           Welcome to our BetaNet! Please be aware that while this has passed
           several public security audits, it is still in Beta. We encourage you
           to first understand how it works before transacting on it and exercise
@@ -32,7 +32,7 @@ export default defineComponent({
           <b class="text-md">This platform is not open to U.S. persons.</b>
         </div>
         <button
-          class="bg-accent-accent_gradient_to h-[40px] px-[14px] flex items-center rounded-b"
+          class="bg-accent-accent_gradient_to flex h-[40px] items-center rounded-b px-[14px]"
           onClick={() => (expandedRef.value = !expandedRef.value)}
         >
           <AssetIcon

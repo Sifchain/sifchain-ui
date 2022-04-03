@@ -93,7 +93,7 @@ export const SearchBox = defineComponent({
       <div
         {...containerProps}
         class={[
-          "bg-gray-input h-8 relative flex items-center rounded overflow-hidden focus-within:border-white border border-solid border-gray-input_outline",
+          "bg-gray-input border-gray-input_outline relative flex h-8 items-center overflow-hidden rounded border border-solid focus-within:border-white",
           containerProps?.class,
           containerClass,
         ]}
@@ -101,7 +101,7 @@ export const SearchBox = defineComponent({
         <AssetIcon
           size={20}
           icon="interactive/search"
-          class={clsx(`ml-3 w-4 h-4`, {
+          class={clsx(`ml-3 h-4 w-4`, {
             "text-[#6E6E6E]": props.disabled,
           })}
         />
@@ -112,7 +112,7 @@ export const SearchBox = defineComponent({
           {...(inputProps as Partial<InputHTMLAttributes>)}
           value={props.value}
           class={[
-            "box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium text-md",
+            "text-md absolute top-0 bottom-0 left-0 right-0 box-border h-full w-full bg-transparent pl-8 pr-3 font-sans font-medium text-white outline-none",
             props.class,
           ]}
         />
@@ -121,7 +121,7 @@ export const SearchBox = defineComponent({
           <label
             for={props.id}
             class={clsx(
-              "absolute right-2 items-center gap-[6px] flex transition-transform",
+              "absolute right-2 flex items-center gap-[6px] transition-transform",
               {
                 "translate-x-[-34px]": props.value?.length,
               },
@@ -130,7 +130,7 @@ export const SearchBox = defineComponent({
             {[`${isMacOs.value ? "Cmd" : "Ctrl"} F`, "/"].map((key) => (
               <div
                 key={key}
-                class="rounded px-2 py-[6px] text-sm font-mono bg-gray-base opacity-60 hover:opacity-80 transition-transform"
+                class="bg-gray-base rounded px-2 py-[6px] font-mono text-sm opacity-60 transition-transform hover:opacity-80"
               >
                 {key}
               </div>

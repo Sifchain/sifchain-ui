@@ -1,6 +1,3 @@
-import { useChains } from "@/hooks/useChains";
-import { isLikeSymbol } from "@/utils/symbol";
-import { IAsset, Network } from "@sifchain/sdk";
 import {
   computed,
   defineComponent,
@@ -10,9 +7,13 @@ import {
   Ref,
   watch,
 } from "vue";
-import AssetIcon from "../AssetIcon";
+import { IAsset } from "@sifchain/sdk";
+
+import { useChains } from "@/hooks/useChains";
+import { isLikeSymbol } from "@/utils/symbol";
 import { TokenIcon } from "../TokenIcon";
 import { Tooltip } from "../Tooltip";
+import AssetIcon from "../AssetIcon";
 
 export const TokenNetworkIcon = defineComponent({
   name: "TokenNetworkIcon",

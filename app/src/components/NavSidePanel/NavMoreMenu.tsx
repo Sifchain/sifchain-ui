@@ -50,7 +50,7 @@ export default defineComponent({
         {items.map((item) => (
           <a
             key={item.name}
-            class="text-sm text-gray-800 no-underline hover:text-white active:text-accent-base cursor-pointer flex items-center h-[23px]"
+            class="active:text-accent-base flex h-[23px] cursor-pointer items-center text-sm text-gray-800 no-underline hover:text-white"
             href={item.href}
             rel={item.href.startsWith("#") ? undefined : "noreferrer noopener"}
             target={item.href.startsWith("#") ? undefined : "_blank"}

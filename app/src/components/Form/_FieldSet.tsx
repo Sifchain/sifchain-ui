@@ -7,7 +7,7 @@ export const _FieldSet = defineComponent({
       <div
         {...ctx.attrs}
         class={[
-          `w-full flex flex-col bg-gray-base p-[20px] rounded-[10px]`,
+          `bg-gray-base flex w-full flex-col rounded-[10px] p-[20px]`,
           ctx.attrs.class,
         ]}
       >

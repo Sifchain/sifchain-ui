@@ -78,7 +78,7 @@ export const NotificationElement = defineComponent({
           removeRef.value();
         }}
         class={[
-          "absolute bottom-0 right-0 h-[40px] flex px-[10px] bg-black drop-shadow-lg rounded-lg cursor-pointer text-md items-center tracking-[-0.025em] whitespace-nowrap",
+          "text-md absolute bottom-0 right-0 flex h-[40px] cursor-pointer items-center whitespace-nowrap rounded-lg bg-black px-[10px] tracking-[-0.025em] drop-shadow-lg",
           props.notification?.onAction && "cursor-pointer",
           data.class,
         ]}
@@ -110,7 +110,7 @@ export const NotificationElement = defineComponent({
                 removeRef.value();
                 ev.stopPropagation();
               }}
-              class="text-white p-[2px] ml-[8px] hover:bg-gray-action_button cursor-pointer rounded-sm"
+              class="hover:bg-gray-action_button ml-[8px] cursor-pointer rounded-sm p-[2px] text-white"
             >
               <AssetIcon
                 icon="interactive/close"

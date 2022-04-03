@@ -59,13 +59,13 @@ export default defineComponent({
           })}
           {...(props.onClick && { onClick: props.onClick })}
           class={[
-            `flex items-center text-sm h-[32px] mt-[10px] px-[8px] hover:bg-gray-200  transition-colors duration-75 cursor-pointer rounded w-full text-left font-semibold whitespace-nowrap`,
-            isActive.value && "bg-gray-200 text-accent-base",
+            `mt-[10px] flex h-[32px] w-full cursor-pointer items-center whitespace-nowrap  rounded px-[8px] text-left text-sm font-semibold transition-colors duration-75 hover:bg-gray-200`,
+            isActive.value && "text-accent-base bg-gray-200",
             props.class,
           ]}
         >
           <AssetIcon
-            class={`transition-all w-[20px] h-[20px] inline-block flex-shrink-0`}
+            class={`inline-block h-[20px] w-[20px] flex-shrink-0 transition-all`}
             icon={props.icon}
             active={isActive.value}
           />
