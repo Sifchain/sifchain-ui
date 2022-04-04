@@ -5,8 +5,10 @@ import { useAsyncData } from "@/hooks/useAsyncData";
 
 import Button from "./Button";
 
-const VITE_APP_SHA = import.meta.env.VITE_APP_SHA || "master";
-const VITE_APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.0.1.local";
+const VITE_APP_SHA = String(import.meta.env.VITE_APP_SHA || "master");
+const VITE_APP_VERSION = String(
+  import.meta.env.VITE_APP_VERSION || "0.0.1.local",
+);
 
 type ChangelogData = {
   version: string;
@@ -14,8 +16,12 @@ type ChangelogData = {
 };
 
 async function fetchChangelogData(): Promise<ChangelogData> {
+  const tag = /^(\d+).(\d+).(\d+)$/.test(VITE_APP_SHA)
+    ? `v${VITE_APP_SHA}`
+    : VITE_APP_SHA;
+
   const json = await fetch(
-    `https://sifchain-changes-server.vercel.app/api/changes/${VITE_APP_SHA}`,
+    `https://sifchain-changes-server.vercel.app/api/changes/${tag}`,
   ).then((res) => res.json() as Promise<ChangelogData>);
 
   return {
