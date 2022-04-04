@@ -1,4 +1,4 @@
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 import { useChainsList } from "@/hooks/useChains";
 import { TokenListItem } from "@/hooks/useToken";
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";

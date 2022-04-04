@@ -8,7 +8,7 @@ export default function AdvancedProgressRing(props: {
   const sizeStyle = { width: props.size + "px", height: props.size + "px" };
   return (
     <div class={[`relative`, props.class]} style={sizeStyle}>
-      <div class="absolute left-0 top-0 text-gray-input" style={sizeStyle}>
+      <div class="text-gray-input absolute left-0 top-0" style={sizeStyle}>
         {/* Background ring: faded color, full circle */}
         <BasicProgressRing
           radius={props.size / 2}

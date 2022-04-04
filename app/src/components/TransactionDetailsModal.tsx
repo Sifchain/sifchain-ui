@@ -52,14 +52,14 @@ export default defineComponent({
           onClose={props.onClose}
           showClose
         >
-          <div class="p-4 bg-gray-base rounded-lg">
+          <div class="bg-gray-base rounded-lg p-4">
             <Form.Details
               details={props.details.value}
               isError={props.transactionDetails.value?.isError}
             />
             {props.transactionDetails.value?.tx?.hash && (
               <a
-                class="text-white block text-center cursor-pointer mt-[10px] text-base underline"
+                class="mt-[10px] block cursor-pointer text-center text-base text-white underline"
                 target="_blank"
                 rel="noopener noreferrer"
                 href={useChains()
@@ -72,7 +72,7 @@ export default defineComponent({
               </a>
             )}
           </div>
-          <p class="mt-[10px] text-base text-center flex items-center justify-center">
+          <p class="mt-[10px] flex items-center justify-center text-center text-base">
             {isLoading && (
               <AssetIcon
                 icon="interactive/anim-racetrack-spinner"
@@ -82,7 +82,7 @@ export default defineComponent({
             )}
             {props.transactionDetails.value?.description ===
             "ledger_smart_contracts_not_approved" ? (
-              <div class="white-space-pre-wrap text-left css-unreset my-[16px]">
+              <div class="white-space-pre-wrap css-unreset my-[16px] text-left">
                 It looks like you may have a MetaMask + Ledger configuration
                 issue. If you are using a new version of Ledger, you must select
                 the Ethereum app and enable contract data.

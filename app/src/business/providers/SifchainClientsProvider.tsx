@@ -1,0 +1,72 @@
+import { useCore } from "@/hooks/useCore";
+import { createQueryClient, createSigningClient } from "@sifchain/sdk";
+import {
+  defineComponent,
+  inject,
+  InjectionKey,
+  onMounted,
+  provide,
+  reactive,
+} from "vue";
+
+type QueryClients = Awaited<ReturnType<typeof createQueryClient>>;
+
+type QueryClientsState =
+  | ({
+      queryClientStatus: "fulfilled";
+    } & QueryClients)
+  | { queryClientStatus?: "pending" | "rejected" };
+
+type SigningClient = Awaited<ReturnType<typeof createSigningClient>>;
+
+type SigningClientState =
+  | {
+      signingClientStatus: "fulfilled";
+      signingClient: SigningClient;
+    }
+  | {
+      signingClientStatus?: "pending" | "rejected";
+    };
+
+export type ClientsState = QueryClientsState & SigningClientState;
+
+export const sifchainClientsSymbol: InjectionKey<ClientsState> =
+  Symbol("sifchainClients");
+
+export const SifchainClientsProvider = defineComponent((_, { slots }) => {
+  const state = reactive<ClientsState>({
+    queryClientStatus: undefined,
+    signingClientStatus: undefined,
+  });
+
+  const { config, services } = useCore();
+
+  onMounted(() => {
+    state.queryClientStatus = "pending";
+    const queryClientPromise = createQueryClient(config.sifRpcUrl)
+      .then((x) => {
+        Object.assign(state, { ...x, queryClientStatus: "fulfilled" });
+      })
+      .catch(() => (state.queryClientStatus = "rejected"));
+
+    state.signingClientStatus = "pending";
+    const signingClientPromise = services.wallet.keplrProvider
+      .getSendingSigner(services.chains.nativeChain)
+      .then((x) => createSigningClient(config.sifRpcUrl, x))
+      .then((x) =>
+        Object.assign(state, {
+          signingClient: x,
+          signingClientStatus: "fulfilled",
+        }),
+      )
+      .catch(() => (state.signingClientStatus = "rejected"));
+
+    return Promise.all([queryClientPromise, signingClientPromise]);
+  });
+
+  provide(sifchainClientsSymbol, state);
+
+  return () => slots.default?.();
+});
+
+export const injectSifchainClients = () => inject(sifchainClientsSymbol);

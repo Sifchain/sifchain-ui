@@ -8,20 +8,24 @@ import Button from "./Button";
 const VITE_APP_SHA = import.meta.env.VITE_APP_SHA || "master";
 const VITE_APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.0.1.local";
 
-type ChangelogData = { version: string; changelog: string };
+type ChangelogData = {
+  version: string;
+  changelog: string;
+};
 
-const fetchChangelogData = async (): Promise<ChangelogData> => {
-  const res = await fetch(
+async function fetchChangelogData(): Promise<ChangelogData> {
+  const json = await fetch(
     `https://sifchain-changes-server.vercel.app/api/changes/${VITE_APP_SHA}`,
-  );
-  const json = (await res.json()) as { version: string; changelog: string };
+  ).then((res) => res.json() as Promise<ChangelogData>);
+
   return {
     version: json.version,
     changelog: json.changelog,
   };
-};
+}
 
 let changelogDataPromise: undefined | Promise<ChangelogData>;
+
 const maybeFetchChangelogData = async () => {
   if (!changelogDataPromise) {
     changelogDataPromise = fetchChangelogData();
@@ -68,12 +72,12 @@ export default defineComponent({
           showClose
           onClose={props.onClose}
         >
-          <div class="max-h-[70vh] overflow-y-scroll w-[calc(100% + 4px)]">
+          <div class="w-[calc(100% + 4px)] max-h-[70vh] overflow-y-scroll">
             <div
-              class="css-unreset text-left"
+              class="prose prose-invert text-left"
               innerHTML={res.data.value?.changelog || ""}
             />
-            <div class="w-full h-[16px]" />
+            <div class="h-[16px] w-full" />
           </div>
           <Button.CallToAction onClick={props.onClose}>
             Close

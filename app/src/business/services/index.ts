@@ -1,29 +1,25 @@
-import { IAsset, Chain, Network } from "@sifchain/sdk";
-
-import createIBCService, { IBCServiceContext } from "./IBCService/IBCService";
-import ethbridgeService, { EthbridgeServiceContext } from "./EthbridgeService";
-import sifService, { SifServiceContext } from "./SifService";
-import clpService, { ClpServiceContext } from "./ClpService";
-import eventBusService, { EventBusServiceContext } from "./EventBusService";
-import createChainsService, {
-  ChainsServiceContext,
-} from "./ChainsService/ChainsService";
-import createDispensationService, {
-  IDispensationServiceContext,
-} from "./DispensationService";
-
-import createDataService from "./DataService";
-
-import storageService, { StorageServiceContext } from "./StorageService";
-import createWalletService, { WalletServiceContext } from "./WalletService";
-import createTokenRegistry, {
-  TokenRegistryContext,
-} from "./TokenRegistryService";
-import Web3 from "web3";
+import { IAsset, Network } from "@sifchain/sdk";
 import {
   LiquidityClient,
   LiquidityContext,
 } from "@sifchain/sdk/src/clients/liquidity";
+import { TokenRegistryContext } from "@sifchain/sdk/src/clients/native/TokenRegistry";
+import Web3 from "web3";
+import createChainsService, {
+  ChainsServiceContext,
+} from "./ChainsService/ChainsService";
+import clpService, { ClpServiceContext } from "./ClpService";
+import createDataService from "./DataService";
+import createDispensationService, {
+  IDispensationServiceContext,
+} from "./DispensationService";
+import ethbridgeService, { EthbridgeServiceContext } from "./EthbridgeService";
+import eventBusService, { EventBusServiceContext } from "./EventBusService";
+import createIBCService, { IBCServiceContext } from "./IBCService/IBCService";
+import sifService, { SifServiceContext } from "./SifService";
+import storageService, { StorageServiceContext } from "./StorageService";
+import TokenRegistryService from "./TokenRegistryService";
+import createWalletService, { WalletServiceContext } from "./WalletService";
 
 export type Services = ReturnType<typeof createServices>;
 
@@ -61,7 +57,7 @@ export function createServices(context: ServiceContext) {
     ...context,
     chains: ChainsService.list(),
   });
-  const TokenRegistryService = createTokenRegistry(context);
+  const tokenRegistryService = new TokenRegistryService(context);
   const liquidityService = new LiquidityClient(
     context,
     ChainsService.get(Network.SIFCHAIN),
@@ -99,7 +95,7 @@ export function createServices(context: ServiceContext) {
     dispensation: DispensationService,
     storage: StorageService,
     wallet: WalletService,
-    tokenRegistry: TokenRegistryService,
+    tokenRegistry: tokenRegistryService,
     liquidity: liquidityService,
     data: DataService,
   };

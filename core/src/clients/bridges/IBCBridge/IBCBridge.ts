@@ -11,8 +11,7 @@ import {
   setupAuthExtension,
   setupBankExtension,
   setupIbcExtension,
-} from "@cosmjs/stargate/build/queries";
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+} from "@cosmjs/stargate";
 import { fetch } from "cross-fetch";
 import {
   IBCChainConfig,
@@ -34,9 +33,9 @@ import {
 } from "../../native";
 import { parseTxFailure } from "../../../utils/parseTxFailure";
 import { SifUnSignedClient } from "../../native/SifClient";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 
 export type IBCBridgeContext = {
-  // applicationNetworkEnvironment: NetworkEnv;
   sifRpcUrl: string;
   sifApiUrl: string;
   sifChainId: string;
@@ -46,7 +45,7 @@ export type IBCBridgeContext = {
 };
 
 export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
-  tokenRegistry = TokenRegistry(this.context);
+  tokenRegistry = new TokenRegistry(this.context);
 
   public transferTimeoutMinutes = 45;
 
@@ -56,8 +55,8 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
   static create(context: IBCBridgeContext) {
     return new this(context);
   }
+
   public loadChainConfigByChainId(chainId: string): IBCChainConfig {
-    // @ts-ignore
     const chainConfig = Object.values(this.context.chainConfigsByNetwork).find(
       (c) => c?.chainId === chainId,
     );
@@ -66,8 +65,8 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     }
     return chainConfig;
   }
+
   public loadChainConfigByNetwork(network: Network): IBCChainConfig {
-    // @ts-ignore
     const chainConfig = this.context.chainConfigsByNetwork[network];
     if (chainConfig?.chainType !== "ibc") {
       throw new Error(`No IBC chain config for network ${network}`);
@@ -230,16 +229,6 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
           // we create amino additions, but these will not be used, because IBC types are already included & assigned
           // on top of the amino additions by default
           aminoTypes: new NativeAminoTypes(),
-          gasLimits: {
-            send: 80000,
-            transfer: 360000,
-            delegate: 250000,
-            undelegate: 250000,
-            redelegate: 250000,
-            // The gas multiplication per rewards.
-            withdrawRewards: 140000,
-            govVote: 250000,
-          },
         },
       );
 

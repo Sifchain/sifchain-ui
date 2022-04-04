@@ -1,12 +1,4 @@
-import {
-  defineComponent,
-  PropType,
-  Ref,
-  ref,
-  toRefs,
-  watchEffect,
-  computed,
-} from "vue";
+import { defineComponent, PropType, computed } from "vue";
 
 export type ErrorType = "danger" | "warning" | "bad";
 
@@ -61,9 +53,9 @@ export const _Details = defineComponent({
 
     return () => {
       return (
-        <div class={["w-full relative", data.value.class]}>
+        <div class={["relative w-full", data.value.class]}>
           {!!data.value.label && (
-            <div class="mb-[10px] pt-[1em] first:pt-0 font-medium">
+            <div class="mb-[10px] pt-[1em] font-medium first:pt-0">
               {data.value.label}
             </div>
           )}
@@ -71,8 +63,8 @@ export const _Details = defineComponent({
             <div
               class={[
                 `
-              h-[49px] w-full flex justify-between items-center
-              box-border bg-gray-base border-gray-input_outline border-l-[1px] border-b-[1px] border-r-[1px] border-solid`,
+              bg-gray-base border-gray-input_outline box-border flex h-[49px]
+              w-full items-center justify-between border-l-[1px] border-b-[1px] border-r-[1px] border-solid`,
                 index == 0 && `rounded-t border-t-[1px]`,
                 index == arr.length - 1 && `rounded-b border-b-[1px]`,
                 data.value.isError
@@ -84,12 +76,12 @@ export const _Details = defineComponent({
                   : "",
               ]}
             >
-              <div class="pl-[20px] text-left text-md text-white font-sans font-medium">
+              <div class="text-md pl-[20px] text-left font-sans font-medium text-white">
                 {key}
               </div>
               <div
                 class={[
-                  `flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right text-md text-white font-medium`,
+                  `text-md mr-[14px] flex flex-row items-center justify-end pl-[20px] text-right font-medium text-white`,
                 ]}
               >
                 {value}

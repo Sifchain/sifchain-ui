@@ -2,7 +2,7 @@ import { Button } from "@/components/Button/Button";
 import { Form } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 import AssetIcon from "@/components/AssetIcon";
 import { defineComponent, computed } from "vue";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";

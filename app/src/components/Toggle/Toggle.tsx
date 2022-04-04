@@ -19,7 +19,7 @@ export default defineComponent({
     const inner = (
       <button
         class={[
-          `cursor-pointer flex transition-all items-center h-[16px] w-[28px] border-solid active:bg-opacity-20  border-[1px] rounded-full`,
+          `flex h-[16px] w-[28px] cursor-pointer items-center rounded-full border-[1px] border-solid  transition-all active:bg-opacity-20`,
           props.active
             ? `border-connected-base active:bg-connected-base`
             : `border-gray-800 active:bg-gray-800`,
@@ -31,7 +31,7 @@ export default defineComponent({
             <div
               key="pod"
               class={[
-                `transition-all ml-auto  w-[12px] h-[12px] m-[1px] rounded-full`,
+                `m-[1px] ml-auto  h-[12px] w-[12px] rounded-full transition-all`,
                 props.active ? `bg-connected-base` : `bg-gray-800`,
               ]}
             ></div>
@@ -40,7 +40,7 @@ export default defineComponent({
             <div
               key="pod"
               class={[
-                `transition-all w-[12px] h-[12px] m-[1px] rounded-full`,
+                `m-[1px] h-[12px] w-[12px] rounded-full transition-all`,
                 props.active ? `bg-[connected-base]` : `bg-gray-800`,
               ]}
             />
@@ -50,7 +50,7 @@ export default defineComponent({
     );
     return () =>
       props.label ? (
-        <label class="flex items-center justify-start gap-1 cursor-pointer">
+        <label class="flex cursor-pointer items-center justify-start gap-1">
           {inner}
           <span class="font-medium">{props.label}</span>
         </label>

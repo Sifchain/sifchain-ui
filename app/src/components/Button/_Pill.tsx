@@ -4,7 +4,7 @@ export function _Pill(props: ButtonHTMLAttributes, ctx: SetupContext) {
     <button
       {...props}
       class={[
-        "px-[10px] pt-[1px] font-semibold h-[20px] flex items-center justify-center border border-solid border-accent-base text-accent-dark text-sm tracking-[-0.01em] cursor-pointer rounded-lg hover:bg-accent-base hover:text-gray-300 z-[1]",
+        "border-accent-base text-accent-dark hover:bg-accent-base z-[1] flex h-[20px] cursor-pointer items-center justify-center rounded-lg border border-solid px-[10px] pt-[1px] text-sm font-semibold tracking-[-0.01em] hover:text-gray-300",
         props.class,
       ]}
     >

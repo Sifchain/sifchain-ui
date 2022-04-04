@@ -1,19 +1,12 @@
 import { createSdk } from "../src/setup";
-import fetch from "cross-fetch";
 import {
   NetworkEnv,
   AssetAmount,
   toBaseUnits,
-  formatAssetAmount,
   IAsset,
-  Network,
   IAssetAmount,
 } from "../src";
-import {
-  DirectSecp256k1HdWalletProvider,
-  WalletProvider,
-  CosmosWalletProvider,
-} from "../src/clients/wallets/cosmos";
+import { DirectSecp256k1HdWalletProvider } from "../src/clients/wallets/cosmos";
 import { Web3WalletProvider } from "../src/clients/wallets/ethereum";
 
 import HDWalletProvider from "@truffle/hdwallet-provider";

@@ -1,5 +1,6 @@
+import { onUnmounted, Ref, ref, watch } from "vue";
+
 import { accountStore } from "@/store/modules/accounts";
-import { onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useCore } from "./useCore";
 
 export const useUserPoolsSubscriber = (params: {

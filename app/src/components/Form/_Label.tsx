@@ -7,7 +7,7 @@ export const _Label = defineComponent({
       <div
         {...ctx.attrs}
         class={[
-          `text-md text-white font-sans text-left font-medium`,
+          `text-md text-left font-sans font-medium text-white`,
           props.class,
         ]}
       >

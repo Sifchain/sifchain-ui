@@ -1,14 +1,17 @@
-import AssetIcon from "@/components/AssetIcon";
-import { Tooltip, TooltipInstance } from "@/components/Tooltip";
-import { useCore } from "@/hooks/useCore";
-import { computed, PropType, Ref, watch } from "vue";
 import {
-  DefineComponent,
+  computed,
+  PropType,
+  Ref,
+  watch,
   defineComponent,
   onMounted,
   onUnmounted,
   ref,
 } from "vue";
+
+import { useCore } from "@/hooks/useCore";
+import AssetIcon from "@/components/AssetIcon";
+import { Tooltip, TooltipInstance } from "@/components/Tooltip";
 
 const layoutBgKey = "layout_bg";
 const layoutBgDefault = "default";
@@ -61,7 +64,7 @@ const ImageBg = defineComponent({
       if (props.src.value === props.bg.value.thumb) {
         return (
           <div class="absolute inset-[8px] overflow-hidden opacity-80">
-            <img class="w-full h-full object-cover" src={props.src.value} />
+            <img class="h-full w-full object-cover" src={props.src.value} />
           </div>
         );
       }
@@ -69,7 +72,7 @@ const ImageBg = defineComponent({
         <div
           class={[
             "absolute inset-0 transition-all",
-            loadedRef.value ? "filter-none" : "filter blur-md",
+            loadedRef.value ? "filter-none" : "blur-md filter",
           ]}
         >
           <div
@@ -84,7 +87,7 @@ const ImageBg = defineComponent({
             style={getStyle(props.src.value)}
           />
 
-          <div class={["bg-black inset-0 absolute bg-opacity-20"]} />
+          <div class={["absolute inset-0 bg-black bg-opacity-20"]} />
         </div>
       );
     };
@@ -157,7 +160,7 @@ const LAYOUT_BACKGROUNDS: LayoutBg[] = [
     thumb: getUrl("dark-coin-thumb"),
     Cmp: (props) => {
       return (
-        <div class="w-full h-full relative bg-black">
+        <div class="relative h-full w-full bg-black">
           <img src={props.src.value} class="w-[42%]" />
         </div>
       );
@@ -169,7 +172,7 @@ const LAYOUT_BACKGROUNDS: LayoutBg[] = [
     thumb: getUrl("gold-coin-thumb"),
     Cmp: (props) => {
       return (
-        <div class="w-full h-full relative bg-[#3B7FBA] flex items-center justify-end">
+        <div class="relative flex h-full w-full items-center justify-end bg-[#3B7FBA]">
           <img src={props.src.value} class="w-[47%]" />
         </div>
       );
@@ -229,13 +232,13 @@ export default defineComponent({
       <>
         <div
           id="layout-bg"
-          class="z-[-1] w-full h-[100vh] fixed top-0 left-0 transition-all duration-500"
+          class="fixed top-0 left-0 z-[-1] h-[100vh] w-full transition-all duration-500"
         >
           {!!srcRef.value && (
             <bgRef.value.Cmp key={srcRef.value} src={srcRef} bg={bgRef} />
           )}
         </div>
-        <div class="absolute bottom-4 right-4 w-[36px] h-[36px]">
+        <div class="absolute bottom-4 right-4 h-[36px] w-[36px]">
           <Tooltip
             placement="top-end"
             animation="scale"
@@ -250,13 +253,13 @@ export default defineComponent({
             maxWidth="none"
             appendTo={() => document.body}
             content={
-              <div class="flex flex-wrap w-[400px]">
+              <div class="flex w-[400px] flex-wrap">
                 {LAYOUT_BACKGROUNDS.map((bg) => (
                   <div
                     key={bg.key}
                     onClick={() => (backgroundKeyRef.value = bg.key)}
                     class={[
-                      "w-1/3 p-[8px] relative rounded-sm cursor-pointer hover:bg-gray-600 w-[133px] h-[94px]",
+                      "relative h-[94px] w-1/3 w-[133px] cursor-pointer rounded-sm p-[8px] hover:bg-gray-600",
                     ]}
                   >
                     <bg.Cmp src={ref(bg.thumb)} bg={ref(bg)} />

@@ -6,8 +6,8 @@ import { useChains, useNativeChain } from "@/hooks/useChains";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
-import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { formatAssetAmount } from "@/components/utils";
+import { useRowanPrice } from "@/hooks/useRowanPrice";
 import { Tooltip } from "@/components/Tooltip";
 
 import {

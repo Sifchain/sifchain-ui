@@ -11,7 +11,7 @@ import {
   watch,
 } from "vue";
 
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 import AssetIcon from "@/components/AssetIcon";
 import { useCore } from "@/hooks/useCore";
 import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
@@ -155,7 +155,7 @@ export const TokenSelectDropdown = defineComponent({
     });
 
     return () => (
-      <div ref={selfRoot} class="w-full h-0">
+      <div ref={selfRoot} class="h-0 w-full">
         {
           <Teleport to="#portal-target">
             {activeRef.value && (
@@ -170,14 +170,14 @@ export const TokenSelectDropdown = defineComponent({
                     // (boundingClientRect.value?.width ?? 0) +
                     "px",
                 }}
-                class=" overflow-hidden bg-gray-input border-gray-input_outline border-solid border-[1px] w-[440px] mt-[7px] z-50 rounded-[4px]"
+                class=" bg-gray-input border-gray-input_outline z-50 mt-[7px] w-[440px] overflow-hidden rounded-[4px] border-[1px] border-solid"
               >
-                <div class="w-full h-full py-[20px] px-[15px]">
-                  <div class="w-full bg-gray-base border-gray-input_outline border-[1px] border-solid h-8 relative flex items-center rounded-lg overflow-hidden">
+                <div class="h-full w-full py-[20px] px-[15px]">
+                  <div class="bg-gray-base border-gray-input_outline relative flex h-8 w-full items-center overflow-hidden rounded-lg border-[1px] border-solid">
                     <AssetIcon
                       size={20}
                       icon="interactive/search"
-                      class={[`ml-3 w-4 h-4`, false ? "text-[#6E6E6E]" : ""]}
+                      class={[`ml-3 h-4 w-4`, false ? "text-[#6E6E6E]" : ""]}
                     />
                     <input
                       id="token-search"
@@ -202,19 +202,19 @@ export const TokenSelectDropdown = defineComponent({
                           e.target as HTMLInputElement
                         ).value;
                       }}
-                      class="box-border w-full absolute top-0 bottom-0 left-0 right-0 pl-8 pr-3 h-full bg-transparent outline-none text-white font-sans font-medium"
+                      class="absolute top-0 bottom-0 left-0 right-0 box-border h-full w-full bg-transparent pl-8 pr-3 font-sans font-medium text-white outline-none"
                     />
                   </div>
                   <div
                     ref={iconScrollContainer}
-                    class="w-full overflow-hidden relative"
+                    class="relative w-full overflow-hidden"
                   >
-                    <div class="justify-between flex w-full font-normal px-[3px] py-[8px]">
+                    <div class="flex w-full justify-between px-[3px] py-[8px] font-normal">
                       <div>Token Name</div>
                       <div>{!props.hideBalances && "Balance"}</div>
                     </div>
-                    <div class="w-full h-[302px] relative mr-[-15px]">
-                      <div class="absolute inset-0 w-full h-full overflow-y-scroll">
+                    <div class="relative mr-[-15px] h-[302px] w-full">
+                      <div class="absolute inset-0 h-full w-full overflow-y-scroll">
                         {sortedAndFilteredTokens.value.map((token) => {
                           return (
                             <div
@@ -223,7 +223,7 @@ export const TokenSelectDropdown = defineComponent({
                                 (e as any).handled = true;
                               }}
                               key={token.asset.symbol}
-                              class="list-complete-item flex w-full px-[8px] py-[4px] hover:bg-gray-base cursor-pointer items-center font-medium uppercase"
+                              class="list-complete-item hover:bg-gray-base flex w-full cursor-pointer items-center px-[8px] py-[4px] font-medium uppercase"
                             >
                               <TokenNetworkIcon
                                 key={token.asset.symbol}
@@ -232,7 +232,7 @@ export const TokenSelectDropdown = defineComponent({
                                 class="mr-[8px]"
                               />
                               {token.asset.displaySymbol || token.asset.symbol}
-                              <div class="flex-1 ml-[8px]" />
+                              <div class="ml-[8px] flex-1" />
                               {props.hideBalances
                                 ? ""
                                 : formatAssetAmount(token.amount)}

@@ -1,7 +1,8 @@
+import { computed } from "vue";
+import { IAsset } from "@sifchain/sdk";
+
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { symbolWithoutPrefix } from "@/utils/symbol";
-import { IAsset } from "@sifchain/sdk";
-import { computed } from "vue";
 import { useAsyncDataCached } from "./useAsyncDataCached";
 import { useNativeChain } from "./useChains";
 import { useCore } from "./useCore";
@@ -47,12 +48,12 @@ export const usePoolStats = () => {
       poolData: {
         ...poolData,
         pools: poolData.pools.map((p) => {
-          const poolAPY =
-            (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
-            100;
+          const poolAPY = p.poolAPY
+            ? Number(p.poolAPY)
+            : (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
+              100;
 
-          let rewardAPY = 0;
-          rewardPrograms.forEach((program) => {
+          const rewardAPY = rewardPrograms.reduce((acc, program) => {
             const incentivisedSymbols = program.incentivizedPoolSymbols.map(
               (x) => x.slice(1),
             );
@@ -62,9 +63,11 @@ export const usePoolStats = () => {
               incentivisedSymbols.includes(p.symbol);
 
             if (program.isUniversal || isIndividuallyIncentivized) {
-              rewardAPY += program.summaryAPY;
+              return acc + program.summaryAPY;
             }
-          });
+            return acc;
+          }, 0);
+
           return {
             ...p,
             poolAPY: poolAPY.toFixed(1),

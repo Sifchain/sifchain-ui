@@ -1,15 +1,16 @@
-import { Asset, Network } from "@sifchain/sdk";
-import { useCore } from "./useCore";
 import { watch } from "vue";
-import { accountStore } from "@/store/modules/accounts";
-import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
-import { useChains } from "./useChains";
+import { Network } from "@sifchain/sdk";
 import {
   BridgeTx,
   bridgeTxEmitter,
 } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
-import { useFaucet } from "./useFaucet";
+
+import { accountStore } from "@/store/modules/accounts";
 import { isChainFlaggedDisabled } from "@/store/modules/flags";
+
+import { useCore } from "./useCore";
+import { useChains } from "./useChains";
+import { useFaucet } from "./useFaucet";
 
 const mirrorToCore = (network: Network) => {
   const data = accountStore.state[network];
@@ -48,7 +49,7 @@ let connectAll = () => {
   if (core.services.storage.getItem("hasRejectedConnectAll") === "true") {
     return;
   }
-  core.services?.wallet.tryConnectAllWallets().catch((e) => {
+  core.services?.wallet.tryConnectAllWallets().catch(() => {
     core.services.storage.setItem("hasRejectedConnectAll", "true");
   });
 };
@@ -58,7 +59,7 @@ export function useInitialize() {
 
   useFaucet();
 
-  const { usecases, store, services, config } = useCore();
+  const { usecases, services } = useCore();
 
   services.wallet.metamaskProvider.onChainChanged(() =>
     window.location.reload(),
@@ -80,72 +81,6 @@ export function useInitialize() {
       services.wallet.metamaskProvider,
     )
     .then(() => {
-      async function generateUniswapWhitelist() {
-        const whitelist = {
-          name: "Sifchain",
-          logoURI: getTokenIconUrl(
-            Asset("rowan"),
-            `https://dex-sifchain-finance.ipns.dweb.link/`,
-          )?.replace("/public/", ""),
-          keywords: ["peggy", "pegged assets", "cosmos ecosystem"],
-          tags: {},
-          timestamp: new Date().toISOString(),
-          tokens: [
-            ...(
-              await Promise.all(
-                [...config.peggyCompatibleCosmosBaseDenoms].map(
-                  async (denom) => {
-                    const web3 =
-                      await services.wallet.metamaskProvider.getWeb3();
-                    const asset = config.assets.find(
-                      (a) =>
-                        a.network === Network.ETHEREUM && a.symbol === denom,
-                    );
-                    if (!asset) return;
-                    const addressOfToken =
-                      await services.ethbridge.fetchTokenAddress(
-                        services.wallet.metamaskProvider,
-                        asset,
-                      );
-                    const tokenContract = new web3.eth.Contract(
-                      await fetch(
-                        `https://gist.githubusercontent.com/veox/8800debbf56e24718f9f483e1e40c35c/raw/f853187315486225002ba56e5283c1dba0556e6f/erc20.abi.json`,
-                      ).then((r) => r.json()),
-                      addressOfToken || "",
-                    );
-                    const symbol = await tokenContract.methods.symbol().call();
-                    const decimals = await tokenContract.methods
-                      .decimals()
-                      .call();
-                    const name = await tokenContract.methods.name().call();
-                    const imageUrl = getTokenIconUrl(
-                      asset,
-                      "https://dex-sifchain-finance.ipns.dweb.link/",
-                    )?.replace("/public/", "");
-                    if (!imageUrl) return;
-                    const item = {
-                      chainId: 1,
-                      address: addressOfToken,
-                      symbol,
-                      name,
-                      decimals: +decimals,
-                      tags: [],
-                      logoURI: imageUrl,
-                    };
-                    return item;
-                  },
-                ),
-              )
-            ).filter((a) => !!a),
-          ],
-          version: {
-            major: 1,
-            minor: 0,
-            patch: 0,
-          },
-        };
-        console.log(JSON.stringify(whitelist, null, 2));
-      }
       // generateUniswapWhitelist();
     });
 
@@ -173,9 +108,12 @@ export function useInitialize() {
   );
 
   for (const network of Object.values(Network)) {
-    if (isChainFlaggedDisabled(useChains().get(network))) continue;
+    if (isChainFlaggedDisabled(useChains().get(network))) {
+      continue;
+    }
 
     accountStore.actions.loadIfConnected(network);
+
     watch(
       accountStore.refs[network].computed(),
       (value) => {
@@ -204,22 +142,4 @@ export function useInitialize() {
     accountStore.updateBalances(tx.toChain.network);
     accountStore.updateBalances(tx.fromChain.network);
   });
-
-  // useSubscription(
-  //   computed(() => store.wallet.get(Network.SIFCHAIN).address),
-  //   () => usecases.reward.subscribeToRewardData("vs"),
-  // );
-  // useSubscription(
-  //   computed(() => store.wallet.get(Network.SIFCHAIN).address),
-  //   () => usecases.reward.subscribeToRewardData("lm"),
-  // );
-
-  // useSubscription(
-  //   computed(() => store.wallet.get(Network.SIFCHAIN).lmUserData),
-  //   usecases.reward.notifyLmMaturity,
-  // );
-  // useSubscription(
-  //   computed(() => store.wallet.get(Network.SIFCHAIN).vsUserData),
-  //   usecases.reward.notifyVsMaturity,
-  // );
 }

@@ -1,13 +1,6 @@
 import { useChainsList, useChains, useNativeChain } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
-import {
-  AppCookies,
-  Asset,
-  getNetworkEnv,
-  IAssetAmount,
-  Network,
-  NetworkEnv,
-} from "@sifchain/sdk";
+import { Asset, IAssetAmount, Network } from "@sifchain/sdk";
 import {
   BridgeEvent,
   BridgeParams,
@@ -148,7 +141,7 @@ export const runTransfer = async (
       tx: {
         state: "failed",
         hash: "",
-        memo: error.message,
+        memo: (error as Error).message,
       },
     });
   }
@@ -168,7 +161,7 @@ export const runTransfer = async (
       tx: {
         hash: "",
         state: "failed",
-        memo: error.message,
+        memo: (error as Error).message,
       },
     });
   }

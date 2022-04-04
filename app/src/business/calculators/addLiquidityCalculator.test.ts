@@ -1,3 +1,5 @@
+import { vitest, test, describe, expect, beforeEach, afterEach } from "vitest";
+
 import { ref, Ref, effect } from "@vue/reactivity";
 import {
   Amount,
@@ -28,9 +30,9 @@ describe("addLiquidityCalculator", () => {
   const lastFocusedTokenField: Ref<"A" | "B" | null> = ref(null);
   const balances = ref([]) as Ref<IAssetAmount[]>;
   const selectedField: Ref<"from" | "to" | null> = ref("from");
-  const poolFinder = jest.fn<Pool | null, any>(() => null);
-  const setTokenAAmount = jest.fn();
-  const setTokenBAmount = jest.fn();
+  const poolFinder: any = vitest.fn(() => null);
+  const setTokenAAmount = vitest.fn();
+  const setTokenBAmount = vitest.fn();
 
   // output
   const aPerBRatioMessage: Ref<string> = ref("");
@@ -90,6 +92,7 @@ describe("addLiquidityCalculator", () => {
     poolFinder.mockReset();
     liquidityProvider.value = null;
   });
+
   type TestShape = {
     only?: boolean;
     skip?: boolean;

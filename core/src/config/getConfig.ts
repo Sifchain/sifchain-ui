@@ -33,11 +33,6 @@ type ConfigMap = Record<NetworkEnv, ReturnType<typeof parseConfig>>;
 type ChainNetwork = string;
 type AssetMap = Record<ChainNetwork, IAsset[]>;
 
-// Save assets for sync lookup throughout the app via Asset.get('symbol')
-function cacheAsset(asset: IAsset) {
-  return Asset(asset);
-}
-
 export type AppConfig = ReturnType<typeof parseConfig>; // Will include other injectables
 
 export function getConfig(
@@ -88,7 +83,6 @@ export function getConfig(
       );
     });
 
-  allAssets = allAssets.map(cacheAsset);
   const peggyCompatibleCosmosBaseDenoms = new Set([
     "uiris",
     "uatom",
