@@ -1,30 +1,29 @@
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
-import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import NavSidePanelItem from "./NavSidePanelItem";
+import { accountStore } from "@/store/modules/accounts";
+import { flagsStore } from "@/store/modules/flags";
+import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
-import AssetIcon from "../AssetIcon";
-import WalletPicker from "@/components/WalletPicker/WalletPicker";
-import MoreMenu from "./NavMoreMenu";
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import useChangeLog from "@/hooks/useChangeLog";
+import { useTVL } from "@/hooks/useTVL";
 import usePMTP from "@/hooks/usePMTP";
-import { rootStore } from "@/store";
-import { accountStore } from "@/store/modules/accounts";
+import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
+import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
+import { formatAssetAmount } from "@/components/utils";
+import Tooltip, { TooltipInstance } from "@/components/Tooltip";
+import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import { Button } from "@/components/Button/Button";
+import { VotingModal } from "@/components/VotingModal/VotingModal";
 import ChangelogModal, {
   changelogViewedVersion,
 } from "@/components/ChangelogModal";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { loadChangesData } from "@/hooks/informational-modals";
-import { flagsStore } from "@/store/modules/flags";
-import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import { RouterLink, useRouter } from "vue-router";
-import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
-import { governanceStore } from "@/store/modules/governance";
-import { VotingModal } from "@/components/VotingModal/VotingModal";
-import { formatAssetAmount } from "@/components/utils";
-import { useTVL } from "@/hooks/useTVL";
+
+import NavSidePanelItem from "./NavSidePanelItem";
+import AssetIcon from "../AssetIcon";
+import MoreMenu from "./NavMoreMenu";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -96,9 +95,9 @@ export default defineComponent({
     const hasUniversalCompetition = useHasUniversalCompetition();
 
     const connectedNetworkCount =
-      rootStore.accounts.refs.connectedNetworkCount.computed();
+      accountStore.refs.connectedNetworkCount.computed();
 
-    const changesData = useAsyncData(() => loadChangesData());
+    const changelog = useChangeLog();
 
     return () => (
       <>
@@ -493,13 +492,12 @@ export default defineComponent({
                   }
                 />
               </Tooltip>
-
-              <div class="mt-[24px] pb-[10px] font-mono text-sm opacity-20 hover:opacity-100">
-                {/* V.2.0.X © {new Date().getFullYear()} Sifchain */}
-                {changesData.isSuccess.value &&
-                  "V." + changesData.data.value?.version?.toUpperCase()}{" "}
-                © {new Date().getFullYear()} Sifchain
-              </div>
+              {changelog.isSuccess.value && (
+                <div class="mt-[24px] pb-[10px] font-mono text-sm opacity-20 hover:opacity-100">
+                  {`V.${changelog.data.value?.version?.toUpperCase()} © 
+                  ${new Date().getFullYear()} Sifchain`}
+                </div>
+              )}
             </div>
           </div>
         </div>
