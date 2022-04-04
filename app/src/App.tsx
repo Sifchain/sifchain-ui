@@ -15,6 +15,7 @@ import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import OnboardingModal from "@/components/OnboardingModal";
 
 import "./App.scss";
+import { SifchainClientsProvider } from "./business/providers/SifchainClientsProvider";
 
 // not currently working? - McCall
 const hideRedundantUselessMetamaskErrors = () => {
@@ -122,14 +123,16 @@ export default defineComponent({
 
     return () => (
       <div class="min-h-screen">
-        <SideBar />
-        <router-view />
-        {shouldShowOnboardingModal.value && (
-          <OnboardingModal onClose={onCloseOnboardingModal} />
-        )}
-        <Notifications />
-        <EnvAlert />
-        <Flags />
+        <SifchainClientsProvider>
+          <SideBar />
+          <router-view />
+          {shouldShowOnboardingModal.value && (
+            <OnboardingModal onClose={onCloseOnboardingModal} />
+          )}
+          <Notifications />
+          <EnvAlert />
+          <Flags />
+        </SifchainClientsProvider>
       </div>
     );
   },

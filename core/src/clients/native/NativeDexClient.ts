@@ -6,15 +6,14 @@ import * as DispensationV1Query from "../../generated/proto/sifnode/dispensation
 import * as DispensationV1Tx from "../../generated/proto/sifnode/dispensation/v1/tx";
 import * as EthbridgeV1Query from "../../generated/proto/sifnode/ethbridge/v1/query";
 import * as EthbridgeV1Tx from "../../generated/proto/sifnode/ethbridge/v1/tx";
-import * as IBCTransferV1Tx from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/tx";
-import * as CosmosBankV1Tx from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx";
-import * as CosmosStakingV1Tx from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx";
-import * as CosmosStakingV1Query from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/query";
-import * as CosmosDistributionV1Tx from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/tx";
-import * as CosmosDistributionV1Query from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/query";
+import * as IBCTransferV1Tx from "cosmjs-types/ibc/applications/transfer/v1/tx";
+import * as CosmosBankV1Tx from "cosmjs-types/cosmos/bank/v1beta1/tx";
+import * as CosmosStakingV1Tx from "cosmjs-types/cosmos/staking/v1beta1/tx";
+import * as CosmosStakingV1Query from "cosmjs-types/cosmos/staking/v1beta1/query";
+import * as CosmosDistributionV1Tx from "cosmjs-types/cosmos/distribution/v1beta1/tx";
+import * as CosmosDistributionV1Query from "cosmjs-types/cosmos/distribution/v1beta1/query";
 
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { buildFeeTable, defaultGasPrice } from "@cosmjs/stargate";
 import { Registry } from "@cosmjs/proto-signing/build/registry";
 import {
   GeneratedType,
@@ -36,6 +35,8 @@ import {
 } from "./NativeDexTransaction";
 import {
   BroadcastTxResult,
+  buildFeeTable,
+  GasPrice,
   isBroadcastTxFailure,
   OfflineSigner as OfflineLaunchpadSigner,
 } from "@cosmjs/launchpad";
@@ -55,7 +56,7 @@ type DeepReadonly<T> = T extends object
 
 export class NativeDexClient {
   static feeTable = buildFeeTable(
-    defaultGasPrice,
+    GasPrice.fromString("0.025ucosm"),
     {
       send: 80000,
       transfer: 250000,

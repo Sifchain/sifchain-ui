@@ -3,7 +3,7 @@ import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { stringToPath } from "@cosmjs/crypto";
 
-import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 import { NativeDexTransaction, NativeDexSignedTransaction } from "../../native";
 import { Chain } from "../../../entities";

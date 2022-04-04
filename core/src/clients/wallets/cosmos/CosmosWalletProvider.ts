@@ -20,10 +20,10 @@ import {
   setupAuthExtension,
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { DenomTrace } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/transfer";
+import { DenomTrace } from "cosmjs-types/ibc/applications/transfer/v1/transfer";
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { createIBCHash } from "../../../utils/createIBCHash";
-import { QueryDenomTracesResponse } from "@cosmjs/stargate/build/codec/ibc/applications/transfer/v1/query";
+import { QueryDenomTracesResponse } from "cosmjs-types/ibc/applications/transfer/v1/query";
 import { TokenRegistry } from "../../native/TokenRegistry";
 import {
   NativeDexClient,
@@ -86,18 +86,6 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     return SigningStargateClient?.connectWithSigner(
       chainConfig.rpcUrl,
       sendingSigner,
-      {
-        gasLimits: {
-          send: 80000,
-          ibcTransfer: 120000,
-          delegate: 250000,
-          undelegate: 250000,
-          redelegate: 250000,
-          // The gas multiplication per rewards.
-          withdrawRewards: 140000,
-          govVote: 250000,
-        },
-      },
     );
   }
 

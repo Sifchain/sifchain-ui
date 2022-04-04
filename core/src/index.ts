@@ -8,3 +8,4 @@ export * from "./config/getConfig";
 
 export * from "./utils";
 export * from "./setup";
+export * from "./clients";
