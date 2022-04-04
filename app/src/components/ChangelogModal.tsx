@@ -4,46 +4,11 @@ import Modal from "@/components/Modal";
 import { useAsyncData } from "@/hooks/useAsyncData";
 
 import Button from "./Button";
+import useChangeLog from "@/hooks/useChangeLog";
 
-const VITE_APP_SHA = String(import.meta.env.VITE_APP_SHA || "master");
 const VITE_APP_VERSION = String(
   import.meta.env.VITE_APP_VERSION || "0.0.1.local",
 );
-
-type ChangelogData = {
-  version: string;
-  changelog: string;
-};
-
-async function fetchChangelogData(): Promise<ChangelogData> {
-  const tag = /^(\d+).(\d+).(\d+)$/.test(VITE_APP_SHA)
-    ? `v${VITE_APP_SHA}`
-    : VITE_APP_SHA;
-
-  const json = await fetch(
-    `https://sifchain-changes-server.vercel.app/api/changes/${tag}`,
-  ).then((res) => res.json() as Promise<ChangelogData>);
-
-  return {
-    version: json.version,
-    changelog: json.changelog,
-  };
-}
-
-let changelogDataPromise: undefined | Promise<ChangelogData>;
-
-const maybeFetchChangelogData = async () => {
-  if (!changelogDataPromise) {
-    changelogDataPromise = fetchChangelogData();
-  }
-  return changelogDataPromise;
-};
-
-// It's a low pri request, but if we can cache it before user
-// opens the modal, that'd be nice.
-if (typeof window !== "undefined") {
-  setTimeout(maybeFetchChangelogData, 5000);
-}
 
 export const changelogViewedVersion = {
   get() {
@@ -63,14 +28,17 @@ export default defineComponent({
     onClose: { type: Function as PropType<() => void>, required: true },
   },
   setup(props) {
-    const res = useAsyncData(maybeFetchChangelogData);
+    const changelog = useChangeLog();
 
     onMounted(() => {
       changelogViewedVersion.setLatest();
     });
 
     return () => {
-      if (res.isLoading.value) return null;
+      if (changelog.isLoading.value) {
+        return null;
+      }
+
       return (
         <Modal
           heading="Changelog"
@@ -81,7 +49,7 @@ export default defineComponent({
           <div class="w-[calc(100% + 4px)] max-h-[70vh] overflow-y-scroll">
             <div
               class="prose prose-invert text-left"
-              innerHTML={res.data.value?.changelog || ""}
+              innerHTML={changelog.data.value?.changelog || ""}
             />
             <div class="h-[16px] w-full" />
           </div>
