@@ -1,4 +1,4 @@
-import { effect, Ref, ref } from "@vue/reactivity";
+import { Ref, ref } from "@vue/reactivity";
 import { watchEffect } from "vue";
 
 type CurrencyFieldState = {

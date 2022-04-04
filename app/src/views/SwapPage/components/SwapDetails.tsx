@@ -1,7 +1,8 @@
+import { IAsset } from "@sifchain/sdk";
+import { defineComponent, PropType, Ref } from "vue";
+
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
-import { defineComponent, PropType, Ref } from "vue";
-import { IAsset } from "../../../../../core/src";
 
 export const SwapDetails = defineComponent({
   props: {
@@ -83,10 +84,7 @@ export const SwapDetails = defineComponent({
         >
           <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
             Price Impact
-            <Button.InlineHelp
-              size={20}
-              key={props.toAsset?.value.displaySymbol}
-            >
+            <Button.InlineHelp key={props.toAsset?.value.displaySymbol}>
               This is the percentage impact to the amount of{" "}
               {props.toAsset?.value.displaySymbol.toUpperCase()} in the
               liquidity pool based upon how much you are swapping for.

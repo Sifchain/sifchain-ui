@@ -1,6 +1,5 @@
-import { computed } from "@vue/reactivity";
-import { Ref } from "vue";
-import { IAsset } from "../../../core/src";
+import { Ref, computed } from "vue";
+
 import { useCore } from "./useCore";
 
 export const useAssetBySymbol = (

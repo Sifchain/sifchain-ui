@@ -7,7 +7,7 @@ import { accountStore } from "@/store/modules/accounts";
 
 import Modal from "@/components/Modal";
 import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 import {
   SelectDropdown,
   SelectDropdownOption,

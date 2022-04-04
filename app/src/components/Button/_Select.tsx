@@ -13,7 +13,7 @@ export function _Select(
     <button
       {...props}
       class={[
-        "transition-all duration-200 relative flex justify-between items-center h-[54px] pl-[8px] pr-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border border-solid border-gray-input_outline active:border-white disabled:bg-transparent text-lg font-medium whitespace-nowrap",
+        "bg-gray-input border-gray-input_outline border-gray-input_outline relative flex h-[54px] items-center justify-between whitespace-nowrap rounded-[4px] border border-solid border-solid pl-[8px] pr-0 text-lg font-medium transition-all duration-200 active:border-white disabled:bg-transparent",
         props.active && "border-white",
         props.class,
       ]}
@@ -22,7 +22,7 @@ export function _Select(
       {!props.hideIcon && (
         <AssetIcon
           class={[
-            "w-[24px] h-[24px] ml-[8px] mr-[16px] transition-all duration-100 flex-shrink-0",
+            "ml-[8px] mr-[16px] h-[24px] w-[24px] flex-shrink-0 transition-all duration-100",
             props.active && "rotate-180",
           ]}
           size={24}

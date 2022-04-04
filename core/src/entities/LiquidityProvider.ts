@@ -1,4 +1,4 @@
-import { Asset, IAsset } from "./Asset";
+import { IAsset } from "./Asset";
 import { IAmount } from "./Amount";
 
 export function LiquidityProvider(

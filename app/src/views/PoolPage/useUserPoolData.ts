@@ -1,8 +1,5 @@
 import { computed, ref, ToRefs } from "@vue/reactivity";
-import {
-  getAssetLabel,
-  getBlockExplorerUrl,
-} from "@/componentsLegacy/shared/utils";
+import { getAssetLabel, getBlockExplorerUrl } from "@/components/utils";
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { Amount } from "@sifchain/sdk";

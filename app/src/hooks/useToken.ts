@@ -134,7 +134,8 @@ export const useAndPollNetworkBalances = (params: {
     await accountStore.updateBalances(params.network.value);
   }, [params.network, params.priority]);
 
-  let stopPollingRef = ref<Promise<() => void> | undefined>();
+  const stopPollingRef = ref<Promise<() => void> | undefined>();
+
   watch(
     params.network,
     async (network) => {

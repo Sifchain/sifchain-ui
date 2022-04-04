@@ -34,7 +34,7 @@ import {
 import { BroadcastTxResult } from "@cosmjs/launchpad";
 import { parseLogs } from "@cosmjs/stargate/build/logs";
 
-import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { getKeplrProvider } from "./getKeplrProvider";
 
 import Long from "long";

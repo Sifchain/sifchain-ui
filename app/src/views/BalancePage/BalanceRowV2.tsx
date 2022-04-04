@@ -1,16 +1,17 @@
 import { defineComponent, PropType, computed, ref } from "vue";
 import cx from "clsx";
 import { RouterLink } from "vue-router";
+import { Network } from "@sifchain/sdk";
+
 import { TokenListItem } from "@/hooks/useToken";
-import { formatAssetAmount } from "@/componentsLegacy/shared/utils";
+import { formatAssetAmount } from "@/components/utils";
 
 import AssetIcon, { IconName } from "@/components/AssetIcon";
 import Tooltip from "@/components/Tooltip";
-import { shortenHash } from "@/componentsLegacy/shared/utils";
-import { getAssetLabel } from "@/componentsLegacy/shared/utils";
+import { shortenHash } from "@/components/utils";
+import { getAssetLabel } from "@/components/utils";
 import { getImportLocation } from "./Import/useImportData";
 import { getExportLocation } from "./Export/useExportData";
-import { Network } from "@sifchain/sdk";
 import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";

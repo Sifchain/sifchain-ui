@@ -1,10 +1,10 @@
-import { createServices, createUsecases, ServiceContext } from "@/business";
+import { createServices, createUsecases } from "@/business";
+import { Asset, getConfig, getEnv, switchEnv } from "@sifchain/sdk";
 import {
   createAccountPoolFinder,
   createPoolFinder,
   createStore,
 } from "@/business/store";
-import { getConfig, getEnv, switchEnv } from "@sifchain/sdk";
 
 switchEnv({ location: window.location });
 
@@ -65,6 +65,11 @@ Object.defineProperty(window, "store", {
     return storeSafe;
   },
 });
+
+// hack to cache the assets
+// TODO: this is a very poor pattern
+// need to do caching at network layer
+config.assets.forEach((x) => Asset.set(x.symbol, x));
 
 export function useCore() {
   return {

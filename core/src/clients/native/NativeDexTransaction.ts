@@ -1,5 +1,5 @@
 import { StdTx, BroadcastTxResult } from "@cosmjs/launchpad";
-import { TxRaw } from "@cosmjs/stargate/build/codec/cosmos/tx/v1beta1/tx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 export interface NativeDexTransactionFee {
   gas: string;

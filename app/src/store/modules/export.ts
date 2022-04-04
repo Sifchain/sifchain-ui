@@ -1,22 +1,14 @@
-import { useChains, useChainsList, useNativeChain } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
-import {
-  AppCookies,
-  Asset,
-  getEnv,
-  getNetworkEnv,
-  IAsset,
-  IAssetAmount,
-  IBCChainConfig,
-  Network,
-  NetworkEnv,
-} from "@sifchain/sdk";
+import { Asset, IAssetAmount, IBCChainConfig, Network } from "@sifchain/sdk";
 import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import {
   Permission,
   RegistryEntry,
-} from "../../../../core/src/generated/proto/sifnode/tokenregistry/v1/types";
-import { Vuextra } from "../Vuextra";
+} from "@sifchain/sdk/src/generated/proto/sifnode/tokenregistry/v1/types";
+
+import { useChains, useChainsList, useNativeChain } from "@/hooks/useChains";
+import { useCore } from "@/hooks/useCore";
+import { Vuextra } from "@/store/Vuextra";
+
 import { accountStore } from "./accounts";
 import { flagsStore, isChainFlaggedDisabled } from "./flags";
 import { runTransfer } from "./import";
@@ -27,11 +19,13 @@ export type ExportDraft = {
   symbol: string;
   unpegEvent: BridgeEvent | undefined;
 };
+
 type State = {
   draft: ExportDraft;
 };
 
 let registry: RegistryEntry[] = [];
+
 useCore()
   .services.tokenRegistry.load()
   .then((r) => (registry = r));
@@ -54,11 +48,9 @@ export const exportStore = Vuextra.createStore({
       const IBC_ETHEREUM_ENABLED = flagsStore.state.peggyForCosmosTokens;
       const ERC20_IBC_TRANSFERS_ENABLED = flagsStore.state.ibcForEthTokens;
       const asset = Asset(state.draft.symbol);
-      const isExternalIBCAsset = ![Network.ETHEREUM, Network.SIFCHAIN].includes(
-        asset.homeNetwork,
-      );
+
       const isPeggyWhitelistedIBCAsset =
-        useCore()!.config.peggyCompatibleCosmosBaseDenoms.has(asset.symbol);
+        useCore().config.peggyCompatibleCosmosBaseDenoms.has(asset.symbol);
 
       const registryEntry = registry.find((e) => e.baseDenom === asset.symbol);
 
@@ -103,7 +95,7 @@ export const exportStore = Vuextra.createStore({
       state.draft.unpegEvent = unpegEvent;
     },
   }),
-  actions: (ctx) => ({
+  actions: () => ({
     async runExport(payload: { assetAmount: IAssetAmount }) {
       if (!payload.assetAmount.amount.greaterThan("0")) return;
       runTransfer(

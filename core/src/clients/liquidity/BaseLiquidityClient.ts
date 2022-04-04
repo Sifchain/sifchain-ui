@@ -23,7 +23,7 @@ export class BaseLiquidityClient {
     protected nativeChain: Chain,
   ) {}
 
-  protected tokenRegistry = TokenRegistry(this.context);
+  protected tokenRegistry = new TokenRegistry(this.context);
 
   private nativeDexClientPromise?: Promise<NativeDexClient>;
   protected async getNativeDexClient() {

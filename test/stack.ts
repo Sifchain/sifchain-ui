@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// @ts-nocheck
+
 import { spawn, ChildProcess, exec } from "child_process";
 import { resolve } from "path";
 
@@ -80,7 +80,9 @@ export async function killStack() {
 
   let cmd;
   while ((cmd = cmdStack.shift())) {
-    await treeKillProm(cmd.pid);
+    if (cmd.pid) {
+      await treeKillProm(cmd.pid);
+    }
   }
   if (isRunning) process.stderr.write("Stopped.\n");
 }

@@ -1,4 +1,4 @@
-import { useRowanPrice } from "@/componentsLegacy/RowanPrice/useRowanPrice";
+import { useRowanPrice } from "@/hooks/useRowanPrice";
 
 export function useRewardsCalculatorData() {
   return {

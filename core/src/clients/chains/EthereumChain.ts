@@ -1,13 +1,7 @@
-import {
-  Chain,
-  Network,
-  IAssetAmount,
-  AssetAmount,
-  IAsset,
-} from "../../entities";
-import { BaseChain } from "./_BaseChain";
 import { urlJoin } from "url-join-ts";
-import { isOriginallySifchainNativeToken } from "../bridges/EthBridge/isOriginallySifchainNativeToken";
+
+import { Chain } from "../../entities";
+import { BaseChain } from "./_BaseChain";
 
 export class EthereumChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {

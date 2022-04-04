@@ -5,11 +5,8 @@ import { AminoMsg } from "@cosmjs/amino";
 
 export class NativeAminoTypes extends AminoTypes {
   constructor() {
-    const options = {
-      additions: createAminoAdditions(),
-      prefix: undefined,
-    };
-    super(options);
+    const aminoAdditions = createAminoAdditions();
+    super(aminoAdditions);
 
     type ToAminoFn = (value: any) => any;
 
@@ -17,7 +14,7 @@ export class NativeAminoTypes extends AminoTypes {
       key: string,
       wrapFn: (value: any, original: ToAminoFn) => any,
     ) => {
-      const originalAddition = options.additions?.[key];
+      const originalAddition = aminoAdditions[key];
       if (originalAddition) {
         const originalToAmino = originalAddition.toAmino;
 

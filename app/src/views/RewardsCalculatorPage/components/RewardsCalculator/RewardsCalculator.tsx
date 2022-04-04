@@ -72,10 +72,6 @@ export const RewardsCalculator = (props: Props) => {
                   : "..."
               }
             />
-            {/* <HeaderInfoItem
-              title="Current APR"
-              value={`${props.currentAPR}%`}
-            /> */}
             <HeaderInfoItem
               title={`Your ${props.tokenInSymbol} Balance`}
               value={prettyNumber(parseFloat(props.tokenInBalance))}

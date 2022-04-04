@@ -1,17 +1,16 @@
-import { ref, watch, computed, effect, Ref, onMounted } from "vue";
+import { ref, watch, computed, effect, Ref } from "vue";
 import { useRoute } from "vue-router";
 import { LiquidityProvider, Network, TransactionStatus } from "@sifchain/sdk";
 
-import { useWalletButton } from "@/componentsLegacy/WithWallet/useWalletButton";
+import { useWalletButton } from "@/hooks/useWalletButton";
 import { useCore } from "@/hooks/useCore";
-import { getLMData } from "@/componentsLegacy/shared/utils";
 import { debounce } from "@/views/utils/debounce";
 import { accountStore } from "@/store/modules/accounts";
 import { useRemoveLiquidityCalculator } from "@/business/calculators";
 import { PoolState } from "@/business/calculators/addLiquidityCalculator";
 
 export function useRemoveLiquidityData() {
-  const { usecases, poolFinder, services, config } = useCore();
+  const { usecases, poolFinder, services } = useCore();
   const route = useRoute();
 
   const transactionStatus = ref<TransactionStatus | null>(null);
@@ -21,7 +20,7 @@ export function useRemoveLiquidityData() {
   const asymmetry = ref("0");
   const wBasisPoints = ref("0");
   const nativeAssetSymbol = ref("rowan");
-  const lmRewards = ref<any>();
+
   const externalAssetSymbol = ref<string | null>(
     route.params.externalAsset ? route.params.externalAsset.toString() : null,
   );
@@ -54,10 +53,6 @@ export function useRemoveLiquidityData() {
       .then((liquidityProviderResult) => {
         liquidityProvider.value = liquidityProviderResult;
       });
-  });
-
-  onMounted(async () => {
-    lmRewards.value = await getLMData(address, config.sifChainId);
   });
 
   // if these values change, recalculate state and asset amounts
@@ -175,6 +170,5 @@ export function useRemoveLiquidityData() {
     externalAssetSymbol,
     transactionStatus,
     modalStatus,
-    lmRewards,
   };
 }
