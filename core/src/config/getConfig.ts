@@ -23,7 +23,7 @@ import {
   CoreConfig,
   AssetConfig,
 } from "../utils/parseConfig";
-import { Asset, Network, IAsset } from "../entities";
+import { Network, IAsset } from "../entities";
 import { NetworkEnv } from "./getEnv";
 import { chainConfigByNetworkEnv } from "./chains";
 

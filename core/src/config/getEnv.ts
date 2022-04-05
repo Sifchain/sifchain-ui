@@ -132,6 +132,7 @@ export function getEnv({
   let sifEnv: NetworkEnv | null;
 
   if (cookieEnv != null && networkEnvsByIndex[+cookieEnv]) {
+    console.log({ cookieEnv });
     sifEnv = networkEnvsByIndex[+cookieEnv];
   } else if (isNetworkEnvSymbol(cookieEnv)) {
     sifEnv = cookieEnv;
