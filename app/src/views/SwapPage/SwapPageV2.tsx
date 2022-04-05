@@ -5,18 +5,21 @@ import {
   ref,
   watch,
 } from "vue";
+import { RouterView, useRouter } from "vue-router";
+
+import { useCore } from "@/hooks/useCore";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
+
 import PageCard from "@/components/PageCard";
-import { TokenInputGroup } from "./components/TokenInputGroup";
-import { useSwapPageData } from "./useSwapPageData";
 import Layout from "@/components/Layout";
-import { SlippageTolerance } from "./components/SlippageTolerance";
-import { SwapDetails } from "./components/SwapDetailsV2";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { RouterView, useRouter } from "vue-router";
-import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
-import { useCore } from "@/hooks/useCore";
+
+import { SwapDetails } from "./components/SwapDetailsV2";
+import { SlippageTolerance } from "./components/SlippageTolerance";
+import { TokenInputGroup } from "./components/TokenInputGroup";
+import { useSwapPageData } from "./useSwapPageData";
 
 export default defineComponent({
   name: "SwapPage",
@@ -49,17 +52,15 @@ export default defineComponent({
     return () => (
       <Layout>
         <PageCard heading="Swap" iconName="navigation/swap" class="w-[531px]">
-          {/* <TransitionGroup name="flip-list"> */}
           <TokenInputGroup
             onSelectAsset={(asset) => {
               data.fromSymbol.value = asset.symbol;
             }}
-            class="overflow-hidden mb-[-12px]"
+            class="mb-[-12px] overflow-hidden"
             tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
             onFocus={() => data.handleFromFocused()}
             onBlur={() => data.handleBlur()}
             heading="From"
-            // key={data.fromSymbol.value}
             onSetToMaxAmount={() => {
               data.handleFromMaxClicked();
             }}
@@ -72,10 +73,10 @@ export default defineComponent({
           />
           <div
             key="button"
-            class="flex relative items-center justify-center w-full overflow-hidden"
+            class="relative flex w-full items-center justify-center overflow-hidden"
           >
             <button
-              class="origin-center actidve:rotate-180 flex items-center relative bg-gray-base border-gray-input_outline py-[4px] px-[9px] box-content border-[1px] rounded-[10px] hover:border-accent-base"
+              class="actidve:rotate-180 bg-gray-base border-gray-input_outline hover:border-accent-base relative box-content flex origin-center items-center rounded-[10px] border-[1px] py-[4px] px-[9px]"
               key="button"
               onClick={async (e: MouseEvent) => {
                 data.handleArrowClicked();
@@ -100,7 +101,7 @@ export default defineComponent({
             onSelectAsset={(asset) => {
               data.toSymbol.value = asset.symbol;
             }}
-            class="overflow-hidden mt-[-12px] "
+            class="mt-[-12px] overflow-hidden"
             tokenIconUrl={data.toTokenIconUrl.value ?? ""}
             onFocus={() => data.handleToFocused()}
             onBlur={() => data.handleBlur()}
@@ -112,7 +113,6 @@ export default defineComponent({
             asset={data.toAsset.value}
             formattedBalance={data.formattedToTokenBalance.value || undefined}
           />
-          {/* </TransitionGroup> */}
           <SlippageTolerance
             slippage={data.slippage.value || "0"}
             onUpdate={(v) => {
