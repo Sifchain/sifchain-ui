@@ -3,7 +3,7 @@ import {
   Chain,
   Network,
   NetworkChainConfigLookup,
-} from "@sifchain/sdk/src/entities";
+} from "@sifchain/sdk";
 import { networkChainCtorLookup } from "@sifchain/sdk/src/clients";
 
 export * from "@sifchain/sdk/src/clients/chains";
