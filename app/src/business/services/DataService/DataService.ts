@@ -144,6 +144,22 @@ export default class DataService {
     }
   }
 
+  async getTokenStatsPMTP() {
+    try {
+      const res = await cached(
+        "tokenStats",
+        () =>
+          fetchJSON<PoolStatsResponseData>(
+            `${this.baseUrl}/beta/asset/tokenStatsPMTP`,
+          ),
+        60000 * 5, // cache for 5 minutes
+      );
+      return res;
+    } catch (error) {
+      return {} as PoolStatsResponseData;
+    }
+  }
+
   async getRewardsPrograms() {
     try {
       const { Rewards } = await cached(
