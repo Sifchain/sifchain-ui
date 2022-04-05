@@ -90,6 +90,7 @@ export function useRewardsPageData() {
     timeRemaining: string;
   }> => {
     const rewardPrograms = await services.data.getRewardsPrograms();
+
     let timeRemaining = "";
 
     if (address.value) {
