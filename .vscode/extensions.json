@@ -2,7 +2,6 @@
   "recommendations": [
     "johnsoncodehk.volar",
     "esbenp.prettier-vscode",
-    "bradlc.vscode-tailwindcss",
-    "octref.vetur"
+    "bradlc.vscode-tailwindcss"
   ]
 }

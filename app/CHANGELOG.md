@@ -1,3 +1,7 @@
+## Release 2022.04.05
+
+- Fixed display of 'Dispensed rewards' on rewards page
+  
 ## Release 2022.04.04
 
 - Fixed issue processing add liquidity transactions

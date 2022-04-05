@@ -1,3 +1,4 @@
+import { flagsStore } from "@/store/modules/flags";
 import { useAsyncData } from "./useAsyncData";
 import { useCore } from "./useCore";
 
@@ -10,6 +11,9 @@ const MOCK_PMTP_PARAMS = {
 export default function usePMTP() {
   const core = useCore();
   return useAsyncData(async () => {
+    if (!flagsStore.state.pmtp) {
+      return MOCK_PMTP_PARAMS;
+    }
     try {
       return await core.services.clp.getPmtpParams();
     } catch (error) {
