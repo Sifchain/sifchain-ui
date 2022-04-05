@@ -18,16 +18,16 @@ export const SwapDetails = defineComponent({
       <div class="mt-[10px] w-full">
         <div
           class={`
-          h-[49px] w-full flex justify-center items-center box-border
-          bg-gray-base border-gray-input_outline
-          border-[1px] border-b-[1px] border-solid rounded-[6px] rounded-br-none rounded-bl-none
+          bg-gray-base border-gray-input_outline box-border flex h-[49px] w-full
+          items-center justify-center
+          rounded-[6px] rounded-br-none rounded-bl-none border-[1px] border-b-[1px] border-solid
         `}
         >
-          <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium">
+          <div class="text-md w-full pl-[20px] text-left font-sans font-medium text-white">
             {props.toAsset?.value.displaySymbol.toUpperCase()} per{" "}
             {props.fromAsset?.value.displaySymbol.toUpperCase()}
           </div>
-          <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium">
+          <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium text-white">
             <span class="mr-[4px] whitespace-nowrap">
               {props.priceRatio?.value &&
                 !!+props.priceRatio.value &&
@@ -37,16 +37,16 @@ export const SwapDetails = defineComponent({
         </div>
         <div
           class={`
-          h-[49px] w-full flex justify-center items-center box-border
-          bg-gray-base border-gray-input_outline
+          bg-gray-base border-gray-input_outline box-border flex h-[49px] w-full
+          items-center justify-center
           border-[1px] border-b-[1px] border-t-0 border-solid 
         `}
         >
-          <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium">
+          <div class="text-md w-full pl-[20px] text-left font-sans font-medium text-white">
             {props.fromAsset?.value.displaySymbol.toUpperCase()} per{" "}
             {props.toAsset?.value.displaySymbol.toUpperCase()}
           </div>
-          <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium">
+          <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium text-white">
             <span class="mr-[4px] whitespace-nowrap">
               {props.priceRatio?.value &&
                 !!+props.priceRatio.value &&
@@ -56,12 +56,12 @@ export const SwapDetails = defineComponent({
         </div>
         <div
           class={`
-          h-[49px] w-full flex justify-center items-center box-border
-          bg-gray-base border-gray-input_outline
+          bg-gray-base border-gray-input_outline box-border flex h-[49px] w-full
+          items-center justify-center
           border-[1px] border-b-[1px] border-t-0 border-solid 
         `}
         >
-          <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
+          <div class="text-md w-full pl-[20px] text-left font-sans font-medium capitalize text-white">
             Price Impact
             <Button.InlineHelp key={props.toAsset?.value.displaySymbol}>
               This is the percentage impact to the amount of{" "}
@@ -69,24 +69,24 @@ export const SwapDetails = defineComponent({
               liquidity pool based upon how much you are swapping for.
             </Button.InlineHelp>
           </div>
-          <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium capitalize">
+          <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium capitalize text-white">
             <span class={["mr-[4px]"]}>{props.priceImpact}</span>
           </div>
         </div>
         <div
           class={`
-          h-[49px] w-full flex justify-center items-center box-border
-          bg-gray-base border-gray-input_outline
-          border-[1px] border-b-[1px] border-t-0 border-solid rounded-b-[6px]
+          bg-gray-base border-gray-input_outline box-border flex h-[49px] w-full
+          items-center justify-center
+          rounded-b-[6px] border-[1px] border-b-[1px] border-t-0 border-solid
         `}
         >
-          <div class="pl-[20px] text-left w-full text-md text-white font-sans font-medium capitalize">
+          <div class="text-md w-full pl-[20px] text-left font-sans font-medium capitalize text-white">
             Liquidity Provider Fee
             <Button.InlineHelp>
               This is the fee paid to the liquidity providers of this pool.
             </Button.InlineHelp>
           </div>
-          <div class="flex flex-row justify-end mr-[14px] items-center pl-[20px] text-right w-full text-md text-white font-mono font-medium">
+          <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium text-white">
             <span class="mr-[4px]">{props.liquidityProviderFee}</span>
             {props.toAsset ? (
               <TokenIcon asset={props.toAsset} size={18}></TokenIcon>
