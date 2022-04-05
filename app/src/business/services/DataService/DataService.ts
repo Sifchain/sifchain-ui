@@ -25,25 +25,25 @@ export type RewardsProgram = {
   config: RewardsProgramConfig;
 };
 
-export type UserRewardsSummaryResponse = {
+export type RewardProgramsResponse = {
+  Rewards: RewardsProgram[];
+};
+
+export type UserRewardsSummary = {
   reward_program: string;
   pool: string;
+  token: string;
   net_liquidity_bal: number;
-  total_liquidity_bal: number;
-  net_percentage: number;
-  reward_allocation: number;
-  pool_unit: string;
-  total_pool: string;
-  perc_pool: number;
-  pool_balance: string;
-  pool_balance_native: string;
-  pool_balance_external: string;
-  network_pool_native: string;
-  network_pool_external: string;
   reward_dispensed_total: string;
-  pending_rewards: string;
   next_remaining_time_to_dispense: string;
   dispensed_rewards: string;
+  pending_rewards: string;
+  rowan_cusdt: string;
+  updated_time_gmt: string;
+};
+
+export type UserRewardsResponse = {
+  Rewards: UserRewardsSummary[];
 };
 
 type ProgramConfigMap = Record<
@@ -149,19 +149,15 @@ export default class DataService {
       const { Rewards } = await cached(
         "rewardsPrograms",
         () =>
-          fetchJSON<{ Rewards: RewardsProgram[] }>(
+          fetchJSON<RewardProgramsResponse>(
             `${this.baseUrl}/beta/network/rewardconfig/all`,
           ),
         60000 * 60, // cache for 1 hour
       );
 
-      const raw = Rewards;
-
-      const sorted = raw
-        .filter((x) => !x.config.end_height)
-        .sort(
-          (a, b) => (a.config.end_height || 0) - (b.config.end_height || 0),
-        );
+      const sorted = Rewards.filter((x) => !x.config.end_height).sort(
+        (a, b) => (a.config.end_height || 0) - (b.config.end_height || 0),
+      );
 
       return sorted.map((program) => {
         const isUniversal = program.config.tokens[0] === "ALL";
@@ -187,9 +183,9 @@ export default class DataService {
       const { Rewards } = await cached(
         ["userRewards", address],
         () =>
-          fetchJSON<{
-            Rewards: UserRewardsSummaryResponse[];
-          }>(`${this.baseUrl}/beta/network/rewardPay/${address}`),
+          fetchJSON<UserRewardsResponse>(
+            `${this.baseUrl}/beta/network/rewardPay/${address}`,
+          ),
         60000 * 5, // cache for 5 minute
       );
 
@@ -199,7 +195,7 @@ export default class DataService {
 
       const programs = Object.keys(groups).reduce(
         (acc, groupName) => {
-          const group: UserRewardsSummaryResponse[] = groups[groupName];
+          const group: UserRewardsSummary[] = groups[groupName];
 
           if (!timeToNextDispensation) {
             timeToNextDispensation = formatTimeInSeconds(
