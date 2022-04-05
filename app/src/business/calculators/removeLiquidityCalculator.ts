@@ -7,9 +7,10 @@ import {
   IAsset,
   LiquidityProvider,
   Pool,
+  format,
 } from "@sifchain/sdk";
 import { calculateWithdrawal } from "@sifchain/sdk/src/entities/formulae";
-import { format } from "@sifchain/sdk/src/utils/format";
+
 import { PoolState } from "./addLiquidityCalculator";
 
 export function useRemoveLiquidityCalculator(input: {
