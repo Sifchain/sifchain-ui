@@ -38,17 +38,22 @@ export default defineComponent({
 
     const classNames = classesByNetworkEnv[networkEnv];
 
-    let selectedEnv = Object.entries(NetworkEnv).find(
-      (e) => e[1] === networkEnv,
-    )?.[0];
+    const selected = networkEnv
+      ? Object.entries(NetworkEnv).find((e) => e[1] === networkEnv)?.[0]
+      : null;
 
     return () => (
-      <div class="fixed bottom-0 left-64 h-8 w-36 overflow-hidden rounded-t">
-        {networkEnv && classNames ? (
-          <div class={["p-1 text-center font-semibold", classNames]}>
-            {Object.entries(NetworkEnv).find((e) => e[1] === networkEnv)?.[0]}
+      <div class="fixed bottom-0 left-64 h-6 w-36 overflow-hidden rounded-t shadow">
+        {selected && (
+          <div
+            class={[
+              "grid h-full place-items-center font-semibold",
+              classNames ?? "",
+            ]}
+          >
+            {selected}
           </div>
-        ) : null}
+        )}
         <select
           value={networkEnv}
           class={["absolute left-0 top-0 h-full w-full opacity-0"]}
