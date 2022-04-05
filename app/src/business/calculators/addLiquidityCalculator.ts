@@ -16,6 +16,7 @@ import {
   Amount,
   IAsset,
   format,
+  toBaseUnits,
 } from "@sifchain/sdk";
 
 export enum PoolState {
@@ -26,7 +27,6 @@ export enum PoolState {
   NO_LIQUIDITY,
   ZERO_AMOUNTS_NEW_POOL,
 }
-import { toBaseUnits } from "@sifchain/sdk/src/utils";
 
 // The following has been done as a stepping stone for refactoring away from
 // @vue/reactivity - this was the quickest way to remove it from this api
