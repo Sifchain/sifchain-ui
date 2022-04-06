@@ -1,3 +1,6 @@
+## Release 2022.04.06
+
+- Fixed display of individual 'Dispensed rewards' by rewards program
 ## Release 2022.04.05
 
 - Fixed display of 'Dispensed rewards' on rewards page
