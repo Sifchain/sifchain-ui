@@ -48,6 +48,10 @@ export function SyncPools(
 
     const rawPools = await clp.getRawPools();
 
+    if (process.env.NODE_ENV === "development") {
+      console.log({ rawPools });
+    }
+
     const pools = rawPools.pools
       .map((pool) => {
         const externalSymbol = pool.externalAsset?.symbol;
