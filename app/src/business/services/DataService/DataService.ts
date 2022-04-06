@@ -46,6 +46,19 @@ export type UserRewardsResponse = {
   Rewards: UserRewardsSummary[];
 };
 
+export type RewardProgramUserRewards = {
+  accumulatedRewards: number;
+  pendingRewards: number;
+  dispensed: number;
+};
+
+export type UserRewards = {
+  programs: Record<string, RewardProgramUserRewards>;
+  timeRemaining: string;
+  totalDispensed: number;
+  totalPending: number;
+};
+
 type ProgramConfigMap = Record<
   string,
   {
@@ -178,7 +191,7 @@ export default class DataService {
     }
   }
 
-  async getUserRewards(address: string) {
+  async getUserRewards(address: string): Promise<UserRewards> {
     try {
       const { Rewards } = await cached(
         ["userRewards", address],
@@ -192,65 +205,59 @@ export default class DataService {
       const groups = groupBy(Rewards, (x) => x.reward_program);
 
       let timeToNextDispensation = "";
+      let totalDispensed = 0;
 
-      const programs = Object.keys(groups).reduce(
-        (acc, groupName) => {
-          const group: UserRewardsSummary[] = groups[groupName];
+      const programs = Object.keys(groups).reduce((acc, groupName) => {
+        const group: UserRewardsSummary[] = groups[groupName];
 
-          if (!timeToNextDispensation) {
-            timeToNextDispensation = formatTimeInSeconds(
-              Math.floor(Number(group[0].next_remaining_time_to_dispense)),
-            );
-          }
-
-          const pendingRewards = uniq(
-            group.map((x) => Number(x.pending_rewards)),
+        if (!timeToNextDispensation) {
+          timeToNextDispensation = formatTimeInSeconds(
+            Math.floor(Number(group[0].next_remaining_time_to_dispense)),
           );
+        }
 
-          const totalDispensedRewards = uniq(
+        if (!totalDispensed) {
+          const rewardDispensedTotals = uniq(
             group.map((x) => Number(x.reward_dispensed_total)),
           );
+          totalDispensed = rewardDispensedTotals[0];
+        }
 
-          const totalPendingRewards = pendingRewards.reduce(
-            (acc, x) => acc + x,
-            0,
-          );
+        const pendingRewards = uniq(
+          group.map((x) => Number(x.pending_rewards)),
+        );
 
-          return {
-            ...acc,
-            [groupName]: {
-              totalClaimableCommissionsAndClaimableRewards: totalPendingRewards,
-              claimedCommissionsAndRewardsAwaitingDispensation:
-                totalPendingRewards,
-              dispensed: totalDispensedRewards[0],
-              pools: group,
-            },
-          };
-        },
-        {} as Record<
-          string,
-          {
-            totalClaimableCommissionsAndClaimableRewards: number;
-            claimedCommissionsAndRewardsAwaitingDispensation: number;
-            dispensed: number;
-          }
-        >,
-      );
+        const dispensedRewardsPerProgram = uniq(
+          group.map((x) => Number(x.dispensed_rewards)),
+        );
+
+        const totalPendingRewards = pendingRewards.reduce(
+          (acc, x) => acc + x,
+          0,
+        );
+
+        return {
+          ...acc,
+          [groupName]: {
+            accumulatedRewards: totalPendingRewards,
+            pendingRewards: totalPendingRewards,
+            dispensed: dispensedRewardsPerProgram[0],
+          },
+        };
+      }, {} as Record<string, RewardProgramUserRewards>);
 
       return {
         programs,
         timeRemaining: timeToNextDispensation,
+        totalDispensed,
+        totalPending: 0,
       };
     } catch (error) {
       return {
-        programs: {} as Record<
-          string,
-          {
-            totalClaimableCommissionsAndClaimableRewards: number;
-            claimedCommissionsAndRewardsAwaitingDispensation: number;
-            dispensed: number;
-          }
-        >,
+        programs: {},
+        timeRemaining: "",
+        totalDispensed: 0,
+        totalPending: 0,
       };
     }
   }
