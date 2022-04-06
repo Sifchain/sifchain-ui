@@ -1,10 +1,7 @@
-import { computed, ComputedRef, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 import { accountStore } from "@/store/modules/accounts";
-
-import { NativeDexClient } from "@sifchain/sdk/src/clients";
-import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
 
 // TODO REACTIVE
 
@@ -26,50 +23,12 @@ export const rewardColumnsLookup = {
   },
 };
 
-const useExistingClaimsData = (
-  address: ComputedRef<string>,
-  sifRpcUrl: string,
-) => {
-  const res = useAsyncData(async () => {
-    if (!address.value) return null;
-    const config = useCore().config;
-    const nativeDexClient = await NativeDexClient.connect(
-      config.sifRpcUrl,
-      config.sifApiUrl,
-      config.sifChainId,
-    );
-    const claims = await nativeDexClient.query.dispensation.ClaimsByType({
-      userClaimType: DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING,
-    });
-    const userClaims = claims.claims.filter(
-      (c) => c.userAddress === address.value,
-    );
-    const lm = userClaims.some(
-      (c) =>
-        c.userClaimType === DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING,
-    );
-    const vs = userClaims.some(
-      (c) =>
-        c.userClaimType ===
-        DistributionType.DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY,
-    );
-    return {
-      lm: lm,
-      vs: vs,
-    };
-  }, [address]);
-  return res;
-};
-
-export type RewardProgramParticipant = {
-  // used
-  totalClaimableCommissionsAndClaimableRewards: number;
-  claimedCommissionsAndRewardsAwaitingDispensation: number;
-  dispensed: number;
-};
-
 export type RewardProgram = {
-  participant?: RewardProgramParticipant;
+  participant?: {
+    pendingRewards: number;
+    dispensed: number;
+    accumulatedRewards: number;
+  };
   incentivizedPoolSymbols: string[];
   isUniversal: boolean;
   summaryAPY: number;
@@ -82,16 +41,14 @@ export type RewardProgram = {
 };
 
 export function useRewardsPageData() {
-  const { config, services } = useCore();
+  const { services } = useCore();
   const address = accountStore.refs.sifchain.address.computed();
 
-  const rewardProgramResponse = useAsyncData(async (): Promise<{
-    rewardPrograms: RewardProgram[];
-    timeRemaining: string;
-  }> => {
+  const rewardProgramResponse = useAsyncData(async () => {
     const rewardPrograms = await services.data.getRewardsPrograms();
 
     let timeRemaining = "";
+    let totalDispensed = 0;
 
     if (address.value) {
       const participantRewards = await services.data.getUserRewards(
@@ -102,52 +59,54 @@ export function useRewardsPageData() {
         timeRemaining = participantRewards.timeRemaining;
       }
 
+      if (participantRewards.totalDispensed) {
+        totalDispensed = participantRewards.totalDispensed;
+      }
+
       const programs = rewardPrograms.map((program, _i) => {
         const summary = participantRewards.programs[program.rewardProgramName];
         return {
           ...program,
           participant: {
-            claimedCommissionsAndRewardsAwaitingDispensation:
-              summary?.claimedCommissionsAndRewardsAwaitingDispensation ?? 0,
-            dispensed: (summary?.dispensed ?? 0) / rewardPrograms.length,
-            totalClaimableCommissionsAndClaimableRewards:
-              summary?.totalClaimableCommissionsAndClaimableRewards ?? 0,
+            pendingRewards: summary?.pendingRewards ?? 0,
+            dispensed: summary?.dispensed ?? 0,
+            accumulatedRewards: summary?.accumulatedRewards ?? 0,
           },
         };
       });
 
-      return { rewardPrograms: programs, timeRemaining };
+      return {
+        rewardPrograms: programs,
+        timeRemaining,
+        totalDispensed,
+      };
     } else {
       const programs = rewardPrograms.map((program, _i) => {
         return {
           ...program,
           participant: {
             dispensed: 0,
-            claimedCommissionsAndRewardsAwaitingDispensation: 0,
-            totalClaimableCommissionsAndClaimableRewards: 0,
+            pendingRewards: 0,
+            accumulatedRewards: 0,
           },
         };
       });
-      return { rewardPrograms: programs, timeRemaining };
+      return {
+        rewardPrograms: programs,
+        timeRemaining,
+        totalDispensed,
+      };
     }
   }, [address]);
 
-  const claimsRes = useExistingClaimsData(address, config.sifRpcUrl);
-
-  const isLoading = computed(() => {
-    return !accountStore.state.sifchain.address || claimsRes.isLoading.value;
-  });
-  const error = computed(() => {
-    return rewardProgramResponse.error.value || claimsRes.error.value;
-  });
+  const isLoading = computed(() => !accountStore.state.sifchain.address);
+  const error = computed(() => rewardProgramResponse.error?.value);
 
   return {
     address,
     isLoading,
     rewardProgramResponse,
     error,
-    lmClaim: computed(() => claimsRes.data.value?.lm),
-    reloadClaims: () => claimsRes.reload.value(),
   };
 }
 

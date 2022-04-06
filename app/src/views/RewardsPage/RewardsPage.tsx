@@ -13,18 +13,26 @@ export default defineComponent({
   props: {},
   setup() {
     const data = useRewardsPageData();
-    const { isLoading, error, rewardProgramResponse, lmClaim } = data;
+    const { isLoading, error, rewardProgramResponse } = data;
     const timeUntilNextDispensation = computed(
       () => rewardProgramResponse.data.value?.timeRemaining ?? "",
     );
+    const totalDispensedRewards = computed(
+      () => rewardProgramResponse.data.value?.totalDispensed ?? 0,
+    );
+
     const rewardTotals = computed(() => {
       const programs = rewardProgramResponse.data.value?.rewardPrograms;
       return programs?.reduce(
         (acc, program) => {
           if (program.participant) {
-            acc.pendingRewards +=
-              program.participant.claimedCommissionsAndRewardsAwaitingDispensation;
-            acc.dispensedRewards += program.participant.dispensed;
+            return {
+              ...acc,
+              pendingRewards:
+                acc.pendingRewards + program.participant.pendingRewards,
+              dispensedRewards:
+                acc.dispensedRewards + program.participant.dispensed,
+            };
           }
           return acc;
         },
@@ -88,9 +96,7 @@ export default defineComponent({
                   </div>
                   <div class="whitespace-pre pt-[7px] text-xl">
                     {rewardTotals.value == null
-                      ? " "
-                      : lmClaim.value && !rewardTotals.value.pendingRewards
-                      ? "Pending Claim"
+                      ? "..."
                       : `${prettyNumber(
                           rewardTotals.value.pendingRewards,
                         )} ROWAN`}
@@ -104,11 +110,9 @@ export default defineComponent({
                     Amount already claimed and received
                   </div>
                   <div class="whitespace-pre pt-[7px] text-xl">
-                    {rewardTotals.value == null
-                      ? " "
-                      : `${prettyNumber(
-                          rewardTotals.value.dispensedRewards,
-                        )} ROWAN`}
+                    {totalDispensedRewards.value
+                      ? `${prettyNumber(totalDispensedRewards.value)} ROWAN`
+                      : "..."}
                   </div>
                 </div>
                 <div class="flex-1 rounded bg-white bg-opacity-5 px-[20px] py-[10px]">
@@ -149,11 +153,8 @@ export default defineComponent({
                     if (isCurrent) return true;
 
                     return (
-                      (program.participant
-                        ?.claimedCommissionsAndRewardsAwaitingDispensation ||
-                        0) > 0 ||
-                      (program.participant
-                        ?.totalClaimableCommissionsAndClaimableRewards || 0) > 0
+                      (program.participant?.pendingRewards || 0) > 0 ||
+                      (program.participant?.accumulatedRewards || 0) > 0
                     );
                   })
                   .sort((a, b) => {
@@ -169,7 +170,7 @@ export default defineComponent({
                     <RewardSection
                       key={program.rewardProgramName}
                       rewardProgram={program}
-                      alreadyClaimed={Boolean(lmClaim.value)}
+                      alreadyClaimed={false}
                       onClaimIntent={() => {
                         claimRewardType.value = "lm";
                         isClaimModalOpened.value = true;
