@@ -604,6 +604,17 @@ export default {
       homeNetwork: "akash",
     },
     {
+      symbol: "uatom",
+      decimals: 6,
+      name: "Atom",
+      network: "sifchain",
+      label: "Atom",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      displaySymbol: "atom",
+      homeNetwork: "cosmoshub",
+    },
+    {
       symbol: "udvpn",
       decimals: 6,
       name: "Sentinel",
