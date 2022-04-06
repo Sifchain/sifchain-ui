@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 import {
   RegistryEntry,
   Registry,
@@ -29,7 +29,9 @@ export interface MsgDeregister {
 
 export interface MsgDeregisterResponse {}
 
-const baseMsgRegister: object = { from: "" };
+function createBaseMsgRegister(): MsgRegister {
+  return { from: "", entry: undefined };
+}
 
 export const MsgRegister = {
   encode(
@@ -48,7 +50,7 @@ export const MsgRegister = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRegister {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgRegister } as MsgRegister;
+    const message = createBaseMsgRegister();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -67,18 +69,12 @@ export const MsgRegister = {
   },
 
   fromJSON(object: any): MsgRegister {
-    const message = { ...baseMsgRegister } as MsgRegister;
-    if (object.from !== undefined && object.from !== null) {
-      message.from = String(object.from);
-    } else {
-      message.from = "";
-    }
-    if (object.entry !== undefined && object.entry !== null) {
-      message.entry = RegistryEntry.fromJSON(object.entry);
-    } else {
-      message.entry = undefined;
-    }
-    return message;
+    return {
+      from: isSet(object.from) ? String(object.from) : "",
+      entry: isSet(object.entry)
+        ? RegistryEntry.fromJSON(object.entry)
+        : undefined,
+    };
   },
 
   toJSON(message: MsgRegister): unknown {
@@ -91,23 +87,22 @@ export const MsgRegister = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgRegister>): MsgRegister {
-    const message = { ...baseMsgRegister } as MsgRegister;
-    if (object.from !== undefined && object.from !== null) {
-      message.from = object.from;
-    } else {
-      message.from = "";
-    }
-    if (object.entry !== undefined && object.entry !== null) {
-      message.entry = RegistryEntry.fromPartial(object.entry);
-    } else {
-      message.entry = undefined;
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgRegister>, I>>(
+    object: I,
+  ): MsgRegister {
+    const message = createBaseMsgRegister();
+    message.from = object.from ?? "";
+    message.entry =
+      object.entry !== undefined && object.entry !== null
+        ? RegistryEntry.fromPartial(object.entry)
+        : undefined;
     return message;
   },
 };
 
-const baseMsgRegisterResponse: object = {};
+function createBaseMsgRegisterResponse(): MsgRegisterResponse {
+  return {};
+}
 
 export const MsgRegisterResponse = {
   encode(
@@ -120,7 +115,7 @@ export const MsgRegisterResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRegisterResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgRegisterResponse } as MsgRegisterResponse;
+    const message = createBaseMsgRegisterResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -133,8 +128,7 @@ export const MsgRegisterResponse = {
   },
 
   fromJSON(_: any): MsgRegisterResponse {
-    const message = { ...baseMsgRegisterResponse } as MsgRegisterResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgRegisterResponse): unknown {
@@ -142,13 +136,17 @@ export const MsgRegisterResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgRegisterResponse>): MsgRegisterResponse {
-    const message = { ...baseMsgRegisterResponse } as MsgRegisterResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgRegisterResponse>, I>>(
+    _: I,
+  ): MsgRegisterResponse {
+    const message = createBaseMsgRegisterResponse();
     return message;
   },
 };
 
-const baseMsgSetRegistry: object = { from: "" };
+function createBaseMsgSetRegistry(): MsgSetRegistry {
+  return { from: "", registry: undefined };
+}
 
 export const MsgSetRegistry = {
   encode(
@@ -167,7 +165,7 @@ export const MsgSetRegistry = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetRegistry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgSetRegistry } as MsgSetRegistry;
+    const message = createBaseMsgSetRegistry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -186,18 +184,12 @@ export const MsgSetRegistry = {
   },
 
   fromJSON(object: any): MsgSetRegistry {
-    const message = { ...baseMsgSetRegistry } as MsgSetRegistry;
-    if (object.from !== undefined && object.from !== null) {
-      message.from = String(object.from);
-    } else {
-      message.from = "";
-    }
-    if (object.registry !== undefined && object.registry !== null) {
-      message.registry = Registry.fromJSON(object.registry);
-    } else {
-      message.registry = undefined;
-    }
-    return message;
+    return {
+      from: isSet(object.from) ? String(object.from) : "",
+      registry: isSet(object.registry)
+        ? Registry.fromJSON(object.registry)
+        : undefined,
+    };
   },
 
   toJSON(message: MsgSetRegistry): unknown {
@@ -210,23 +202,22 @@ export const MsgSetRegistry = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgSetRegistry>): MsgSetRegistry {
-    const message = { ...baseMsgSetRegistry } as MsgSetRegistry;
-    if (object.from !== undefined && object.from !== null) {
-      message.from = object.from;
-    } else {
-      message.from = "";
-    }
-    if (object.registry !== undefined && object.registry !== null) {
-      message.registry = Registry.fromPartial(object.registry);
-    } else {
-      message.registry = undefined;
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgSetRegistry>, I>>(
+    object: I,
+  ): MsgSetRegistry {
+    const message = createBaseMsgSetRegistry();
+    message.from = object.from ?? "";
+    message.registry =
+      object.registry !== undefined && object.registry !== null
+        ? Registry.fromPartial(object.registry)
+        : undefined;
     return message;
   },
 };
 
-const baseMsgSetRegistryResponse: object = {};
+function createBaseMsgSetRegistryResponse(): MsgSetRegistryResponse {
+  return {};
+}
 
 export const MsgSetRegistryResponse = {
   encode(
@@ -242,7 +233,7 @@ export const MsgSetRegistryResponse = {
   ): MsgSetRegistryResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgSetRegistryResponse } as MsgSetRegistryResponse;
+    const message = createBaseMsgSetRegistryResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -255,8 +246,7 @@ export const MsgSetRegistryResponse = {
   },
 
   fromJSON(_: any): MsgSetRegistryResponse {
-    const message = { ...baseMsgSetRegistryResponse } as MsgSetRegistryResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSetRegistryResponse): unknown {
@@ -264,13 +254,17 @@ export const MsgSetRegistryResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgSetRegistryResponse>): MsgSetRegistryResponse {
-    const message = { ...baseMsgSetRegistryResponse } as MsgSetRegistryResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgSetRegistryResponse>, I>>(
+    _: I,
+  ): MsgSetRegistryResponse {
+    const message = createBaseMsgSetRegistryResponse();
     return message;
   },
 };
 
-const baseMsgDeregister: object = { from: "", denom: "" };
+function createBaseMsgDeregister(): MsgDeregister {
+  return { from: "", denom: "" };
+}
 
 export const MsgDeregister = {
   encode(
@@ -289,7 +283,7 @@ export const MsgDeregister = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeregister {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgDeregister } as MsgDeregister;
+    const message = createBaseMsgDeregister();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -308,18 +302,10 @@ export const MsgDeregister = {
   },
 
   fromJSON(object: any): MsgDeregister {
-    const message = { ...baseMsgDeregister } as MsgDeregister;
-    if (object.from !== undefined && object.from !== null) {
-      message.from = String(object.from);
-    } else {
-      message.from = "";
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = String(object.denom);
-    } else {
-      message.denom = "";
-    }
-    return message;
+    return {
+      from: isSet(object.from) ? String(object.from) : "",
+      denom: isSet(object.denom) ? String(object.denom) : "",
+    };
   },
 
   toJSON(message: MsgDeregister): unknown {
@@ -329,23 +315,19 @@ export const MsgDeregister = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgDeregister>): MsgDeregister {
-    const message = { ...baseMsgDeregister } as MsgDeregister;
-    if (object.from !== undefined && object.from !== null) {
-      message.from = object.from;
-    } else {
-      message.from = "";
-    }
-    if (object.denom !== undefined && object.denom !== null) {
-      message.denom = object.denom;
-    } else {
-      message.denom = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgDeregister>, I>>(
+    object: I,
+  ): MsgDeregister {
+    const message = createBaseMsgDeregister();
+    message.from = object.from ?? "";
+    message.denom = object.denom ?? "";
     return message;
   },
 };
 
-const baseMsgDeregisterResponse: object = {};
+function createBaseMsgDeregisterResponse(): MsgDeregisterResponse {
+  return {};
+}
 
 export const MsgDeregisterResponse = {
   encode(
@@ -361,7 +343,7 @@ export const MsgDeregisterResponse = {
   ): MsgDeregisterResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgDeregisterResponse } as MsgDeregisterResponse;
+    const message = createBaseMsgDeregisterResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -374,8 +356,7 @@ export const MsgDeregisterResponse = {
   },
 
   fromJSON(_: any): MsgDeregisterResponse {
-    const message = { ...baseMsgDeregisterResponse } as MsgDeregisterResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgDeregisterResponse): unknown {
@@ -383,8 +364,10 @@ export const MsgDeregisterResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgDeregisterResponse>): MsgDeregisterResponse {
-    const message = { ...baseMsgDeregisterResponse } as MsgDeregisterResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgDeregisterResponse>, I>>(
+    _: I,
+  ): MsgDeregisterResponse {
+    const message = createBaseMsgDeregisterResponse();
     return message;
   },
 };
@@ -455,10 +438,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -467,7 +452,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

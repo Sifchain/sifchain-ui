@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.clp.v1";
 
@@ -13,12 +13,19 @@ export interface Pool {
   nativeAssetBalance: string;
   externalAssetBalance: string;
   poolUnits: string;
+  swapPriceNative: string;
+  swapPriceExternal: string;
 }
 
 export interface LiquidityProvider {
   asset?: Asset;
   liquidityProviderUnits: string;
   liquidityProviderAddress: string;
+}
+
+export interface PmtpEpoch {
+  epochCounter: Long;
+  blockCounter: Long;
 }
 
 export interface WhiteList {
@@ -31,7 +38,15 @@ export interface LiquidityProviderData {
   externalAssetBalance: string;
 }
 
-const baseAsset: object = { symbol: "" };
+export interface EventPolicy {
+  eventType: string;
+  pmtpPeriodStartBlock: string;
+  pmtpPeriodEndBlock: string;
+}
+
+function createBaseAsset(): Asset {
+  return { symbol: "" };
+}
 
 export const Asset = {
   encode(message: Asset, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -44,7 +59,7 @@ export const Asset = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Asset {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseAsset } as Asset;
+    const message = createBaseAsset();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -60,13 +75,9 @@ export const Asset = {
   },
 
   fromJSON(object: any): Asset {
-    const message = { ...baseAsset } as Asset;
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = String(object.symbol);
-    } else {
-      message.symbol = "";
-    }
-    return message;
+    return {
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+    };
   },
 
   toJSON(message: Asset): unknown {
@@ -75,22 +86,23 @@ export const Asset = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Asset>): Asset {
-    const message = { ...baseAsset } as Asset;
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = object.symbol;
-    } else {
-      message.symbol = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<Asset>, I>>(object: I): Asset {
+    const message = createBaseAsset();
+    message.symbol = object.symbol ?? "";
     return message;
   },
 };
 
-const basePool: object = {
-  nativeAssetBalance: "",
-  externalAssetBalance: "",
-  poolUnits: "",
-};
+function createBasePool(): Pool {
+  return {
+    externalAsset: undefined,
+    nativeAssetBalance: "",
+    externalAssetBalance: "",
+    poolUnits: "",
+    swapPriceNative: "",
+    swapPriceExternal: "",
+  };
+}
 
 export const Pool = {
   encode(message: Pool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -106,13 +118,19 @@ export const Pool = {
     if (message.poolUnits !== "") {
       writer.uint32(34).string(message.poolUnits);
     }
+    if (message.swapPriceNative !== "") {
+      writer.uint32(42).string(message.swapPriceNative);
+    }
+    if (message.swapPriceExternal !== "") {
+      writer.uint32(50).string(message.swapPriceExternal);
+    }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Pool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...basePool } as Pool;
+    const message = createBasePool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -128,6 +146,12 @@ export const Pool = {
         case 4:
           message.poolUnits = reader.string();
           break;
+        case 5:
+          message.swapPriceNative = reader.string();
+          break;
+        case 6:
+          message.swapPriceExternal = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -137,34 +161,24 @@ export const Pool = {
   },
 
   fromJSON(object: any): Pool {
-    const message = { ...basePool } as Pool;
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = String(object.nativeAssetBalance);
-    } else {
-      message.nativeAssetBalance = "";
-    }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = String(object.externalAssetBalance);
-    } else {
-      message.externalAssetBalance = "";
-    }
-    if (object.poolUnits !== undefined && object.poolUnits !== null) {
-      message.poolUnits = String(object.poolUnits);
-    } else {
-      message.poolUnits = "";
-    }
-    return message;
+    return {
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      nativeAssetBalance: isSet(object.nativeAssetBalance)
+        ? String(object.nativeAssetBalance)
+        : "",
+      externalAssetBalance: isSet(object.externalAssetBalance)
+        ? String(object.externalAssetBalance)
+        : "",
+      poolUnits: isSet(object.poolUnits) ? String(object.poolUnits) : "",
+      swapPriceNative: isSet(object.swapPriceNative)
+        ? String(object.swapPriceNative)
+        : "",
+      swapPriceExternal: isSet(object.swapPriceExternal)
+        ? String(object.swapPriceExternal)
+        : "",
+    };
   },
 
   toJSON(message: Pool): unknown {
@@ -178,45 +192,35 @@ export const Pool = {
     message.externalAssetBalance !== undefined &&
       (obj.externalAssetBalance = message.externalAssetBalance);
     message.poolUnits !== undefined && (obj.poolUnits = message.poolUnits);
+    message.swapPriceNative !== undefined &&
+      (obj.swapPriceNative = message.swapPriceNative);
+    message.swapPriceExternal !== undefined &&
+      (obj.swapPriceExternal = message.swapPriceExternal);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Pool>): Pool {
-    const message = { ...basePool } as Pool;
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = object.nativeAssetBalance;
-    } else {
-      message.nativeAssetBalance = "";
-    }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = object.externalAssetBalance;
-    } else {
-      message.externalAssetBalance = "";
-    }
-    if (object.poolUnits !== undefined && object.poolUnits !== null) {
-      message.poolUnits = object.poolUnits;
-    } else {
-      message.poolUnits = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<Pool>, I>>(object: I): Pool {
+    const message = createBasePool();
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.nativeAssetBalance = object.nativeAssetBalance ?? "";
+    message.externalAssetBalance = object.externalAssetBalance ?? "";
+    message.poolUnits = object.poolUnits ?? "";
+    message.swapPriceNative = object.swapPriceNative ?? "";
+    message.swapPriceExternal = object.swapPriceExternal ?? "";
     return message;
   },
 };
 
-const baseLiquidityProvider: object = {
-  liquidityProviderUnits: "",
-  liquidityProviderAddress: "",
-};
+function createBaseLiquidityProvider(): LiquidityProvider {
+  return {
+    asset: undefined,
+    liquidityProviderUnits: "",
+    liquidityProviderAddress: "",
+  };
+}
 
 export const LiquidityProvider = {
   encode(
@@ -238,7 +242,7 @@ export const LiquidityProvider = {
   decode(input: _m0.Reader | Uint8Array, length?: number): LiquidityProvider {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseLiquidityProvider } as LiquidityProvider;
+    const message = createBaseLiquidityProvider();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -260,31 +264,15 @@ export const LiquidityProvider = {
   },
 
   fromJSON(object: any): LiquidityProvider {
-    const message = { ...baseLiquidityProvider } as LiquidityProvider;
-    if (object.asset !== undefined && object.asset !== null) {
-      message.asset = Asset.fromJSON(object.asset);
-    } else {
-      message.asset = undefined;
-    }
-    if (
-      object.liquidityProviderUnits !== undefined &&
-      object.liquidityProviderUnits !== null
-    ) {
-      message.liquidityProviderUnits = String(object.liquidityProviderUnits);
-    } else {
-      message.liquidityProviderUnits = "";
-    }
-    if (
-      object.liquidityProviderAddress !== undefined &&
-      object.liquidityProviderAddress !== null
-    ) {
-      message.liquidityProviderAddress = String(
-        object.liquidityProviderAddress,
-      );
-    } else {
-      message.liquidityProviderAddress = "";
-    }
-    return message;
+    return {
+      asset: isSet(object.asset) ? Asset.fromJSON(object.asset) : undefined,
+      liquidityProviderUnits: isSet(object.liquidityProviderUnits)
+        ? String(object.liquidityProviderUnits)
+        : "",
+      liquidityProviderAddress: isSet(object.liquidityProviderAddress)
+        ? String(object.liquidityProviderAddress)
+        : "",
+    };
   },
 
   toJSON(message: LiquidityProvider): unknown {
@@ -298,34 +286,98 @@ export const LiquidityProvider = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<LiquidityProvider>): LiquidityProvider {
-    const message = { ...baseLiquidityProvider } as LiquidityProvider;
-    if (object.asset !== undefined && object.asset !== null) {
-      message.asset = Asset.fromPartial(object.asset);
-    } else {
-      message.asset = undefined;
-    }
-    if (
-      object.liquidityProviderUnits !== undefined &&
-      object.liquidityProviderUnits !== null
-    ) {
-      message.liquidityProviderUnits = object.liquidityProviderUnits;
-    } else {
-      message.liquidityProviderUnits = "";
-    }
-    if (
-      object.liquidityProviderAddress !== undefined &&
-      object.liquidityProviderAddress !== null
-    ) {
-      message.liquidityProviderAddress = object.liquidityProviderAddress;
-    } else {
-      message.liquidityProviderAddress = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<LiquidityProvider>, I>>(
+    object: I,
+  ): LiquidityProvider {
+    const message = createBaseLiquidityProvider();
+    message.asset =
+      object.asset !== undefined && object.asset !== null
+        ? Asset.fromPartial(object.asset)
+        : undefined;
+    message.liquidityProviderUnits = object.liquidityProviderUnits ?? "";
+    message.liquidityProviderAddress = object.liquidityProviderAddress ?? "";
     return message;
   },
 };
 
-const baseWhiteList: object = { validatorList: "" };
+function createBasePmtpEpoch(): PmtpEpoch {
+  return { epochCounter: Long.ZERO, blockCounter: Long.ZERO };
+}
+
+export const PmtpEpoch = {
+  encode(
+    message: PmtpEpoch,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (!message.epochCounter.isZero()) {
+      writer.uint32(8).int64(message.epochCounter);
+    }
+    if (!message.blockCounter.isZero()) {
+      writer.uint32(16).int64(message.blockCounter);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PmtpEpoch {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePmtpEpoch();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.epochCounter = reader.int64() as Long;
+          break;
+        case 2:
+          message.blockCounter = reader.int64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PmtpEpoch {
+    return {
+      epochCounter: isSet(object.epochCounter)
+        ? Long.fromString(object.epochCounter)
+        : Long.ZERO,
+      blockCounter: isSet(object.blockCounter)
+        ? Long.fromString(object.blockCounter)
+        : Long.ZERO,
+    };
+  },
+
+  toJSON(message: PmtpEpoch): unknown {
+    const obj: any = {};
+    message.epochCounter !== undefined &&
+      (obj.epochCounter = (message.epochCounter || Long.ZERO).toString());
+    message.blockCounter !== undefined &&
+      (obj.blockCounter = (message.blockCounter || Long.ZERO).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<PmtpEpoch>, I>>(
+    object: I,
+  ): PmtpEpoch {
+    const message = createBasePmtpEpoch();
+    message.epochCounter =
+      object.epochCounter !== undefined && object.epochCounter !== null
+        ? Long.fromValue(object.epochCounter)
+        : Long.ZERO;
+    message.blockCounter =
+      object.blockCounter !== undefined && object.blockCounter !== null
+        ? Long.fromValue(object.blockCounter)
+        : Long.ZERO;
+    return message;
+  },
+};
+
+function createBaseWhiteList(): WhiteList {
+  return { validatorList: [] };
+}
 
 export const WhiteList = {
   encode(
@@ -341,8 +393,7 @@ export const WhiteList = {
   decode(input: _m0.Reader | Uint8Array, length?: number): WhiteList {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseWhiteList } as WhiteList;
-    message.validatorList = [];
+    const message = createBaseWhiteList();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -358,14 +409,11 @@ export const WhiteList = {
   },
 
   fromJSON(object: any): WhiteList {
-    const message = { ...baseWhiteList } as WhiteList;
-    message.validatorList = [];
-    if (object.validatorList !== undefined && object.validatorList !== null) {
-      for (const e of object.validatorList) {
-        message.validatorList.push(String(e));
-      }
-    }
-    return message;
+    return {
+      validatorList: Array.isArray(object?.validatorList)
+        ? object.validatorList.map((e: any) => String(e))
+        : [],
+    };
   },
 
   toJSON(message: WhiteList): unknown {
@@ -378,22 +426,22 @@ export const WhiteList = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<WhiteList>): WhiteList {
-    const message = { ...baseWhiteList } as WhiteList;
-    message.validatorList = [];
-    if (object.validatorList !== undefined && object.validatorList !== null) {
-      for (const e of object.validatorList) {
-        message.validatorList.push(e);
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<WhiteList>, I>>(
+    object: I,
+  ): WhiteList {
+    const message = createBaseWhiteList();
+    message.validatorList = object.validatorList?.map((e) => e) || [];
     return message;
   },
 };
 
-const baseLiquidityProviderData: object = {
-  nativeAssetBalance: "",
-  externalAssetBalance: "",
-};
+function createBaseLiquidityProviderData(): LiquidityProviderData {
+  return {
+    liquidityProvider: undefined,
+    nativeAssetBalance: "",
+    externalAssetBalance: "",
+  };
+}
 
 export const LiquidityProviderData = {
   encode(
@@ -421,7 +469,7 @@ export const LiquidityProviderData = {
   ): LiquidityProviderData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
+    const message = createBaseLiquidityProviderData();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -446,34 +494,17 @@ export const LiquidityProviderData = {
   },
 
   fromJSON(object: any): LiquidityProviderData {
-    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
-    if (
-      object.liquidityProvider !== undefined &&
-      object.liquidityProvider !== null
-    ) {
-      message.liquidityProvider = LiquidityProvider.fromJSON(
-        object.liquidityProvider,
-      );
-    } else {
-      message.liquidityProvider = undefined;
-    }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = String(object.nativeAssetBalance);
-    } else {
-      message.nativeAssetBalance = "";
-    }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = String(object.externalAssetBalance);
-    } else {
-      message.externalAssetBalance = "";
-    }
-    return message;
+    return {
+      liquidityProvider: isSet(object.liquidityProvider)
+        ? LiquidityProvider.fromJSON(object.liquidityProvider)
+        : undefined,
+      nativeAssetBalance: isSet(object.nativeAssetBalance)
+        ? String(object.nativeAssetBalance)
+        : "",
+      externalAssetBalance: isSet(object.externalAssetBalance)
+        ? String(object.externalAssetBalance)
+        : "",
+    };
   },
 
   toJSON(message: LiquidityProviderData): unknown {
@@ -489,36 +520,95 @@ export const LiquidityProviderData = {
     return obj;
   },
 
-  fromPartial(
-    object: DeepPartial<LiquidityProviderData>,
+  fromPartial<I extends Exact<DeepPartial<LiquidityProviderData>, I>>(
+    object: I,
   ): LiquidityProviderData {
-    const message = { ...baseLiquidityProviderData } as LiquidityProviderData;
-    if (
+    const message = createBaseLiquidityProviderData();
+    message.liquidityProvider =
       object.liquidityProvider !== undefined &&
       object.liquidityProvider !== null
-    ) {
-      message.liquidityProvider = LiquidityProvider.fromPartial(
-        object.liquidityProvider,
-      );
-    } else {
-      message.liquidityProvider = undefined;
+        ? LiquidityProvider.fromPartial(object.liquidityProvider)
+        : undefined;
+    message.nativeAssetBalance = object.nativeAssetBalance ?? "";
+    message.externalAssetBalance = object.externalAssetBalance ?? "";
+    return message;
+  },
+};
+
+function createBaseEventPolicy(): EventPolicy {
+  return { eventType: "", pmtpPeriodStartBlock: "", pmtpPeriodEndBlock: "" };
+}
+
+export const EventPolicy = {
+  encode(
+    message: EventPolicy,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.eventType !== "") {
+      writer.uint32(10).string(message.eventType);
     }
-    if (
-      object.nativeAssetBalance !== undefined &&
-      object.nativeAssetBalance !== null
-    ) {
-      message.nativeAssetBalance = object.nativeAssetBalance;
-    } else {
-      message.nativeAssetBalance = "";
+    if (message.pmtpPeriodStartBlock !== "") {
+      writer.uint32(18).string(message.pmtpPeriodStartBlock);
     }
-    if (
-      object.externalAssetBalance !== undefined &&
-      object.externalAssetBalance !== null
-    ) {
-      message.externalAssetBalance = object.externalAssetBalance;
-    } else {
-      message.externalAssetBalance = "";
+    if (message.pmtpPeriodEndBlock !== "") {
+      writer.uint32(26).string(message.pmtpPeriodEndBlock);
     }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventPolicy {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEventPolicy();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.eventType = reader.string();
+          break;
+        case 2:
+          message.pmtpPeriodStartBlock = reader.string();
+          break;
+        case 3:
+          message.pmtpPeriodEndBlock = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EventPolicy {
+    return {
+      eventType: isSet(object.eventType) ? String(object.eventType) : "",
+      pmtpPeriodStartBlock: isSet(object.pmtpPeriodStartBlock)
+        ? String(object.pmtpPeriodStartBlock)
+        : "",
+      pmtpPeriodEndBlock: isSet(object.pmtpPeriodEndBlock)
+        ? String(object.pmtpPeriodEndBlock)
+        : "",
+    };
+  },
+
+  toJSON(message: EventPolicy): unknown {
+    const obj: any = {};
+    message.eventType !== undefined && (obj.eventType = message.eventType);
+    message.pmtpPeriodStartBlock !== undefined &&
+      (obj.pmtpPeriodStartBlock = message.pmtpPeriodStartBlock);
+    message.pmtpPeriodEndBlock !== undefined &&
+      (obj.pmtpPeriodEndBlock = message.pmtpPeriodEndBlock);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<EventPolicy>, I>>(
+    object: I,
+  ): EventPolicy {
+    const message = createBaseEventPolicy();
+    message.eventType = object.eventType ?? "";
+    message.pmtpPeriodStartBlock = object.pmtpPeriodStartBlock ?? "";
+    message.pmtpPeriodEndBlock = object.pmtpPeriodEndBlock ?? "";
     return message;
   },
 };
@@ -530,10 +620,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -542,7 +634,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }
