@@ -13,12 +13,19 @@ export interface Pool {
   nativeAssetBalance: string;
   externalAssetBalance: string;
   poolUnits: string;
+  swapPriceNative: string;
+  swapPriceExternal: string;
 }
 
 export interface LiquidityProvider {
   asset?: Asset;
   liquidityProviderUnits: string;
   liquidityProviderAddress: string;
+}
+
+export interface PmtpEpoch {
+  epochCounter: Long;
+  blockCounter: Long;
 }
 
 export interface WhiteList {
@@ -29,6 +36,12 @@ export interface LiquidityProviderData {
   liquidityProvider?: LiquidityProvider;
   nativeAssetBalance: string;
   externalAssetBalance: string;
+}
+
+export interface EventPolicy {
+  eventType: string;
+  pmtpPeriodStartBlock: string;
+  pmtpPeriodEndBlock: string;
 }
 
 function createBaseAsset(): Asset {
@@ -86,6 +99,8 @@ function createBasePool(): Pool {
     nativeAssetBalance: "",
     externalAssetBalance: "",
     poolUnits: "",
+    swapPriceNative: "",
+    swapPriceExternal: "",
   };
 }
 
@@ -102,6 +117,12 @@ export const Pool = {
     }
     if (message.poolUnits !== "") {
       writer.uint32(34).string(message.poolUnits);
+    }
+    if (message.swapPriceNative !== "") {
+      writer.uint32(42).string(message.swapPriceNative);
+    }
+    if (message.swapPriceExternal !== "") {
+      writer.uint32(50).string(message.swapPriceExternal);
     }
     return writer;
   },
@@ -125,6 +146,12 @@ export const Pool = {
         case 4:
           message.poolUnits = reader.string();
           break;
+        case 5:
+          message.swapPriceNative = reader.string();
+          break;
+        case 6:
+          message.swapPriceExternal = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -145,6 +172,12 @@ export const Pool = {
         ? String(object.externalAssetBalance)
         : "",
       poolUnits: isSet(object.poolUnits) ? String(object.poolUnits) : "",
+      swapPriceNative: isSet(object.swapPriceNative)
+        ? String(object.swapPriceNative)
+        : "",
+      swapPriceExternal: isSet(object.swapPriceExternal)
+        ? String(object.swapPriceExternal)
+        : "",
     };
   },
 
@@ -159,6 +192,10 @@ export const Pool = {
     message.externalAssetBalance !== undefined &&
       (obj.externalAssetBalance = message.externalAssetBalance);
     message.poolUnits !== undefined && (obj.poolUnits = message.poolUnits);
+    message.swapPriceNative !== undefined &&
+      (obj.swapPriceNative = message.swapPriceNative);
+    message.swapPriceExternal !== undefined &&
+      (obj.swapPriceExternal = message.swapPriceExternal);
     return obj;
   },
 
@@ -171,6 +208,8 @@ export const Pool = {
     message.nativeAssetBalance = object.nativeAssetBalance ?? "";
     message.externalAssetBalance = object.externalAssetBalance ?? "";
     message.poolUnits = object.poolUnits ?? "";
+    message.swapPriceNative = object.swapPriceNative ?? "";
+    message.swapPriceExternal = object.swapPriceExternal ?? "";
     return message;
   },
 };
@@ -257,6 +296,81 @@ export const LiquidityProvider = {
         : undefined;
     message.liquidityProviderUnits = object.liquidityProviderUnits ?? "";
     message.liquidityProviderAddress = object.liquidityProviderAddress ?? "";
+    return message;
+  },
+};
+
+function createBasePmtpEpoch(): PmtpEpoch {
+  return { epochCounter: Long.ZERO, blockCounter: Long.ZERO };
+}
+
+export const PmtpEpoch = {
+  encode(
+    message: PmtpEpoch,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (!message.epochCounter.isZero()) {
+      writer.uint32(8).int64(message.epochCounter);
+    }
+    if (!message.blockCounter.isZero()) {
+      writer.uint32(16).int64(message.blockCounter);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PmtpEpoch {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePmtpEpoch();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.epochCounter = reader.int64() as Long;
+          break;
+        case 2:
+          message.blockCounter = reader.int64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PmtpEpoch {
+    return {
+      epochCounter: isSet(object.epochCounter)
+        ? Long.fromString(object.epochCounter)
+        : Long.ZERO,
+      blockCounter: isSet(object.blockCounter)
+        ? Long.fromString(object.blockCounter)
+        : Long.ZERO,
+    };
+  },
+
+  toJSON(message: PmtpEpoch): unknown {
+    const obj: any = {};
+    message.epochCounter !== undefined &&
+      (obj.epochCounter = (message.epochCounter || Long.ZERO).toString());
+    message.blockCounter !== undefined &&
+      (obj.blockCounter = (message.blockCounter || Long.ZERO).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<PmtpEpoch>, I>>(
+    object: I,
+  ): PmtpEpoch {
+    const message = createBasePmtpEpoch();
+    message.epochCounter =
+      object.epochCounter !== undefined && object.epochCounter !== null
+        ? Long.fromValue(object.epochCounter)
+        : Long.ZERO;
+    message.blockCounter =
+      object.blockCounter !== undefined && object.blockCounter !== null
+        ? Long.fromValue(object.blockCounter)
+        : Long.ZERO;
     return message;
   },
 };
@@ -417,6 +531,84 @@ export const LiquidityProviderData = {
         : undefined;
     message.nativeAssetBalance = object.nativeAssetBalance ?? "";
     message.externalAssetBalance = object.externalAssetBalance ?? "";
+    return message;
+  },
+};
+
+function createBaseEventPolicy(): EventPolicy {
+  return { eventType: "", pmtpPeriodStartBlock: "", pmtpPeriodEndBlock: "" };
+}
+
+export const EventPolicy = {
+  encode(
+    message: EventPolicy,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.eventType !== "") {
+      writer.uint32(10).string(message.eventType);
+    }
+    if (message.pmtpPeriodStartBlock !== "") {
+      writer.uint32(18).string(message.pmtpPeriodStartBlock);
+    }
+    if (message.pmtpPeriodEndBlock !== "") {
+      writer.uint32(26).string(message.pmtpPeriodEndBlock);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventPolicy {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEventPolicy();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.eventType = reader.string();
+          break;
+        case 2:
+          message.pmtpPeriodStartBlock = reader.string();
+          break;
+        case 3:
+          message.pmtpPeriodEndBlock = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EventPolicy {
+    return {
+      eventType: isSet(object.eventType) ? String(object.eventType) : "",
+      pmtpPeriodStartBlock: isSet(object.pmtpPeriodStartBlock)
+        ? String(object.pmtpPeriodStartBlock)
+        : "",
+      pmtpPeriodEndBlock: isSet(object.pmtpPeriodEndBlock)
+        ? String(object.pmtpPeriodEndBlock)
+        : "",
+    };
+  },
+
+  toJSON(message: EventPolicy): unknown {
+    const obj: any = {};
+    message.eventType !== undefined && (obj.eventType = message.eventType);
+    message.pmtpPeriodStartBlock !== undefined &&
+      (obj.pmtpPeriodStartBlock = message.pmtpPeriodStartBlock);
+    message.pmtpPeriodEndBlock !== undefined &&
+      (obj.pmtpPeriodEndBlock = message.pmtpPeriodEndBlock);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<EventPolicy>, I>>(
+    object: I,
+  ): EventPolicy {
+    const message = createBaseEventPolicy();
+    message.eventType = object.eventType ?? "";
+    message.pmtpPeriodStartBlock = object.pmtpPeriodStartBlock ?? "";
+    message.pmtpPeriodEndBlock = object.pmtpPeriodEndBlock ?? "";
     return message;
   },
 };

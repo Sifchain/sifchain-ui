@@ -4,6 +4,7 @@ import * as _m0 from "protobufjs/minimal";
 import {
   Pool,
   LiquidityProvider,
+  PmtpEpoch,
   Asset,
   LiquidityProviderData,
 } from "../../../sifnode/clp/v1/types";
@@ -11,6 +12,7 @@ import {
   PageRequest,
   PageResponse,
 } from "../../../cosmos/base/query/v1beta1/pagination";
+import { PmtpParams, PmtpRateParams } from "../../../sifnode/clp/v1/params";
 
 export const protobufPackage = "sifnode.clp.v1";
 
@@ -90,6 +92,15 @@ export interface LiquidityProvidersRes {
   liquidityProviders: LiquidityProvider[];
   height: Long;
   pagination?: PageResponse;
+}
+
+export interface PmtpParamsReq {}
+
+export interface PmtpParamsRes {
+  params?: PmtpParams;
+  pmtpRateParams?: PmtpRateParams;
+  pmtpEpoch?: PmtpEpoch;
+  height: Long;
 }
 
 function createBasePoolReq(): PoolReq {
@@ -1264,6 +1275,170 @@ export const LiquidityProvidersRes = {
   },
 };
 
+function createBasePmtpParamsReq(): PmtpParamsReq {
+  return {};
+}
+
+export const PmtpParamsReq = {
+  encode(
+    _: PmtpParamsReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PmtpParamsReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePmtpParamsReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): PmtpParamsReq {
+    return {};
+  },
+
+  toJSON(_: PmtpParamsReq): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<PmtpParamsReq>, I>>(
+    _: I,
+  ): PmtpParamsReq {
+    const message = createBasePmtpParamsReq();
+    return message;
+  },
+};
+
+function createBasePmtpParamsRes(): PmtpParamsRes {
+  return {
+    params: undefined,
+    pmtpRateParams: undefined,
+    pmtpEpoch: undefined,
+    height: Long.ZERO,
+  };
+}
+
+export const PmtpParamsRes = {
+  encode(
+    message: PmtpParamsRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.params !== undefined) {
+      PmtpParams.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pmtpRateParams !== undefined) {
+      PmtpRateParams.encode(
+        message.pmtpRateParams,
+        writer.uint32(18).fork(),
+      ).ldelim();
+    }
+    if (message.pmtpEpoch !== undefined) {
+      PmtpEpoch.encode(message.pmtpEpoch, writer.uint32(26).fork()).ldelim();
+    }
+    if (!message.height.isZero()) {
+      writer.uint32(32).int64(message.height);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PmtpParamsRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePmtpParamsRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.params = PmtpParams.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.pmtpRateParams = PmtpRateParams.decode(
+            reader,
+            reader.uint32(),
+          );
+          break;
+        case 3:
+          message.pmtpEpoch = PmtpEpoch.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.height = reader.int64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PmtpParamsRes {
+    return {
+      params: isSet(object.params)
+        ? PmtpParams.fromJSON(object.params)
+        : undefined,
+      pmtpRateParams: isSet(object.pmtpRateParams)
+        ? PmtpRateParams.fromJSON(object.pmtpRateParams)
+        : undefined,
+      pmtpEpoch: isSet(object.pmtpEpoch)
+        ? PmtpEpoch.fromJSON(object.pmtpEpoch)
+        : undefined,
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+    };
+  },
+
+  toJSON(message: PmtpParamsRes): unknown {
+    const obj: any = {};
+    message.params !== undefined &&
+      (obj.params = message.params
+        ? PmtpParams.toJSON(message.params)
+        : undefined);
+    message.pmtpRateParams !== undefined &&
+      (obj.pmtpRateParams = message.pmtpRateParams
+        ? PmtpRateParams.toJSON(message.pmtpRateParams)
+        : undefined);
+    message.pmtpEpoch !== undefined &&
+      (obj.pmtpEpoch = message.pmtpEpoch
+        ? PmtpEpoch.toJSON(message.pmtpEpoch)
+        : undefined);
+    message.height !== undefined &&
+      (obj.height = (message.height || Long.ZERO).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<PmtpParamsRes>, I>>(
+    object: I,
+  ): PmtpParamsRes {
+    const message = createBasePmtpParamsRes();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? PmtpParams.fromPartial(object.params)
+        : undefined;
+    message.pmtpRateParams =
+      object.pmtpRateParams !== undefined && object.pmtpRateParams !== null
+        ? PmtpRateParams.fromPartial(object.pmtpRateParams)
+        : undefined;
+    message.pmtpEpoch =
+      object.pmtpEpoch !== undefined && object.pmtpEpoch !== null
+        ? PmtpEpoch.fromPartial(object.pmtpEpoch)
+        : undefined;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
+    return message;
+  },
+};
+
 export interface Query {
   GetPool(request: PoolReq): Promise<PoolRes>;
   GetPools(request: PoolsReq): Promise<PoolsRes>;
@@ -1280,6 +1455,7 @@ export interface Query {
   GetLiquidityProviderList(
     request: LiquidityProviderListReq,
   ): Promise<LiquidityProviderListRes>;
+  GetPmtpParams(request: PmtpParamsReq): Promise<PmtpParamsRes>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1293,6 +1469,7 @@ export class QueryClientImpl implements Query {
     this.GetAssetList = this.GetAssetList.bind(this);
     this.GetLiquidityProviders = this.GetLiquidityProviders.bind(this);
     this.GetLiquidityProviderList = this.GetLiquidityProviderList.bind(this);
+    this.GetPmtpParams = this.GetPmtpParams.bind(this);
   }
   GetPool(request: PoolReq): Promise<PoolRes> {
     const data = PoolReq.encode(request).finish();
@@ -1370,6 +1547,16 @@ export class QueryClientImpl implements Query {
     return promise.then((data) =>
       LiquidityProviderListRes.decode(new _m0.Reader(data)),
     );
+  }
+
+  GetPmtpParams(request: PmtpParamsReq): Promise<PmtpParamsRes> {
+    const data = PmtpParamsReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetPmtpParams",
+      data,
+    );
+    return promise.then((data) => PmtpParamsRes.decode(new _m0.Reader(data)));
   }
 }
 
