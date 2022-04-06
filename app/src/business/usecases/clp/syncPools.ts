@@ -55,16 +55,25 @@ export function SyncPools(
           (item) =>
             item.denom === externalSymbol || item.baseDenom === externalSymbol,
         );
-        if (!entry) return null;
+        if (!entry) {
+          console.warn("Could not find token in registry", {
+            externalSymbol,
+            pool,
+          });
+          return null;
+        }
 
         const asset = chains
           .get(Network.SIFCHAIN)
           .findAssetWithLikeSymbol(entry.baseDenom);
 
         if (!asset) {
-          console.log(entry, externalSymbol);
+          console.warn("Could not find asset in chain", {
+            asset: entry.baseDenom,
+            externalSymbol,
+          });
+          return null;
         }
-        if (!asset) return null;
 
         return new Pool(
           AssetAmount(nativeAsset, pool.nativeAssetBalance),
