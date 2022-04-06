@@ -3,15 +3,15 @@ import { Network, IBCChainConfig } from "../../../entities";
 export const SIFCHAIN_TEMPNET_PMTP: IBCChainConfig = {
   network: Network.SIFCHAIN,
   chainType: "ibc",
-  displayName: "sifchain-tempnet-e34f290",
+  displayName: "sifchain-testnet-1",
   blockExplorerUrl: "https://www.mintscan.io/sifchain",
   nativeAssetSymbol: "rowan",
-  chainId: "sifchain-tempnet-e34f290",
+  chainId: "sifchain-testnet-1",
   rpcUrl: "https://proxies.sifchain.finance/api/sifchain-pmtp-tempnet/rpc",
   restUrl: "https://proxies.sifchain.finance/api/sifchain-pmtp-tempnet/rest",
   keplrChainInfo: {
-    chainName: "sifchain-tempnet-e34f290",
-    chainId: "sifchain-tempnet-e34f290",
+    chainName: "sifchain-testnet-1",
+    chainId: "sifchain-testnet-1",
     rpc: "https://proxies.sifchain.finance/api/sifchain-pmtp-tempnet/rpc",
     rest: "https://proxies.sifchain.finance/api/sifchain-pmtp-tempnet/rest",
     stakeCurrency: {

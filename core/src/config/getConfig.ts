@@ -29,8 +29,8 @@ import { chainConfigByNetworkEnv } from "./chains";
 
 type ConfigMap = Record<NetworkEnv, ReturnType<typeof parseConfig>>;
 
-// type ChainNetwork = `${Network}.${NetworkEnv}`;
-type ChainNetwork = string;
+type ChainNetwork = `${Network}.${NetworkEnv}`;
+
 type AssetMap = Record<ChainNetwork, IAsset[]>;
 
 export type AppConfig = ReturnType<typeof parseConfig>; // Will include other injectables
@@ -70,7 +70,7 @@ export function getConfig(
   const sifchainAssets = assetMap[sifchainAssetTag] || [];
   const ethereumAssets = assetMap[ethereumAssetTag] || [];
 
-  let allAssets = [...sifchainAssets, ...ethereumAssets];
+  const allAssets = [...sifchainAssets, ...ethereumAssets];
 
   Object.values(Network)
     .filter((n) => n !== Network.ETHEREUM && n !== Network.SIFCHAIN)

@@ -9,7 +9,7 @@ import { usePoolStats } from "@/hooks/usePoolStats";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import useChangeLog from "@/hooks/useChangeLog";
 import { useTVL } from "@/hooks/useTVL";
-import usePMTP from "@/hooks/usePMTP";
+import usePmtpParams from "@/hooks/usePMTP";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
 import { formatAssetAmount } from "@/components/utils";
@@ -46,7 +46,7 @@ export default defineComponent({
 
     const router = useRouter();
 
-    const pmtp = usePMTP();
+    const pmtp = usePmtpParams();
 
     const isPMTPEnabled = flagsStore.state.pmtp;
 
@@ -384,8 +384,10 @@ export default defineComponent({
                         PMTP{" "}
                         {pmtp.isLoading.value
                           ? "..."
-                          : `${Number(
-                              pmtp.data.value?.pmtp_period_governance_rate,
+                          : `${(
+                              Number(
+                                pmtp.data.value?.pmtp_period_governance_rate,
+                              ) * 100
                             ).toFixed(4)}%`}
                       </>
                     }

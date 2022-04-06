@@ -1,3 +1,4 @@
+import { Network } from "../entities";
 import { AppCookies } from "./AppCookies";
 
 export enum NetworkEnv {
@@ -22,8 +23,8 @@ export const networkEnvsByIndex = [
   NetworkEnv.TEMPNET_PMTP,
 ];
 
-// type AssetTag = `${Network}.${NetworkEnv}`;
-type AssetTag = string;
+type AssetTag = `${Network}.${NetworkEnv}`;
+
 type ProfileLookup = Record<
   NetworkEnv | number,
   {
@@ -59,17 +60,11 @@ export const profileLookup: ProfileLookup = {
     sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
-  get [1]() {
-    return this[NetworkEnv.TESTNET];
-  },
   [NetworkEnv.DEVNET]: {
     tag: NetworkEnv.DEVNET,
     ethAssetTag: "ethereum.devnet",
     sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
-  },
-  get [2]() {
-    return this[NetworkEnv.DEVNET];
   },
   [NetworkEnv.LOCALNET]: {
     tag: NetworkEnv.LOCALNET,
@@ -77,17 +72,11 @@ export const profileLookup: ProfileLookup = {
     sifAssetTag: "sifchain.localnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
-  get [3]() {
-    return this[NetworkEnv.LOCALNET];
-  },
   [NetworkEnv.TEMPNET_PMTP]: {
     tag: NetworkEnv.TEMPNET_PMTP,
     ethAssetTag: "ethereum.testnet",
     sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
-  },
-  get [4]() {
-    return this[NetworkEnv.TEMPNET_PMTP];
   },
 } as const;
 

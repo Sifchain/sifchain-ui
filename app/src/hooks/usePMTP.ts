@@ -8,7 +8,7 @@ const MOCK_PMTP_PARAMS = {
   pmtp_period_epoch_length: "7",
 };
 
-export default function usePMTP() {
+export default function usePmtpParams() {
   const core = useCore();
   return useAsyncData(async () => {
     if (!flagsStore.state.pmtp) {

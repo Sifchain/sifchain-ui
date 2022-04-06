@@ -1,8 +1,5 @@
 import { Network, IBCChainConfig } from "../../../entities";
 
-// rpcUrl: "https://proxies.sifchain.finance/api/sifchain-pmtp-tempnet/rpc",
-// restUrl: "https://proxies.sifchain.finance/api/sifchain-pmtp-tempnet/rest",
-
 export const SIFCHAIN_TESTNET: IBCChainConfig = {
   network: Network.SIFCHAIN,
   chainType: "ibc",
