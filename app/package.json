@@ -67,8 +67,7 @@
     "vite-plugin-live-reload": "^2.1.0",
     "vite-plugin-singlefile": "^0.7.1",
     "vite-svg-loader": "^2.2.0",
-    "vitest": "^0.9.0",
-    "vue-jest": "^5.0.0-0"
+    "vitest": "^0.9.0"
   },
   "eslintConfig": {
     "root": true,
