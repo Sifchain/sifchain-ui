@@ -23,8 +23,8 @@ export const useRowanPrice = (params?: { shouldReload: boolean }) => {
     if (!params?.shouldReload) return;
     let shouldBreak = false;
     while (!shouldBreak) {
-      await price.reload.value();
       await new Promise((r) => setTimeout(r, 300 * 1000));
+      price.reload.value();
     }
     onInvalidate(() => {
       shouldBreak = true;
