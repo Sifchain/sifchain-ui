@@ -5,7 +5,6 @@ import { accountStore } from "@/store/modules/accounts";
 import { flagsStore } from "@/store/modules/flags";
 import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
-import { usePoolStats } from "@/hooks/usePoolStats";
 import useChangeLog from "@/hooks/useChangeLog";
 import { useTVL } from "@/hooks/useTVL";
 import usePmtpParams from "@/hooks/usePMTP";
@@ -22,6 +21,7 @@ import NavSidePanelItem from "./NavSidePanelItem";
 import AssetIcon from "../AssetIcon";
 import MoreMenu from "./NavMoreMenu";
 import ConnectedWallets from "./ConnectedWallets";
+import RowanPrice from "./RowanPrice";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -82,11 +82,7 @@ export default defineComponent({
       });
     });
 
-    const poolStats = usePoolStats();
     const tvl = useTVL();
-    const rowanPrice = computed(() => {
-      return poolStats.data.value?.rowanUsd;
-    });
 
     const hasUniversalCompetition = useHasUniversalCompetition();
 
@@ -387,18 +383,7 @@ export default defineComponent({
                     icon="interactive/policy"
                   />
                 )}
-                <NavSidePanelItem
-                  class={"mt-[0px] opacity-50"}
-                  displayName={
-                    <>
-                      {rowanPrice.value
-                        ? `$${(+rowanPrice.value).toFixed(5)}`
-                        : "..."}{" "}
-                      / ROWAN
-                    </>
-                  }
-                  icon="navigation/rowan"
-                />
+                <RowanPrice />
               </div>
               <ConnectedWallets />
               {changelog.isSuccess.value && (
