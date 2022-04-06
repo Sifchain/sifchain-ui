@@ -6,8 +6,6 @@ import { flagsStore } from "@/store/modules/flags";
 import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
 import useChangeLog from "@/hooks/useChangeLog";
-import { useTVL } from "@/hooks/useTVL";
-import usePmtpParams from "@/hooks/usePMTP";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
@@ -22,6 +20,8 @@ import AssetIcon from "../AssetIcon";
 import MoreMenu from "./NavMoreMenu";
 import ConnectedWallets from "./ConnectedWallets";
 import RowanPrice from "./RowanPrice";
+import PmtpParam from "./PmtpParam";
+import TVL from "./TVL";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -41,10 +41,6 @@ export default defineComponent({
     const votingOpenRef = ref(false);
 
     const router = useRouter();
-
-    const pmtp = usePmtpParams();
-
-    const isPMTPEnabled = flagsStore.state.pmtp;
 
     watch([router.currentRoute], () => {
       // add ?vote=anything to any hash route to open the voting modal
@@ -81,8 +77,6 @@ export default defineComponent({
         }, 1);
       });
     });
-
-    const tvl = useTVL();
 
     const hasUniversalCompetition = useHasUniversalCompetition();
 
@@ -355,34 +349,8 @@ export default defineComponent({
               )}
             <div class="bottom mt-[10px]">
               <div class="mb-[2.2vh] w-full text-left transition-all">
-                <NavSidePanelItem
-                  class={"mt-[0px] opacity-50"}
-                  displayName={
-                    <>
-                      {tvl.data.value ? `${tvl.data.value.formatted}` : "..."}{" "}
-                      TVL
-                    </>
-                  }
-                  icon="interactive/lock"
-                />
-                {isPMTPEnabled && (
-                  <NavSidePanelItem
-                    class={"mt-[0px] opacity-50"}
-                    displayName={
-                      <>
-                        PMTP{" "}
-                        {pmtp.isLoading.value
-                          ? "..."
-                          : `${(
-                              Number(
-                                pmtp.data.value?.pmtp_period_governance_rate,
-                              ) * 100
-                            ).toFixed(4)}%`}
-                      </>
-                    }
-                    icon="interactive/policy"
-                  />
-                )}
+                <TVL />
+                <PmtpParam />
                 <RowanPrice />
               </div>
               <ConnectedWallets />
