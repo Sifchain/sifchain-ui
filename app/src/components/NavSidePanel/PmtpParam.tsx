@@ -4,6 +4,9 @@ import usePmtpParams from "@/hooks/usePMTP";
 import { flagsStore } from "@/store/modules/flags";
 import NavSidePanelItem from "./NavSidePanelItem";
 
+const PMTP_ROADMAP_URL =
+  "https://docs.sifchain.finance/project/about-sifchain/roadmap/pmtp";
+
 export default defineComponent({
   name: "PmtpParam",
   setup() {
@@ -13,7 +16,8 @@ export default defineComponent({
     return () =>
       isPMTPEnabled && (
         <NavSidePanelItem
-          class={"mt-[0px] opacity-50"}
+          class="opacity-50"
+          href={PMTP_ROADMAP_URL}
           displayName={
             <>
               PMTP{" "}
