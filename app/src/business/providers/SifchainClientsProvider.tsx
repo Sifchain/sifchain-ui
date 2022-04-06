@@ -31,8 +31,12 @@ type SigningClientState =
 
 export type ClientsState = QueryClientsState & SigningClientState;
 
-export const sifchainClientsSymbol: InjectionKey<ClientsState> =
-  Symbol("sifchainClients");
+export const sifchainClientsSymbol: InjectionKey<
+  ClientsState & {
+    getOrInitQueryClients: () => Promise<QueryClients>;
+    getOrInitSigningClient: () => Promise<SigningClient>;
+  }
+> = Symbol("sifchainClients");
 
 export const SifchainClientsProvider = defineComponent((_, { slots }) => {
   const state = reactive<ClientsState>({
@@ -42,38 +46,86 @@ export const SifchainClientsProvider = defineComponent((_, { slots }) => {
 
   const { config, services } = useCore();
 
-  onMounted(() => {
+  const getOrInitQueryClients = () => {
+    if (state.queryClientStatus === "fulfilled") {
+      return Promise.resolve(state);
+    }
+
     state.queryClientStatus = "pending";
-    const queryClientPromise = createQueryClient(config.sifRpcUrl)
-      .then((x) => {
-        Object.assign(state, { ...x, queryClientStatus: "fulfilled" });
+    return createQueryClient(config.sifRpcUrl)
+      .then((queryClients) => {
+        Object.assign(state, {
+          ...queryClients,
+          queryClientStatus: "fulfilled",
+        });
+        return queryClients;
       })
-      .catch(() => (state.queryClientStatus = "rejected"));
+      .catch((error) => {
+        state.queryClientStatus = "rejected";
+        return Promise.reject(error);
+      });
+  };
+
+  const getOrInitSigningClient = () => {
+    if (state.signingClientStatus === "fulfilled")
+      return Promise.resolve(state.signingClient);
 
     state.signingClientStatus = "pending";
-    const signingClientPromise = services.wallet.keplrProvider
+    return services.wallet.keplrProvider
       .getSendingSigner(services.chains.nativeChain)
       .then((x) => createSigningClient(config.sifRpcUrl, x))
-      .then((x) =>
+      .then((signingClient) => {
         Object.assign(state, {
-          signingClient: x,
+          signingClient,
           signingClientStatus: "fulfilled",
-        }),
-      )
-      .catch(() => (state.signingClientStatus = "rejected"));
+        });
+        return signingClient;
+      })
+      .catch((error) => {
+        state.signingClientStatus = "rejected";
+        return Promise.reject(error);
+      });
+  };
 
-    return Promise.all([queryClientPromise, signingClientPromise]);
-  });
+  onMounted(() =>
+    Promise.all([getOrInitQueryClients(), getOrInitSigningClient()]),
+  );
 
-  provide(sifchainClientsSymbol, state);
+  provide(
+    sifchainClientsSymbol,
+    Object.assign(state, { getOrInitQueryClients, getOrInitSigningClient }),
+  );
 
   return () => slots.default?.();
 });
 
-export const injectSifchainClients = () => inject(sifchainClientsSymbol);
+export const useSifchainClients = () => {
+  const noProviderError = new Error(
+    "No provider in tree, check if you have added SifchainClientsProvider",
+  );
+
+  return inject(
+    sifchainClientsSymbol,
+    new Proxy(
+      {
+        getOrInitQueryClients: () => {
+          throw noProviderError;
+        },
+        getOrInitSigningClient: () => {
+          throw noProviderError;
+        },
+      },
+      {
+        get() {
+          throw noProviderError;
+        },
+      },
+    ),
+  );
+};
 
 export function useQueryClient<K extends keyof QueryClients>(clientKind: K) {
-  const clientState = injectSifchainClients();
+  const clientState = useSifchainClients();
 
   if (!clientState) return;
 

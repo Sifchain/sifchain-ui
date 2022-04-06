@@ -78,9 +78,7 @@ export const RewardSection = defineComponent({
           name: "Pending Rewards",
           tooltip:
             "This is the amount that will be dispensed on Tuesday. Any new claimable amounts will need to be claimed after the next dispensation.",
-          amount:
-            this.rewardProgram.participant
-              ?.claimedCommissionsAndRewardsAwaitingDispensation,
+          amount: this.rewardProgram.participant?.pendingRewards,
         },
         {
           name: "Dispensed Rewards",
@@ -104,9 +102,9 @@ export const RewardSection = defineComponent({
     const sifConnected = this.sifConnected;
 
     return (
-      <article class="align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 py-[16px]">
+      <article class="border-b border-solid border-gray-200 border-opacity-80 py-[16px] align-middle last:border-transparent hover:opacity-80">
         <section
-          class="text flex items-center cursor-pointer"
+          class="text flex cursor-pointer items-center"
           onClick={() => (this.expanded = !this.expanded)}
           style={{
             opacity: this.rewardProgram.endDateTimeISO
@@ -147,7 +145,7 @@ export const RewardSection = defineComponent({
           <div
             class={[
               rewardColumnsLookup.apy.class,
-              "font-mono flex items-center justify-end",
+              "flex items-center justify-end font-mono",
             ]}
           >
             {/* Full Amount */}
@@ -161,13 +159,12 @@ export const RewardSection = defineComponent({
           <div
             class={[
               rewardColumnsLookup.claimableAmount.class,
-              "justify-end font-mono flex items-center",
+              "flex items-center justify-end font-mono",
             ]}
           >
             {/* Claimable Amount */}
             {getClaimableAmountString(
-              this.rewardProgram?.participant
-                ?.totalClaimableCommissionsAndClaimableRewards,
+              this.rewardProgram?.participant?.accumulatedRewards,
             )}
             <TokenIcon
               assetValue={Asset.get("rowan")}
@@ -190,9 +187,9 @@ export const RewardSection = defineComponent({
           </div>
         </section>
         {this.expanded && (
-          <section class="mt-[10px] flex justify-between text-sm bg-gray-base py-2 px-3">
+          <section class="bg-gray-base mt-[10px] flex justify-between py-2 px-3 text-sm">
             <div class="flex flex-col justify-between">
-              <div class="opacity-50 text-[14px] mb-[20px]">
+              <div class="mb-[20px] text-[14px] opacity-50">
                 <div>{this.rewardProgram.description}</div>
                 <div class={[`w-full`, `flex flex-row`]}>
                   {!this.rewardProgram.isUniversal &&
@@ -218,9 +215,9 @@ export const RewardSection = defineComponent({
               {this.details.map((detail, index) => (
                 <div
                   key={index}
-                  class="mt-[6px] first:mt-0 flex w-[400px] justify-between"
+                  class="mt-[6px] flex w-[400px] justify-between first:mt-0"
                 >
-                  <span class="whitespace-nowrap flex items-center">
+                  <span class="flex items-center whitespace-nowrap">
                     {detail.name}
                     {!!detail.tooltip && (
                       <Button.InlineHelp>{detail.tooltip}</Button.InlineHelp>
@@ -238,7 +235,7 @@ export const RewardSection = defineComponent({
             </div>
 
             <div class="flex items-center justify-center">
-              <div class="p-[6px] w-[140px] bg-black rounded-lg">
+              <div class="w-[140px] rounded-lg bg-black p-[6px]">
                 <Button.Inline
                   class="w-full no-underline"
                   icon="interactive/circle-info"
