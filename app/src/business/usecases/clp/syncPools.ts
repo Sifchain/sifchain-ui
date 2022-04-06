@@ -85,7 +85,7 @@ export function SyncPools(
           Amount(pool.poolUnits),
         );
       })
-      .filter((val) => val != null) as Pool[];
+      .filter(Boolean) as Pool[];
 
     for (const pool of pools) {
       store.pools[pool.symbol()] = pool;
