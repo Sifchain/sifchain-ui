@@ -8,11 +8,9 @@ export enum NetworkEnv {
   LOCALNET = "localnet",
   DEVNET_042 = "devnet_042",
   TESTNET_042_IBC = "testnet_042_ibc",
-  TEMPNET_PMTP = "tempnet_pmtp",
 }
 
-// NOTE(ajoslin): support legacy `?_env=n` urls, from
-// 0-4
+// NOTE(ajoslin): support legacy `?_env=n` urls
 export const networkEnvsByIndex = [
   NetworkEnv.MAINNET,
   NetworkEnv.TESTNET,
@@ -20,7 +18,6 @@ export const networkEnvsByIndex = [
   NetworkEnv.LOCALNET,
   NetworkEnv.DEVNET_042,
   NetworkEnv.TESTNET_042_IBC,
-  NetworkEnv.TEMPNET_PMTP,
 ];
 
 type AssetTag = `${Network}.${NetworkEnv}`;
@@ -70,12 +67,6 @@ export const profileLookup: ProfileLookup = {
     tag: NetworkEnv.LOCALNET,
     ethAssetTag: "ethereum.localnet",
     sifAssetTag: "sifchain.localnet",
-    cosmoshubAssetTag: "cosmoshub.testnet",
-  },
-  [NetworkEnv.TEMPNET_PMTP]: {
-    tag: NetworkEnv.TEMPNET_PMTP,
-    ethAssetTag: "ethereum.testnet",
-    sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
 } as const;
