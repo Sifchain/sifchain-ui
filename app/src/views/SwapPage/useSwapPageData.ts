@@ -1,10 +1,14 @@
 import { ref, watch, watchEffect } from "vue";
 import { computed } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { IAsset, Network, TransactionStatus, toBaseUnits } from "@sifchain/sdk";
+import {
+  IAsset,
+  Network,
+  TransactionStatus,
+  toBaseUnits,
+  format,
+} from "@sifchain/sdk";
 import { useWalletButton } from "@/hooks/useWalletButton";
-import { getMaxAmount } from "../utils/getMaxAmount";
-import { format } from "@sifchain/sdk/src/utils/format";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { useRoute, useRouter } from "vue-router";
@@ -15,6 +19,8 @@ import { formatAssetAmount } from "@/components/utils";
 import { ServiceContext } from "@/business";
 import { SwapState, useSwapCalculator } from "@/business/calculators";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
+import { getMaxAmount } from "../utils/getMaxAmount";
+
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 export const SWAP_MIN_BALANCE = toBaseUnits(
@@ -383,7 +389,6 @@ export const useSwapPageData = () => {
         trimMantissa: true,
       });
     },
-
     nextStepAllowed: computed(() => {
       // return whether swap is valid
       return nextStepValidityMessage.value.isValid;

@@ -1,5 +1,3 @@
-import { useCore } from "@/hooks/useCore";
-import { createQueryClient, createSigningClient } from "@sifchain/sdk";
 import {
   defineComponent,
   inject,
@@ -8,6 +6,9 @@ import {
   provide,
   reactive,
 } from "vue";
+
+import { useCore } from "@/hooks/useCore";
+import { createQueryClient, createSigningClient } from "@sifchain/sdk";
 
 type QueryClients = Awaited<ReturnType<typeof createQueryClient>>;
 
@@ -70,3 +71,13 @@ export const SifchainClientsProvider = defineComponent((_, { slots }) => {
 });
 
 export const injectSifchainClients = () => inject(sifchainClientsSymbol);
+
+export function useQueryClient<K extends keyof QueryClients>(clientKind: K) {
+  const clientState = injectSifchainClients();
+
+  if (!clientState) return;
+
+  if (clientState.queryClientStatus === "fulfilled") {
+    return clientState[clientKind];
+  }
+}
