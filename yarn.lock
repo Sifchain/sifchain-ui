@@ -1169,7 +1169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-modules-commonjs@npm:^7.16.8, @babel/plugin-transform-modules-commonjs@npm:^7.2.0":
+"@babel/plugin-transform-modules-commonjs@npm:^7.16.8":
   version: 7.16.8
   resolution: "@babel/plugin-transform-modules-commonjs@npm:7.16.8"
   dependencies:
@@ -5995,20 +5995,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/strip-bom@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@types/strip-bom@npm:3.0.0"
-  checksum: cb165d0c2ce6abbef95506ebee25be02bd453600ef1792dc1754236e5d6f9c830d52bdb85978d0b08ea1f36b96a61235ac5ad99e0f4c2767fb4ea004e141d2df
-  languageName: node
-  linkType: hard
-
-"@types/strip-json-comments@npm:0.0.30":
-  version: 0.0.30
-  resolution: "@types/strip-json-comments@npm:0.0.30"
-  checksum: 829ddd389645073f347c5b1924a8c34b8813af29756576e511c46f40e218193cf93ccbade62661d47fc70f707e98f410331729b8c20edfcb2e807d51df1ad4b7
-  languageName: node
-  linkType: hard
-
 "@types/to-json-schema@npm:^0.2.0":
   version: 0.2.1
   resolution: "@types/to-json-schema@npm:0.2.1"
@@ -7555,7 +7541,6 @@ __metadata:
     vite-svg-loader: ^2.2.0
     vitest: ^0.9.0
     vue: ^3.2.31
-    vue-jest: ^5.0.0-0
     vue-router: ^4.0.14
     vue-tippy: ^6.0.0-alpha.30
     vuex: 4.0.2
@@ -10711,7 +10696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css@npm:2.X, css@npm:^2.1.0":
+"css@npm:2.X":
   version: 2.2.4
   resolution: "css@npm:2.2.4"
   dependencies:
@@ -13677,15 +13662,6 @@ __metadata:
     snapdragon: ^0.8.1
     to-regex: ^3.0.1
   checksum: a41531b8934735b684cef5e8c5a01d0f298d7d384500ceca38793a9ce098125aab04ee73e2d75d5b2901bc5dddd2b64e1b5e3bf19139ea48bac52af4a92f1d00
-  languageName: node
-  linkType: hard
-
-"extract-from-css@npm:^0.4.4":
-  version: 0.4.4
-  resolution: "extract-from-css@npm:0.4.4"
-  dependencies:
-    css: ^2.1.0
-  checksum: f3628d14a736a363188881dc9b5c603f42d6a7bbbf1338ca5eb8362bff6a392edb07ab8a57e3cee1fd8191cd9795c671b6369523d69231c59395a94a62436d84
   languageName: node
   linkType: hard
 
@@ -24865,13 +24841,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:0.5.6":
-  version: 0.5.6
-  resolution: "source-map@npm:0.5.6"
-  checksum: 390b3f5165c9631a74fb6fb55ba61e62a7f9b7d4026ae0e2bfc2899c241d71c1bccb8731c496dc7f7cb79a5f523406eb03d8c5bebe8448ee3fc38168e2d209c8
-  languageName: node
-  linkType: hard
-
 "source-map@npm:^0.5.0, source-map@npm:^0.5.3, source-map@npm:^0.5.6, source-map@npm:^0.5.7, source-map@npm:~0.5.1":
   version: 0.5.7
   resolution: "source-map@npm:0.5.7"
@@ -25393,17 +25362,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-json-comments@npm:^2.0.0, strip-json-comments@npm:~2.0.1":
-  version: 2.0.1
-  resolution: "strip-json-comments@npm:2.0.1"
-  checksum: 1074ccb63270d32ca28edfb0a281c96b94dc679077828135141f27d52a5a398ef5e78bcf22809d23cadc2b81dfbe345eb5fd8699b385c8b1128907dec4a7d1e1
-  languageName: node
-  linkType: hard
-
 "strip-json-comments@npm:^3.0.1, strip-json-comments@npm:^3.1.0, strip-json-comments@npm:^3.1.1":
   version: 3.1.1
   resolution: "strip-json-comments@npm:3.1.1"
   checksum: 492f73e27268f9b1c122733f28ecb0e7e8d8a531a6662efbd08e22cccb3f9475e90a1b82cab06a392f6afae6d2de636f977e231296400d0ec5304ba70f166443
+  languageName: node
+  linkType: hard
+
+"strip-json-comments@npm:~2.0.1":
+  version: 2.0.1
+  resolution: "strip-json-comments@npm:2.0.1"
+  checksum: 1074ccb63270d32ca28edfb0a281c96b94dc679077828135141f27d52a5a398ef5e78bcf22809d23cadc2b81dfbe345eb5fd8699b385c8b1128907dec4a7d1e1
   languageName: node
   linkType: hard
 
@@ -26356,18 +26325,6 @@ __metadata:
   bin:
     protoc-gen-ts_proto: protoc-gen-ts_proto
   checksum: dc91f644602e1787103ecda89addfcb355cd787044a39df197aaa2dd39e29f7cc412035165ee4332a76f31a1f55863ca738e56c7138cd6ec99bcec8316c97538
-  languageName: node
-  linkType: hard
-
-"tsconfig@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "tsconfig@npm:7.0.0"
-  dependencies:
-    "@types/strip-bom": ^3.0.0
-    "@types/strip-json-comments": 0.0.30
-    strip-bom: ^3.0.0
-    strip-json-comments: ^2.0.0
-  checksum: 8bce05e93c673defd56d93d83d4055e49651d3947c076339c4bc15d47b7eb5029bed194087e568764213a2e4bf45c477ba9f4da16adfd92cd901af7c09e4517e
   languageName: node
   linkType: hard
 
@@ -27596,32 +27553,6 @@ __metadata:
   peerDependencies:
     eslint: ">=6.0.0"
   checksum: 3a5bebd39cd576a07c188b47212255e023153ec151f4ea4d389c9374bf59847eb46d639ff33ee236ee89e3b9c437faf2dc97e4349246179738f86931fb66274a
-  languageName: node
-  linkType: hard
-
-"vue-jest@npm:^5.0.0-0":
-  version: 5.0.0-alpha.10
-  resolution: "vue-jest@npm:5.0.0-alpha.10"
-  dependencies:
-    "@babel/plugin-transform-modules-commonjs": ^7.2.0
-    chalk: ^2.1.0
-    convert-source-map: ^1.6.0
-    extract-from-css: ^0.4.4
-    source-map: 0.5.6
-    tsconfig: ^7.0.0
-  peerDependencies:
-    "@babel/core": 7.x
-    babel-jest: ">= 24 < 27"
-    jest: ">= 24 < 27 "
-    ts-jest: ">= 24 < 27 "
-    typescript: ">= 3.x"
-    vue: ^3.0.0-0
-  peerDependenciesMeta:
-    ts-jest:
-      optional: true
-    typescript:
-      optional: true
-  checksum: 88f7959ebff421dc0c489825b86497d13f1dfe9edcdf4090f6355c683a2264c9cc165fa9e804de63b0ab271d37ed1e5496caf30a9cd1f6d15f897695b206d9d6
   languageName: node
   linkType: hard
 
