@@ -65,8 +65,6 @@ export class Pool extends Pair {
     return calculatePriceImpact(x, X).multiply("100");
   }
 
-  // https://github.com/Sifchain/sifnode/blob/develop/docs/1.Liquidity%20Pools%20Architecture.md
-  // Formula: swapAmount = (x * X * Y) / (x + X) ^ 2
   calcSwapResult(x: IAssetAmount) {
     const X = this.amounts.find((a) => a.symbol === x.symbol);
     if (!X)

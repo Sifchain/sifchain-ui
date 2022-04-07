@@ -194,19 +194,6 @@ export function calculateSwapResult_pmtp(
   );
 }
 
-export function calculateExternalExternalSwapResult(
-  // External -> Native pool
-  ax: IAmount, // Swap Amount
-  aX: IAmount, // External Balance
-  aY: IAmount, // Native Balance
-  // Native -> External pool
-  bX: IAmount, // External Balance
-  bY: IAmount, // Native Balance
-) {
-  const ay = calculateSwapResult(ax, aX, aY);
-  return calculateSwapResult(ay, bX, bY);
-}
-
 // Formula: S = (x * X * Y) / (x + X) ^ 2
 // Reverse Formula: x = ( -2*X*S + X*Y - X*sqrt( Y*(Y - 4*S) ) ) / 2*S
 // Need to use Big.js for sqrt calculation

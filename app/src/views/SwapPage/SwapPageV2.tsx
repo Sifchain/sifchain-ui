@@ -78,7 +78,7 @@ export default defineComponent({
             <button
               class="actidve:rotate-180 bg-gray-base border-gray-input_outline hover:border-accent-base relative box-content flex origin-center items-center rounded-[10px] border-[1px] py-[4px] px-[9px]"
               key="button"
-              onClick={async (e: MouseEvent) => {
+              onClick={() => {
                 data.handleArrowClicked();
                 isInverted.value = !isInverted.value;
               }}
@@ -103,8 +103,8 @@ export default defineComponent({
             }}
             class="mt-[-12px] overflow-hidden"
             tokenIconUrl={data.toTokenIconUrl.value ?? ""}
-            onFocus={() => data.handleToFocused()}
-            onBlur={() => data.handleBlur()}
+            onFocus={data.handleToFocused}
+            onBlur={data.handleBlur}
             heading="To"
             onInputAmount={(val) => {
               data.toAmount.value = val;

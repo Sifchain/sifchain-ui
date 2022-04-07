@@ -1,4 +1,4 @@
-import { defineComponent, PropType, Ref } from "vue";
+import { computed, defineComponent, PropType, Ref } from "vue";
 import { IAsset } from "@sifchain/sdk";
 
 import { Button } from "@/components/Button/Button";
@@ -14,6 +14,14 @@ export const SwapDetails = defineComponent({
     fromAsset: Object as PropType<Ref<IAsset>>,
   },
   setup: (props) => {
+    const priceRatios = computed(() => {
+      if (!props.priceRatio?.value) {
+        return ["", ""] as const;
+      }
+      const ratio = parseFloat(props.priceRatio.value || "0");
+
+      return [ratio.toFixed(6), (1 / ratio).toFixed(6)] as const;
+    });
     return () => (
       <div class="mt-[10px] w-full">
         <div
@@ -29,9 +37,7 @@ export const SwapDetails = defineComponent({
           </div>
           <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium text-white">
             <span class="mr-[4px] whitespace-nowrap">
-              {props.priceRatio?.value &&
-                !!+props.priceRatio.value &&
-                parseFloat(props.priceRatio?.value || "0").toFixed(6)}
+              {priceRatios.value[0]}
             </span>
           </div>
         </div>
@@ -48,9 +54,7 @@ export const SwapDetails = defineComponent({
           </div>
           <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium text-white">
             <span class="mr-[4px] whitespace-nowrap">
-              {props.priceRatio?.value &&
-                !!+props.priceRatio.value &&
-                (1 / parseFloat(props.priceRatio?.value || "0")).toFixed(6)}
+              {priceRatios.value[1]}
             </span>
           </div>
         </div>

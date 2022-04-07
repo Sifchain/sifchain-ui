@@ -29,7 +29,9 @@ export const SWAP_MIN_BALANCE = toBaseUnits(
 );
 
 let defaultSymbol = "";
+
 const options = ["uatom", "uphoton", "uiris", "ceth"];
+
 while (defaultSymbol === "") {
   const option = options.shift() || "";
   try {
@@ -91,6 +93,7 @@ export const useSwapPageData = () => {
     currentSwapInput.fromAmount = fromAmount.value;
     currentSwapInput.toAmount = toAmount.value;
   });
+
   useBoundRoute({
     query: {
       from: fromSymbol,
@@ -172,7 +175,6 @@ export const useSwapPageData = () => {
     fromFieldAmount,
     toFieldAmount,
     priceRatio,
-    priceMessage,
     priceImpact,
     providerFee,
     minimumReceived,
@@ -375,7 +377,6 @@ export const useSwapPageData = () => {
       return format(amount, asset, { mantissa: 18, trimMantissa: true });
     }),
     toSymbol,
-    priceMessage,
     priceRatio,
     priceImpact,
     providerFee,
