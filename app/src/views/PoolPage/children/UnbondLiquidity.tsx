@@ -233,7 +233,7 @@ const UnbondLiquidity = defineComponent({
               disabled={buttonErrorMsg.value !== undefined}
               onClick={() =>
                 unlockLiquidityMutation.mutate({
-                  units: unlockLiquidityData.value.units?.toString() ?? "0",
+                  units: unlockLiquidityData.value.units?.toFixed() ?? "0",
                 })
               }
             >
