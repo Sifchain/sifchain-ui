@@ -14,6 +14,7 @@
     "@sifchain/wallet-keplr": "workspace:*",
     "@sifchain/wallet-metamask": "workspace:*",
     "@sifchain/wallet-terra-station": "workspace:*",
+    "bignumber.js": "^9.0.2",
     "buffer": "^6.0.3",
     "clsx": "^1.1.1",
     "color-hash": "^1.0.3",

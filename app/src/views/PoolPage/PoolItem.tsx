@@ -95,7 +95,7 @@ export default defineComponent({
 
       return prettyNumber(
         parseFloat(formattedExternal) *
-          parseFloat(this.poolStat.priceToken || "0") +
+          parseFloat(this.poolStat.priceToken.toString() || "0") +
           parseFloat(formattedNative) *
             parseFloat(this.rowanPrice.data.value || "0"),
       );
@@ -161,7 +161,9 @@ export default defineComponent({
           <span class="font-mono">
             {this.$props.poolStat?.priceToken != null
               ? `$${prettyNumber(
-                  parseFloat(this.$props.poolStat?.priceToken || "0"),
+                  parseFloat(
+                    this.$props.poolStat?.priceToken.toString() || "0",
+                  ),
                 )}`
               : "..."}
           </span>,
@@ -358,7 +360,7 @@ export default defineComponent({
               {!!this.userPoolData.myPoolShare?.value && (
                 <Button.Inline
                   to={{
-                    name: "RemoveLiquidity",
+                    name: "UnbondLiquidity",
                     params: {
                       externalAsset: this.externalAmount.symbol.toLowerCase(),
                     },
@@ -367,7 +369,7 @@ export default defineComponent({
                   class="w-[140px] !bg-black !text-accent-base mt-[6px]"
                   icon="interactive/minus"
                 >
-                  Remove Liquidity
+                  Unbond Liquidity
                 </Button.Inline>
               )}
             </div>

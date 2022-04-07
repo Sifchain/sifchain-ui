@@ -6,7 +6,9 @@ import {
 } from "@cosmjs/proto-signing";
 import {
   defaultRegistryTypes as defaultStargateTypes,
+  GasPrice,
   SigningStargateClient,
+  SigningStargateClientOptions,
 } from "@cosmjs/stargate";
 import * as clpTx from "../../generated/sifnode/clp/v1/tx";
 import * as dispensationTx from "../../generated/sifnode/dispensation/v1/tx";
@@ -25,7 +27,11 @@ const generateTypeUrlAndTypeRecords = (
       type: value,
     }));
 
-export const createSigningClient = (rpcUrl: string, signer: OfflineSigner) => {
+export const createSigningClient = (
+  rpcUrl: string,
+  signer: OfflineSigner,
+  options?: SigningStargateClientOptions,
+) => {
   const registry = new Registry(defaultStargateTypes);
 
   [clpTx, dispensationTx, ethBridgeTx, tokenRegistryTx]
@@ -34,5 +40,7 @@ export const createSigningClient = (rpcUrl: string, signer: OfflineSigner) => {
 
   return SigningStargateClient.connectWithSigner(rpcUrl, signer, {
     registry,
+    gasPrice: GasPrice.fromString("500000rowan"),
+    ...options,
   });
 };
