@@ -16,13 +16,14 @@ export default ({
   const syncPools = SyncPools(services, store);
 
   return {
+    syncPools,
     addLiquidity: AddLiquidity(services, store),
     removeLiquidity: RemoveLiquidity(services),
-    syncPools,
-    subscribeToPublicPools: (delay: number = PUBLIC_POOLS_POLL_DELAY) => {
-      let timeoutId: NodeJS.Timeout;
-      (async function publicPoolsLoop() {
-        timeoutId = setTimeout(run, delay);
+    subscribeToPublicPools(delay: number = PUBLIC_POOLS_POLL_DELAY) {
+      let timeoutId: number;
+
+      async function publicPoolsLoop() {
+        timeoutId = window.setTimeout(run, delay);
         async function run() {
           try {
             await syncPools.syncPublicPools();
@@ -32,16 +33,19 @@ export default ({
             publicPoolsLoop();
           }
         }
-      })();
-      return () => clearTimeout(timeoutId);
+      }
+
+      publicPoolsLoop();
+      return () => window.clearTimeout(timeoutId);
     },
-    subscribeToUserPools: (
+    subscribeToUserPools(
       address: string,
       delay: number = USER_POOLS_POLL_DELAY,
-    ) => {
-      let timeoutId: NodeJS.Timeout;
-      (async function userPoolsLoop() {
-        timeoutId = setTimeout(run, delay);
+    ) {
+      let timeoutId: number;
+
+      async function userPoolsLoop() {
+        timeoutId = window.setTimeout(run, delay);
         async function run() {
           try {
             await syncPools.syncUserPools(address);
@@ -51,8 +55,11 @@ export default ({
             userPoolsLoop();
           }
         }
-      })();
-      return () => clearTimeout(timeoutId);
+      }
+
+      userPoolsLoop();
+
+      return () => window.clearTimeout(timeoutId);
     },
   };
 };
