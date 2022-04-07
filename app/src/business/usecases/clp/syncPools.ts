@@ -83,6 +83,10 @@ export function SyncPools(
           AssetAmount(nativeAsset, pool.nativeAssetBalance),
           AssetAmount(asset, pool.externalAssetBalance),
           Amount(pool.poolUnits),
+          {
+            native: AssetAmount(nativeAsset, pool.swapPriceNative),
+            external: AssetAmount(asset, pool.swapPriceExternal),
+          },
         );
       })
       .filter(Boolean) as Pool[];

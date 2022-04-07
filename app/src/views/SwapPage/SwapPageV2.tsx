@@ -24,7 +24,6 @@ import { useSwapPageData } from "./useSwapPageData";
 export default defineComponent({
   name: "SwapPage",
   setup() {
-    // const data = useSwapPageModule();
     const data = useSwapPageData();
     const swapIcon = ref<ComponentPublicInstance>();
     const appWalletPicker = useAppWalletPicker();

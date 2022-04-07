@@ -36,6 +36,7 @@ export default ({
       }
 
       publicPoolsLoop();
+
       return () => window.clearTimeout(timeoutId);
     },
     subscribeToUserPools(
