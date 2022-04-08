@@ -25,12 +25,12 @@ export interface PageRequest {
    * It is less efficient than using key. Only one of offset or key should
    * be set.
    */
-  offset: number;
+  offset: Long;
   /**
    * limit is the total number of results to be returned in the result page.
    * If left empty it will default to a value to be set by each app.
    */
-  limit: number;
+  limit: Long;
   /**
    * count_total is set to true  to indicate that the result set should include
    * a count of the total number of items available for pagination in UIs.
@@ -59,11 +59,16 @@ export interface PageResponse {
    * total is total number of results available if PageRequest.count_total
    * was set, its value is undefined otherwise
    */
-  total: number;
+  total: Long;
 }
 
 function createBasePageRequest(): PageRequest {
-  return { key: new Uint8Array(), offset: 0, limit: 0, countTotal: false };
+  return {
+    key: new Uint8Array(),
+    offset: Long.UZERO,
+    limit: Long.UZERO,
+    countTotal: false,
+  };
 }
 
 export const PageRequest = {
@@ -74,10 +79,10 @@ export const PageRequest = {
     if (message.key.length !== 0) {
       writer.uint32(10).bytes(message.key);
     }
-    if (message.offset !== 0) {
+    if (!message.offset.isZero()) {
       writer.uint32(16).uint64(message.offset);
     }
-    if (message.limit !== 0) {
+    if (!message.limit.isZero()) {
       writer.uint32(24).uint64(message.limit);
     }
     if (message.countTotal === true) {
@@ -97,10 +102,10 @@ export const PageRequest = {
           message.key = reader.bytes();
           break;
         case 2:
-          message.offset = longToNumber(reader.uint64() as Long);
+          message.offset = reader.uint64() as Long;
           break;
         case 3:
-          message.limit = longToNumber(reader.uint64() as Long);
+          message.limit = reader.uint64() as Long;
           break;
         case 4:
           message.countTotal = reader.bool();
@@ -116,8 +121,10 @@ export const PageRequest = {
   fromJSON(object: any): PageRequest {
     return {
       key: isSet(object.key) ? bytesFromBase64(object.key) : new Uint8Array(),
-      offset: isSet(object.offset) ? Number(object.offset) : 0,
-      limit: isSet(object.limit) ? Number(object.limit) : 0,
+      offset: isSet(object.offset)
+        ? Long.fromString(object.offset)
+        : Long.UZERO,
+      limit: isSet(object.limit) ? Long.fromString(object.limit) : Long.UZERO,
       countTotal: isSet(object.countTotal) ? Boolean(object.countTotal) : false,
     };
   },
@@ -128,8 +135,10 @@ export const PageRequest = {
       (obj.key = base64FromBytes(
         message.key !== undefined ? message.key : new Uint8Array(),
       ));
-    message.offset !== undefined && (obj.offset = Math.round(message.offset));
-    message.limit !== undefined && (obj.limit = Math.round(message.limit));
+    message.offset !== undefined &&
+      (obj.offset = (message.offset || Long.UZERO).toString());
+    message.limit !== undefined &&
+      (obj.limit = (message.limit || Long.UZERO).toString());
     message.countTotal !== undefined && (obj.countTotal = message.countTotal);
     return obj;
   },
@@ -139,15 +148,21 @@ export const PageRequest = {
   ): PageRequest {
     const message = createBasePageRequest();
     message.key = object.key ?? new Uint8Array();
-    message.offset = object.offset ?? 0;
-    message.limit = object.limit ?? 0;
+    message.offset =
+      object.offset !== undefined && object.offset !== null
+        ? Long.fromValue(object.offset)
+        : Long.UZERO;
+    message.limit =
+      object.limit !== undefined && object.limit !== null
+        ? Long.fromValue(object.limit)
+        : Long.UZERO;
     message.countTotal = object.countTotal ?? false;
     return message;
   },
 };
 
 function createBasePageResponse(): PageResponse {
-  return { nextKey: new Uint8Array(), total: 0 };
+  return { nextKey: new Uint8Array(), total: Long.UZERO };
 }
 
 export const PageResponse = {
@@ -158,7 +173,7 @@ export const PageResponse = {
     if (message.nextKey.length !== 0) {
       writer.uint32(10).bytes(message.nextKey);
     }
-    if (message.total !== 0) {
+    if (!message.total.isZero()) {
       writer.uint32(16).uint64(message.total);
     }
     return writer;
@@ -175,7 +190,7 @@ export const PageResponse = {
           message.nextKey = reader.bytes();
           break;
         case 2:
-          message.total = longToNumber(reader.uint64() as Long);
+          message.total = reader.uint64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -190,7 +205,7 @@ export const PageResponse = {
       nextKey: isSet(object.nextKey)
         ? bytesFromBase64(object.nextKey)
         : new Uint8Array(),
-      total: isSet(object.total) ? Number(object.total) : 0,
+      total: isSet(object.total) ? Long.fromString(object.total) : Long.UZERO,
     };
   },
 
@@ -200,7 +215,8 @@ export const PageResponse = {
       (obj.nextKey = base64FromBytes(
         message.nextKey !== undefined ? message.nextKey : new Uint8Array(),
       ));
-    message.total !== undefined && (obj.total = Math.round(message.total));
+    message.total !== undefined &&
+      (obj.total = (message.total || Long.UZERO).toString());
     return obj;
   },
 
@@ -209,7 +225,10 @@ export const PageResponse = {
   ): PageResponse {
     const message = createBasePageResponse();
     message.nextKey = object.nextKey ?? new Uint8Array();
-    message.total = object.total ?? 0;
+    message.total =
+      object.total !== undefined && object.total !== null
+        ? Long.fromValue(object.total)
+        : Long.UZERO;
     return message;
   },
 };
@@ -259,6 +278,8 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -274,13 +295,6 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
-
-function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

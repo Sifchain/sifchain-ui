@@ -10,7 +10,7 @@ export interface MsgLock {
   cosmosSender: string;
   amount: string;
   symbol: string;
-  ethereumChainId: number;
+  ethereumChainId: Long;
   ethereumReceiver: string;
   cethAmount: string;
 }
@@ -22,7 +22,7 @@ export interface MsgBurn {
   cosmosSender: string;
   amount: string;
   symbol: string;
-  ethereumChainId: number;
+  ethereumChainId: Long;
   ethereumReceiver: string;
   cethAmount: string;
 }
@@ -71,7 +71,7 @@ function createBaseMsgLock(): MsgLock {
     cosmosSender: "",
     amount: "",
     symbol: "",
-    ethereumChainId: 0,
+    ethereumChainId: Long.ZERO,
     ethereumReceiver: "",
     cethAmount: "",
   };
@@ -91,7 +91,7 @@ export const MsgLock = {
     if (message.symbol !== "") {
       writer.uint32(26).string(message.symbol);
     }
-    if (message.ethereumChainId !== 0) {
+    if (!message.ethereumChainId.isZero()) {
       writer.uint32(32).int64(message.ethereumChainId);
     }
     if (message.ethereumReceiver !== "") {
@@ -120,7 +120,7 @@ export const MsgLock = {
           message.symbol = reader.string();
           break;
         case 4:
-          message.ethereumChainId = longToNumber(reader.int64() as Long);
+          message.ethereumChainId = reader.int64() as Long;
           break;
         case 5:
           message.ethereumReceiver = reader.string();
@@ -144,8 +144,8 @@ export const MsgLock = {
       amount: isSet(object.amount) ? String(object.amount) : "",
       symbol: isSet(object.symbol) ? String(object.symbol) : "",
       ethereumChainId: isSet(object.ethereumChainId)
-        ? Number(object.ethereumChainId)
-        : 0,
+        ? Long.fromString(object.ethereumChainId)
+        : Long.ZERO,
       ethereumReceiver: isSet(object.ethereumReceiver)
         ? String(object.ethereumReceiver)
         : "",
@@ -160,7 +160,7 @@ export const MsgLock = {
     message.amount !== undefined && (obj.amount = message.amount);
     message.symbol !== undefined && (obj.symbol = message.symbol);
     message.ethereumChainId !== undefined &&
-      (obj.ethereumChainId = Math.round(message.ethereumChainId));
+      (obj.ethereumChainId = (message.ethereumChainId || Long.ZERO).toString());
     message.ethereumReceiver !== undefined &&
       (obj.ethereumReceiver = message.ethereumReceiver);
     message.cethAmount !== undefined && (obj.cethAmount = message.cethAmount);
@@ -172,7 +172,10 @@ export const MsgLock = {
     message.cosmosSender = object.cosmosSender ?? "";
     message.amount = object.amount ?? "";
     message.symbol = object.symbol ?? "";
-    message.ethereumChainId = object.ethereumChainId ?? 0;
+    message.ethereumChainId =
+      object.ethereumChainId !== undefined && object.ethereumChainId !== null
+        ? Long.fromValue(object.ethereumChainId)
+        : Long.ZERO;
     message.ethereumReceiver = object.ethereumReceiver ?? "";
     message.cethAmount = object.cethAmount ?? "";
     return message;
@@ -228,7 +231,7 @@ function createBaseMsgBurn(): MsgBurn {
     cosmosSender: "",
     amount: "",
     symbol: "",
-    ethereumChainId: 0,
+    ethereumChainId: Long.ZERO,
     ethereumReceiver: "",
     cethAmount: "",
   };
@@ -248,7 +251,7 @@ export const MsgBurn = {
     if (message.symbol !== "") {
       writer.uint32(26).string(message.symbol);
     }
-    if (message.ethereumChainId !== 0) {
+    if (!message.ethereumChainId.isZero()) {
       writer.uint32(32).int64(message.ethereumChainId);
     }
     if (message.ethereumReceiver !== "") {
@@ -277,7 +280,7 @@ export const MsgBurn = {
           message.symbol = reader.string();
           break;
         case 4:
-          message.ethereumChainId = longToNumber(reader.int64() as Long);
+          message.ethereumChainId = reader.int64() as Long;
           break;
         case 5:
           message.ethereumReceiver = reader.string();
@@ -301,8 +304,8 @@ export const MsgBurn = {
       amount: isSet(object.amount) ? String(object.amount) : "",
       symbol: isSet(object.symbol) ? String(object.symbol) : "",
       ethereumChainId: isSet(object.ethereumChainId)
-        ? Number(object.ethereumChainId)
-        : 0,
+        ? Long.fromString(object.ethereumChainId)
+        : Long.ZERO,
       ethereumReceiver: isSet(object.ethereumReceiver)
         ? String(object.ethereumReceiver)
         : "",
@@ -317,7 +320,7 @@ export const MsgBurn = {
     message.amount !== undefined && (obj.amount = message.amount);
     message.symbol !== undefined && (obj.symbol = message.symbol);
     message.ethereumChainId !== undefined &&
-      (obj.ethereumChainId = Math.round(message.ethereumChainId));
+      (obj.ethereumChainId = (message.ethereumChainId || Long.ZERO).toString());
     message.ethereumReceiver !== undefined &&
       (obj.ethereumReceiver = message.ethereumReceiver);
     message.cethAmount !== undefined && (obj.cethAmount = message.cethAmount);
@@ -329,7 +332,10 @@ export const MsgBurn = {
     message.cosmosSender = object.cosmosSender ?? "";
     message.amount = object.amount ?? "";
     message.symbol = object.symbol ?? "";
-    message.ethereumChainId = object.ethereumChainId ?? 0;
+    message.ethereumChainId =
+      object.ethereumChainId !== undefined && object.ethereumChainId !== null
+        ? Long.fromValue(object.ethereumChainId)
+        : Long.ZERO;
     message.ethereumReceiver = object.ethereumReceiver ?? "";
     message.cethAmount = object.cethAmount ?? "";
     return message;
@@ -1102,17 +1108,6 @@ interface Rpc {
   ): Promise<Uint8Array>;
 }
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
-  throw "Unable to locate global object";
-})();
-
 type Builtin =
   | Date
   | Function
@@ -1124,6 +1119,8 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -1139,13 +1136,6 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
-
-function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

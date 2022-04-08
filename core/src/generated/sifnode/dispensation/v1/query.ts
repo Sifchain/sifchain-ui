@@ -19,7 +19,7 @@ export interface QueryAllDistributionsRequest {}
 
 export interface QueryAllDistributionsResponse {
   distributions: Distribution[];
-  height: number;
+  height: Long;
 }
 
 export interface QueryRecordsByDistributionNameRequest {
@@ -29,7 +29,7 @@ export interface QueryRecordsByDistributionNameRequest {
 
 export interface QueryRecordsByDistributionNameResponse {
   distributionRecords?: DistributionRecords;
-  height: number;
+  height: Long;
 }
 
 export interface QueryRecordsByRecipientAddrRequest {
@@ -38,7 +38,7 @@ export interface QueryRecordsByRecipientAddrRequest {
 
 export interface QueryRecordsByRecipientAddrResponse {
   distributionRecords?: DistributionRecords;
-  height: number;
+  height: Long;
 }
 
 export interface QueryClaimsByTypeRequest {
@@ -47,7 +47,7 @@ export interface QueryClaimsByTypeRequest {
 
 export interface QueryClaimsResponse {
   claims: UserClaim[];
-  height: number;
+  height: Long;
 }
 
 function createBaseQueryAllDistributionsRequest(): QueryAllDistributionsRequest {
@@ -98,7 +98,7 @@ export const QueryAllDistributionsRequest = {
 };
 
 function createBaseQueryAllDistributionsResponse(): QueryAllDistributionsResponse {
-  return { distributions: [], height: 0 };
+  return { distributions: [], height: Long.ZERO };
 }
 
 export const QueryAllDistributionsResponse = {
@@ -109,7 +109,7 @@ export const QueryAllDistributionsResponse = {
     for (const v of message.distributions) {
       Distribution.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    if (message.height !== 0) {
+    if (!message.height.isZero()) {
       writer.uint32(16).int64(message.height);
     }
     return writer;
@@ -131,7 +131,7 @@ export const QueryAllDistributionsResponse = {
           );
           break;
         case 2:
-          message.height = longToNumber(reader.int64() as Long);
+          message.height = reader.int64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -146,7 +146,7 @@ export const QueryAllDistributionsResponse = {
       distributions: Array.isArray(object?.distributions)
         ? object.distributions.map((e: any) => Distribution.fromJSON(e))
         : [],
-      height: isSet(object.height) ? Number(object.height) : 0,
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
     };
   },
 
@@ -159,7 +159,8 @@ export const QueryAllDistributionsResponse = {
     } else {
       obj.distributions = [];
     }
-    message.height !== undefined && (obj.height = Math.round(message.height));
+    message.height !== undefined &&
+      (obj.height = (message.height || Long.ZERO).toString());
     return obj;
   },
 
@@ -169,7 +170,10 @@ export const QueryAllDistributionsResponse = {
     const message = createBaseQueryAllDistributionsResponse();
     message.distributions =
       object.distributions?.map((e) => Distribution.fromPartial(e)) || [];
-    message.height = object.height ?? 0;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
@@ -247,7 +251,7 @@ export const QueryRecordsByDistributionNameRequest = {
 };
 
 function createBaseQueryRecordsByDistributionNameResponse(): QueryRecordsByDistributionNameResponse {
-  return { distributionRecords: undefined, height: 0 };
+  return { distributionRecords: undefined, height: Long.ZERO };
 }
 
 export const QueryRecordsByDistributionNameResponse = {
@@ -261,7 +265,7 @@ export const QueryRecordsByDistributionNameResponse = {
         writer.uint32(10).fork(),
       ).ldelim();
     }
-    if (message.height !== 0) {
+    if (!message.height.isZero()) {
       writer.uint32(16).int64(message.height);
     }
     return writer;
@@ -284,7 +288,7 @@ export const QueryRecordsByDistributionNameResponse = {
           );
           break;
         case 2:
-          message.height = longToNumber(reader.int64() as Long);
+          message.height = reader.int64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -299,7 +303,7 @@ export const QueryRecordsByDistributionNameResponse = {
       distributionRecords: isSet(object.distributionRecords)
         ? DistributionRecords.fromJSON(object.distributionRecords)
         : undefined,
-      height: isSet(object.height) ? Number(object.height) : 0,
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
     };
   },
 
@@ -309,7 +313,8 @@ export const QueryRecordsByDistributionNameResponse = {
       (obj.distributionRecords = message.distributionRecords
         ? DistributionRecords.toJSON(message.distributionRecords)
         : undefined);
-    message.height !== undefined && (obj.height = Math.round(message.height));
+    message.height !== undefined &&
+      (obj.height = (message.height || Long.ZERO).toString());
     return obj;
   },
 
@@ -322,7 +327,10 @@ export const QueryRecordsByDistributionNameResponse = {
       object.distributionRecords !== null
         ? DistributionRecords.fromPartial(object.distributionRecords)
         : undefined;
-    message.height = object.height ?? 0;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
@@ -385,7 +393,7 @@ export const QueryRecordsByRecipientAddrRequest = {
 };
 
 function createBaseQueryRecordsByRecipientAddrResponse(): QueryRecordsByRecipientAddrResponse {
-  return { distributionRecords: undefined, height: 0 };
+  return { distributionRecords: undefined, height: Long.ZERO };
 }
 
 export const QueryRecordsByRecipientAddrResponse = {
@@ -399,7 +407,7 @@ export const QueryRecordsByRecipientAddrResponse = {
         writer.uint32(10).fork(),
       ).ldelim();
     }
-    if (message.height !== 0) {
+    if (!message.height.isZero()) {
       writer.uint32(16).int64(message.height);
     }
     return writer;
@@ -422,7 +430,7 @@ export const QueryRecordsByRecipientAddrResponse = {
           );
           break;
         case 2:
-          message.height = longToNumber(reader.int64() as Long);
+          message.height = reader.int64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -437,7 +445,7 @@ export const QueryRecordsByRecipientAddrResponse = {
       distributionRecords: isSet(object.distributionRecords)
         ? DistributionRecords.fromJSON(object.distributionRecords)
         : undefined,
-      height: isSet(object.height) ? Number(object.height) : 0,
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
     };
   },
 
@@ -447,7 +455,8 @@ export const QueryRecordsByRecipientAddrResponse = {
       (obj.distributionRecords = message.distributionRecords
         ? DistributionRecords.toJSON(message.distributionRecords)
         : undefined);
-    message.height !== undefined && (obj.height = Math.round(message.height));
+    message.height !== undefined &&
+      (obj.height = (message.height || Long.ZERO).toString());
     return obj;
   },
 
@@ -460,7 +469,10 @@ export const QueryRecordsByRecipientAddrResponse = {
       object.distributionRecords !== null
         ? DistributionRecords.fromPartial(object.distributionRecords)
         : undefined;
-    message.height = object.height ?? 0;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
@@ -526,7 +538,7 @@ export const QueryClaimsByTypeRequest = {
 };
 
 function createBaseQueryClaimsResponse(): QueryClaimsResponse {
-  return { claims: [], height: 0 };
+  return { claims: [], height: Long.ZERO };
 }
 
 export const QueryClaimsResponse = {
@@ -537,7 +549,7 @@ export const QueryClaimsResponse = {
     for (const v of message.claims) {
       UserClaim.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    if (message.height !== 0) {
+    if (!message.height.isZero()) {
       writer.uint32(16).int64(message.height);
     }
     return writer;
@@ -554,7 +566,7 @@ export const QueryClaimsResponse = {
           message.claims.push(UserClaim.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.height = longToNumber(reader.int64() as Long);
+          message.height = reader.int64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -569,7 +581,7 @@ export const QueryClaimsResponse = {
       claims: Array.isArray(object?.claims)
         ? object.claims.map((e: any) => UserClaim.fromJSON(e))
         : [],
-      height: isSet(object.height) ? Number(object.height) : 0,
+      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
     };
   },
 
@@ -582,7 +594,8 @@ export const QueryClaimsResponse = {
     } else {
       obj.claims = [];
     }
-    message.height !== undefined && (obj.height = Math.round(message.height));
+    message.height !== undefined &&
+      (obj.height = (message.height || Long.ZERO).toString());
     return obj;
   },
 
@@ -591,7 +604,10 @@ export const QueryClaimsResponse = {
   ): QueryClaimsResponse {
     const message = createBaseQueryClaimsResponse();
     message.claims = object.claims?.map((e) => UserClaim.fromPartial(e)) || [];
-    message.height = object.height ?? 0;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
     return message;
   },
 };
@@ -683,17 +699,6 @@ interface Rpc {
   ): Promise<Uint8Array>;
 }
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
-  throw "Unable to locate global object";
-})();
-
 type Builtin =
   | Date
   | Function
@@ -705,6 +710,8 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -720,13 +727,6 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
-
-function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
