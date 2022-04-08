@@ -14,6 +14,7 @@ export type IAssetAmount = Readonly<IAsset> & {
 
   toBigInt(): JSBI;
   toString(detailed?: boolean): string;
+  toNumber(): number;
 
   // CONVENIENCE UTILITIES
   // Utilty operators common enough to live on this class
@@ -50,16 +51,16 @@ export type IAssetAmount = Readonly<IAsset> & {
 
   // MATH OPERATORS
 
-  add(other: IAmount | string): IAmount;
-  divide(other: IAmount | string): IAmount;
-  equalTo(other: IAmount | string): boolean;
-  greaterThan(other: IAmount | string): boolean;
-  greaterThanOrEqual(other: IAmount | string): boolean;
-  lessThan(other: IAmount | string): boolean;
-  lessThanOrEqual(other: IAmount | string): boolean;
-  multiply(other: IAmount | string): IAmount;
+  add(other: IAmount | string | number): IAmount;
+  divide(other: IAmount | string | number): IAmount;
+  equalTo(other: IAmount | string | number): boolean;
+  greaterThan(other: IAmount | string | number): boolean;
+  greaterThanOrEqual(other: IAmount | string | number): boolean;
+  lessThan(other: IAmount | string | number): boolean;
+  lessThanOrEqual(other: IAmount | string | number): boolean;
+  multiply(other: IAmount | string | number): IAmount;
   sqrt(): IAmount;
-  subtract(other: IAmount | string): IAmount;
+  subtract(other: IAmount | string | number): IAmount;
 };
 
 export function AssetAmount(
@@ -126,6 +127,10 @@ export function AssetAmount(
 
     toString() {
       return `${_amount.toString(false)} ${_asset.symbol.toUpperCase()}`;
+    },
+
+    toNumber() {
+      return _amount.toNumber();
     },
 
     add(other) {

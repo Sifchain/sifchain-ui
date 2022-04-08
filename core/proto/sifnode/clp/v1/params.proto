@@ -6,4 +6,26 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/Sifchain/sifnode/x/clp/types";
 
 // Params - used for initializing default parameter for clp at genesis
-message Params { uint64 min_create_pool_threshold = 1; }
+message Params {
+  uint64 min_create_pool_threshold = 1;
+  uint64 liquidity_removal_lock_period = 2; // in blocks
+  uint64 liquidity_removal_cancel_period = 3; // in blocks
+  repeated RewardPeriod reward_periods = 4;
+}
+
+message RewardPeriod {
+  string id = 1;
+  uint64 start_block = 2;
+  uint64 end_block = 3;
+  string allocation = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint"
+  ];
+  repeated PoolMultiplier multipliers = 5;
+}
+
+message PoolMultiplier {
+  string asset = 1;
+  string multiplier = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"
+  ];
+}

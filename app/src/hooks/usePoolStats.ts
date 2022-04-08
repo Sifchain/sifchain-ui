@@ -21,7 +21,7 @@ interface Body {
 
 export interface PoolStat {
   symbol: string;
-  priceToken: string;
+  priceToken: number;
   poolDepth: string;
   volume: string;
   arb?: string;

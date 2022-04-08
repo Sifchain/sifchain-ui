@@ -1,32 +1,32 @@
-import { RouterView } from "vue-router";
-import { defineComponent } from "vue";
-
-import { useNativeChain } from "@/hooks/useChains";
-import Layout from "@/components/Layout";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
+import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
-import {
-  COLUMNS,
-  PoolDataItem,
-  PoolPageColumnId,
-  PoolRewardProgram,
-  usePoolPageData,
-} from "./usePoolPageData";
-import PoolItem from "./PoolItem";
+import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-
+import { format } from "date-fns";
+import { defineComponent } from "vue";
+import { RouterView } from "vue-router";
 import {
   CompetitionsBySymbolLookup,
   useLeaderboardCompetitions,
 } from "../LeaderboardPage/useCompetitionData";
+import PoolItem from "./PoolItem";
+import {
+  COLUMNS,
+  PoolPageColumnId,
+  PoolRewardProgram,
+  usePoolPageData,
+} from "./usePoolPageData";
 
 export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      allPoolsData: [] as PoolDataItem[],
+      allPoolsData: [] as ReturnType<
+        typeof usePoolPageData
+      >["allPoolsData"]["value"],
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
@@ -75,12 +75,12 @@ export default defineComponent({
     symbolCompetitionsLookup(): CompetitionsBySymbolLookup | null {
       return this.competitionsRes.data?.value || null;
     },
-    sanitizedPoolData() {
+    sanitizedPoolData(): ReturnType<
+      typeof usePoolPageData
+    >["allPoolsData"]["value"] {
       if (!this.isLoaded) return [];
 
-      const poolDataItems = this.allPoolsData as PoolDataItem[];
-
-      const result = poolDataItems
+      const result = this.allPoolsData
         .filter((item) => {
           const asset = item.pool.externalAmount?.asset;
           if (!asset) return;
@@ -101,7 +101,7 @@ export default defineComponent({
           );
         })
         // First sort by name or apy
-        .sort((a: PoolDataItem, b: PoolDataItem) => {
+        .sort((a, b) => {
           if (this.$data.sortBy === "token") {
             const aAsset = a.pool.externalAmount!.asset;
             const bAsset = b.pool.externalAmount!.asset;
@@ -119,7 +119,7 @@ export default defineComponent({
           }
         })
         // Then sort by balance
-        .sort((a: PoolDataItem, b: PoolDataItem) => {
+        .sort((a, b) => {
           if (a.accountPool && b.accountPool) {
             return (
               +b.accountPool.lp.units.toString() -
@@ -132,8 +132,9 @@ export default defineComponent({
         });
 
       if (this.$data.sortReverse) {
-        result.reverse();
+        return [...result].reverse();
       }
+
       return result;
     },
   },
@@ -151,8 +152,8 @@ export default defineComponent({
           }
         />
         {!this.isLoaded ? (
-          <div class="absolute left-0 top-[180px] w-full flex justify-center">
-            <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+          <div class="absolute left-0 top-[180px] flex w-full justify-center">
+            <div class="flex h-[80px] w-[80px] items-center justify-center rounded-lg bg-black bg-opacity-50">
               <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
             </div>
           </div>
@@ -167,7 +168,7 @@ export default defineComponent({
                 to={{ name: "AddLiquidity", params: {} }}
                 active
                 replace
-                class={["!h-[40px] px-[17px] text-md"]}
+                class={["text-md !h-[40px] px-[17px]"]}
                 icon="interactive/plus"
               >
                 <div class="font-semibold">Add Liquidity</div>
@@ -183,7 +184,7 @@ export default defineComponent({
                     this.searchQuery = (e.target as HTMLInputElement).value;
                   }}
                 />
-                <div class="w-full pb-[5px] mb-[-5px] flex flex-row justify-start">
+                <div class="mb-[-5px] flex w-full flex-row justify-start pb-[5px]">
                   {COLUMNS.map((column, index) => (
                     <div
                       key={column.name}
@@ -198,7 +199,7 @@ export default defineComponent({
                       }}
                       class={[
                         column.class,
-                        "opacity-50 flex items-center",
+                        "flex items-center opacity-50",
                         column.sortable && "cursor-pointer",
                       ]}
                     >
@@ -209,7 +210,7 @@ export default defineComponent({
                       <AssetIcon
                         icon="interactive/arrow-down"
                         class={[
-                          "pl-[2px] mr-[-22px]",
+                          "mr-[-22px] pl-[2px]",
                           (!column.sortable || this.sortBy !== column.id) &&
                             "invisible",
                           this.sortReverse && "rotate-180",
@@ -221,13 +222,30 @@ export default defineComponent({
               </>
             }
           >
-            {this.sanitizedPoolData.map((item: PoolDataItem) => {
+            {this.sanitizedPoolData.map((item) => {
               const rewardsPrograms =
                 this.poolRewardProgramLookup[
                   item.pool.externalAmount!.symbol
                 ] ?? [];
+
+              const unlock =
+                item.liquidityProvider?.liquidityProvider?.unlocks[0];
+
               return (
                 <PoolItem
+                  unlock={
+                    unlock === undefined
+                      ? undefined
+                      : {
+                          requestHeight: unlock.requestHeight.toNumber(),
+                          unlockedFromHeight: unlock.requestHeight.toNumber(),
+                          ready: unlock.ready,
+                          eta:
+                            unlock.eta === undefined
+                              ? undefined
+                              : format(unlock.eta, "MM/dd/yyyy"),
+                        }
+                  }
                   bonusRewardPrograms={rewardsPrograms}
                   competitionsLookup={
                     this.symbolCompetitionsLookup?.[

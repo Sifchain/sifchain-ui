@@ -1,45 +1,48 @@
-import { computed, defineComponent, PropType } from "vue";
-import { AssetAmount, IAssetAmount, Network } from "@sifchain/sdk";
-
-import { prettyNumber } from "@/utils/prettyNumber";
-import { useChains, useNativeChain } from "@/hooks/useChains";
+import { AccountPool } from "@/business/store/pools";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
-import { formatAssetAmount } from "@/components/utils";
-import { useRowanPrice } from "@/hooks/useRowanPrice";
-import { Tooltip } from "@/components/Tooltip";
-
-import {
-  COLUMNS_LOOKUP,
-  PoolDataItem,
-  PoolRewardProgram,
-} from "./usePoolPageData";
-import { useUserPoolData } from "./useUserPoolData";
-import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
-import {
-  CompetitionsLookup,
-  Competition,
-  COMPETITION_TYPE_DISPLAY_DATA,
-} from "../LeaderboardPage/useCompetitionData";
-
-import { RouterLink } from "vue-router";
-import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { Tooltip } from "@/components/Tooltip";
+import { formatAssetAmount } from "@/components/utils";
+import { useChains, useNativeChain } from "@/hooks/useChains";
+import { PoolStat } from "@/hooks/usePoolStats";
+import { useRowanPrice } from "@/hooks/useRowanPrice";
+import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
+import { prettyNumber } from "@/utils/prettyNumber";
+import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
+import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/sifnode/clp/v1/types";
+import { computed, defineComponent, PropType } from "vue";
+import {
+  Competition,
+  CompetitionsLookup,
+} from "../LeaderboardPage/useCompetitionData";
+import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
+import { COLUMNS_LOOKUP, PoolRewardProgram } from "./usePoolPageData";
+import { useUserPoolData } from "./useUserPoolData";
 
 export default defineComponent({
   name: "PoolItem",
   props: {
+    unlock: {
+      type: Object as PropType<{
+        unlockedFromHeight: number;
+        requestHeight: number;
+        ready: boolean;
+        eta: string;
+      }>,
+      required: false,
+    },
     pool: {
-      type: Object as PropType<PoolDataItem["pool"]>,
+      type: Object as PropType<Pool>,
       required: true,
     },
     poolStat: {
-      type: Object as PropType<PoolDataItem["poolStat"]>,
+      type: Object as PropType<PoolStat>,
       required: false,
     },
     accountPool: {
-      type: Object as PropType<PoolDataItem["accountPool"]>,
+      type: Object as PropType<AccountPool>,
       required: false,
     },
     bonusRewardPrograms: {
@@ -48,6 +51,10 @@ export default defineComponent({
     },
     competitionsLookup: {
       type: Object as PropType<CompetitionsLookup>,
+      required: false,
+    },
+    liquidityProvider: {
+      type: Object as PropType<LiquidityProviderData>,
       required: false,
     },
   },
@@ -95,7 +102,7 @@ export default defineComponent({
 
       return prettyNumber(
         parseFloat(formattedExternal) *
-          parseFloat(this.poolStat.priceToken || "0") +
+          parseFloat(this.poolStat.priceToken.toString() || "0") +
           parseFloat(formattedNative) *
             parseFloat(this.rowanPrice.data.value || "0"),
       );
@@ -161,7 +168,9 @@ export default defineComponent({
           <span class="font-mono">
             {this.$props.poolStat?.priceToken != null
               ? `$${prettyNumber(
-                  parseFloat(this.$props.poolStat?.priceToken || "0"),
+                  parseFloat(
+                    this.$props.poolStat?.priceToken.toString() || "0",
+                  ),
                 )}`
               : "..."}
           </span>,
@@ -218,10 +227,10 @@ export default defineComponent({
 
   render() {
     return (
-      <div class="w-full py-[10px] align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 last:border-none group">
+      <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent hover:opacity-80">
         <div
           onClick={() => this.toggleExpanded()}
-          class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] group-hover:opacity-80"
+          class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
             <TokenIcon assetValue={this.nativeAmount.asset} size={22} />
@@ -230,7 +239,7 @@ export default defineComponent({
               size={22}
               class="ml-[4px]"
             />
-            <div class="ml-[10px] uppercase font-sans">
+            <div class="ml-[10px] font-sans uppercase">
               ROWAN / {this.externalAmount.displaySymbol.toUpperCase()}
             </div>
             {this.externalAmount.asset.decommissioned &&
@@ -263,7 +272,7 @@ export default defineComponent({
             ))}
           </div>
           <div
-            class={[COLUMNS_LOOKUP.apy.class, "font-mono flex items-center"]}
+            class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
             {this.$props.poolStat?.poolAPY != null
               ? `${parseFloat(this.$props.poolStat?.poolAPY || "0").toFixed(
@@ -274,7 +283,7 @@ export default defineComponent({
           <div
             class={[
               COLUMNS_LOOKUP.rewardApy.class,
-              "font-mono flex items-center",
+              "flex items-center font-mono",
             ]}
           >
             {this.$props.poolStat?.rewardAPY != null
@@ -288,7 +297,7 @@ export default defineComponent({
           <div
             class={[
               COLUMNS_LOOKUP.userShare.class,
-              "font-mono flex items-center",
+              "flex items-center font-mono",
             ]}
           >
             {!!this.userPoolData.myPoolShare?.value
@@ -298,7 +307,7 @@ export default defineComponent({
           <div
             class={[
               COLUMNS_LOOKUP.userValue.class,
-              "font-mono flex items-center",
+              "flex items-center font-mono",
             ]}
           >
             {this.myPoolValue == null
@@ -324,15 +333,15 @@ export default defineComponent({
           <section
             id={`expandable-${this.pool.symbol()}`}
             class={[
-              "mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-auto",
+              "bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]",
               this.accountPool ? "h-[216px]" : "h-[193px]",
             ]}
           >
-            <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">
+            <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
               {this.details.map(([key, value], index) => (
                 <div
                   key={index}
-                  class="h-[28px] px-[6px] flex items-center justify-between text-sm font-medium border-b border-solid border-gray-input_outline last:border-none"
+                  class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
                 >
                   <span>{key}</span>
                   <span>{value}</span>
@@ -349,7 +358,7 @@ export default defineComponent({
                     },
                   }}
                   replace
-                  class="w-[140px] !bg-black !text-accent-base"
+                  class="!text-accent-base w-[140px] !bg-black"
                   icon="interactive/plus"
                 >
                   Add Liquidity
@@ -364,12 +373,29 @@ export default defineComponent({
                     },
                   }}
                   replace
-                  class="w-[140px] !bg-black !text-accent-base mt-[6px]"
+                  class="!text-accent-base mt-[6px] w-[140px] !bg-black"
                   icon="interactive/minus"
                 >
                   Remove Liquidity
                 </Button.Inline>
               )}
+              {/* {!!this.userPoolData.myPoolShare?.value &&
+                this.liquidityProvider?.liquidityProvider?.unlocks.length ===
+                  0 && (
+                  <Button.Inline
+                    to={{
+                      name: "UnbondLiquidity",
+                      params: {
+                        externalAsset: this.externalAmount.symbol.toLowerCase(),
+                      },
+                    }}
+                    replace
+                    class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                    icon="interactive/minus"
+                  >
+                    Unbond Liquidity
+                  </Button.Inline>
+                )} */}
             </div>
           </section>
         )}
