@@ -1,6 +1,6 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
 import dangerouslyAssert from "@/utils/dangerouslyAssert";
-import { QueryEntriesResponse } from "@sifchain/sdk/build/typescript/generated/sifnode/tokenregistry/v1/query";
+import { QueryEntriesResponse } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/tokenregistry/v1/query";
 import { computed, unref } from "vue";
 import { useQuery, UseQueryOptions } from "vue-query";
 import { MaybeRef } from "vue-query/lib/vue/types";

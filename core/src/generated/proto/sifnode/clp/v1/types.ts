@@ -21,6 +21,12 @@ export interface LiquidityProvider {
   asset?: Asset;
   liquidityProviderUnits: string;
   liquidityProviderAddress: string;
+  unlocks: LiquidityUnlock[];
+}
+
+export interface LiquidityUnlock {
+  requestHeight: Long;
+  units: string;
 }
 
 export interface PmtpEpoch {
@@ -219,6 +225,7 @@ function createBaseLiquidityProvider(): LiquidityProvider {
     asset: undefined,
     liquidityProviderUnits: "",
     liquidityProviderAddress: "",
+    unlocks: [],
   };
 }
 
@@ -235,6 +242,9 @@ export const LiquidityProvider = {
     }
     if (message.liquidityProviderAddress !== "") {
       writer.uint32(26).string(message.liquidityProviderAddress);
+    }
+    for (const v of message.unlocks) {
+      LiquidityUnlock.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -255,6 +265,9 @@ export const LiquidityProvider = {
         case 3:
           message.liquidityProviderAddress = reader.string();
           break;
+        case 4:
+          message.unlocks.push(LiquidityUnlock.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -272,6 +285,9 @@ export const LiquidityProvider = {
       liquidityProviderAddress: isSet(object.liquidityProviderAddress)
         ? String(object.liquidityProviderAddress)
         : "",
+      unlocks: Array.isArray(object?.unlocks)
+        ? object.unlocks.map((e: any) => LiquidityUnlock.fromJSON(e))
+        : [],
     };
   },
 
@@ -283,6 +299,13 @@ export const LiquidityProvider = {
       (obj.liquidityProviderUnits = message.liquidityProviderUnits);
     message.liquidityProviderAddress !== undefined &&
       (obj.liquidityProviderAddress = message.liquidityProviderAddress);
+    if (message.unlocks) {
+      obj.unlocks = message.unlocks.map((e) =>
+        e ? LiquidityUnlock.toJSON(e) : undefined,
+      );
+    } else {
+      obj.unlocks = [];
+    }
     return obj;
   },
 
@@ -296,6 +319,77 @@ export const LiquidityProvider = {
         : undefined;
     message.liquidityProviderUnits = object.liquidityProviderUnits ?? "";
     message.liquidityProviderAddress = object.liquidityProviderAddress ?? "";
+    message.unlocks =
+      object.unlocks?.map((e) => LiquidityUnlock.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseLiquidityUnlock(): LiquidityUnlock {
+  return { requestHeight: Long.ZERO, units: "" };
+}
+
+export const LiquidityUnlock = {
+  encode(
+    message: LiquidityUnlock,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (!message.requestHeight.isZero()) {
+      writer.uint32(8).int64(message.requestHeight);
+    }
+    if (message.units !== "") {
+      writer.uint32(18).string(message.units);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): LiquidityUnlock {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLiquidityUnlock();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.requestHeight = reader.int64() as Long;
+          break;
+        case 2:
+          message.units = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LiquidityUnlock {
+    return {
+      requestHeight: isSet(object.requestHeight)
+        ? Long.fromString(object.requestHeight)
+        : Long.ZERO,
+      units: isSet(object.units) ? String(object.units) : "",
+    };
+  },
+
+  toJSON(message: LiquidityUnlock): unknown {
+    const obj: any = {};
+    message.requestHeight !== undefined &&
+      (obj.requestHeight = (message.requestHeight || Long.ZERO).toString());
+    message.units !== undefined && (obj.units = message.units);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<LiquidityUnlock>, I>>(
+    object: I,
+  ): LiquidityUnlock {
+    const message = createBaseLiquidityUnlock();
+    message.requestHeight =
+      object.requestHeight !== undefined && object.requestHeight !== null
+        ? Long.fromValue(object.requestHeight)
+        : Long.ZERO;
+    message.units = object.units ?? "";
     return message;
   },
 };

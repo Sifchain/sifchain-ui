@@ -3,6 +3,7 @@ package sifnode.clp.v1;
 
 import "gogoproto/gogo.proto";
 import "sifnode/clp/v1/types.proto";
+import "sifnode/clp/v1/params.proto";
 
 option go_package = "github.com/Sifchain/sifnode/x/clp/types";
 
@@ -14,6 +15,10 @@ service Msg {
   rpc DecommissionPool(MsgDecommissionPool)
       returns (MsgDecommissionPoolResponse);
   rpc UnlockLiquidity(MsgUnlockLiquidityRequest) returns (MsgUnlockLiquidityResponse);
+  rpc UpdateRewardsParams(MsgUpdateRewardsParamsRequest) returns (MsgUpdateRewardsParamsResponse);
+  rpc AddRewardPeriod(MsgAddRewardPeriodRequest) returns (MsgAddRewardPeriodResponse);
+  rpc ModifyPmtpRates(MsgModifyPmtpRates) returns (MsgModifyPmtpRatesResponse);
+  rpc UpdatePmtpParams(MsgUpdatePmtpParams) returns (MsgUpdatePmtpParamsResponse);
 }
 
 message MsgRemoveLiquidity {
@@ -83,10 +88,9 @@ message MsgModifyPmtpRatesResponse {}
 message MsgUpdatePmtpParams {
   string signer = 1 [ (gogoproto.moretags) = "yaml:\"signer\"" ];
   string pmtp_period_governance_rate = 2;
-  bool start_new_policy = 3;
-  int64 pmtp_period_epoch_length = 4;
-  int64 pmtp_period_start_block = 5;
-  int64 pmtp_period_end_block = 6;
+  int64 pmtp_period_epoch_length = 3;
+  int64 pmtp_period_start_block = 4;
+  int64 pmtp_period_end_block = 5;
 }
 message MsgUpdatePmtpParamsResponse {}
 
@@ -130,3 +134,18 @@ message MsgUnlockLiquidityRequest {
 }
 
 message MsgUnlockLiquidityResponse {}
+
+message MsgUpdateRewardsParamsRequest {
+  string signer = 1 [ (gogoproto.moretags) = "yaml:\"signer\"" ];
+  uint64 liquidity_removal_lock_period = 2; // in blocks
+  uint64 liquidity_removal_cancel_period = 3; // in blocks
+}
+
+message MsgUpdateRewardsParamsResponse {}
+
+message MsgAddRewardPeriodRequest {
+  string signer = 1 [ (gogoproto.moretags) = "yaml:\"signer\"" ];
+  repeated RewardPeriod reward_periods = 2;
+}
+
+message MsgAddRewardPeriodResponse {}

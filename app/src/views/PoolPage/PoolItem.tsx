@@ -11,7 +11,7 @@ import { useRowanPrice } from "@/hooks/useRowanPrice";
 import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
-import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/sifnode/clp/v1/types";
+import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import { computed, defineComponent, PropType } from "vue";
 import {
   Competition,

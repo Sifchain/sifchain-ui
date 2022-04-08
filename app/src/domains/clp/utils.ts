@@ -1,8 +1,8 @@
-import { Params } from "@sifchain/sdk/build/typescript/generated/sifnode/clp/v1/params";
+import { Params } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/params";
 import {
   LiquidityProvider,
   LiquidityUnlock,
-} from "@sifchain/sdk/build/typescript/generated/sifnode/clp/v1/types";
+} from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import { addMilliseconds, addSeconds } from "date-fns";
 import Long from "long";
 

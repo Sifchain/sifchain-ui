@@ -2,6 +2,7 @@
 import Long from "long";
 import * as _m0 from "protobufjs/minimal";
 import { Asset } from "../../../sifnode/clp/v1/types";
+import { RewardPeriod } from "../../../sifnode/clp/v1/params";
 
 export const protobufPackage = "sifnode.clp.v1";
 
@@ -44,7 +45,6 @@ export interface MsgModifyPmtpRatesResponse {}
 export interface MsgUpdatePmtpParams {
   signer: string;
   pmtpPeriodGovernanceRate: string;
-  startNewPolicy: boolean;
   pmtpPeriodEpochLength: Long;
   pmtpPeriodStartBlock: Long;
   pmtpPeriodEndBlock: Long;
@@ -68,6 +68,31 @@ export interface MsgDecommissionPool {
 }
 
 export interface MsgDecommissionPoolResponse {}
+
+export interface MsgUnlockLiquidityRequest {
+  signer: string;
+  externalAsset?: Asset;
+  units: string;
+}
+
+export interface MsgUnlockLiquidityResponse {}
+
+export interface MsgUpdateRewardsParamsRequest {
+  signer: string;
+  /** in blocks */
+  liquidityRemovalLockPeriod: Long;
+  /** in blocks */
+  liquidityRemovalCancelPeriod: Long;
+}
+
+export interface MsgUpdateRewardsParamsResponse {}
+
+export interface MsgAddRewardPeriodRequest {
+  signer: string;
+  rewardPeriods: RewardPeriod[];
+}
+
+export interface MsgAddRewardPeriodResponse {}
 
 function createBaseMsgRemoveLiquidity(): MsgRemoveLiquidity {
   return {
@@ -640,7 +665,6 @@ function createBaseMsgUpdatePmtpParams(): MsgUpdatePmtpParams {
   return {
     signer: "",
     pmtpPeriodGovernanceRate: "",
-    startNewPolicy: false,
     pmtpPeriodEpochLength: Long.ZERO,
     pmtpPeriodStartBlock: Long.ZERO,
     pmtpPeriodEndBlock: Long.ZERO,
@@ -658,17 +682,14 @@ export const MsgUpdatePmtpParams = {
     if (message.pmtpPeriodGovernanceRate !== "") {
       writer.uint32(18).string(message.pmtpPeriodGovernanceRate);
     }
-    if (message.startNewPolicy === true) {
-      writer.uint32(24).bool(message.startNewPolicy);
-    }
     if (!message.pmtpPeriodEpochLength.isZero()) {
-      writer.uint32(32).int64(message.pmtpPeriodEpochLength);
+      writer.uint32(24).int64(message.pmtpPeriodEpochLength);
     }
     if (!message.pmtpPeriodStartBlock.isZero()) {
-      writer.uint32(40).int64(message.pmtpPeriodStartBlock);
+      writer.uint32(32).int64(message.pmtpPeriodStartBlock);
     }
     if (!message.pmtpPeriodEndBlock.isZero()) {
-      writer.uint32(48).int64(message.pmtpPeriodEndBlock);
+      writer.uint32(40).int64(message.pmtpPeriodEndBlock);
     }
     return writer;
   },
@@ -687,15 +708,12 @@ export const MsgUpdatePmtpParams = {
           message.pmtpPeriodGovernanceRate = reader.string();
           break;
         case 3:
-          message.startNewPolicy = reader.bool();
-          break;
-        case 4:
           message.pmtpPeriodEpochLength = reader.int64() as Long;
           break;
-        case 5:
+        case 4:
           message.pmtpPeriodStartBlock = reader.int64() as Long;
           break;
-        case 6:
+        case 5:
           message.pmtpPeriodEndBlock = reader.int64() as Long;
           break;
         default:
@@ -712,9 +730,6 @@ export const MsgUpdatePmtpParams = {
       pmtpPeriodGovernanceRate: isSet(object.pmtpPeriodGovernanceRate)
         ? String(object.pmtpPeriodGovernanceRate)
         : "",
-      startNewPolicy: isSet(object.startNewPolicy)
-        ? Boolean(object.startNewPolicy)
-        : false,
       pmtpPeriodEpochLength: isSet(object.pmtpPeriodEpochLength)
         ? Long.fromString(object.pmtpPeriodEpochLength)
         : Long.ZERO,
@@ -732,8 +747,6 @@ export const MsgUpdatePmtpParams = {
     message.signer !== undefined && (obj.signer = message.signer);
     message.pmtpPeriodGovernanceRate !== undefined &&
       (obj.pmtpPeriodGovernanceRate = message.pmtpPeriodGovernanceRate);
-    message.startNewPolicy !== undefined &&
-      (obj.startNewPolicy = message.startNewPolicy);
     message.pmtpPeriodEpochLength !== undefined &&
       (obj.pmtpPeriodEpochLength = (
         message.pmtpPeriodEpochLength || Long.ZERO
@@ -755,7 +768,6 @@ export const MsgUpdatePmtpParams = {
     const message = createBaseMsgUpdatePmtpParams();
     message.signer = object.signer ?? "";
     message.pmtpPeriodGovernanceRate = object.pmtpPeriodGovernanceRate ?? "";
-    message.startNewPolicy = object.startNewPolicy ?? false;
     message.pmtpPeriodEpochLength =
       object.pmtpPeriodEpochLength !== undefined &&
       object.pmtpPeriodEpochLength !== null
@@ -1089,6 +1101,404 @@ export const MsgDecommissionPoolResponse = {
   },
 };
 
+function createBaseMsgUnlockLiquidityRequest(): MsgUnlockLiquidityRequest {
+  return { signer: "", externalAsset: undefined, units: "" };
+}
+
+export const MsgUnlockLiquidityRequest = {
+  encode(
+    message: MsgUnlockLiquidityRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.externalAsset !== undefined) {
+      Asset.encode(message.externalAsset, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.units !== "") {
+      writer.uint32(26).string(message.units);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUnlockLiquidityRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUnlockLiquidityRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.externalAsset = Asset.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.units = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUnlockLiquidityRequest {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      units: isSet(object.units) ? String(object.units) : "",
+    };
+  },
+
+  toJSON(message: MsgUnlockLiquidityRequest): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.externalAsset !== undefined &&
+      (obj.externalAsset = message.externalAsset
+        ? Asset.toJSON(message.externalAsset)
+        : undefined);
+    message.units !== undefined && (obj.units = message.units);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUnlockLiquidityRequest>, I>>(
+    object: I,
+  ): MsgUnlockLiquidityRequest {
+    const message = createBaseMsgUnlockLiquidityRequest();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.units = object.units ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgUnlockLiquidityResponse(): MsgUnlockLiquidityResponse {
+  return {};
+}
+
+export const MsgUnlockLiquidityResponse = {
+  encode(
+    _: MsgUnlockLiquidityResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUnlockLiquidityResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUnlockLiquidityResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUnlockLiquidityResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUnlockLiquidityResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUnlockLiquidityResponse>, I>>(
+    _: I,
+  ): MsgUnlockLiquidityResponse {
+    const message = createBaseMsgUnlockLiquidityResponse();
+    return message;
+  },
+};
+
+function createBaseMsgUpdateRewardsParamsRequest(): MsgUpdateRewardsParamsRequest {
+  return {
+    signer: "",
+    liquidityRemovalLockPeriod: Long.UZERO,
+    liquidityRemovalCancelPeriod: Long.UZERO,
+  };
+}
+
+export const MsgUpdateRewardsParamsRequest = {
+  encode(
+    message: MsgUpdateRewardsParamsRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (!message.liquidityRemovalLockPeriod.isZero()) {
+      writer.uint32(16).uint64(message.liquidityRemovalLockPeriod);
+    }
+    if (!message.liquidityRemovalCancelPeriod.isZero()) {
+      writer.uint32(24).uint64(message.liquidityRemovalCancelPeriod);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateRewardsParamsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateRewardsParamsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.liquidityRemovalLockPeriod = reader.uint64() as Long;
+          break;
+        case 3:
+          message.liquidityRemovalCancelPeriod = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateRewardsParamsRequest {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      liquidityRemovalLockPeriod: isSet(object.liquidityRemovalLockPeriod)
+        ? Long.fromString(object.liquidityRemovalLockPeriod)
+        : Long.UZERO,
+      liquidityRemovalCancelPeriod: isSet(object.liquidityRemovalCancelPeriod)
+        ? Long.fromString(object.liquidityRemovalCancelPeriod)
+        : Long.UZERO,
+    };
+  },
+
+  toJSON(message: MsgUpdateRewardsParamsRequest): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.liquidityRemovalLockPeriod !== undefined &&
+      (obj.liquidityRemovalLockPeriod = (
+        message.liquidityRemovalLockPeriod || Long.UZERO
+      ).toString());
+    message.liquidityRemovalCancelPeriod !== undefined &&
+      (obj.liquidityRemovalCancelPeriod = (
+        message.liquidityRemovalCancelPeriod || Long.UZERO
+      ).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateRewardsParamsRequest>, I>>(
+    object: I,
+  ): MsgUpdateRewardsParamsRequest {
+    const message = createBaseMsgUpdateRewardsParamsRequest();
+    message.signer = object.signer ?? "";
+    message.liquidityRemovalLockPeriod =
+      object.liquidityRemovalLockPeriod !== undefined &&
+      object.liquidityRemovalLockPeriod !== null
+        ? Long.fromValue(object.liquidityRemovalLockPeriod)
+        : Long.UZERO;
+    message.liquidityRemovalCancelPeriod =
+      object.liquidityRemovalCancelPeriod !== undefined &&
+      object.liquidityRemovalCancelPeriod !== null
+        ? Long.fromValue(object.liquidityRemovalCancelPeriod)
+        : Long.UZERO;
+    return message;
+  },
+};
+
+function createBaseMsgUpdateRewardsParamsResponse(): MsgUpdateRewardsParamsResponse {
+  return {};
+}
+
+export const MsgUpdateRewardsParamsResponse = {
+  encode(
+    _: MsgUpdateRewardsParamsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateRewardsParamsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateRewardsParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateRewardsParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateRewardsParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateRewardsParamsResponse>, I>>(
+    _: I,
+  ): MsgUpdateRewardsParamsResponse {
+    const message = createBaseMsgUpdateRewardsParamsResponse();
+    return message;
+  },
+};
+
+function createBaseMsgAddRewardPeriodRequest(): MsgAddRewardPeriodRequest {
+  return { signer: "", rewardPeriods: [] };
+}
+
+export const MsgAddRewardPeriodRequest = {
+  encode(
+    message: MsgAddRewardPeriodRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    for (const v of message.rewardPeriods) {
+      RewardPeriod.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAddRewardPeriodRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddRewardPeriodRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.rewardPeriods.push(
+            RewardPeriod.decode(reader, reader.uint32()),
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgAddRewardPeriodRequest {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      rewardPeriods: Array.isArray(object?.rewardPeriods)
+        ? object.rewardPeriods.map((e: any) => RewardPeriod.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: MsgAddRewardPeriodRequest): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    if (message.rewardPeriods) {
+      obj.rewardPeriods = message.rewardPeriods.map((e) =>
+        e ? RewardPeriod.toJSON(e) : undefined,
+      );
+    } else {
+      obj.rewardPeriods = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAddRewardPeriodRequest>, I>>(
+    object: I,
+  ): MsgAddRewardPeriodRequest {
+    const message = createBaseMsgAddRewardPeriodRequest();
+    message.signer = object.signer ?? "";
+    message.rewardPeriods =
+      object.rewardPeriods?.map((e) => RewardPeriod.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseMsgAddRewardPeriodResponse(): MsgAddRewardPeriodResponse {
+  return {};
+}
+
+export const MsgAddRewardPeriodResponse = {
+  encode(
+    _: MsgAddRewardPeriodResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAddRewardPeriodResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddRewardPeriodResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgAddRewardPeriodResponse {
+    return {};
+  },
+
+  toJSON(_: MsgAddRewardPeriodResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAddRewardPeriodResponse>, I>>(
+    _: I,
+  ): MsgAddRewardPeriodResponse {
+    const message = createBaseMsgAddRewardPeriodResponse();
+    return message;
+  },
+};
+
 export interface Msg {
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
@@ -1099,6 +1509,15 @@ export interface Msg {
   DecommissionPool(
     request: MsgDecommissionPool,
   ): Promise<MsgDecommissionPoolResponse>;
+  UnlockLiquidity(
+    request: MsgUnlockLiquidityRequest,
+  ): Promise<MsgUnlockLiquidityResponse>;
+  UpdateRewardsParams(
+    request: MsgUpdateRewardsParamsRequest,
+  ): Promise<MsgUpdateRewardsParamsResponse>;
+  AddRewardPeriod(
+    request: MsgAddRewardPeriodRequest,
+  ): Promise<MsgAddRewardPeriodResponse>;
   ModifyPmtpRates(
     request: MsgModifyPmtpRates,
   ): Promise<MsgModifyPmtpRatesResponse>;
@@ -1116,6 +1535,9 @@ export class MsgClientImpl implements Msg {
     this.AddLiquidity = this.AddLiquidity.bind(this);
     this.Swap = this.Swap.bind(this);
     this.DecommissionPool = this.DecommissionPool.bind(this);
+    this.UnlockLiquidity = this.UnlockLiquidity.bind(this);
+    this.UpdateRewardsParams = this.UpdateRewardsParams.bind(this);
+    this.AddRewardPeriod = this.AddRewardPeriod.bind(this);
     this.ModifyPmtpRates = this.ModifyPmtpRates.bind(this);
     this.UpdatePmtpParams = this.UpdatePmtpParams.bind(this);
   }
@@ -1170,6 +1592,48 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgDecommissionPoolResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  UnlockLiquidity(
+    request: MsgUnlockLiquidityRequest,
+  ): Promise<MsgUnlockLiquidityResponse> {
+    const data = MsgUnlockLiquidityRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "UnlockLiquidity",
+      data,
+    );
+    return promise.then((data) =>
+      MsgUnlockLiquidityResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  UpdateRewardsParams(
+    request: MsgUpdateRewardsParamsRequest,
+  ): Promise<MsgUpdateRewardsParamsResponse> {
+    const data = MsgUpdateRewardsParamsRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "UpdateRewardsParams",
+      data,
+    );
+    return promise.then((data) =>
+      MsgUpdateRewardsParamsResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  AddRewardPeriod(
+    request: MsgAddRewardPeriodRequest,
+  ): Promise<MsgAddRewardPeriodResponse> {
+    const data = MsgAddRewardPeriodRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "AddRewardPeriod",
+      data,
+    );
+    return promise.then((data) =>
+      MsgAddRewardPeriodResponse.decode(new _m0.Reader(data)),
     );
   }
 

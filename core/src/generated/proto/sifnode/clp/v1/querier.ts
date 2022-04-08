@@ -12,7 +12,12 @@ import {
   PageRequest,
   PageResponse,
 } from "../../../cosmos/base/query/v1beta1/pagination";
-import { PmtpParams, PmtpRateParams } from "../../../sifnode/clp/v1/params";
+import {
+  Params,
+  RewardParams,
+  PmtpParams,
+  PmtpRateParams,
+} from "../../../sifnode/clp/v1/params";
 
 export const protobufPackage = "sifnode.clp.v1";
 
@@ -92,6 +97,18 @@ export interface LiquidityProvidersRes {
   liquidityProviders: LiquidityProvider[];
   height: Long;
   pagination?: PageResponse;
+}
+
+export interface ParamsReq {}
+
+export interface ParamsRes {
+  params?: Params;
+}
+
+export interface RewardParamsReq {}
+
+export interface RewardParamsRes {
+  params?: RewardParams;
 }
 
 export interface PmtpParamsReq {}
@@ -290,7 +307,7 @@ export const PoolsReq = {
     const message = createBasePoolsReq();
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageRequest.fromPartial(object.pagination as Partial<PageRequest>)
+        ? PageRequest.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -398,7 +415,7 @@ export const PoolsRes = {
         : Long.ZERO;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageResponse.fromPartial(object.pagination as Partial<PageResponse>)
+        ? PageResponse.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -649,7 +666,7 @@ export const AssetListReq = {
     message.lpAddress = object.lpAddress ?? "";
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageRequest.fromPartial(object.pagination as Partial<PageRequest>)
+        ? PageRequest.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -742,7 +759,7 @@ export const AssetListRes = {
         : Long.ZERO;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageResponse.fromPartial(object.pagination as Partial<PageResponse>)
+        ? PageResponse.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -816,7 +833,7 @@ export const LiquidityProviderDataReq = {
     message.lpAddress = object.lpAddress ?? "";
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageRequest.fromPartial(object.pagination as Partial<PageRequest>)
+        ? PageRequest.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -922,7 +939,7 @@ export const LiquidityProviderDataRes = {
         : Long.ZERO;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageRequest.fromPartial(object.pagination as Partial<PageRequest>)
+        ? PageRequest.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -996,7 +1013,7 @@ export const LiquidityProviderListReq = {
     message.symbol = object.symbol ?? "";
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageRequest.fromPartial(object.pagination as Partial<PageRequest>)
+        ? PageRequest.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -1100,7 +1117,7 @@ export const LiquidityProviderListRes = {
         : Long.ZERO;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageResponse.fromPartial(object.pagination as Partial<PageResponse>)
+        ? PageResponse.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -1165,7 +1182,7 @@ export const LiquidityProvidersReq = {
     const message = createBaseLiquidityProvidersReq();
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageRequest.fromPartial(object.pagination as Partial<PageRequest>)
+        ? PageRequest.fromPartial(object.pagination)
         : undefined;
     return message;
   },
@@ -1269,7 +1286,210 @@ export const LiquidityProvidersRes = {
         : Long.ZERO;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
-        ? PageResponse.fromPartial(object.pagination as Partial<PageResponse>)
+        ? PageResponse.fromPartial(object.pagination)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseParamsReq(): ParamsReq {
+  return {};
+}
+
+export const ParamsReq = {
+  encode(_: ParamsReq, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ParamsReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseParamsReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): ParamsReq {
+    return {};
+  },
+
+  toJSON(_: ParamsReq): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ParamsReq>, I>>(_: I): ParamsReq {
+    const message = createBaseParamsReq();
+    return message;
+  },
+};
+
+function createBaseParamsRes(): ParamsRes {
+  return { params: undefined };
+}
+
+export const ParamsRes = {
+  encode(
+    message: ParamsRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.params !== undefined) {
+      Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ParamsRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseParamsRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.params = Params.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ParamsRes {
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+    };
+  },
+
+  toJSON(message: ParamsRes): unknown {
+    const obj: any = {};
+    message.params !== undefined &&
+      (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ParamsRes>, I>>(
+    object: I,
+  ): ParamsRes {
+    const message = createBaseParamsRes();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? Params.fromPartial(object.params)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseRewardParamsReq(): RewardParamsReq {
+  return {};
+}
+
+export const RewardParamsReq = {
+  encode(
+    _: RewardParamsReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RewardParamsReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRewardParamsReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): RewardParamsReq {
+    return {};
+  },
+
+  toJSON(_: RewardParamsReq): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RewardParamsReq>, I>>(
+    _: I,
+  ): RewardParamsReq {
+    const message = createBaseRewardParamsReq();
+    return message;
+  },
+};
+
+function createBaseRewardParamsRes(): RewardParamsRes {
+  return { params: undefined };
+}
+
+export const RewardParamsRes = {
+  encode(
+    message: RewardParamsRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.params !== undefined) {
+      RewardParams.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RewardParamsRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRewardParamsRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.params = RewardParams.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RewardParamsRes {
+    return {
+      params: isSet(object.params)
+        ? RewardParams.fromJSON(object.params)
+        : undefined,
+    };
+  },
+
+  toJSON(message: RewardParamsRes): unknown {
+    const obj: any = {};
+    message.params !== undefined &&
+      (obj.params = message.params
+        ? RewardParams.toJSON(message.params)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RewardParamsRes>, I>>(
+    object: I,
+  ): RewardParamsRes {
+    const message = createBaseRewardParamsRes();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? RewardParams.fromPartial(object.params)
         : undefined;
     return message;
   },
@@ -1455,6 +1675,8 @@ export interface Query {
   GetLiquidityProviderList(
     request: LiquidityProviderListReq,
   ): Promise<LiquidityProviderListRes>;
+  GetParams(request: ParamsReq): Promise<ParamsRes>;
+  GetRewardParams(request: RewardParamsReq): Promise<RewardParamsRes>;
   GetPmtpParams(request: PmtpParamsReq): Promise<PmtpParamsRes>;
 }
 
@@ -1469,6 +1691,8 @@ export class QueryClientImpl implements Query {
     this.GetAssetList = this.GetAssetList.bind(this);
     this.GetLiquidityProviders = this.GetLiquidityProviders.bind(this);
     this.GetLiquidityProviderList = this.GetLiquidityProviderList.bind(this);
+    this.GetParams = this.GetParams.bind(this);
+    this.GetRewardParams = this.GetRewardParams.bind(this);
     this.GetPmtpParams = this.GetPmtpParams.bind(this);
   }
   GetPool(request: PoolReq): Promise<PoolRes> {
@@ -1547,6 +1771,22 @@ export class QueryClientImpl implements Query {
     return promise.then((data) =>
       LiquidityProviderListRes.decode(new _m0.Reader(data)),
     );
+  }
+
+  GetParams(request: ParamsReq): Promise<ParamsRes> {
+    const data = ParamsReq.encode(request).finish();
+    const promise = this.rpc.request("sifnode.clp.v1.Query", "GetParams", data);
+    return promise.then((data) => ParamsRes.decode(new _m0.Reader(data)));
+  }
+
+  GetRewardParams(request: RewardParamsReq): Promise<RewardParamsRes> {
+    const data = RewardParamsReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetRewardParams",
+      data,
+    );
+    return promise.then((data) => RewardParamsRes.decode(new _m0.Reader(data)));
   }
 
   GetPmtpParams(request: PmtpParamsReq): Promise<PmtpParamsRes> {

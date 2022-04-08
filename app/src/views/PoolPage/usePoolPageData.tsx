@@ -15,7 +15,7 @@ import {
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
 import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
-import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/sifnode/clp/v1/types";
+import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import { computed } from "@vue/reactivity";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
 
