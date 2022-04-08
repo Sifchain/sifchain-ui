@@ -21,7 +21,7 @@ export interface PoolReq {
 export interface PoolRes {
   pool?: Pool;
   clpModuleAddress: string;
-  height: Long;
+  height: number;
 }
 
 export interface PoolsReq {
@@ -31,7 +31,7 @@ export interface PoolsReq {
 export interface PoolsRes {
   pools: Pool[];
   clpModuleAddress: string;
-  height: Long;
+  height: number;
   pagination?: PageResponse;
 }
 
@@ -44,7 +44,7 @@ export interface LiquidityProviderRes {
   liquidityProvider?: LiquidityProvider;
   nativeAssetBalance: string;
   externalAssetBalance: string;
-  height: Long;
+  height: number;
 }
 
 export interface AssetListReq {
@@ -54,7 +54,7 @@ export interface AssetListReq {
 
 export interface AssetListRes {
   assets: Asset[];
-  height: Long;
+  height: number;
   pagination?: PageResponse;
 }
 
@@ -65,7 +65,7 @@ export interface LiquidityProviderDataReq {
 
 export interface LiquidityProviderDataRes {
   liquidityProviderData: LiquidityProviderData[];
-  height: Long;
+  height: number;
   pagination?: PageRequest;
 }
 
@@ -77,7 +77,7 @@ export interface LiquidityProviderListReq {
 
 export interface LiquidityProviderListRes {
   liquidityProviders: LiquidityProvider[];
-  height: Long;
+  height: number;
   /** pagination defines the pagination in the response. */
   pagination?: PageResponse;
 }
@@ -88,7 +88,7 @@ export interface LiquidityProvidersReq {
 
 export interface LiquidityProvidersRes {
   liquidityProviders: LiquidityProvider[];
-  height: Long;
+  height: number;
   pagination?: PageResponse;
 }
 
@@ -145,7 +145,7 @@ export const PoolReq = {
 };
 
 function createBasePoolRes(): PoolRes {
-  return { pool: undefined, clpModuleAddress: "", height: Long.ZERO };
+  return { pool: undefined, clpModuleAddress: "", height: 0 };
 }
 
 export const PoolRes = {
@@ -159,7 +159,7 @@ export const PoolRes = {
     if (message.clpModuleAddress !== "") {
       writer.uint32(18).string(message.clpModuleAddress);
     }
-    if (!message.height.isZero()) {
+    if (message.height !== 0) {
       writer.uint32(24).int64(message.height);
     }
     return writer;
@@ -179,7 +179,7 @@ export const PoolRes = {
           message.clpModuleAddress = reader.string();
           break;
         case 3:
-          message.height = reader.int64() as Long;
+          message.height = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -195,7 +195,7 @@ export const PoolRes = {
       clpModuleAddress: isSet(object.clpModuleAddress)
         ? String(object.clpModuleAddress)
         : "",
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0,
     };
   },
 
@@ -205,8 +205,7 @@ export const PoolRes = {
       (obj.pool = message.pool ? Pool.toJSON(message.pool) : undefined);
     message.clpModuleAddress !== undefined &&
       (obj.clpModuleAddress = message.clpModuleAddress);
-    message.height !== undefined &&
-      (obj.height = (message.height || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
     return obj;
   },
 
@@ -217,10 +216,7 @@ export const PoolRes = {
         ? Pool.fromPartial(object.pool)
         : undefined;
     message.clpModuleAddress = object.clpModuleAddress ?? "";
-    message.height =
-      object.height !== undefined && object.height !== null
-        ? Long.fromValue(object.height)
-        : Long.ZERO;
+    message.height = object.height ?? 0;
     return message;
   },
 };
@@ -286,12 +282,7 @@ export const PoolsReq = {
 };
 
 function createBasePoolsRes(): PoolsRes {
-  return {
-    pools: [],
-    clpModuleAddress: "",
-    height: Long.ZERO,
-    pagination: undefined,
-  };
+  return { pools: [], clpModuleAddress: "", height: 0, pagination: undefined };
 }
 
 export const PoolsRes = {
@@ -305,7 +296,7 @@ export const PoolsRes = {
     if (message.clpModuleAddress !== "") {
       writer.uint32(18).string(message.clpModuleAddress);
     }
-    if (!message.height.isZero()) {
+    if (message.height !== 0) {
       writer.uint32(24).int64(message.height);
     }
     if (message.pagination !== undefined) {
@@ -331,7 +322,7 @@ export const PoolsRes = {
           message.clpModuleAddress = reader.string();
           break;
         case 3:
-          message.height = reader.int64() as Long;
+          message.height = longToNumber(reader.int64() as Long);
           break;
         case 4:
           message.pagination = PageResponse.decode(reader, reader.uint32());
@@ -352,7 +343,7 @@ export const PoolsRes = {
       clpModuleAddress: isSet(object.clpModuleAddress)
         ? String(object.clpModuleAddress)
         : "",
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0,
       pagination: isSet(object.pagination)
         ? PageResponse.fromJSON(object.pagination)
         : undefined,
@@ -368,8 +359,7 @@ export const PoolsRes = {
     }
     message.clpModuleAddress !== undefined &&
       (obj.clpModuleAddress = message.clpModuleAddress);
-    message.height !== undefined &&
-      (obj.height = (message.height || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
         ? PageResponse.toJSON(message.pagination)
@@ -381,10 +371,7 @@ export const PoolsRes = {
     const message = createBasePoolsRes();
     message.pools = object.pools?.map((e) => Pool.fromPartial(e)) || [];
     message.clpModuleAddress = object.clpModuleAddress ?? "";
-    message.height =
-      object.height !== undefined && object.height !== null
-        ? Long.fromValue(object.height)
-        : Long.ZERO;
+    message.height = object.height ?? 0;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
         ? PageResponse.fromPartial(object.pagination)
@@ -464,7 +451,7 @@ function createBaseLiquidityProviderRes(): LiquidityProviderRes {
     liquidityProvider: undefined,
     nativeAssetBalance: "",
     externalAssetBalance: "",
-    height: Long.ZERO,
+    height: 0,
   };
 }
 
@@ -485,7 +472,7 @@ export const LiquidityProviderRes = {
     if (message.externalAssetBalance !== "") {
       writer.uint32(26).string(message.externalAssetBalance);
     }
-    if (!message.height.isZero()) {
+    if (message.height !== 0) {
       writer.uint32(32).int64(message.height);
     }
     return writer;
@@ -514,7 +501,7 @@ export const LiquidityProviderRes = {
           message.externalAssetBalance = reader.string();
           break;
         case 4:
-          message.height = reader.int64() as Long;
+          message.height = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -535,7 +522,7 @@ export const LiquidityProviderRes = {
       externalAssetBalance: isSet(object.externalAssetBalance)
         ? String(object.externalAssetBalance)
         : "",
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0,
     };
   },
 
@@ -549,8 +536,7 @@ export const LiquidityProviderRes = {
       (obj.nativeAssetBalance = message.nativeAssetBalance);
     message.externalAssetBalance !== undefined &&
       (obj.externalAssetBalance = message.externalAssetBalance);
-    message.height !== undefined &&
-      (obj.height = (message.height || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
     return obj;
   },
 
@@ -565,10 +551,7 @@ export const LiquidityProviderRes = {
         : undefined;
     message.nativeAssetBalance = object.nativeAssetBalance ?? "";
     message.externalAssetBalance = object.externalAssetBalance ?? "";
-    message.height =
-      object.height !== undefined && object.height !== null
-        ? Long.fromValue(object.height)
-        : Long.ZERO;
+    message.height = object.height ?? 0;
     return message;
   },
 };
@@ -645,7 +628,7 @@ export const AssetListReq = {
 };
 
 function createBaseAssetListRes(): AssetListRes {
-  return { assets: [], height: Long.ZERO, pagination: undefined };
+  return { assets: [], height: 0, pagination: undefined };
 }
 
 export const AssetListRes = {
@@ -656,7 +639,7 @@ export const AssetListRes = {
     for (const v of message.assets) {
       Asset.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    if (!message.height.isZero()) {
+    if (message.height !== 0) {
       writer.uint32(16).int64(message.height);
     }
     if (message.pagination !== undefined) {
@@ -679,7 +662,7 @@ export const AssetListRes = {
           message.assets.push(Asset.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.height = reader.int64() as Long;
+          message.height = longToNumber(reader.int64() as Long);
           break;
         case 3:
           message.pagination = PageResponse.decode(reader, reader.uint32());
@@ -697,7 +680,7 @@ export const AssetListRes = {
       assets: Array.isArray(object?.assets)
         ? object.assets.map((e: any) => Asset.fromJSON(e))
         : [],
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0,
       pagination: isSet(object.pagination)
         ? PageResponse.fromJSON(object.pagination)
         : undefined,
@@ -711,8 +694,7 @@ export const AssetListRes = {
     } else {
       obj.assets = [];
     }
-    message.height !== undefined &&
-      (obj.height = (message.height || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
         ? PageResponse.toJSON(message.pagination)
@@ -725,10 +707,7 @@ export const AssetListRes = {
   ): AssetListRes {
     const message = createBaseAssetListRes();
     message.assets = object.assets?.map((e) => Asset.fromPartial(e)) || [];
-    message.height =
-      object.height !== undefined && object.height !== null
-        ? Long.fromValue(object.height)
-        : Long.ZERO;
+    message.height = object.height ?? 0;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
         ? PageResponse.fromPartial(object.pagination)
@@ -812,11 +791,7 @@ export const LiquidityProviderDataReq = {
 };
 
 function createBaseLiquidityProviderDataRes(): LiquidityProviderDataRes {
-  return {
-    liquidityProviderData: [],
-    height: Long.ZERO,
-    pagination: undefined,
-  };
+  return { liquidityProviderData: [], height: 0, pagination: undefined };
 }
 
 export const LiquidityProviderDataRes = {
@@ -827,7 +802,7 @@ export const LiquidityProviderDataRes = {
     for (const v of message.liquidityProviderData) {
       LiquidityProviderData.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    if (!message.height.isZero()) {
+    if (message.height !== 0) {
       writer.uint32(16).int64(message.height);
     }
     if (message.pagination !== undefined) {
@@ -852,7 +827,7 @@ export const LiquidityProviderDataRes = {
           );
           break;
         case 2:
-          message.height = reader.int64() as Long;
+          message.height = longToNumber(reader.int64() as Long);
           break;
         case 3:
           message.pagination = PageRequest.decode(reader, reader.uint32());
@@ -872,7 +847,7 @@ export const LiquidityProviderDataRes = {
             LiquidityProviderData.fromJSON(e),
           )
         : [],
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0,
       pagination: isSet(object.pagination)
         ? PageRequest.fromJSON(object.pagination)
         : undefined,
@@ -888,8 +863,7 @@ export const LiquidityProviderDataRes = {
     } else {
       obj.liquidityProviderData = [];
     }
-    message.height !== undefined &&
-      (obj.height = (message.height || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
         ? PageRequest.toJSON(message.pagination)
@@ -905,10 +879,7 @@ export const LiquidityProviderDataRes = {
       object.liquidityProviderData?.map((e) =>
         LiquidityProviderData.fromPartial(e),
       ) || [];
-    message.height =
-      object.height !== undefined && object.height !== null
-        ? Long.fromValue(object.height)
-        : Long.ZERO;
+    message.height = object.height ?? 0;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
         ? PageRequest.fromPartial(object.pagination)
@@ -992,7 +963,7 @@ export const LiquidityProviderListReq = {
 };
 
 function createBaseLiquidityProviderListRes(): LiquidityProviderListRes {
-  return { liquidityProviders: [], height: Long.ZERO, pagination: undefined };
+  return { liquidityProviders: [], height: 0, pagination: undefined };
 }
 
 export const LiquidityProviderListRes = {
@@ -1003,7 +974,7 @@ export const LiquidityProviderListRes = {
     for (const v of message.liquidityProviders) {
       LiquidityProvider.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    if (!message.height.isZero()) {
+    if (message.height !== 0) {
       writer.uint32(16).int64(message.height);
     }
     if (message.pagination !== undefined) {
@@ -1031,7 +1002,7 @@ export const LiquidityProviderListRes = {
           );
           break;
         case 2:
-          message.height = reader.int64() as Long;
+          message.height = longToNumber(reader.int64() as Long);
           break;
         case 3:
           message.pagination = PageResponse.decode(reader, reader.uint32());
@@ -1051,7 +1022,7 @@ export const LiquidityProviderListRes = {
             LiquidityProvider.fromJSON(e),
           )
         : [],
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0,
       pagination: isSet(object.pagination)
         ? PageResponse.fromJSON(object.pagination)
         : undefined,
@@ -1067,8 +1038,7 @@ export const LiquidityProviderListRes = {
     } else {
       obj.liquidityProviders = [];
     }
-    message.height !== undefined &&
-      (obj.height = (message.height || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
         ? PageResponse.toJSON(message.pagination)
@@ -1083,10 +1053,7 @@ export const LiquidityProviderListRes = {
     message.liquidityProviders =
       object.liquidityProviders?.map((e) => LiquidityProvider.fromPartial(e)) ||
       [];
-    message.height =
-      object.height !== undefined && object.height !== null
-        ? Long.fromValue(object.height)
-        : Long.ZERO;
+    message.height = object.height ?? 0;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
         ? PageResponse.fromPartial(object.pagination)
@@ -1161,7 +1128,7 @@ export const LiquidityProvidersReq = {
 };
 
 function createBaseLiquidityProvidersRes(): LiquidityProvidersRes {
-  return { liquidityProviders: [], height: Long.ZERO, pagination: undefined };
+  return { liquidityProviders: [], height: 0, pagination: undefined };
 }
 
 export const LiquidityProvidersRes = {
@@ -1172,7 +1139,7 @@ export const LiquidityProvidersRes = {
     for (const v of message.liquidityProviders) {
       LiquidityProvider.encode(v!, writer.uint32(10).fork()).ldelim();
     }
-    if (!message.height.isZero()) {
+    if (message.height !== 0) {
       writer.uint32(16).int64(message.height);
     }
     if (message.pagination !== undefined) {
@@ -1200,7 +1167,7 @@ export const LiquidityProvidersRes = {
           );
           break;
         case 2:
-          message.height = reader.int64() as Long;
+          message.height = longToNumber(reader.int64() as Long);
           break;
         case 3:
           message.pagination = PageResponse.decode(reader, reader.uint32());
@@ -1220,7 +1187,7 @@ export const LiquidityProvidersRes = {
             LiquidityProvider.fromJSON(e),
           )
         : [],
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0,
       pagination: isSet(object.pagination)
         ? PageResponse.fromJSON(object.pagination)
         : undefined,
@@ -1236,8 +1203,7 @@ export const LiquidityProvidersRes = {
     } else {
       obj.liquidityProviders = [];
     }
-    message.height !== undefined &&
-      (obj.height = (message.height || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
     message.pagination !== undefined &&
       (obj.pagination = message.pagination
         ? PageResponse.toJSON(message.pagination)
@@ -1252,10 +1218,7 @@ export const LiquidityProvidersRes = {
     message.liquidityProviders =
       object.liquidityProviders?.map((e) => LiquidityProvider.fromPartial(e)) ||
       [];
-    message.height =
-      object.height !== undefined && object.height !== null
-        ? Long.fromValue(object.height)
-        : Long.ZERO;
+    message.height = object.height ?? 0;
     message.pagination =
       object.pagination !== undefined && object.pagination !== null
         ? PageResponse.fromPartial(object.pagination)
@@ -1381,6 +1344,17 @@ interface Rpc {
   ): Promise<Uint8Array>;
 }
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
+
 type Builtin =
   | Date
   | Function
@@ -1392,8 +1366,6 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
-  : T extends Long
-  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -1409,6 +1381,13 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

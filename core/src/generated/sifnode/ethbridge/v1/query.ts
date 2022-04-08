@@ -8,10 +8,10 @@ export const protobufPackage = "sifnode.ethbridge.v1";
 
 /** QueryEthProphecyRequest payload for EthProphecy rpc query */
 export interface QueryEthProphecyRequest {
-  ethereumChainId: Long;
+  ethereumChainId: number;
   /** bridge_contract_address is an EthereumAddress */
   bridgeContractAddress: string;
-  nonce: Long;
+  nonce: number;
   symbol: string;
   /** token_contract_address is an EthereumAddress */
   tokenContractAddress: string;
@@ -34,9 +34,9 @@ export interface QueryBlacklistResponse {
 
 function createBaseQueryEthProphecyRequest(): QueryEthProphecyRequest {
   return {
-    ethereumChainId: Long.ZERO,
+    ethereumChainId: 0,
     bridgeContractAddress: "",
-    nonce: Long.ZERO,
+    nonce: 0,
     symbol: "",
     tokenContractAddress: "",
     ethereumSender: "",
@@ -48,13 +48,13 @@ export const QueryEthProphecyRequest = {
     message: QueryEthProphecyRequest,
     writer: _m0.Writer = _m0.Writer.create(),
   ): _m0.Writer {
-    if (!message.ethereumChainId.isZero()) {
+    if (message.ethereumChainId !== 0) {
       writer.uint32(8).int64(message.ethereumChainId);
     }
     if (message.bridgeContractAddress !== "") {
       writer.uint32(18).string(message.bridgeContractAddress);
     }
-    if (!message.nonce.isZero()) {
+    if (message.nonce !== 0) {
       writer.uint32(24).int64(message.nonce);
     }
     if (message.symbol !== "") {
@@ -80,13 +80,13 @@ export const QueryEthProphecyRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.ethereumChainId = reader.int64() as Long;
+          message.ethereumChainId = longToNumber(reader.int64() as Long);
           break;
         case 2:
           message.bridgeContractAddress = reader.string();
           break;
         case 3:
-          message.nonce = reader.int64() as Long;
+          message.nonce = longToNumber(reader.int64() as Long);
           break;
         case 4:
           message.symbol = reader.string();
@@ -108,12 +108,12 @@ export const QueryEthProphecyRequest = {
   fromJSON(object: any): QueryEthProphecyRequest {
     return {
       ethereumChainId: isSet(object.ethereumChainId)
-        ? Long.fromString(object.ethereumChainId)
-        : Long.ZERO,
+        ? Number(object.ethereumChainId)
+        : 0,
       bridgeContractAddress: isSet(object.bridgeContractAddress)
         ? String(object.bridgeContractAddress)
         : "",
-      nonce: isSet(object.nonce) ? Long.fromString(object.nonce) : Long.ZERO,
+      nonce: isSet(object.nonce) ? Number(object.nonce) : 0,
       symbol: isSet(object.symbol) ? String(object.symbol) : "",
       tokenContractAddress: isSet(object.tokenContractAddress)
         ? String(object.tokenContractAddress)
@@ -127,11 +127,10 @@ export const QueryEthProphecyRequest = {
   toJSON(message: QueryEthProphecyRequest): unknown {
     const obj: any = {};
     message.ethereumChainId !== undefined &&
-      (obj.ethereumChainId = (message.ethereumChainId || Long.ZERO).toString());
+      (obj.ethereumChainId = Math.round(message.ethereumChainId));
     message.bridgeContractAddress !== undefined &&
       (obj.bridgeContractAddress = message.bridgeContractAddress);
-    message.nonce !== undefined &&
-      (obj.nonce = (message.nonce || Long.ZERO).toString());
+    message.nonce !== undefined && (obj.nonce = Math.round(message.nonce));
     message.symbol !== undefined && (obj.symbol = message.symbol);
     message.tokenContractAddress !== undefined &&
       (obj.tokenContractAddress = message.tokenContractAddress);
@@ -144,15 +143,9 @@ export const QueryEthProphecyRequest = {
     object: I,
   ): QueryEthProphecyRequest {
     const message = createBaseQueryEthProphecyRequest();
-    message.ethereumChainId =
-      object.ethereumChainId !== undefined && object.ethereumChainId !== null
-        ? Long.fromValue(object.ethereumChainId)
-        : Long.ZERO;
+    message.ethereumChainId = object.ethereumChainId ?? 0;
     message.bridgeContractAddress = object.bridgeContractAddress ?? "";
-    message.nonce =
-      object.nonce !== undefined && object.nonce !== null
-        ? Long.fromValue(object.nonce)
-        : Long.ZERO;
+    message.nonce = object.nonce ?? 0;
     message.symbol = object.symbol ?? "";
     message.tokenContractAddress = object.tokenContractAddress ?? "";
     message.ethereumSender = object.ethereumSender ?? "";
@@ -411,6 +404,17 @@ interface Rpc {
   ): Promise<Uint8Array>;
 }
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
+
 type Builtin =
   | Date
   | Function
@@ -422,8 +426,6 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
-  : T extends Long
-  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -439,6 +441,13 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

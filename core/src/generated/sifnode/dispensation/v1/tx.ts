@@ -31,7 +31,7 @@ export interface MsgRunDistribution {
   authorizedRunner: string;
   distributionName: string;
   distributionType: DistributionType;
-  distributionCount: Long;
+  distributionCount: number;
 }
 
 function createBaseMsgCreateDistribution(): MsgCreateDistribution {
@@ -351,7 +351,7 @@ function createBaseMsgRunDistribution(): MsgRunDistribution {
     authorizedRunner: "",
     distributionName: "",
     distributionType: 0,
-    distributionCount: Long.ZERO,
+    distributionCount: 0,
   };
 }
 
@@ -369,7 +369,7 @@ export const MsgRunDistribution = {
     if (message.distributionType !== 0) {
       writer.uint32(24).int32(message.distributionType);
     }
-    if (!message.distributionCount.isZero()) {
+    if (message.distributionCount !== 0) {
       writer.uint32(32).int64(message.distributionCount);
     }
     return writer;
@@ -392,7 +392,7 @@ export const MsgRunDistribution = {
           message.distributionType = reader.int32() as any;
           break;
         case 4:
-          message.distributionCount = reader.int64() as Long;
+          message.distributionCount = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -414,8 +414,8 @@ export const MsgRunDistribution = {
         ? distributionTypeFromJSON(object.distributionType)
         : 0,
       distributionCount: isSet(object.distributionCount)
-        ? Long.fromString(object.distributionCount)
-        : Long.ZERO,
+        ? Number(object.distributionCount)
+        : 0,
     };
   },
 
@@ -428,9 +428,7 @@ export const MsgRunDistribution = {
     message.distributionType !== undefined &&
       (obj.distributionType = distributionTypeToJSON(message.distributionType));
     message.distributionCount !== undefined &&
-      (obj.distributionCount = (
-        message.distributionCount || Long.ZERO
-      ).toString());
+      (obj.distributionCount = Math.round(message.distributionCount));
     return obj;
   },
 
@@ -441,11 +439,7 @@ export const MsgRunDistribution = {
     message.authorizedRunner = object.authorizedRunner ?? "";
     message.distributionName = object.distributionName ?? "";
     message.distributionType = object.distributionType ?? 0;
-    message.distributionCount =
-      object.distributionCount !== undefined &&
-      object.distributionCount !== null
-        ? Long.fromValue(object.distributionCount)
-        : Long.ZERO;
+    message.distributionCount = object.distributionCount ?? 0;
     return message;
   },
 };
@@ -519,6 +513,17 @@ interface Rpc {
   ): Promise<Uint8Array>;
 }
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
+
 type Builtin =
   | Date
   | Function
@@ -530,8 +535,6 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
-  : T extends Long
-  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -547,6 +550,13 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
