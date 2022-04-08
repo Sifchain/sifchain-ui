@@ -15,7 +15,7 @@
     "test": "yarn jest --passWithNoTests --collect-coverage --projects jest-unit.config.js",
     "test:integration": "yarn jest --projects --collect-coverage jest-integration.config.js",
     "syncProto": "rm -rf proto && degit Sifchain/sifnode/proto/sifnode#${TAG:-'develop'} proto/sifnode && degit Sifchain/sifnode/third_party/proto#${TAG:-'develop'} proto/third_party",
-    "codegen": "protoc -I=proto -I=proto/third_party proto/sifnode/**/*.proto --plugin=../node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=src/generated --ts_proto_opt='esModuleInterop=true,useOptionals=true'"
+    "codegen": "protoc -I=proto -I=proto/third_party proto/sifnode/**/*.proto --plugin=../node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=src/generated --ts_proto_opt='esModuleInterop=true,forceLong=long,useOptionals=true'"
   },
   "files": [
     "build"
