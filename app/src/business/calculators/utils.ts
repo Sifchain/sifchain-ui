@@ -1,19 +1,5 @@
 import { computed, Ref } from "@vue/reactivity";
-import { IAssetAmount, IPool } from "@sifchain/sdk";
-import { format } from "@sifchain/sdk/src/utils/format";
-
-export function assetPriceMessage(
-  amount: IAssetAmount | null,
-  pair: IPool | null,
-  decimals: number,
-) {
-  if (!pair || !amount || amount.equalTo("0")) return "";
-  const swapResult = pair.calcSwapResult(amount);
-
-  return `${format(swapResult.divide(amount), {
-    mantissa: decimals,
-  })} ${swapResult.label} per ${amount.label}`;
-}
+import { IAssetAmount } from "@sifchain/sdk";
 
 export function trimZeros(amount: string) {
   if (amount.indexOf(".") === -1) return `${amount}.0`;

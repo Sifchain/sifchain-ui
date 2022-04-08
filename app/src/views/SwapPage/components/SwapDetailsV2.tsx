@@ -1,4 +1,4 @@
-import { computed, defineComponent, PropType, Ref } from "vue";
+import { computed, defineComponent, effect, PropType, Ref } from "vue";
 import { IAsset } from "@sifchain/sdk";
 
 import { Button } from "@/components/Button/Button";
@@ -22,6 +22,7 @@ export const SwapDetails = defineComponent({
 
       return [ratio.toFixed(6), (1 / ratio).toFixed(6)] as const;
     });
+
     return () => (
       <div class="mt-[10px] w-full">
         <div
@@ -56,25 +57,6 @@ export const SwapDetails = defineComponent({
             <span class="mr-[4px] whitespace-nowrap">
               {priceRatios.value[1]}
             </span>
-          </div>
-        </div>
-        <div
-          class={`
-          bg-gray-base border-gray-input_outline box-border flex h-[49px] w-full
-          items-center justify-center
-          border-[1px] border-b-[1px] border-t-0 border-solid 
-        `}
-        >
-          <div class="text-md w-full pl-[20px] text-left font-sans font-medium capitalize text-white">
-            Price Impact
-            <Button.InlineHelp key={props.toAsset?.value.displaySymbol}>
-              This is the percentage impact to the amount of{" "}
-              {props.toAsset?.value.displaySymbol.toUpperCase()} in the
-              liquidity pool based upon how much you are swapping for.
-            </Button.InlineHelp>
-          </div>
-          <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium capitalize text-white">
-            <span class={["mr-[4px]"]}>{props.priceImpact}</span>
           </div>
         </div>
         <div

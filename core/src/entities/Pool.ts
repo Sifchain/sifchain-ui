@@ -23,7 +23,10 @@ export class Pool extends Pair {
     a: IAssetAmount,
     b: IAssetAmount,
     poolUnits?: IAmount,
-    swapPrices?: { native: IAssetAmount; external: IAssetAmount },
+    swapPrices?: {
+      native: IAssetAmount;
+      external: IAssetAmount;
+    },
   ) {
     super(a, b);
     this.swapPrices = swapPrices;
@@ -43,7 +46,7 @@ export class Pool extends Pair {
   }
 
   get externalSwapPrice() {
-    return this.swapPrices?.native;
+    return this.swapPrices?.external;
   }
 
   get externalAmount() {
@@ -52,10 +55,6 @@ export class Pool extends Pair {
 
   get nativeAmount() {
     return this.amounts.find((amount) => amount.symbol === "rowan")!;
-  }
-
-  priceAsset(asset: IAsset) {
-    return this.calcSwapResult(AssetAmount(asset, "1"));
   }
 
   calcProviderFee(x: IAssetAmount) {
@@ -102,49 +101,37 @@ export class Pool extends Pair {
       throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
     }
 
-    const swapAmount = calculateSwapResult(x, X, Y);
-    return AssetAmount(this.otherAsset(x), swapAmount);
-  }
+    const swapResult = calculateSwapResult(x, X, Y);
 
-  calcSwapResultPMTP(x: IAssetAmount) {
-    const X = this.amounts.find((a) => a.symbol === x.symbol);
-
-    if (!X) {
-      throw new Error(
-        `Sent amount with symbol ${
-          x.symbol
-        } does not exist in this pair: ${this.toString()}`,
-      );
-    }
-
-    const Y = this.amounts.find((a) => a.symbol !== x.symbol);
-
-    if (!Y) {
-      throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
-    }
-
-    const swapAmount = calculateSwapResult(x, X, Y);
-    return AssetAmount(this.otherAsset(x), swapAmount);
+    return AssetAmount(this.otherAsset(x), swapResult);
   }
 
   calcReverseSwapResult(Sa: IAssetAmount): IAssetAmount {
     const Ya = this.amounts.find((a) => a.symbol === Sa.symbol);
-    if (!Ya)
+
+    if (!Ya) {
       throw new Error(
         `Sent amount with symbol ${
           Sa.symbol
         } does not exist in this pair: ${this.toString()}`,
       );
+    }
+
     const Xa = this.amounts.find((a) => a.symbol !== Sa.symbol);
-    if (!Xa) throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
+
+    if (!Xa) {
+      throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
+    }
+
     const otherAsset = this.otherAsset(Sa);
+
     if (Sa.equalTo("0")) {
       return AssetAmount(otherAsset, "0");
     }
 
-    const x = calculateReverseSwapResult(Sa, Xa, Ya);
+    const reverseSwapResult = calculateReverseSwapResult(Sa, Xa, Ya);
 
-    return AssetAmount(otherAsset, x);
+    return AssetAmount(otherAsset, reverseSwapResult);
   }
 
   calculatePoolUnits(
@@ -222,10 +209,6 @@ export function CompositePool(pair1: IPool, pair2: IPool): IPool {
       return pair2.getAmount(asset);
     },
 
-    priceAsset(asset: IAsset) {
-      return this.calcSwapResult(AssetAmount(asset, "1"));
-    },
-
     otherAsset(asset: IAsset) {
       const otherAsset = amounts.find(
         (amount) => amount.symbol !== asset.symbol,
@@ -282,17 +265,6 @@ export function CompositePool(pair1: IPool, pair2: IPool): IPool {
       const nativeAmount = first.calcSwapResult(x);
 
       return second.calcSwapResult(nativeAmount);
-    },
-
-    calcSwapResultPMTP(x: IAssetAmount) {
-      // TODO: possibly use a combined formula
-      const [first, second] = pair1.contains(x)
-        ? [pair1, pair2]
-        : [pair2, pair1];
-
-      const nativeAmount = first.calcSwapResultPMTP(x);
-
-      return second.calcSwapResultPMTP(nativeAmount);
     },
 
     calcReverseSwapResult(S: IAssetAmount) {

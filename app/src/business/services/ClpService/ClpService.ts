@@ -197,9 +197,9 @@ export class ClpService {
     });
   }
 
-  async getPmtpParams(params?: { ticker: string }) {
-    const { result } = await this.client.getPmtpParams(params);
-    return result.params;
+  async getPmtpParams() {
+    const queryClient = await this.dexClientPromise;
+    return await queryClient.query.clp.GetPmtpParams({});
   }
 }
 

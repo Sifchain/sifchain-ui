@@ -1,4 +1,5 @@
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
+import { Amount, format } from "@sifchain/sdk";
 
 import usePmtpParams from "@/hooks/usePMTP";
 import { flagsStore } from "@/store/modules/flags";
@@ -13,21 +14,26 @@ export default defineComponent({
     const isPMTPEnabled = flagsStore.state.pmtp;
     const pmtp = usePmtpParams();
 
+    const displayValue = computed(() => {
+      if (!pmtp.data.value) {
+        return "...";
+      }
+
+      const amount = Amount(pmtp.data.value?.pmtpPeriodGovernanceRate)
+        .divide("1".concat("0".repeat(18)))
+        .multiply("100");
+
+      return `${format(amount, {
+        mantissa: 4,
+      })}%`;
+    });
+
     return () =>
-      isPMTPEnabled && (
+      !isPMTPEnabled ? null : (
         <NavSidePanelItem
           class="opacity-50"
           href={PMTP_ROADMAP_URL}
-          displayName={
-            <>
-              PMTP{" "}
-              {pmtp.isLoading.value
-                ? "..."
-                : `${(
-                    Number(pmtp.data.value?.pmtp_period_governance_rate) * 100
-                  ).toFixed(4)}%`}
-            </>
-          }
+          displayName={<>PMTP {displayValue.value}</>}
           icon="interactive/policy"
         />
       );
