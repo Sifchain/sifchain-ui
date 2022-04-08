@@ -19,9 +19,11 @@ export default defineComponent({
         return "...";
       }
 
-      const amount = Amount(pmtp.data.value?.pmtpPeriodGovernanceRate ?? "0")
-        .divide("1".concat("0".repeat(18)))
-        .multiply("100");
+      const amount = pmtp.data.value.active
+        ? Amount(pmtp.data.value?.pmtpPeriodGovernanceRate ?? "0")
+            .divide("1".concat("0".repeat(18)))
+            .multiply("100")
+        : Amount(0);
 
       return `${format(amount, {
         mantissa: 4,
@@ -29,7 +31,7 @@ export default defineComponent({
     });
 
     return () =>
-      !isPMTPEnabled || !pmtp.data.value?.active ? null : (
+      isPMTPEnabled && (
         <NavSidePanelItem
           class="opacity-50"
           href={PMTP_ROADMAP_URL}
