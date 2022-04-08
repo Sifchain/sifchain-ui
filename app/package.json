@@ -28,6 +28,7 @@
     "react-dom": "^17.0.2",
     "tippy.js": "^6.3.7",
     "vue": "^3.2.31",
+    "vue-query": "^1.22.2",
     "vue-router": "^4.0.14",
     "vue-tippy": "^6.0.0-alpha.30",
     "vuex": "4.0.2"

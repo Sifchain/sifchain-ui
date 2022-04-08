@@ -1,7 +1,8 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
 import dangerouslyAssert from "@/utils/dangerouslyAssert";
-import { computed, Ref } from "vue";
+import { computed, Ref, unref } from "vue";
 import { useQuery } from "vue-query";
+import { MaybeRef } from "vue-query/lib/vue/types";
 
 export const useTokenRegistryEntriesQuery = () => {
   const sifchainClients = useSifchainClients();
@@ -21,14 +22,14 @@ export const useTokenRegistryEntriesQuery = () => {
   );
 };
 
-export const useTokenRegistryEntryQuery = (baseDenom: Ref<string>) => {
+export const useTokenRegistryEntryQuery = (baseDenom: MaybeRef<string>) => {
   const registryQuery = useTokenRegistryEntriesQuery();
 
   return {
     ...registryQuery,
     data: computed(() =>
       registryQuery.data.value?.registry?.entries.find(
-        (x) => x.baseDenom === baseDenom.value,
+        (x) => x.baseDenom === unref(baseDenom),
       ),
     ),
   };
