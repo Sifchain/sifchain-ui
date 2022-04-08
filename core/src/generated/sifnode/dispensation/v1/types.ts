@@ -115,8 +115,8 @@ export interface DistributionRecord {
   distributionName: string;
   recipientAddress: string;
   coins: Coin[];
-  distributionStartHeight: Long;
-  distributionCompletedHeight: Long;
+  distributionStartHeight: number;
+  distributionCompletedHeight: number;
   authorizedRunner: string;
 }
 
@@ -265,8 +265,8 @@ function createBaseDistributionRecord(): DistributionRecord {
     distributionName: "",
     recipientAddress: "",
     coins: [],
-    distributionStartHeight: Long.ZERO,
-    distributionCompletedHeight: Long.ZERO,
+    distributionStartHeight: 0,
+    distributionCompletedHeight: 0,
     authorizedRunner: "",
   };
 }
@@ -291,10 +291,10 @@ export const DistributionRecord = {
     for (const v of message.coins) {
       Coin.encode(v!, writer.uint32(42).fork()).ldelim();
     }
-    if (!message.distributionStartHeight.isZero()) {
+    if (message.distributionStartHeight !== 0) {
       writer.uint32(48).int64(message.distributionStartHeight);
     }
-    if (!message.distributionCompletedHeight.isZero()) {
+    if (message.distributionCompletedHeight !== 0) {
       writer.uint32(56).int64(message.distributionCompletedHeight);
     }
     if (message.authorizedRunner !== "") {
@@ -326,10 +326,14 @@ export const DistributionRecord = {
           message.coins.push(Coin.decode(reader, reader.uint32()));
           break;
         case 6:
-          message.distributionStartHeight = reader.int64() as Long;
+          message.distributionStartHeight = longToNumber(
+            reader.int64() as Long,
+          );
           break;
         case 7:
-          message.distributionCompletedHeight = reader.int64() as Long;
+          message.distributionCompletedHeight = longToNumber(
+            reader.int64() as Long,
+          );
           break;
         case 8:
           message.authorizedRunner = reader.string();
@@ -360,11 +364,11 @@ export const DistributionRecord = {
         ? object.coins.map((e: any) => Coin.fromJSON(e))
         : [],
       distributionStartHeight: isSet(object.distributionStartHeight)
-        ? Long.fromString(object.distributionStartHeight)
-        : Long.ZERO,
+        ? Number(object.distributionStartHeight)
+        : 0,
       distributionCompletedHeight: isSet(object.distributionCompletedHeight)
-        ? Long.fromString(object.distributionCompletedHeight)
-        : Long.ZERO,
+        ? Number(object.distributionCompletedHeight)
+        : 0,
       authorizedRunner: isSet(object.authorizedRunner)
         ? String(object.authorizedRunner)
         : "",
@@ -389,13 +393,13 @@ export const DistributionRecord = {
       obj.coins = [];
     }
     message.distributionStartHeight !== undefined &&
-      (obj.distributionStartHeight = (
-        message.distributionStartHeight || Long.ZERO
-      ).toString());
+      (obj.distributionStartHeight = Math.round(
+        message.distributionStartHeight,
+      ));
     message.distributionCompletedHeight !== undefined &&
-      (obj.distributionCompletedHeight = (
-        message.distributionCompletedHeight || Long.ZERO
-      ).toString());
+      (obj.distributionCompletedHeight = Math.round(
+        message.distributionCompletedHeight,
+      ));
     message.authorizedRunner !== undefined &&
       (obj.authorizedRunner = message.authorizedRunner);
     return obj;
@@ -410,16 +414,9 @@ export const DistributionRecord = {
     message.distributionName = object.distributionName ?? "";
     message.recipientAddress = object.recipientAddress ?? "";
     message.coins = object.coins?.map((e) => Coin.fromPartial(e)) || [];
-    message.distributionStartHeight =
-      object.distributionStartHeight !== undefined &&
-      object.distributionStartHeight !== null
-        ? Long.fromValue(object.distributionStartHeight)
-        : Long.ZERO;
+    message.distributionStartHeight = object.distributionStartHeight ?? 0;
     message.distributionCompletedHeight =
-      object.distributionCompletedHeight !== undefined &&
-      object.distributionCompletedHeight !== null
-        ? Long.fromValue(object.distributionCompletedHeight)
-        : Long.ZERO;
+      object.distributionCompletedHeight ?? 0;
     message.authorizedRunner = object.authorizedRunner ?? "";
     return message;
   },
@@ -841,6 +838,17 @@ export const MintController = {
   },
 };
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
+
 type Builtin =
   | Date
   | Function
@@ -852,8 +860,6 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
-  : T extends Long
-  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -869,6 +875,13 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

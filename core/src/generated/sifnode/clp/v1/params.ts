@@ -6,18 +6,18 @@ export const protobufPackage = "sifnode.clp.v1";
 
 /** Params - used for initializing default parameter for clp at genesis */
 export interface Params {
-  minCreatePoolThreshold: Long;
+  minCreatePoolThreshold: number;
   /** in blocks */
-  liquidityRemovalLockPeriod: Long;
+  liquidityRemovalLockPeriod: number;
   /** in blocks */
-  liquidityRemovalCancelPeriod: Long;
+  liquidityRemovalCancelPeriod: number;
   rewardPeriods: RewardPeriod[];
 }
 
 export interface RewardPeriod {
   id: string;
-  startBlock: Long;
-  endBlock: Long;
+  startBlock: number;
+  endBlock: number;
   allocation: string;
   multipliers: PoolMultiplier[];
 }
@@ -29,9 +29,9 @@ export interface PoolMultiplier {
 
 function createBaseParams(): Params {
   return {
-    minCreatePoolThreshold: Long.UZERO,
-    liquidityRemovalLockPeriod: Long.UZERO,
-    liquidityRemovalCancelPeriod: Long.UZERO,
+    minCreatePoolThreshold: 0,
+    liquidityRemovalLockPeriod: 0,
+    liquidityRemovalCancelPeriod: 0,
     rewardPeriods: [],
   };
 }
@@ -41,13 +41,13 @@ export const Params = {
     message: Params,
     writer: _m0.Writer = _m0.Writer.create(),
   ): _m0.Writer {
-    if (!message.minCreatePoolThreshold.isZero()) {
+    if (message.minCreatePoolThreshold !== 0) {
       writer.uint32(8).uint64(message.minCreatePoolThreshold);
     }
-    if (!message.liquidityRemovalLockPeriod.isZero()) {
+    if (message.liquidityRemovalLockPeriod !== 0) {
       writer.uint32(16).uint64(message.liquidityRemovalLockPeriod);
     }
-    if (!message.liquidityRemovalCancelPeriod.isZero()) {
+    if (message.liquidityRemovalCancelPeriod !== 0) {
       writer.uint32(24).uint64(message.liquidityRemovalCancelPeriod);
     }
     for (const v of message.rewardPeriods) {
@@ -64,13 +64,19 @@ export const Params = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.minCreatePoolThreshold = reader.uint64() as Long;
+          message.minCreatePoolThreshold = longToNumber(
+            reader.uint64() as Long,
+          );
           break;
         case 2:
-          message.liquidityRemovalLockPeriod = reader.uint64() as Long;
+          message.liquidityRemovalLockPeriod = longToNumber(
+            reader.uint64() as Long,
+          );
           break;
         case 3:
-          message.liquidityRemovalCancelPeriod = reader.uint64() as Long;
+          message.liquidityRemovalCancelPeriod = longToNumber(
+            reader.uint64() as Long,
+          );
           break;
         case 4:
           message.rewardPeriods.push(
@@ -88,14 +94,14 @@ export const Params = {
   fromJSON(object: any): Params {
     return {
       minCreatePoolThreshold: isSet(object.minCreatePoolThreshold)
-        ? Long.fromString(object.minCreatePoolThreshold)
-        : Long.UZERO,
+        ? Number(object.minCreatePoolThreshold)
+        : 0,
       liquidityRemovalLockPeriod: isSet(object.liquidityRemovalLockPeriod)
-        ? Long.fromString(object.liquidityRemovalLockPeriod)
-        : Long.UZERO,
+        ? Number(object.liquidityRemovalLockPeriod)
+        : 0,
       liquidityRemovalCancelPeriod: isSet(object.liquidityRemovalCancelPeriod)
-        ? Long.fromString(object.liquidityRemovalCancelPeriod)
-        : Long.UZERO,
+        ? Number(object.liquidityRemovalCancelPeriod)
+        : 0,
       rewardPeriods: Array.isArray(object?.rewardPeriods)
         ? object.rewardPeriods.map((e: any) => RewardPeriod.fromJSON(e))
         : [],
@@ -105,17 +111,15 @@ export const Params = {
   toJSON(message: Params): unknown {
     const obj: any = {};
     message.minCreatePoolThreshold !== undefined &&
-      (obj.minCreatePoolThreshold = (
-        message.minCreatePoolThreshold || Long.UZERO
-      ).toString());
+      (obj.minCreatePoolThreshold = Math.round(message.minCreatePoolThreshold));
     message.liquidityRemovalLockPeriod !== undefined &&
-      (obj.liquidityRemovalLockPeriod = (
-        message.liquidityRemovalLockPeriod || Long.UZERO
-      ).toString());
+      (obj.liquidityRemovalLockPeriod = Math.round(
+        message.liquidityRemovalLockPeriod,
+      ));
     message.liquidityRemovalCancelPeriod !== undefined &&
-      (obj.liquidityRemovalCancelPeriod = (
-        message.liquidityRemovalCancelPeriod || Long.UZERO
-      ).toString());
+      (obj.liquidityRemovalCancelPeriod = Math.round(
+        message.liquidityRemovalCancelPeriod,
+      ));
     if (message.rewardPeriods) {
       obj.rewardPeriods = message.rewardPeriods.map((e) =>
         e ? RewardPeriod.toJSON(e) : undefined,
@@ -128,21 +132,10 @@ export const Params = {
 
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = createBaseParams();
-    message.minCreatePoolThreshold =
-      object.minCreatePoolThreshold !== undefined &&
-      object.minCreatePoolThreshold !== null
-        ? Long.fromValue(object.minCreatePoolThreshold)
-        : Long.UZERO;
-    message.liquidityRemovalLockPeriod =
-      object.liquidityRemovalLockPeriod !== undefined &&
-      object.liquidityRemovalLockPeriod !== null
-        ? Long.fromValue(object.liquidityRemovalLockPeriod)
-        : Long.UZERO;
+    message.minCreatePoolThreshold = object.minCreatePoolThreshold ?? 0;
+    message.liquidityRemovalLockPeriod = object.liquidityRemovalLockPeriod ?? 0;
     message.liquidityRemovalCancelPeriod =
-      object.liquidityRemovalCancelPeriod !== undefined &&
-      object.liquidityRemovalCancelPeriod !== null
-        ? Long.fromValue(object.liquidityRemovalCancelPeriod)
-        : Long.UZERO;
+      object.liquidityRemovalCancelPeriod ?? 0;
     message.rewardPeriods =
       object.rewardPeriods?.map((e) => RewardPeriod.fromPartial(e)) || [];
     return message;
@@ -152,8 +145,8 @@ export const Params = {
 function createBaseRewardPeriod(): RewardPeriod {
   return {
     id: "",
-    startBlock: Long.UZERO,
-    endBlock: Long.UZERO,
+    startBlock: 0,
+    endBlock: 0,
     allocation: "",
     multipliers: [],
   };
@@ -167,10 +160,10 @@ export const RewardPeriod = {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
-    if (!message.startBlock.isZero()) {
+    if (message.startBlock !== 0) {
       writer.uint32(16).uint64(message.startBlock);
     }
-    if (!message.endBlock.isZero()) {
+    if (message.endBlock !== 0) {
       writer.uint32(24).uint64(message.endBlock);
     }
     if (message.allocation !== "") {
@@ -193,10 +186,10 @@ export const RewardPeriod = {
           message.id = reader.string();
           break;
         case 2:
-          message.startBlock = reader.uint64() as Long;
+          message.startBlock = longToNumber(reader.uint64() as Long);
           break;
         case 3:
-          message.endBlock = reader.uint64() as Long;
+          message.endBlock = longToNumber(reader.uint64() as Long);
           break;
         case 4:
           message.allocation = reader.string();
@@ -217,12 +210,8 @@ export const RewardPeriod = {
   fromJSON(object: any): RewardPeriod {
     return {
       id: isSet(object.id) ? String(object.id) : "",
-      startBlock: isSet(object.startBlock)
-        ? Long.fromString(object.startBlock)
-        : Long.UZERO,
-      endBlock: isSet(object.endBlock)
-        ? Long.fromString(object.endBlock)
-        : Long.UZERO,
+      startBlock: isSet(object.startBlock) ? Number(object.startBlock) : 0,
+      endBlock: isSet(object.endBlock) ? Number(object.endBlock) : 0,
       allocation: isSet(object.allocation) ? String(object.allocation) : "",
       multipliers: Array.isArray(object?.multipliers)
         ? object.multipliers.map((e: any) => PoolMultiplier.fromJSON(e))
@@ -234,9 +223,9 @@ export const RewardPeriod = {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
     message.startBlock !== undefined &&
-      (obj.startBlock = (message.startBlock || Long.UZERO).toString());
+      (obj.startBlock = Math.round(message.startBlock));
     message.endBlock !== undefined &&
-      (obj.endBlock = (message.endBlock || Long.UZERO).toString());
+      (obj.endBlock = Math.round(message.endBlock));
     message.allocation !== undefined && (obj.allocation = message.allocation);
     if (message.multipliers) {
       obj.multipliers = message.multipliers.map((e) =>
@@ -253,14 +242,8 @@ export const RewardPeriod = {
   ): RewardPeriod {
     const message = createBaseRewardPeriod();
     message.id = object.id ?? "";
-    message.startBlock =
-      object.startBlock !== undefined && object.startBlock !== null
-        ? Long.fromValue(object.startBlock)
-        : Long.UZERO;
-    message.endBlock =
-      object.endBlock !== undefined && object.endBlock !== null
-        ? Long.fromValue(object.endBlock)
-        : Long.UZERO;
+    message.startBlock = object.startBlock ?? 0;
+    message.endBlock = object.endBlock ?? 0;
     message.allocation = object.allocation ?? "";
     message.multipliers =
       object.multipliers?.map((e) => PoolMultiplier.fromPartial(e)) || [];
@@ -331,6 +314,17 @@ export const PoolMultiplier = {
   },
 };
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
+
 type Builtin =
   | Date
   | Function
@@ -342,8 +336,6 @@ type Builtin =
 
 export type DeepPartial<T> = T extends Builtin
   ? T
-  : T extends Long
-  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -359,6 +351,13 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
