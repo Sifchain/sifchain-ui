@@ -1,19 +1,24 @@
-import { computed } from "@vue/reactivity";
-import { useCore } from "@/hooks/useCore";
-import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
+import { AccountPool } from "@/business/store/pools";
+import {
+  useLiquidityProviderQuery,
+  useLiquidityProvidersQuery,
+} from "@/domains/clp/queries/liquidityProvider";
+import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
 import { useAsyncData } from "@/hooks/useAsyncData";
+import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+import { useChains } from "@/hooks/useChains";
+import { useCore } from "@/hooks/useCore";
+import {
+  usePublicPoolsSubscriber,
+  useUserPoolsSubscriber,
+} from "@/hooks/usePoolsSubscriber";
 import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
-
-import { useChains } from "@/hooks/useChains";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
-import {
-  useUserPoolsSubscriber,
-  usePublicPoolsSubscriber,
-} from "@/hooks/usePoolsSubscriber";
-
+import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
+import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/sifnode/clp/v1/types";
+import { computed } from "@vue/reactivity";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
-import { AccountPool } from "@/business/store/pools";
+
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
@@ -96,14 +101,10 @@ export const COLUMNS_LOOKUP = COLUMNS.reduce((acc, col) => {
   return acc;
 }, {} as Record<PoolPageColumnId, PoolPageColumn>);
 
-// Only wait for load on first visit of the page
-export type PoolDataItem = {
-  pool: Pool;
-  poolStat?: PoolStat;
-  accountPool?: AccountPool;
-};
-
 export const usePoolPageData = () => {
+  const liquidityProvidersQuery = useLiquidityProvidersQuery();
+  const tokenRegistryEntriesQuery = useTokenRegistryEntriesQuery();
+
   const statsRes = usePoolStats();
   const { services } = useCore();
 
@@ -124,7 +125,7 @@ export const usePoolPageData = () => {
     services.data.getRewardsPrograms(),
   );
 
-  const allPoolsData = computed<PoolDataItem[]>(() => {
+  const allPoolsData = computed(() => {
     const sifchainChain = useChains().get(Network.SIFCHAIN);
     return (statsRes.data?.value?.poolData?.pools || []).map((poolStat) => {
       const poolKey = createPoolKey(
@@ -138,10 +139,22 @@ export const usePoolPageData = () => {
             poolKey
           ];
       }
+
+      const liquidityProvider =
+        liquidityProvidersQuery.data.value?.liquidityProviderData.find((x) => {
+          const tokenRegistryEntry =
+            tokenRegistryEntriesQuery.data.value?.registry?.entries.find(
+              (y) => y.denom === x.liquidityProvider?.asset?.symbol,
+            );
+
+          return tokenRegistryEntry?.baseDenom === poolStat.symbol;
+        });
+
       const item = {
         poolStat,
         pool: useCore().store.pools[poolKey],
         accountPool,
+        liquidityProvider,
       };
       return item;
     });
@@ -154,7 +167,9 @@ export const usePoolPageData = () => {
         !statsRes.isLoading.value &&
         !userPoolsRes.isLoading.value &&
         allPoolsData.value.length > 0 &&
-        !accountStore.state.sifchain.connecting
+        !accountStore.state.sifchain.connecting &&
+        liquidityProvidersQuery.isFetched &&
+        tokenRegistryEntriesQuery.isFetched
       );
     }),
     allPoolsData,
