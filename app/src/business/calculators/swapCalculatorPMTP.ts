@@ -85,16 +85,6 @@ export function useSwapCalculator(input: {
     return CompositePool(fromPair.value, toPair.value);
   });
 
-  effect(() => {
-    console.log({
-      pool: pool.value,
-      type: typeof pool.value,
-      string: pool.value?.toString(),
-      swapNative: pool.value?.swapPrices?.native.toString(),
-      swapExternal: pool.value?.swapPrices?.external.toString(),
-    });
-  });
-
   // Get the balance of the from the users account
   const balance = computed(() => {
     const balanceMap = useBalances(input.balances);
@@ -127,39 +117,56 @@ export function useSwapCalculator(input: {
           ? pool.value.nativeSwapPrice
           : pool.value.externalSwapPrice;
 
-        console.log({ swapResult: swapResult.toString() });
+        // to get ratio needs to be divided by amount as input by user
+        const amountAsInput = "1";
+
+        let formatted = "0.0";
+
+        try {
+          const divided = swapResult.divide(amountAsInput);
+
+          formatted = format(divided, swapResult.asset, {
+            mantissa: 6,
+          });
+        } catch (error) {
+          if (/division by zero/i.test((error as Error).message)) {
+            formatted = "0.0";
+          } else {
+            throw error;
+          }
+        }
+        return formatted;
       }
     } else {
+      // external x external retain previous logic
+
       const amount = fromField.value.fieldAmount.equalTo("0")
         ? AssetAmount(fromField.value.fieldAmount.asset, "1")
         : fromField.value.fieldAmount;
 
-      swapResult = pool.value.calcSwapResult(amount);
-    }
+      const pair = pool.value;
 
-    if (!swapResult) {
-      return "0.0";
-    }
+      const swapResult = pair.calcSwapResult(amount);
 
-    // to get ratio needs to be divided by amount as input by user
-    const amountAsInput = "1";
+      // to get ratio needs to be divided by amount as input by user
+      const amountAsInput = format(amount.amount, amount.asset);
 
-    let formatted = "0.0";
-
-    try {
-      const divided = swapResult.divide(amountAsInput);
-
-      formatted = format(divided, swapResult.asset, {
-        mantissa: 6,
-      });
-    } catch (error) {
-      if (/division by zero/i.test((error as Error).message)) {
-        formatted = "0.0";
-      } else {
-        throw error;
+      let formatted;
+      try {
+        formatted = format(swapResult.divide(amountAsInput), swapResult.asset, {
+          mantissa: 6,
+        });
+      } catch (error) {
+        if (/division by zero/i.test((error as Error).message)) {
+          formatted = "0.0";
+        } else {
+          throw error;
+        }
       }
+      return formatted;
     }
-    return formatted;
+
+    return "0.0";
   });
 
   // Selected field changes when the user changes the field selection
