@@ -7557,6 +7557,7 @@ __metadata:
     vite-svg-loader: ^2.2.0
     vitest: ^0.9.0
     vue: ^3.2.31
+    vue-query: ^1.22.2
     vue-router: ^4.0.14
     vue-tippy: ^6.0.0-alpha.30
     vuex: 4.0.2
@@ -24699,7 +24700,6 @@ __metadata:
     turbo: ^1.1.6
     untildify: ^4.0.0
     vercel: ^21.0.1
-    vue-query: ^1.22.2
     wait-on: ^5.2.1
     wscat: ^4.0.1
     zx: ^4.3.0
