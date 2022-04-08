@@ -7530,6 +7530,7 @@ __metadata:
     copy-to-clipboard: ^3.3.1
     core-js: ^3.6.5
     dat.gui: ^0.7.9
+    date-fns: ^2.28.0
     eslint: ^6.7.2
     eslint-plugin-vue: ^8.5.0
     flip-toolkit: ^7.0.13
@@ -10874,7 +10875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.0.1, date-fns@npm:^2.16.1":
+"date-fns@npm:^2.0.1, date-fns@npm:^2.16.1, date-fns@npm:^2.28.0":
   version: 2.28.0
   resolution: "date-fns@npm:2.28.0"
   checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f

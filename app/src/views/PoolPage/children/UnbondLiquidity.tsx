@@ -3,8 +3,8 @@ import { Form, FormDetailsType } from "@/components/Form";
 import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { useUnlockLiquidityByPercentage } from "@/domains/clp/hooks";
-import { useUnlockLiquidityMutation } from "@/domains/clp/mutations";
+import { useUnlockLiquidityMutation } from "@/domains/clp/mutation/liquidity";
+import { useUnlockLiquidityByPercentage } from "@/domains/clp/queries/unlockLiquidityByPercentage";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { usePoolStats } from "@/hooks/usePoolStats";
@@ -233,6 +233,7 @@ const UnbondLiquidity = defineComponent({
               disabled={buttonErrorMsg.value !== undefined}
               onClick={() =>
                 unlockLiquidityMutation.mutate({
+                  externalAssetSymbol: externalAssetBaseDenom.value,
                   units: unlockLiquidityData.value.units?.toFixed() ?? "0",
                 })
               }
