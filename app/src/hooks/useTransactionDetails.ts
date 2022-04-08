@@ -1,8 +1,7 @@
 import { computed } from "vue";
-import { DeliverTxResponse, TransactionStatus } from "@sifchain/sdk";
+import { TransactionStatus } from "@sifchain/sdk";
 import { Ref, ComputedRef } from "vue";
 import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
-import { transactionStatusFromDeliverTxResponse } from "@sifchain/sdk/src/clients/native/SifClient";
 
 export function useBridgeEventDetails(props: {
   bridgeEvent: Ref<BridgeEvent>;
@@ -19,25 +18,6 @@ export function useTransactionDetails(props: {
     return getTransactionDetails(props.tx.value);
   });
 }
-
-export const useDeliverTxDetails = (
-  tx: Ref<DeliverTxResponse | undefined>,
-  isQueryError: Ref<boolean>,
-) =>
-  computed(() => {
-    if (tx.value === undefined && isQueryError?.value === true) {
-      return getTransactionDetails({
-        hash: "",
-        state: "failed",
-      });
-    }
-
-    return getTransactionDetails(
-      tx.value === undefined
-        ? undefined
-        : transactionStatusFromDeliverTxResponse(tx.value),
-    );
-  });
 
 export type TransactionDetails = null | {
   tx?: TransactionStatus;

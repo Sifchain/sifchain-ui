@@ -13,5 +13,3 @@ export type TransactionStatus = {
 };
 
 export type TxHash = string;
-
-export { DeliverTxResponse } from "@cosmjs/stargate";
