@@ -68,11 +68,9 @@ export function useRemoveLiquidityData() {
         sifAddress: address,
         poolFinder,
       });
-      state.value = calcData.state.value;
-      withdrawExternalAssetAmount.value =
-        calcData.withdrawExternalAssetAmount.value;
-      withdrawNativeAssetAmount.value =
-        calcData.withdrawNativeAssetAmount.value;
+      state.value = calcData.state;
+      withdrawExternalAssetAmount.value = calcData.withdrawExternalAssetAmount;
+      withdrawNativeAssetAmount.value = calcData.withdrawNativeAssetAmount;
     }, 200),
   );
 
