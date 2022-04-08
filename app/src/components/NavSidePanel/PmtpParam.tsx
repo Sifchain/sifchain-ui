@@ -19,7 +19,7 @@ export default defineComponent({
         return "...";
       }
 
-      const amount = Amount(pmtp.data.value?.pmtpPeriodGovernanceRate)
+      const amount = Amount(pmtp.data.value?.pmtpPeriodGovernanceRate ?? "0")
         .divide("1".concat("0".repeat(18)))
         .multiply("100");
 
@@ -29,7 +29,7 @@ export default defineComponent({
     });
 
     return () =>
-      !isPMTPEnabled ? null : (
+      !isPMTPEnabled || !pmtp.data.value?.active ? null : (
         <NavSidePanelItem
           class="opacity-50"
           href={PMTP_ROADMAP_URL}
