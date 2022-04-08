@@ -4,9 +4,10 @@ import dangerouslyAssert from "@/utils/dangerouslyAssert";
 import { Network } from "@sifchain/sdk/src";
 import { computed, Ref } from "vue";
 import { useQuery } from "vue-query";
+import { MaybeRef } from "vue-query/lib/vue/types";
 import { useTokenRegistryEntryQuery } from "../tokenRegistry/queries";
 
-export const usePoolQuery = (externalAssetBaseDenom: Ref<string>) => {
+export const usePoolQuery = (externalAssetBaseDenom: MaybeRef<string>) => {
   const sifchainClients = useSifchainClients();
   const { data: tokenRegistryEntry } = useTokenRegistryEntryQuery(
     externalAssetBaseDenom,
@@ -31,7 +32,7 @@ export const usePoolQuery = (externalAssetBaseDenom: Ref<string>) => {
 };
 
 export const useLiquidityProviderQuery = (
-  externalAssetBaseDenom: Ref<string>,
+  externalAssetBaseDenom: MaybeRef<string>,
 ) => {
   const sifchainClients = useSifchainClients();
   const { data: tokenRegistryEntry } = useTokenRegistryEntryQuery(
