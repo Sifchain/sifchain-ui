@@ -364,7 +364,22 @@ export default defineComponent({
                   Add Liquidity
                 </Button.Inline>
               )}
-              {!!this.userPoolData.myPoolShare?.value &&
+              {!!this.userPoolData.myPoolShare?.value && (
+                <Button.Inline
+                  to={{
+                    name: "RemoveLiquidity",
+                    params: {
+                      externalAsset: this.externalAmount.symbol.toLowerCase(),
+                    },
+                  }}
+                  replace
+                  class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                  icon="interactive/minus"
+                >
+                  Remove Liquidity
+                </Button.Inline>
+              )}
+              {/* {!!this.userPoolData.myPoolShare?.value &&
                 this.liquidityProvider?.liquidityProvider?.unlocks.length ===
                   0 && (
                   <Button.Inline
@@ -380,7 +395,7 @@ export default defineComponent({
                   >
                     Unbond Liquidity
                   </Button.Inline>
-                )}
+                )} */}
             </div>
           </section>
         )}
