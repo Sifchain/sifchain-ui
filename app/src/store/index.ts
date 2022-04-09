@@ -5,14 +5,20 @@ import { exportStore } from "./modules/export";
 import { flagsStore } from "./modules/flags";
 import { governanceStore } from "./modules/governance";
 
-export const vuexStore = createStore({
+type RootStore = typeof rootStore;
+
+export type StoreState = { [K in keyof RootStore]: RootStore[K]["state"] };
+
+export const vuexStore = createStore<StoreState>({
   devtools: true,
 });
+
 accountStore.register(vuexStore);
 importStore.register(vuexStore);
 exportStore.register(vuexStore);
 flagsStore.register(vuexStore);
 governanceStore.register(vuexStore);
+
 export const rootStore = {
   accounts: accountStore,
   import: importStore,
