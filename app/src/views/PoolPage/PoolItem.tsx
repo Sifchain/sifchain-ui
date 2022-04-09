@@ -12,6 +12,7 @@ import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
+import BigNumber from "bignumber.js";
 import { computed, defineComponent, PropType } from "vue";
 import {
   Competition,
@@ -365,9 +366,12 @@ export default defineComponent({
                 </Button.Inline>
               )}
               {this.$store.state.flags.newLiquidityUnlockProcess
-                ? !!this.userPoolData.myPoolShare?.value &&
-                  this.liquidityProvider?.liquidityProvider?.unlocks.length ===
-                    0 && (
+                ? new BigNumber(
+                    this.liquidityProvider?.liquidityProvider
+                      ?.liquidityProviderUnits ?? "0",
+                  ).isPositive() &&
+                  (this.liquidityProvider?.liquidityProvider?.unlocks.length ??
+                    0) === 0 && (
                     <Button.Inline
                       to={{
                         name: "UnbondLiquidity",
