@@ -38,6 +38,7 @@ export const flagsStore = Vuextra.createStore({
     balancePageV2: true,
     rewardsCalculator: true,
     pmtp: true,
+    newLiquidityUnlockProcess: process.env.NODE_ENV === "development",
   },
   getters: (state) => ({}),
   mutations: (state) => ({
