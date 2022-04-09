@@ -15,6 +15,14 @@ export interface MsgRemoveLiquidity {
 
 export interface MsgRemoveLiquidityResponse {}
 
+export interface MsgRemoveLiquidityUnits {
+  signer: string;
+  externalAsset?: Asset;
+  withdrawUnits: string;
+}
+
+export interface MsgRemoveLiquidityUnitsResponse {}
+
 export interface MsgCreatePool {
   signer: string;
   externalAsset?: Asset;
@@ -234,6 +242,139 @@ export const MsgRemoveLiquidityResponse = {
     _: I,
   ): MsgRemoveLiquidityResponse {
     const message = createBaseMsgRemoveLiquidityResponse();
+    return message;
+  },
+};
+
+function createBaseMsgRemoveLiquidityUnits(): MsgRemoveLiquidityUnits {
+  return { signer: "", externalAsset: undefined, withdrawUnits: "" };
+}
+
+export const MsgRemoveLiquidityUnits = {
+  encode(
+    message: MsgRemoveLiquidityUnits,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.externalAsset !== undefined) {
+      Asset.encode(message.externalAsset, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.withdrawUnits !== "") {
+      writer.uint32(26).string(message.withdrawUnits);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgRemoveLiquidityUnits {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgRemoveLiquidityUnits();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.externalAsset = Asset.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.withdrawUnits = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgRemoveLiquidityUnits {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      withdrawUnits: isSet(object.withdrawUnits)
+        ? String(object.withdrawUnits)
+        : "",
+    };
+  },
+
+  toJSON(message: MsgRemoveLiquidityUnits): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.externalAsset !== undefined &&
+      (obj.externalAsset = message.externalAsset
+        ? Asset.toJSON(message.externalAsset)
+        : undefined);
+    message.withdrawUnits !== undefined &&
+      (obj.withdrawUnits = message.withdrawUnits);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidityUnits>, I>>(
+    object: I,
+  ): MsgRemoveLiquidityUnits {
+    const message = createBaseMsgRemoveLiquidityUnits();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.withdrawUnits = object.withdrawUnits ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgRemoveLiquidityUnitsResponse(): MsgRemoveLiquidityUnitsResponse {
+  return {};
+}
+
+export const MsgRemoveLiquidityUnitsResponse = {
+  encode(
+    _: MsgRemoveLiquidityUnitsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgRemoveLiquidityUnitsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgRemoveLiquidityUnitsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgRemoveLiquidityUnitsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgRemoveLiquidityUnitsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidityUnitsResponse>, I>>(
+    _: I,
+  ): MsgRemoveLiquidityUnitsResponse {
+    const message = createBaseMsgRemoveLiquidityUnitsResponse();
     return message;
   },
 };
@@ -1503,6 +1644,9 @@ export interface Msg {
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
   ): Promise<MsgRemoveLiquidityResponse>;
+  RemoveLiquidityUnits(
+    request: MsgRemoveLiquidityUnits,
+  ): Promise<MsgRemoveLiquidityUnitsResponse>;
   CreatePool(request: MsgCreatePool): Promise<MsgCreatePoolResponse>;
   AddLiquidity(request: MsgAddLiquidity): Promise<MsgAddLiquidityResponse>;
   Swap(request: MsgSwap): Promise<MsgSwapResponse>;
@@ -1531,6 +1675,7 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.RemoveLiquidity = this.RemoveLiquidity.bind(this);
+    this.RemoveLiquidityUnits = this.RemoveLiquidityUnits.bind(this);
     this.CreatePool = this.CreatePool.bind(this);
     this.AddLiquidity = this.AddLiquidity.bind(this);
     this.Swap = this.Swap.bind(this);
@@ -1552,6 +1697,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgRemoveLiquidityResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  RemoveLiquidityUnits(
+    request: MsgRemoveLiquidityUnits,
+  ): Promise<MsgRemoveLiquidityUnitsResponse> {
+    const data = MsgRemoveLiquidityUnits.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "RemoveLiquidityUnits",
+      data,
+    );
+    return promise.then((data) =>
+      MsgRemoveLiquidityUnitsResponse.decode(new _m0.Reader(data)),
     );
   }
 
