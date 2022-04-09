@@ -111,32 +111,30 @@ export function useSwapCalculator(input: {
     const fromRowan = fromField.value.asset?.symbol === "rowan";
     const toRowan = toField.value.asset?.symbol === "rowan";
 
-    if (fromRowan || toRowan) {
-      if (pool.value.nativeSwapPrice && pool.value.externalSwapPrice) {
-        swapResult = fromRowan
-          ? pool.value.nativeSwapPrice
-          : pool.value.externalSwapPrice;
+    if ((fromRowan || toRowan) && pool.value.swapPrices) {
+      swapResult = fromRowan
+        ? pool.value.swapPrices.native
+        : pool.value.swapPrices.external;
 
-        // to get ratio needs to be divided by amount as input by user
-        const amountAsInput = "1";
+      // to get ratio needs to be divided by amount as input by user
+      const amountAsInput = "1";
 
-        let formatted = "0.0";
+      let formatted = "0.0";
 
-        try {
-          const divided = swapResult.divide(amountAsInput);
+      try {
+        const divided = swapResult.divide(amountAsInput);
 
-          formatted = format(divided, swapResult.asset, {
-            mantissa: 6,
-          });
-        } catch (error) {
-          if (/division by zero/i.test((error as Error).message)) {
-            formatted = "0.0";
-          } else {
-            throw error;
-          }
+        formatted = format(divided, swapResult.asset, {
+          mantissa: 6,
+        });
+      } catch (error) {
+        if (/division by zero/i.test((error as Error).message)) {
+          formatted = "0.0";
+        } else {
+          throw error;
         }
-        return formatted;
       }
+      return formatted;
     } else {
       // external x external retain previous logic
 
