@@ -70,19 +70,22 @@ export const addDetailToLiquidityProvider = (
 ) => {
   return {
     ...liquidityProvider,
-    unlocks: liquidityProvider.unlocks.map((x) =>
-      addDetailToUnlock(
-        x,
-        params,
-        currentHeight,
-        new BigNumber(liquidityProvider.liquidityProviderUnits),
-        new BigNumber(nativeAsset.value).shiftedBy(
-          -nativeAsset.fractionalDigits,
+    unlocks: liquidityProvider.unlocks
+      .map((x) =>
+        addDetailToUnlock(
+          x,
+          params,
+          currentHeight,
+          new BigNumber(liquidityProvider.liquidityProviderUnits),
+          new BigNumber(nativeAsset.value).shiftedBy(
+            -nativeAsset.fractionalDigits,
+          ),
+          new BigNumber(externalAsset.value).shiftedBy(
+            -externalAsset.fractionalDigits,
+          ),
         ),
-        new BigNumber(externalAsset.value).shiftedBy(
-          -externalAsset.fractionalDigits,
-        ),
-      ),
-    ),
+      )
+      // Needed as unlock get set to 0 before they are removed by sifnode
+      .filter((x) => !new BigNumber(x.units).isZero()),
   };
 };
