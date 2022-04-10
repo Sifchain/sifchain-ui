@@ -21,13 +21,21 @@ const addDetailToUnlock = (
 ) => {
   const lockPeriod = params?.liquidityRemovalLockPeriod ?? Long.ZERO;
   const unlockedFromHeight = unlock.requestHeight.add(lockPeriod).toNumber();
+  const expiredAtHeight =
+    unlockedFromHeight + params.liquidityRemovalCancelPeriod.toNumber();
   const ready = currentHeight >= unlockedFromHeight;
+  const expired = currentHeight > expiredAtHeight;
 
   const blocksUntilUnlock = unlockedFromHeight - currentHeight;
+  const blockUntilExpiration = expiredAtHeight - currentHeight;
   const eta =
     blocksUntilUnlock <= 0
       ? undefined
       : addSeconds(new Date(), EST_SECONDS_PER_BLOCK * blocksUntilUnlock);
+  const expiration =
+    blockUntilExpiration <= 0
+      ? undefined
+      : addSeconds(new Date(), EST_SECONDS_PER_BLOCK * blockUntilExpiration);
 
   const units = new BigNumber(unlock.units);
   const unlockPercentage = units.dividedBy(totalUnits);
@@ -45,8 +53,11 @@ const addDetailToUnlock = (
     externalAssetAmount,
     requestHeight: unlock.requestHeight.toNumber(),
     ready,
+    expired,
     unlockedFromHeight,
+    expiredAtHeight,
     eta,
+    expiration,
   };
 };
 

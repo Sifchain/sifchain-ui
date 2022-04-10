@@ -33,8 +33,10 @@ export default defineComponent({
         externalAssetAmount: string;
         unlockedFromHeight: number;
         requestHeight: number;
+        expiredAtHeight: number;
         ready: boolean;
         eta?: string;
+        expiration?: string;
         onRemoveRequest: () => any;
         isRemovingInProgress: boolean;
       }>,
@@ -388,15 +390,26 @@ export default defineComponent({
                       <span>{this.unlock.requestHeight}</span>
                     </div>
                     <div class={tableItemClass}>
-                      <span>Unlocked at height</span>
+                      <span>Unlocked from height</span>
                       <span>{this.unlock.unlockedFromHeight}</span>
                     </div>
-                    {!isNilOrWhitespace(this.unlock.eta) && (
-                      <div class={tableItemClass}>
-                        <span>Estimated time remaining</span>
-                        <span>{this.unlock.eta}</span>
-                      </div>
-                    )}
+                    <div class={tableItemClass}>
+                      <span>Expired at height</span>
+                      <span>{this.unlock.expiredAtHeight}</span>
+                    </div>
+                    {this.unlock.ready
+                      ? !isNilOrWhitespace(this.unlock.expiration) && (
+                          <div class={tableItemClass}>
+                            <span>Estimated time remaining to claim</span>
+                            <span>{this.unlock.expiration}</span>
+                          </div>
+                        )
+                      : !isNilOrWhitespace(this.unlock.eta) && (
+                          <div class={tableItemClass}>
+                            <span>Estimated time remaining</span>
+                            <span>{this.unlock.eta}</span>
+                          </div>
+                        )}
                     {this.unlock.ready && (
                       <Button.CallToActionSecondary
                         class="disabled:bg-inherit"

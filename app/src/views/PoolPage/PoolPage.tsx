@@ -237,7 +237,9 @@ export default defineComponent({
                   itemLp?.liquidityProviderUnits ?? 0,
                 ).isPositive() && (itemLp?.unlocks.length ?? 0) === 0;
               const unlock =
-                item.liquidityProvider?.liquidityProvider?.unlocks[0];
+                item.liquidityProvider?.liquidityProvider?.unlocks.filter(
+                  (x) => !x.expired,
+                )[0];
 
               return (
                 <PoolItem
@@ -252,6 +254,10 @@ export default defineComponent({
                             unlock.nativeAssetAmount.toFixed(6),
                           externalAssetAmount:
                             unlock.externalAssetAmount.toFixed(6),
+                          expiration:
+                            unlock.expiration === undefined
+                              ? undefined
+                              : formatDistance(new Date(), unlock.expiration),
                           eta:
                             unlock.eta === undefined
                               ? undefined
