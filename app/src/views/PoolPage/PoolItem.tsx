@@ -28,12 +28,8 @@ export default defineComponent({
     unLockable: { type: Boolean, required: true },
     unlock: {
       type: Object as PropType<{
-        units: string;
         nativeAssetAmount: string;
         externalAssetAmount: string;
-        unlockedFromHeight: number;
-        requestHeight: number;
-        expiredAtHeight: number;
         ready: boolean;
         eta?: string;
         expiration?: string;
@@ -361,16 +357,12 @@ export default defineComponent({
               </div>
               {this.unlock !== undefined && (
                 <section>
-                  <header class="mt-1 mb-0.5">
-                    <p class="text-lg">Pending unlock</p>
+                  <header class="mt-2 mb-0.5">
+                    <p class="text-md font-bold">Unlocking request</p>
                   </header>
                   <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
                     <div class={tableItemClass}>
-                      <span>Pool units</span>
-                      <span class="flex items-center">{this.unlock.units}</span>
-                    </div>
-                    <div class={tableItemClass}>
-                      <span>Asset equivalent</span>
+                      <span>Unlocking assets</span>
                       <span class="flex items-center">
                         {this.unlock.nativeAssetAmount}{" "}
                         <TokenIcon
@@ -385,18 +377,6 @@ export default defineComponent({
                           class="ml-[2px]"
                         />
                       </span>
-                    </div>
-                    <div class={tableItemClass}>
-                      <span>Request height</span>
-                      <span>{this.unlock.requestHeight}</span>
-                    </div>
-                    <div class={tableItemClass}>
-                      <span>Unlocked from height</span>
-                      <span>{this.unlock.unlockedFromHeight}</span>
-                    </div>
-                    <div class={tableItemClass}>
-                      <span>Expired at height</span>
-                      <span>{this.unlock.expiredAtHeight}</span>
                     </div>
                     {this.unlock.ready
                       ? !isNilOrWhitespace(this.unlock.expiration) && (
@@ -413,7 +393,7 @@ export default defineComponent({
                         )}
                     {this.unlock.ready && (
                       <Button.CallToActionSecondary
-                        class="disabled:bg-inherit"
+                        class="h-[46px] text-[17px] disabled:bg-inherit"
                         disabled={this.unlock.isRemovingInProgress}
                         onClick={this.unlock.onRemoveRequest}
                       >

@@ -250,7 +250,6 @@ export default defineComponent({
                       ? undefined
                       : {
                           ...unlock,
-                          units: BigInt(unlock.units).toLocaleString("en-US"),
                           nativeAssetAmount:
                             unlock.nativeAssetAmount.toFixed(6),
                           externalAssetAmount:
