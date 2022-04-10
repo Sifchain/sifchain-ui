@@ -1,6 +1,7 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
 import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
 import { useCore } from "@/hooks/useCore";
+import { isNil } from "@/utils/assertion";
 import { UseQueryDataType } from "@/utils/types";
 import { isDeliverTxFailure, isDeliverTxSuccess } from "@cosmjs/stargate";
 import { DEFAULT_FEE, SifchainEncodeObjectRecord } from "@sifchain/sdk";
@@ -79,10 +80,7 @@ export const useUnlockLiquidityMutation = () => {
     },
     {
       onSettled: (data, error) => {
-        if (
-          error !== undefined ||
-          (data !== undefined && isDeliverTxFailure(data))
-        ) {
+        if (!isNil(error) || (data !== undefined && isDeliverTxFailure(data))) {
           return services.bus.dispatch({
             type: "ErrorEvent",
             payload: { message: "Unlock liquidity request failed" },
@@ -144,10 +142,7 @@ export const useRemoveLiquidityMutation = () => {
     },
     {
       onSettled: (data, error) => {
-        if (
-          error !== undefined ||
-          (data !== undefined && isDeliverTxFailure(data))
-        ) {
+        if (!isNil(error) || (data !== undefined && isDeliverTxFailure(data))) {
           return services.bus.dispatch({
             type: "ErrorEvent",
             payload: { message: "Failed to remove liquidity" },
