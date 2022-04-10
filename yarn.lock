@@ -7535,6 +7535,7 @@ __metadata:
     eslint-plugin-vue: ^8.5.0
     flip-toolkit: ^7.0.13
     happy-dom: ^2.55.0
+    immer: ^9.0.12
     normalize-scss: ^7.0.1
     p-limit: ^4.0.0
     p-props: ^5.0.0
@@ -15698,6 +15699,13 @@ __metadata:
   version: 3.2.3
   resolution: "immediate@npm:3.2.3"
   checksum: 9867dc70794f3aa246a90afe8a0166607590b687e8c572839ff2342292ac2da4b1cdfd396d38f7b9e72625d817d601e73c33c2874e9c0b8e0f1d6658b3c03496
+  languageName: node
+  linkType: hard
+
+"immer@npm:^9.0.12":
+  version: 9.0.12
+  resolution: "immer@npm:9.0.12"
+  checksum: bcbec6d76dac65e49068eb67ece4d407116e62b8cde3126aa89c801e408f5047763ba0aeb62f1938c1aa704bb6612f1d8302bb2a86fa1fc60fcc12d8b25dc895
   languageName: node
   linkType: hard
 

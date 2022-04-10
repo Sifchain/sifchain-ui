@@ -107,6 +107,7 @@ const UnbondLiquidity = defineComponent({
 
     const transactionDetails = useDeliverTxDetails(
       unlockLiquidityMutation.data,
+      unlockLiquidityMutation.isLoading,
       unlockLiquidityMutation.isError,
     );
 

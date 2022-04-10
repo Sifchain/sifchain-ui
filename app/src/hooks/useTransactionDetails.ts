@@ -1,8 +1,9 @@
-import { computed } from "vue";
+import { computed, unref } from "vue";
 import { DeliverTxResponse, TransactionStatus } from "@sifchain/sdk";
 import { Ref, ComputedRef } from "vue";
 import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { transactionStatusFromDeliverTxResponse } from "@sifchain/sdk/src/clients/native/SifClient";
+import { MaybeRef } from "vue-query/lib/vue/types";
 
 export function useBridgeEventDetails(props: {
   bridgeEvent: Ref<BridgeEvent>;
@@ -21,21 +22,30 @@ export function useTransactionDetails(props: {
 }
 
 export const useDeliverTxDetails = (
-  tx: Ref<DeliverTxResponse | undefined>,
-  isQueryError: Ref<boolean>,
+  tx: MaybeRef<DeliverTxResponse | undefined>,
+  isLoading: MaybeRef<boolean>,
+  isQueryError: MaybeRef<boolean>,
 ) =>
   computed(() => {
-    if (tx.value === undefined && isQueryError?.value === true) {
+    const unrefTx = unref(tx);
+    if (unrefTx === undefined && unref(isQueryError) === true) {
       return getTransactionDetails({
         hash: "",
         state: "failed",
       });
     }
 
+    if (unref(isLoading)) {
+      return {
+        heading: "Waiting for Confirmation",
+        description: "Confirm this transaction in your wallet",
+      };
+    }
+
     return getTransactionDetails(
-      tx.value === undefined
+      unrefTx === undefined
         ? undefined
-        : transactionStatusFromDeliverTxResponse(tx.value),
+        : transactionStatusFromDeliverTxResponse(unrefTx),
     );
   });
 

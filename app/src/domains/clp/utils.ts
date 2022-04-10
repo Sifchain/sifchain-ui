@@ -1,54 +1,91 @@
-import { Params } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/params";
+import { RewardParams } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/params";
 import {
   LiquidityProvider,
   LiquidityUnlock,
 } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
-import { addMilliseconds, addSeconds } from "date-fns";
+import BigNumber from "bignumber.js";
+import { addSeconds } from "date-fns";
 import Long from "long";
 
 // TODO: this shouldn't be here
 // see if this can be extracted out or fetch from external service
-const EST_SECONDS_PER_BLOCK = 7;
+const EST_SECONDS_PER_BLOCK = 5;
 
-export const addDetailToUnlock = (
-  unlock: LiquidityUnlock | undefined,
-  params: Params | undefined,
-  currentHeight: number | undefined,
+const addDetailToUnlock = (
+  unlock: LiquidityUnlock,
+  params: RewardParams,
+  currentHeight: number,
+  totalUnits: BigNumber,
+  totalNativeAssets: BigNumber,
+  totalExternalAssets: BigNumber,
 ) => {
-  if (
-    unlock === undefined ||
-    params === undefined ||
-    currentHeight === undefined
-  )
-    return undefined;
-
   const lockPeriod = params?.liquidityRemovalLockPeriod ?? Long.ZERO;
-  const unlockedFromHeight = unlock.requestHeight.add(lockPeriod);
-  const ready = currentHeight >= unlockedFromHeight.toNumber();
+  const unlockedFromHeight = unlock.requestHeight.add(lockPeriod).toNumber();
+  const expiredAtHeight =
+    unlockedFromHeight + params.liquidityRemovalCancelPeriod.toNumber();
+  const expired = currentHeight > expiredAtHeight;
+  const ready = currentHeight >= unlockedFromHeight && !expired;
 
-  const blocksUntilUnlock = unlockedFromHeight.toNumber() - currentHeight;
+  const blocksUntilUnlock = unlockedFromHeight - currentHeight;
+  const blockUntilExpiration = expiredAtHeight - currentHeight;
   const eta =
     blocksUntilUnlock <= 0
       ? undefined
       : addSeconds(new Date(), EST_SECONDS_PER_BLOCK * blocksUntilUnlock);
+  const expiration =
+    blockUntilExpiration <= 0
+      ? undefined
+      : addSeconds(new Date(), EST_SECONDS_PER_BLOCK * blockUntilExpiration);
 
-  return { ...unlock, ready, unlockedFromHeight, eta };
+  const units = new BigNumber(unlock.units);
+  const unlockPercentage = units.dividedBy(totalUnits);
+
+  const nativeAssetAmount = new BigNumber(totalNativeAssets).multipliedBy(
+    unlockPercentage,
+  );
+  const externalAssetAmount = new BigNumber(totalExternalAssets).multipliedBy(
+    unlockPercentage,
+  );
+
+  return {
+    ...unlock,
+    nativeAssetAmount,
+    externalAssetAmount,
+    requestHeight: unlock.requestHeight.toNumber(),
+    ready,
+    expired,
+    unlockedFromHeight,
+    expiredAtHeight,
+    eta,
+    expiration,
+  };
 };
 
 export const addDetailToLiquidityProvider = (
-  liquidityProvider: LiquidityProvider | undefined,
-  params: Params | undefined,
-  currentHeight: number | undefined,
+  liquidityProvider: LiquidityProvider,
+  nativeAsset: { value: string; fractionalDigits: number },
+  externalAsset: { value: string; fractionalDigits: number },
+  params: RewardParams,
+  currentHeight: number,
 ) => {
-  return liquidityProvider === undefined
-    ? undefined
-    : {
-        ...liquidityProvider,
-        unlocks: liquidityProvider.unlocks.map(
-          // as to not mess up the type definition
-          // this is a mess though, should clean up later
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          (x) => addDetailToUnlock(x, params, currentHeight)!,
+  return {
+    ...liquidityProvider,
+    unlocks: liquidityProvider.unlocks
+      .map((x) =>
+        addDetailToUnlock(
+          x,
+          params,
+          currentHeight,
+          new BigNumber(liquidityProvider.liquidityProviderUnits),
+          new BigNumber(nativeAsset.value).shiftedBy(
+            -nativeAsset.fractionalDigits,
+          ),
+          new BigNumber(externalAsset.value).shiftedBy(
+            -externalAsset.fractionalDigits,
+          ),
         ),
-      };
+      )
+      // Needed as unlock get set to 0 before they are removed by sifnode
+      .filter((x) => !new BigNumber(x.units).isZero()),
+  };
 };

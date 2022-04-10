@@ -9,6 +9,7 @@ import { useChains, useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useRowanPrice } from "@/hooks/useRowanPrice";
 import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
+import { isNilOrWhitespace } from "@/utils/assertion";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
@@ -24,12 +25,16 @@ import { useUserPoolData } from "./useUserPoolData";
 export default defineComponent({
   name: "PoolItem",
   props: {
+    unLockable: { type: Boolean, required: true },
     unlock: {
       type: Object as PropType<{
-        unlockedFromHeight: number;
-        requestHeight: number;
+        nativeAssetAmount: string;
+        externalAssetAmount: string;
         ready: boolean;
-        eta: string;
+        eta?: string;
+        expiration?: string;
+        onRemoveRequest: () => any;
+        isRemovingInProgress: boolean;
       }>,
       required: false,
     },
@@ -100,9 +105,10 @@ export default defineComponent({
 
       if (this.rowanPrice.isLoading.value) return "";
 
+      console.log(this.poolStat);
       return prettyNumber(
         parseFloat(formattedExternal) *
-          parseFloat(this.poolStat.priceToken.toString() || "0") +
+          parseFloat(this.poolStat.priceToken?.toString() || "0") +
           parseFloat(formattedNative) *
             parseFloat(this.rowanPrice.data.value || "0"),
       );
@@ -226,6 +232,9 @@ export default defineComponent({
   },
 
   render() {
+    const tableItemClass =
+      "border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
+
     return (
       <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent hover:opacity-80">
         <div
@@ -332,21 +341,75 @@ export default defineComponent({
         {this.expanded && (
           <section
             id={`expandable-${this.pool.symbol()}`}
-            class={[
-              "bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]",
-              this.accountPool ? "h-[216px]" : "h-[193px]",
-            ]}
+            class="bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]"
           >
-            <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
-              {this.details.map(([key, value], index) => (
-                <div
-                  key={index}
-                  class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
-                >
-                  <span>{key}</span>
-                  <span>{value}</span>
-                </div>
-              ))}
+            <div>
+              <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+                {this.details.map(([key, value], index) => (
+                  <div
+                    key={index}
+                    class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
+                  >
+                    <span>{key}</span>
+                    <span>{value}</span>
+                  </div>
+                ))}
+              </div>
+              {this.unlock !== undefined && (
+                <section>
+                  <header class="mt-2 mb-0.5">
+                    <p class="text-md font-bold">Unlocking request</p>
+                  </header>
+                  <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+                    <div class={tableItemClass}>
+                      <span>Unlocking assets</span>
+                      <span class="flex items-center">
+                        {this.unlock.nativeAssetAmount}{" "}
+                        <TokenIcon
+                          assetValue={useNativeChain().nativeAsset}
+                          size={14}
+                          class="ml-[2px]"
+                        />
+                        , {this.unlock.externalAssetAmount}{" "}
+                        <TokenIcon
+                          assetValue={this.pool.externalAmount.asset}
+                          size={14}
+                          class="ml-[2px]"
+                        />
+                      </span>
+                    </div>
+                    {this.unlock.ready
+                      ? !isNilOrWhitespace(this.unlock.expiration) && (
+                          <div class={tableItemClass}>
+                            <span>Estimated time remaining to claim</span>
+                            <span>{this.unlock.expiration}</span>
+                          </div>
+                        )
+                      : !isNilOrWhitespace(this.unlock.eta) && (
+                          <div class={tableItemClass}>
+                            <span>Estimated time remaining</span>
+                            <span>{this.unlock.eta}</span>
+                          </div>
+                        )}
+                    {this.unlock.ready && (
+                      <Button.CallToActionSecondary
+                        class="h-[46px] text-[17px] disabled:bg-inherit"
+                        disabled={this.unlock.isRemovingInProgress}
+                        onClick={this.unlock.onRemoveRequest}
+                      >
+                        {this.unlock.isRemovingInProgress ? (
+                          <AssetIcon
+                            size={36}
+                            icon="interactive/anim-racetrack-spinner"
+                          />
+                        ) : (
+                          "Claim unlocked liquidity"
+                        )}
+                      </Button.CallToActionSecondary>
+                    )}
+                  </div>
+                </section>
+              )}
             </div>
             <div class="p-[4px]">
               {!this.externalAmount.decommissioned && (
@@ -364,38 +427,39 @@ export default defineComponent({
                   Add Liquidity
                 </Button.Inline>
               )}
-              {!!this.userPoolData.myPoolShare?.value && (
-                <Button.Inline
-                  to={{
-                    name: "RemoveLiquidity",
-                    params: {
-                      externalAsset: this.externalAmount.symbol.toLowerCase(),
-                    },
-                  }}
-                  replace
-                  class="!text-accent-base mt-[6px] w-[140px] !bg-black"
-                  icon="interactive/minus"
-                >
-                  Remove Liquidity
-                </Button.Inline>
-              )}
-              {/* {!!this.userPoolData.myPoolShare?.value &&
-                this.liquidityProvider?.liquidityProvider?.unlocks.length ===
-                  0 && (
-                  <Button.Inline
-                    to={{
-                      name: "UnbondLiquidity",
-                      params: {
-                        externalAsset: this.externalAmount.symbol.toLowerCase(),
-                      },
-                    }}
-                    replace
-                    class="!text-accent-base mt-[6px] w-[140px] !bg-black"
-                    icon="interactive/minus"
-                  >
-                    Unbond Liquidity
-                  </Button.Inline>
-                )} */}
+              {this.$store.state.flags.newLiquidityUnlockProcess
+                ? this.$props.unLockable && (
+                    <Button.Inline
+                      to={{
+                        name: "UnbondLiquidity",
+                        params: {
+                          externalAsset:
+                            this.externalAmount.symbol.toLowerCase(),
+                        },
+                      }}
+                      replace
+                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      icon="interactive/minus"
+                    >
+                      Unbond Liquidity
+                    </Button.Inline>
+                  )
+                : !!this.userPoolData.myPoolShare?.value && (
+                    <Button.Inline
+                      to={{
+                        name: "RemoveLiquidity",
+                        params: {
+                          externalAsset:
+                            this.externalAmount.symbol.toLowerCase(),
+                        },
+                      }}
+                      replace
+                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      icon="interactive/minus"
+                    >
+                      Remove Liquidity
+                    </Button.Inline>
+                  )}
             </div>
           </section>
         )}
