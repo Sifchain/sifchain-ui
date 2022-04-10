@@ -19,6 +19,7 @@ export type UnlockLiquidityParams = {
 };
 
 export const useUnlockLiquidityMutation = () => {
+  const queryClient = useQueryClient();
   const sifchainClients = useSifchainClients();
   const { services } = useCore();
 
@@ -59,6 +60,14 @@ export const useUnlockLiquidityMutation = () => {
       };
 
       return signingClient.signAndBroadcast(signer, [message], DEFAULT_FEE);
+    },
+    {
+      onSuccess: (data) => {
+        if (isDeliverTxFailure(data)) return;
+
+        queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY);
+        queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY);
+      },
     },
   );
 };
