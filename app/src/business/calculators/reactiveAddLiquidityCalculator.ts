@@ -199,7 +199,15 @@ export function useReactivePoolCalculator(input: {
   // external_balance / native_balance
   const aPerBRatio = computed(() => {
     if (!poolAmounts.value) return 0;
+    if (!preExistingPool.value) return 0;
+
     const [native, external] = poolAmounts.value;
+
+    const { swapPrices } = preExistingPool.value;
+
+    if (swapPrices) {
+      return swapPrices.native;
+    }
 
     const derivedNative = native.toDerived();
     const derivedExternal = external.toDerived();
@@ -218,8 +226,15 @@ export function useReactivePoolCalculator(input: {
   // native_balance / external_balance
   const bPerARatio = computed(() => {
     if (!poolAmounts.value) return 0;
+    if (!preExistingPool.value) return 0;
+
     const [native, external] = poolAmounts.value;
 
+    const { swapPrices } = preExistingPool.value;
+
+    if (swapPrices) {
+      return swapPrices.external;
+    }
     const derivedNative = native.toDerived();
     const derivedExternal = external.toDerived();
 

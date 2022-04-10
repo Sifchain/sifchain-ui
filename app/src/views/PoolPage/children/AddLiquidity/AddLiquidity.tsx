@@ -145,7 +145,7 @@ export default defineComponent({
             showClose
             onClose={close}
           >
-            <div class="p-4 bg-gray-base rounded-lg">
+            <div class="bg-gray-base rounded-lg p-4">
               <Form.Details details={detailsRef.value} />
             </div>
             <Button.CallToAction
@@ -194,7 +194,7 @@ export default defineComponent({
               data.fromSymbol.value = asset.symbol;
             }}
           />
-          <div class="flex justify-center my-[4px]">
+          <div class="my-[4px] flex justify-center">
             <AssetIcon size={20} class=" text-white" icon="interactive/plus" />
           </div>
           <TokenInputGroup
@@ -261,7 +261,7 @@ export default defineComponent({
               isError: !!data.riskFactorStatus.value,
               errorType: data.riskFactorStatus.value || undefined,
               label: (
-                <div class="flex justify-between items-center">
+                <div class="flex items-center justify-between">
                   <span>Est. prices after pooling & pool share</span>
                   {!!riskContent.value && (
                     <Tooltip
