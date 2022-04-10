@@ -29,7 +29,7 @@ export const useLiquidityProviderQuery = (
   );
 
   return useQuery(
-    [LIQUIDITY_PROVIDERS_KEY, externalAssetBaseDenom],
+    [LIQUIDITY_PROVIDER_KEY, externalAssetBaseDenom],
     async () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
@@ -94,7 +94,7 @@ export const useLiquidityProvidersQuery = () => {
   const { services, config } = useCore();
 
   return useQuery(
-    LIQUIDITY_PROVIDER_KEY,
+    LIQUIDITY_PROVIDERS_KEY,
     async () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
