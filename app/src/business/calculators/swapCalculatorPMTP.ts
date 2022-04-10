@@ -55,16 +55,6 @@ function calculateSwapResultPmtp(fromAmount: IAssetAmount, pool: IPool) {
 }
 
 function calculateReverseSwapResultPmtp(amount: IAssetAmount, pool: IPool) {
-  // const swapPrice = fromRowan
-  //         ? pool.value.swapPrices.external
-  //         : pool.value.swapPrices.native;
-
-  //       const swapValue = toField.value.fieldAmount.multiply(swapPrice);
-
-  //       reverseSwapResult.value = AssetAmount(
-  //         toField.value.fieldAmount,
-  //         swapValue,
-  //       );
   const fromRowan = pool.otherAsset(amount.asset).symbol === "rowan";
   const toRowan = amount.asset.symbol === "rowan";
 
