@@ -45,13 +45,30 @@ function calculateSwapResultPmtp(fromAmount: IAssetAmount, pool: IPool) {
     return pool.calcSwapResult(fromAmount);
   }
 
+  const otherAsset = pool.otherAsset(fromAmount.asset);
+
+  const decimalsDelta = fromAmount.decimals - otherAsset.decimals;
+
+  const decimalAdjust = Math.pow(10, Math.abs(decimalsDelta));
+
   const swapPrice = fromRowan
-    ? pool.swapPrices.native
-    : pool.swapPrices.external;
+    ? pool.swapPrices.native.divide(decimalAdjust)
+    : pool.swapPrices.external.multiply(decimalAdjust);
 
   const swapResult = fromAmount.multiply(swapPrice);
 
-  return AssetAmount(fromAmount.asset, swapResult);
+  const result = AssetAmount(otherAsset, swapResult);
+
+  console.log({
+    decimalsDelta,
+    decimalAdjust,
+    assetSymbol: fromAmount.asset.symbol,
+    otherAssetSymbol: otherAsset.symbol,
+    result: result.toString(),
+    swapResult: swapResult.toString(),
+  });
+
+  return result;
 }
 
 function calculateReverseSwapResultPmtp(amount: IAssetAmount, pool: IPool) {
