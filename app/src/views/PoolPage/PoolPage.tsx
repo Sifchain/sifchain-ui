@@ -232,14 +232,15 @@ export default defineComponent({
                 ] ?? [];
 
               const itemLp = item.liquidityProvider?.liquidityProvider;
+              const filteredUnlock =
+                item.liquidityProvider?.liquidityProvider?.unlocks.filter(
+                  (x) => !x.expired,
+                );
               const isUnlockable =
                 new BigNumber(
                   itemLp?.liquidityProviderUnits ?? 0,
-                ).isGreaterThan(0) && (itemLp?.unlocks.length ?? 0) === 0;
-              const unlock =
-                item.liquidityProvider?.liquidityProvider?.unlocks.filter(
-                  (x) => !x.expired,
-                )[0];
+                ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
+              const unlock = filteredUnlock?.[0];
 
               return (
                 <PoolItem
