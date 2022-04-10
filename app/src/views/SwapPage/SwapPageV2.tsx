@@ -19,7 +19,7 @@ import { Button } from "@/components/Button/Button";
 import { SwapDetails } from "./components/SwapDetailsV2";
 import { SlippageTolerance } from "./components/SlippageTolerance";
 import { TokenInputGroup } from "./components/TokenInputGroup";
-import { useSwapPageData } from "./useSwapPageDataV2";
+import { useSwapPageData } from "./useSwapPageData";
 
 export default defineComponent({
   name: "SwapPage",
