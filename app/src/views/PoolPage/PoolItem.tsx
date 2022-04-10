@@ -36,6 +36,7 @@ export default defineComponent({
         ready: boolean;
         eta?: string;
         onRemoveRequest: () => any;
+        isRemovingInProgress: boolean;
       }>,
       required: false,
     },
@@ -398,9 +399,18 @@ export default defineComponent({
                     )}
                     {this.unlock.ready && (
                       <Button.CallToActionSecondary
+                        class="disabled:bg-inherit"
+                        disabled={this.unlock.isRemovingInProgress}
                         onClick={this.unlock.onRemoveRequest}
                       >
-                        Withdraw liquidity
+                        {this.unlock.isRemovingInProgress ? (
+                          <AssetIcon
+                            size={36}
+                            icon="interactive/anim-racetrack-spinner"
+                          />
+                        ) : (
+                          "Claim unlocked liquidity"
+                        )}
                       </Button.CallToActionSecondary>
                     )}
                   </div>
