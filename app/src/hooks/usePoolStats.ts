@@ -21,10 +21,10 @@ interface Body {
 
 export interface PoolStat {
   symbol: string;
-  priceToken: number;
-  poolDepth: string;
-  volume: string;
-  arb?: string;
+  priceToken: number | null;
+  poolDepth: string | null;
+  volume: string | null;
+  arb?: string | null;
   poolAPY: string;
   rewardAPY: string;
   totalAPY: string;

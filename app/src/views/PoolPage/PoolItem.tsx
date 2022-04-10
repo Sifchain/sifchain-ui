@@ -109,9 +109,10 @@ export default defineComponent({
 
       if (this.rowanPrice.isLoading.value) return "";
 
+      console.log(this.poolStat);
       return prettyNumber(
         parseFloat(formattedExternal) *
-          parseFloat(this.poolStat.priceToken.toString() || "0") +
+          parseFloat(this.poolStat.priceToken?.toString() || "0") +
           parseFloat(formattedNative) *
             parseFloat(this.rowanPrice.data.value || "0"),
       );
