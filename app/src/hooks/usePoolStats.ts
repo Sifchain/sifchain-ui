@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import { IAsset } from "@sifchain/sdk";
 
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { symbolWithoutPrefix } from "@/utils/symbol";
 import { useAsyncDataCached } from "./useAsyncDataCached";
 import { useNativeChain } from "./useChains";
@@ -36,11 +36,13 @@ export interface Headers {
 
 const hasLoggedError: Record<string, boolean> = {};
 
-export const usePoolStats = () => {
+export function usePoolStats() {
   const { store, services } = useCore();
 
   const poolStatsRes = useAsyncDataCached("poolStats", async () => {
-    const { body: poolData } = await services.data.getTokenStats();
+    const { body: poolData } = flagsStore.state.pmtp
+      ? await services.data.getTokenStatsPMTP()
+      : await services.data.getTokenStats();
 
     const rewardPrograms = await services.data.getRewardsPrograms();
 
@@ -162,4 +164,4 @@ export const usePoolStats = () => {
     data: wrappedData,
     isError: poolStatsRes.isError,
   };
-};
+}

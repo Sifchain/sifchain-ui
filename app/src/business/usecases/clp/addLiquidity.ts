@@ -1,9 +1,15 @@
-import { ErrorCode, getErrorMessage, IAssetAmount, Asset } from "@sifchain/sdk";
-import { Services } from "../../services";
-import { Store } from "../../store";
-import { PoolStore } from "../../store/pools";
+import {
+  ErrorCode,
+  getErrorMessage,
+  IAssetAmount,
+  createPoolKey,
+} from "@sifchain/sdk";
+
+import { Services } from "@/business/services";
+import { Store } from "@/business/store";
+import { PoolStore } from "@/business/store/pools";
+
 import { ReportTransactionError } from "../utils";
-import { createPoolKey } from "@sifchain/sdk/src/utils";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
 type PickSif = Pick<
@@ -33,7 +39,7 @@ type AddLiquidityServices = {
 type AddLiquidityStore = Pick<Store, "pools">;
 
 export function AddLiquidity(
-  { bus, clp, sif, ibc, tokenRegistry, wallet, chains }: AddLiquidityServices,
+  { bus, sif, tokenRegistry, wallet, chains }: AddLiquidityServices,
   store: AddLiquidityStore,
 ) {
   return async (

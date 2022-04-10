@@ -1,23 +1,42 @@
+import { useQuery } from "vue-query";
+
 import { flagsStore } from "@/store/modules/flags";
-import { useAsyncData } from "./useAsyncData";
 import { useCore } from "./useCore";
 
-const MOCK_PMTP_PARAMS = {
-  min_create_pool_threshold: "100",
-  pmtp_period_governance_rate: "0.000000000000000000",
-  pmtp_period_epoch_length: "7",
+const MOCK_PMTP_RESPONSE = {
+  pmtpPeriodGovernanceRate: "000000000000000000",
+  active: false,
 };
 
-export default function usePMTP() {
+type PmtpParamsResponse = {
+  pmtpPeriodGovernanceRate?: string;
+  active: boolean;
+};
+
+export default function usePmtpParams() {
   const core = useCore();
-  return useAsyncData(async () => {
-    if (!flagsStore.state.pmtp) {
-      return MOCK_PMTP_PARAMS;
-    }
-    try {
-      return await core.services.clp.getPmtpParams();
-    } catch (error) {
-      return MOCK_PMTP_PARAMS;
-    }
-  });
+
+  return useQuery(
+    ["pmtp-params"],
+    async (): Promise<PmtpParamsResponse> => {
+      if (!flagsStore.state.pmtp) {
+        return MOCK_PMTP_RESPONSE;
+      }
+      try {
+        const res = await core.services.clp.getPmtpParams();
+
+        return {
+          active: Boolean(
+            res.params && res.params.pmtpPeriodEndBlock.gt(res.height),
+          ),
+          pmtpPeriodGovernanceRate: res.params?.pmtpPeriodGovernanceRate,
+        };
+      } catch (error) {
+        return MOCK_PMTP_RESPONSE;
+      }
+    },
+    {
+      refetchInterval: 60000,
+    },
+  );
 }

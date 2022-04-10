@@ -1,6 +1,7 @@
-import { IAsset, WalletType, IAssetAmount } from "../";
-import { Network } from "./Network";
 import { ChainInfo } from "@keplr-wallet/types";
+
+import { IAsset } from "./Asset";
+import { Network } from "./Network";
 
 export type BaseChainConfig = {
   network: Network;

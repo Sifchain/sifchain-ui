@@ -1,7 +1,7 @@
 import { Decimal } from "@cosmjs/math";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { assertIsDeliverTxSuccess } from "@cosmjs/stargate";
-import { PoolsReq } from "../../generated/sifnode/clp/v1/querier";
+import { PoolsReq } from "../../generated/proto/sifnode/clp/v1/querier";
 import { SifchainEncodeObjectRecord } from "./messages";
 import { createQueryClient } from "./queryClient";
 import { createSigningClient } from "./signingClient";

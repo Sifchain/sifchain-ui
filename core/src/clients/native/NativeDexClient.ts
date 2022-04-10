@@ -44,11 +44,6 @@ import { parseTxFailure } from "../../utils/parseTxFailure";
 import { TransactionStatus, Chain, IBCChainConfig } from "../../";
 
 type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;
-type TxGroup =
-  | typeof EthbridgeV1Tx
-  | typeof DispensationV1Tx
-  | typeof CLPV1Tx
-  | typeof TokenRegistryV1Tx;
 
 type DeepReadonly<T> = T extends object
   ? { [K in keyof T]: DeepReadonly<T[K]> } & Readonly<T>

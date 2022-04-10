@@ -7,6 +7,7 @@ import {
   TransactionStatus,
   toBaseUnits,
   format,
+  NativeDexClient,
 } from "@sifchain/sdk";
 import { useWalletButton } from "@/hooks/useWalletButton";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
@@ -17,8 +18,10 @@ import { accountStore } from "@/store/modules/accounts";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { formatAssetAmount } from "@/components/utils";
 import { ServiceContext } from "@/business";
-import { SwapState, useSwapCalculator } from "@/business/calculators";
-import { NativeDexClient } from "@sifchain/sdk/src/clients";
+import {
+  SwapState,
+  useSwapCalculator,
+} from "@/business/calculators/swapCalculatorPMTP";
 import { getMaxAmount } from "../utils/getMaxAmount";
 
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
@@ -39,7 +42,7 @@ while (defaultSymbol === "") {
     defaultSymbol = option;
     break;
   } catch (e) {
-    null;
+    // nothing to do here
   }
 }
 
@@ -51,11 +54,11 @@ const currentSwapInput = {
   fromAmount: "0",
 };
 
-const getRouteSymbol = (
+function getRouteSymbol(
   config: ServiceContext,
   queryValue: string,
   defaultValue: string,
-) => {
+) {
   const asset = config.assets.find((asset) => {
     return (
       asset.symbol.toLowerCase() === queryValue.toLowerCase() &&
@@ -63,7 +66,7 @@ const getRouteSymbol = (
     );
   });
   return asset?.symbol || defaultValue;
-};
+}
 
 export const useSwapPageData = () => {
   const { poolFinder, store, config } = useCore();
@@ -117,9 +120,9 @@ export const useSwapPageData = () => {
     });
   });
 
-  const pageState = computed<SwapPageState>(() => {
-    return router.currentRoute.value.meta.pageState as SwapPageState;
-  });
+  const pageState = computed<SwapPageState>(
+    () => router.currentRoute.value.meta.pageState as SwapPageState,
+  );
   const txStatus = ref<TransactionStatus | null>(null);
 
   const selectedField = ref<"from" | "to" | null>("from");
@@ -130,30 +133,25 @@ export const useSwapPageData = () => {
       .balances.find((balance) => balance.asset.symbol === fromSymbol.value);
   };
   const fromAsset = computed(() => {
-    return (
-      core.config.assets.find(
-        (asset) =>
-          asset.symbol == fromSymbol.value ||
-          asset.symbol == `c${fromSymbol.value}`,
-      ) || (core.config.assets[0] as IAsset)
+    const found = core.config.assets.find(
+      (asset) =>
+        asset.symbol == fromSymbol.value ||
+        asset.symbol == `c${fromSymbol.value}`,
     );
-  });
-  const toAsset = computed(() => {
-    return (
-      core.config.assets.find(
-        (asset) =>
-          asset.symbol == toSymbol.value ||
-          asset.symbol == `c${toSymbol.value}`,
-      ) || (core.config.assets[0] as IAsset)
-    );
+    return found ?? (core.config.assets[0] as IAsset);
   });
 
-  const fromTokenIconUrl = useTokenIconUrl({
-    symbol: fromSymbol,
+  const toAsset = computed(() => {
+    const found = core.config.assets.find(
+      (asset) =>
+        asset.symbol == toSymbol.value || asset.symbol == `c${toSymbol.value}`,
+    );
+
+    return found ?? (core.config.assets[0] as IAsset);
   });
-  const toTokenIconUrl = useTokenIconUrl({
-    symbol: toSymbol,
-  });
+
+  const fromTokenIconUrl = useTokenIconUrl({ symbol: fromSymbol });
+  const toTokenIconUrl = useTokenIconUrl({ symbol: toSymbol });
 
   const { connected } = useWalletButton();
 
@@ -164,9 +162,9 @@ export const useSwapPageData = () => {
   }
 
   const formattedFromTokenBalance = useFormattedTokenBalance(fromSymbol);
-  const isFromMaxActive = computed(() => {
-    return fromAmount.value === formattedFromTokenBalance.value;
-  });
+  const isFromMaxActive = computed(
+    () => fromAmount.value === formattedFromTokenBalance.value,
+  );
 
   const formattedToTokenBalance = useFormattedTokenBalance(toSymbol);
 
@@ -192,6 +190,7 @@ export const useSwapPageData = () => {
   function handleNextStepClicked() {
     if (!fromFieldAmount) throw new Error("from field amount is not defined");
     if (!toFieldAmount) throw new Error("to field amount is not defined");
+
     router.replace({
       name: "ConfirmSwap",
     });
@@ -205,6 +204,7 @@ export const useSwapPageData = () => {
   }
   async function handleAskConfirmClicked() {
     checkSwapInputs();
+
     router.replace({
       name: "ApproveSwap",
     });

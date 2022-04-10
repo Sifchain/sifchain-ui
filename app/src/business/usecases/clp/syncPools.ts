@@ -47,6 +47,11 @@ export function SyncPools(
     const registry = await tokenRegistry.load();
 
     const rawPools = await clp.getRawPools();
+
+    if (process.env.NODE_ENV === "development") {
+      console.log({ rawPools });
+    }
+
     const pools = rawPools.pools
       .map((pool) => {
         const externalSymbol = pool.externalAsset?.symbol;
@@ -54,24 +59,37 @@ export function SyncPools(
           (item) =>
             item.denom === externalSymbol || item.baseDenom === externalSymbol,
         );
-        if (!entry) return null;
+        if (!entry) {
+          console.warn("Could not find token in registry", {
+            externalSymbol,
+            pool,
+          });
+          return null;
+        }
 
         const asset = chains
           .get(Network.SIFCHAIN)
           .findAssetWithLikeSymbol(entry.baseDenom);
 
         if (!asset) {
-          console.log(entry, externalSymbol);
+          console.warn("Could not find asset in chain", {
+            asset: entry.baseDenom,
+            externalSymbol,
+          });
+          return null;
         }
-        if (!asset) return null;
 
         return new Pool(
           AssetAmount(nativeAsset, pool.nativeAssetBalance),
           AssetAmount(asset, pool.externalAssetBalance),
           Amount(pool.poolUnits),
+          {
+            native: Amount(pool.swapPriceNative).divide(1e18),
+            external: Amount(pool.swapPriceExternal).divide(1e18),
+          },
         );
       })
-      .filter((val) => val != null) as Pool[];
+      .filter(Boolean) as Pool[];
 
     for (const pool of pools) {
       store.pools[pool.symbol()] = pool;

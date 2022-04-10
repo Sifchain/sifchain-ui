@@ -1,6 +1,3 @@
-import JSBI from "jsbi";
-import Long from "long";
-
 export const gasSample: {
   transferMsgCount: number;
   gas: number;
@@ -39,7 +36,7 @@ const GAS_COEFF = 1.3;
 
 export function calculateGasForIBCTransfer(x: number) {
   let y = 0;
-  for (let [gasIndex, gasPoint] of gasSample.entries()) {
+  for (const [gasIndex, gasPoint] of gasSample.entries()) {
     if (gasIndex == 0) continue;
     const y1 = gasSample[gasIndex - 1].gas * GAS_COEFF;
     const y2 = gasPoint.gas * GAS_COEFF;
