@@ -23,8 +23,8 @@ const addDetailToUnlock = (
   const unlockedFromHeight = unlock.requestHeight.add(lockPeriod).toNumber();
   const expiredAtHeight =
     unlockedFromHeight + params.liquidityRemovalCancelPeriod.toNumber();
-  const ready = currentHeight >= unlockedFromHeight;
   const expired = currentHeight > expiredAtHeight;
+  const ready = currentHeight >= unlockedFromHeight && !expired;
 
   const blocksUntilUnlock = unlockedFromHeight - currentHeight;
   const blockUntilExpiration = expiredAtHeight - currentHeight;

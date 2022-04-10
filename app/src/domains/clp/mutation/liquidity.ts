@@ -1,4 +1,5 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
+import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
 import { useCore } from "@/hooks/useCore";
 import { UseQueryDataType } from "@/utils/types";
 import { isDeliverTxFailure, isDeliverTxSuccess } from "@cosmjs/stargate";
@@ -12,6 +13,8 @@ import {
   useLiquidityProviderQuery,
   useLiquidityProvidersQuery,
 } from "../queries/liquidityProvider";
+import { useRewardsParamsQuery } from "../queries/params";
+import { addDetailToLiquidityProvider } from "../utils";
 
 export type UnlockLiquidityParams = {
   units: string;
@@ -22,6 +25,8 @@ export const useUnlockLiquidityMutation = () => {
   const queryClient = useQueryClient();
   const sifchainClients = useSifchainClients();
   const { services } = useCore();
+  const tokenEntriesQuery = useTokenRegistryEntriesQuery({ enabled: false });
+  const { data: rewardsParams } = useRewardsParamsQuery();
 
   return useMutation(
     "unlockLiquidity",
@@ -32,10 +37,8 @@ export const useUnlockLiquidityMutation = () => {
         services.chains.get(Network.SIFCHAIN),
       );
 
-      const tokenEntries = await queryClients.tokenRegistryQueryClient.Entries(
-        {},
-      );
-      const tokenEntry = tokenEntries.registry?.entries.find(
+      const tokenEntries = (await tokenEntriesQuery.refetch.value()).data;
+      const externalTokenEntry = tokenEntries?.registry?.entries.find(
         (x) => x.baseDenom === externalAssetSymbol,
       );
 
@@ -43,11 +46,24 @@ export const useUnlockLiquidityMutation = () => {
       const liquidityProvider =
         await queryClients.clpQueryClient.GetLiquidityProvider({
           lpAddress: signer,
-          symbol: tokenEntry?.denom ?? "",
+          symbol: externalTokenEntry?.denom ?? "",
         });
 
-      if ((liquidityProvider.liquidityProvider?.unlocks.length ?? 0) > 0) {
-        throw new Error("Multiple unlocks not allowed");
+      if (
+        liquidityProvider.liquidityProvider !== undefined &&
+        rewardsParams.value?.params !== undefined
+      ) {
+        const lp = addDetailToLiquidityProvider(
+          liquidityProvider.liquidityProvider,
+          { value: "0", fractionalDigits: 0 },
+          { value: "0", fractionalDigits: 0 },
+          rewardsParams.value?.params,
+          await signingClient.getHeight(),
+        );
+
+        if (lp.unlocks.filter((x) => !x.expired).length > 0) {
+          throw new Error("Multiple unlocks not allowed");
+        }
       }
 
       const message: SifchainEncodeObjectRecord["MsgUnlockLiquidityRequest"] = {
@@ -55,7 +71,7 @@ export const useUnlockLiquidityMutation = () => {
         value: {
           signer,
           units,
-          externalAsset: { symbol: tokenEntry?.denom ?? "" },
+          externalAsset: { symbol: externalTokenEntry?.denom ?? "" },
         },
       };
 
