@@ -235,7 +235,7 @@ export default defineComponent({
               const isUnlockable =
                 new BigNumber(
                   itemLp?.liquidityProviderUnits ?? 0,
-                ).isPositive() && (itemLp?.unlocks.length ?? 0) === 0;
+                ).isGreaterThan(0) && (itemLp?.unlocks.length ?? 0) === 0;
               const unlock =
                 item.liquidityProvider?.liquidityProvider?.unlocks.filter(
                   (x) => !x.expired,
