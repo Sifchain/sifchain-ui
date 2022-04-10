@@ -75,7 +75,7 @@ export const useUnlockLiquidityMutation = () => {
 
         if (data !== undefined && isDeliverTxSuccess(data)) {
           return services.bus.dispatch({
-            type: "ErrorEvent",
+            type: "SuccessEvent",
             payload: {
               message: "Successfully request liquidity unlock",
             },
@@ -140,7 +140,7 @@ export const useRemoveLiquidityMutation = () => {
 
         if (data !== undefined && isDeliverTxSuccess(data)) {
           return services.bus.dispatch({
-            type: "ErrorEvent",
+            type: "SuccessEvent",
             payload: { message: "Successfully remove unlocked liquidity" },
           });
         }
