@@ -9,10 +9,10 @@ import { useChains, useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useRowanPrice } from "@/hooks/useRowanPrice";
 import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
+import { isNilOrWhitespace } from "@/utils/assertion";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
-import BigNumber from "bignumber.js";
 import { computed, defineComponent, PropType } from "vue";
 import {
   Competition,
@@ -25,12 +25,17 @@ import { useUserPoolData } from "./useUserPoolData";
 export default defineComponent({
   name: "PoolItem",
   props: {
+    unLockable: { type: Boolean, required: true },
     unlock: {
       type: Object as PropType<{
+        units: string;
+        nativeAssetAmount: string;
+        externalAssetAmount: string;
         unlockedFromHeight: number;
         requestHeight: number;
         ready: boolean;
-        eta: string;
+        eta?: string;
+        onRemoveRequest: () => any;
       }>,
       required: false,
     },
@@ -227,6 +232,9 @@ export default defineComponent({
   },
 
   render() {
+    const tableItemClass =
+      "border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
+
     return (
       <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent hover:opacity-80">
         <div
@@ -333,21 +341,71 @@ export default defineComponent({
         {this.expanded && (
           <section
             id={`expandable-${this.pool.symbol()}`}
-            class={[
-              "bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]",
-              this.accountPool ? "h-[216px]" : "h-[193px]",
-            ]}
+            class="bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]"
           >
-            <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
-              {this.details.map(([key, value], index) => (
-                <div
-                  key={index}
-                  class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
-                >
-                  <span>{key}</span>
-                  <span>{value}</span>
-                </div>
-              ))}
+            <div>
+              <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+                {this.details.map(([key, value], index) => (
+                  <div
+                    key={index}
+                    class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
+                  >
+                    <span>{key}</span>
+                    <span>{value}</span>
+                  </div>
+                ))}
+              </div>
+              {this.unlock !== undefined && (
+                <section>
+                  <header class="mt-1 mb-0.5">
+                    <p class="text-lg">Pending unlock</p>
+                  </header>
+                  <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+                    <div class={tableItemClass}>
+                      <span>Pool units</span>
+                      <span class="flex items-center">{this.unlock.units}</span>
+                    </div>
+                    <div class={tableItemClass}>
+                      <span>Asset equivalent</span>
+                      <span class="flex items-center">
+                        {this.unlock.nativeAssetAmount}{" "}
+                        <TokenIcon
+                          assetValue={useNativeChain().nativeAsset}
+                          size={14}
+                          class="ml-[2px]"
+                        />
+                        , {this.unlock.externalAssetAmount}{" "}
+                        <TokenIcon
+                          assetValue={this.pool.externalAmount.asset}
+                          size={14}
+                          class="ml-[2px]"
+                        />
+                      </span>
+                    </div>
+                    <div class={tableItemClass}>
+                      <span>Request height</span>
+                      <span>{this.unlock.requestHeight}</span>
+                    </div>
+                    <div class={tableItemClass}>
+                      <span>Unlocked at height</span>
+                      <span>{this.unlock.unlockedFromHeight}</span>
+                    </div>
+                    {!isNilOrWhitespace(this.unlock.eta) && (
+                      <div class={tableItemClass}>
+                        <span>Estimated time remaining</span>
+                        <span>{this.unlock.eta}</span>
+                      </div>
+                    )}
+                    {this.unlock.ready && (
+                      <Button.CallToActionSecondary
+                        onClick={this.unlock.onRemoveRequest}
+                      >
+                        Withdraw liquidity
+                      </Button.CallToActionSecondary>
+                    )}
+                  </div>
+                </section>
+              )}
             </div>
             <div class="p-[4px]">
               {!this.externalAmount.decommissioned && (
@@ -366,12 +424,7 @@ export default defineComponent({
                 </Button.Inline>
               )}
               {this.$store.state.flags.newLiquidityUnlockProcess
-                ? new BigNumber(
-                    this.liquidityProvider?.liquidityProvider
-                      ?.liquidityProviderUnits ?? "0",
-                  ).isPositive() &&
-                  (this.liquidityProvider?.liquidityProvider?.unlocks.length ??
-                    0) === 0 && (
+                ? this.$props.unLockable && (
                     <Button.Inline
                       to={{
                         name: "UnbondLiquidity",

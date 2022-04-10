@@ -3,9 +3,11 @@ import { Button } from "@/components/Button/Button";
 import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
+import { useRemoveLiquidityMutation } from "@/domains/clp/mutation/liquidity";
 import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-import { format } from "date-fns";
+import BigNumber from "bignumber.js";
+import { format, formatDistance } from "date-fns";
 import { defineComponent } from "vue";
 import { RouterView } from "vue-router";
 import {
@@ -35,6 +37,7 @@ export default defineComponent({
   setup() {
     const data = usePoolPageData();
     return {
+      removeLiquidityMutation: useRemoveLiquidityMutation(),
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
@@ -228,22 +231,38 @@ export default defineComponent({
                   item.pool.externalAmount!.symbol
                 ] ?? [];
 
+              const itemLp = item.liquidityProvider?.liquidityProvider;
+              const isUnlockable =
+                new BigNumber(
+                  itemLp?.liquidityProviderUnits ?? 0,
+                ).isPositive() && (itemLp?.unlocks.length ?? 0) === 0;
               const unlock =
                 item.liquidityProvider?.liquidityProvider?.unlocks[0];
 
               return (
                 <PoolItem
+                  unLockable={isUnlockable}
                   unlock={
                     unlock === undefined
                       ? undefined
                       : {
-                          requestHeight: unlock.requestHeight.toNumber(),
-                          unlockedFromHeight: unlock.requestHeight.toNumber(),
-                          ready: unlock.ready,
+                          ...unlock,
+                          units: BigInt(unlock.units).toLocaleString("en-US"),
+                          nativeAssetAmount:
+                            unlock.nativeAssetAmount.toFixed(6),
+                          externalAssetAmount:
+                            unlock.externalAssetAmount.toFixed(6),
                           eta:
                             unlock.eta === undefined
                               ? undefined
-                              : format(unlock.eta, "MM/dd/yyyy"),
+                              : formatDistance(new Date(), unlock.eta),
+                          onRemoveRequest: () =>
+                            this.removeLiquidityMutation.mutate({
+                              requestHeight: unlock.requestHeight,
+                              externalAssetSymbol:
+                                item.pool.externalAmount!.symbol,
+                              units: unlock.units,
+                            }),
                         }
                   }
                   bonusRewardPrograms={rewardsPrograms}
