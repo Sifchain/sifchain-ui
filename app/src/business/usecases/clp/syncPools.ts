@@ -84,8 +84,8 @@ export function SyncPools(
           AssetAmount(asset, pool.externalAssetBalance),
           Amount(pool.poolUnits),
           {
-            native: AssetAmount(nativeAsset, pool.swapPriceNative),
-            external: AssetAmount(nativeAsset, pool.swapPriceExternal),
+            native: Amount(pool.swapPriceNative).divide(1e18),
+            external: Amount(pool.swapPriceExternal).divide(1e18),
           },
         );
       })

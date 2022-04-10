@@ -15,8 +15,8 @@ export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 export class Pool extends Pair {
   poolUnits: IAmount;
   swapPrices?: {
-    native: IAssetAmount;
-    external: IAssetAmount;
+    native: IAmount;
+    external: IAmount;
   };
 
   constructor(
@@ -24,8 +24,8 @@ export class Pool extends Pair {
     b: IAssetAmount,
     poolUnits?: IAmount,
     swapPrices?: {
-      native: IAssetAmount;
-      external: IAssetAmount;
+      native: IAmount;
+      external: IAmount;
     },
   ) {
     super(a, b);

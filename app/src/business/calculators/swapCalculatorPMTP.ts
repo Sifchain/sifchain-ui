@@ -37,6 +37,50 @@ function calculateFormattedProviderFee(pair: IPool, amount: IAssetAmount) {
   );
 }
 
+function calculateSwapResultPmtp(fromAmount: IAssetAmount, pool: IPool) {
+  const fromRowan = fromAmount.asset.symbol === "rowan";
+  const toRowan = pool.otherAsset(fromAmount.asset).symbol === "rowan";
+
+  if (!pool.swapPrices || !(fromRowan || toRowan)) {
+    return pool.calcSwapResult(fromAmount);
+  }
+
+  const swapPrice = fromRowan
+    ? pool.swapPrices.native
+    : pool.swapPrices.external;
+
+  const swapResult = fromAmount.multiply(swapPrice);
+
+  return AssetAmount(fromAmount.asset, swapResult);
+}
+
+function calculateReverseSwapResultPmtp(amount: IAssetAmount, pool: IPool) {
+  // const swapPrice = fromRowan
+  //         ? pool.value.swapPrices.external
+  //         : pool.value.swapPrices.native;
+
+  //       const swapValue = toField.value.fieldAmount.multiply(swapPrice);
+
+  //       reverseSwapResult.value = AssetAmount(
+  //         toField.value.fieldAmount,
+  //         swapValue,
+  //       );
+  const fromRowan = pool.otherAsset(amount.asset).symbol === "rowan";
+  const toRowan = amount.asset.symbol === "rowan";
+
+  if (!pool.swapPrices || !(fromRowan || toRowan)) {
+    return pool.calcReverseSwapResult(amount);
+  }
+
+  const swapPrice = fromRowan
+    ? pool.swapPrices.external
+    : pool.swapPrices.native;
+
+  const swapValue = amount.multiply(swapPrice);
+
+  return AssetAmount(amount.asset, swapValue);
+}
+
 // TODO: make swap calculator only generate Fractions/Amounts that get stringified in the view
 export function useSwapCalculator(input: {
   fromAmount: Ref<string>;
@@ -102,8 +146,6 @@ export function useSwapCalculator(input: {
       return "0.0";
     }
 
-    let swapResult: IAssetAmount | null = null;
-
     if (!fromField.value?.fieldAmount || !toField.value?.fieldAmount) {
       return "0.0";
     }
@@ -112,29 +154,11 @@ export function useSwapCalculator(input: {
     const toRowan = toField.value.asset?.symbol === "rowan";
 
     if ((fromRowan || toRowan) && pool.value.swapPrices) {
-      swapResult = fromRowan
+      const swapPrice = fromRowan
         ? pool.value.swapPrices.native
         : pool.value.swapPrices.external;
 
-      // to get ratio needs to be divided by amount as input by user
-      const amountAsInput = "1";
-
-      let formatted = "0.0";
-
-      try {
-        const divided = swapResult.divide(amountAsInput);
-
-        formatted = format(divided, swapResult.asset, {
-          mantissa: 6,
-        });
-      } catch (error) {
-        if (/division by zero/i.test((error as Error).message)) {
-          formatted = "0.0";
-        } else {
-          throw error;
-        }
-      }
-      return formatted;
+      return swapPrice.toString();
     } else {
       // external x external retain previous logic
 
@@ -163,8 +187,6 @@ export function useSwapCalculator(input: {
       }
       return formatted;
     }
-
-    return "0.0";
   });
 
   // Selected field changes when the user changes the field selection
@@ -182,18 +204,39 @@ export function useSwapCalculator(input: {
       pool.value.contains(fromField.value.asset) &&
       selectedField === "from"
     ) {
-      swapResult.value = pool.value.calcSwapResult(fromField.value.fieldAmount);
+      const fromRowan = fromField.value.asset?.symbol === "rowan";
+      const toRowan = toField.value.asset?.symbol === "rowan";
 
-      const toAmountValue = format(
-        swapResult.value.amount,
-        swapResult.value.asset,
-        {
-          mantissa: 10,
-          trimMantissa: true,
-        },
-      );
+      if ((fromRowan || toRowan) && pool.value.swapPrices) {
+        swapResult.value = calculateSwapResultPmtp(
+          fromField.value.fieldAmount,
+          pool.value,
+        );
 
-      input.toAmount.value = toAmountValue;
+        input.toAmount.value = format(
+          swapResult.value.amount,
+          swapResult.value.asset,
+          {
+            mantissa: 10,
+            trimMantissa: true,
+          },
+        );
+      } else {
+        swapResult.value = pool.value.calcSwapResult(
+          fromField.value.fieldAmount,
+        );
+
+        const toAmountValue = format(
+          swapResult.value.amount,
+          swapResult.value.asset,
+          {
+            mantissa: 10,
+            trimMantissa: true,
+          },
+        );
+
+        input.toAmount.value = toAmountValue;
+      }
     }
   });
 
@@ -208,22 +251,54 @@ export function useSwapCalculator(input: {
       pool.value.contains(toField.value.asset) &&
       selectedField === "to"
     ) {
-      reverseSwapResult.value = pool.value.calcReverseSwapResult(
-        toField.value.fieldAmount,
-      );
+      const fromRowan = fromField.value.asset?.symbol === "rowan";
+      const toRowan = toField.value.asset?.symbol === "rowan";
 
-      // Internally trigger calulations based off swapResult as this is how we
-      // work out priceImpact, providerFee, minimumReceived
+      if ((fromRowan || toRowan) && pool.value.swapPrices) {
+        reverseSwapResult.value = calculateReverseSwapResultPmtp(
+          toField.value.fieldAmount,
+          pool.value,
+        );
 
-      swapResult.value = pool.value.calcSwapResult(
-        reverseSwapResult.value as IAssetAmount,
-      );
+        // Internally trigger calulations based off swapResult as this is how we
+        // work out priceImpact, providerFee, minimumReceived
 
-      input.fromAmount.value = trimZeros(
-        format(reverseSwapResult.value.amount, reverseSwapResult.value.asset, {
-          mantissa: 8,
-        }),
-      );
+        swapResult.value = calculateSwapResultPmtp(
+          reverseSwapResult.value,
+          pool.value,
+        );
+
+        input.fromAmount.value = trimZeros(
+          format(
+            reverseSwapResult.value.amount,
+            reverseSwapResult.value.asset,
+            {
+              mantissa: 8,
+            },
+          ),
+        );
+      } else {
+        reverseSwapResult.value = pool.value.calcReverseSwapResult(
+          toField.value.fieldAmount,
+        );
+
+        // Internally trigger calulations based off swapResult as this is how we
+        // work out priceImpact, providerFee, minimumReceived
+
+        swapResult.value = pool.value.calcSwapResult(
+          reverseSwapResult.value as IAssetAmount,
+        );
+
+        input.fromAmount.value = trimZeros(
+          format(
+            reverseSwapResult.value.amount,
+            reverseSwapResult.value.asset,
+            {
+              mantissa: 8,
+            },
+          ),
+        );
+      }
     }
   });
 
