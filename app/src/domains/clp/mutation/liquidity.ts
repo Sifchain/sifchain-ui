@@ -1,7 +1,7 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
 import { useCore } from "@/hooks/useCore";
 import { UseQueryDataType } from "@/utils/types";
-import { isDeliverTxFailure } from "@cosmjs/stargate";
+import { isDeliverTxFailure, isDeliverTxSuccess } from "@cosmjs/stargate";
 import { DEFAULT_FEE, SifchainEncodeObjectRecord } from "@sifchain/sdk";
 import { Network } from "@sifchain/sdk/src";
 import produce from "immer";
@@ -62,10 +62,30 @@ export const useUnlockLiquidityMutation = () => {
       return signingClient.signAndBroadcast(signer, [message], DEFAULT_FEE);
     },
     {
+      onSettled: (data, error) => {
+        if (
+          error !== undefined ||
+          (data !== undefined && isDeliverTxFailure(data))
+        ) {
+          return services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: { message: "Unlock liquidity request failed" },
+          });
+        }
+
+        if (data !== undefined && isDeliverTxSuccess(data)) {
+          return services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: {
+              message: "Successfully request liquidity unlock",
+            },
+          });
+        }
+      },
       onSuccess: (data) => {
         if (isDeliverTxFailure(data)) return;
 
-        queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY);
+        queryClient.invalidateQueries(LIQUIDITY_PROVIDER_KEY);
         queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY);
       },
     },
@@ -107,6 +127,24 @@ export const useRemoveLiquidityMutation = () => {
       return signingClient.signAndBroadcast(signer, [message], DEFAULT_FEE);
     },
     {
+      onSettled: (data, error) => {
+        if (
+          error !== undefined ||
+          (data !== undefined && isDeliverTxFailure(data))
+        ) {
+          return services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: { message: "Failed to remove liquidity" },
+          });
+        }
+
+        if (data !== undefined && isDeliverTxSuccess(data)) {
+          return services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: { message: "Successfully remove unlocked liquidity" },
+          });
+        }
+      },
       onSuccess: (data, { requestHeight, externalAssetSymbol }) => {
         if (isDeliverTxFailure(data)) return;
 
