@@ -1,3 +1,7 @@
+import { useQuery } from "vue-query";
+import { computed } from "@vue/reactivity";
+import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
+
 import { AccountPool } from "@/business/store/pools";
 import { useLiquidityProvidersQuery } from "@/domains/clp/queries/liquidityProvider";
 import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
@@ -10,9 +14,6 @@ import {
 } from "@/hooks/usePoolsSubscriber";
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
-import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
-import { computed } from "@vue/reactivity";
-import { useQuery } from "vue-query";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
 
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
