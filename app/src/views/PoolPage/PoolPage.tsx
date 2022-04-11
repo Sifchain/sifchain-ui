@@ -37,7 +37,9 @@ export default defineComponent({
   setup() {
     const data = usePoolPageData();
     return {
-      removeLiquidityMutation: useRemoveLiquidityMutation(),
+      removeLiquidityMutation: useRemoveLiquidityMutation({
+        onSuccess: () => data.reload(),
+      }),
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,

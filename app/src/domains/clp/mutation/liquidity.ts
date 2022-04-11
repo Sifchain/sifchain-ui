@@ -3,11 +3,15 @@ import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/to
 import { useCore } from "@/hooks/useCore";
 import { isNil } from "@/utils/assertion";
 import { UseQueryDataType } from "@/utils/types";
-import { isDeliverTxFailure, isDeliverTxSuccess } from "@cosmjs/stargate";
+import {
+  DeliverTxResponse,
+  isDeliverTxFailure,
+  isDeliverTxSuccess,
+} from "@cosmjs/stargate";
 import { DEFAULT_FEE, SifchainEncodeObjectRecord } from "@sifchain/sdk";
 import { Network } from "@sifchain/sdk/src";
 import produce from "immer";
-import { useMutation, useQueryClient } from "vue-query";
+import { useMutation, UseMutationOptions, useQueryClient } from "vue-query";
 import {
   LIQUIDITY_PROVIDERS_KEY,
   LIQUIDITY_PROVIDER_KEY,
@@ -106,7 +110,14 @@ export const useUnlockLiquidityMutation = () => {
   );
 };
 
-export const useRemoveLiquidityMutation = () => {
+export const useRemoveLiquidityMutation = (
+  options?: UseMutationOptions<
+    DeliverTxResponse,
+    unknown,
+    UnlockLiquidityParams & { requestHeight: number },
+    unknown
+  >,
+) => {
   const queryClient = useQueryClient();
   const sifchainClients = useSifchainClients();
   const { services } = useCore();
@@ -141,7 +152,9 @@ export const useRemoveLiquidityMutation = () => {
       return signingClient.signAndBroadcast(signer, [message], DEFAULT_FEE);
     },
     {
-      onSettled: (data, error) => {
+      ...options,
+      onSettled: (data, error, variables, context) => {
+        options?.onSettled?.(data, error, variables, context);
         if (!isNil(error) || (data !== undefined && isDeliverTxFailure(data))) {
           return services.bus.dispatch({
             type: "ErrorEvent",
@@ -156,8 +169,11 @@ export const useRemoveLiquidityMutation = () => {
           });
         }
       },
-      onSuccess: (data, { requestHeight, externalAssetSymbol }) => {
+      onSuccess: (data, variables, context) => {
+        options?.onSuccess?.(data, variables, context);
         if (isDeliverTxFailure(data)) return;
+
+        const { requestHeight, externalAssetSymbol } = variables;
 
         const oldLiquidityProviders = queryClient.getQueryData<
           UseQueryDataType<typeof useLiquidityProvidersQuery>
