@@ -14,17 +14,19 @@ export default defineComponent({
           heading="Rewards"
           iconName="navigation/rewards"
         >
-          <p class="text-md pt-1 pb-3">
-            Rewards have moved! Visit the{" "}
-            <RouterLink class="text-accent-dark" to="pool">
-              Pools
-            </RouterLink>{" "}
-            or{" "}
-            <RouterLink class="text-accent-dark" to="stats">
-              Pool Stats
-            </RouterLink>{" "}
-            pages to see your rewards
-          </p>
+          <div class="grid place-items-center p-8">
+            <p class="pt-1 pb-3 md:text-lg">
+              Rewards have moved! Visit the{" "}
+              <RouterLink class="text-accent-dark" to="pool">
+                Pools
+              </RouterLink>{" "}
+              or{" "}
+              <RouterLink class="text-accent-dark" to="stats">
+                Pool Stats
+              </RouterLink>{" "}
+              pages to see your rewards
+            </p>
+          </div>
         </PageCard>
       </Layout>
     );
