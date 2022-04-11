@@ -164,7 +164,7 @@ export default defineComponent({
           </div>
         ) : (
           <PageCard
-            class="w-[900px] !max-w-[1000px]"
+            class="w-[828px] !max-w-[1000px]"
             heading="Pool"
             iconName="navigation/pool"
             withOverflowSpace
