@@ -62,12 +62,11 @@ export default defineComponent({
         class: "min-w-[100px] text-right",
         ref: ref<HTMLElement>(),
         message: (
-          <div>
-            Pool APR is an estimate of trading fees generated from this pool,
-            and is calculated as{" "}
-            <span class="font-mono">24hour_trading_volume / pool_depth</span>{" "}
-            for each pool.
-          </div>
+          <code class="text-xs">
+            Pool reward APR = Total rewards distributed in current program /
+            (Total seconds passed in current program * Current pool balance) *
+            (Total seconds per year)
+          </code>
         ),
       },
     ];
