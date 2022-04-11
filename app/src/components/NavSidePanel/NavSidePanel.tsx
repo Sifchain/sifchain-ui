@@ -124,7 +124,7 @@ export default defineComponent({
                 <Logo class="w-full h-[50px]" />
               </div> */}
               <div class="shorter:mt-[7.5vmin] mt-[9.3vmin]">
-                <NavSidePanelItem
+                {/* <NavSidePanelItem
                   displayName="Dashboard"
                   icon="navigation/dashboard"
                   class="pointer-events-none opacity-50"
@@ -133,7 +133,7 @@ export default defineComponent({
                       Soon
                     </div>
                   }
-                />
+                /> */}
                 <NavSidePanelItem
                   displayName="Swap"
                   icon="navigation/swap"
