@@ -47,7 +47,7 @@ export default defineComponent({
         <div
           key="view-layer"
           class={[
-            `relative w-[50vw] min-w-[531px] max-w-[800px] flex-col items-center justify-start rounded-[10px] bg-black px-4 text-white shadow-2xl transition-all`,
+            `relative w-[50vw] min-w-[531px] max-w-[800px] flex-col items-center justify-start rounded-[10px] bg-black px-4 pb-1 text-white shadow-2xl transition-all`,
             props.class,
           ]}
         >
