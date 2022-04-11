@@ -12,6 +12,60 @@ import { Amount, IAmount } from "./Amount";
 
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
+function calculateReverseSwapResultPmtp(amount: IAssetAmount, pool: IPool) {
+  const fromRowan = pool.otherAsset(amount.asset).symbol === "rowan";
+  const toRowan = amount.asset.symbol === "rowan";
+
+  if (!pool.swapPrices || !(fromRowan || toRowan)) {
+    return pool.calcReverseSwapResult(amount);
+  }
+
+  const swapPrice = fromRowan
+    ? pool.swapPrices.external
+    : pool.swapPrices.native;
+
+  const swapValue = amount.multiply(swapPrice);
+
+  return AssetAmount(amount.asset, swapValue);
+}
+
+function calculateSwapResultPmtp(
+  fromAmount: IAssetAmount,
+  pool: IPool,
+): IAssetAmount {
+  const fromRowan = fromAmount.asset.symbol === "rowan";
+  const toRowan = pool.otherAsset(fromAmount.asset).symbol === "rowan";
+
+  if (!pool.swapPrices || !(fromRowan || toRowan)) {
+    return pool.calcSwapResult(fromAmount);
+  }
+
+  const otherAsset = pool.otherAsset(fromAmount.asset);
+
+  const decimalsDelta = fromAmount.decimals - otherAsset.decimals;
+
+  const decimalAdjust = Math.pow(10, Math.abs(decimalsDelta));
+
+  const swapPrice = fromRowan
+    ? pool.swapPrices.native.divide(decimalAdjust)
+    : pool.swapPrices.external.multiply(decimalAdjust);
+
+  const swapResult = fromAmount.multiply(swapPrice);
+
+  const result = AssetAmount(otherAsset, swapResult);
+
+  console.log({
+    decimalsDelta,
+    decimalAdjust,
+    assetSymbol: fromAmount.asset.symbol,
+    otherAssetSymbol: otherAsset.symbol,
+    result: result.toString(),
+    swapResult: swapResult.toString(),
+  });
+
+  return result;
+}
+
 export class Pool extends Pair {
   poolUnits: IAmount;
   swapPrices?: {
@@ -101,7 +155,9 @@ export class Pool extends Pair {
       throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
     }
 
-    const swapResult = calculateSwapResult(x, X, Y);
+    const swapResult = this.swapPrices
+      ? calculateSwapResultPmtp(x, this)
+      : calculateSwapResult(x, X, Y);
 
     return AssetAmount(this.otherAsset(x), swapResult);
   }
@@ -129,7 +185,9 @@ export class Pool extends Pair {
       return AssetAmount(otherAsset, "0");
     }
 
-    const reverseSwapResult = calculateReverseSwapResult(Sa, Xa, Ya);
+    const reverseSwapResult = this.swapPrices
+      ? calculateReverseSwapResultPmtp(Sa, this)
+      : calculateReverseSwapResult(Sa, Xa, Ya);
 
     return AssetAmount(otherAsset, reverseSwapResult);
   }
@@ -218,20 +276,17 @@ export function CompositePool(pair1: IPool, pair2: IPool): IPool {
       }
       return otherAsset;
     },
-
     symbol() {
       return amounts
         .map((a) => a.symbol)
         .sort()
         .join("_");
     },
-
     contains(...assets: IAsset[]) {
       const local = amounts.map((a) => a.symbol).sort();
       const other = assets.map((a) => a.symbol).sort();
       return !!local.find((s) => other.includes(s));
     },
-
     calcProviderFee(x: IAssetAmount) {
       const [first, second] = pair1.contains(x)
         ? [pair1, pair2]
@@ -240,12 +295,12 @@ export function CompositePool(pair1: IPool, pair2: IPool): IPool {
       const firstSwapOutput = first.calcSwapResult(x);
       const secondSwapFee = second.calcProviderFee(firstSwapOutput);
       const firstSwapFeeInOutputAsset = second.calcSwapResult(firstSwapFee);
+
       return AssetAmount(
         second.otherAsset(firstSwapFee),
         firstSwapFeeInOutputAsset.add(secondSwapFee),
       );
     },
-
     calcPriceImpact(x: IAssetAmount) {
       const [first, second] = pair1.contains(x)
         ? [pair1, pair2]
@@ -253,9 +308,9 @@ export function CompositePool(pair1: IPool, pair2: IPool): IPool {
       const firstPoolImpact = first.calcPriceImpact(x);
       const r = first.calcSwapResult(x);
       const secondPoolImpact = second.calcPriceImpact(r);
+
       return firstPoolImpact.add(secondPoolImpact);
     },
-
     calcSwapResult(x: IAssetAmount) {
       // TODO: possibly use a combined formula
       const [first, second] = pair1.contains(x)
