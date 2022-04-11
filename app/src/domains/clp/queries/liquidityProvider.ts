@@ -1,4 +1,5 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
+import { useBlockTimeQuery } from "@/domains/statistics/queries/blockTime";
 import { useCore } from "@/hooks/useCore";
 import dangerouslyAssert from "@/utils/dangerouslyAssert";
 import { Network } from "@sifchain/sdk";
@@ -29,6 +30,7 @@ export const useLiquidityProviderQuery = (
     externalAssetBaseDenom,
   );
   const { data: rewardsParams } = useRewardsParamsQuery();
+  const { data: blockTime } = useBlockTimeQuery();
 
   return useQuery(
     [LIQUIDITY_PROVIDER_KEY, externalAssetBaseDenom],
@@ -66,6 +68,7 @@ export const useLiquidityProviderQuery = (
               },
               rewardsParams.value.params,
               currentHeight,
+              blockTime.value ?? 0,
             );
 
       const updatedLiquidityProvider = {
@@ -82,7 +85,8 @@ export const useLiquidityProviderQuery = (
           sifchainClients.queryClientStatus === "fulfilled" &&
           nativeAssetTokenEntry.value !== undefined &&
           externalAssetTokenEntry.value !== undefined &&
-          rewardsParams.value !== undefined,
+          rewardsParams.value !== undefined &&
+          blockTime.value !== undefined,
       ),
     },
   );
@@ -92,6 +96,7 @@ export const useLiquidityProvidersQuery = () => {
   const sifchainClients = useSifchainClients();
   const tokenRegistryEntriesQuery = useTokenRegistryEntriesQuery();
   const rewardsParamsQuery = useRewardsParamsQuery();
+  const { data: blockTime } = useBlockTimeQuery();
   const { services, config } = useCore();
 
   return useQuery(
@@ -143,6 +148,7 @@ export const useLiquidityProvidersQuery = () => {
                       },
                       rewardsParamsQuery.data.value.params,
                       currentHeight,
+                      blockTime.value ?? 0,
                     ),
             };
           },
@@ -157,7 +163,8 @@ export const useLiquidityProvidersQuery = () => {
           sifchainClients.signingClientStatus === "fulfilled" &&
           sifchainClients.queryClientStatus === "fulfilled" &&
           tokenRegistryEntriesQuery.data.value !== undefined &&
-          rewardsParamsQuery.data.value !== undefined,
+          rewardsParamsQuery.data.value !== undefined &&
+          blockTime.value !== undefined,
       ),
     },
   );
