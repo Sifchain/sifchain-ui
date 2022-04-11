@@ -51,7 +51,7 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[260px] text-left justify-start",
+    class: "w-[388px] text-left justify-start",
     sortable: true,
   },
   {
@@ -65,18 +65,6 @@ export const COLUMNS: PoolPageColumn[] = [
         calculated as{" "}
         <span class="font-mono">24hour_trading_volume / pool_depth</span> for
         each pool.
-      </div>
-    ),
-  },
-  {
-    id: "rewardApy",
-    name: "Reward APR (APY)",
-    class: "w-[150px] text-right justify-end",
-    sortable: true,
-    help: (
-      <div>
-        The Reward APY is calculated as the rate of return from the given reward
-        APR, compounded weekly.
       </div>
     ),
   },

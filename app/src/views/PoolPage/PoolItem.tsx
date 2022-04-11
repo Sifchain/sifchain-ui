@@ -292,20 +292,6 @@ export default defineComponent({
           </div>
           <div
             class={[
-              COLUMNS_LOOKUP.rewardApy.class,
-              "flex items-center font-mono",
-            ]}
-          >
-            {this.$props.poolStat?.rewardAPY != null
-              ? `${parseFloat(this.$props.poolStat?.rewardAPY || "0").toFixed(
-                  0,
-                )}% (${aprToWeeklyCompoundedApy(
-                  parseFloat(this.$props.poolStat?.rewardAPY || "0"),
-                ).toFixed(0)}%)`
-              : "..."}
-          </div>
-          <div
-            class={[
               COLUMNS_LOOKUP.userShare.class,
               "flex items-center font-mono",
             ]}

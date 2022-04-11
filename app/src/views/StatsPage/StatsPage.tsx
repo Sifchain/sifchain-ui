@@ -71,24 +71,6 @@ export default defineComponent({
           </div>
         ),
       },
-      {
-        name: "Reward APR (APY)",
-        sortBy: "rewardApy",
-        class: "min-w-[140px] text-right",
-        ref: ref<HTMLElement>(),
-        message: (
-          <div>
-            The Reward APY is calculated as the rate of return from the given
-            reward APR, compounded weekly.
-          </div>
-        ),
-      },
-      {
-        name: "Total APR",
-        sortBy: "totalApy",
-        class: "min-w-[80px] text-right",
-        ref: ref<HTMLElement>(),
-      },
     ];
     const colStyles = computed(() => {
       return columns.map((col) => {
@@ -109,8 +91,8 @@ export default defineComponent({
     return () => {
       if (res.isLoading.value) {
         return (
-          <div class="absolute left-0 top-[180px] w-full flex justify-center">
-            <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+          <div class="absolute left-0 top-[180px] flex w-full justify-center">
+            <div class="flex h-[80px] w-[80px] items-center justify-center rounded-lg bg-black bg-opacity-50">
               <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
             </div>
           </div>
@@ -143,7 +125,7 @@ export default defineComponent({
                       class={[column.class]}
                     >
                       <div
-                        class="inline-flex items-center cursor-pointer opacity-50 hover:opacity-60"
+                        class="inline-flex cursor-pointer items-center opacity-50 hover:opacity-60"
                         onClick={() => {
                           if (state.sortBy === column.sortBy) {
                             state.sortDirection =
@@ -164,7 +146,7 @@ export default defineComponent({
                         {state.sortBy === column.sortBy && (
                           <AssetIcon
                             icon="interactive/arrow-down"
-                            class="transition-all w-[12px] h-[12px]"
+                            class="h-[12px] w-[12px] transition-all"
                             style={{
                               transform:
                                 state.sortDirection === "asc"
@@ -197,7 +179,7 @@ export default defineComponent({
                   return (
                     <tr
                       key={item.asset.symbol}
-                      class="align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80"
+                      class="h-8 border-b border-solid border-gray-200 border-opacity-80 align-middle last:border-transparent hover:opacity-80"
                     >
                       <td class="align-middle">
                         <div class="flex items-center">
@@ -211,12 +193,12 @@ export default defineComponent({
                           ).toUpperCase()}
                         </div>
                       </td>
-                      <td class="align-middle text-right text-mono">
+                      <td class="text-mono text-right align-middle">
                         ${prettyNumber(item.price, 3)}
                       </td>
                       <td
                         class={[
-                          "align-middle text-mono text-right",
+                          "text-mono text-right align-middle",
                           item.arbitrage == null
                             ? "text-gray-800"
                             : item.arbitrage < 0
@@ -228,24 +210,14 @@ export default defineComponent({
                           ? "N/A"
                           : `${prettyNumber(Math.abs(item.arbitrage))}%`}
                       </td>
-                      <td class="align-middle text-right text-mono">
+                      <td class="text-mono text-right align-middle">
                         ${prettyNumber(item.depth * 2)}
                       </td>
-                      <td class="align-middle text-right text-mono">
+                      <td class="text-mono text-right align-middle">
                         ${prettyNumber(item.volume)}
                       </td>
-                      <td class="align-middle text-right text-mono">
+                      <td class="text-mono text-right align-middle">
                         {item.poolApy}%
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        {(+item.rewardApy || 0).toFixed(0)}% (
-                        {aprToWeeklyCompoundedApy(+item.rewardApy || 0).toFixed(
-                          0,
-                        )}
-                        %)
-                      </td>
-                      <td class="align-middle text-right text-mono">
-                        {item.totalApy}%
                       </td>
                     </tr>
                   );
