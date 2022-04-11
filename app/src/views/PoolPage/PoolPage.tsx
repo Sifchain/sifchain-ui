@@ -264,8 +264,11 @@ export default defineComponent({
                             unlock.eta === undefined
                               ? undefined
                               : formatDistance(new Date(), unlock.eta),
-                          isRemovingInProgress:
+                          isRemovalInProgress:
                             this.removeLiquidityMutation.isLoading.value,
+                          isActiveRemoval:
+                            this.removeLiquidityMutation.variables.value
+                              ?.requestHeight === unlock.requestHeight,
                           onRemoveRequest: () =>
                             this.removeLiquidityMutation.mutate({
                               requestHeight: unlock.requestHeight,
