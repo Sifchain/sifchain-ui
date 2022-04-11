@@ -1,4 +1,5 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
+import { useBlockTimeQuery } from "@/domains/statistics/queries/blockTime";
 import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
 import { useCore } from "@/hooks/useCore";
 import { isNil } from "@/utils/assertion";
@@ -32,6 +33,7 @@ export const useUnlockLiquidityMutation = () => {
   const { services } = useCore();
   const tokenEntriesQuery = useTokenRegistryEntriesQuery({ enabled: false });
   const { data: rewardsParams } = useRewardsParamsQuery();
+  const blockTimeQuery = useBlockTimeQuery();
 
   return useMutation(
     "unlockLiquidity",
@@ -64,6 +66,7 @@ export const useUnlockLiquidityMutation = () => {
           { value: "0", fractionalDigits: 0 },
           rewardsParams.value?.params,
           await signingClient.getHeight(),
+          (await blockTimeQuery.refetch.value()).data ?? 0,
         );
 
         if (lp.unlocks.filter((x) => !x.expired).length > 0) {
