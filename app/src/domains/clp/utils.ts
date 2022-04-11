@@ -4,12 +4,8 @@ import {
   LiquidityUnlock,
 } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import BigNumber from "bignumber.js";
-import { addSeconds } from "date-fns";
+import { addMilliseconds } from "date-fns";
 import Long from "long";
-
-// TODO: this shouldn't be here
-// see if this can be extracted out or fetch from external service
-const EST_SECONDS_PER_BLOCK = 5;
 
 const addDetailToUnlock = (
   unlock: LiquidityUnlock,
@@ -18,6 +14,7 @@ const addDetailToUnlock = (
   totalUnits: BigNumber,
   totalNativeAssets: BigNumber,
   totalExternalAssets: BigNumber,
+  estimatedBlockTimeMs: number,
 ) => {
   const lockPeriod = params?.liquidityRemovalLockPeriod ?? Long.ZERO;
   const unlockedFromHeight = unlock.requestHeight.add(lockPeriod).toNumber();
@@ -31,11 +28,14 @@ const addDetailToUnlock = (
   const eta =
     blocksUntilUnlock <= 0
       ? undefined
-      : addSeconds(new Date(), EST_SECONDS_PER_BLOCK * blocksUntilUnlock);
+      : addMilliseconds(new Date(), estimatedBlockTimeMs * blocksUntilUnlock);
   const expiration =
     blockUntilExpiration <= 0
       ? undefined
-      : addSeconds(new Date(), EST_SECONDS_PER_BLOCK * blockUntilExpiration);
+      : addMilliseconds(
+          new Date(),
+          estimatedBlockTimeMs * blockUntilExpiration,
+        );
 
   const units = new BigNumber(unlock.units);
   const unlockPercentage = units.dividedBy(totalUnits);
@@ -67,6 +67,7 @@ export const addDetailToLiquidityProvider = (
   externalAsset: { value: string; fractionalDigits: number },
   params: RewardParams,
   currentHeight: number,
+  estimatedBlockTimeMs: number,
 ) => {
   return {
     ...liquidityProvider,
@@ -83,6 +84,7 @@ export const addDetailToLiquidityProvider = (
           new BigNumber(externalAsset.value).shiftedBy(
             -externalAsset.fractionalDigits,
           ),
+          estimatedBlockTimeMs,
         ),
       )
       // Needed as unlock get set to 0 before they are removed by sifnode
