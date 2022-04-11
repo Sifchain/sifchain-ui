@@ -101,8 +101,12 @@ export default defineComponent({
             </span>
           </span>,
           <div class="flex items-center gap-[4px] font-mono">
-            <div>{data.aPerBRatioProjectedMessage.value}</div>
-            <TokenIcon asset={data.fromAsset}></TokenIcon>
+            <div>
+              {isPMTPEnabled
+                ? data.aPerBRatioMessage.value
+                : data.aPerBRatioProjectedMessage.value}
+            </div>
+            <TokenIcon asset={data.fromAsset} />
           </div>,
         ],
         [
@@ -112,8 +116,12 @@ export default defineComponent({
             <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>
           </span>,
           <div class="flex items-center gap-[4px] font-mono">
-            <div>{data.bPerARatioProjectedMessage.value}</div>
-            <TokenIcon asset={data.toAsset}></TokenIcon>
+            <div>
+              {isPMTPEnabled
+                ? data.bPerARatioMessage.value
+                : data.bPerARatioProjectedMessage.value}
+            </div>
+            <TokenIcon asset={data.toAsset} />
           </div>,
         ],
         [
