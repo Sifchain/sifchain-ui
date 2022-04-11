@@ -8,8 +8,7 @@ import { formatAssetAmount } from "@/components/utils";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useRowanPrice } from "@/hooks/useRowanPrice";
-import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
-import { isNilOrWhitespace } from "@/utils/assertion";
+import { isNil, isNilOrWhitespace } from "@/utils/assertion";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
@@ -37,6 +36,15 @@ export default defineComponent({
         isRemovalInProgress: boolean;
         isActiveRemoval: boolean;
       }>,
+      required: false,
+    },
+    currentRewardPeriod: {
+      type: Object as PropType<
+        | {
+            endEta: string;
+          }
+        | undefined
+      >,
       required: false,
     },
     pool: {
@@ -159,6 +167,16 @@ export default defineComponent({
           </div>,
         ],
         [
+          "Rewards paid to the pool for current period",
+          <span class="font-mono">
+            {this.poolStat?.rewardPeriodNativeDistributed}
+          </span>,
+        ],
+        this.currentRewardPeriod !== undefined && [
+          "Rewards time remaining for current period",
+          <span class="font-mono">{this.currentRewardPeriod.endEta}</span>,
+        ],
+        [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">
             {prettyNumber(+formatAssetAmount(this.externalAmount), 5)}
@@ -214,9 +232,7 @@ export default defineComponent({
           "Pool TVL (USD)",
           <span class="font-mono">
             {this.$props.poolStat?.poolDepth != null
-              ? `${prettyNumber(
-                  parseFloat(this.$props.poolStat?.poolDepth || "0") * 2,
-                )}`
+              ? `${prettyNumber(this.$props.poolStat?.poolDepth * 2)}`
               : "..."}
           </span>,
         ],
@@ -224,7 +240,7 @@ export default defineComponent({
           "Trade Volume 24hr",
           <span class="font-mono">
             {this.$props.poolStat?.volume != null
-              ? prettyNumber(parseFloat(this.$props.poolStat?.volume || "0"))
+              ? prettyNumber(this.$props.poolStat?.volume ?? 0)
               : "..."}
           </span>,
         ],
@@ -237,7 +253,7 @@ export default defineComponent({
       "border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
 
     return (
-      <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent hover:opacity-80">
+      <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent">
         <div
           onClick={() => this.toggleExpanded()}
           class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
@@ -284,24 +300,8 @@ export default defineComponent({
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
-            {this.$props.poolStat?.poolAPY != null
-              ? `${parseFloat(this.$props.poolStat?.poolAPY || "0").toFixed(
-                  2,
-                )}%`
-              : "..."}
-          </div>
-          <div
-            class={[
-              COLUMNS_LOOKUP.rewardApy.class,
-              "flex items-center font-mono",
-            ]}
-          >
-            {this.$props.poolStat?.rewardAPY != null
-              ? `${parseFloat(this.$props.poolStat?.rewardAPY || "0").toFixed(
-                  0,
-                )}% (${aprToWeeklyCompoundedApy(
-                  parseFloat(this.$props.poolStat?.rewardAPY || "0"),
-                ).toFixed(0)}%)`
+            {!isNil(this.$props.poolStat?.poolApr)
+              ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
           <div

@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
 import { useRemoveLiquidityMutation } from "@/domains/clp/mutation/liquidity";
+import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import BigNumber from "bignumber.js";
@@ -40,6 +41,7 @@ export default defineComponent({
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
+      currentRewardPeriod: useCurrentRewardPeriod(),
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
@@ -111,16 +113,10 @@ export default defineComponent({
             const aAsset = a.pool.externalAmount!.asset;
             const bAsset = b.pool.externalAmount!.asset;
             return aAsset.displaySymbol.localeCompare(bAsset.displaySymbol);
-          } else if (this.$data.sortBy === "rewardApy") {
-            return (
-              parseFloat(b.poolStat?.rewardAPY || "0") -
-              parseFloat(a.poolStat?.rewardAPY || "0")
-            );
+          } else if (this.$data.sortBy === "rewardApr") {
+            return (b.poolStat?.rewardApr ?? 0) - (a.poolStat?.rewardApr ?? 0);
           } else {
-            return (
-              parseFloat(b.poolStat?.poolAPY || "0") -
-              parseFloat(a.poolStat?.poolAPY || "0")
-            );
+            return (b.poolStat?.poolApr ?? 0) - (a.poolStat?.poolApr ?? 0);
           }
         })
         // Then sort by balance
@@ -164,7 +160,7 @@ export default defineComponent({
           </div>
         ) : (
           <PageCard
-            class="w-[900px] !max-w-[1000px]"
+            class="w-[828px] !max-w-[1000px]"
             heading="Pool"
             iconName="navigation/pool"
             withOverflowSpace
@@ -244,8 +240,20 @@ export default defineComponent({
                 ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
               const unlock = filteredUnlock?.[0];
 
+              const currentRewardPeriod = this.currentRewardPeriod.data.value;
+
               return (
                 <PoolItem
+                  currentRewardPeriod={
+                    currentRewardPeriod === undefined
+                      ? undefined
+                      : {
+                          endEta: formatDistance(
+                            new Date(),
+                            currentRewardPeriod.estimatedRewardPeriodEndDate,
+                          ),
+                        }
+                  }
                   unLockable={isUnlockable}
                   unlock={
                     unlock === undefined
