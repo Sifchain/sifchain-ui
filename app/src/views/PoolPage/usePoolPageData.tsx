@@ -24,7 +24,7 @@ export type PoolPageColumnId =
   | "token"
   | "apy"
   | "gainLoss"
-  | "rewardApy"
+  | "rewardApr"
   | "userShare"
   | "userValue";
 
@@ -51,33 +51,20 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[260px] text-left justify-start",
+    class: "w-[388px] text-left justify-start",
     sortable: true,
   },
   {
     id: "apy",
-    name: "Pool APY",
+    name: "Pool APR",
     class: "w-[128px] text-right justify-end",
     sortable: true,
     help: (
-      <div>
-        Pool APR is an estimate of trading fees generated from this pool, and is
-        calculated as{" "}
-        <span class="font-mono">24hour_trading_volume / pool_depth</span> for
-        each pool.
-      </div>
-    ),
-  },
-  {
-    id: "rewardApy",
-    name: "Reward APR (APY)",
-    class: "w-[150px] text-right justify-end",
-    sortable: true,
-    help: (
-      <div>
-        The Reward APY is calculated as the rate of return from the given reward
-        APR, compounded weekly.
-      </div>
+      <code class="text-xs">
+        Pool reward APR = Total rewards distributed in current program / (Total
+        seconds passed in current program * Current pool balance) * (Total
+        seconds per year)
+      </code>
     ),
   },
   {

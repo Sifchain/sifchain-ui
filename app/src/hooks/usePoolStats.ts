@@ -1,11 +1,10 @@
-import { computed } from "vue";
-import { IAsset } from "@sifchain/sdk";
-
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { symbolWithoutPrefix } from "@/utils/symbol";
+import { IAsset } from "@sifchain/sdk";
+import { computed } from "vue";
+import { useQuery } from "vue-query";
 import { useNativeChain } from "./useChains";
 import { useCore } from "./useCore";
-import { useQuery } from "vue-query";
 
 export interface PoolStatsResponseData {
   statusCode: number;
@@ -21,13 +20,19 @@ interface Body {
 
 export interface PoolStat {
   symbol: string;
-  priceToken: number | null;
-  poolDepth: string | null;
-  volume: string | null;
-  arb?: string | null;
-  poolAPY: string;
-  rewardAPY: string;
-  totalAPY: string;
+  priceToken: number;
+  poolDepth: number;
+  poolTVL: number;
+  volume: number;
+  arb: number;
+  dailySwapFees: number;
+  poolBalance: number;
+  accruedNumSecsRewards: number;
+  rewardPeriodNativeDistributed: number;
+  secsPerYear: number;
+  tradingApr: number;
+  rewardApr: number;
+  poolApr: number;
 }
 
 export interface Headers {
@@ -73,38 +78,7 @@ export function usePoolStats() {
       const rewardPrograms = await services.data.getRewardsPrograms();
 
       const response = {
-        poolData: {
-          ...poolData,
-          pools: poolData.pools.map((p) => {
-            const poolAPY = p.poolAPY
-              ? Number(p.poolAPY)
-              : (parseFloat(p?.volume || "0") /
-                  parseFloat(p?.poolDepth || "0")) *
-                100;
-
-            const rewardAPY = rewardPrograms.reduce((acc, program) => {
-              const incentivisedSymbols = program.incentivizedPoolSymbols.map(
-                (x) => x.slice(1),
-              );
-
-              const isIndividuallyIncentivized =
-                program.incentivizedPoolSymbols?.includes(p.symbol) ||
-                incentivisedSymbols.includes(p.symbol);
-
-              if (program.isUniversal || isIndividuallyIncentivized) {
-                return acc + program.summaryAPY;
-              }
-              return acc;
-            }, 0);
-
-            return {
-              ...p,
-              poolAPY: poolAPY.toFixed(1),
-              rewardAPY: rewardAPY.toFixed(1),
-              totalAPY: (poolAPY + rewardAPY).toFixed(1),
-            };
-          }),
-        },
+        poolData: poolData,
         liqAPY: 0,
         rowanUsd: poolData.rowanUSD,
       };
