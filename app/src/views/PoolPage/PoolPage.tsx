@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
 import { useRemoveLiquidityMutation } from "@/domains/clp/mutation/liquidity";
+import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import BigNumber from "bignumber.js";
@@ -40,6 +41,7 @@ export default defineComponent({
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
+      currentRewardPeriod: useCurrentRewardPeriod(),
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
@@ -238,8 +240,20 @@ export default defineComponent({
                 ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
               const unlock = filteredUnlock?.[0];
 
+              const currentRewardPeriod = this.currentRewardPeriod.data.value;
+
               return (
                 <PoolItem
+                  currentRewardPeriod={
+                    currentRewardPeriod === undefined
+                      ? undefined
+                      : {
+                          endEta: formatDistance(
+                            new Date(),
+                            currentRewardPeriod.estimatedRewardPeriodEndDate,
+                          ),
+                        }
+                  }
                   unLockable={isUnlockable}
                   unlock={
                     unlock === undefined

@@ -38,6 +38,15 @@ export default defineComponent({
       }>,
       required: false,
     },
+    currentRewardPeriod: {
+      type: Object as PropType<
+        | {
+            endEta: string;
+          }
+        | undefined
+      >,
+      required: false,
+    },
     pool: {
       type: Object as PropType<Pool>,
       required: true,
@@ -156,6 +165,16 @@ export default defineComponent({
               size={14}
             />
           </div>,
+        ],
+        [
+          "Rewards paid to the pool for current period",
+          <span class="font-mono">
+            {this.poolStat?.rewardPeriodNativeDistributed}
+          </span>,
+        ],
+        this.currentRewardPeriod !== undefined && [
+          "Rewards time remaining for current period",
+          <span class="font-mono">{this.currentRewardPeriod.endEta}</span>,
         ],
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
