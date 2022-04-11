@@ -5,4 +5,4 @@ import { calculateFee, GasPrice } from "@cosmjs/stargate";
 
 export const DEFAULT_GAS_PRICE = GasPrice.fromString("0.5rowan");
 
-export const DEFAULT_FEE = calculateFee(500_000, DEFAULT_GAS_PRICE);
+export const DEFAULT_FEE = calculateFee(250_000, DEFAULT_GAS_PRICE);
