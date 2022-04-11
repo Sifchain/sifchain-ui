@@ -41,6 +41,15 @@ export default defineComponent({
     };
 
     const riskContent = computed(() => {
+      if (isPMTPEnabled && !data.asyncPooling.value) {
+        return (
+          <>
+            When pooling with only a single asset, we will automatically perform
+            a swap for equal value of the other asset to keep the pool balanced
+          </>
+        );
+      }
+
       if (data.riskFactorStatus.value && !data.asyncPooling.value) {
         return (
           <>
@@ -101,8 +110,12 @@ export default defineComponent({
             </span>
           </span>,
           <div class="flex items-center gap-[4px] font-mono">
-            <div>{data.aPerBRatioProjectedMessage.value}</div>
-            <TokenIcon asset={data.fromAsset}></TokenIcon>
+            <div>
+              {isPMTPEnabled
+                ? data.aPerBRatioMessage.value
+                : data.aPerBRatioProjectedMessage.value}
+            </div>
+            <TokenIcon asset={data.fromAsset} />
           </div>,
         ],
         [
@@ -112,8 +125,12 @@ export default defineComponent({
             <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>
           </span>,
           <div class="flex items-center gap-[4px] font-mono">
-            <div>{data.bPerARatioProjectedMessage.value}</div>
-            <TokenIcon asset={data.toAsset}></TokenIcon>
+            <div>
+              {isPMTPEnabled
+                ? data.bPerARatioMessage.value
+                : data.bPerARatioProjectedMessage.value}
+            </div>
+            <TokenIcon asset={data.toAsset} />
           </div>,
         ],
         [

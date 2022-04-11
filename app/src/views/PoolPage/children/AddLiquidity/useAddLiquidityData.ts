@@ -7,16 +7,17 @@ import {
   Pool,
   TransactionStatus,
 } from "@sifchain/sdk";
+import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
 
+import { accountStore } from "@/store/modules/accounts";
 import { useWalletButton } from "@/hooks/useWalletButton";
 import { useCore } from "@/hooks/useCore";
-import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
 import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
 import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { formatAssetAmount, formatNumber } from "@/components/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
-import { accountStore } from "@/store/modules/accounts";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
+import { flagsStore } from "@/store/modules/flags";
 
 export const useAddLiquidityData = () => {
   const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
@@ -34,9 +35,7 @@ export const useAddLiquidityData = () => {
     fromAmount,
     toAmount,
     toSymbol,
-  } = useCurrencyFieldState({
-    pooling: ref(true),
-  });
+  } = useCurrencyFieldState({ pooling: ref(true) });
 
   const fromSymbol = computed({
     get() {
@@ -342,6 +341,10 @@ export const useAddLiquidityData = () => {
     formatNumber,
     poolUnits: totalLiquidityProviderUnits,
     riskFactorStatus: computed<"" | "bad" | "danger" | "warning">(() => {
+      if (flagsStore.state.pmtp && !asyncPooling.value) {
+        return "warning";
+      }
+
       if (!riskFactor.value || asyncPooling.value) return "";
       if (riskFactor.value.lessThanOrEqual("0.01")) {
         return "";

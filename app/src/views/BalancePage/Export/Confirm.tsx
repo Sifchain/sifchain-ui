@@ -10,7 +10,7 @@ export default defineComponent({
   name: "ExportConfirmModal",
   setup() {
     const exportData = useExportData();
-    const exportNetwork = exportStore.refs.draft.network.computed();
+
     return () => (
       <Modal
         heading={exportData.headingRef.value}
@@ -18,32 +18,11 @@ export default defineComponent({
         onClose={exportData.exitExport}
         showClose
       >
-        <div class="p-4 bg-gray-base rounded-lg">
+        <div class="bg-gray-base rounded-lg p-4">
           <Form.Details details={exportData.detailsRef.value} />
         </div>
-
-        {
-          // If it's an IBC export of a token w/ high precision (needs to be batched)
-          // warn user about high fees and point them to the github issue so we can get community
-          // support
-          // Leave commented out until we determine the path forward for
-          // exportNetwork.value === Network.COSMOSHUB &&
-          //   exportData?.computedExportAssetAmount?.value?.asset?.decimals &&
-          //   exportData?.computedExportAssetAmount?.value?.asset?.decimals >=
-          //     18 &&
-          //   exportData?.computedExportAssetAmount.value?.amount.greaterThanOrEqual(
-          //     "1000",
-          //   ) && (
-          //     <p class="mt-[10px] text-base">
-          //       <div class="font-bold">Please Note *</div>
-          //       Your funds will be available for use on Sifchain after about 10
-          //       minutes. However in some rare cases, this action can take up to
-          //       60 minutes.
-          //     </p>
-          //   )
-        }
         <Button.CallToAction
-          class="w-full mt-[10px]"
+          class="mt-[10px] w-full"
           onClick={() => {
             exportData.runExport();
             router.push(
