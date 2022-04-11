@@ -4,10 +4,7 @@ import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import { formatAssetAmount } from "@/components/utils";
 import AssetIcon from "@/components/AssetIcon";
-import { defineComponent, computed } from "vue";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import { format } from "@sifchain/sdk";
+import { defineComponent } from "vue";
 import { SwapDetails } from "../components/SwapDetails";
 import { useSwapPageData } from "../useSwapPageData";
 
@@ -24,39 +21,38 @@ export const ConfirmSwap = defineComponent({
         >
           <Form.FieldSet>
             <div class="w-full px-[4px]">
-              <div class="w-full flex flex-row justify-between">
+              <div class="flex w-full flex-row justify-between">
                 <div class="flex flex-row items-center">
                   {data.toAsset.value && (
                     <TokenIcon asset={data.fromAsset} size={22}></TokenIcon>
                   )}
-                  <span class="ml-[10px] font-medium text-md">
+                  <span class="text-md ml-[10px] font-medium">
                     {data.fromAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>
                 <div class="font-mono">
-                  {data.fromFieldAmount.value &&
-                    formatAssetAmount(data.fromFieldAmount.value)}
+                  {data.fromFieldAmount &&
+                    formatAssetAmount(data.fromFieldAmount)}
                 </div>
               </div>
-              <div class="w-full my-[10px] flex justify-center">
+              <div class="my-[10px] flex w-full justify-center">
                 <AssetIcon
                   class="text-accent-base"
                   icon="interactive/chevron-down"
                   size={20}
                 ></AssetIcon>
               </div>
-              <div class="w-full flex flex-row justify-between">
+              <div class="flex w-full flex-row justify-between">
                 <div class="flex items-center">
                   {data.toAsset.value && (
                     <TokenIcon asset={data.toAsset} size={22}></TokenIcon>
                   )}
-                  <span class="ml-[10px] font-medium text-md">
+                  <span class="text-md ml-[10px] font-medium">
                     {data.toAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>
                 <div class="font-mono">
-                  {data.toFieldAmount.value &&
-                    formatAssetAmount(data.toFieldAmount.value)}
+                  {data.toFieldAmount && formatAssetAmount(data.toFieldAmount)}
                 </div>
               </div>
             </div>
@@ -72,9 +68,6 @@ export const ConfirmSwap = defineComponent({
               minimumReceived={data.minimumReceived.value}
             />
           </Form.FieldSet>
-          {/* <div class="text-center w-full font-medium mt-[10px]">
-            Confirm this transaction in your wallet.
-          </div> */}
           <Button.CallToAction
             class="mt-[10px]"
             onClick={() => data.handleAskConfirmClicked()}

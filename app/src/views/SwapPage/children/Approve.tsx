@@ -1,12 +1,12 @@
-import { Form, FormDetailsType } from "@/components/Form";
-import Modal from "@/components/Modal";
+import { Network } from "@sifchain/sdk";
+import { defineComponent, watchEffect, onMounted, ref } from "vue";
+
+import { FormDetailsType } from "@/components/Form";
 import { TokenIcon } from "@/components/TokenIcon";
-import { defineComponent, computed, watchEffect, onMounted, ref } from "vue";
-import { useSwapPageData } from "../useSwapPageData";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import { propsToAttrMap } from "@vue/shared";
-import { Network } from "@sifchain/sdk";
+
+import { useSwapPageData } from "../useSwapPageData";
 
 export const ApproveSwap = defineComponent({
   setup() {
