@@ -16,6 +16,7 @@ import Toggle from "@/components/Toggle";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
+import { flagsStore } from "@/store/modules/flags";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -123,6 +124,7 @@ export default defineComponent({
         ],
       ],
     }));
+    const isPMTPEnabled = flagsStore.state.pmtp;
 
     return () => {
       if (data.modalStatus.value === "processing") {
@@ -262,7 +264,11 @@ export default defineComponent({
               errorType: data.riskFactorStatus.value || undefined,
               label: (
                 <div class="flex items-center justify-between">
-                  <span>Est. prices after pooling & pool share</span>
+                  <span>
+                    {isPMTPEnabled
+                      ? "Est. pool share after pooling"
+                      : "Est. prices after pooling & pool share"}
+                  </span>
                   {!!riskContent.value && (
                     <Tooltip
                       content={riskContent.value}
@@ -292,36 +298,40 @@ export default defineComponent({
                 </div>
               ),
               details: [
-                [
-                  <span>
-                    <span class="uppercase">
-                      {data.fromAsset.value?.displaySymbol}
-                    </span>{" "}
-                    per{" "}
-                    <span class="uppercase">
-                      {data.toAsset.value?.displaySymbol}
-                    </span>
-                  </span>,
-                  <div class="flex items-center gap-[4px] font-mono">
-                    <div>{data.aPerBRatioProjectedMessage.value}</div>
-                    <TokenIcon asset={data.fromAsset}></TokenIcon>
-                  </div>,
-                ],
-                [
-                  <span>
-                    <span class="uppercase">
-                      {data.toAsset.value?.displaySymbol}
-                    </span>{" "}
-                    per{" "}
-                    <span class="uppercase">
-                      {data.fromAsset.value?.displaySymbol}
-                    </span>
-                  </span>,
-                  <div class="flex items-center gap-[4px] font-mono">
-                    <div>{data.bPerARatioProjectedMessage.value}</div>
-                    <TokenIcon asset={data.toAsset}></TokenIcon>
-                  </div>,
-                ],
+                ...((isPMTPEnabled
+                  ? ([] as [any, any][])
+                  : [
+                      [
+                        <span>
+                          <span class="uppercase">
+                            {data.fromAsset.value?.displaySymbol}
+                          </span>{" "}
+                          per{" "}
+                          <span class="uppercase">
+                            {data.toAsset.value?.displaySymbol}
+                          </span>
+                        </span>,
+                        <div class="flex items-center gap-[4px] font-mono">
+                          <div>{data.aPerBRatioProjectedMessage.value}</div>
+                          <TokenIcon asset={data.fromAsset}></TokenIcon>
+                        </div>,
+                      ],
+                      [
+                        <span>
+                          <span class="uppercase">
+                            {data.toAsset.value?.displaySymbol}
+                          </span>{" "}
+                          per{" "}
+                          <span class="uppercase">
+                            {data.fromAsset.value?.displaySymbol}
+                          </span>
+                        </span>,
+                        <div class="flex items-center gap-[4px] font-mono">
+                          <div>{data.bPerARatioProjectedMessage.value}</div>
+                          <TokenIcon asset={data.toAsset}></TokenIcon>
+                        </div>,
+                      ],
+                    ]) as [any, any][]),
                 [
                   <span>Your Share of Pool</span>,
                   <div class="flex items-center gap-[4px] font-mono">
