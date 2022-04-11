@@ -1,22 +1,18 @@
 import { AccountPool } from "@/business/store/pools";
-import {
-  useLiquidityProviderQuery,
-  useLiquidityProvidersQuery,
-} from "@/domains/clp/queries/liquidityProvider";
+import { useLiquidityProvidersQuery } from "@/domains/clp/queries/liquidityProvider";
 import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 import { useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import {
   usePublicPoolsSubscriber,
   useUserPoolsSubscriber,
 } from "@/hooks/usePoolsSubscriber";
-import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
+import { usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
 import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
-import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import { computed } from "@vue/reactivity";
+import { useQuery } from "vue-query";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
 
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
@@ -111,14 +107,13 @@ export const usePoolPageData = () => {
   useUserPoolsSubscriber({});
   usePublicPoolsSubscriber({});
 
-  const userPoolsRes = useAsyncDataCached(
-    "userPoolsData",
-    async () => {
+  const syncUserPoolQuery = useQuery(
+    ["userPoolsData", accountStore.refs.sifchain.connected.computed()],
+    () => {
       const address = accountStore.state.sifchain.address;
       if (!address) return;
       return useCore().usecases.clp.syncPools.syncUserPools(address);
     },
-    [accountStore.refs.sifchain.connected.computed()],
   );
 
   const rewardProgramsRes = useAsyncData(() =>
@@ -165,7 +160,7 @@ export const usePoolPageData = () => {
     isLoaded: computed(() => {
       return (
         !statsRes.isLoading.value &&
-        !userPoolsRes.isLoading.value &&
+        !syncUserPoolQuery.isLoading.value &&
         allPoolsData.value.length > 0 &&
         !accountStore.state.sifchain.connecting &&
         liquidityProvidersQuery.isFetched &&
@@ -173,5 +168,11 @@ export const usePoolPageData = () => {
       );
     }),
     allPoolsData,
+    reload: () => {
+      // NOTE: intentionally left out liquidityProvidersQuery & tokenRegistryEntriesQuery
+      // those cache are handled globally, need to refactor usePoolPageData and extract those query out if possible
+      rewardProgramsRes.reload.value();
+      syncUserPoolQuery.refetch.value();
+    },
   };
 };
