@@ -3,9 +3,9 @@ import { IAsset } from "@sifchain/sdk";
 
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { symbolWithoutPrefix } from "@/utils/symbol";
-import { useAsyncDataCached } from "./useAsyncDataCached";
 import { useNativeChain } from "./useChains";
 import { useCore } from "./useCore";
+import { useQuery } from "vue-query";
 
 export interface PoolStatsResponseData {
   statusCode: number;
@@ -36,54 +36,85 @@ export interface Headers {
 
 const hasLoggedError: Record<string, boolean> = {};
 
+export function useDataServicesPoolStats() {
+  const { services } = useCore();
+
+  const isPMTPEnabled = flagsStore.state.pmtp;
+
+  return useQuery(
+    ["pool-stats", isPMTPEnabled],
+    () =>
+      isPMTPEnabled
+        ? services.data.getTokenStatsPMTP()
+        : services.data.getTokenStats(),
+    {
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 5 * 60 * 1000,
+      retry: true,
+    },
+  );
+}
+
 export function usePoolStats() {
   const { store, services } = useCore();
 
-  const poolStatsRes = useAsyncDataCached("poolStats", async () => {
-    const { body: poolData } = flagsStore.state.pmtp
-      ? await services.data.getTokenStatsPMTP()
-      : await services.data.getTokenStats();
+  const isPMTPEnabled = flagsStore.state.pmtp;
 
-    const rewardPrograms = await services.data.getRewardsPrograms();
+  const poolStatsQuery = useDataServicesPoolStats();
 
-    const response = {
-      poolData: {
-        ...poolData,
-        pools: poolData.pools.map((p) => {
-          const poolAPY = p.poolAPY
-            ? Number(p.poolAPY)
-            : (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
-              100;
+  const poolStatsRes = useQuery(
+    ["poolStats", isPMTPEnabled],
+    async () => {
+      if (!poolStatsQuery.data.value) {
+        return;
+      }
+      const { body: poolData } = poolStatsQuery.data.value;
 
-          const rewardAPY = rewardPrograms.reduce((acc, program) => {
-            const incentivisedSymbols = program.incentivizedPoolSymbols.map(
-              (x) => x.slice(1),
-            );
+      const rewardPrograms = await services.data.getRewardsPrograms();
 
-            const isIndividuallyIncentivized =
-              program.incentivizedPoolSymbols?.includes(p.symbol) ||
-              incentivisedSymbols.includes(p.symbol);
+      const response = {
+        poolData: {
+          ...poolData,
+          pools: poolData.pools.map((p) => {
+            const poolAPY = p.poolAPY
+              ? Number(p.poolAPY)
+              : (parseFloat(p?.volume || "0") /
+                  parseFloat(p?.poolDepth || "0")) *
+                100;
 
-            if (program.isUniversal || isIndividuallyIncentivized) {
-              return acc + program.summaryAPY;
-            }
-            return acc;
-          }, 0);
+            const rewardAPY = rewardPrograms.reduce((acc, program) => {
+              const incentivisedSymbols = program.incentivizedPoolSymbols.map(
+                (x) => x.slice(1),
+              );
 
-          return {
-            ...p,
-            poolAPY: poolAPY.toFixed(1),
-            rewardAPY: rewardAPY.toFixed(1),
-            totalAPY: (poolAPY + rewardAPY).toFixed(1),
-          };
-        }),
-      },
-      liqAPY: 0,
-      rowanUsd: poolData.rowanUSD,
-    };
+              const isIndividuallyIncentivized =
+                program.incentivizedPoolSymbols?.includes(p.symbol) ||
+                incentivisedSymbols.includes(p.symbol);
 
-    return response;
-  });
+              if (program.isUniversal || isIndividuallyIncentivized) {
+                return acc + program.summaryAPY;
+              }
+              return acc;
+            }, 0);
+
+            return {
+              ...p,
+              poolAPY: poolAPY.toFixed(1),
+              rewardAPY: rewardAPY.toFixed(1),
+              totalAPY: (poolAPY + rewardAPY).toFixed(1),
+            };
+          }),
+        },
+        liqAPY: 0,
+        rowanUsd: poolData.rowanUSD,
+      };
+
+      return response;
+    },
+    {
+      enabled: poolStatsQuery.isSuccess,
+    },
+  );
 
   const isLoading = computed(() => {
     return poolStatsRes.isLoading.value || !Object.keys(store.pools).length;
