@@ -34,7 +34,8 @@ export default defineComponent({
         eta?: string;
         expiration?: string;
         onRemoveRequest: () => any;
-        isRemovingInProgress: boolean;
+        isRemovalInProgress: boolean;
+        isActiveRemoval: boolean;
       }>,
       required: false,
     },
@@ -394,10 +395,11 @@ export default defineComponent({
                     {this.unlock.ready && (
                       <Button.CallToActionSecondary
                         class="h-[46px] text-[17px] disabled:bg-inherit"
-                        disabled={this.unlock.isRemovingInProgress}
+                        disabled={this.unlock.isRemovalInProgress}
                         onClick={this.unlock.onRemoveRequest}
                       >
-                        {this.unlock.isRemovingInProgress ? (
+                        {this.unlock.isRemovalInProgress &&
+                        this.unlock.isActiveRemoval ? (
                           <AssetIcon
                             size={36}
                             icon="interactive/anim-racetrack-spinner"
