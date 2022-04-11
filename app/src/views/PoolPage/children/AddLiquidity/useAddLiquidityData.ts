@@ -17,6 +17,7 @@ import { formatAssetAmount, formatNumber } from "@/components/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { accountStore } from "@/store/modules/accounts";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
+import { flagsStore } from "@/store/modules/flags";
 
 export const useAddLiquidityData = () => {
   const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
@@ -342,6 +343,10 @@ export const useAddLiquidityData = () => {
     formatNumber,
     poolUnits: totalLiquidityProviderUnits,
     riskFactorStatus: computed<"" | "bad" | "danger" | "warning">(() => {
+      if (flagsStore.state.pmtp && !asyncPooling.value) {
+        return "warning";
+      }
+
       if (!riskFactor.value || asyncPooling.value) return "";
       if (riskFactor.value.lessThanOrEqual("0.01")) {
         return "";

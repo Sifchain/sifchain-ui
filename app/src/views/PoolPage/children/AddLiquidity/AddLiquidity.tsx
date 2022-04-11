@@ -41,6 +41,15 @@ export default defineComponent({
     };
 
     const riskContent = computed(() => {
+      if (isPMTPEnabled && !data.asyncPooling.value) {
+        return (
+          <>
+            When pooling with only a single asset, we will automatically perform
+            a swap for equal value of the other asset to keep the pool balanced
+          </>
+        );
+      }
+
       if (data.riskFactorStatus.value && !data.asyncPooling.value) {
         return (
           <>
