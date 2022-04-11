@@ -5,22 +5,33 @@ import { Network } from "@sifchain/sdk";
 import { computed } from "vue";
 import { useQuery } from "vue-query";
 import { MaybeRef } from "vue-query/lib/vue/types";
-import { useTokenRegistryEntryQuery } from "../../tokenRegistry/queries/tokenRegistry";
+import {
+  useTokenRegistryEntriesQuery,
+  useTokenRegistryEntryQuery,
+} from "../../tokenRegistry/queries/tokenRegistry";
 import { addDetailToLiquidityProvider } from "../utils";
+import { useRewardsParamsQuery } from "./params";
 
 // TODO: duplicate logic that needed to be cleanup, too tired, getting sloppy ==
+
+export const LIQUIDITY_PROVIDER_KEY = "liquidityProvider";
+export const LIQUIDITY_PROVIDERS_KEY = "liquidityProviders";
 
 export const useLiquidityProviderQuery = (
   externalAssetBaseDenom: MaybeRef<string>,
 ) => {
+  const { services, config } = useCore();
   const sifchainClients = useSifchainClients();
-  const { data: tokenRegistryEntry } = useTokenRegistryEntryQuery(
+  const { data: nativeAssetTokenEntry } = useTokenRegistryEntryQuery(
+    config.nativeAsset.symbol,
+  );
+  const { data: externalAssetTokenEntry } = useTokenRegistryEntryQuery(
     externalAssetBaseDenom,
   );
-  const { services } = useCore();
+  const { data: rewardsParams } = useRewardsParamsQuery();
 
   return useQuery(
-    ["liquidityProvider", externalAssetBaseDenom],
+    [LIQUIDITY_PROVIDER_KEY, externalAssetBaseDenom],
     async () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
@@ -32,22 +43,34 @@ export const useLiquidityProviderQuery = (
       const liquidityProvider =
         await sifchainClients.clpQueryClient.GetLiquidityProvider({
           lpAddress: walletAddress,
-          symbol: tokenRegistryEntry.value?.denom ?? "",
+          symbol: externalAssetTokenEntry.value?.denom ?? "",
         });
 
       const currentHeight = await sifchainClients.signingClient.getHeight();
-      const { params } = await sifchainClients.clpQueryClient.GetParams({});
+
+      const lpWithAddedDetails =
+        liquidityProvider.liquidityProvider === undefined ||
+        rewardsParams.value?.params === undefined
+          ? undefined
+          : addDetailToLiquidityProvider(
+              liquidityProvider.liquidityProvider,
+              {
+                value: liquidityProvider.nativeAssetBalance,
+                fractionalDigits:
+                  nativeAssetTokenEntry.value?.decimals.toNumber() ?? 0,
+              },
+              {
+                value: liquidityProvider.externalAssetBalance,
+                fractionalDigits:
+                  externalAssetTokenEntry.value?.decimals.toNumber() ?? 0,
+              },
+              rewardsParams.value.params,
+              currentHeight,
+            );
 
       const updatedLiquidityProvider = {
         ...liquidityProvider,
-        liquidityProvider: {
-          ...liquidityProvider.liquidityProvider,
-          unlocks: addDetailToLiquidityProvider(
-            liquidityProvider.liquidityProvider,
-            params,
-            currentHeight,
-          ),
-        },
+        liquidityProvider: lpWithAddedDetails,
       };
 
       return updatedLiquidityProvider;
@@ -57,7 +80,9 @@ export const useLiquidityProviderQuery = (
         () =>
           sifchainClients.signingClientStatus === "fulfilled" &&
           sifchainClients.queryClientStatus === "fulfilled" &&
-          tokenRegistryEntry.value !== undefined,
+          nativeAssetTokenEntry.value !== undefined &&
+          externalAssetTokenEntry.value !== undefined &&
+          rewardsParams.value !== undefined,
       ),
     },
   );
@@ -65,10 +90,12 @@ export const useLiquidityProviderQuery = (
 
 export const useLiquidityProvidersQuery = () => {
   const sifchainClients = useSifchainClients();
-  const { services } = useCore();
+  const tokenRegistryEntriesQuery = useTokenRegistryEntriesQuery();
+  const rewardsParamsQuery = useRewardsParamsQuery();
+  const { services, config } = useCore();
 
   return useQuery(
-    "liquidityProviders",
+    LIQUIDITY_PROVIDERS_KEY,
     async () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
@@ -82,19 +109,43 @@ export const useLiquidityProvidersQuery = () => {
         });
 
       const currentHeight = await sifchainClients.signingClient.getHeight();
-      const { params } = await sifchainClients.clpQueryClient.GetParams({});
+
+      const tokenEntries =
+        tokenRegistryEntriesQuery.data.value?.registry?.entries;
+      const nativeAssetTokenEntry = tokenEntries?.find(
+        (x) => x.baseDenom === config.nativeAsset.symbol,
+      );
 
       const updatedLiquidityProvider = {
         ...liquidityProviders,
         liquidityProviderData: liquidityProviders.liquidityProviderData.map(
-          (x) => ({
-            ...x,
-            liquidityProvider: addDetailToLiquidityProvider(
-              x.liquidityProvider,
-              params,
-              currentHeight,
-            ),
-          }),
+          (x) => {
+            const externalAssetTokenEntry = tokenEntries?.find(
+              (y) => y.baseDenom === x.liquidityProvider?.asset?.symbol,
+            );
+            return {
+              ...x,
+              liquidityProvider:
+                x.liquidityProvider === undefined ||
+                rewardsParamsQuery.data.value?.params === undefined
+                  ? undefined
+                  : addDetailToLiquidityProvider(
+                      x.liquidityProvider,
+                      {
+                        value: x.nativeAssetBalance,
+                        fractionalDigits:
+                          nativeAssetTokenEntry?.decimals.toNumber() ?? 0,
+                      },
+                      {
+                        value: x.externalAssetBalance,
+                        fractionalDigits:
+                          externalAssetTokenEntry?.decimals.toNumber() ?? 0,
+                      },
+                      rewardsParamsQuery.data.value.params,
+                      currentHeight,
+                    ),
+            };
+          },
         ),
       };
 
@@ -104,7 +155,9 @@ export const useLiquidityProvidersQuery = () => {
       enabled: computed(
         () =>
           sifchainClients.signingClientStatus === "fulfilled" &&
-          sifchainClients.queryClientStatus === "fulfilled",
+          sifchainClients.queryClientStatus === "fulfilled" &&
+          tokenRegistryEntriesQuery.data.value !== undefined &&
+          rewardsParamsQuery.data.value !== undefined,
       ),
     },
   );

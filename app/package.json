@@ -23,6 +23,7 @@
     "dat.gui": "^0.7.9",
     "date-fns": "^2.28.0",
     "flip-toolkit": "^7.0.13",
+    "immer": "^9.0.12",
     "normalize-scss": "^7.0.1",
     "p-limit": "^4.0.0",
     "p-props": "^5.0.0",
