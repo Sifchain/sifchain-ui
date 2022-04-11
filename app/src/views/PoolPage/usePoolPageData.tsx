@@ -24,7 +24,7 @@ export type PoolPageColumnId =
   | "token"
   | "apy"
   | "gainLoss"
-  | "rewardApy"
+  | "rewardApr"
   | "userShare"
   | "userValue";
 
@@ -56,7 +56,7 @@ export const COLUMNS: PoolPageColumn[] = [
   },
   {
     id: "apy",
-    name: "Pool APY",
+    name: "Pool APR",
     class: "w-[128px] text-right justify-end",
     sortable: true,
     help: (

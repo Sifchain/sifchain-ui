@@ -111,16 +111,10 @@ export default defineComponent({
             const aAsset = a.pool.externalAmount!.asset;
             const bAsset = b.pool.externalAmount!.asset;
             return aAsset.displaySymbol.localeCompare(bAsset.displaySymbol);
-          } else if (this.$data.sortBy === "rewardApy") {
-            return (
-              parseFloat(b.poolStat?.rewardAPY || "0") -
-              parseFloat(a.poolStat?.rewardAPY || "0")
-            );
+          } else if (this.$data.sortBy === "rewardApr") {
+            return (b.poolStat?.rewardApr ?? 0) - (a.poolStat?.rewardApr ?? 0);
           } else {
-            return (
-              parseFloat(b.poolStat?.poolAPY || "0") -
-              parseFloat(a.poolStat?.poolAPY || "0")
-            );
+            return (b.poolStat?.poolApr ?? 0) - (a.poolStat?.poolApr ?? 0);
           }
         })
         // Then sort by balance

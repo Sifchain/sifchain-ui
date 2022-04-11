@@ -6,7 +6,6 @@ import AssetIcon from "@/components/AssetIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
-import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
@@ -14,7 +13,7 @@ export default defineComponent({
   props: {},
   setup() {
     const { res, statsRef, state } = useStatsPageData({
-      sortBy: "rewardApy",
+      sortBy: "rewardApr",
       sortDirection: "desc",
     } as StatsPageState);
 
@@ -58,8 +57,8 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Pool APY",
-        sortBy: "poolApy",
+        name: "Pool APR",
+        sortBy: "poolApr",
         class: "min-w-[100px] text-right",
         ref: ref<HTMLElement>(),
         message: (
@@ -217,7 +216,7 @@ export default defineComponent({
                         ${prettyNumber(item.volume)}
                       </td>
                       <td class="text-mono text-right align-middle">
-                        {item.poolApy}%
+                        {item.poolApr}%
                       </td>
                     </tr>
                   );

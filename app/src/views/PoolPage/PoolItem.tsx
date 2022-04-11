@@ -8,8 +8,7 @@ import { formatAssetAmount } from "@/components/utils";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useRowanPrice } from "@/hooks/useRowanPrice";
-import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
-import { isNilOrWhitespace } from "@/utils/assertion";
+import { isNil, isNilOrWhitespace } from "@/utils/assertion";
 import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
@@ -214,9 +213,7 @@ export default defineComponent({
           "Pool TVL (USD)",
           <span class="font-mono">
             {this.$props.poolStat?.poolDepth != null
-              ? `${prettyNumber(
-                  parseFloat(this.$props.poolStat?.poolDepth || "0") * 2,
-                )}`
+              ? `${prettyNumber(this.$props.poolStat?.poolDepth * 2)}`
               : "..."}
           </span>,
         ],
@@ -224,7 +221,7 @@ export default defineComponent({
           "Trade Volume 24hr",
           <span class="font-mono">
             {this.$props.poolStat?.volume != null
-              ? prettyNumber(parseFloat(this.$props.poolStat?.volume || "0"))
+              ? prettyNumber(this.$props.poolStat?.volume ?? 0)
               : "..."}
           </span>,
         ],
@@ -284,10 +281,8 @@ export default defineComponent({
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
-            {this.$props.poolStat?.poolAPY != null
-              ? `${parseFloat(this.$props.poolStat?.poolAPY || "0").toFixed(
-                  2,
-                )}%`
+            {!isNil(this.$props.poolStat?.poolApr)
+              ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
           <div
