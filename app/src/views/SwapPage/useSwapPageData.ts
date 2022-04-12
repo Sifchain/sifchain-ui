@@ -325,6 +325,12 @@ export const useSwapPageData = () => {
     }
   });
 
+  const formattedMinimumReceived = computed(() => {
+    if (!minimumReceived.value) return "";
+    const { amount, asset } = minimumReceived.value;
+    return format(amount, asset, { mantissa: 18, trimMantissa: true });
+  });
+
   return {
     connected,
     handleFromSymbolClicked(next: () => void) {
@@ -372,11 +378,7 @@ export const useSwapPageData = () => {
     formattedToTokenBalance,
     fromFieldAmount,
     toFieldAmount,
-    minimumReceived: computed(() => {
-      if (!minimumReceived.value) return "";
-      const { amount, asset } = minimumReceived.value;
-      return format(amount, asset, { mantissa: 18, trimMantissa: true });
-    }),
+    minimumReceived: formattedMinimumReceived,
     toSymbol,
     priceRatio,
     priceImpact,
