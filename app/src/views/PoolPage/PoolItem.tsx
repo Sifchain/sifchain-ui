@@ -168,8 +168,13 @@ export default defineComponent({
         ],
         [
           "Rewards paid to the pool for current period",
-          <span class="font-mono">
-            {this.poolStat?.rewardPeriodNativeDistributed}
+          <span class="flex items-center font-mono">
+            {this.poolStat?.rewardPeriodNativeDistributed.toLocaleString()}
+            <TokenIcon
+              assetValue={useNativeChain().nativeAsset}
+              size={14}
+              class="ml-[3px]"
+            />
           </span>,
         ],
         this.currentRewardPeriod !== undefined && [
