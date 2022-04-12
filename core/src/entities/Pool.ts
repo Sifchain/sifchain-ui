@@ -12,81 +12,46 @@ import { Amount, IAmount } from "./Amount";
 
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
-function calculateReverseSwapResultPmtp(amount: IAssetAmount, pool: IPool) {
-  const fromRowan = pool.otherAsset(amount.asset).symbol === "rowan";
-  const toRowan = amount.asset.symbol === "rowan";
-
-  if (!pool.swapPrices || !(fromRowan || toRowan)) {
-    return pool.calcReverseSwapResult(amount);
+export function getNormalizedSwapPrice(swapAsset: IAsset, pool: IPool) {
+  if (!pool.swapPrices) {
+    throw new Error("Pool is missing 'swapPrices'");
   }
-
-  const otherAsset = pool.otherAsset(amount.asset);
-
-  const decimalsDelta = amount.decimals - otherAsset.decimals;
-
+  const otherAsset = pool.otherAsset(swapAsset);
+  const decimalsDelta = swapAsset.decimals - otherAsset.decimals;
   const decimalAdjust = Math.pow(10, Math.abs(decimalsDelta));
 
-  const swapPrice = toRowan
+  return swapAsset.symbol === "rowan"
     ? pool.swapPrices.native.divide(decimalAdjust)
     : pool.swapPrices.external.multiply(decimalAdjust);
-
-  const swapValue = amount.multiply(swapPrice);
-
-  return swapValue;
 }
 
-function calculateSwapResultPmtp(
-  fromAmount: IAssetAmount,
+export function calculateSwapResultPmtp(
+  inputAmount: IAssetAmount,
   pool: IPool,
-): IAssetAmount {
-  const fromRowan = fromAmount.asset.symbol === "rowan";
-  const toRowan = pool.otherAsset(fromAmount.asset).symbol === "rowan";
-
-  if (!pool.swapPrices || !(fromRowan || toRowan)) {
-    return pool.calcSwapResult(fromAmount);
+): IAmount {
+  if (!pool.swapPrices) {
+    throw new Error("Pool.swapPrices is required for PMTP swaps");
   }
 
-  const otherAsset = pool.otherAsset(fromAmount.asset);
+  const swapPrice = getNormalizedSwapPrice(inputAmount.asset, pool);
 
-  const decimalsDelta = fromAmount.decimals - otherAsset.decimals;
-
-  const decimalAdjust = Math.pow(10, Math.abs(decimalsDelta));
-
-  const swapPrice = fromRowan
-    ? pool.swapPrices.native.divide(decimalAdjust)
-    : pool.swapPrices.external.multiply(decimalAdjust);
-
-  const swapResult = fromAmount.multiply(swapPrice);
-
-  const result = AssetAmount(otherAsset, swapResult);
-
-  console.log({
-    decimalsDelta,
-    decimalAdjust,
-    assetSymbol: fromAmount.asset.symbol,
-    otherAssetSymbol: otherAsset.symbol,
-    result: result.toString(),
-    swapResult: swapResult.toString(),
-  });
-
-  return result;
+  return inputAmount.multiply(swapPrice);
 }
+
+export type SwapPrices = {
+  native: IAmount;
+  external: IAmount;
+};
 
 export class Pool extends Pair {
   poolUnits: IAmount;
-  swapPrices?: {
-    native: IAmount;
-    external: IAmount;
-  };
+  swapPrices?: SwapPrices;
 
   constructor(
     a: IAssetAmount,
     b: IAssetAmount,
     poolUnits?: IAmount,
-    swapPrices?: {
-      native: IAmount;
-      external: IAmount;
-    },
+    swapPrices?: SwapPrices,
   ) {
     super(a, b);
     this.swapPrices = swapPrices;
@@ -192,7 +157,7 @@ export class Pool extends Pair {
     }
 
     const reverseSwapResult = this.swapPrices
-      ? calculateReverseSwapResultPmtp(Sa, this)
+      ? calculateSwapResultPmtp(Sa, this)
       : calculateReverseSwapResult(Sa, Xa, Ya);
 
     return AssetAmount(otherAsset, reverseSwapResult);
