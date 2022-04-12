@@ -284,17 +284,31 @@ export function useSwapCalculator(input: {
 
     const slippage = Amount(input.slippage.value).divide(Amount("100"));
 
-    const priceImpact = pool.value
-      .calcPriceImpact(fromField.value.fieldAmount)
-      .divide(Amount("100"));
+    let minAmount = Amount("0");
 
-    const effeciveSlippageRate = Amount("1").subtract(
-      slippage.add(priceImpact),
-    );
+    if (pool.value.swapPrices) {
+      // pmptp minAmount calculation:
+      // subtracts not only the slippage, but also the priceImpact and providerFee
 
-    const minAmount = effeciveSlippageRate
-      .multiply(swapResult.value)
-      .subtract(providerFee.value);
+      const priceImpact = pool.value
+        .calcPriceImpact(fromField.value.fieldAmount)
+        .divide(Amount("100"));
+
+      const effeciveSlippageRate = Amount("1").subtract(
+        slippage.add(priceImpact),
+      );
+
+      minAmount = effeciveSlippageRate
+        .multiply(swapResult.value)
+        .subtract(providerFee.value);
+    } else {
+      // default minAmount calculation:
+      // only subtracts the slippage from the swap result
+
+      const effeciveSlippageRate = Amount("1").subtract(slippage);
+
+      minAmount = effeciveSlippageRate.multiply(swapResult.value);
+    }
 
     return AssetAmount(toField.value.asset, minAmount);
   });

@@ -14,7 +14,7 @@ import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
 import PageCard from "@/components/PageCard";
 import Layout from "@/components/Layout";
 import AssetIcon from "@/components/AssetIcon";
-import { Button } from "@/components/Button/Button";
+import Button from "@/components/Button";
 
 import { SwapDetails } from "./components/SwapDetailsV2";
 import { SlippageTolerance } from "./components/SlippageTolerance";
