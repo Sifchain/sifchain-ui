@@ -20,8 +20,13 @@ export type IAssetAmount = Readonly<IAsset> & {
   // Utilty operators common enough to live on this class
 
   /**
+   * @returns IAmount
+   *
    * Return the derived value for the AssetAmount based on the asset's decimals
-   * For example lets say we have one eth:
+   *
+   * @example
+   * //
+   * // Lets say we have one eth:
    *
    * AssetAmount("eth", "100000000000000000").toDerived().equalTo(Amount("1")); // true
    * AssetAmount("usdc", "1000000").toDerived().equalTo(Amount("1")); // true
@@ -45,7 +50,7 @@ export type IAssetAmount = Readonly<IAsset> & {
    *   const newAmount = ethAmount.multiply(usdcAmount);
    *   const newUsdcAmount = AssetAmount('usdc', newAmount);
    *
-   * @returns IAmount
+   *
    */
   toDerived(): IAmount;
 

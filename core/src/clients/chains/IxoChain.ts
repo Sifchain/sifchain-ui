@@ -1,5 +1,6 @@
-import { Chain, IAssetAmount } from "../../entities";
 import { urlJoin } from "url-join-ts";
+
+import { Chain } from "../../entities";
 import { BaseChain } from "./_BaseChain";
 
 export class IxoChain extends BaseChain implements Chain {

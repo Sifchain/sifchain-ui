@@ -1,6 +1,5 @@
 import { BaseLiquidityClient } from "./BaseLiquidityClient";
 import { SwapClient } from "./SwapClient";
-import { Chain } from "../../entities";
 
 export type LiquidityContext = {
   sifApiUrl: string;
