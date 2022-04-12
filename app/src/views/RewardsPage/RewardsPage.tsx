@@ -16,15 +16,11 @@ export default defineComponent({
         >
           <div class="grid place-items-center p-8">
             <p class="pt-1 pb-3 md:text-lg">
-              Rewards have moved! Visit the{" "}
+              Rewards have moved! Please visit the{" "}
               <RouterLink class="text-accent-dark" to="pool">
                 Pools
               </RouterLink>{" "}
-              or{" "}
-              <RouterLink class="text-accent-dark" to="stats">
-                Pool Stats
-              </RouterLink>{" "}
-              pages to see your rewards
+              page to see rewards.
             </p>
           </div>
         </PageCard>
