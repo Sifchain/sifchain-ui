@@ -368,7 +368,7 @@ export default defineComponent({
                   </header>
                   <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
                     <div class={tableItemClass}>
-                      <span>Unlocking assets</span>
+                      <span>Unbonding assets</span>
                       <span class="flex items-center">
                         {this.unlock.nativeAssetAmount}{" "}
                         <TokenIcon

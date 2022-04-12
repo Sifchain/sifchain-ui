@@ -71,7 +71,7 @@ const UnbondLiquidity = defineComponent({
     // });
 
     const detailsRef = computed<FormDetailsType>(() => ({
-      label: "You will receive:",
+      label: "Est amount you will receive:",
       details: [
         [
           <div class="uppercase">{nativeAsset.value?.displaySymbol}</div>,
