@@ -10,6 +10,7 @@ import { Services } from "@/business/services";
 import { Store } from "@/business/store";
 import { createPoolKey } from "@sifchain/sdk/src/utils";
 import { AccountPool } from "@/business/store/pools";
+import { flagsStore } from "@/store/modules/flags";
 
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<
@@ -52,6 +53,8 @@ export function SyncPools(
       console.log({ rawPools });
     }
 
+    const isPMTPEnabled = flagsStore.state.pmtp;
+
     const pools = rawPools.pools
       .map((pool) => {
         const externalSymbol = pool.externalAsset?.symbol;
@@ -83,10 +86,15 @@ export function SyncPools(
           AssetAmount(nativeAsset, pool.nativeAssetBalance),
           AssetAmount(asset, pool.externalAssetBalance),
           Amount(pool.poolUnits),
-          {
-            native: Amount(pool.swapPriceNative).divide(1e18),
-            external: Amount(pool.swapPriceExternal).divide(1e18),
-          },
+          isPMTPEnabled
+            ? {
+                native: AssetAmount("rowan", pool.swapPriceNative).toDerived(),
+                external: AssetAmount(
+                  "rowan",
+                  pool.swapPriceExternal,
+                ).toDerived(),
+              }
+            : undefined,
         );
       })
       .filter(Boolean) as Pool[];

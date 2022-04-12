@@ -72,21 +72,20 @@ function calculateSwapResultPmtp(
   return result;
 }
 
+export type SwapPrices = {
+  native: IAmount;
+  external: IAmount;
+};
+
 export class Pool extends Pair {
   poolUnits: IAmount;
-  swapPrices?: {
-    native: IAmount;
-    external: IAmount;
-  };
+  swapPrices?: SwapPrices;
 
   constructor(
     a: IAssetAmount,
     b: IAssetAmount,
     poolUnits?: IAmount,
-    swapPrices?: {
-      native: IAmount;
-      external: IAmount;
-    },
+    swapPrices?: SwapPrices,
   ) {
     super(a, b);
     this.swapPrices = swapPrices;
