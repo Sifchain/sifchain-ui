@@ -88,9 +88,12 @@ export function SyncPools(
           Amount(pool.poolUnits),
           isPMTPEnabled
             ? {
-                native: AssetAmount("rowan", pool.swapPriceNative).toDerived(),
+                native: AssetAmount(
+                  nativeAsset,
+                  pool.swapPriceNative,
+                ).toDerived(),
                 external: AssetAmount(
-                  "rowan",
+                  nativeAsset,
                   pool.swapPriceExternal,
                 ).toDerived(),
               }
