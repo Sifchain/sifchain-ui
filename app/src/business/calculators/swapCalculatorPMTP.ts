@@ -9,6 +9,7 @@ import {
   IAsset,
 } from "@sifchain/sdk";
 
+import { flagsStore } from "@/store/modules/flags";
 import { useField } from "./useField";
 import { trimZeros, useBalances } from "./utils";
 
@@ -286,13 +287,15 @@ export function useSwapCalculator(input: {
 
     let minAmount = Amount("0");
 
-    if (pool.value.swapPrices) {
+    if (flagsStore.state.pmtp) {
       // pmptp minAmount calculation:
       // subtracts not only the slippage, but also the priceImpact and providerFee
 
-      const priceImpact = pool.value
-        .calcPriceImpact(fromField.value.fieldAmount)
-        .divide(Amount("100"));
+      const basePriceImpact = pool.value.calcPriceImpact(
+        fromField.value.fieldAmount,
+      );
+
+      const priceImpact = basePriceImpact.divide(Amount("100"));
 
       const effeciveSlippageRate = Amount("1").subtract(
         slippage.add(priceImpact),
