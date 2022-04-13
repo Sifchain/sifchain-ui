@@ -9,6 +9,7 @@ import {
   IAsset,
 } from "@sifchain/sdk";
 
+import { flagsStore } from "@/store/modules/flags";
 import { useField } from "./useField";
 import { trimZeros, useBalances } from "./utils";
 
@@ -22,19 +23,22 @@ export enum SwapState {
   INVALID_SLIPPAGE,
 }
 
-function calculateFormattedPriceImpact(pair: IPool, amount: IAssetAmount) {
-  return format(pair.calcPriceImpact(amount), {
-    mantissa: 6,
-    trimMantissa: true,
-  });
+export function calculateFormattedPriceImpact(
+  pair: IPool,
+  swapAmount: IAssetAmount,
+) {
+  const priceImpact = pair.calcPriceImpact(swapAmount);
+
+  return format(priceImpact, { mantissa: 6, trimMantissa: true });
 }
 
-function calculateFormattedProviderFee(pair: IPool, amount: IAssetAmount) {
-  return format(
-    pair.calcProviderFee(amount).amount,
-    pair.calcProviderFee(amount).asset,
-    { mantissa: 5, trimMantissa: true },
-  );
+export function calculateFormattedProviderFee(
+  pair: IPool,
+  swapAmount: IAssetAmount,
+) {
+  const { amount, asset } = pair.calcProviderFee(swapAmount);
+
+  return format(amount, asset, { mantissa: 5, trimMantissa: true });
 }
 
 // TODO: make swap calculator only generate Fractions/Amounts that get stringified in the view
@@ -249,6 +253,18 @@ export function useSwapCalculator(input: {
     )
       return null;
 
+    return pool.value.calcProviderFee(fromField.value.fieldAmount);
+  });
+
+  const formattedProviderFee = computed(() => {
+    if (
+      !pool.value ||
+      !fromField.value.asset ||
+      !fromField.value.fieldAmount ||
+      !poolContainsFromAsset.value
+    )
+      return null;
+
     return calculateFormattedProviderFee(
       pool.value as IPool,
       fromField.value.fieldAmount,
@@ -257,14 +273,45 @@ export function useSwapCalculator(input: {
 
   // minimumReceived
   const minimumReceived = computed(() => {
-    if (!input.slippage.value || !toField.value.asset || !swapResult.value)
+    if (
+      !input.slippage.value ||
+      !toField.value.asset ||
+      !swapResult.value ||
+      !providerFee.value ||
+      !pool.value ||
+      !fromField.value.fieldAmount
+    )
       return null;
 
-    const slippage = Amount(input.slippage.value);
+    const slippage = Amount(input.slippage.value).divide(Amount("100"));
 
-    const minAmount = Amount("1")
-      .subtract(slippage.divide(Amount("100")))
-      .multiply(swapResult.value);
+    let minAmount = Amount("0");
+
+    if (flagsStore.state.pmtp) {
+      // pmptp minAmount calculation:
+      // subtracts not only the slippage, but also the priceImpact and providerFee
+
+      const basePriceImpact = pool.value.calcPriceImpact(
+        fromField.value.fieldAmount,
+      );
+
+      const priceImpact = basePriceImpact.divide(Amount("100"));
+
+      const effeciveSlippageRate = Amount("1").subtract(
+        slippage.add(priceImpact),
+      );
+
+      minAmount = effeciveSlippageRate
+        .multiply(swapResult.value)
+        .subtract(providerFee.value);
+    } else {
+      // default minAmount calculation:
+      // only subtracts the slippage from the swap result
+
+      const effeciveSlippageRate = Amount("1").subtract(slippage);
+
+      minAmount = effeciveSlippageRate.multiply(swapResult.value);
+    }
 
     return AssetAmount(toField.value.asset, minAmount);
   });
@@ -334,7 +381,7 @@ export function useSwapCalculator(input: {
     toAmount: input.toAmount,
     fromAmount: input.fromAmount,
     priceImpact,
-    providerFee,
+    providerFee: formattedProviderFee,
     minimumReceived,
     swapResult,
     reverseSwapResult,
