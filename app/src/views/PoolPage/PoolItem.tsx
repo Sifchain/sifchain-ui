@@ -234,14 +234,6 @@ export default defineComponent({
           </span>,
         ],
         [
-          "Pool TVL (USD)",
-          <span class="font-mono">
-            {this.$props.poolStat?.poolDepth != null
-              ? `${prettyNumber(this.$props.poolStat?.poolDepth * 2)}`
-              : "..."}
-          </span>,
-        ],
-        [
           "Trade Volume 24hr",
           <span class="font-mono">
             {this.$props.poolStat?.volume != null
@@ -308,6 +300,17 @@ export default defineComponent({
             {!isNil(this.$props.poolStat?.poolApr)
               ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
+          </div>
+          <div
+            class={[
+              COLUMNS_LOOKUP.poolTvl.class,
+              "flex items-center font-mono",
+            ]}
+          >
+            {this.$props.poolStat?.poolDepth.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            })}
           </div>
           <div
             class={[

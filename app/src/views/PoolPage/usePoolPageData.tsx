@@ -25,6 +25,7 @@ export type PoolPageColumnId =
   | "apy"
   | "gainLoss"
   | "rewardApr"
+  | "poolTvl"
   | "userShare"
   | "userValue";
 
@@ -51,7 +52,7 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[388px] text-left justify-start",
+    class: "w-[358px] text-left justify-start",
     sortable: true,
   },
   {
@@ -68,15 +69,23 @@ export const COLUMNS: PoolPageColumn[] = [
     ),
   },
   {
+    id: "poolTvl",
+    name: "Pool TVL",
+    class: "w-[168px] text-right justify-end",
+    sortable: true,
+  },
+  {
     id: "userShare",
     name: "Your Pool Share",
     class: "w-[128px] text-right justify-end",
+    sortable: true,
   },
   {
     id: "userValue",
     name: "Your Pool Value",
     help: "This is your estimated pool value in USD assuming you remove your liquidity equally across both tokens. This number does not take into consideration any projected or earned rewards.",
     class: "w-[168px] text-right justify-end",
+    sortable: true,
   },
 ];
 
