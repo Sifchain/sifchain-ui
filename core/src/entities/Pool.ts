@@ -126,9 +126,13 @@ export class Pool extends Pair {
       throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
     }
 
-    const swapResult = this.swapPrices
-      ? calculateSwapResultPmtp(x, this)
-      : calculateSwapResult(x, X, Y);
+    const fromRowan = x.symbol === "rowan";
+    const toRowan = Y.symbol === "rowan";
+
+    const swapResult =
+      (fromRowan || toRowan) && this.swapPrices
+        ? calculateSwapResultPmtp(x, this)
+        : calculateSwapResult(x, X, Y);
 
     return AssetAmount(this.otherAsset(x), swapResult);
   }
@@ -156,9 +160,13 @@ export class Pool extends Pair {
       return AssetAmount(otherAsset, "0");
     }
 
-    const reverseSwapResult = this.swapPrices
-      ? calculateSwapResultPmtp(Sa, this)
-      : calculateReverseSwapResult(Sa, Xa, Ya);
+    const fromRowan = Sa.symbol === "rowan";
+    const toRowan = Xa.symbol === "rowan";
+
+    const reverseSwapResult =
+      (fromRowan || toRowan) && this.swapPrices
+        ? calculateSwapResultPmtp(Sa, this)
+        : calculateReverseSwapResult(Sa, Xa, Ya);
 
     return AssetAmount(otherAsset, reverseSwapResult);
   }
