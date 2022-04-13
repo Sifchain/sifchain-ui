@@ -702,6 +702,83 @@ export default {
       homeNetwork: "terra",
     },
     {
+      symbol: "ubtsg",
+      displaySymbol: "btsg",
+      decimals: 6,
+      name: "btsg",
+      network: "sifchain",
+      label: "btsg",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/5041/small/logo_-_2021-01-10T210801.390.png?1610284134",
+      homeNetwork: "bitsong",
+    },
+    {
+      symbol: "ucrbrus",
+      displaySymbol: "crbrus",
+      decimals: 6,
+      name: "crbrus",
+      network: "sifchain",
+      label: "crbrus",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/24509/small/AUdZyrmO_400x400.png?1647931023",
+      homeNetwork: "Cerberus",
+    },
+    {
+      symbol: "uhuahua",
+      displaySymbol: "huahua",
+      decimals: 6,
+      name: "huahua",
+      network: "sifchain",
+      label: "huahua",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15651/small/chihua.PNG?1621476950",
+      homeNetwork: "Chihuahua",
+    },
+    {
+      symbol: "ucmdx",
+      displaySymbol: "cmdx",
+      decimals: 6,
+      name: "cmdx",
+      network: "sifchain",
+      label: "cmdx",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/21540/small/_ooQky6B_400x400.jpg?1639447618",
+      homeNetwork: "Comdex",
+    },
+    {
+      symbol: "uxki",
+      displaySymbol: "xki",
+      decimals: 6,
+      name: "xki",
+      network: "sifchain",
+      label: "xki",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15694/small/xki-color.png?1621569714",
+      homeNetwork: "Ki",
+    },
+    {
+      symbol: "nanolike",
+      displaySymbol: "nanolike",
+      decimals: 6,
+      name: "nanolike",
+      network: "sifchain",
+      label: "nanolike",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+      homeNetwork: "Likecoin",
+    },
+    {
+      symbol: "ustarx",
+      displaySymbol: "starx",
+      decimals: 6,
+      name: "starx",
+      network: "sifchain",
+      label: "starx",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+      homeNetwork: "Stargaze",
+    },
+    {
       address: "0xa47c8bf37f92abed4a126bda807a7b7498661acd",
       decimals: 18,
       imageUrl:
