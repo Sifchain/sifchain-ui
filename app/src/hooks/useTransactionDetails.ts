@@ -62,7 +62,6 @@ export type TransactionDetails = null | {
 export function getBridgeEventDetails(
   bridgeEvent: BridgeEvent,
 ): TransactionDetails {
-  const type = bridgeEvent?.type || null;
   switch (bridgeEvent?.type) {
     case "sent": {
       return {

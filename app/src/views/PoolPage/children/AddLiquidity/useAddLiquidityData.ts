@@ -27,7 +27,7 @@ export const useAddLiquidityData = () => {
   const modalStatus = ref<"setup" | "confirm" | "processing">("setup");
   const transactionStatus = ref<TransactionStatus | null>(null);
 
-  const asyncPooling = ref<boolean>(true);
+  const symmetricalPooling = ref<boolean>(false);
   const router = useRouter();
 
   const {
@@ -144,7 +144,7 @@ export const useAddLiquidityData = () => {
     tokenBSymbol: toSymbol,
     poolFinder,
     liquidityProvider,
-    asyncPooling,
+    symmetricalPooling,
     lastFocusedTokenField,
   });
 
@@ -160,6 +160,7 @@ export const useAddLiquidityData = () => {
   async function handleAskConfirmClicked() {
     if (!tokenAField.value.fieldAmount)
       throw new Error("Token A field amount is not defined");
+
     if (!tokenBField.value.fieldAmount)
       throw new Error("Token B field amount is not defined");
 
@@ -217,7 +218,7 @@ export const useAddLiquidityData = () => {
   }
 
   function toggleAsyncPooling() {
-    asyncPooling.value = !asyncPooling.value;
+    symmetricalPooling.value = !symmetricalPooling.value;
   }
 
   return {
@@ -303,15 +304,14 @@ export const useAddLiquidityData = () => {
     backlink: window.history.state.back || "/pool",
 
     handleNextStepClicked,
-
     handleAskConfirmClicked,
 
     transactionStatus,
     modalStatus,
+    symmetricalPooling,
 
     requestTransactionModalClose,
     toggleAsyncPooling,
-    asyncPooling,
     handleBlur() {
       selectedField.value = null;
     },
@@ -341,11 +341,7 @@ export const useAddLiquidityData = () => {
     formatNumber,
     poolUnits: totalLiquidityProviderUnits,
     riskFactorStatus: computed<"" | "bad" | "danger" | "warning">(() => {
-      if (flagsStore.state.pmtp && !asyncPooling.value) {
-        return "warning";
-      }
-
-      if (!riskFactor.value || asyncPooling.value) return "";
+      if (!riskFactor.value || symmetricalPooling.value) return "";
       if (riskFactor.value.lessThanOrEqual("0.01")) {
         return "";
       } else if (riskFactor.value.lessThanOrEqual("0.1")) {

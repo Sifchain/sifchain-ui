@@ -12,11 +12,10 @@ import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { Tooltip } from "@/components/Tooltip";
-import Toggle from "@/components/Toggle";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
+import { flagsStore } from "@/store/modules/flags";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
-import { flagsStore } from "@/store/modules/flags";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -24,7 +23,6 @@ export default defineComponent({
 
     const router = useRouter();
     const formattedFromTokenBalance = useFormattedTokenBalance(data.fromSymbol);
-    const formattedToTokenBalance = useFormattedTokenBalance(data.toSymbol);
 
     data.handleTokenAFocused();
 
@@ -34,23 +32,12 @@ export default defineComponent({
       tx: data.transactionStatus,
     });
 
-    const close = () => {
-      router.push({
-        name: "Pool",
-      });
+    const handleClose = () => {
+      router.push({ name: "Pool" });
     };
 
     const riskContent = computed(() => {
-      if (isPMTPEnabled && !data.asyncPooling.value) {
-        return (
-          <>
-            When pooling with only a single asset, we will automatically perform
-            a swap for equal value of the other asset to keep the pool balanced
-          </>
-        );
-      }
-
-      if (data.riskFactorStatus.value && !data.asyncPooling.value) {
+      if (data.riskFactorStatus.value && !data.symmetricalPooling.value) {
         return (
           <>
             This is an asymmetric liquidity add that has an estimated large
@@ -73,7 +60,7 @@ export default defineComponent({
       details: [
         [
           <div class="flex items-center">
-            <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
+            <TokenIcon asset={data.fromAsset} size={18} />
             <span class="ml-[4px]">
               {(
                 data.fromAsset.value?.displaySymbol ||
@@ -84,13 +71,13 @@ export default defineComponent({
           </div>,
           <span class="font-mono">{data.fromAmount.value}</span>,
         ],
-        [
-          <div class="flex items-center">
-            <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
-            <span class="ml-[4px]">{data.toSymbol.value?.toUpperCase()}</span>
-          </div>,
-          <span class="font-mono">{data.toAmount.value}</span>,
-        ],
+        // [
+        //   <div class="flex items-center">
+        //     <TokenIcon asset={data.toAsset} size={18} />
+        //     <span class="ml-[4px]">{data.toSymbol.value?.toUpperCase()}</span>
+        //   </div>,
+        //   <span class="font-mono">{data.toAmount.value}</span>,
+        // ],
         [
           <span>
             <span class="uppercase">
@@ -141,6 +128,7 @@ export default defineComponent({
         ],
       ],
     }));
+
     const isPMTPEnabled = flagsStore.state.pmtp;
 
     return () => {
@@ -149,7 +137,7 @@ export default defineComponent({
           <TransactionDetailsModal
             network={Network.SIFCHAIN}
             icon="interactive/plus"
-            onClose={close}
+            onClose={handleClose}
             details={detailsRef}
             transactionDetails={transactionDetails}
           />
@@ -162,7 +150,7 @@ export default defineComponent({
             heading="Add Liquidity"
             icon="interactive/plus"
             showClose
-            onClose={close}
+            onClose={handleClose}
           >
             <div class="bg-gray-base rounded-lg p-4">
               <Form.Details details={detailsRef.value} />
@@ -183,21 +171,11 @@ export default defineComponent({
           heading="Add Liquidity"
           icon="interactive/plus"
           showClose
-          headingAction={
-            <Toggle
-              label="Pool Equaly"
-              active={data.asyncPooling.value}
-              onChange={(_active) => {
-                data.toggleAsyncPooling();
-                data.handleTokenAFocused();
-              }}
-            />
-          }
-          onClose={() => close()}
+          headingAction={<div></div>}
+          onClose={() => handleClose()}
         >
           <TokenInputGroup
             shouldShowNumberInputOnLeft
-            excludeSymbols={["rowan"]}
             heading="Input"
             asset={data.fromAsset.value}
             amount={data.fromAmount.value}
@@ -208,31 +186,14 @@ export default defineComponent({
             onInputAmount={(v) => {
               data.fromAmount.value = v;
             }}
-            class=""
             onSelectAsset={(asset) => {
-              data.fromSymbol.value = asset.symbol;
-            }}
-          />
-          <div class="my-[4px] flex justify-center">
-            <AssetIcon size={20} class=" text-white" icon="interactive/plus" />
-          </div>
-          <TokenInputGroup
-            selectDisabled
-            shouldShowNumberInputOnLeft
-            heading="Input"
-            asset={data.toAsset.value}
-            amount={data.toAmount.value}
-            formattedBalance={formattedToTokenBalance.value}
-            onSetToMaxAmount={data.handleToMaxClicked}
-            onBlur={data.handleBlur}
-            onFocus={data.handleTokenBFocused}
-            onInputAmount={(v) => {
-              data.toAmount.value = v;
-            }}
-            excludeSymbols={["rowan"]}
-            class=""
-            onSelectAsset={(asset) => {
-              data.toSymbol.value = asset.symbol;
+              if (asset.symbol === "rowan") {
+                data.toSymbol.value = data.fromSymbol.value;
+                data.fromSymbol.value = "rowan";
+              } else {
+                data.fromSymbol.value = asset.symbol;
+                data.toSymbol.value = "rowan";
+              }
             }}
           />
           <Form.Details
