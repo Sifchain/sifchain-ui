@@ -137,6 +137,34 @@ export default defineComponent({
         : data.fromAsset.value;
     });
 
+    const modalHeadingAction = (
+      <div class="flex justify-end md:min-w-[200px]">
+        {targetAsset.value ? (
+          <Tooltip
+            content={
+              <>
+                You're adding liquidity to
+                <span class="text-accent-base mx-1 font-medium">
+                  {targetAsset.value.displaySymbol.toUpperCase()}'s
+                </span>{" "}
+                pool.
+              </>
+            }
+          >
+            <div class="flex items-center font-semibold">
+              {targetAsset.value.displaySymbol.toUpperCase()}{" "}
+              <span class="translate-x-1">
+                <TokenIcon asset={ref(Asset("rowan"))} size={26} />
+              </span>
+              <span class="z-10 overflow-hidden rounded-full bg-black ring ring-black">
+                <TokenIcon asset={targetAsset} size={26} />
+              </span>
+            </div>
+          </Tooltip>
+        ) : null}
+      </div>
+    );
+
     return () => {
       if (data.modalStatus.value === "processing") {
         return (
@@ -157,6 +185,7 @@ export default defineComponent({
             icon="interactive/plus"
             showClose
             onClose={handleClose}
+            headingAction={modalHeadingAction}
           >
             <div class="bg-gray-base rounded-lg p-4">
               <Form.Details details={detailsRef.value} />
@@ -178,33 +207,7 @@ export default defineComponent({
           icon="interactive/plus"
           showClose
           onClose={() => handleClose()}
-          headingAction={
-            <div class="flex justify-end md:min-w-[200px]">
-              {targetAsset.value ? (
-                <Tooltip
-                  content={
-                    <>
-                      You're adding liquidity to
-                      <span class="text-accent-base mx-1 font-medium">
-                        {targetAsset.value.displaySymbol.toUpperCase()}'s
-                      </span>{" "}
-                      pool.
-                    </>
-                  }
-                >
-                  <div class="flex items-center font-semibold">
-                    {targetAsset.value.displaySymbol.toUpperCase()}{" "}
-                    <span class="translate-x-1">
-                      <TokenIcon asset={ref(Asset("rowan"))} size={26} />
-                    </span>
-                    <span class="z-10 overflow-hidden rounded-full bg-black ring ring-black">
-                      <TokenIcon asset={targetAsset} size={26} />
-                    </span>
-                  </div>
-                </Tooltip>
-              ) : null}
-            </div>
-          }
+          headingAction={modalHeadingAction}
         >
           <TokenInputGroup
             shouldShowNumberInputOnLeft
