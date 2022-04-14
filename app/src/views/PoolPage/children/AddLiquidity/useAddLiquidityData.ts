@@ -169,10 +169,20 @@ export const useAddLiquidityData = () => {
       state: "requested",
       hash: "",
     };
-    transactionStatus.value = await usecases.clp.addLiquidity(
-      tokenBField.value.fieldAmount,
-      tokenAField.value.fieldAmount,
-    );
+
+    if (tokenAField.value.asset?.symbol === "rowan") {
+      // invert fields when token a is rowan
+
+      transactionStatus.value = await usecases.clp.addLiquidity(
+        tokenAField.value.fieldAmount,
+        tokenBField.value.fieldAmount,
+      );
+    } else {
+      transactionStatus.value = await usecases.clp.addLiquidity(
+        tokenBField.value.fieldAmount,
+        tokenAField.value.fieldAmount,
+      );
+    }
 
     if (!tokenAField.value.fieldAmount || !tokenBField.value.fieldAmount) {
       throw new Error("Token A or Token B field amount is not defined");
