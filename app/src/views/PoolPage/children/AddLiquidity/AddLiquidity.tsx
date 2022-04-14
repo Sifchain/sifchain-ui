@@ -1,6 +1,6 @@
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { Network } from "@sifchain/sdk";
+import { Asset, Network } from "@sifchain/sdk";
 
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
@@ -78,48 +78,48 @@ export default defineComponent({
         //   </div>,
         //   <span class="font-mono">{data.toAmount.value}</span>,
         // ],
-        [
-          <span>
-            <span class="uppercase">
-              {(
-                data.fromAsset.value?.displaySymbol ||
-                data.fromAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>{" "}
-            per{" "}
-            <span class="uppercase">
-              {(
-                data.toAsset.value?.displaySymbol ||
-                data.toAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>
-          </span>,
-          <div class="flex items-center gap-[4px] font-mono">
-            <div>
-              {isPMTPEnabled
-                ? data.aPerBRatioMessage.value
-                : data.aPerBRatioProjectedMessage.value}
-            </div>
-            <TokenIcon asset={data.fromAsset} />
-          </div>,
-        ],
-        [
-          <span>
-            <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>{" "}
-            per{" "}
-            <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>
-          </span>,
-          <div class="flex items-center gap-[4px] font-mono">
-            <div>
-              {isPMTPEnabled
-                ? data.bPerARatioMessage.value
-                : data.bPerARatioProjectedMessage.value}
-            </div>
-            <TokenIcon asset={data.toAsset} />
-          </div>,
-        ],
+        // [
+        //   <span>
+        //     <span class="uppercase">
+        //       {(
+        //         data.fromAsset.value?.displaySymbol ||
+        //         data.fromAsset.value?.symbol ||
+        //         ""
+        //       ).toUpperCase()}
+        //     </span>{" "}
+        //     per{" "}
+        //     <span class="uppercase">
+        //       {(
+        //         data.toAsset.value?.displaySymbol ||
+        //         data.toAsset.value?.symbol ||
+        //         ""
+        //       ).toUpperCase()}
+        //     </span>
+        //   </span>,
+        //   <div class="flex items-center gap-[4px] font-mono">
+        //     <div>
+        //       {isPMTPEnabled
+        //         ? data.aPerBRatioMessage.value
+        //         : data.aPerBRatioProjectedMessage.value}
+        //     </div>
+        //     <TokenIcon asset={data.fromAsset} />
+        //   </div>,
+        // ],
+        // [
+        //   <span>
+        //     <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>{" "}
+        //     per{" "}
+        //     <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>
+        //   </span>,
+        //   <div class="flex items-center gap-[4px] font-mono">
+        //     <div>
+        //       {isPMTPEnabled
+        //         ? data.bPerARatioMessage.value
+        //         : data.bPerARatioProjectedMessage.value}
+        //     </div>
+        //     <TokenIcon asset={data.toAsset} />
+        //   </div>,
+        // ],
         [
           <span>Your Share of Pool</span>,
           <div class="flex items-center gap-[4px] font-mono">
@@ -130,6 +130,12 @@ export default defineComponent({
     }));
 
     const isPMTPEnabled = flagsStore.state.pmtp;
+
+    const targetAsset = computed(() => {
+      return data.fromAsset.value?.symbol === "rowan"
+        ? data.toAsset.value
+        : data.fromAsset.value;
+    });
 
     return () => {
       if (data.modalStatus.value === "processing") {
@@ -171,8 +177,34 @@ export default defineComponent({
           heading="Add Liquidity"
           icon="interactive/plus"
           showClose
-          headingAction={<div></div>}
           onClose={() => handleClose()}
+          headingAction={
+            <div class="flex justify-end md:min-w-[200px]">
+              {targetAsset.value ? (
+                <Tooltip
+                  content={
+                    <>
+                      You're adding liquidity to
+                      <span class="text-accent-base mx-1 font-medium">
+                        {targetAsset.value.displaySymbol.toUpperCase()}'s
+                      </span>{" "}
+                      pool.
+                    </>
+                  }
+                >
+                  <div class="flex items-center font-semibold">
+                    {targetAsset.value.displaySymbol.toUpperCase()}{" "}
+                    <span class="translate-x-1">
+                      <TokenIcon asset={ref(Asset("rowan"))} size={26} />
+                    </span>
+                    <span class="z-10 overflow-hidden rounded-full bg-black ring ring-black">
+                      <TokenIcon asset={targetAsset} size={26} />
+                    </span>
+                  </div>
+                </Tooltip>
+              ) : null}
+            </div>
+          }
         >
           <TokenInputGroup
             shouldShowNumberInputOnLeft
@@ -196,7 +228,7 @@ export default defineComponent({
               }
             }}
           />
-          <Form.Details
+          {/* <Form.Details
             class="mt-[10px]"
             details={{
               label: "Pool Token Price",
@@ -213,7 +245,7 @@ export default defineComponent({
                   </span>,
                   <div class="flex items-center gap-[4px] font-mono">
                     <div>{data.aPerBRatioMessage.value}</div>
-                    <TokenIcon asset={data.fromAsset}></TokenIcon>
+                    <TokenIcon asset={data.fromAsset} />
                   </div>,
                 ],
                 [
@@ -233,7 +265,7 @@ export default defineComponent({
                 ],
               ],
             }}
-          ></Form.Details>
+          /> */}
           <Form.Details
             class="mt-[10px]"
             isError={!!data.riskFactorStatus.value}
