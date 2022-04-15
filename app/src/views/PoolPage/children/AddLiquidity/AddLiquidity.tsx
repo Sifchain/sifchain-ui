@@ -1,6 +1,6 @@
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { Network } from "@sifchain/sdk";
+import { Asset, Network } from "@sifchain/sdk";
 
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
@@ -12,11 +12,11 @@ import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { Tooltip } from "@/components/Tooltip";
-import Toggle from "@/components/Toggle";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
+import { flagsStore } from "@/store/modules/flags";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
-import { flagsStore } from "@/store/modules/flags";
+import clsx from "clsx";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -24,7 +24,6 @@ export default defineComponent({
 
     const router = useRouter();
     const formattedFromTokenBalance = useFormattedTokenBalance(data.fromSymbol);
-    const formattedToTokenBalance = useFormattedTokenBalance(data.toSymbol);
 
     data.handleTokenAFocused();
 
@@ -34,38 +33,29 @@ export default defineComponent({
       tx: data.transactionStatus,
     });
 
-    const close = () => {
-      router.push({
-        name: "Pool",
-      });
+    const handleClose = () => {
+      router.push({ name: "Pool" });
     };
 
     const riskContent = computed(() => {
-      if (isPMTPEnabled && !data.asyncPooling.value) {
-        return (
-          <>
-            When pooling with only a single asset, we will automatically perform
-            a swap for equal value of the other asset to keep the pool balanced
-          </>
-        );
-      }
-
-      if (data.riskFactorStatus.value && !data.asyncPooling.value) {
-        return (
-          <>
-            This is an asymmetric liquidity add that has an estimated large
-            impact on this pool, and therefore a significant slip adjustment.
-            Please be aware of how this works by reading our documentation{" "}
-            <a
-              href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/pool/sifchain-liquidity-pools#asymmetric-liquidity-pool"
-              target="_blank"
-              class="underline"
-            >
-              here
-            </a>
-            .
-          </>
-        );
+      switch (data.riskFactorStatus.value) {
+        case "":
+          return `
+            Note, this asymmetric liquidity add will induce a slip adjustment on your share of the pool.
+          `;
+        case "bad":
+        case "warning":
+          return `
+            WARNING, this asymmetric liquidity add will induce a significant
+            slip adjustment on your share of the pool. Consider adding
+            liquidity in smaller chunks (alternating between Rowan and the
+            other token) to reduce the slip adjustment impact.
+        `;
+        case "danger":
+          return `
+            ATTENTION! ARE YOU SURE?  This asymmetric liquidity add will induce a VERY significant slip adjustment on your share of the pool. 
+            STRONGLY consider adding liquidity in smaller chunks (alternating between Rowan and the other token) to reduce the slip adjustment impact.
+          `;
       }
     });
 
@@ -73,7 +63,7 @@ export default defineComponent({
       details: [
         [
           <div class="flex items-center">
-            <TokenIcon asset={data.fromAsset} size={18}></TokenIcon>
+            <TokenIcon asset={data.fromAsset} size={18} />
             <span class="ml-[4px]">
               {(
                 data.fromAsset.value?.displaySymbol ||
@@ -85,63 +75,108 @@ export default defineComponent({
           <span class="font-mono">{data.fromAmount.value}</span>,
         ],
         [
-          <div class="flex items-center">
-            <TokenIcon asset={data.toAsset} size={18}></TokenIcon>
-            <span class="ml-[4px]">{data.toSymbol.value?.toUpperCase()}</span>
-          </div>,
-          <span class="font-mono">{data.toAmount.value}</span>,
-        ],
-        [
-          <span>
-            <span class="uppercase">
-              {(
-                data.fromAsset.value?.displaySymbol ||
-                data.fromAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>{" "}
-            per{" "}
-            <span class="uppercase">
-              {(
-                data.toAsset.value?.displaySymbol ||
-                data.toAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>
-          </span>,
-          <div class="flex items-center gap-[4px] font-mono">
-            <div>
-              {isPMTPEnabled
-                ? data.aPerBRatioMessage.value
-                : data.aPerBRatioProjectedMessage.value}
-            </div>
-            <TokenIcon asset={data.fromAsset} />
-          </div>,
-        ],
-        [
-          <span>
-            <span class="uppercase">{data.toAsset.value?.displaySymbol}</span>{" "}
-            per{" "}
-            <span class="uppercase">{data.fromAsset.value?.displaySymbol}</span>
-          </span>,
-          <div class="flex items-center gap-[4px] font-mono">
-            <div>
-              {isPMTPEnabled
-                ? data.bPerARatioMessage.value
-                : data.bPerARatioProjectedMessage.value}
-            </div>
-            <TokenIcon asset={data.toAsset} />
-          </div>,
-        ],
-        [
-          <span>Your Share of Pool</span>,
+          <span>Est. pool share</span>,
           <div class="flex items-center gap-[4px] font-mono">
             <div>{data.shareOfPoolPercent.value}</div>
           </div>,
         ],
       ],
     }));
-    const isPMTPEnabled = flagsStore.state.pmtp;
+
+    const targetAsset = computed(() => {
+      return data.fromAsset.value?.symbol === "rowan"
+        ? data.toAsset.value
+        : data.fromAsset.value;
+    });
+
+    const modalHeadingAction = (
+      <div class="flex justify-end md:min-w-[200px]">
+        {targetAsset.value ? (
+          <Tooltip
+            content={
+              <>
+                You're adding liquidity to
+                <span class="text-accent-base mx-1 font-medium">
+                  {targetAsset.value.displaySymbol.toUpperCase()}'s
+                </span>{" "}
+                pool.
+              </>
+            }
+          >
+            <div class="flex items-center font-semibold">
+              {targetAsset.value.displaySymbol.toUpperCase()}{" "}
+              <span class="translate-x-1">
+                <TokenIcon asset={ref(Asset("rowan"))} size={26} />
+              </span>
+              <span class="z-10 overflow-hidden rounded-full bg-black ring ring-black">
+                <TokenIcon asset={targetAsset} size={26} />
+              </span>
+            </div>
+          </Tooltip>
+        ) : null}
+      </div>
+    );
+
+    const riskDisclaimer = computed(() => {
+      const warningClasses = {
+        "": {
+          border: "border-gray-500",
+          icon: "text-slate-300",
+        },
+        bad: {
+          border: "border-danger-bad",
+          icon: "text-danger-bad",
+        },
+        warning: {
+          border: "border-danger-warning",
+          icon: "text-danger-warning",
+        },
+        danger: {
+          border: "border-danger-base",
+          icon: "text-danger-base",
+        },
+      };
+      return riskContent.value ? (
+        <div
+          class={clsx(
+            "relative my-2 rounded border p-4",
+            warningClasses[data.riskFactorStatus.value].border,
+          )}
+        >
+          <div class="absolute top-0 right-0 p-2">
+            <Tooltip
+              content={riskContent.value}
+              placement="top"
+              interactive
+              appendTo={() =>
+                document.querySelector("#portal-target") || document.body
+              }
+            >
+              <div class="cursor-pointer">
+                <AssetIcon
+                  icon="interactive/warning"
+                  class={[
+                    "mr-[4px]",
+                    warningClasses[data.riskFactorStatus.value].icon,
+                  ]}
+                  size={22}
+                />
+              </div>
+            </Tooltip>
+          </div>
+          <p class={["pr-4 text-slate-300"]}>
+            {riskContent.value} See documentation{" "}
+            <a
+              href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/pool/sifchain-liquidity-pools#asymmetric-liquidity-pool"
+              target="_blank"
+              class="underline"
+            >
+              here
+            </a>
+          </p>
+        </div>
+      ) : null;
+    });
 
     return () => {
       if (data.modalStatus.value === "processing") {
@@ -149,7 +184,7 @@ export default defineComponent({
           <TransactionDetailsModal
             network={Network.SIFCHAIN}
             icon="interactive/plus"
-            onClose={close}
+            onClose={handleClose}
             details={detailsRef}
             transactionDetails={transactionDetails}
           />
@@ -162,10 +197,12 @@ export default defineComponent({
             heading="Add Liquidity"
             icon="interactive/plus"
             showClose
-            onClose={close}
+            onClose={handleClose}
+            headingAction={modalHeadingAction}
           >
-            <div class="bg-gray-base rounded-lg p-4">
+            <div class="bg-gray-base grid gap-4 rounded-lg p-4">
               <Form.Details details={detailsRef.value} />
+              {riskDisclaimer.value}
             </div>
             <Button.CallToAction
               class="mt-[10px]"
@@ -178,211 +215,80 @@ export default defineComponent({
           </Modal>
         );
       }
+
       return (
         <Modal
           heading="Add Liquidity"
           icon="interactive/plus"
           showClose
-          headingAction={
-            <Toggle
-              label="Pool Equaly"
-              active={data.asyncPooling.value}
-              onChange={(_active) => {
-                data.toggleAsyncPooling();
-                data.handleTokenAFocused();
+          onClose={() => handleClose()}
+          headingAction={modalHeadingAction}
+        >
+          <div class="grid gap-4">
+            <TokenInputGroup
+              shouldShowNumberInputOnLeft
+              heading="Input"
+              asset={data.fromAsset.value}
+              amount={data.fromAmount.value}
+              formattedBalance={formattedFromTokenBalance.value}
+              onSetToMaxAmount={data.handleFromMaxClicked}
+              onBlur={data.handleBlur}
+              onFocus={data.handleTokenAFocused}
+              onInputAmount={(v) => {
+                data.fromAmount.value = v;
+              }}
+              onSelectAsset={(asset) => {
+                if (asset.symbol === "rowan") {
+                  data.toSymbol.value = data.fromSymbol.value;
+                  data.fromSymbol.value = "rowan";
+                } else {
+                  data.fromSymbol.value = asset.symbol;
+                  data.toSymbol.value = "rowan";
+                }
               }}
             />
-          }
-          onClose={() => close()}
-        >
-          <TokenInputGroup
-            shouldShowNumberInputOnLeft
-            excludeSymbols={["rowan"]}
-            heading="Input"
-            asset={data.fromAsset.value}
-            amount={data.fromAmount.value}
-            formattedBalance={formattedFromTokenBalance.value}
-            onSetToMaxAmount={data.handleFromMaxClicked}
-            onBlur={data.handleBlur}
-            onFocus={data.handleTokenAFocused}
-            onInputAmount={(v) => {
-              data.fromAmount.value = v;
-            }}
-            class=""
-            onSelectAsset={(asset) => {
-              data.fromSymbol.value = asset.symbol;
-            }}
-          />
-          <div class="my-[4px] flex justify-center">
-            <AssetIcon size={20} class=" text-white" icon="interactive/plus" />
+
+            <div class="bg-gray-base grid gap-4 rounded-lg p-4">
+              <Form.Details
+                isError={!!data.riskFactorStatus.value}
+                details={{
+                  isError: !!data.riskFactorStatus.value,
+                  errorType: data.riskFactorStatus.value || undefined,
+                  label: <div></div>,
+                  details: [
+                    [
+                      <span>Est. pool share</span>,
+                      <div class="flex items-center gap-[4px] font-mono">
+                        <div>{data.shareOfPoolPercent.value}</div>
+                      </div>,
+                    ],
+                  ],
+                }}
+              />
+              {riskDisclaimer.value}
+            </div>
+            {(data.nextStepAllowed.value && !data.hasActiveSafetyLag.value && (
+              <Button.CallToAction onClick={() => data.handleNextStepClicked()}>
+                Add Liquidity
+              </Button.CallToAction>
+            )) || (
+              <Button.CallToAction
+                disabled={
+                  !data.nextStepAllowed.value || data.hasActiveSafetyLag.value
+                }
+                onClick={() => appWalletPicker.show()}
+              >
+                {data.hasActiveSafetyLag.value ? (
+                  <AssetIcon
+                    size={22}
+                    icon="interactive/anim-racetrack-spinner"
+                  />
+                ) : (
+                  data.nextStepMessage.value
+                )}
+              </Button.CallToAction>
+            )}
           </div>
-          <TokenInputGroup
-            selectDisabled
-            shouldShowNumberInputOnLeft
-            heading="Input"
-            asset={data.toAsset.value}
-            amount={data.toAmount.value}
-            formattedBalance={formattedToTokenBalance.value}
-            onSetToMaxAmount={data.handleToMaxClicked}
-            onBlur={data.handleBlur}
-            onFocus={data.handleTokenBFocused}
-            onInputAmount={(v) => {
-              data.toAmount.value = v;
-            }}
-            excludeSymbols={["rowan"]}
-            class=""
-            onSelectAsset={(asset) => {
-              data.toSymbol.value = asset.symbol;
-            }}
-          />
-          <Form.Details
-            class="mt-[10px]"
-            details={{
-              label: "Pool Token Price",
-              details: [
-                [
-                  <span>
-                    <span class="uppercase">
-                      {data.fromAsset.value?.displaySymbol}
-                    </span>{" "}
-                    per{" "}
-                    <span class="uppercase">
-                      {data.toAsset.value?.displaySymbol}
-                    </span>
-                  </span>,
-                  <div class="flex items-center gap-[4px] font-mono">
-                    <div>{data.aPerBRatioMessage.value}</div>
-                    <TokenIcon asset={data.fromAsset}></TokenIcon>
-                  </div>,
-                ],
-                [
-                  <span>
-                    <span class="uppercase">
-                      {data.toAsset.value?.displaySymbol}
-                    </span>{" "}
-                    per{" "}
-                    <span class="uppercase">
-                      {data.fromAsset.value?.displaySymbol}
-                    </span>
-                  </span>,
-                  <div class="flex items-center gap-[4px] font-mono">
-                    <div>{data.bPerARatioMessage.value}</div>
-                    <TokenIcon asset={data.toAsset}></TokenIcon>
-                  </div>,
-                ],
-              ],
-            }}
-          ></Form.Details>
-          <Form.Details
-            class="mt-[10px]"
-            isError={!!data.riskFactorStatus.value}
-            details={{
-              isError: !!data.riskFactorStatus.value,
-              errorType: data.riskFactorStatus.value || undefined,
-              label: (
-                <div class="flex items-center justify-between">
-                  <span>
-                    {isPMTPEnabled
-                      ? "Est. pool share after pooling"
-                      : "Est. prices after pooling & pool share"}
-                  </span>
-                  {!!riskContent.value && (
-                    <Tooltip
-                      content={riskContent.value}
-                      placement="top"
-                      interactive
-                      appendTo={() =>
-                        document.querySelector("#portal-target") ||
-                        document.body
-                      }
-                    >
-                      <div class="cursor-pointer">
-                        <AssetIcon
-                          icon="interactive/warning"
-                          class={[
-                            "mr-[4px]",
-                            {
-                              danger: "text-danger-base",
-                              warning: "text-danger-warning",
-                              bad: "text-danger-bad",
-                            }[data.riskFactorStatus.value || "danger"],
-                          ]}
-                          size={22}
-                        />
-                      </div>
-                    </Tooltip>
-                  )}
-                </div>
-              ),
-              details: [
-                ...((isPMTPEnabled
-                  ? ([] as [any, any][])
-                  : [
-                      [
-                        <span>
-                          <span class="uppercase">
-                            {data.fromAsset.value?.displaySymbol}
-                          </span>{" "}
-                          per{" "}
-                          <span class="uppercase">
-                            {data.toAsset.value?.displaySymbol}
-                          </span>
-                        </span>,
-                        <div class="flex items-center gap-[4px] font-mono">
-                          <div>{data.aPerBRatioProjectedMessage.value}</div>
-                          <TokenIcon asset={data.fromAsset}></TokenIcon>
-                        </div>,
-                      ],
-                      [
-                        <span>
-                          <span class="uppercase">
-                            {data.toAsset.value?.displaySymbol}
-                          </span>{" "}
-                          per{" "}
-                          <span class="uppercase">
-                            {data.fromAsset.value?.displaySymbol}
-                          </span>
-                        </span>,
-                        <div class="flex items-center gap-[4px] font-mono">
-                          <div>{data.bPerARatioProjectedMessage.value}</div>
-                          <TokenIcon asset={data.toAsset}></TokenIcon>
-                        </div>,
-                      ],
-                    ]) as [any, any][]),
-                [
-                  <span>Your Share of Pool</span>,
-                  <div class="flex items-center gap-[4px] font-mono">
-                    <div>{data.shareOfPoolPercent.value}</div>
-                  </div>,
-                ],
-              ],
-            }}
-          />
-          {(data.nextStepAllowed.value && !data.hasActiveSafetyLag.value && (
-            <Button.CallToAction
-              onClick={() => data.handleNextStepClicked()}
-              class="mt-[10px]"
-            >
-              Add Liquidity
-            </Button.CallToAction>
-          )) || (
-            <Button.CallToAction
-              disabled={
-                !data.nextStepAllowed.value || data.hasActiveSafetyLag.value
-              }
-              onClick={() => appWalletPicker.show()}
-              class="mt-[10px]"
-            >
-              {data.hasActiveSafetyLag.value ? (
-                <AssetIcon
-                  size={22}
-                  icon="interactive/anim-racetrack-spinner"
-                ></AssetIcon>
-              ) : (
-                data.nextStepMessage.value
-              )}
-            </Button.CallToAction>
-          )}
         </Modal>
       );
     };

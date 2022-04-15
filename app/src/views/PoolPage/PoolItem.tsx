@@ -169,7 +169,9 @@ export default defineComponent({
         [
           "Rewards paid to the pool for current period",
           <span class="flex items-center font-mono">
-            {this.poolStat?.rewardPeriodNativeDistributed.toLocaleString()}
+            {typeof this.poolStat?.rewardPeriodNativeDistributed === "number"
+              ? (this.poolStat?.rewardPeriodNativeDistributed).toLocaleString()
+              : "..."}
             <TokenIcon
               assetValue={useNativeChain().nativeAsset}
               size={14}
@@ -236,8 +238,8 @@ export default defineComponent({
         [
           "Trade Volume 24hr",
           <span class="font-mono">
-            {this.$props.poolStat?.volume != null
-              ? prettyNumber(this.$props.poolStat?.volume ?? 0)
+            {typeof this.$props.poolStat?.volume === "number"
+              ? prettyNumber(this.$props.poolStat?.volume)
               : "..."}
           </span>,
         ],
@@ -294,6 +296,21 @@ export default defineComponent({
               </Tooltip>
             ))}
           </div>
+
+          <div
+            class={[
+              COLUMNS_LOOKUP.poolTvl.class,
+              "flex items-center font-mono",
+            ]}
+          >
+            {typeof this.$props.poolStat?.poolTVL === "number"
+              ? this.$props.poolStat.poolTVL.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })
+              : "..."}
+          </div>
+
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
@@ -301,17 +318,7 @@ export default defineComponent({
               ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
-          <div
-            class={[
-              COLUMNS_LOOKUP.poolTvl.class,
-              "flex items-center font-mono",
-            ]}
-          >
-            {this.$props.poolStat?.poolDepth.toLocaleString("en-US", {
-              style: "currency",
-              currency: "USD",
-            })}
-          </div>
+
           <div
             class={[
               COLUMNS_LOOKUP.userShare.class,

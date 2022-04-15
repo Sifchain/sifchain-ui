@@ -56,6 +56,11 @@ export const COLUMNS: PoolPageColumn[] = [
     sortable: true,
   },
   {
+    id: "poolTvl",
+    name: "Pool TVL",
+    class: "w-[168px] text-right justify-end",
+  },
+  {
     id: "apy",
     name: "Pool APR",
     class: "w-[128px] text-right justify-end",
@@ -67,11 +72,6 @@ export const COLUMNS: PoolPageColumn[] = [
         seconds per year)
       </code>
     ),
-  },
-  {
-    id: "poolTvl",
-    name: "Pool TVL",
-    class: "w-[168px] text-right justify-end",
   },
   {
     id: "userShare",

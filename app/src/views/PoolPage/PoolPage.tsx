@@ -8,7 +8,7 @@ import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import BigNumber from "bignumber.js";
-import { format, formatDistance } from "date-fns";
+import { formatDistance } from "date-fns";
 import { defineComponent } from "vue";
 import { RouterView } from "vue-router";
 import {
@@ -164,17 +164,17 @@ export default defineComponent({
             heading="Pool"
             iconName="navigation/pool"
             withOverflowSpace
-            headerAction={
-              <Button.Inline
-                to={{ name: "AddLiquidity", params: {} }}
-                active
-                replace
-                class={["text-md !h-[40px] px-[17px]"]}
-                icon="interactive/plus"
-              >
-                <div class="font-semibold">Add Liquidity</div>
-              </Button.Inline>
-            }
+            // headerAction={
+            //   <Button.Inline
+            //     to={{ name: "AddLiquidity", params: {} }}
+            //     active
+            //     replace
+            //     class={["text-md !h-[40px] px-[17px]"]}
+            //     icon="interactive/plus"
+            //   >
+            //     <div class="font-semibold">Add Liquidity</div>
+            //   </Button.Inline>
+            // }
             headerContent={
               <>
                 <SearchBox
