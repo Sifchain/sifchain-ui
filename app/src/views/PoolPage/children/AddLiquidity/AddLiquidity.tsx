@@ -75,7 +75,7 @@ export default defineComponent({
           <span class="font-mono">{data.fromAmount.value}</span>,
         ],
         [
-          <span>Your Share of Pool</span>,
+          <span>Est. pool share</span>,
           <div class="flex items-center gap-[4px] font-mono">
             <div>{data.shareOfPoolPercent.value}</div>
           </div>,
