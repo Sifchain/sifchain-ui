@@ -296,6 +296,21 @@ export default defineComponent({
               </Tooltip>
             ))}
           </div>
+
+          <div
+            class={[
+              COLUMNS_LOOKUP.poolTvl.class,
+              "flex items-center font-mono",
+            ]}
+          >
+            {typeof this.$props.poolStat?.poolTVL === "number"
+              ? this.$props.poolStat.poolTVL.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })
+              : "..."}
+          </div>
+
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
@@ -303,19 +318,7 @@ export default defineComponent({
               ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
-          <div
-            class={[
-              COLUMNS_LOOKUP.poolTvl.class,
-              "flex items-center font-mono",
-            ]}
-          >
-            {typeof this.$props.poolStat?.poolDepth === "number"
-              ? this.$props.poolStat.poolDepth.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })
-              : "..."}
-          </div>
+
           <div
             class={[
               COLUMNS_LOOKUP.userShare.class,
