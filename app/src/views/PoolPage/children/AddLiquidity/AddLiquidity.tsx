@@ -228,6 +228,7 @@ export default defineComponent({
             <TokenInputGroup
               shouldShowNumberInputOnLeft
               heading="Input"
+              excludeSymbols={[data.fromSymbol.value]}
               asset={data.fromAsset.value}
               amount={data.fromAmount.value}
               formattedBalance={formattedFromTokenBalance.value}
