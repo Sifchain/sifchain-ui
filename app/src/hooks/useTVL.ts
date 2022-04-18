@@ -10,7 +10,14 @@ export function useTVL() {
 
     const pools = tokenStats.body.pools ?? [];
 
-    const total = pools.reduce((acc, pool) => acc + pool.poolTVL, 0);
+    const total = pools.reduce(
+      (acc, { poolTVL, poolDepth }) =>
+        acc +
+        (typeof poolTVL === "string" || typeof poolTVL === "number"
+          ? Number(poolTVL ?? "0")
+          : parseFloat(poolDepth as any) * 2),
+      0,
+    );
 
     return { formatted: "$" + prettyNumber(total), raw: total };
   };
