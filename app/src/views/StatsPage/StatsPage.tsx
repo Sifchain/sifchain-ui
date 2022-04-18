@@ -209,7 +209,7 @@ export default defineComponent({
                           : `${prettyNumber(Math.abs(item.arbitrage))}%`}
                       </td>
                       <td class="text-mono text-right align-middle">
-                        ${prettyNumber(item.depth * 2)}
+                        ${prettyNumber(item.tvl)}
                       </td>
                       <td class="text-mono text-right align-middle">
                         ${prettyNumber(item.volume)}
