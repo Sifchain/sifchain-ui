@@ -99,27 +99,31 @@ export default defineComponent({
         : [];
     },
     myPoolValue(): string | undefined {
-      if (!this.accountPool || !this.poolStat) return;
+      if (
+        !this.accountPool ||
+        !this.poolStat ||
+        this.rowanPrice.isLoading.value
+      )
+        return;
 
       const externalAmount = AssetAmount(
         this.accountPool.lp.asset,
         this.accountPool.lp.externalAmount,
-      );
+      ).toDerived();
       const nativeAmount = AssetAmount(
         useChains().get(Network.SIFCHAIN).nativeAsset,
         this.accountPool.lp.nativeAmount,
+      ).toDerived();
+
+      const nativeDollarAmount = nativeAmount.multiply(
+        this.rowanPrice.data.value ?? 0,
       );
-      const formattedExternal = formatAssetAmount(externalAmount);
-      const formattedNative = formatAssetAmount(nativeAmount);
+      const externalDollarAmount = externalAmount.multiply(
+        this.poolStat.priceToken ?? 0,
+      );
 
-      if (this.rowanPrice.isLoading.value) return "";
-
-      console.log(this.poolStat);
       return prettyNumber(
-        parseFloat(formattedExternal) *
-          parseFloat(this.poolStat.priceToken?.toString() || "0") +
-          parseFloat(formattedNative) *
-            parseFloat(this.rowanPrice.data.value || "0"),
+        nativeDollarAmount.add(externalDollarAmount).toNumber(),
       );
     },
     externalAmount(): IAssetAmount {
