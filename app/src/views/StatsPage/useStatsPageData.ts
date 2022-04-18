@@ -39,7 +39,7 @@ export function useStatsPageData(initialState: StatsPageState) {
         const item = {
           asset,
           price: pool.priceToken,
-          depth: pool.poolDepth,
+          tvl: pool.poolTVL,
           volume: pool.volume ?? 0,
           arbitrage: pool.arb == null ? null : pool.arb ?? 0,
           poolApr: pool.poolApr?.toFixed(1),

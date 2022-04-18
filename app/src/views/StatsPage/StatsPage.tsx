@@ -63,9 +63,9 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
         message: (
           <code class="text-xs">
-            Pool reward APR = Total rewards distributed in current program /
-            (Total seconds passed in current program * Current pool balance) *
-            (Total seconds per year)
+            Pool reward APR = Trading APR + (Total rewards distributed in
+            current program / (Total blocks passed in current program * Current
+            pool balance) * (Total blocks per year))
           </code>
         ),
       },
@@ -209,7 +209,7 @@ export default defineComponent({
                           : `${prettyNumber(Math.abs(item.arbitrage))}%`}
                       </td>
                       <td class="text-mono text-right align-middle">
-                        ${prettyNumber(item.depth * 2)}
+                        ${prettyNumber(item.tvl)}
                       </td>
                       <td class="text-mono text-right align-middle">
                         ${prettyNumber(item.volume)}
