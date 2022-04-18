@@ -13,7 +13,6 @@ import AssetIcon from "@/components/AssetIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { Tooltip } from "@/components/Tooltip";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
-import { flagsStore } from "@/store/modules/flags";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import clsx from "clsx";
