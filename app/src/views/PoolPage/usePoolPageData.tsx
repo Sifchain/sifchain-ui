@@ -67,9 +67,9 @@ export const COLUMNS: PoolPageColumn[] = [
     sortable: true,
     help: (
       <code class="text-xs">
-        Pool reward APR = Total rewards distributed in current program / (Total
-        seconds passed in current program * Current pool balance) * (Total
-        seconds per year)
+        Pool reward APR = Trading APR + (Total rewards distributed in current
+        program / (Total blocks passed in current program * Current pool
+        balance) * (Total blocks per year))
       </code>
     ),
   },

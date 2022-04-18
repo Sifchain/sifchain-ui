@@ -374,7 +374,7 @@ export default defineComponent({
               {this.unlock !== undefined && (
                 <section>
                   <header class="mt-2 mb-0.5">
-                    <p class="text-md font-bold">Unlocking request</p>
+                    <p class="text-md font-bold">Unbonding request</p>
                   </header>
                   <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
                     <div class={tableItemClass}>
