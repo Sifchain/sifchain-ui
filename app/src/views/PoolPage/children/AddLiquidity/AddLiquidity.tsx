@@ -1,4 +1,5 @@
 import { computed, defineComponent, ref } from "vue";
+import clsx from "clsx";
 import { useRouter } from "vue-router";
 import { Asset, Network } from "@sifchain/sdk";
 
@@ -15,7 +16,6 @@ import { Tooltip } from "@/components/Tooltip";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
-import clsx from "clsx";
 
 export default defineComponent({
   setup(): () => JSX.Element {

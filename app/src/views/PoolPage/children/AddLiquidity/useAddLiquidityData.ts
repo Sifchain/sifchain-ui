@@ -17,7 +17,6 @@ import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { formatAssetAmount, formatNumber } from "@/components/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
-import { flagsStore } from "@/store/modules/flags";
 
 export const useAddLiquidityData = () => {
   const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
