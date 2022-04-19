@@ -42,7 +42,7 @@ export const useCurrentRouteBannerMessage = () => {
     if (
       matchingKey &&
       matchingKey in bannersRes.data.value &&
-      typeof bannersRes.data.value[matchingKey] === "string"
+      Boolean(bannersRes.data.value[matchingKey])
     ) {
       const meta = bannersRes.data.value.meta[matchingKey];
       const message = bannersRes.data.value[matchingKey];
