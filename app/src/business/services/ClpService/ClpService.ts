@@ -9,7 +9,6 @@ export type ClpServiceContext = {
   nativeAsset: IAsset;
   sifApiUrl: string;
   sifRpcUrl: string;
-  sifWsUrl: string;
   sifChainId: string;
   sifUnsignedClient?: SifUnSignedClient;
 };
@@ -25,7 +24,7 @@ export class ClpService {
 
     this.client =
       ctx.sifUnsignedClient ??
-      new SifUnSignedClient(ctx.sifApiUrl, ctx.sifRpcUrl, ctx.sifWsUrl);
+      new SifUnSignedClient(ctx.sifApiUrl, ctx.sifRpcUrl);
 
     this.dexClientPromise = NativeDexClient.connect(
       ctx.sifRpcUrl,

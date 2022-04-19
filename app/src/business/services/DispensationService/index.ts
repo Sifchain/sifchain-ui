@@ -1,12 +1,11 @@
-import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
 import { IAsset } from "@sifchain/sdk";
+import { DistributionType } from "@sifchain/sdk/src/generated/proto/sifnode/dispensation/v1/types";
 import { SifUnSignedClient } from "@sifchain/sdk/src/clients/native/SifClient";
 
 export type IDispensationServiceContext = {
   nativeAsset: IAsset;
   sifApiUrl: string;
   sifRpcUrl: string;
-  sifWsUrl: string;
   sifChainId: string;
   sifUnsignedClient?: SifUnSignedClient;
 };
@@ -17,11 +16,9 @@ type IDispensationService = {
 
 export default function createDispensationService({
   sifApiUrl,
-  nativeAsset,
   sifChainId,
-  sifWsUrl,
   sifRpcUrl,
-  sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl),
+  sifUnsignedClient = new SifUnSignedClient(sifApiUrl, sifRpcUrl),
 }: IDispensationServiceContext): IDispensationService {
   const client = sifUnsignedClient;
   const instance: IDispensationService = {
