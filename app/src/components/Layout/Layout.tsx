@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { defineComponent, HtmlHTMLAttributes, PropType } from "vue";
 
 import { useCurrentRouteBannerMessage } from "@/hooks/useCurrentRouteBannerMessage";
@@ -23,11 +24,21 @@ export default defineComponent({
           onScroll={props.onScroll as HtmlHTMLAttributes["onScroll"]}
         >
           {context.slots.default?.()}
-          <div id="modal-target"></div>
+          <div id="modal-target" />
 
           {!!bannerMessageRef.value && (
-            <div class="bg-info-base absolute top-0 left-0 right-0 flex items-center justify-center overflow-visible p-[12px] px-[100px] pr-[200px] text-white">
-              <p>{bannerMessageRef.value}</p>
+            <div
+              class={clsx(
+                "bg-info-base/60 absolute left-0 right-0 z-10 p-2 font-semibold text-white backdrop-blur-md",
+                {
+                  "md:p-4": !bannerMessageRef.value.meta?.fullScreen,
+                  "inset-0 h-screen text-lg md:p-24":
+                    bannerMessageRef.value.meta?.fullScreen,
+                  "pointer-events-none": "",
+                },
+              )}
+            >
+              <p class="max-w-6xl">{bannerMessageRef.value.message}</p>
             </div>
           )}
         </div>
