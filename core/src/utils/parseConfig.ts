@@ -86,16 +86,15 @@ export type KeplrChainConfig = {
     high: number;
   };
 };
+
 export type CoreConfig = {
   sifAddrPrefix: string;
   sifApiUrl: string;
-  sifWsUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
   cryptoeconomicsUrl: string;
   blockExplorerUrl: string;
   web3Provider: "metamask" | string;
-  // assets: AssetConfig[];
   nativeAsset: string; // symbol
   bridgebankContractAddress: string;
   keplrChainConfig: KeplrChainConfig;
@@ -138,7 +137,6 @@ export function parseConfig(
     chainConfigsByNetwork: chainConfigsByNetwork,
     sifAddrPrefix: config.sifAddrPrefix,
     sifApiUrl: config.sifApiUrl,
-    sifWsUrl: config.sifWsUrl,
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
     cryptoeconomicsUrl: config.cryptoeconomicsUrl,

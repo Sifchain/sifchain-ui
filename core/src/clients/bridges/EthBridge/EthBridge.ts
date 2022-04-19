@@ -31,7 +31,6 @@ import { TokenRegistry } from "../../native/TokenRegistry";
 
 export type EthBridgeContext = {
   sifApiUrl: string;
-  sifWsUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
   bridgebankContractAddress: string;
