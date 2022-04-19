@@ -40,20 +40,6 @@ export default defineComponent({
       });
     };
 
-    const modalHeadingAction = (
-      <div class="flex items-center gap-2">
-        <Toggle
-          label="Pool Equaly"
-          active={data.symmetricalPooling.value}
-          onChange={(_active) => {
-            data.toggleAsyncPooling();
-            data.handleTokenAFocused();
-          }}
-        />
-        <AssetPair hideTokenSymbol asset={data.fromAsset} />
-      </div>
-    );
-
     const detailsRef = computed<FormDetailsType>(() => ({
       details: [
         [
@@ -119,7 +105,9 @@ export default defineComponent({
           >
             <div class="bg-gray-base grid gap-4 rounded-lg p-4">
               <Form.Details details={detailsRef.value} />
-              <RiskWarning riskFactorStatus={data.riskFactorStatus} />
+              {!data.symmetricalPooling.value && (
+                <RiskWarning riskFactorStatus={data.riskFactorStatus} />
+              )}
             </div>
             <Button.CallToAction
               onClick={() => {
@@ -137,7 +125,19 @@ export default defineComponent({
           heading="Add Liquidity"
           icon="interactive/plus"
           showClose
-          headingAction={modalHeadingAction}
+          headingAction={
+            <div class="flex items-center gap-2">
+              <Toggle
+                label="Pool Equaly"
+                active={data.symmetricalPooling.value}
+                onChange={(_active) => {
+                  data.toggleAsyncPooling();
+                  data.handleTokenAFocused();
+                }}
+              />
+              <AssetPair hideTokenSymbol asset={data.fromAsset} />
+            </div>
+          }
           onClose={() => close()}
         >
           <div class="grid gap-4">
