@@ -26,7 +26,7 @@ export const useAddLiquidityData = () => {
   const modalStatus = ref<"setup" | "confirm" | "processing">("setup");
   const transactionStatus = ref<TransactionStatus | null>(null);
 
-  const symmetricalPooling = ref<boolean>(false);
+  const symmetricalPooling = ref<boolean>(true);
   const router = useRouter();
 
   const {
@@ -226,7 +226,7 @@ export const useAddLiquidityData = () => {
     clearAmounts();
   }
 
-  function toggleAsyncPooling() {
+  function toggleSymmetricPooling() {
     symmetricalPooling.value = !symmetricalPooling.value;
   }
 
@@ -320,7 +320,7 @@ export const useAddLiquidityData = () => {
     symmetricalPooling,
 
     requestTransactionModalClose,
-    toggleAsyncPooling,
+    toggleAsyncPooling: toggleSymmetricPooling,
     handleBlur() {
       selectedField.value = null;
     },

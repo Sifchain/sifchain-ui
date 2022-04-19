@@ -167,7 +167,17 @@ export default class DataService {
           ),
         60000 * 5, // cache for 5 minutes
       );
-      return res;
+      const { pools } = res.body;
+      return {
+        ...res,
+        body: {
+          ...res.body,
+          pools: pools.map((x) => ({
+            ...x,
+            poolApr: (x.poolApr ?? 0) * 100,
+          })),
+        },
+      };
     } catch (error) {
       return {} as PoolStatsResponseData;
     }
