@@ -8,7 +8,8 @@ import Button from "@/components/Button";
 
 const isProduction =
   import.meta.env.VITE_APP_DEPLOYMENT === "production" ||
-  location.hostname == "dex.sifchain.finance";
+  location.hostname === "dex.sifchain.finance" ||
+  /sifchain-dex\.((redstarling|forbole)\.com)/.test(location.hostname);
 
 import { createGui } from "./flagsGui";
 const loadGui = () => createGui;
