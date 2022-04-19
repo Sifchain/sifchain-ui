@@ -26,14 +26,15 @@ export default defineComponent({
           {context.slots.default?.()}
           <div id="modal-target" />
 
-          {!!bannerMessageRef.value && (
+          {bannerMessageRef.value && (
             <div
               class={clsx(
-                "bg-info-base/60 absolute left-0 right-0 z-10 p-2 font-semibold text-white backdrop-blur-md",
+                "bg-info-base/60  z-10 p-2 font-semibold text-white backdrop-blur-md",
                 {
-                  "md:p-4": !bannerMessageRef.value.meta?.fullScreen,
-                  "inset-0 h-screen text-lg md:p-24":
-                    bannerMessageRef.value.meta?.fullScreen,
+                  "absolute left-0 right-0 md:p-4":
+                    !bannerMessageRef.value?.meta?.fullScreen,
+                  "fixed inset-0 grid h-screen place-items-center text-lg md:p-24":
+                    bannerMessageRef.value?.meta?.fullScreen,
                   "pointer-events-none": "",
                 },
               )}
