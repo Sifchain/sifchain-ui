@@ -52,7 +52,7 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[358px] text-left justify-start",
+    class: "w-[320px] text-left justify-start",
     sortable: true,
   },
   {
