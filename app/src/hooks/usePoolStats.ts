@@ -1,9 +1,8 @@
-import { computed } from "vue";
-import { IAsset } from "@sifchain/sdk";
-
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import { symbolWithoutPrefix } from "@/utils/symbol";
-import { useAsyncDataCached } from "./useAsyncDataCached";
+import { IAsset } from "@sifchain/sdk";
+import { computed } from "vue";
+import { useQuery } from "vue-query";
 import { useNativeChain } from "./useChains";
 import { useCore } from "./useCore";
 
@@ -21,13 +20,19 @@ interface Body {
 
 export interface PoolStat {
   symbol: string;
-  priceToken: string;
-  poolDepth: string;
-  volume: string;
-  arb?: string;
-  poolAPY: string;
-  rewardAPY: string;
-  totalAPY: string;
+  priceToken: number;
+  poolDepth: number;
+  poolTVL: number;
+  volume: number;
+  arb: number;
+  dailySwapFees: number;
+  poolBalance: number;
+  accruedNumSecsRewards: number;
+  rewardPeriodNativeDistributed: number;
+  secsPerYear: number;
+  tradingApr: number;
+  rewardApr: number;
+  poolApr: number;
 }
 
 export interface Headers {
@@ -36,52 +41,54 @@ export interface Headers {
 
 const hasLoggedError: Record<string, boolean> = {};
 
-export const usePoolStats = () => {
+export function useDataServicesPoolStats() {
+  const { services } = useCore();
+
+  const isPMTPEnabled = flagsStore.state.pmtp;
+
+  return useQuery(
+    ["pool-stats", isPMTPEnabled],
+    () =>
+      isPMTPEnabled
+        ? services.data.getTokenStatsPMTP()
+        : services.data.getTokenStats(),
+    {
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 5 * 60 * 1000,
+      retry: true,
+    },
+  );
+}
+
+export function usePoolStats() {
   const { store, services } = useCore();
 
-  const poolStatsRes = useAsyncDataCached("poolStats", async () => {
-    const { body: poolData } = await services.data.getTokenStats();
+  const isPMTPEnabled = flagsStore.state.pmtp;
 
-    const rewardPrograms = await services.data.getRewardsPrograms();
+  const poolStatsQuery = useDataServicesPoolStats();
 
-    const response = {
-      poolData: {
-        ...poolData,
-        pools: poolData.pools.map((p) => {
-          const poolAPY = p.poolAPY
-            ? Number(p.poolAPY)
-            : (parseFloat(p?.volume || "0") / parseFloat(p?.poolDepth || "0")) *
-              100;
+  const poolStatsRes = useQuery(
+    ["poolStats", isPMTPEnabled],
+    async () => {
+      if (!poolStatsQuery.data.value) {
+        return;
+      }
+      const { body: poolData } = poolStatsQuery.data.value;
 
-          const rewardAPY = rewardPrograms.reduce((acc, program) => {
-            const incentivisedSymbols = program.incentivizedPoolSymbols.map(
-              (x) => x.slice(1),
-            );
+      const rewardPrograms = await services.data.getRewardsPrograms();
 
-            const isIndividuallyIncentivized =
-              program.incentivizedPoolSymbols?.includes(p.symbol) ||
-              incentivisedSymbols.includes(p.symbol);
+      const response = {
+        poolData: poolData,
+        liqAPY: 0,
+        rowanUsd: poolData.rowanUSD,
+      };
 
-            if (program.isUniversal || isIndividuallyIncentivized) {
-              return acc + program.summaryAPY;
-            }
-            return acc;
-          }, 0);
-
-          return {
-            ...p,
-            poolAPY: poolAPY.toFixed(1),
-            rewardAPY: rewardAPY.toFixed(1),
-            totalAPY: (poolAPY + rewardAPY).toFixed(1),
-          };
-        }),
-      },
-      liqAPY: 0,
-      rowanUsd: poolData.rowanUSD,
-    };
-
-    return response;
-  });
+      return response;
+    },
+    {
+      enabled: poolStatsQuery.isSuccess,
+    },
+  );
 
   const isLoading = computed(() => {
     return poolStatsRes.isLoading.value || !Object.keys(store.pools).length;
@@ -162,4 +169,4 @@ export const usePoolStats = () => {
     data: wrappedData,
     isError: poolStatsRes.isError,
   };
-};
+}

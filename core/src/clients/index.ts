@@ -16,6 +16,12 @@ import {
   LikecoinChain,
   EmoneyChain,
   StarnameChain,
+  BitsongChain,
+  CerberusChain,
+  ComdexChain,
+  ChihuahuaChain,
+  KiChain,
+  StargazeChain,
 } from "../clients/chains";
 
 import { Network } from "..";
@@ -38,6 +44,12 @@ export const networkChainCtorLookup = {
   [Network.LIKECOIN]: LikecoinChain,
   [Network.EMONEY]: EmoneyChain,
   [Network.STARNAME]: StarnameChain,
+  [Network.BITSONG]: BitsongChain,
+  [Network.CERBERUS]: CerberusChain,
+  [Network.COMDEX]: ComdexChain,
+  [Network.CHIHUAHUA]: ChihuahuaChain,
+  [Network.KI]: KiChain,
+  [Network.STARGAZE]: StargazeChain,
 };
 
 export * from "./chains";

@@ -8,6 +8,7 @@ import {
   SetupContext,
   onMounted,
   ref,
+  StyleValue,
 } from "vue";
 import { useRouter } from "vue-router";
 import { TokenIcon } from "./TokenIcon";
@@ -31,6 +32,7 @@ export default defineComponent({
       default: "AssetIcon",
     },
     class: String as PropType<HTMLAttributes["class"]>,
+    style: Object as PropType<StyleValue>,
     withOverflowSpace: {
       type: Boolean,
     },
@@ -47,9 +49,10 @@ export default defineComponent({
         <div
           key="view-layer"
           class={[
-            `relative w-[50vw] min-w-[531px] max-w-[800px] flex-col items-center justify-start rounded-[10px] bg-black px-4 text-white shadow-2xl transition-all`,
+            `relative w-[50vw] min-w-[531px] max-w-[800px] flex-col items-center justify-start rounded-[10px] bg-black px-4 pb-1 text-white shadow-2xl transition-all`,
             props.class,
           ]}
+          style={props.style}
         >
           <div class="sticky top-0 z-10 w-full bg-black pt-4">
             {!!props.heading && (

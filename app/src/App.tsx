@@ -4,11 +4,10 @@ import { Amount } from "@sifchain/sdk";
 
 import { useInitialize } from "@/hooks/useInitialize";
 
-import EnvAlert from "@/components/EnvAlert";
+import EnvSwitcher from "@/components/EnvSwitcher";
 import SideBar from "@/components/NavSidePanel";
 import Notifications from "@/components/Notifications";
 import Flags from "@/components/Flags";
-import { ExpansionIntro } from "@/components/ExpansionIntro";
 
 import { accountStore } from "@/store/modules/accounts";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
@@ -59,14 +58,6 @@ let hasShownOnboardingModal = (() => {
 
 export default defineComponent({
   name: "App",
-  components: {
-    ExpansionIntro,
-    Notifications,
-    EnvAlert,
-    SideBar,
-    Flags,
-    OnboardingModal,
-  },
   computed: {
     key() {
       return this.$route.path;
@@ -130,7 +121,7 @@ export default defineComponent({
             <OnboardingModal onClose={onCloseOnboardingModal} />
           )}
           <Notifications />
-          <EnvAlert />
+          <EnvSwitcher />
           <Flags />
         </SifchainClientsProvider>
       </div>

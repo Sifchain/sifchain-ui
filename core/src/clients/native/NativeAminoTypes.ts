@@ -1,7 +1,8 @@
+import inflection from "inflection";
 import { AminoConverter, AminoTypes } from "@cosmjs/stargate";
-import { NativeDexClient } from "./NativeDexClient";
-import * as inflection from "inflection";
 import { AminoMsg } from "@cosmjs/amino";
+
+import { NativeDexClient } from "./NativeDexClient";
 
 export class NativeAminoTypes extends AminoTypes {
   constructor() {

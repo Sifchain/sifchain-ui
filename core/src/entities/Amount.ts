@@ -1,6 +1,7 @@
 import JSBI from "jsbi";
-import { Fraction, IFraction } from "./fraction/Fraction";
 import Big from "big.js";
+
+import { Fraction, IFraction } from "./fraction/Fraction";
 import { isAssetAmount } from "./AssetAmount";
 import { decimalShift, floorDecimal } from "../utils/decimalShift";
 
@@ -8,24 +9,29 @@ export type IAmount = {
   // for use by display lib and in testing
   toBigInt(): JSBI;
   toString(detailed?: boolean): string;
+  toNumber(): number;
 
   // for use elsewhere
-  add(other: IAmount | string): IAmount;
-  divide(other: IAmount | string): IAmount;
-  equalTo(other: IAmount | string): boolean;
-  greaterThan(other: IAmount | string): boolean;
-  greaterThanOrEqual(other: IAmount | string): boolean;
-  lessThan(other: IAmount | string): boolean;
-  lessThanOrEqual(other: IAmount | string): boolean;
-  multiply(other: IAmount | string): IAmount;
+  add(other: IAmount | string | number): IAmount;
+  divide(other: IAmount | string | number): IAmount;
+  equalTo(other: IAmount | string | number): boolean;
+  greaterThan(other: IAmount | string | number): boolean;
+  greaterThanOrEqual(other: IAmount | string | number): boolean;
+  lessThan(other: IAmount | string | number): boolean;
+  lessThanOrEqual(other: IAmount | string | number): boolean;
+  multiply(other: IAmount | string | number): IAmount;
   sqrt(): IAmount;
-  subtract(other: IAmount | string): IAmount;
+  subtract(other: IAmount | string | number): IAmount;
 };
 
 export function Amount(
-  source: JSBI | bigint | string | IAmount,
+  source: JSBI | bigint | string | IAmount | number,
 ): Readonly<IAmount> {
   type _IAmount = _ExposeInternal<IAmount>;
+
+  if (typeof source === "number") {
+    return Amount(source.toString());
+  }
 
   // Am I a decimal number string with a period?
   if (typeof source === "string" && /^[+-]?(\d+)?\.\d+$/.test(source)) {
@@ -63,6 +69,10 @@ export function Amount(
 
     toString(detailed: boolean = true) {
       return fraction.toFixed(detailed ? 18 : 0);
+    },
+
+    toNumber() {
+      return +this.toString();
     },
 
     add(other) {
@@ -193,10 +203,11 @@ export type _ExposeInternal<T extends IAmount> = T & {
 // Helper for extracting a fraction out of an amount.
 // This uses a private API and should not be exposed
 // outside of Amount
-function toFraction(a: string): string;
-function toFraction(a: IAmount | string): IFraction;
-function toFraction(a: IAmount | string): IFraction | string {
+function toFraction(a: IAmount | string | number): IFraction | string {
   type _IAmount = _ExposeInternal<IAmount>;
+  if (typeof a === "number") {
+    return toFraction(a.toString());
+  }
   if (typeof a === "string") {
     return a.indexOf(".") < 0 ? a : (Amount(a) as _IAmount)._toInternal();
   }

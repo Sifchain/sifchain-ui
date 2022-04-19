@@ -1,5 +1,4 @@
 import { LcdClient } from "@cosmjs/launchpad";
-import { Network } from "../../../../../entities";
 import { ClpExtension, setupClpExtension } from "./index";
 
 const removeLiquidityParams = {

@@ -1,6 +1,6 @@
 import { computed } from "vue";
+import { useQuery } from "vue-query";
 import { useRoute } from "vue-router";
-import { useAsyncDataCached } from "./useAsyncDataCached";
 
 const CHANGES_SERVER_ENDPOINT =
   "https://sifchain-changes-server.vercel.app/api/banners";
@@ -20,18 +20,15 @@ type BannersResponse = Record<RouteKey, string> & {
 export const useCurrentRouteBannerMessage = () => {
   const route = useRoute();
 
-  const bannersRes = useAsyncDataCached(
-    "banners",
-    async (): Promise<BannersResponse> => {
-      const res = await fetch(CHANGES_SERVER_ENDPOINT);
+  const bannersRes = useQuery("banners", async (): Promise<BannersResponse> => {
+    const res = await fetch(CHANGES_SERVER_ENDPOINT);
 
-      try {
-        return res.json() as Promise<BannersResponse>;
-      } catch (error) {
-        return {} as BannersResponse;
-      }
-    },
-  );
+    try {
+      return res.json() as Promise<BannersResponse>;
+    } catch (error) {
+      return {} as BannersResponse;
+    }
+  });
 
   const currentMessage = computed(() => {
     if (!bannersRes.data.value) {

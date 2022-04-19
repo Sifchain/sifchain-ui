@@ -1,4 +1,4 @@
-import { Chain, IAssetAmount } from "../../entities";
+import { Chain } from "../../entities";
 import { urlJoin } from "url-join-ts";
 import { BaseChain } from "./_BaseChain";
 

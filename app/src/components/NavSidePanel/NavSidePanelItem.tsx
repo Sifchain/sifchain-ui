@@ -33,9 +33,11 @@ export default defineComponent({
   },
   setup(props) {
     const isExternal = computed(() => props.href?.startsWith("http"));
+
     const Cmp = computed(() => {
       return !props.href ? "button" : isExternal.value ? "a" : RouterLink;
     });
+
     const linkRef =
       props.href && !isExternal.value
         ? useLink({
@@ -62,6 +64,9 @@ export default defineComponent({
             `mt-[10px] flex h-[32px] w-full cursor-pointer items-center whitespace-nowrap  rounded px-[8px] text-left text-sm font-semibold transition-colors duration-75 hover:bg-gray-200`,
             isActive.value && "text-accent-base bg-gray-200",
             props.class,
+            Cmp.value === "button" && !props.onClick
+              ? "pointer-events-none"
+              : "",
           ]}
         >
           <AssetIcon

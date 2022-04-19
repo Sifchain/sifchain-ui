@@ -17,6 +17,12 @@ import band from "./band";
 import likecoin from "./likecoin";
 import emoney from "./emoney";
 import starname from "./starname";
+import bitsong from "./bitsong";
+import cerberus from "./cerberus";
+import chihuahua from "./chihuahua";
+import comdex from "./comdex";
+import ki from "./ki";
+import stargaze from "./stargaze";
 
 export const chainConfigByNetworkEnv = Object.fromEntries(
   Object.values(NetworkEnv).map((env) => {
@@ -37,10 +43,15 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.JUNO]: juno[env],
         [Network.IXO]: ixo[env],
         [Network.BAND]: band[env],
-        // [Network.BITSONG]: bitsong[env],
+        [Network.BITSONG]: bitsong[env],
         [Network.LIKECOIN]: likecoin[env],
         [Network.EMONEY]: emoney[env],
         [Network.STARNAME]: starname[env],
+        [Network.CERBERUS]: cerberus[env],
+        [Network.CHIHUAHUA]: chihuahua[env],
+        [Network.COMDEX]: comdex[env],
+        [Network.KI]: ki[env],
+        [Network.STARGAZE]: stargaze[env],
       },
     ];
   }),

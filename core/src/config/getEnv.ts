@@ -1,3 +1,4 @@
+import { Network } from "../entities";
 import { AppCookies } from "./AppCookies";
 
 export enum NetworkEnv {
@@ -7,11 +8,9 @@ export enum NetworkEnv {
   LOCALNET = "localnet",
   DEVNET_042 = "devnet_042",
   TESTNET_042_IBC = "testnet_042_ibc",
-  TEMPNET_PMTP = "tempnet_pmtp",
 }
 
-// NOTE(ajoslin): support legacy `?_env=n` urls, from
-// 0-4
+// NOTE(ajoslin): support legacy `?_env=n` urls
 export const networkEnvsByIndex = [
   NetworkEnv.MAINNET,
   NetworkEnv.TESTNET,
@@ -19,11 +18,10 @@ export const networkEnvsByIndex = [
   NetworkEnv.LOCALNET,
   NetworkEnv.DEVNET_042,
   NetworkEnv.TESTNET_042_IBC,
-  NetworkEnv.TEMPNET_PMTP,
 ];
 
-// type AssetTag = `${Network}.${NetworkEnv}`;
-type AssetTag = string;
+type AssetTag = `${Network}.${NetworkEnv}`;
+
 type ProfileLookup = Record<
   NetworkEnv | number,
   {
@@ -59,35 +57,17 @@ export const profileLookup: ProfileLookup = {
     sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
-  get [1]() {
-    return this[NetworkEnv.TESTNET];
-  },
   [NetworkEnv.DEVNET]: {
     tag: NetworkEnv.DEVNET,
     ethAssetTag: "ethereum.devnet",
     sifAssetTag: "sifchain.devnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
-  get [2]() {
-    return this[NetworkEnv.DEVNET];
-  },
   [NetworkEnv.LOCALNET]: {
     tag: NetworkEnv.LOCALNET,
     ethAssetTag: "ethereum.localnet",
     sifAssetTag: "sifchain.localnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
-  },
-  get [3]() {
-    return this[NetworkEnv.LOCALNET];
-  },
-  [NetworkEnv.TEMPNET_PMTP]: {
-    tag: NetworkEnv.TEMPNET_PMTP,
-    ethAssetTag: "ethereum.testnet",
-    sifAssetTag: "sifchain.devnet",
-    cosmoshubAssetTag: "cosmoshub.testnet",
-  },
-  get [4]() {
-    return this[NetworkEnv.TEMPNET_PMTP];
   },
 } as const;
 
@@ -132,6 +112,7 @@ export function getEnv({
   let sifEnv: NetworkEnv | null;
 
   if (cookieEnv != null && networkEnvsByIndex[+cookieEnv]) {
+    console.log({ cookieEnv });
     sifEnv = networkEnvsByIndex[+cookieEnv];
   } else if (isNetworkEnvSymbol(cookieEnv)) {
     sifEnv = cookieEnv;

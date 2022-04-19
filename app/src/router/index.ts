@@ -22,6 +22,7 @@ import ExportProcessing from "@/views/BalancePage/Export/Processing";
 import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
 import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
+import UnbondLiquidity from "@/views/PoolPage/children/UnbondLiquidity";
 
 type SwapPageMeta = {
   title: string;
@@ -96,14 +97,23 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
           title: "Add Liquidity - Sifchain",
         },
       },
-      {
-        path: "remove-liquidity/:externalAsset?",
-        name: "RemoveLiquidity",
-        component: Pool_RemoveLiquidity,
-        meta: {
-          title: "Remove Liquidity - Sifchain",
-        },
-      },
+      flagsStore.state.newLiquidityUnlockProcess
+        ? {
+            path: "unbond-liquidity/:externalAsset?",
+            name: "UnbondLiquidity",
+            component: UnbondLiquidity,
+            meta: {
+              title: "UnbondLiquidity - Sifchain",
+            },
+          }
+        : {
+            path: "remove-liquidity/:externalAsset?",
+            name: "RemoveLiquidity",
+            component: Pool_RemoveLiquidity,
+            meta: {
+              title: "Remove Liquidity - Sifchain",
+            },
+          },
     ],
   },
   {

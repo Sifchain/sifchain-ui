@@ -1,32 +1,19 @@
 import { reactive, computed, onMounted, onUnmounted } from "vue";
-import { Asset, IAsset } from "@sifchain/sdk";
+import { Asset } from "@sifchain/sdk";
 
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useCore } from "@/hooks/useCore";
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 
-export type StatsItem = {
-  asset: IAsset;
-  price: number;
-  depth: number;
-  volume: number;
-  arbitrage: number;
-  poolApy: number;
-  miningBonus: number;
-  totalApy: number;
-  rewardApy: number;
-};
-
 export type StatsPageState = {
   sortBy:
     | "asset"
     | "price"
-    | "depth"
+    | "tvl"
     | "volume"
     | "arbitrage"
-    | "poolApy"
-    | "rewardApy"
-    | "totalApy";
+    | "poolApr"
+    | "rewardApr";
   sortDirection: "asc" | "desc";
 };
 
@@ -44,29 +31,26 @@ export function useStatsPageData(initialState: StatsPageState) {
 
   const statsRef = computed(() => {
     if (!res.data.value) return [];
-    const { liqAPY, poolData } = res.data.value;
+    const { poolData } = res.data.value;
 
     const array = poolData.pools
       .map((pool) => {
         const asset = Asset.get(pool.symbol);
         const item = {
           asset,
-          price: parseFloat(pool.priceToken),
-          depth: parseFloat(pool.poolDepth),
-          volume: parseFloat(pool.volume) || 0,
-          arbitrage: pool.arb == null ? null : parseFloat(pool.arb) || 0,
-          poolApy: Number(pool.poolAPY),
-          rewardApy: pool.rewardAPY,
-          totalApy: pool.totalAPY,
+          price: pool.priceToken,
+          tvl: pool.poolTVL,
+          volume: pool.volume ?? 0,
+          arbitrage: pool.arb == null ? null : pool.arb ?? 0,
+          poolApr: pool.poolApr?.toFixed(1),
+          rewardApr: pool.rewardApr,
         };
 
         return item;
       })
-      .filter((item) => {
-        return (
-          !item.asset.decommissioned && !isAssetFlaggedDisabled(item.asset)
-        );
-      })
+      .filter(
+        ({ asset }) => !asset.decommissioned && !isAssetFlaggedDisabled(asset),
+      )
       .sort((a, b) => {
         if (state.sortBy === "asset") {
           return (a.asset.displaySymbol || a.asset.symbol).localeCompare(

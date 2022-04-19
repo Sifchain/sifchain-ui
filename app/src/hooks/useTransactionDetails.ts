@@ -1,7 +1,9 @@
-import { computed } from "vue";
-import { TransactionStatus } from "@sifchain/sdk";
+import { computed, unref } from "vue";
+import { DeliverTxResponse, TransactionStatus } from "@sifchain/sdk";
 import { Ref, ComputedRef } from "vue";
 import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
+import { transactionStatusFromDeliverTxResponse } from "@sifchain/sdk/src/clients/native/SifClient";
+import { MaybeRef } from "vue-query/lib/vue/types";
 
 export function useBridgeEventDetails(props: {
   bridgeEvent: Ref<BridgeEvent>;
@@ -19,6 +21,34 @@ export function useTransactionDetails(props: {
   });
 }
 
+export const useDeliverTxDetails = (
+  tx: MaybeRef<DeliverTxResponse | undefined>,
+  isLoading: MaybeRef<boolean>,
+  isQueryError: MaybeRef<boolean>,
+) =>
+  computed(() => {
+    const unrefTx = unref(tx);
+    if (unrefTx === undefined && unref(isQueryError) === true) {
+      return getTransactionDetails({
+        hash: "",
+        state: "failed",
+      });
+    }
+
+    if (unref(isLoading)) {
+      return {
+        heading: "Waiting for Confirmation",
+        description: "Confirm this transaction in your wallet",
+      };
+    }
+
+    return getTransactionDetails(
+      unrefTx === undefined
+        ? undefined
+        : transactionStatusFromDeliverTxResponse(unrefTx),
+    );
+  });
+
 export type TransactionDetails = null | {
   tx?: TransactionStatus;
   heading: string;
@@ -32,7 +62,6 @@ export type TransactionDetails = null | {
 export function getBridgeEventDetails(
   bridgeEvent: BridgeEvent,
 ): TransactionDetails {
-  const type = bridgeEvent?.type || null;
   switch (bridgeEvent?.type) {
     case "sent": {
       return {

@@ -1,12 +1,11 @@
 import { NetworkEnv } from "../../getEnv";
 import { NetEnvChainConfigLookup } from "../NetEnvChainConfigLookup";
 import { LIKECOIN_MAINNET } from "./likecoin-mainnet";
+import { LIKECOIN_TESTNET } from "./likecoin-testnet";
 
 export default <NetEnvChainConfigLookup>{
-  [NetworkEnv.LOCALNET]: LIKECOIN_MAINNET,
-  [NetworkEnv.TESTNET_042_IBC]: LIKECOIN_MAINNET,
-  [NetworkEnv.DEVNET_042]: LIKECOIN_MAINNET,
-  [NetworkEnv.DEVNET]: LIKECOIN_MAINNET,
-  [NetworkEnv.TESTNET]: LIKECOIN_MAINNET,
+  [NetworkEnv.LOCALNET]: LIKECOIN_TESTNET,
+  [NetworkEnv.DEVNET]: LIKECOIN_TESTNET,
+  [NetworkEnv.TESTNET]: LIKECOIN_TESTNET,
   [NetworkEnv.MAINNET]: LIKECOIN_MAINNET,
 };
