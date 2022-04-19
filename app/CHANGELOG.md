@@ -1,5 +1,5 @@
 ## Release 2022.04.19
-- Fix decimal formatting of ibc tokens on 'Unbond liquity' page
+- Fix decimal formatting of ibc tokens on 'Unbond liquidity' page
   
 ## Release 2022.04.19
 - Sif’s Ascension and PMTP are now live!
