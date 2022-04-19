@@ -4,7 +4,6 @@ export enum Network {
   // The rest... sort by name
   AKASH = "akash",
   BAND = "band",
-  // BITSONG = "bitsong",
   COSMOSHUB = "cosmoshub",
   CRYPTO_ORG = "crypto-org",
   IRIS = "iris",
@@ -18,4 +17,10 @@ export enum Network {
   TERRA = "terra",
   EMONEY = "emoney",
   STARNAME = "starname",
+  BITSONG = "bitsong",
+  CERBERUS = "cerberus",
+  COMDEX = "comdex",
+  CHIHUAHUA = "chihuahua",
+  KI = "ki",
+  STARGAZE = "stargaze",
 }

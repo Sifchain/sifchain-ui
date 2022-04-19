@@ -10,6 +10,8 @@ export function useTVL() {
 
     const pools = tokenStats.body.pools ?? [];
 
+    console.log({ pools });
+
     const total = pools.reduce(
       (acc, { poolTVL, poolDepth }) =>
         acc +

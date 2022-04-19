@@ -6,11 +6,14 @@ import { LiquidityClient } from "./clients/liquidity";
 import { networkChainCtorLookup } from "./clients";
 import { getSdkConfig } from "./utils/getSdkConfig";
 
+type ActiveNetworks = keyof typeof networkChainCtorLookup;
+
 export function createSdk(options: { environment: NetworkEnv }) {
   const config = getSdkConfig(options);
   const chains = Object.fromEntries(
     Object.keys(networkChainCtorLookup).map((network) => {
-      const n = network as Network;
+      const n = network as ActiveNetworks;
+
       const Ctor = networkChainCtorLookup[n];
       const chainConfig = config.chainConfigsByNetwork[n];
 
