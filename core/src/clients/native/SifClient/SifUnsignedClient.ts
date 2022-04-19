@@ -25,7 +25,7 @@ function createLcdClient(
   broadcastMode: BroadcastMode | undefined,
 ): CustomLcdClient {
   return LcdClient.withExtensions(
-    { apiUrl: apiUrl, broadcastMode: broadcastMode },
+    { apiUrl, broadcastMode },
     setupAuthExtension,
     setupClpExtension,
     setupEthbridgeExtension,
@@ -42,18 +42,15 @@ export class SifUnSignedClient
   implements IClpApi, IEthbridgeApi
 {
   protected readonly lcdClient: CustomLcdClient;
-  wsUrl: string;
   rpcUrl: string;
   apiUrl: string;
   private nativeDexClientPromise: Promise<NativeDexClient>;
   constructor(
     apiUrl: string,
-    wsUrl = "ws://localhost:26657/websocket",
     rpcUrl = "http://localhost:26657",
     broadcastMode?: BroadcastMode,
   ) {
     super(apiUrl, broadcastMode);
-    this.wsUrl = wsUrl;
     this.rpcUrl = rpcUrl;
     this.apiUrl = apiUrl;
     this.lcdClient = createLcdClient(apiUrl, broadcastMode);
