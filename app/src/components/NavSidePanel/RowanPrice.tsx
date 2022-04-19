@@ -1,5 +1,5 @@
-import { usePoolStats } from "@/hooks/usePoolStats";
 import { computed, defineComponent } from "vue";
+import { usePoolStats } from "@/hooks/usePoolStats";
 import NavSidePanelItem from "./NavSidePanelItem";
 
 export default defineComponent({
