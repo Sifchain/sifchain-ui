@@ -1,14 +1,15 @@
 ## Release 2022.04.19
-- Fix decimal formatting of ibc tokens on 'Unbond liquidity' page
-  
-## Release 2022.04.19
 - Sif’s Ascension and PMTP are now live!
 - Rewards will be auto-distributed back into the pools at every block
 - All liquidity is now subject to 7-day unbonding periods
 - PMTP governance rates are listed above the token price on the DEX - click on the PMTP icon for additional information
+- chore/security patches:
+  - Fix decimal formatting of ibc tokens on 'Unbond liquidity' page
+  - Remove keplr provider websocket dependency
+  
 ## Release 2022.04.06
-
 - Fixed display of individual 'Dispensed rewards' by rewards program
+  
 ## Release 2022.04.05
 
 - Fixed display of 'Dispensed rewards' on rewards page

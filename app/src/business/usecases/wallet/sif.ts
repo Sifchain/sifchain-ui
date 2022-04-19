@@ -1,6 +1,7 @@
-import { Address, TxParams, Network } from "@sifchain/sdk";
-import { UsecaseContext } from "..";
+import { Address, IAmount, IAsset, Network } from "@sifchain/sdk";
 import { effect, ReactiveEffectRunner, stop } from "@vue/reactivity";
+
+import { UsecaseContext } from "..";
 
 export default ({
   services,
@@ -43,7 +44,7 @@ export default ({
       );
 
       return () => {
-        for (let ef of effects) {
+        for (const ef of effects) {
           stop(ef);
         }
       };
@@ -54,7 +55,7 @@ export default ({
       return await services.sif.getBalance(address);
     },
 
-    async sendCosmosTransaction(params: TxParams) {
+    async sendCosmosTransaction(params: { amount: IAmount; asset: IAsset }) {
       return await services.sif.transfer(params);
     },
 
