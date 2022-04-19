@@ -1,5 +1,6 @@
-import { Chain, Network, IAssetAmount } from "../../entities";
 import { urlJoin } from "url-join-ts";
+
+import { Chain } from "../../entities";
 import { BaseChain } from "./_BaseChain";
 
 export class SentinelChain extends BaseChain implements Chain {

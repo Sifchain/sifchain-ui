@@ -5,16 +5,10 @@ import { accountStore } from "@/store/modules/accounts";
 import { flagsStore } from "@/store/modules/flags";
 import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
-import { usePoolStats } from "@/hooks/usePoolStats";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import useChangeLog from "@/hooks/useChangeLog";
-import { useTVL } from "@/hooks/useTVL";
-import usePMTP from "@/hooks/usePMTP";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
 import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
-import { formatAssetAmount } from "@/components/utils";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import WalletPicker from "@/components/WalletPicker/WalletPicker";
 import { Button } from "@/components/Button/Button";
 import { VotingModal } from "@/components/VotingModal/VotingModal";
 import ChangelogModal, {
@@ -24,6 +18,10 @@ import ChangelogModal, {
 import NavSidePanelItem from "./NavSidePanelItem";
 import AssetIcon from "../AssetIcon";
 import MoreMenu from "./NavMoreMenu";
+import ConnectedWallets from "./ConnectedWallets";
+import RowanPrice from "./RowanPrice";
+import PmtpParam from "./PmtpParam";
+import TVL from "./TVL";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -32,8 +30,6 @@ try {
 
 export default defineComponent({
   setup() {
-    const appWalletPicker = useAppWalletPicker();
-
     const moreMenuRef = ref();
 
     const sidebarRef = ref();
@@ -45,10 +41,6 @@ export default defineComponent({
     const votingOpenRef = ref(false);
 
     const router = useRouter();
-
-    const pmtp = usePMTP();
-
-    const isPMTPEnabled = flagsStore.state.pmtp;
 
     watch([router.currentRoute], () => {
       // add ?vote=anything to any hash route to open the voting modal
@@ -86,16 +78,7 @@ export default defineComponent({
       });
     });
 
-    const poolStats = usePoolStats();
-    const tvl = useTVL();
-    const rowanPrice = computed(() => {
-      return poolStats.data.value?.rowanUsd;
-    });
-
     const hasUniversalCompetition = useHasUniversalCompetition();
-
-    const connectedNetworkCount =
-      accountStore.refs.connectedNetworkCount.computed();
 
     const changelog = useChangeLog();
 
@@ -141,7 +124,7 @@ export default defineComponent({
                 <Logo class="w-full h-[50px]" />
               </div> */}
               <div class="shorter:mt-[7.5vmin] mt-[9.3vmin]">
-                <NavSidePanelItem
+                {/* <NavSidePanelItem
                   displayName="Dashboard"
                   icon="navigation/dashboard"
                   class="pointer-events-none opacity-50"
@@ -150,7 +133,7 @@ export default defineComponent({
                       Soon
                     </div>
                   }
-                />
+                /> */}
                 <NavSidePanelItem
                   displayName="Swap"
                   icon="navigation/swap"
@@ -366,132 +349,11 @@ export default defineComponent({
               )}
             <div class="bottom mt-[10px]">
               <div class="mb-[2.2vh] w-full text-left transition-all">
-                <NavSidePanelItem
-                  class={"mt-[0px] opacity-50"}
-                  displayName={
-                    <>
-                      {tvl.data.value ? `${tvl.data.value.formatted}` : "..."}{" "}
-                      TVL
-                    </>
-                  }
-                  icon="interactive/lock"
-                />
-                {isPMTPEnabled && (
-                  <NavSidePanelItem
-                    class={"mt-[0px] opacity-50"}
-                    displayName={
-                      <>
-                        PMTP{" "}
-                        {pmtp.isLoading.value
-                          ? "..."
-                          : `${Number(
-                              pmtp.data.value?.pmtp_period_governance_rate,
-                            ).toFixed(4)}%`}
-                      </>
-                    }
-                    icon="interactive/policy"
-                  />
-                )}
-                <NavSidePanelItem
-                  class={"mt-[0px] opacity-50"}
-                  displayName={
-                    <>
-                      {rowanPrice.value
-                        ? `$${(+rowanPrice.value).toFixed(5)}`
-                        : "..."}{" "}
-                      / ROWAN
-                    </>
-                  }
-                  icon="navigation/rowan"
-                />
+                <TVL />
+                <PmtpParam />
+                <RowanPrice />
               </div>
-
-              <Tooltip
-                placement="top-start"
-                animation="scale"
-                arrow={false}
-                trigger="click"
-                interactive
-                offset={[20, 0]}
-                onShow={() => {
-                  appWalletPicker.isOpen.value = true;
-                }}
-                onHide={() => {
-                  appWalletPicker.isOpen.value = false;
-                }}
-                onMount={(instance: TooltipInstance) => {
-                  instance.popper
-                    .querySelector(".tippy-box")
-                    ?.classList.add("!origin-bottom-left");
-                }}
-                appendTo={() => document.body}
-                content={<WalletPicker />}
-                ref={appWalletPicker.ref}
-              >
-                <NavSidePanelItem
-                  icon="interactive/wallet"
-                  displayName={
-                    connectedNetworkCount.value === 0 ? (
-                      "Connect Wallets"
-                    ) : accountStore.getters.isConnecting ? (
-                      "Connecting..."
-                    ) : (
-                      <>
-                        <div>Connected Wallets</div>
-                        <div class="mt-[-2px] w-full text-left text-sm font-semibold opacity-50">
-                          {!accountStore.state.sifchain.connecting &&
-                            accountStore.state.sifchain
-                              .hasLoadedBalancesOnce && (
-                              <>
-                                {accountStore.state.sifchain.balances
-                                  .filter(
-                                    // does not have rowan
-                                    (b) => b.asset.symbol.includes("rowan"),
-                                  )
-                                  .map((asset) => {
-                                    const formatted = formatAssetAmount(asset);
-                                    if (formatted.length > 6) {
-                                      return Intl.NumberFormat("en", {
-                                        notation: "compact",
-                                      }).format(+formatted);
-                                    }
-                                  })[0] || 0}{" "}
-                                ROWAN
-                              </>
-                            )}
-                        </div>
-                      </>
-                    )
-                  }
-                  class={[
-                    "mt-0",
-                    appWalletPicker.isOpen.value && "bg-gray-200",
-                  ]}
-                  action={
-                    connectedNetworkCount.value === 0 ? (
-                      <AssetIcon
-                        icon="interactive/chevron-down"
-                        style={{
-                          transform: "rotate(-90deg)",
-                        }}
-                        class="h-[20px] w-[20px]"
-                      />
-                    ) : accountStore.getters.isConnecting ? (
-                      <div class="flex flex-1 justify-end">
-                        <AssetIcon
-                          icon="interactive/anim-racetrack-spinner"
-                          size={20}
-                          class="flex-shrink-0"
-                        />
-                      </div>
-                    ) : (
-                      <div class="border-connected-base text-connected-base ml-auto flex h-[20px] w-[20px] flex-shrink-0 items-center justify-center rounded-full border border-solid">
-                        {connectedNetworkCount.value}
-                      </div>
-                    )
-                  }
-                />
-              </Tooltip>
+              <ConnectedWallets />
               {changelog.isSuccess.value && (
                 <div class="mt-[24px] pb-[10px] font-mono text-sm opacity-20 hover:opacity-100">
                   {`V.${changelog.data.value?.version?.toUpperCase()} © 

@@ -1,10 +1,15 @@
 import { ref, watch, watchEffect } from "vue";
 import { computed } from "@vue/reactivity";
 import { useCore } from "@/hooks/useCore";
-import { IAsset, Network, TransactionStatus, toBaseUnits } from "@sifchain/sdk";
+import {
+  IAsset,
+  Network,
+  TransactionStatus,
+  toBaseUnits,
+  format,
+  NativeDexClient,
+} from "@sifchain/sdk";
 import { useWalletButton } from "@/hooks/useWalletButton";
-import { getMaxAmount } from "../utils/getMaxAmount";
-import { format } from "@sifchain/sdk/src/utils/format";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
 import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
 import { useRoute, useRouter } from "vue-router";
@@ -13,8 +18,12 @@ import { accountStore } from "@/store/modules/accounts";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { formatAssetAmount } from "@/components/utils";
 import { ServiceContext } from "@/business";
-import { SwapState, useSwapCalculator } from "@/business/calculators";
-import { NativeDexClient } from "@sifchain/sdk/src/clients";
+import {
+  SwapState,
+  useSwapCalculator,
+} from "@/business/calculators/swapCalculatorPMTP";
+import { getMaxAmount } from "../utils/getMaxAmount";
+
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
 
 export const SWAP_MIN_BALANCE = toBaseUnits(
@@ -23,7 +32,9 @@ export const SWAP_MIN_BALANCE = toBaseUnits(
 );
 
 let defaultSymbol = "";
+
 const options = ["uatom", "uphoton", "uiris", "ceth"];
+
 while (defaultSymbol === "") {
   const option = options.shift() || "";
   try {
@@ -31,7 +42,7 @@ while (defaultSymbol === "") {
     defaultSymbol = option;
     break;
   } catch (e) {
-    null;
+    // nothing to do here
   }
 }
 
@@ -43,11 +54,11 @@ const currentSwapInput = {
   fromAmount: "0",
 };
 
-const getRouteSymbol = (
+function getRouteSymbol(
   config: ServiceContext,
   queryValue: string,
   defaultValue: string,
-) => {
+) {
   const asset = config.assets.find((asset) => {
     return (
       asset.symbol.toLowerCase() === queryValue.toLowerCase() &&
@@ -55,7 +66,7 @@ const getRouteSymbol = (
     );
   });
   return asset?.symbol || defaultValue;
-};
+}
 
 export const useSwapPageData = () => {
   const { poolFinder, store, config } = useCore();
@@ -85,6 +96,7 @@ export const useSwapPageData = () => {
     currentSwapInput.fromAmount = fromAmount.value;
     currentSwapInput.toAmount = toAmount.value;
   });
+
   useBoundRoute({
     query: {
       from: fromSymbol,
@@ -108,9 +120,9 @@ export const useSwapPageData = () => {
     });
   });
 
-  const pageState = computed<SwapPageState>(() => {
-    return router.currentRoute.value.meta.pageState as SwapPageState;
-  });
+  const pageState = computed<SwapPageState>(
+    () => router.currentRoute.value.meta.pageState as SwapPageState,
+  );
   const txStatus = ref<TransactionStatus | null>(null);
 
   const selectedField = ref<"from" | "to" | null>("from");
@@ -121,30 +133,25 @@ export const useSwapPageData = () => {
       .balances.find((balance) => balance.asset.symbol === fromSymbol.value);
   };
   const fromAsset = computed(() => {
-    return (
-      core.config.assets.find(
-        (asset) =>
-          asset.symbol == fromSymbol.value ||
-          asset.symbol == `c${fromSymbol.value}`,
-      ) || (core.config.assets[0] as IAsset)
+    const found = core.config.assets.find(
+      (asset) =>
+        asset.symbol == fromSymbol.value ||
+        asset.symbol == `c${fromSymbol.value}`,
     );
-  });
-  const toAsset = computed(() => {
-    return (
-      core.config.assets.find(
-        (asset) =>
-          asset.symbol == toSymbol.value ||
-          asset.symbol == `c${toSymbol.value}`,
-      ) || (core.config.assets[0] as IAsset)
-    );
+    return found ?? (core.config.assets[0] as IAsset);
   });
 
-  const fromTokenIconUrl = useTokenIconUrl({
-    symbol: fromSymbol,
+  const toAsset = computed(() => {
+    const found = core.config.assets.find(
+      (asset) =>
+        asset.symbol == toSymbol.value || asset.symbol == `c${toSymbol.value}`,
+    );
+
+    return found ?? (core.config.assets[0] as IAsset);
   });
-  const toTokenIconUrl = useTokenIconUrl({
-    symbol: toSymbol,
-  });
+
+  const fromTokenIconUrl = useTokenIconUrl({ symbol: fromSymbol });
+  const toTokenIconUrl = useTokenIconUrl({ symbol: toSymbol });
 
   const { connected } = useWalletButton();
 
@@ -155,9 +162,9 @@ export const useSwapPageData = () => {
   }
 
   const formattedFromTokenBalance = useFormattedTokenBalance(fromSymbol);
-  const isFromMaxActive = computed(() => {
-    return fromAmount.value === formattedFromTokenBalance.value;
-  });
+  const isFromMaxActive = computed(
+    () => fromAmount.value === formattedFromTokenBalance.value,
+  );
 
   const formattedToTokenBalance = useFormattedTokenBalance(toSymbol);
 
@@ -166,7 +173,6 @@ export const useSwapPageData = () => {
     fromFieldAmount,
     toFieldAmount,
     priceRatio,
-    priceMessage,
     priceImpact,
     providerFee,
     minimumReceived,
@@ -184,6 +190,7 @@ export const useSwapPageData = () => {
   function handleNextStepClicked() {
     if (!fromFieldAmount) throw new Error("from field amount is not defined");
     if (!toFieldAmount) throw new Error("to field amount is not defined");
+
     router.replace({
       name: "ConfirmSwap",
     });
@@ -195,8 +202,10 @@ export const useSwapPageData = () => {
     if (!minimumReceived.value)
       throw new Error("minimumReceived amount is not defined");
   }
+
   async function handleAskConfirmClicked() {
     checkSwapInputs();
+
     router.replace({
       name: "ApproveSwap",
     });
@@ -316,6 +325,12 @@ export const useSwapPageData = () => {
     }
   });
 
+  const formattedMinimumReceived = computed(() => {
+    if (!minimumReceived.value) return "";
+    const { amount, asset } = minimumReceived.value;
+    return format(amount, asset, { mantissa: 18, trimMantissa: true });
+  });
+
   return {
     connected,
     handleFromSymbolClicked(next: () => void) {
@@ -363,13 +378,8 @@ export const useSwapPageData = () => {
     formattedToTokenBalance,
     fromFieldAmount,
     toFieldAmount,
-    minimumReceived: computed(() => {
-      if (!minimumReceived.value) return "";
-      const { amount, asset } = minimumReceived.value;
-      return format(amount, asset, { mantissa: 18, trimMantissa: true });
-    }),
+    minimumReceived: formattedMinimumReceived,
     toSymbol,
-    priceMessage,
     priceRatio,
     priceImpact,
     providerFee,
@@ -383,7 +393,6 @@ export const useSwapPageData = () => {
         trimMantissa: true,
       });
     },
-
     nextStepAllowed: computed(() => {
       // return whether swap is valid
       return nextStepValidityMessage.value.isValid;

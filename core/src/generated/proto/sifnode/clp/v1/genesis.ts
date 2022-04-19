@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 import { Params } from "../../../sifnode/clp/v1/params";
 import { Pool, LiquidityProvider } from "../../../sifnode/clp/v1/types";
 
@@ -18,7 +18,14 @@ export interface GenesisState {
   liquidityProviders: LiquidityProvider[];
 }
 
-const baseGenesisState: object = { addressWhitelist: "" };
+function createBaseGenesisState(): GenesisState {
+  return {
+    params: undefined,
+    addressWhitelist: [],
+    poolList: [],
+    liquidityProviders: [],
+  };
+}
 
 export const GenesisState = {
   encode(
@@ -43,10 +50,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGenesisState } as GenesisState;
-    message.addressWhitelist = [];
-    message.poolList = [];
-    message.liquidityProviders = [];
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -73,37 +77,20 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    message.addressWhitelist = [];
-    message.poolList = [];
-    message.liquidityProviders = [];
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromJSON(object.params);
-    } else {
-      message.params = undefined;
-    }
-    if (
-      object.addressWhitelist !== undefined &&
-      object.addressWhitelist !== null
-    ) {
-      for (const e of object.addressWhitelist) {
-        message.addressWhitelist.push(String(e));
-      }
-    }
-    if (object.poolList !== undefined && object.poolList !== null) {
-      for (const e of object.poolList) {
-        message.poolList.push(Pool.fromJSON(e));
-      }
-    }
-    if (
-      object.liquidityProviders !== undefined &&
-      object.liquidityProviders !== null
-    ) {
-      for (const e of object.liquidityProviders) {
-        message.liquidityProviders.push(LiquidityProvider.fromJSON(e));
-      }
-    }
-    return message;
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+      addressWhitelist: Array.isArray(object?.addressWhitelist)
+        ? object.addressWhitelist.map((e: any) => String(e))
+        : [],
+      poolList: Array.isArray(object?.poolList)
+        ? object.poolList.map((e: any) => Pool.fromJSON(e))
+        : [],
+      liquidityProviders: Array.isArray(object?.liquidityProviders)
+        ? object.liquidityProviders.map((e: any) =>
+            LiquidityProvider.fromJSON(e),
+          )
+        : [],
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -132,37 +119,19 @@ export const GenesisState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    message.addressWhitelist = [];
-    message.poolList = [];
-    message.liquidityProviders = [];
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromPartial(object.params);
-    } else {
-      message.params = undefined;
-    }
-    if (
-      object.addressWhitelist !== undefined &&
-      object.addressWhitelist !== null
-    ) {
-      for (const e of object.addressWhitelist) {
-        message.addressWhitelist.push(e);
-      }
-    }
-    if (object.poolList !== undefined && object.poolList !== null) {
-      for (const e of object.poolList) {
-        message.poolList.push(Pool.fromPartial(e));
-      }
-    }
-    if (
-      object.liquidityProviders !== undefined &&
-      object.liquidityProviders !== null
-    ) {
-      for (const e of object.liquidityProviders) {
-        message.liquidityProviders.push(LiquidityProvider.fromPartial(e));
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(
+    object: I,
+  ): GenesisState {
+    const message = createBaseGenesisState();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? Params.fromPartial(object.params)
+        : undefined;
+    message.addressWhitelist = object.addressWhitelist?.map((e) => e) || [];
+    message.poolList = object.poolList?.map((e) => Pool.fromPartial(e)) || [];
+    message.liquidityProviders =
+      object.liquidityProviders?.map((e) => LiquidityProvider.fromPartial(e)) ||
+      [];
     return message;
   },
 };
@@ -174,10 +143,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -186,7 +157,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

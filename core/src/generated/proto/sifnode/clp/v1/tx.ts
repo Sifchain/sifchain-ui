@@ -1,7 +1,8 @@
 /* eslint-disable */
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 import { Asset } from "../../../sifnode/clp/v1/types";
+import { RewardPeriod } from "../../../sifnode/clp/v1/params";
 
 export const protobufPackage = "sifnode.clp.v1";
 
@@ -13,6 +14,14 @@ export interface MsgRemoveLiquidity {
 }
 
 export interface MsgRemoveLiquidityResponse {}
+
+export interface MsgRemoveLiquidityUnits {
+  signer: string;
+  externalAsset?: Asset;
+  withdrawUnits: string;
+}
+
+export interface MsgRemoveLiquidityUnitsResponse {}
 
 export interface MsgCreatePool {
   signer: string;
@@ -32,6 +41,25 @@ export interface MsgAddLiquidity {
 
 export interface MsgAddLiquidityResponse {}
 
+export interface MsgModifyPmtpRates {
+  signer: string;
+  blockRate: string;
+  runningRate: string;
+  endPolicy: boolean;
+}
+
+export interface MsgModifyPmtpRatesResponse {}
+
+export interface MsgUpdatePmtpParams {
+  signer: string;
+  pmtpPeriodGovernanceRate: string;
+  pmtpPeriodEpochLength: Long;
+  pmtpPeriodStartBlock: Long;
+  pmtpPeriodEndBlock: Long;
+}
+
+export interface MsgUpdatePmtpParamsResponse {}
+
 export interface MsgSwap {
   signer: string;
   sentAsset?: Asset;
@@ -49,11 +77,39 @@ export interface MsgDecommissionPool {
 
 export interface MsgDecommissionPoolResponse {}
 
-const baseMsgRemoveLiquidity: object = {
-  signer: "",
-  wBasisPoints: "",
-  asymmetry: "",
-};
+export interface MsgUnlockLiquidityRequest {
+  signer: string;
+  externalAsset?: Asset;
+  units: string;
+}
+
+export interface MsgUnlockLiquidityResponse {}
+
+export interface MsgUpdateRewardsParamsRequest {
+  signer: string;
+  /** in blocks */
+  liquidityRemovalLockPeriod: Long;
+  /** in blocks */
+  liquidityRemovalCancelPeriod: Long;
+}
+
+export interface MsgUpdateRewardsParamsResponse {}
+
+export interface MsgAddRewardPeriodRequest {
+  signer: string;
+  rewardPeriods: RewardPeriod[];
+}
+
+export interface MsgAddRewardPeriodResponse {}
+
+function createBaseMsgRemoveLiquidity(): MsgRemoveLiquidity {
+  return {
+    signer: "",
+    externalAsset: undefined,
+    wBasisPoints: "",
+    asymmetry: "",
+  };
+}
 
 export const MsgRemoveLiquidity = {
   encode(
@@ -78,7 +134,7 @@ export const MsgRemoveLiquidity = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRemoveLiquidity {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgRemoveLiquidity } as MsgRemoveLiquidity;
+    const message = createBaseMsgRemoveLiquidity();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -103,28 +159,16 @@ export const MsgRemoveLiquidity = {
   },
 
   fromJSON(object: any): MsgRemoveLiquidity {
-    const message = { ...baseMsgRemoveLiquidity } as MsgRemoveLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (object.wBasisPoints !== undefined && object.wBasisPoints !== null) {
-      message.wBasisPoints = String(object.wBasisPoints);
-    } else {
-      message.wBasisPoints = "";
-    }
-    if (object.asymmetry !== undefined && object.asymmetry !== null) {
-      message.asymmetry = String(object.asymmetry);
-    } else {
-      message.asymmetry = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      wBasisPoints: isSet(object.wBasisPoints)
+        ? String(object.wBasisPoints)
+        : "",
+      asymmetry: isSet(object.asymmetry) ? String(object.asymmetry) : "",
+    };
   },
 
   toJSON(message: MsgRemoveLiquidity): unknown {
@@ -140,33 +184,24 @@ export const MsgRemoveLiquidity = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgRemoveLiquidity>): MsgRemoveLiquidity {
-    const message = { ...baseMsgRemoveLiquidity } as MsgRemoveLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (object.wBasisPoints !== undefined && object.wBasisPoints !== null) {
-      message.wBasisPoints = object.wBasisPoints;
-    } else {
-      message.wBasisPoints = "";
-    }
-    if (object.asymmetry !== undefined && object.asymmetry !== null) {
-      message.asymmetry = object.asymmetry;
-    } else {
-      message.asymmetry = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidity>, I>>(
+    object: I,
+  ): MsgRemoveLiquidity {
+    const message = createBaseMsgRemoveLiquidity();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.wBasisPoints = object.wBasisPoints ?? "";
+    message.asymmetry = object.asymmetry ?? "";
     return message;
   },
 };
 
-const baseMsgRemoveLiquidityResponse: object = {};
+function createBaseMsgRemoveLiquidityResponse(): MsgRemoveLiquidityResponse {
+  return {};
+}
 
 export const MsgRemoveLiquidityResponse = {
   encode(
@@ -182,9 +217,7 @@ export const MsgRemoveLiquidityResponse = {
   ): MsgRemoveLiquidityResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgRemoveLiquidityResponse,
-    } as MsgRemoveLiquidityResponse;
+    const message = createBaseMsgRemoveLiquidityResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -197,10 +230,7 @@ export const MsgRemoveLiquidityResponse = {
   },
 
   fromJSON(_: any): MsgRemoveLiquidityResponse {
-    const message = {
-      ...baseMsgRemoveLiquidityResponse,
-    } as MsgRemoveLiquidityResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgRemoveLiquidityResponse): unknown {
@@ -208,21 +238,155 @@ export const MsgRemoveLiquidityResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgRemoveLiquidityResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidityResponse>, I>>(
+    _: I,
   ): MsgRemoveLiquidityResponse {
-    const message = {
-      ...baseMsgRemoveLiquidityResponse,
-    } as MsgRemoveLiquidityResponse;
+    const message = createBaseMsgRemoveLiquidityResponse();
     return message;
   },
 };
 
-const baseMsgCreatePool: object = {
-  signer: "",
-  nativeAssetAmount: "",
-  externalAssetAmount: "",
+function createBaseMsgRemoveLiquidityUnits(): MsgRemoveLiquidityUnits {
+  return { signer: "", externalAsset: undefined, withdrawUnits: "" };
+}
+
+export const MsgRemoveLiquidityUnits = {
+  encode(
+    message: MsgRemoveLiquidityUnits,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.externalAsset !== undefined) {
+      Asset.encode(message.externalAsset, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.withdrawUnits !== "") {
+      writer.uint32(26).string(message.withdrawUnits);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgRemoveLiquidityUnits {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgRemoveLiquidityUnits();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.externalAsset = Asset.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.withdrawUnits = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgRemoveLiquidityUnits {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      withdrawUnits: isSet(object.withdrawUnits)
+        ? String(object.withdrawUnits)
+        : "",
+    };
+  },
+
+  toJSON(message: MsgRemoveLiquidityUnits): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.externalAsset !== undefined &&
+      (obj.externalAsset = message.externalAsset
+        ? Asset.toJSON(message.externalAsset)
+        : undefined);
+    message.withdrawUnits !== undefined &&
+      (obj.withdrawUnits = message.withdrawUnits);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidityUnits>, I>>(
+    object: I,
+  ): MsgRemoveLiquidityUnits {
+    const message = createBaseMsgRemoveLiquidityUnits();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.withdrawUnits = object.withdrawUnits ?? "";
+    return message;
+  },
 };
+
+function createBaseMsgRemoveLiquidityUnitsResponse(): MsgRemoveLiquidityUnitsResponse {
+  return {};
+}
+
+export const MsgRemoveLiquidityUnitsResponse = {
+  encode(
+    _: MsgRemoveLiquidityUnitsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgRemoveLiquidityUnitsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgRemoveLiquidityUnitsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgRemoveLiquidityUnitsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgRemoveLiquidityUnitsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgRemoveLiquidityUnitsResponse>, I>>(
+    _: I,
+  ): MsgRemoveLiquidityUnitsResponse {
+    const message = createBaseMsgRemoveLiquidityUnitsResponse();
+    return message;
+  },
+};
+
+function createBaseMsgCreatePool(): MsgCreatePool {
+  return {
+    signer: "",
+    externalAsset: undefined,
+    nativeAssetAmount: "",
+    externalAssetAmount: "",
+  };
+}
 
 export const MsgCreatePool = {
   encode(
@@ -247,7 +411,7 @@ export const MsgCreatePool = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreatePool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreatePool } as MsgCreatePool;
+    const message = createBaseMsgCreatePool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -272,34 +436,18 @@ export const MsgCreatePool = {
   },
 
   fromJSON(object: any): MsgCreatePool {
-    const message = { ...baseMsgCreatePool } as MsgCreatePool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = String(object.nativeAssetAmount);
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = String(object.externalAssetAmount);
-    } else {
-      message.externalAssetAmount = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      nativeAssetAmount: isSet(object.nativeAssetAmount)
+        ? String(object.nativeAssetAmount)
+        : "",
+      externalAssetAmount: isSet(object.externalAssetAmount)
+        ? String(object.externalAssetAmount)
+        : "",
+    };
   },
 
   toJSON(message: MsgCreatePool): unknown {
@@ -316,39 +464,24 @@ export const MsgCreatePool = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgCreatePool>): MsgCreatePool {
-    const message = { ...baseMsgCreatePool } as MsgCreatePool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = object.nativeAssetAmount;
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = object.externalAssetAmount;
-    } else {
-      message.externalAssetAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgCreatePool>, I>>(
+    object: I,
+  ): MsgCreatePool {
+    const message = createBaseMsgCreatePool();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.nativeAssetAmount = object.nativeAssetAmount ?? "";
+    message.externalAssetAmount = object.externalAssetAmount ?? "";
     return message;
   },
 };
 
-const baseMsgCreatePoolResponse: object = {};
+function createBaseMsgCreatePoolResponse(): MsgCreatePoolResponse {
+  return {};
+}
 
 export const MsgCreatePoolResponse = {
   encode(
@@ -364,7 +497,7 @@ export const MsgCreatePoolResponse = {
   ): MsgCreatePoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreatePoolResponse } as MsgCreatePoolResponse;
+    const message = createBaseMsgCreatePoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -377,8 +510,7 @@ export const MsgCreatePoolResponse = {
   },
 
   fromJSON(_: any): MsgCreatePoolResponse {
-    const message = { ...baseMsgCreatePoolResponse } as MsgCreatePoolResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreatePoolResponse): unknown {
@@ -386,17 +518,22 @@ export const MsgCreatePoolResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgCreatePoolResponse>): MsgCreatePoolResponse {
-    const message = { ...baseMsgCreatePoolResponse } as MsgCreatePoolResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCreatePoolResponse>, I>>(
+    _: I,
+  ): MsgCreatePoolResponse {
+    const message = createBaseMsgCreatePoolResponse();
     return message;
   },
 };
 
-const baseMsgAddLiquidity: object = {
-  signer: "",
-  nativeAssetAmount: "",
-  externalAssetAmount: "",
-};
+function createBaseMsgAddLiquidity(): MsgAddLiquidity {
+  return {
+    signer: "",
+    externalAsset: undefined,
+    nativeAssetAmount: "",
+    externalAssetAmount: "",
+  };
+}
 
 export const MsgAddLiquidity = {
   encode(
@@ -421,7 +558,7 @@ export const MsgAddLiquidity = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddLiquidity {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgAddLiquidity } as MsgAddLiquidity;
+    const message = createBaseMsgAddLiquidity();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -446,34 +583,18 @@ export const MsgAddLiquidity = {
   },
 
   fromJSON(object: any): MsgAddLiquidity {
-    const message = { ...baseMsgAddLiquidity } as MsgAddLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromJSON(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = String(object.nativeAssetAmount);
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = String(object.externalAssetAmount);
-    } else {
-      message.externalAssetAmount = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      nativeAssetAmount: isSet(object.nativeAssetAmount)
+        ? String(object.nativeAssetAmount)
+        : "",
+      externalAssetAmount: isSet(object.externalAssetAmount)
+        ? String(object.externalAssetAmount)
+        : "",
+    };
   },
 
   toJSON(message: MsgAddLiquidity): unknown {
@@ -490,39 +611,24 @@ export const MsgAddLiquidity = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgAddLiquidity>): MsgAddLiquidity {
-    const message = { ...baseMsgAddLiquidity } as MsgAddLiquidity;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.externalAsset !== undefined && object.externalAsset !== null) {
-      message.externalAsset = Asset.fromPartial(object.externalAsset);
-    } else {
-      message.externalAsset = undefined;
-    }
-    if (
-      object.nativeAssetAmount !== undefined &&
-      object.nativeAssetAmount !== null
-    ) {
-      message.nativeAssetAmount = object.nativeAssetAmount;
-    } else {
-      message.nativeAssetAmount = "";
-    }
-    if (
-      object.externalAssetAmount !== undefined &&
-      object.externalAssetAmount !== null
-    ) {
-      message.externalAssetAmount = object.externalAssetAmount;
-    } else {
-      message.externalAssetAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgAddLiquidity>, I>>(
+    object: I,
+  ): MsgAddLiquidity {
+    const message = createBaseMsgAddLiquidity();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.nativeAssetAmount = object.nativeAssetAmount ?? "";
+    message.externalAssetAmount = object.externalAssetAmount ?? "";
     return message;
   },
 };
 
-const baseMsgAddLiquidityResponse: object = {};
+function createBaseMsgAddLiquidityResponse(): MsgAddLiquidityResponse {
+  return {};
+}
 
 export const MsgAddLiquidityResponse = {
   encode(
@@ -538,9 +644,7 @@ export const MsgAddLiquidityResponse = {
   ): MsgAddLiquidityResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgAddLiquidityResponse,
-    } as MsgAddLiquidityResponse;
+    const message = createBaseMsgAddLiquidityResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -553,10 +657,7 @@ export const MsgAddLiquidityResponse = {
   },
 
   fromJSON(_: any): MsgAddLiquidityResponse {
-    const message = {
-      ...baseMsgAddLiquidityResponse,
-    } as MsgAddLiquidityResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgAddLiquidityResponse): unknown {
@@ -564,21 +665,325 @@ export const MsgAddLiquidityResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgAddLiquidityResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgAddLiquidityResponse>, I>>(
+    _: I,
   ): MsgAddLiquidityResponse {
-    const message = {
-      ...baseMsgAddLiquidityResponse,
-    } as MsgAddLiquidityResponse;
+    const message = createBaseMsgAddLiquidityResponse();
     return message;
   },
 };
 
-const baseMsgSwap: object = {
-  signer: "",
-  sentAmount: "",
-  minReceivingAmount: "",
+function createBaseMsgModifyPmtpRates(): MsgModifyPmtpRates {
+  return { signer: "", blockRate: "", runningRate: "", endPolicy: false };
+}
+
+export const MsgModifyPmtpRates = {
+  encode(
+    message: MsgModifyPmtpRates,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.blockRate !== "") {
+      writer.uint32(18).string(message.blockRate);
+    }
+    if (message.runningRate !== "") {
+      writer.uint32(26).string(message.runningRate);
+    }
+    if (message.endPolicy === true) {
+      writer.uint32(32).bool(message.endPolicy);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgModifyPmtpRates {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgModifyPmtpRates();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.blockRate = reader.string();
+          break;
+        case 3:
+          message.runningRate = reader.string();
+          break;
+        case 4:
+          message.endPolicy = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgModifyPmtpRates {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      blockRate: isSet(object.blockRate) ? String(object.blockRate) : "",
+      runningRate: isSet(object.runningRate) ? String(object.runningRate) : "",
+      endPolicy: isSet(object.endPolicy) ? Boolean(object.endPolicy) : false,
+    };
+  },
+
+  toJSON(message: MsgModifyPmtpRates): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.blockRate !== undefined && (obj.blockRate = message.blockRate);
+    message.runningRate !== undefined &&
+      (obj.runningRate = message.runningRate);
+    message.endPolicy !== undefined && (obj.endPolicy = message.endPolicy);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgModifyPmtpRates>, I>>(
+    object: I,
+  ): MsgModifyPmtpRates {
+    const message = createBaseMsgModifyPmtpRates();
+    message.signer = object.signer ?? "";
+    message.blockRate = object.blockRate ?? "";
+    message.runningRate = object.runningRate ?? "";
+    message.endPolicy = object.endPolicy ?? false;
+    return message;
+  },
 };
+
+function createBaseMsgModifyPmtpRatesResponse(): MsgModifyPmtpRatesResponse {
+  return {};
+}
+
+export const MsgModifyPmtpRatesResponse = {
+  encode(
+    _: MsgModifyPmtpRatesResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgModifyPmtpRatesResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgModifyPmtpRatesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgModifyPmtpRatesResponse {
+    return {};
+  },
+
+  toJSON(_: MsgModifyPmtpRatesResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgModifyPmtpRatesResponse>, I>>(
+    _: I,
+  ): MsgModifyPmtpRatesResponse {
+    const message = createBaseMsgModifyPmtpRatesResponse();
+    return message;
+  },
+};
+
+function createBaseMsgUpdatePmtpParams(): MsgUpdatePmtpParams {
+  return {
+    signer: "",
+    pmtpPeriodGovernanceRate: "",
+    pmtpPeriodEpochLength: Long.ZERO,
+    pmtpPeriodStartBlock: Long.ZERO,
+    pmtpPeriodEndBlock: Long.ZERO,
+  };
+}
+
+export const MsgUpdatePmtpParams = {
+  encode(
+    message: MsgUpdatePmtpParams,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.pmtpPeriodGovernanceRate !== "") {
+      writer.uint32(18).string(message.pmtpPeriodGovernanceRate);
+    }
+    if (!message.pmtpPeriodEpochLength.isZero()) {
+      writer.uint32(24).int64(message.pmtpPeriodEpochLength);
+    }
+    if (!message.pmtpPeriodStartBlock.isZero()) {
+      writer.uint32(32).int64(message.pmtpPeriodStartBlock);
+    }
+    if (!message.pmtpPeriodEndBlock.isZero()) {
+      writer.uint32(40).int64(message.pmtpPeriodEndBlock);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdatePmtpParams {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdatePmtpParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.pmtpPeriodGovernanceRate = reader.string();
+          break;
+        case 3:
+          message.pmtpPeriodEpochLength = reader.int64() as Long;
+          break;
+        case 4:
+          message.pmtpPeriodStartBlock = reader.int64() as Long;
+          break;
+        case 5:
+          message.pmtpPeriodEndBlock = reader.int64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdatePmtpParams {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      pmtpPeriodGovernanceRate: isSet(object.pmtpPeriodGovernanceRate)
+        ? String(object.pmtpPeriodGovernanceRate)
+        : "",
+      pmtpPeriodEpochLength: isSet(object.pmtpPeriodEpochLength)
+        ? Long.fromString(object.pmtpPeriodEpochLength)
+        : Long.ZERO,
+      pmtpPeriodStartBlock: isSet(object.pmtpPeriodStartBlock)
+        ? Long.fromString(object.pmtpPeriodStartBlock)
+        : Long.ZERO,
+      pmtpPeriodEndBlock: isSet(object.pmtpPeriodEndBlock)
+        ? Long.fromString(object.pmtpPeriodEndBlock)
+        : Long.ZERO,
+    };
+  },
+
+  toJSON(message: MsgUpdatePmtpParams): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.pmtpPeriodGovernanceRate !== undefined &&
+      (obj.pmtpPeriodGovernanceRate = message.pmtpPeriodGovernanceRate);
+    message.pmtpPeriodEpochLength !== undefined &&
+      (obj.pmtpPeriodEpochLength = (
+        message.pmtpPeriodEpochLength || Long.ZERO
+      ).toString());
+    message.pmtpPeriodStartBlock !== undefined &&
+      (obj.pmtpPeriodStartBlock = (
+        message.pmtpPeriodStartBlock || Long.ZERO
+      ).toString());
+    message.pmtpPeriodEndBlock !== undefined &&
+      (obj.pmtpPeriodEndBlock = (
+        message.pmtpPeriodEndBlock || Long.ZERO
+      ).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdatePmtpParams>, I>>(
+    object: I,
+  ): MsgUpdatePmtpParams {
+    const message = createBaseMsgUpdatePmtpParams();
+    message.signer = object.signer ?? "";
+    message.pmtpPeriodGovernanceRate = object.pmtpPeriodGovernanceRate ?? "";
+    message.pmtpPeriodEpochLength =
+      object.pmtpPeriodEpochLength !== undefined &&
+      object.pmtpPeriodEpochLength !== null
+        ? Long.fromValue(object.pmtpPeriodEpochLength)
+        : Long.ZERO;
+    message.pmtpPeriodStartBlock =
+      object.pmtpPeriodStartBlock !== undefined &&
+      object.pmtpPeriodStartBlock !== null
+        ? Long.fromValue(object.pmtpPeriodStartBlock)
+        : Long.ZERO;
+    message.pmtpPeriodEndBlock =
+      object.pmtpPeriodEndBlock !== undefined &&
+      object.pmtpPeriodEndBlock !== null
+        ? Long.fromValue(object.pmtpPeriodEndBlock)
+        : Long.ZERO;
+    return message;
+  },
+};
+
+function createBaseMsgUpdatePmtpParamsResponse(): MsgUpdatePmtpParamsResponse {
+  return {};
+}
+
+export const MsgUpdatePmtpParamsResponse = {
+  encode(
+    _: MsgUpdatePmtpParamsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdatePmtpParamsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdatePmtpParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdatePmtpParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdatePmtpParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdatePmtpParamsResponse>, I>>(
+    _: I,
+  ): MsgUpdatePmtpParamsResponse {
+    const message = createBaseMsgUpdatePmtpParamsResponse();
+    return message;
+  },
+};
+
+function createBaseMsgSwap(): MsgSwap {
+  return {
+    signer: "",
+    sentAsset: undefined,
+    receivedAsset: undefined,
+    sentAmount: "",
+    minReceivingAmount: "",
+  };
+}
 
 export const MsgSwap = {
   encode(
@@ -606,7 +1011,7 @@ export const MsgSwap = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSwap {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgSwap } as MsgSwap;
+    const message = createBaseMsgSwap();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -634,36 +1039,19 @@ export const MsgSwap = {
   },
 
   fromJSON(object: any): MsgSwap {
-    const message = { ...baseMsgSwap } as MsgSwap;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.sentAsset !== undefined && object.sentAsset !== null) {
-      message.sentAsset = Asset.fromJSON(object.sentAsset);
-    } else {
-      message.sentAsset = undefined;
-    }
-    if (object.receivedAsset !== undefined && object.receivedAsset !== null) {
-      message.receivedAsset = Asset.fromJSON(object.receivedAsset);
-    } else {
-      message.receivedAsset = undefined;
-    }
-    if (object.sentAmount !== undefined && object.sentAmount !== null) {
-      message.sentAmount = String(object.sentAmount);
-    } else {
-      message.sentAmount = "";
-    }
-    if (
-      object.minReceivingAmount !== undefined &&
-      object.minReceivingAmount !== null
-    ) {
-      message.minReceivingAmount = String(object.minReceivingAmount);
-    } else {
-      message.minReceivingAmount = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      sentAsset: isSet(object.sentAsset)
+        ? Asset.fromJSON(object.sentAsset)
+        : undefined,
+      receivedAsset: isSet(object.receivedAsset)
+        ? Asset.fromJSON(object.receivedAsset)
+        : undefined,
+      sentAmount: isSet(object.sentAmount) ? String(object.sentAmount) : "",
+      minReceivingAmount: isSet(object.minReceivingAmount)
+        ? String(object.minReceivingAmount)
+        : "",
+    };
   },
 
   toJSON(message: MsgSwap): unknown {
@@ -683,41 +1071,26 @@ export const MsgSwap = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgSwap>): MsgSwap {
-    const message = { ...baseMsgSwap } as MsgSwap;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.sentAsset !== undefined && object.sentAsset !== null) {
-      message.sentAsset = Asset.fromPartial(object.sentAsset);
-    } else {
-      message.sentAsset = undefined;
-    }
-    if (object.receivedAsset !== undefined && object.receivedAsset !== null) {
-      message.receivedAsset = Asset.fromPartial(object.receivedAsset);
-    } else {
-      message.receivedAsset = undefined;
-    }
-    if (object.sentAmount !== undefined && object.sentAmount !== null) {
-      message.sentAmount = object.sentAmount;
-    } else {
-      message.sentAmount = "";
-    }
-    if (
-      object.minReceivingAmount !== undefined &&
-      object.minReceivingAmount !== null
-    ) {
-      message.minReceivingAmount = object.minReceivingAmount;
-    } else {
-      message.minReceivingAmount = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgSwap>, I>>(object: I): MsgSwap {
+    const message = createBaseMsgSwap();
+    message.signer = object.signer ?? "";
+    message.sentAsset =
+      object.sentAsset !== undefined && object.sentAsset !== null
+        ? Asset.fromPartial(object.sentAsset)
+        : undefined;
+    message.receivedAsset =
+      object.receivedAsset !== undefined && object.receivedAsset !== null
+        ? Asset.fromPartial(object.receivedAsset)
+        : undefined;
+    message.sentAmount = object.sentAmount ?? "";
+    message.minReceivingAmount = object.minReceivingAmount ?? "";
     return message;
   },
 };
 
-const baseMsgSwapResponse: object = {};
+function createBaseMsgSwapResponse(): MsgSwapResponse {
+  return {};
+}
 
 export const MsgSwapResponse = {
   encode(
@@ -730,7 +1103,7 @@ export const MsgSwapResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSwapResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgSwapResponse } as MsgSwapResponse;
+    const message = createBaseMsgSwapResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -743,8 +1116,7 @@ export const MsgSwapResponse = {
   },
 
   fromJSON(_: any): MsgSwapResponse {
-    const message = { ...baseMsgSwapResponse } as MsgSwapResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSwapResponse): unknown {
@@ -752,13 +1124,17 @@ export const MsgSwapResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgSwapResponse>): MsgSwapResponse {
-    const message = { ...baseMsgSwapResponse } as MsgSwapResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgSwapResponse>, I>>(
+    _: I,
+  ): MsgSwapResponse {
+    const message = createBaseMsgSwapResponse();
     return message;
   },
 };
 
-const baseMsgDecommissionPool: object = { signer: "", symbol: "" };
+function createBaseMsgDecommissionPool(): MsgDecommissionPool {
+  return { signer: "", symbol: "" };
+}
 
 export const MsgDecommissionPool = {
   encode(
@@ -777,7 +1153,7 @@ export const MsgDecommissionPool = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDecommissionPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgDecommissionPool } as MsgDecommissionPool;
+    const message = createBaseMsgDecommissionPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -796,18 +1172,10 @@ export const MsgDecommissionPool = {
   },
 
   fromJSON(object: any): MsgDecommissionPool {
-    const message = { ...baseMsgDecommissionPool } as MsgDecommissionPool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = String(object.symbol);
-    } else {
-      message.symbol = "";
-    }
-    return message;
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+    };
   },
 
   toJSON(message: MsgDecommissionPool): unknown {
@@ -817,23 +1185,19 @@ export const MsgDecommissionPool = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgDecommissionPool>): MsgDecommissionPool {
-    const message = { ...baseMsgDecommissionPool } as MsgDecommissionPool;
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = object.symbol;
-    } else {
-      message.symbol = "";
-    }
+  fromPartial<I extends Exact<DeepPartial<MsgDecommissionPool>, I>>(
+    object: I,
+  ): MsgDecommissionPool {
+    const message = createBaseMsgDecommissionPool();
+    message.signer = object.signer ?? "";
+    message.symbol = object.symbol ?? "";
     return message;
   },
 };
 
-const baseMsgDecommissionPoolResponse: object = {};
+function createBaseMsgDecommissionPoolResponse(): MsgDecommissionPoolResponse {
+  return {};
+}
 
 export const MsgDecommissionPoolResponse = {
   encode(
@@ -849,9 +1213,7 @@ export const MsgDecommissionPoolResponse = {
   ): MsgDecommissionPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseMsgDecommissionPoolResponse,
-    } as MsgDecommissionPoolResponse;
+    const message = createBaseMsgDecommissionPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -864,10 +1226,7 @@ export const MsgDecommissionPoolResponse = {
   },
 
   fromJSON(_: any): MsgDecommissionPoolResponse {
-    const message = {
-      ...baseMsgDecommissionPoolResponse,
-    } as MsgDecommissionPoolResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgDecommissionPoolResponse): unknown {
@@ -875,12 +1234,408 @@ export const MsgDecommissionPoolResponse = {
     return obj;
   },
 
-  fromPartial(
-    _: DeepPartial<MsgDecommissionPoolResponse>,
+  fromPartial<I extends Exact<DeepPartial<MsgDecommissionPoolResponse>, I>>(
+    _: I,
   ): MsgDecommissionPoolResponse {
-    const message = {
-      ...baseMsgDecommissionPoolResponse,
-    } as MsgDecommissionPoolResponse;
+    const message = createBaseMsgDecommissionPoolResponse();
+    return message;
+  },
+};
+
+function createBaseMsgUnlockLiquidityRequest(): MsgUnlockLiquidityRequest {
+  return { signer: "", externalAsset: undefined, units: "" };
+}
+
+export const MsgUnlockLiquidityRequest = {
+  encode(
+    message: MsgUnlockLiquidityRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.externalAsset !== undefined) {
+      Asset.encode(message.externalAsset, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.units !== "") {
+      writer.uint32(26).string(message.units);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUnlockLiquidityRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUnlockLiquidityRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.externalAsset = Asset.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.units = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUnlockLiquidityRequest {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      units: isSet(object.units) ? String(object.units) : "",
+    };
+  },
+
+  toJSON(message: MsgUnlockLiquidityRequest): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.externalAsset !== undefined &&
+      (obj.externalAsset = message.externalAsset
+        ? Asset.toJSON(message.externalAsset)
+        : undefined);
+    message.units !== undefined && (obj.units = message.units);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUnlockLiquidityRequest>, I>>(
+    object: I,
+  ): MsgUnlockLiquidityRequest {
+    const message = createBaseMsgUnlockLiquidityRequest();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.units = object.units ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgUnlockLiquidityResponse(): MsgUnlockLiquidityResponse {
+  return {};
+}
+
+export const MsgUnlockLiquidityResponse = {
+  encode(
+    _: MsgUnlockLiquidityResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUnlockLiquidityResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUnlockLiquidityResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUnlockLiquidityResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUnlockLiquidityResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUnlockLiquidityResponse>, I>>(
+    _: I,
+  ): MsgUnlockLiquidityResponse {
+    const message = createBaseMsgUnlockLiquidityResponse();
+    return message;
+  },
+};
+
+function createBaseMsgUpdateRewardsParamsRequest(): MsgUpdateRewardsParamsRequest {
+  return {
+    signer: "",
+    liquidityRemovalLockPeriod: Long.UZERO,
+    liquidityRemovalCancelPeriod: Long.UZERO,
+  };
+}
+
+export const MsgUpdateRewardsParamsRequest = {
+  encode(
+    message: MsgUpdateRewardsParamsRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (!message.liquidityRemovalLockPeriod.isZero()) {
+      writer.uint32(16).uint64(message.liquidityRemovalLockPeriod);
+    }
+    if (!message.liquidityRemovalCancelPeriod.isZero()) {
+      writer.uint32(24).uint64(message.liquidityRemovalCancelPeriod);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateRewardsParamsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateRewardsParamsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.liquidityRemovalLockPeriod = reader.uint64() as Long;
+          break;
+        case 3:
+          message.liquidityRemovalCancelPeriod = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateRewardsParamsRequest {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      liquidityRemovalLockPeriod: isSet(object.liquidityRemovalLockPeriod)
+        ? Long.fromString(object.liquidityRemovalLockPeriod)
+        : Long.UZERO,
+      liquidityRemovalCancelPeriod: isSet(object.liquidityRemovalCancelPeriod)
+        ? Long.fromString(object.liquidityRemovalCancelPeriod)
+        : Long.UZERO,
+    };
+  },
+
+  toJSON(message: MsgUpdateRewardsParamsRequest): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.liquidityRemovalLockPeriod !== undefined &&
+      (obj.liquidityRemovalLockPeriod = (
+        message.liquidityRemovalLockPeriod || Long.UZERO
+      ).toString());
+    message.liquidityRemovalCancelPeriod !== undefined &&
+      (obj.liquidityRemovalCancelPeriod = (
+        message.liquidityRemovalCancelPeriod || Long.UZERO
+      ).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateRewardsParamsRequest>, I>>(
+    object: I,
+  ): MsgUpdateRewardsParamsRequest {
+    const message = createBaseMsgUpdateRewardsParamsRequest();
+    message.signer = object.signer ?? "";
+    message.liquidityRemovalLockPeriod =
+      object.liquidityRemovalLockPeriod !== undefined &&
+      object.liquidityRemovalLockPeriod !== null
+        ? Long.fromValue(object.liquidityRemovalLockPeriod)
+        : Long.UZERO;
+    message.liquidityRemovalCancelPeriod =
+      object.liquidityRemovalCancelPeriod !== undefined &&
+      object.liquidityRemovalCancelPeriod !== null
+        ? Long.fromValue(object.liquidityRemovalCancelPeriod)
+        : Long.UZERO;
+    return message;
+  },
+};
+
+function createBaseMsgUpdateRewardsParamsResponse(): MsgUpdateRewardsParamsResponse {
+  return {};
+}
+
+export const MsgUpdateRewardsParamsResponse = {
+  encode(
+    _: MsgUpdateRewardsParamsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateRewardsParamsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateRewardsParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateRewardsParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateRewardsParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateRewardsParamsResponse>, I>>(
+    _: I,
+  ): MsgUpdateRewardsParamsResponse {
+    const message = createBaseMsgUpdateRewardsParamsResponse();
+    return message;
+  },
+};
+
+function createBaseMsgAddRewardPeriodRequest(): MsgAddRewardPeriodRequest {
+  return { signer: "", rewardPeriods: [] };
+}
+
+export const MsgAddRewardPeriodRequest = {
+  encode(
+    message: MsgAddRewardPeriodRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    for (const v of message.rewardPeriods) {
+      RewardPeriod.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAddRewardPeriodRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddRewardPeriodRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.rewardPeriods.push(
+            RewardPeriod.decode(reader, reader.uint32()),
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgAddRewardPeriodRequest {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      rewardPeriods: Array.isArray(object?.rewardPeriods)
+        ? object.rewardPeriods.map((e: any) => RewardPeriod.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: MsgAddRewardPeriodRequest): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    if (message.rewardPeriods) {
+      obj.rewardPeriods = message.rewardPeriods.map((e) =>
+        e ? RewardPeriod.toJSON(e) : undefined,
+      );
+    } else {
+      obj.rewardPeriods = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAddRewardPeriodRequest>, I>>(
+    object: I,
+  ): MsgAddRewardPeriodRequest {
+    const message = createBaseMsgAddRewardPeriodRequest();
+    message.signer = object.signer ?? "";
+    message.rewardPeriods =
+      object.rewardPeriods?.map((e) => RewardPeriod.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseMsgAddRewardPeriodResponse(): MsgAddRewardPeriodResponse {
+  return {};
+}
+
+export const MsgAddRewardPeriodResponse = {
+  encode(
+    _: MsgAddRewardPeriodResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAddRewardPeriodResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddRewardPeriodResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgAddRewardPeriodResponse {
+    return {};
+  },
+
+  toJSON(_: MsgAddRewardPeriodResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAddRewardPeriodResponse>, I>>(
+    _: I,
+  ): MsgAddRewardPeriodResponse {
+    const message = createBaseMsgAddRewardPeriodResponse();
     return message;
   },
 };
@@ -889,12 +1644,30 @@ export interface Msg {
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
   ): Promise<MsgRemoveLiquidityResponse>;
+  RemoveLiquidityUnits(
+    request: MsgRemoveLiquidityUnits,
+  ): Promise<MsgRemoveLiquidityUnitsResponse>;
   CreatePool(request: MsgCreatePool): Promise<MsgCreatePoolResponse>;
   AddLiquidity(request: MsgAddLiquidity): Promise<MsgAddLiquidityResponse>;
   Swap(request: MsgSwap): Promise<MsgSwapResponse>;
   DecommissionPool(
     request: MsgDecommissionPool,
   ): Promise<MsgDecommissionPoolResponse>;
+  UnlockLiquidity(
+    request: MsgUnlockLiquidityRequest,
+  ): Promise<MsgUnlockLiquidityResponse>;
+  UpdateRewardsParams(
+    request: MsgUpdateRewardsParamsRequest,
+  ): Promise<MsgUpdateRewardsParamsResponse>;
+  AddRewardPeriod(
+    request: MsgAddRewardPeriodRequest,
+  ): Promise<MsgAddRewardPeriodResponse>;
+  ModifyPmtpRates(
+    request: MsgModifyPmtpRates,
+  ): Promise<MsgModifyPmtpRatesResponse>;
+  UpdatePmtpParams(
+    request: MsgUpdatePmtpParams,
+  ): Promise<MsgUpdatePmtpParamsResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -902,10 +1675,16 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.RemoveLiquidity = this.RemoveLiquidity.bind(this);
+    this.RemoveLiquidityUnits = this.RemoveLiquidityUnits.bind(this);
     this.CreatePool = this.CreatePool.bind(this);
     this.AddLiquidity = this.AddLiquidity.bind(this);
     this.Swap = this.Swap.bind(this);
     this.DecommissionPool = this.DecommissionPool.bind(this);
+    this.UnlockLiquidity = this.UnlockLiquidity.bind(this);
+    this.UpdateRewardsParams = this.UpdateRewardsParams.bind(this);
+    this.AddRewardPeriod = this.AddRewardPeriod.bind(this);
+    this.ModifyPmtpRates = this.ModifyPmtpRates.bind(this);
+    this.UpdatePmtpParams = this.UpdatePmtpParams.bind(this);
   }
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
@@ -918,6 +1697,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgRemoveLiquidityResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  RemoveLiquidityUnits(
+    request: MsgRemoveLiquidityUnits,
+  ): Promise<MsgRemoveLiquidityUnitsResponse> {
+    const data = MsgRemoveLiquidityUnits.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "RemoveLiquidityUnits",
+      data,
+    );
+    return promise.then((data) =>
+      MsgRemoveLiquidityUnitsResponse.decode(new _m0.Reader(data)),
     );
   }
 
@@ -960,6 +1753,76 @@ export class MsgClientImpl implements Msg {
       MsgDecommissionPoolResponse.decode(new _m0.Reader(data)),
     );
   }
+
+  UnlockLiquidity(
+    request: MsgUnlockLiquidityRequest,
+  ): Promise<MsgUnlockLiquidityResponse> {
+    const data = MsgUnlockLiquidityRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "UnlockLiquidity",
+      data,
+    );
+    return promise.then((data) =>
+      MsgUnlockLiquidityResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  UpdateRewardsParams(
+    request: MsgUpdateRewardsParamsRequest,
+  ): Promise<MsgUpdateRewardsParamsResponse> {
+    const data = MsgUpdateRewardsParamsRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "UpdateRewardsParams",
+      data,
+    );
+    return promise.then((data) =>
+      MsgUpdateRewardsParamsResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  AddRewardPeriod(
+    request: MsgAddRewardPeriodRequest,
+  ): Promise<MsgAddRewardPeriodResponse> {
+    const data = MsgAddRewardPeriodRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "AddRewardPeriod",
+      data,
+    );
+    return promise.then((data) =>
+      MsgAddRewardPeriodResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  ModifyPmtpRates(
+    request: MsgModifyPmtpRates,
+  ): Promise<MsgModifyPmtpRatesResponse> {
+    const data = MsgModifyPmtpRates.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "ModifyPmtpRates",
+      data,
+    );
+    return promise.then((data) =>
+      MsgModifyPmtpRatesResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  UpdatePmtpParams(
+    request: MsgUpdatePmtpParams,
+  ): Promise<MsgUpdatePmtpParamsResponse> {
+    const data = MsgUpdatePmtpParams.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "UpdatePmtpParams",
+      data,
+    );
+    return promise.then((data) =>
+      MsgUpdatePmtpParamsResponse.decode(new _m0.Reader(data)),
+    );
+  }
 }
 
 interface Rpc {
@@ -977,10 +1840,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -989,7 +1854,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

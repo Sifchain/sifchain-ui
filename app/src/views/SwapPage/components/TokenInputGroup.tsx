@@ -33,7 +33,7 @@ export const TokenInputGroup = defineComponent({
     onSelectAsset: required(Function as PropType<(asset: IAsset) => any>),
     onBlur: required(Function as PropType<HTMLAttributes["onBlur"]>),
     onFocus: required(Function as PropType<HTMLAttributes["onFocus"]>),
-    class: required([Object, String, Array] as PropType<
+    class: optional([Object, String, Array] as PropType<
       HTMLAttributes["class"]
     >),
     excludeSymbols: optional(Array as PropType<string[]>),
@@ -60,18 +60,18 @@ export const TokenInputGroup = defineComponent({
           onSubmit={(e) => e.preventDefault()}
           ref={selfRef}
           class={[
-            "z-0 overflow-visible p-[20px] bg-gray-base border-solid border-[1px] border-gray-input_outline rounded-lg",
+            "bg-gray-base border-gray-input_outline z-0 overflow-visible rounded-lg border-[1px] border-solid p-[20px]",
             props.class,
           ]}
         >
-          <div class="w-full flex justify-between items-baseline">
-            <div class=" text-md text-white font-sans font-medium capitalize">
+          <div class="flex w-full items-baseline justify-between">
+            <div class=" text-md font-sans font-medium capitalize text-white">
               {props.heading}
             </div>
             <div
               onClick={() => props.onSetToMaxAmount?.()}
               class={[
-                `text-white opacity-50 font-sans font-medium text-sm ${
+                `font-sans text-sm font-medium text-white opacity-50 ${
                   props.formattedBalance ? "" : "opacity-0"
                 }`,
                 !!props.onSetToMaxAmount &&
@@ -84,7 +84,7 @@ export const TokenInputGroup = defineComponent({
           </div>
           <div
             class={[
-              `relative flex flex-row mt-[10px] overflow-visible gap-[10px]`,
+              `relative mt-[10px] flex flex-row gap-[10px] overflow-visible`,
               props.shouldShowNumberInputOnLeft ? "flex-row-reverse" : "",
             ]}
           >
@@ -103,9 +103,9 @@ export const TokenInputGroup = defineComponent({
                 selectIsOpen.value = !selectIsOpen.value;
               }}
             >
-              <div class="flex justify-between items-center">
+              <div class="flex items-center justify-between">
                 <TokenNetworkIcon size={38} asset={propRefs.asset} />
-                <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
+                <div class="ml-[8px] font-sans text-[18px] font-medium uppercase text-white">
                   {props.asset?.displaySymbol}
                 </div>
               </div>

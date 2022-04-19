@@ -93,7 +93,9 @@ export function useSwapCalculator(input: {
       : fromField.value.fieldAmount;
 
     const pair = pool.value;
+
     const swapResult = pair.calcSwapResult(amount);
+
     // to get ratio needs to be divided by amount as input by user
     const amountAsInput = format(amount.amount, amount.asset);
 
@@ -113,7 +115,10 @@ export function useSwapCalculator(input: {
   });
 
   const priceMessage = computed(() => {
-    if (!+priceRatio.value) return "";
+    if (!Number(priceRatio.value)) {
+      return "";
+    }
+
     return [
       priceRatio.value,
       fromField.value.asset?.displaySymbol.toUpperCase(),
@@ -128,6 +133,7 @@ export function useSwapCalculator(input: {
 
   // Changing the "from" field recalculates the "to" amount
   const swapResult = ref<IAssetAmount | null>(null);
+
   effect(() => {
     if (
       pool.value &&
@@ -153,6 +159,7 @@ export function useSwapCalculator(input: {
 
   // Changing the "to" field recalculates the "from" amount
   const reverseSwapResult = ref<IAssetAmount | null>(null);
+
   effect(() => {
     if (
       pool.value &&
@@ -247,7 +254,9 @@ export function useSwapCalculator(input: {
   // Derive state
   const state = computed(() => {
     // SwapState.INSUFFICIENT_LIQUIDITY is probably better here
-    if (!pool.value) return SwapState.INSUFFICIENT_LIQUIDITY;
+    if (!pool.value) {
+      return SwapState.INSUFFICIENT_LIQUIDITY;
+    }
     const fromTokenLiquidity = (pool.value as IPool).amounts.find(
       (amount) => amount.asset.symbol === fromField.value.asset?.symbol,
     );

@@ -1,7 +1,7 @@
-import { Chain, Network, AssetAmount, IAssetAmount } from "../../entities";
-import { BaseChain } from "./_BaseChain";
 import { urlJoin } from "url-join-ts";
-import { calculateIBCExportFee } from "../../utils/ibcExportFees";
+
+import { Chain } from "../../entities";
+import { BaseChain } from "./_BaseChain";
 
 export class BandChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {

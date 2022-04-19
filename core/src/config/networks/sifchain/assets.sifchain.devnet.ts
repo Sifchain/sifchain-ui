@@ -604,6 +604,17 @@ export default {
       homeNetwork: "akash",
     },
     {
+      symbol: "uatom",
+      decimals: 6,
+      name: "Atom",
+      network: "sifchain",
+      label: "Atom",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      displaySymbol: "atom",
+      homeNetwork: "cosmoshub",
+    },
+    {
       symbol: "udvpn",
       decimals: 6,
       name: "Sentinel",
@@ -689,6 +700,83 @@ export default {
       imageUrl:
         "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072",
       homeNetwork: "terra",
+    },
+    {
+      symbol: "ubtsg",
+      displaySymbol: "btsg",
+      decimals: 6,
+      name: "btsg",
+      network: "sifchain",
+      label: "btsg",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/5041/small/logo_-_2021-01-10T210801.390.png?1610284134",
+      homeNetwork: "bitsong",
+    },
+    {
+      symbol: "ucrbrus",
+      displaySymbol: "crbrus",
+      decimals: 6,
+      name: "crbrus",
+      network: "sifchain",
+      label: "crbrus",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/24509/small/AUdZyrmO_400x400.png?1647931023",
+      homeNetwork: "cerberus",
+    },
+    {
+      symbol: "uhuahua",
+      displaySymbol: "huahua",
+      decimals: 6,
+      name: "huahua",
+      network: "sifchain",
+      label: "huahua",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15651/small/chihua.PNG?1621476950",
+      homeNetwork: "chihuahua",
+    },
+    {
+      symbol: "ucmdx",
+      displaySymbol: "cmdx",
+      decimals: 6,
+      name: "cmdx",
+      network: "sifchain",
+      label: "cmdx",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/21540/small/_ooQky6B_400x400.jpg?1639447618",
+      homeNetwork: "comdex",
+    },
+    {
+      symbol: "uxki",
+      displaySymbol: "xki",
+      decimals: 6,
+      name: "xki",
+      network: "sifchain",
+      label: "xki",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/15694/small/xki-color.png?1621569714",
+      homeNetwork: "ki",
+    },
+    {
+      symbol: "nanolike",
+      displaySymbol: "nanolike",
+      decimals: 6,
+      name: "nanolike",
+      network: "sifchain",
+      label: "nanolike",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+      homeNetwork: "likecoin",
+    },
+    {
+      symbol: "ustarx",
+      displaySymbol: "starx",
+      decimals: 6,
+      name: "starx",
+      network: "sifchain",
+      label: "starx",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+      homeNetwork: "stargaze",
     },
     {
       address: "0xa47c8bf37f92abed4a126bda807a7b7498661acd",

@@ -2,7 +2,7 @@
 import localnetconfig from "./networks/sifchain/config.localnet.json";
 import devnetconfig from "./networks/sifchain/config.devnet.json";
 import devnet042config from "./networks/sifchain/config.devnet-042.json";
-import tempnetPMTPconfig from "./networks/sifchain/config.tempnet-pmtp.json";
+
 import testnet042ibcconfig from "./networks/sifchain/config.testnet-042-ibc.json";
 import testnetconfig from "./networks/sifchain/config.testnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
@@ -23,14 +23,14 @@ import {
   CoreConfig,
   AssetConfig,
 } from "../utils/parseConfig";
-import { Asset, Network, IAsset } from "../entities";
+import { Network, IAsset } from "../entities";
 import { NetworkEnv } from "./getEnv";
 import { chainConfigByNetworkEnv } from "./chains";
 
 type ConfigMap = Record<NetworkEnv, ReturnType<typeof parseConfig>>;
 
-// type ChainNetwork = `${Network}.${NetworkEnv}`;
-type ChainNetwork = string;
+type ChainNetwork = `${Network}.${NetworkEnv}`;
+
 type AssetMap = Record<ChainNetwork, IAsset[]>;
 
 export type AppConfig = ReturnType<typeof parseConfig>; // Will include other injectables
@@ -70,7 +70,7 @@ export function getConfig(
   const sifchainAssets = assetMap[sifchainAssetTag] || [];
   const ethereumAssets = assetMap[ethereumAssetTag] || [];
 
-  let allAssets = [...sifchainAssets, ...ethereumAssets];
+  const allAssets = [...sifchainAssets, ...ethereumAssets];
 
   Object.values(Network)
     .filter((n) => n !== Network.ETHEREUM && n !== Network.SIFCHAIN)
@@ -117,12 +117,6 @@ export function getConfig(
       devnet042config as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.DEVNET_042],
-      peggyCompatibleCosmosBaseDenoms,
-    ),
-    tempnet_pmtp: parseConfig(
-      tempnetPMTPconfig as CoreConfig,
-      allAssets,
-      chainConfigByNetworkEnv[NetworkEnv.TEMPNET_PMTP],
       peggyCompatibleCosmosBaseDenoms,
     ),
     testnet: parseConfig(

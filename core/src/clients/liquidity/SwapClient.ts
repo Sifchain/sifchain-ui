@@ -4,18 +4,10 @@ import {
   AssetAmount,
   Amount,
   Pool,
-  LiquidityProvider,
   CompositePool,
 } from "../../entities";
 import { format } from "../../utils";
 import { BaseLiquidityClient } from "./BaseLiquidityClient";
-
-type RemoveLiquidityParams = {
-  pool: Pool;
-  liquidityProvider: LiquidityProvider;
-  asymmetry: number;
-  basisPoints: number;
-};
 
 export type LiquidityContext = {
   sifApiUrl: string;

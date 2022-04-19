@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import * as _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.ethbridge.v1";
 
@@ -78,18 +78,20 @@ export interface GenesisState {
   peggyTokens: string[];
 }
 
-const baseEthBridgeClaim: object = {
-  ethereumChainId: Long.ZERO,
-  bridgeContractAddress: "",
-  nonce: Long.ZERO,
-  symbol: "",
-  tokenContractAddress: "",
-  ethereumSender: "",
-  cosmosReceiver: "",
-  validatorAddress: "",
-  amount: "",
-  claimType: 0,
-};
+function createBaseEthBridgeClaim(): EthBridgeClaim {
+  return {
+    ethereumChainId: Long.ZERO,
+    bridgeContractAddress: "",
+    nonce: Long.ZERO,
+    symbol: "",
+    tokenContractAddress: "",
+    ethereumSender: "",
+    cosmosReceiver: "",
+    validatorAddress: "",
+    amount: "",
+    claimType: 0,
+  };
+}
 
 export const EthBridgeClaim = {
   encode(
@@ -132,7 +134,7 @@ export const EthBridgeClaim = {
   decode(input: _m0.Reader | Uint8Array, length?: number): EthBridgeClaim {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseEthBridgeClaim } as EthBridgeClaim;
+    const message = createBaseEthBridgeClaim();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -175,70 +177,32 @@ export const EthBridgeClaim = {
   },
 
   fromJSON(object: any): EthBridgeClaim {
-    const message = { ...baseEthBridgeClaim } as EthBridgeClaim;
-    if (
-      object.ethereumChainId !== undefined &&
-      object.ethereumChainId !== null
-    ) {
-      message.ethereumChainId = Long.fromString(object.ethereumChainId);
-    } else {
-      message.ethereumChainId = Long.ZERO;
-    }
-    if (
-      object.bridgeContractAddress !== undefined &&
-      object.bridgeContractAddress !== null
-    ) {
-      message.bridgeContractAddress = String(object.bridgeContractAddress);
-    } else {
-      message.bridgeContractAddress = "";
-    }
-    if (object.nonce !== undefined && object.nonce !== null) {
-      message.nonce = Long.fromString(object.nonce);
-    } else {
-      message.nonce = Long.ZERO;
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = String(object.symbol);
-    } else {
-      message.symbol = "";
-    }
-    if (
-      object.tokenContractAddress !== undefined &&
-      object.tokenContractAddress !== null
-    ) {
-      message.tokenContractAddress = String(object.tokenContractAddress);
-    } else {
-      message.tokenContractAddress = "";
-    }
-    if (object.ethereumSender !== undefined && object.ethereumSender !== null) {
-      message.ethereumSender = String(object.ethereumSender);
-    } else {
-      message.ethereumSender = "";
-    }
-    if (object.cosmosReceiver !== undefined && object.cosmosReceiver !== null) {
-      message.cosmosReceiver = String(object.cosmosReceiver);
-    } else {
-      message.cosmosReceiver = "";
-    }
-    if (
-      object.validatorAddress !== undefined &&
-      object.validatorAddress !== null
-    ) {
-      message.validatorAddress = String(object.validatorAddress);
-    } else {
-      message.validatorAddress = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = String(object.amount);
-    } else {
-      message.amount = "";
-    }
-    if (object.claimType !== undefined && object.claimType !== null) {
-      message.claimType = claimTypeFromJSON(object.claimType);
-    } else {
-      message.claimType = 0;
-    }
-    return message;
+    return {
+      ethereumChainId: isSet(object.ethereumChainId)
+        ? Long.fromString(object.ethereumChainId)
+        : Long.ZERO,
+      bridgeContractAddress: isSet(object.bridgeContractAddress)
+        ? String(object.bridgeContractAddress)
+        : "",
+      nonce: isSet(object.nonce) ? Long.fromString(object.nonce) : Long.ZERO,
+      symbol: isSet(object.symbol) ? String(object.symbol) : "",
+      tokenContractAddress: isSet(object.tokenContractAddress)
+        ? String(object.tokenContractAddress)
+        : "",
+      ethereumSender: isSet(object.ethereumSender)
+        ? String(object.ethereumSender)
+        : "",
+      cosmosReceiver: isSet(object.cosmosReceiver)
+        ? String(object.cosmosReceiver)
+        : "",
+      validatorAddress: isSet(object.validatorAddress)
+        ? String(object.validatorAddress)
+        : "",
+      amount: isSet(object.amount) ? String(object.amount) : "",
+      claimType: isSet(object.claimType)
+        ? claimTypeFromJSON(object.claimType)
+        : 0,
+    };
   },
 
   toJSON(message: EthBridgeClaim): unknown {
@@ -264,75 +228,33 @@ export const EthBridgeClaim = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<EthBridgeClaim>): EthBridgeClaim {
-    const message = { ...baseEthBridgeClaim } as EthBridgeClaim;
-    if (
-      object.ethereumChainId !== undefined &&
-      object.ethereumChainId !== null
-    ) {
-      message.ethereumChainId = object.ethereumChainId as Long;
-    } else {
-      message.ethereumChainId = Long.ZERO;
-    }
-    if (
-      object.bridgeContractAddress !== undefined &&
-      object.bridgeContractAddress !== null
-    ) {
-      message.bridgeContractAddress = object.bridgeContractAddress;
-    } else {
-      message.bridgeContractAddress = "";
-    }
-    if (object.nonce !== undefined && object.nonce !== null) {
-      message.nonce = object.nonce as Long;
-    } else {
-      message.nonce = Long.ZERO;
-    }
-    if (object.symbol !== undefined && object.symbol !== null) {
-      message.symbol = object.symbol;
-    } else {
-      message.symbol = "";
-    }
-    if (
-      object.tokenContractAddress !== undefined &&
-      object.tokenContractAddress !== null
-    ) {
-      message.tokenContractAddress = object.tokenContractAddress;
-    } else {
-      message.tokenContractAddress = "";
-    }
-    if (object.ethereumSender !== undefined && object.ethereumSender !== null) {
-      message.ethereumSender = object.ethereumSender;
-    } else {
-      message.ethereumSender = "";
-    }
-    if (object.cosmosReceiver !== undefined && object.cosmosReceiver !== null) {
-      message.cosmosReceiver = object.cosmosReceiver;
-    } else {
-      message.cosmosReceiver = "";
-    }
-    if (
-      object.validatorAddress !== undefined &&
-      object.validatorAddress !== null
-    ) {
-      message.validatorAddress = object.validatorAddress;
-    } else {
-      message.validatorAddress = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      message.amount = object.amount;
-    } else {
-      message.amount = "";
-    }
-    if (object.claimType !== undefined && object.claimType !== null) {
-      message.claimType = object.claimType;
-    } else {
-      message.claimType = 0;
-    }
+  fromPartial<I extends Exact<DeepPartial<EthBridgeClaim>, I>>(
+    object: I,
+  ): EthBridgeClaim {
+    const message = createBaseEthBridgeClaim();
+    message.ethereumChainId =
+      object.ethereumChainId !== undefined && object.ethereumChainId !== null
+        ? Long.fromValue(object.ethereumChainId)
+        : Long.ZERO;
+    message.bridgeContractAddress = object.bridgeContractAddress ?? "";
+    message.nonce =
+      object.nonce !== undefined && object.nonce !== null
+        ? Long.fromValue(object.nonce)
+        : Long.ZERO;
+    message.symbol = object.symbol ?? "";
+    message.tokenContractAddress = object.tokenContractAddress ?? "";
+    message.ethereumSender = object.ethereumSender ?? "";
+    message.cosmosReceiver = object.cosmosReceiver ?? "";
+    message.validatorAddress = object.validatorAddress ?? "";
+    message.amount = object.amount ?? "";
+    message.claimType = object.claimType ?? 0;
     return message;
   },
 };
 
-const basePeggyTokens: object = { tokens: "" };
+function createBasePeggyTokens(): PeggyTokens {
+  return { tokens: [] };
+}
 
 export const PeggyTokens = {
   encode(
@@ -348,8 +270,7 @@ export const PeggyTokens = {
   decode(input: _m0.Reader | Uint8Array, length?: number): PeggyTokens {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...basePeggyTokens } as PeggyTokens;
-    message.tokens = [];
+    const message = createBasePeggyTokens();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -365,14 +286,11 @@ export const PeggyTokens = {
   },
 
   fromJSON(object: any): PeggyTokens {
-    const message = { ...basePeggyTokens } as PeggyTokens;
-    message.tokens = [];
-    if (object.tokens !== undefined && object.tokens !== null) {
-      for (const e of object.tokens) {
-        message.tokens.push(String(e));
-      }
-    }
-    return message;
+    return {
+      tokens: Array.isArray(object?.tokens)
+        ? object.tokens.map((e: any) => String(e))
+        : [],
+    };
   },
 
   toJSON(message: PeggyTokens): unknown {
@@ -385,19 +303,18 @@ export const PeggyTokens = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<PeggyTokens>): PeggyTokens {
-    const message = { ...basePeggyTokens } as PeggyTokens;
-    message.tokens = [];
-    if (object.tokens !== undefined && object.tokens !== null) {
-      for (const e of object.tokens) {
-        message.tokens.push(e);
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<PeggyTokens>, I>>(
+    object: I,
+  ): PeggyTokens {
+    const message = createBasePeggyTokens();
+    message.tokens = object.tokens?.map((e) => e) || [];
     return message;
   },
 };
 
-const baseGenesisState: object = { cethReceiveAccount: "", peggyTokens: "" };
+function createBaseGenesisState(): GenesisState {
+  return { cethReceiveAccount: "", peggyTokens: [] };
+}
 
 export const GenesisState = {
   encode(
@@ -416,8 +333,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGenesisState } as GenesisState;
-    message.peggyTokens = [];
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -436,22 +352,14 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    message.peggyTokens = [];
-    if (
-      object.cethReceiveAccount !== undefined &&
-      object.cethReceiveAccount !== null
-    ) {
-      message.cethReceiveAccount = String(object.cethReceiveAccount);
-    } else {
-      message.cethReceiveAccount = "";
-    }
-    if (object.peggyTokens !== undefined && object.peggyTokens !== null) {
-      for (const e of object.peggyTokens) {
-        message.peggyTokens.push(String(e));
-      }
-    }
-    return message;
+    return {
+      cethReceiveAccount: isSet(object.cethReceiveAccount)
+        ? String(object.cethReceiveAccount)
+        : "",
+      peggyTokens: Array.isArray(object?.peggyTokens)
+        ? object.peggyTokens.map((e: any) => String(e))
+        : [],
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -466,22 +374,12 @@ export const GenesisState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState;
-    message.peggyTokens = [];
-    if (
-      object.cethReceiveAccount !== undefined &&
-      object.cethReceiveAccount !== null
-    ) {
-      message.cethReceiveAccount = object.cethReceiveAccount;
-    } else {
-      message.cethReceiveAccount = "";
-    }
-    if (object.peggyTokens !== undefined && object.peggyTokens !== null) {
-      for (const e of object.peggyTokens) {
-        message.peggyTokens.push(e);
-      }
-    }
+  fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(
+    object: I,
+  ): GenesisState {
+    const message = createBaseGenesisState();
+    message.cethReceiveAccount = object.cethReceiveAccount ?? "";
+    message.peggyTokens = object.peggyTokens?.map((e) => e) || [];
     return message;
   },
 };
@@ -493,10 +391,12 @@ type Builtin =
   | string
   | number
   | boolean
-  | undefined
-  | Long;
+  | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -505,7 +405,19 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
+        Exclude<keyof I, KeysOfUnion<P>>,
+        never
+      >;
+
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

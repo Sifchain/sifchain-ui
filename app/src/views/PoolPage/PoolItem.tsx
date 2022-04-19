@@ -1,45 +1,62 @@
-import { computed, defineComponent, PropType } from "vue";
-import { AssetAmount, IAssetAmount, Network } from "@sifchain/sdk";
-
-import { prettyNumber } from "@/utils/prettyNumber";
-import { useChains, useNativeChain } from "@/hooks/useChains";
+import { AccountPool } from "@/business/store/pools";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
-import { formatAssetAmount } from "@/components/utils";
-import { useRowanPrice } from "@/hooks/useRowanPrice";
-import { Tooltip } from "@/components/Tooltip";
-
-import {
-  COLUMNS_LOOKUP,
-  PoolDataItem,
-  PoolRewardProgram,
-} from "./usePoolPageData";
-import { useUserPoolData } from "./useUserPoolData";
-import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
-import {
-  CompetitionsLookup,
-  Competition,
-  COMPETITION_TYPE_DISPLAY_DATA,
-} from "../LeaderboardPage/useCompetitionData";
-
-import { RouterLink } from "vue-router";
-import { aprToWeeklyCompoundedApy } from "@/utils/aprToApy";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { Tooltip } from "@/components/Tooltip";
+import { formatAssetAmount } from "@/components/utils";
+import { useChains, useNativeChain } from "@/hooks/useChains";
+import { PoolStat } from "@/hooks/usePoolStats";
+import { useRowanPrice } from "@/hooks/useRowanPrice";
+import { isNil, isNilOrWhitespace } from "@/utils/assertion";
+import { prettyNumber } from "@/utils/prettyNumber";
+import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
+import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
+import { computed, defineComponent, PropType } from "vue";
+import {
+  Competition,
+  CompetitionsLookup,
+} from "../LeaderboardPage/useCompetitionData";
+import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
+import { COLUMNS_LOOKUP, PoolRewardProgram } from "./usePoolPageData";
+import { useUserPoolData } from "./useUserPoolData";
 
 export default defineComponent({
   name: "PoolItem",
   props: {
+    unLockable: { type: Boolean, required: true },
+    unlock: {
+      type: Object as PropType<{
+        nativeAssetAmount: string;
+        externalAssetAmount: string;
+        ready: boolean;
+        eta?: string;
+        expiration?: string;
+        onRemoveRequest: () => any;
+        isRemovalInProgress: boolean;
+        isActiveRemoval: boolean;
+      }>,
+      required: false,
+    },
+    currentRewardPeriod: {
+      type: Object as PropType<
+        | {
+            endEta: string;
+          }
+        | undefined
+      >,
+      required: false,
+    },
     pool: {
-      type: Object as PropType<PoolDataItem["pool"]>,
+      type: Object as PropType<Pool>,
       required: true,
     },
     poolStat: {
-      type: Object as PropType<PoolDataItem["poolStat"]>,
+      type: Object as PropType<PoolStat>,
       required: false,
     },
     accountPool: {
-      type: Object as PropType<PoolDataItem["accountPool"]>,
+      type: Object as PropType<AccountPool>,
       required: false,
     },
     bonusRewardPrograms: {
@@ -48,6 +65,10 @@ export default defineComponent({
     },
     competitionsLookup: {
       type: Object as PropType<CompetitionsLookup>,
+      required: false,
+    },
+    liquidityProvider: {
+      type: Object as PropType<LiquidityProviderData>,
       required: false,
     },
   },
@@ -78,26 +99,31 @@ export default defineComponent({
         : [];
     },
     myPoolValue(): string | undefined {
-      if (!this.accountPool || !this.poolStat) return;
+      if (
+        !this.accountPool ||
+        !this.poolStat ||
+        this.rowanPrice.isLoading.value
+      )
+        return;
 
       const externalAmount = AssetAmount(
         this.accountPool.lp.asset,
         this.accountPool.lp.externalAmount,
-      );
+      ).toDerived();
       const nativeAmount = AssetAmount(
         useChains().get(Network.SIFCHAIN).nativeAsset,
         this.accountPool.lp.nativeAmount,
-      );
-      const formattedExternal = formatAssetAmount(externalAmount);
-      const formattedNative = formatAssetAmount(nativeAmount);
+      ).toDerived();
 
-      if (this.rowanPrice.isLoading.value) return "";
+      const nativeDollarAmount = nativeAmount.multiply(
+        this.rowanPrice.data.value ?? 0,
+      );
+      const externalDollarAmount = externalAmount.multiply(
+        this.poolStat.priceToken ?? 0,
+      );
 
       return prettyNumber(
-        parseFloat(formattedExternal) *
-          parseFloat(this.poolStat.priceToken || "0") +
-          parseFloat(formattedNative) *
-            parseFloat(this.rowanPrice.data.value || "0"),
+        nativeDollarAmount.add(externalDollarAmount).toNumber(),
       );
     },
     externalAmount(): IAssetAmount {
@@ -145,6 +171,23 @@ export default defineComponent({
           </div>,
         ],
         [
+          "Rewards paid to the pool for current period",
+          <span class="flex items-center font-mono">
+            {typeof this.poolStat?.rewardPeriodNativeDistributed === "number"
+              ? (this.poolStat?.rewardPeriodNativeDistributed).toLocaleString()
+              : "..."}
+            <TokenIcon
+              assetValue={useNativeChain().nativeAsset}
+              size={14}
+              class="ml-[3px]"
+            />
+          </span>,
+        ],
+        this.currentRewardPeriod !== undefined && [
+          "Rewards time remaining for current period",
+          <span class="font-mono">{this.currentRewardPeriod.endEta}</span>,
+        ],
+        [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">
             {prettyNumber(+formatAssetAmount(this.externalAmount), 5)}
@@ -161,7 +204,9 @@ export default defineComponent({
           <span class="font-mono">
             {this.$props.poolStat?.priceToken != null
               ? `$${prettyNumber(
-                  parseFloat(this.$props.poolStat?.priceToken || "0"),
+                  parseFloat(
+                    this.$props.poolStat?.priceToken.toString() || "0",
+                  ),
                 )}`
               : "..."}
           </span>,
@@ -195,20 +240,10 @@ export default defineComponent({
           </span>,
         ],
         [
-          "Pool TVL (USD)",
-          <span class="font-mono">
-            {this.$props.poolStat?.poolDepth != null
-              ? `${prettyNumber(
-                  parseFloat(this.$props.poolStat?.poolDepth || "0") * 2,
-                )}`
-              : "..."}
-          </span>,
-        ],
-        [
           "Trade Volume 24hr",
           <span class="font-mono">
-            {this.$props.poolStat?.volume != null
-              ? prettyNumber(parseFloat(this.$props.poolStat?.volume || "0"))
+            {typeof this.$props.poolStat?.volume === "number"
+              ? prettyNumber(this.$props.poolStat?.volume)
               : "..."}
           </span>,
         ],
@@ -217,11 +252,14 @@ export default defineComponent({
   },
 
   render() {
+    const tableItemClass =
+      "border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
+
     return (
-      <div class="w-full py-[10px] align-middle border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 last:border-none group">
+      <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent">
         <div
           onClick={() => this.toggleExpanded()}
-          class="cursor-pointer font-mono w-full flex justify-between items-center font-medium h-[32px] group-hover:opacity-80"
+          class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
             <TokenIcon assetValue={this.nativeAmount.asset} size={22} />
@@ -230,7 +268,7 @@ export default defineComponent({
               size={22}
               class="ml-[4px]"
             />
-            <div class="ml-[10px] uppercase font-sans">
+            <div class="ml-[10px] font-sans uppercase">
               ROWAN / {this.externalAmount.displaySymbol.toUpperCase()}
             </div>
             {this.externalAmount.asset.decommissioned &&
@@ -262,33 +300,33 @@ export default defineComponent({
               </Tooltip>
             ))}
           </div>
-          <div
-            class={[COLUMNS_LOOKUP.apy.class, "font-mono flex items-center"]}
-          >
-            {this.$props.poolStat?.poolAPY != null
-              ? `${parseFloat(this.$props.poolStat?.poolAPY || "0").toFixed(
-                  2,
-                )}%`
-              : "..."}
-          </div>
+
           <div
             class={[
-              COLUMNS_LOOKUP.rewardApy.class,
-              "font-mono flex items-center",
+              COLUMNS_LOOKUP.poolTvl.class,
+              "flex items-center font-mono",
             ]}
           >
-            {this.$props.poolStat?.rewardAPY != null
-              ? `${parseFloat(this.$props.poolStat?.rewardAPY || "0").toFixed(
-                  0,
-                )}% (${aprToWeeklyCompoundedApy(
-                  parseFloat(this.$props.poolStat?.rewardAPY || "0"),
-                ).toFixed(0)}%)`
+            {typeof this.$props.poolStat?.poolTVL === "number"
+              ? this.$props.poolStat.poolTVL.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })
               : "..."}
           </div>
+
+          <div
+            class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
+          >
+            {!isNil(this.$props.poolStat?.poolApr)
+              ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
+              : "..."}
+          </div>
+
           <div
             class={[
               COLUMNS_LOOKUP.userShare.class,
-              "font-mono flex items-center",
+              "flex items-center font-mono",
             ]}
           >
             {!!this.userPoolData.myPoolShare?.value
@@ -298,7 +336,7 @@ export default defineComponent({
           <div
             class={[
               COLUMNS_LOOKUP.userValue.class,
-              "font-mono flex items-center",
+              "flex items-center font-mono",
             ]}
           >
             {this.myPoolValue == null
@@ -323,21 +361,76 @@ export default defineComponent({
         {this.expanded && (
           <section
             id={`expandable-${this.pool.symbol()}`}
-            class={[
-              "mt-[10px] p-[12px] flex flex-row justify-between bg-gray-base w-full rounded overflow-hidden pointer-events-auto",
-              this.accountPool ? "h-[216px]" : "h-[193px]",
-            ]}
+            class="bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]"
           >
-            <div class="w-[482px] rounded-sm border border-solid border-gray-input_outline align self-center">
-              {this.details.map(([key, value], index) => (
-                <div
-                  key={index}
-                  class="h-[28px] px-[6px] flex items-center justify-between text-sm font-medium border-b border-solid border-gray-input_outline last:border-none"
-                >
-                  <span>{key}</span>
-                  <span>{value}</span>
-                </div>
-              ))}
+            <div>
+              <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+                {this.details.map(([key, value], index) => (
+                  <div
+                    key={index}
+                    class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
+                  >
+                    <span>{key}</span>
+                    <span>{value}</span>
+                  </div>
+                ))}
+              </div>
+              {this.unlock !== undefined && (
+                <section>
+                  <header class="mt-2 mb-0.5">
+                    <p class="text-md font-bold">Unbonding request</p>
+                  </header>
+                  <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+                    <div class={tableItemClass}>
+                      <span>Unbonding assets</span>
+                      <span class="flex items-center">
+                        {this.unlock.nativeAssetAmount}{" "}
+                        <TokenIcon
+                          assetValue={useNativeChain().nativeAsset}
+                          size={14}
+                          class="ml-[2px]"
+                        />
+                        , {this.unlock.externalAssetAmount}{" "}
+                        <TokenIcon
+                          assetValue={this.pool.externalAmount.asset}
+                          size={14}
+                          class="ml-[2px]"
+                        />
+                      </span>
+                    </div>
+                    {this.unlock.ready
+                      ? !isNilOrWhitespace(this.unlock.expiration) && (
+                          <div class={tableItemClass}>
+                            <span>Estimated time remaining to claim</span>
+                            <span>{this.unlock.expiration}</span>
+                          </div>
+                        )
+                      : !isNilOrWhitespace(this.unlock.eta) && (
+                          <div class={tableItemClass}>
+                            <span>Estimated time remaining</span>
+                            <span>{this.unlock.eta}</span>
+                          </div>
+                        )}
+                    {this.unlock.ready && (
+                      <Button.CallToActionSecondary
+                        class="h-[46px] text-[17px] disabled:bg-inherit"
+                        disabled={this.unlock.isRemovalInProgress}
+                        onClick={this.unlock.onRemoveRequest}
+                      >
+                        {this.unlock.isRemovalInProgress &&
+                        this.unlock.isActiveRemoval ? (
+                          <AssetIcon
+                            size={36}
+                            icon="interactive/anim-racetrack-spinner"
+                          />
+                        ) : (
+                          "Claim unlocked liquidity"
+                        )}
+                      </Button.CallToActionSecondary>
+                    )}
+                  </div>
+                </section>
+              )}
             </div>
             <div class="p-[4px]">
               {!this.externalAmount.decommissioned && (
@@ -349,27 +442,45 @@ export default defineComponent({
                     },
                   }}
                   replace
-                  class="w-[140px] !bg-black !text-accent-base"
+                  class="!text-accent-base w-[140px] !bg-black"
                   icon="interactive/plus"
                 >
                   Add Liquidity
                 </Button.Inline>
               )}
-              {!!this.userPoolData.myPoolShare?.value && (
-                <Button.Inline
-                  to={{
-                    name: "RemoveLiquidity",
-                    params: {
-                      externalAsset: this.externalAmount.symbol.toLowerCase(),
-                    },
-                  }}
-                  replace
-                  class="w-[140px] !bg-black !text-accent-base mt-[6px]"
-                  icon="interactive/minus"
-                >
-                  Remove Liquidity
-                </Button.Inline>
-              )}
+              {this.$store.state.flags.newLiquidityUnlockProcess
+                ? this.$props.unLockable && (
+                    <Button.Inline
+                      to={{
+                        name: "UnbondLiquidity",
+                        params: {
+                          externalAsset:
+                            this.externalAmount.symbol.toLowerCase(),
+                        },
+                      }}
+                      replace
+                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      icon="interactive/minus"
+                    >
+                      Unbond Liquidity
+                    </Button.Inline>
+                  )
+                : !!this.userPoolData.myPoolShare?.value && (
+                    <Button.Inline
+                      to={{
+                        name: "RemoveLiquidity",
+                        params: {
+                          externalAsset:
+                            this.externalAmount.symbol.toLowerCase(),
+                        },
+                      }}
+                      replace
+                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      icon="interactive/minus"
+                    >
+                      Remove Liquidity
+                    </Button.Inline>
+                  )}
             </div>
           </section>
         )}
