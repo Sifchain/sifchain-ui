@@ -6,14 +6,7 @@ import { useCore } from "@/hooks/useCore";
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 
 export type StatsPageState = {
-  sortBy:
-    | "asset"
-    | "price"
-    | "depth"
-    | "volume"
-    | "arbitrage"
-    | "poolApr"
-    | "rewardApr";
+  sortBy: "asset" | "price" | "volume" | "arbitrage" | "poolApr" | "rewardApr";
   sortDirection: "asc" | "desc";
 };
 
@@ -48,11 +41,9 @@ export function useStatsPageData(initialState: StatsPageState) {
 
         return item;
       })
-      .filter((item) => {
-        return (
-          !item.asset.decommissioned && !isAssetFlaggedDisabled(item.asset)
-        );
-      })
+      .filter(
+        ({ asset }) => !asset.decommissioned && !isAssetFlaggedDisabled(asset),
+      )
       .sort((a, b) => {
         if (state.sortBy === "asset") {
           return (a.asset.displaySymbol || a.asset.symbol).localeCompare(
