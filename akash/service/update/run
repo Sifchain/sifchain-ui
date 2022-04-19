@@ -24,4 +24,7 @@ if ! $(grep -qw "^${VER}$" /root/current); then
   echo $VER > /root/current
 fi
 
-sleep 2h
+# Github API Rate limits
+# For unauthenticated requests, the rate limit allows for up to 60 requests per hour.
+# So make sure to not set sleep to a lower than 1 minute value.
+sleep 3m
