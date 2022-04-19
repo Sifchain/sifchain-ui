@@ -39,7 +39,11 @@ export const useCurrentRouteBannerMessage = () => {
       route.path.startsWith(key),
     ) as RouteKey | undefined;
 
-    if (matchingKey && matchingKey in bannersRes.data.value) {
+    if (
+      matchingKey &&
+      matchingKey in bannersRes.data.value &&
+      typeof bannersRes.data.value[matchingKey] === "string"
+    ) {
       const meta = bannersRes.data.value.meta[matchingKey];
       const message = bannersRes.data.value[matchingKey];
       return { message, meta };
