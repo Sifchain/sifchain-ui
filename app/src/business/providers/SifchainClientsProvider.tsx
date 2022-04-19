@@ -72,7 +72,7 @@ export const SifchainClientsProvider = defineComponent((_, { slots }) => {
 
     state.signingClientStatus = "pending";
     return services.wallet.keplrProvider
-      .getSendingSigner(services.chains.nativeChain)
+      .getOfflineSignerAuto(services.chains.nativeChain)
       .then((x) => createSigningClient(config.sifRpcUrl, x))
       .then((signingClient) => {
         Object.assign(state, {
