@@ -6,7 +6,14 @@ import { useCore } from "@/hooks/useCore";
 import { isAssetFlaggedDisabled } from "@/store/modules/flags";
 
 export type StatsPageState = {
-  sortBy: "asset" | "price" | "volume" | "arbitrage" | "poolApr" | "rewardApr";
+  sortBy:
+    | "asset"
+    | "price"
+    | "tvl"
+    | "volume"
+    | "arbitrage"
+    | "poolApr"
+    | "rewardApr";
   sortDirection: "asc" | "desc";
 };
 

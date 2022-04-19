@@ -46,7 +46,7 @@ export default defineComponent({
       },
       {
         name: "Pool TVL (USD)",
-        sortBy: "depth",
+        sortBy: "tvl",
         class: "min-w-[120px] text-right",
         ref: ref<HTMLElement>(),
       },
