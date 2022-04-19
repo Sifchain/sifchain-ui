@@ -1,5 +1,5 @@
 import { reactive, computed, onMounted, onUnmounted } from "vue";
-import { Asset, IAsset } from "@sifchain/sdk";
+import { Asset } from "@sifchain/sdk";
 
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { useCore } from "@/hooks/useCore";
