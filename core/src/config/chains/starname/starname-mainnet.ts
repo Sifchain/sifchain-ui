@@ -1,6 +1,6 @@
 import { Network, IBCChainConfig } from "../../../entities";
 
-export const STARNAME_TESTNET: IBCChainConfig = {
+export const STARNAME_MAINNET: IBCChainConfig = {
   chainType: "ibc",
   network: Network.STARNAME,
   displayName: "Starname",
