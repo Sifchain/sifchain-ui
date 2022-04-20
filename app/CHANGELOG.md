@@ -5,6 +5,7 @@
 - PMTP governance rates are listed above the token price on the DEX - click on the PMTP icon for additional information
 - chore/security patches:
   - Fix decimal formatting of ibc tokens on 'Unbond liquidity' page
+  - Fix decimal formatting of ibc tokens on 'Unbonding request' section on 'Pools' page
   - Remove keplr provider websocket dependency
   
 ## Release 2022.04.06
