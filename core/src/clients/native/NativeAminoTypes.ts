@@ -115,7 +115,7 @@ export const convertToSnakeCaseDeep = (obj: any): any => {
   return newObj;
 };
 
-const convertToCamelCaseDeep = (obj: any): any => {
+export const convertToCamelCaseDeep = (obj: any): any => {
   if (typeof obj !== "object") {
     return obj;
   }

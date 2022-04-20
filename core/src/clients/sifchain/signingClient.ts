@@ -24,6 +24,7 @@ import * as dispensationTx from "../../generated/proto/sifnode/dispensation/v1/t
 import * as ethBridgeTx from "../../generated/proto/sifnode/ethbridge/v1/tx";
 import * as tokenRegistryTx from "../../generated/proto/sifnode/tokenregistry/v1/tx";
 import {
+  convertToCamelCaseDeep,
   convertToSnakeCaseDeep,
   createAminoTypeNameFromProtoTypeUrl,
 } from "../native";
@@ -50,7 +51,7 @@ const createSifchainAminoConverters = (): AminoConverters =>
       {
         aminoType: createAminoTypeNameFromProtoTypeUrl(x.typeUrl),
         toAmino: (value: any): AminoMsg => convertToSnakeCaseDeep(value),
-        fromAmino: (value: AminoMsg): any => convertToSnakeCaseDeep(value),
+        fromAmino: (value: AminoMsg): any => convertToCamelCaseDeep(value),
       },
     ]),
   );
