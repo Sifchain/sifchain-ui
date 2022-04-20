@@ -29,6 +29,8 @@ import {
 } from "../native";
 import { DEFAULT_GAS_PRICE } from "./fees";
 
+const MODULES = [clpTx, dispensationTx, ethBridgeTx, tokenRegistryTx];
+
 const generateTypeUrlAndTypeRecords = (
   proto: Record<string, GeneratedType | any> & {
     protobufPackage: string;
@@ -41,16 +43,9 @@ const generateTypeUrlAndTypeRecords = (
       type: value,
     }));
 
-const createSifchainAminoConverters = (): AminoConverters => {
-  const protoTypes = [
-    clpTx,
-    dispensationTx,
-    ethBridgeTx,
-    tokenRegistryTx,
-  ].flatMap(generateTypeUrlAndTypeRecords);
-
-  return Object.fromEntries(
-    protoTypes.map((x) => [
+const createSifchainAminoConverters = (): AminoConverters =>
+  Object.fromEntries(
+    MODULES.flatMap(generateTypeUrlAndTypeRecords).map((x) => [
       x.typeUrl,
       {
         aminoType: createAminoTypeNameFromProtoTypeUrl(x.typeUrl),
@@ -59,15 +54,14 @@ const createSifchainAminoConverters = (): AminoConverters => {
       },
     ]),
   );
-};
 
-const createDefaultTypes = () =>
+const createDefaultTypes = (prefix: string = "sif") =>
   new AminoTypes({
     ...createAuthzAminoConverters(),
     ...createBankAminoConverters(),
     ...createDistributionAminoConverters(),
     ...createGovAminoConverters(),
-    ...createStakingAminoConverters("sif"),
+    ...createStakingAminoConverters(prefix),
     ...createIbcAminoConverters(),
     ...createFreegrantAminoConverters(),
     ...createSifchainAminoConverters(),
@@ -75,9 +69,9 @@ const createDefaultTypes = () =>
 
 const createDefaultRegistry = () => {
   const registry = new Registry(defaultStargateTypes);
-  [clpTx, dispensationTx, ethBridgeTx, tokenRegistryTx]
-    .flatMap(generateTypeUrlAndTypeRecords)
-    .forEach((x) => registry.register(x.typeUrl, x.type));
+  MODULES.flatMap(generateTypeUrlAndTypeRecords).forEach((x) =>
+    registry.register(x.typeUrl, x.type),
+  );
   return registry;
 };
 
@@ -88,7 +82,7 @@ export const createSigningClient = (
 ) =>
   SigningStargateClient.connectWithSigner(rpcUrl, signer, {
     registry: createDefaultRegistry(),
-    aminoTypes: createDefaultTypes(),
+    aminoTypes: createDefaultTypes(options?.prefix),
     gasPrice: DEFAULT_GAS_PRICE,
     ...options,
   });
