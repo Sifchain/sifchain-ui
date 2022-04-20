@@ -17,7 +17,6 @@ import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { formatAssetAmount, formatNumber } from "@/components/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
-import { flagsStore } from "@/store/modules/flags";
 
 export const useAddLiquidityData = () => {
   const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
@@ -27,7 +26,7 @@ export const useAddLiquidityData = () => {
   const modalStatus = ref<"setup" | "confirm" | "processing">("setup");
   const transactionStatus = ref<TransactionStatus | null>(null);
 
-  const asyncPooling = ref<boolean>(true);
+  const symmetricalPooling = ref<boolean>(true);
   const router = useRouter();
 
   const {
@@ -144,7 +143,7 @@ export const useAddLiquidityData = () => {
     tokenBSymbol: toSymbol,
     poolFinder,
     liquidityProvider,
-    asyncPooling,
+    symmetricalPooling,
     lastFocusedTokenField,
   });
 
@@ -160,6 +159,7 @@ export const useAddLiquidityData = () => {
   async function handleAskConfirmClicked() {
     if (!tokenAField.value.fieldAmount)
       throw new Error("Token A field amount is not defined");
+
     if (!tokenBField.value.fieldAmount)
       throw new Error("Token B field amount is not defined");
 
@@ -168,10 +168,20 @@ export const useAddLiquidityData = () => {
       state: "requested",
       hash: "",
     };
-    transactionStatus.value = await usecases.clp.addLiquidity(
-      tokenBField.value.fieldAmount,
-      tokenAField.value.fieldAmount,
-    );
+
+    if (tokenAField.value.asset?.symbol === "rowan") {
+      // invert fields when token a is rowan
+
+      transactionStatus.value = await usecases.clp.addLiquidity(
+        tokenAField.value.fieldAmount,
+        tokenBField.value.fieldAmount,
+      );
+    } else {
+      transactionStatus.value = await usecases.clp.addLiquidity(
+        tokenBField.value.fieldAmount,
+        tokenAField.value.fieldAmount,
+      );
+    }
 
     if (!tokenAField.value.fieldAmount || !tokenBField.value.fieldAmount) {
       throw new Error("Token A or Token B field amount is not defined");
@@ -216,8 +226,8 @@ export const useAddLiquidityData = () => {
     clearAmounts();
   }
 
-  function toggleAsyncPooling() {
-    asyncPooling.value = !asyncPooling.value;
+  function toggleSymmetricPooling() {
+    symmetricalPooling.value = !symmetricalPooling.value;
   }
 
   return {
@@ -303,15 +313,14 @@ export const useAddLiquidityData = () => {
     backlink: window.history.state.back || "/pool",
 
     handleNextStepClicked,
-
     handleAskConfirmClicked,
 
     transactionStatus,
     modalStatus,
+    symmetricalPooling,
 
     requestTransactionModalClose,
-    toggleAsyncPooling,
-    asyncPooling,
+    toggleAsyncPooling: toggleSymmetricPooling,
     handleBlur() {
       selectedField.value = null;
     },
@@ -341,11 +350,7 @@ export const useAddLiquidityData = () => {
     formatNumber,
     poolUnits: totalLiquidityProviderUnits,
     riskFactorStatus: computed<"" | "bad" | "danger" | "warning">(() => {
-      if (flagsStore.state.pmtp && !asyncPooling.value) {
-        return "warning";
-      }
-
-      if (!riskFactor.value || asyncPooling.value) return "";
+      if (!riskFactor.value || symmetricalPooling.value) return "";
       if (riskFactor.value.lessThanOrEqual("0.01")) {
         return "";
       } else if (riskFactor.value.lessThanOrEqual("0.1")) {

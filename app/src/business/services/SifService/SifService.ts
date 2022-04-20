@@ -8,35 +8,33 @@ import {
 import { reactive } from "@vue/reactivity";
 import {
   Address,
-  Asset,
-  AssetAmount,
+  IAsset,
   IAssetAmount,
   Network,
   TransactionStatus,
-  TxParams,
+  Mnemonic,
+  IAmount,
 } from "@sifchain/sdk";
-import { Mnemonic } from "@sifchain/sdk";
-
-import { ensureSifAddress } from "./utils";
-import { KeplrChainConfig } from "@sifchain/sdk/src/utils/parseConfig";
-import { parseTxFailure } from "@sifchain/sdk/src/utils/parseTxFailure";
-import { debounce } from "@sifchain/sdk/src/utils/debounce";
-import { NativeDexClient } from "@sifchain/sdk/src/clients";
-import { getKeplrProvider } from "@sifchain/wallet-keplr";
 import {
   SifClient,
   SifUnSignedClient,
 } from "@sifchain/sdk/src/clients/native/SifClient";
 
+import { ensureSifAddress } from "./utils";
+import { KeplrChainConfig } from "@sifchain/sdk/src/utils/parseConfig";
+import { parseTxFailure } from "@sifchain/sdk/src/utils/parseTxFailure";
+import { NativeDexClient } from "@sifchain/sdk/src/clients";
+import { getKeplrProvider, KeplrProvider } from "@sifchain/wallet-keplr";
+
 export type SifServiceContext = {
   sifAddrPrefix: string;
   sifApiUrl: string;
   sifChainId: string;
-  sifWsUrl: string;
   sifRpcUrl: string;
   keplrChainConfig: KeplrChainConfig;
-  assets: Asset[];
+  assets: IAsset[];
 };
+
 type HandlerFn<T> = (a: T) => void;
 
 /**
@@ -47,7 +45,6 @@ type HandlerFn<T> = (a: T) => void;
 export default function createSifService({
   sifAddrPrefix,
   sifApiUrl,
-  sifWsUrl,
   sifRpcUrl,
   keplrChainConfig,
   assets,
@@ -68,23 +65,22 @@ export default function createSifService({
   });
 
   const keplrProviderPromise = getKeplrProvider();
-  let keplrProvider: any;
-  let client: SifClient | null = null;
-  let polling: any;
-  let connecting: boolean = false;
 
-  const unSignedClient = new SifUnSignedClient(sifApiUrl, sifWsUrl, sifRpcUrl);
+  let keplrProvider: null | KeplrProvider;
+  let client: SifClient | null = null;
+  let connecting = false;
+
+  const unSignedClient = new SifUnSignedClient(sifApiUrl, sifRpcUrl);
 
   const supportedTokens = assets.filter(
     (asset) => asset.network === Network.SIFCHAIN,
   );
 
   async function createSifClientFromMnemonic(mnemonic: string) {
-    const wallet = await Secp256k1HdWallet.fromMnemonic(
-      mnemonic,
-      makeCosmoshubPath(0),
-      sifAddrPrefix,
-    );
+    const wallet = await Secp256k1HdWallet.fromMnemonic(mnemonic, {
+      hdPaths: [makeCosmoshubPath(0)],
+      prefix: sifAddrPrefix,
+    });
     const accounts = await wallet.getAccounts();
 
     const address = accounts.length > 0 ? accounts[0].address : "";
@@ -93,46 +89,9 @@ export default function createSifService({
       throw new Error("No address on sif account");
     }
 
-    return new SifClient(sifApiUrl, address, wallet, sifWsUrl, sifRpcUrl);
+    return new SifClient(sifApiUrl, address, wallet, sifRpcUrl);
   }
 
-  const triggerUpdate = debounce(async () => {
-    // try {
-    //   if (!polling) {
-    //     while (true) {
-    //       triggerUpdate();
-    //       await new Promise((r) => setTimeout(r, 15000));
-    //     }
-    //   }
-    //   await instance.setClient();
-    //   if (!client) {
-    //     state.connected = false;
-    //     state.address = "";
-    //     state.balances = [];
-    //     state.accounts = [];
-    //     state.log = "";
-    //     return;
-    //   }
-    //   state.connected = !!client;
-    //   state.address = client.senderAddress;
-    //   state.accounts = await client.getAccounts();
-    //   // Don't fetch balances here... thats the job of the new wallet store.
-    //   state.balances = []; // await instance.getBalance(client.senderAddress);
-    // } catch (e) {
-    //   console.error("Sifchain Wallet Connect Error", e);
-    //   if (!e.toString().toLowerCase().includes("no address found on chain")) {
-    //     state.connected = false;
-    //     state.address = "";
-    //     state.balances = [];
-    //     state.accounts = [];
-    //     state.log = "";
-    //     if (polling) {
-    //       clearInterval(polling);
-    //       polling = null;
-    //     }
-    //   }
-    // }
-  }, 100);
   const nativeDexClientPromise = NativeDexClient.connect(
     sifRpcUrl,
     sifApiUrl,
@@ -160,6 +119,10 @@ export default function createSifService({
       if (!keplrProvider) {
         keplrProvider = await keplrProviderPromise;
       }
+      if (!keplrProvider) {
+        throw new Error("Keplr provider not set");
+      }
+
       if (connecting || client) {
         return;
       }
@@ -181,13 +144,7 @@ export default function createSifService({
       if (!address) {
         throw "No address on sif account";
       }
-      client = new SifClient(
-        sifApiUrl,
-        address,
-        offlineSigner,
-        sifWsUrl,
-        sifRpcUrl,
-      );
+      client = new SifClient(sifApiUrl, address, offlineSigner, sifRpcUrl);
       connecting = false;
     },
 
@@ -197,7 +154,6 @@ export default function createSifService({
         if (!keplrProvider) {
           return;
         }
-        triggerUpdate();
       } catch (e) {
         console.log("initProvider", e);
       }
@@ -207,6 +163,11 @@ export default function createSifService({
       if (!keplrProvider) {
         keplrProvider = await keplrProviderPromise;
       }
+
+      if (!keplrProvider) {
+        throw new Error("Keplr provider not set");
+      }
+
       // open extension
       if (keplrProvider.experimentalSuggestChain) {
         try {
@@ -246,25 +207,19 @@ export default function createSifService({
 
     // Required solely for testing purposes
     async setPhrase(mnemonic: Mnemonic): Promise<Address> {
-      try {
-        if (!mnemonic) {
-          throw "No mnemonic. Can't generate wallet.";
-        }
-        client = await createSifClientFromMnemonic(mnemonic);
-        return client.senderAddress;
-      } catch (error) {
-        throw error;
+      if (!mnemonic) {
+        throw "No mnemonic. Can't generate wallet.";
       }
+      client = await createSifClientFromMnemonic(mnemonic);
+
+      return client.senderAddress;
     },
 
     async purgeClient() {
       // We currently delegate auth to Keplr so this is irrelevant
     },
 
-    async getBalance(
-      address?: Address,
-      asset?: Asset,
-    ): Promise<IAssetAmount[]> {
+    async getBalance(address?: Address): Promise<IAssetAmount[]> {
       if (!client) {
         throw "No client. Please sign in.";
       }
@@ -274,45 +229,9 @@ export default function createSifService({
 
       ensureSifAddress(address);
       return state.balances;
-      // return IBCService({
-      //   assets: assets,
-      //   chainConfigsByNetwork,
-      // })
-      //   .createWalletByNetwork(Network.SIFCHAIN)
-      //   .then((w) => {
-      //     state.connected = true;
-      //     state.accounts = w.addresses;
-      //     state.balances = w?.balances;
-      //     return w.balances;
-      //     // console.table(w.balances);
-      //   });
-      // try {
-      //   const account = await client.getAccount(address);
-      //   if (!account) {
-      //     throw "No Address found on chain";
-      //   } // todo handle this better
-      //   const supportedTokenSymbols = supportedTokens.map((s) => s.symbol);
-      //   return account.balance
-      //     .filter((balance) => supportedTokenSymbols.includes(balance.denom))
-      //     .map(({ amount, denom }) => {
-      //       const asset = supportedTokens.find(
-      //         (token) => token.symbol === denom || token.ibcDenom == denom,
-      //       )!; // will be found because of filter above
-      //       return AssetAmount(asset, amount);
-      //     })
-      //     .filter((balance) => {
-      //       // If an aseet is supplied filter for it
-      //       if (!asset) {
-      //         return true;
-      //       }
-      //       return balance.asset.symbol === asset.symbol;
-      //     });
-      // } catch (error) {
-      //   throw error;
-      // }
     },
 
-    async transfer(params: TxParams): Promise<any> {
+    async transfer(params: { amount: IAmount; asset: IAsset }): Promise<any> {
       if (!client) {
         throw "No client. Please sign in.";
       }

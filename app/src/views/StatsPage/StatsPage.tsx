@@ -46,7 +46,7 @@ export default defineComponent({
       },
       {
         name: "Pool TVL (USD)",
-        sortBy: "depth",
+        sortBy: "tvl",
         class: "min-w-[120px] text-right",
         ref: ref<HTMLElement>(),
       },
@@ -64,8 +64,8 @@ export default defineComponent({
         message: (
           <code class="text-xs">
             Pool reward APR = Total rewards distributed in current program /
-            (Total seconds passed in current program * Current pool balance) *
-            (Total seconds per year)
+            (Total blocks passed in current program * Current pool balance) *
+            (Total blocks per year)
           </code>
         ),
       },
@@ -209,7 +209,7 @@ export default defineComponent({
                           : `${prettyNumber(Math.abs(item.arbitrage))}%`}
                       </td>
                       <td class="text-mono text-right align-middle">
-                        ${prettyNumber(item.depth * 2)}
+                        ${prettyNumber(item.tvl)}
                       </td>
                       <td class="text-mono text-right align-middle">
                         ${prettyNumber(item.volume)}

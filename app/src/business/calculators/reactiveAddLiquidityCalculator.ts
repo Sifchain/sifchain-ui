@@ -31,7 +31,7 @@ export function useReactivePoolCalculator(input: {
   tokenBSymbol: Ref<string | null>;
   balances: Ref<IAssetAmount[]>;
   liquidityProvider: Ref<LiquidityProvider | null>;
-  asyncPooling: Ref<boolean>;
+  symmetricalPooling: Ref<boolean>;
   lastFocusedTokenField: Ref<"A" | "B" | null>;
   poolFinder: (a: IAsset | string, b: IAsset | string) => Ref<Pool> | null;
 }) {
@@ -313,7 +313,7 @@ export function useReactivePoolCalculator(input: {
     if (
       assetA.value &&
       assetB.value &&
-      input.asyncPooling.value &&
+      input.symmetricalPooling.value &&
       preExistingPool.value &&
       input.lastFocusedTokenField.value !== null
     ) {

@@ -721,7 +721,7 @@ export default {
       label: "crbrus",
       imageUrl:
         "https://assets.coingecko.com/coins/images/24509/small/AUdZyrmO_400x400.png?1647931023",
-      homeNetwork: "Cerberus",
+      homeNetwork: "cerberus",
     },
     {
       symbol: "uhuahua",
@@ -732,7 +732,7 @@ export default {
       label: "huahua",
       imageUrl:
         "https://assets.coingecko.com/coins/images/15651/small/chihua.PNG?1621476950",
-      homeNetwork: "Chihuahua",
+      homeNetwork: "chihuahua",
     },
     {
       symbol: "ucmdx",
@@ -743,7 +743,7 @@ export default {
       label: "cmdx",
       imageUrl:
         "https://assets.coingecko.com/coins/images/21540/small/_ooQky6B_400x400.jpg?1639447618",
-      homeNetwork: "Comdex",
+      homeNetwork: "comdex",
     },
     {
       symbol: "uxki",
@@ -754,7 +754,7 @@ export default {
       label: "xki",
       imageUrl:
         "https://assets.coingecko.com/coins/images/15694/small/xki-color.png?1621569714",
-      homeNetwork: "Ki",
+      homeNetwork: "ki",
     },
     {
       symbol: "nanolike",
@@ -765,7 +765,7 @@ export default {
       label: "nanolike",
       imageUrl:
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
-      homeNetwork: "Likecoin",
+      homeNetwork: "likecoin",
     },
     {
       symbol: "ustarx",
@@ -776,7 +776,7 @@ export default {
       label: "starx",
       imageUrl:
         "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
-      homeNetwork: "Stargaze",
+      homeNetwork: "stargaze",
     },
     {
       address: "0xa47c8bf37f92abed4a126bda807a7b7498661acd",

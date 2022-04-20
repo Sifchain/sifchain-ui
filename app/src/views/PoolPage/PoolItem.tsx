@@ -99,27 +99,31 @@ export default defineComponent({
         : [];
     },
     myPoolValue(): string | undefined {
-      if (!this.accountPool || !this.poolStat) return;
+      if (
+        !this.accountPool ||
+        !this.poolStat ||
+        this.rowanPrice.isLoading.value
+      )
+        return;
 
       const externalAmount = AssetAmount(
         this.accountPool.lp.asset,
         this.accountPool.lp.externalAmount,
-      );
+      ).toDerived();
       const nativeAmount = AssetAmount(
         useChains().get(Network.SIFCHAIN).nativeAsset,
         this.accountPool.lp.nativeAmount,
+      ).toDerived();
+
+      const nativeDollarAmount = nativeAmount.multiply(
+        this.rowanPrice.data.value ?? 0,
       );
-      const formattedExternal = formatAssetAmount(externalAmount);
-      const formattedNative = formatAssetAmount(nativeAmount);
+      const externalDollarAmount = externalAmount.multiply(
+        this.poolStat.priceToken ?? 0,
+      );
 
-      if (this.rowanPrice.isLoading.value) return "";
-
-      console.log(this.poolStat);
       return prettyNumber(
-        parseFloat(formattedExternal) *
-          parseFloat(this.poolStat.priceToken?.toString() || "0") +
-          parseFloat(formattedNative) *
-            parseFloat(this.rowanPrice.data.value || "0"),
+        nativeDollarAmount.add(externalDollarAmount).toNumber(),
       );
     },
     externalAmount(): IAssetAmount {
@@ -169,7 +173,9 @@ export default defineComponent({
         [
           "Rewards paid to the pool for current period",
           <span class="flex items-center font-mono">
-            {this.poolStat?.rewardPeriodNativeDistributed.toLocaleString()}
+            {typeof this.poolStat?.rewardPeriodNativeDistributed === "number"
+              ? (this.poolStat?.rewardPeriodNativeDistributed).toLocaleString()
+              : "..."}
             <TokenIcon
               assetValue={useNativeChain().nativeAsset}
               size={14}
@@ -234,18 +240,10 @@ export default defineComponent({
           </span>,
         ],
         [
-          "Pool TVL (USD)",
-          <span class="font-mono">
-            {this.$props.poolStat?.poolDepth != null
-              ? `${prettyNumber(this.$props.poolStat?.poolDepth * 2)}`
-              : "..."}
-          </span>,
-        ],
-        [
           "Trade Volume 24hr",
           <span class="font-mono">
-            {this.$props.poolStat?.volume != null
-              ? prettyNumber(this.$props.poolStat?.volume ?? 0)
+            {typeof this.$props.poolStat?.volume === "number"
+              ? prettyNumber(this.$props.poolStat?.volume)
               : "..."}
           </span>,
         ],
@@ -302,6 +300,21 @@ export default defineComponent({
               </Tooltip>
             ))}
           </div>
+
+          <div
+            class={[
+              COLUMNS_LOOKUP.poolTvl.class,
+              "flex items-center font-mono",
+            ]}
+          >
+            {typeof this.$props.poolStat?.poolTVL === "number"
+              ? this.$props.poolStat.poolTVL.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })
+              : "..."}
+          </div>
+
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
@@ -309,6 +322,7 @@ export default defineComponent({
               ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
+
           <div
             class={[
               COLUMNS_LOOKUP.userShare.class,
@@ -364,7 +378,7 @@ export default defineComponent({
               {this.unlock !== undefined && (
                 <section>
                   <header class="mt-2 mb-0.5">
-                    <p class="text-md font-bold">Unlocking request</p>
+                    <p class="text-md font-bold">Unbonding request</p>
                   </header>
                   <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
                     <div class={tableItemClass}>

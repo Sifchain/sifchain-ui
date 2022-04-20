@@ -1,14 +1,15 @@
-import { OfflineSigner } from "@cosmjs/launchpad";
 import { Window as KeplrWindow, Keplr } from "@keplr-wallet/types";
+
 type WindowWithPossibleKeplr = typeof window & KeplrWindow;
 
 // Mock out Keplr roughly. TODO import types
 
-type provider = Keplr;
+export type KeplrProvider = Keplr;
+
 let numChecks = 0;
 
 // Detect mossible keplr provider from browser
-export async function getKeplrProvider(): Promise<provider | null> {
+export async function getKeplrProvider(): Promise<KeplrProvider | null> {
   const window = globalThis.window || global;
   if (typeof window === "undefined") return null;
 

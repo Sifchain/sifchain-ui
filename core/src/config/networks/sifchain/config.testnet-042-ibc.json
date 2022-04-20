@@ -1,7 +1,6 @@
 {
   "sifAddrPrefix": "sif",
   "sifApiUrl": "https://api-testnet-042-ibc.sifchain.finance",
-  "sifWsUrl": "wss://rpc-testnet-042-ibc.sifchain.finance/websocket",
   "sifRpcUrl": "https://rpc-testnet-042-ibc.sifchain.finance",
   "sifChainId": "sifchain-testnet-042-ibc",
   "web3Provider": "metamask",

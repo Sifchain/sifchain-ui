@@ -1,4 +1,4 @@
-likecoin-testnet.tsimport { Network, IBCChainConfig } from "../../../entities";
+import { Network, IBCChainConfig } from "../../../entities";
 
 export const LIKECOIN_TESTNET: IBCChainConfig = {
   network: Network.LIKECOIN,

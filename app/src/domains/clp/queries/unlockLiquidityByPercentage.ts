@@ -28,11 +28,11 @@ export const useUnlockLiquidityByPercentage = (
 
     const externalAssetFractionalDigits =
       tokenEntries.data.value?.registry?.entries
-        .find((x) => x.baseDenom === lp?.asset?.symbol)
+        .find((x) => x.denom === lp?.asset?.symbol)
         ?.decimals.toNumber();
     const nativeAssetFractionalDigits =
       tokenEntries.data.value?.registry?.entries
-        .find((x) => x.baseDenom === config.nativeAsset.symbol)
+        .find((x) => x.denom === config.nativeAsset.symbol)
         ?.decimals.toNumber();
 
     const roundedUnits = new BigNumber(percentage.value)

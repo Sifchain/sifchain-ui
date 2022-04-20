@@ -11,10 +11,11 @@ import {
   StdTx,
   BroadcastTxResult,
 } from "@cosmjs/launchpad";
+import { CosmosClient } from "@cosmjs/launchpad";
 import { fromHex } from "@cosmjs/encoding";
 import { Uint53 } from "@cosmjs/math";
+
 import { SifUnSignedClient } from "./SifUnsignedClient";
-import { CosmosClient } from "@cosmjs/launchpad";
 
 export class Compatible42CosmosClient extends CosmosClient {
   // NOTE(59023g): in 0.42, the result.logs array items do not include `msg_index` and
@@ -128,7 +129,6 @@ export class SifClient extends Compatible42SigningCosmosClient {
     apiUrl: string,
     senderAddress: string,
     signer: OfflineSigner,
-    wsUrl: string,
     rpcUrl: string,
     gasPrice?: GasPrice,
     gasLimits?: Partial<GasLimits<CosmosFeeTable>>,
@@ -138,12 +138,7 @@ export class SifClient extends Compatible42SigningCosmosClient {
 
     this.rpcUrl = rpcUrl;
     this.wallet = signer;
-    this.unsignedClient = new SifUnSignedClient(
-      apiUrl,
-      wsUrl,
-      rpcUrl,
-      broadcastMode,
-    );
+    this.unsignedClient = new SifUnSignedClient(apiUrl, rpcUrl, broadcastMode);
   }
 
   getRpcUrl() {

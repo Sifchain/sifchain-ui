@@ -1,4 +1,4 @@
-import { TxHash, TxParams, Address, Asset, IAssetAmount } from "../entities";
+import { TxHash, Address, IAsset, IAssetAmount } from "@sifchain/sdk";
 
 type Msg = { type: string; value: any }; // make entity
 
@@ -15,26 +15,12 @@ export type IWalletService = {
   onProviderNotFound(handler: () => void): () => void;
   onChainIdDetected(handler: (chainId: string) => void): () => void;
   isConnected(): boolean;
-  getSupportedTokens: () => Asset[];
+  getSupportedTokens: () => IAsset[];
   connect(): Promise<void>;
   disconnect(): Promise<void>;
-  transfer(params: TxParams): Promise<TxHash>;
-  getBalance(address?: Address, asset?: Asset): Promise<IAssetAmount[]>;
+  transfer(params: any): Promise<TxHash>;
+  getBalance(address?: Address, asset?: IAsset): Promise<IAssetAmount[]>;
   signAndBroadcast(msg: Msg, memo?: string): Promise<any>;
   setPhrase(phrase: string): Promise<Address>;
   purgeClient(): void;
-
-  // FOLLOWING ARE YTI:
-
-  // setNetwork(net: Network): void
-  // getNetwork(): Network
-
-  // getExplorerAddressUrl(address: Address): string
-  // getExplorerTxUrl(txID: string): string
-  // getTransactions(params?: TxHistoryParams): Promise<TxsPage>
-
-  // getFees(): Promise<Fees>
-
-  // transfer(params: TxParams): Promise<TxHash>
-  // deposit(params: TxParams): Promise<TxHash>
 };

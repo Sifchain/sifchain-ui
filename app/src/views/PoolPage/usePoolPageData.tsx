@@ -25,6 +25,7 @@ export type PoolPageColumnId =
   | "apy"
   | "gainLoss"
   | "rewardApr"
+  | "poolTvl"
   | "userShare"
   | "userValue";
 
@@ -51,8 +52,13 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[388px] text-left justify-start",
+    class: "w-[320px] text-left justify-start",
     sortable: true,
+  },
+  {
+    id: "poolTvl",
+    name: "Pool TVL",
+    class: "w-[168px] text-right justify-end",
   },
   {
     id: "apy",
@@ -62,8 +68,8 @@ export const COLUMNS: PoolPageColumn[] = [
     help: (
       <code class="text-xs">
         Pool reward APR = Total rewards distributed in current program / (Total
-        seconds passed in current program * Current pool balance) * (Total
-        seconds per year)
+        blocks passed in current program * Current pool balance) * (Total blocks
+        per year)
       </code>
     ),
   },

@@ -16,7 +16,8 @@ export const SwapDetails = defineComponent({
   setup: (props) => {
     const priceRatios = computed(() => {
       if (!props.priceRatio?.value || !Number(props.priceRatio.value)) {
-        return [(0).toFixed(6), (0).toFixed(6)] as const;
+        const zero = "0.000000";
+        return [zero, zero] as const;
       }
 
       const ratio = parseFloat(props.priceRatio.value || "0");
