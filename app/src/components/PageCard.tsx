@@ -50,7 +50,7 @@ export default defineComponent({
         <div
           key="view-layer"
           class={[
-            "relative max-w-3xl flex-col items-center justify-start md:rounded-lg",
+            "relative max-w-4xl flex-col items-center justify-start md:rounded-lg",
             "bg-black p-4 text-white shadow-2xl transition-all",
             props.class,
           ]}
