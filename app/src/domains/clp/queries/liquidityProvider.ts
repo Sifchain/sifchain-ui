@@ -126,7 +126,7 @@ export const useLiquidityProvidersQuery = () => {
         liquidityProviderData: liquidityProviders.liquidityProviderData.map(
           (x) => {
             const externalAssetTokenEntry = tokenEntries?.find(
-              (y) => y.baseDenom === x.liquidityProvider?.asset?.symbol,
+              (y) => y.denom === x.liquidityProvider?.asset?.symbol,
             );
             return {
               ...x,
