@@ -29,7 +29,7 @@ export default defineComponent({
           {bannerMessageRef.value && (
             <div
               class={clsx(
-                "bg-info-base/60  z-10 p-2 font-semibold text-white backdrop-blur-md",
+                "bg-info-base/60 z-10 p-2 font-semibold text-white backdrop-blur-md",
                 {
                   "absolute left-0 right-0 md:p-4":
                     !bannerMessageRef.value?.meta?.fullScreen,

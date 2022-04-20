@@ -51,95 +51,103 @@ export default defineComponent({
 
     return () => (
       <Layout>
-        <PageCard heading="Swap" iconName="navigation/swap" class="max-w-xs">
-          <TokenInputGroup
-            onSelectAsset={(asset) => {
-              data.fromSymbol.value = asset.symbol;
-            }}
-            class="-mb-2 overflow-hidden"
-            tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
-            onFocus={() => data.handleFromFocused()}
-            onBlur={() => data.handleBlur()}
-            heading="From"
-            onSetToMaxAmount={() => {
-              data.handleFromMaxClicked();
-            }}
-            onInputAmount={(val) => {
-              data.fromAmount.value = val;
-            }}
-            amount={data.fromAmount.value}
-            asset={data.fromAsset.value}
-            formattedBalance={data.formattedFromTokenBalance.value || undefined}
-          />
-          <div
-            key="button"
-            class="relative flex w-full items-center justify-center overflow-hidden"
-          >
-            <button
-              class="actidve:rotate-180 bg-gray-base border-gray-input_outline hover:border-accent-base relative box-content flex origin-center items-center rounded-[10px] border-[1px] py-[4px] px-[9px]"
-              key="button"
-              onClick={() => {
-                data.handleArrowClicked();
-                isInverted.value = !isInverted.value;
-              }}
-            >
-              <div
-                style={{
-                  transform: `scaleY(${isInverted.value ? -1 : 1})`,
+        <PageCard heading="Swap" iconName="navigation/swap">
+          <div class="grid gap-4">
+            <div class="grid gap-2">
+              <TokenInputGroup
+                onSelectAsset={(asset) => {
+                  data.fromSymbol.value = asset.symbol;
                 }}
+                class="-mb-4 overflow-hidden"
+                tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
+                onFocus={() => data.handleFromFocused()}
+                onBlur={() => data.handleBlur()}
+                heading="From"
+                onSetToMaxAmount={() => {
+                  data.handleFromMaxClicked();
+                }}
+                onInputAmount={(val) => {
+                  data.fromAmount.value = val;
+                }}
+                amount={data.fromAmount.value}
+                asset={data.fromAsset.value}
+                formattedBalance={
+                  data.formattedFromTokenBalance.value || undefined
+                }
+              />
+              <div
+                key="button"
+                class="relative z-10 flex w-full scale-125 items-center justify-center overflow-hidden"
               >
-                <AssetIcon
-                  vectorRef={swapIcon}
-                  size={22}
-                  class="text-accent-base"
-                  icon="navigation/swap"
-                />
+                <button
+                  class="actidve:rotate-180 bg-gray-base border-gray-input_outline hover:border-accent-base relative box-content flex origin-center items-center rounded-[10px] border-[1px] py-[4px] px-[9px]"
+                  key="button"
+                  onClick={() => {
+                    data.handleArrowClicked();
+                    isInverted.value = !isInverted.value;
+                  }}
+                >
+                  <div
+                    style={{
+                      transform: `scaleY(${isInverted.value ? -1 : 1})`,
+                    }}
+                  >
+                    <AssetIcon
+                      vectorRef={swapIcon}
+                      size={22}
+                      class="text-accent-base"
+                      icon="navigation/swap"
+                    />
+                  </div>
+                </button>
               </div>
-            </button>
+              <TokenInputGroup
+                onSelectAsset={(asset) => {
+                  data.toSymbol.value = asset.symbol;
+                }}
+                class="-mt-4 overflow-hidden"
+                tokenIconUrl={data.toTokenIconUrl.value ?? ""}
+                onFocus={data.handleToFocused}
+                onBlur={data.handleBlur}
+                heading="To"
+                onInputAmount={(val) => {
+                  data.toAmount.value = val;
+                }}
+                amount={data.toAmount.value}
+                asset={data.toAsset.value}
+                formattedBalance={
+                  data.formattedToTokenBalance.value || undefined
+                }
+              />
+            </div>
+
+            <SlippageTolerance
+              slippage={data.slippage.value || "0"}
+              onUpdate={(v) => {
+                data.slippage.value = v || "0";
+              }}
+            />
+            <SwapDetails
+              fromAsset={data.fromAsset}
+              toAsset={data.toAsset}
+              priceRatio={data.priceRatio}
+              priceImpact={(data.priceImpact.value ?? "") + "%"}
+              liquidityProviderFee={data.providerFee.value ?? ""}
+              minimumReceived={data.minimumReceived.value}
+            />
+            <Button.CallToAction
+              onClick={() => {
+                if (!data.nextStepAllowed.value) {
+                  return appWalletPicker.show();
+                }
+                data.handleNextStepClicked();
+              }}
+              disabled={!data.nextStepAllowed.value}
+            >
+              {data.nextStepMessage.value}
+            </Button.CallToAction>
+            <RouterView />
           </div>
-          <TokenInputGroup
-            onSelectAsset={(asset) => {
-              data.toSymbol.value = asset.symbol;
-            }}
-            class="mt-[-12px] overflow-hidden"
-            tokenIconUrl={data.toTokenIconUrl.value ?? ""}
-            onFocus={data.handleToFocused}
-            onBlur={data.handleBlur}
-            heading="To"
-            onInputAmount={(val) => {
-              data.toAmount.value = val;
-            }}
-            amount={data.toAmount.value}
-            asset={data.toAsset.value}
-            formattedBalance={data.formattedToTokenBalance.value || undefined}
-          />
-          <SlippageTolerance
-            slippage={data.slippage.value || "0"}
-            onUpdate={(v) => {
-              data.slippage.value = v || "0";
-            }}
-          />
-          <SwapDetails
-            fromAsset={data.fromAsset}
-            toAsset={data.toAsset}
-            priceRatio={data.priceRatio}
-            priceImpact={(data.priceImpact.value ?? "") + "%"}
-            liquidityProviderFee={data.providerFee.value ?? ""}
-            minimumReceived={data.minimumReceived.value}
-          />
-          <Button.CallToAction
-            onClick={() => {
-              if (!data.nextStepAllowed.value) {
-                return appWalletPicker.show();
-              }
-              data.handleNextStepClicked();
-            }}
-            disabled={!data.nextStepAllowed.value}
-            class="mt-[10px]"
-          >
-            {data.nextStepMessage.value}
-          </Button.CallToAction>
-          <RouterView />
         </PageCard>
       </Layout>
     );
