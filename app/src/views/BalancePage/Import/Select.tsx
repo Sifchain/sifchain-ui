@@ -198,10 +198,10 @@ export default defineComponent({
         onClose={exitImport}
         showClose
       >
-        <section class="bg-gray-base p-4 rounded">
+        <section class="bg-gray-base rounded p-4">
           <div class="w-full">
             <div class="flex w-full">
-              <div class="block flex-1 mr-[5px]">
+              <div class="mr-[5px] block flex-1">
                 Network
                 <SelectDropdown
                   key={optionsRef.value.map((o) => o.value).join("")}
@@ -223,30 +223,30 @@ export default defineComponent({
                   }}
                 >
                   <Button.Select
-                    class="w-full relative capitalize pl-[16px] mt-[10px]"
+                    class="relative mt-[10px] w-full pl-[16px] capitalize"
                     active={networkOpenRef.value}
                   >
                     {useChains().get(networkValue.value).displayName}
                   </Button.Select>
                 </SelectDropdown>
               </div>
-              <div class="block flex-1 ml-[5px]">
+              <div class="ml-[5px] block flex-1">
                 Token
                 <Button.Select
-                  class="w-full mt-[10px]"
+                  class="mt-[10px] w-full"
                   active={selectIsOpen.value}
                   onClick={(e) => {
                     e.stopPropagation();
                     selectIsOpen.value = !selectIsOpen.value;
                   }}
                 >
-                  <div class="flex justify-between items-center">
+                  <div class="flex items-center justify-between">
                     <TokenNetworkIcon
                       size={38}
                       key={boundAsset.value?.symbol || ""}
                       asset={boundAsset}
                     />
-                    <div class="font-sans ml-[8px] text-[18px] font-medium text-white uppercase">
+                    <div class="ml-[8px] font-sans text-[18px] font-medium uppercase text-white">
                       {tokenRef.value?.asset?.displaySymbol ||
                         tokenRef.value?.asset?.symbol}
                     </div>
@@ -271,10 +271,10 @@ export default defineComponent({
             />
           </div>
 
-          <div class="h-[40px] flex items-end justify-end">
+          <div class="flex h-[40px] items-end justify-end">
             {!!tokenRef.value && (
               <span
-                class="text-base opacity-50 hover:text-accent-base cursor-pointer flex items-center"
+                class="hover:text-accent-base flex cursor-pointer items-center text-base opacity-50"
                 onClick={handleSetMax}
               >
                 Balance:{" "}
@@ -323,13 +323,13 @@ export default defineComponent({
           />
         </section>
 
-        <section class="bg-gray-base p-4 rounded mt-[10px]">
+        <section class="bg-gray-base mt-[10px] rounded p-4">
           <div class="text-white">Sifchain Recipient Address</div>
-          <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
+          <div class="border-gray-input_outline bg-gray-input relative mt-[10px] h-[54px] rounded border border-solid focus-within:border-white">
             <input
               readonly
               value={store.wallet.get(Network.SIFCHAIN).address}
-              class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
+              class="text-md absolute top-0 left-0 h-full w-full bg-transparent p-[16px] font-mono outline-none"
               onClick={(e) => {
                 (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
               }}
@@ -341,7 +341,7 @@ export default defineComponent({
           {!!buttonRef.value.icon && (
             <AssetIcon
               icon={buttonRef.value.icon}
-              class="w-[20px] h-[20px] mr-[4px]"
+              class="mr-[4px] h-[20px] w-[20px]"
             />
           )}{" "}
           {buttonRef.value.name}

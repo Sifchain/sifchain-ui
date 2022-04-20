@@ -22,7 +22,7 @@ export default defineComponent({
         onClose={exitImport.value}
         showClose
       >
-        <div class="p-4 bg-gray-base rounded-lg">
+        <div class="bg-gray-base rounded-lg p-4">
           <Form.Details details={detailsRef.value} />
         </div>
         {importDraft.value.network === Network.ETHEREUM && (

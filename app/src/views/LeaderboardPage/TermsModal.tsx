@@ -33,7 +33,7 @@ export default defineComponent({
       >
         <p class="text-md">
           <a
-            class="underline text-accent-base"
+            class="text-accent-base underline"
             href="https://forms.gle/CKUEtz7P4H2PCnJd9"
             rel="noopener noreferrer"
             target="_blank"
@@ -48,12 +48,12 @@ export default defineComponent({
         </p>
         <br />
         <label
-          class="flex items-center px-[16px] font-medium h-[48px] cursor-pointer"
+          class="flex h-[48px] cursor-pointer items-center px-[16px] font-medium"
           onClick={() => this.agree()}
         >
           <div
             class={[
-              "w-[16px] h-[16px] transition-all border border-solid border-2 rounded-sm border-accent-base transition-all duration-500 mr-[6px] flex items-center justify-center",
+              "border-accent-base mr-[6px] flex h-[16px] w-[16px] items-center justify-center rounded-sm border border-solid transition-all duration-500",
             ]}
           >
             {this.isAgreed && "✓"}

@@ -1,4 +1,4 @@
-import { defineComponent, PropType, computed } from "vue";
+import { defineComponent, PropType, computed, ref } from "vue";
 import cx from "clsx";
 import { RouterLink } from "vue-router";
 import { Network } from "@sifchain/sdk";
@@ -16,10 +16,6 @@ import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 
-export const SYMBOL_COLUMN_WIDTH = 130;
-
-export type BalanceRowActionType = "import" | "export" | "pool" | "swap";
-
 export default defineComponent({
   name: "BalanceRow",
   props: {
@@ -27,25 +23,25 @@ export default defineComponent({
       type: Object as PropType<TokenListItem>,
       required: true,
     },
-    expandedSymbol: {
-      type: String,
+    isExpanded: {
+      type: Boolean,
     },
-    onSetExpandedSymbol: {
+    isMasked: {
+      type: Boolean,
+    },
+    onExpand: {
       type: Function as PropType<(symbol: string) => void>,
       required: true,
     },
   },
   setup(props) {
-    const expandedRef = computed(
-      () => props.expandedSymbol === props.tokenItem.asset.symbol,
-    );
-    const showMaskRef = computed(
-      () => props.expandedSymbol && !expandedRef.value,
-    );
-    const isNoBalanceRef = computed(
+    const hasNoBalance = computed(
       () => props.tokenItem.amount.amount.toString(false) === "0",
     );
-    const assetRef = computed(() => props.tokenItem.asset);
+
+    const { chainConfig, displayName } = useChains().get(
+      props.tokenItem.asset.network,
+    );
 
     // Always render all buttons, expandedRef.value or not, they will just be hidden.
     const buttonsRef = computed(() => [
@@ -54,17 +50,13 @@ export default defineComponent({
         icon: "interactive/arrow-down",
         name: "Import",
         visible: true,
-        help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
-          .underMaintenance
-          ? `${
-              useChains().get(props.tokenItem.asset.homeNetwork).displayName
-            } Connection Under Maintenance`
+        help: chainConfig.underMaintenance
+          ? `${displayName} Connection Under Maintenance`
           : null,
         props: {
           disabled:
             props.tokenItem.asset.decommissioned ||
-            useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
-              .underMaintenance,
+            chainConfig.underMaintenance,
           replace: false,
           to: getImportLocation("select", {
             symbol: props.tokenItem.asset.symbol,
@@ -75,7 +67,7 @@ export default defineComponent({
           }),
         },
       },
-      isNoBalanceRef.value
+      hasNoBalance.value
         ? {
             tag: "button",
             icon: "interactive/arrow-up",
@@ -88,11 +80,8 @@ export default defineComponent({
             icon: "interactive/arrow-up",
             name: "Export",
             visible: true,
-            help: useChains().get(props.tokenItem.asset.homeNetwork).chainConfig
-              .underMaintenance
-              ? `${
-                  useChains().get(props.tokenItem.asset.homeNetwork).displayName
-                } Connection Under Maintenance`
+            help: chainConfig.underMaintenance
+              ? `${displayName} Connection Under Maintenance`
               : null,
             props: {
               disabled: useChains().get(props.tokenItem.asset.homeNetwork)
@@ -111,7 +100,7 @@ export default defineComponent({
         icon: "navigation/pool",
         name: "Pool",
         id: "pool",
-        visible: expandedRef.value,
+        visible: props.isExpanded,
         tag: RouterLink,
         props: {
           disabled: props.tokenItem.asset.decommissioned,
@@ -131,7 +120,7 @@ export default defineComponent({
         name: "Swap",
         id: "swap",
         tag: RouterLink,
-        visible: expandedRef.value,
+        visible: props.isExpanded,
         props: {
           disabled: props.tokenItem.asset.decommissioned,
           to: {
@@ -143,21 +132,24 @@ export default defineComponent({
     ]);
 
     return () => (
-      <tr
-        onClick={(e) => {
-          if (showMaskRef.value) {
-            props.onSetExpandedSymbol("");
+      <div
+        onClick={() => {
+          if (props.isMasked) {
+            props.onExpand("");
           }
         }}
         class={cx(
-          "list-complete-item align-middle h-8 border-solid border-gray-200 border-b border-opacity-80 last:border-transparent hover:opacity-80 relative overflow-hidden group",
-          showMaskRef.value && "opacity-40",
+          "list-complete-item flex h-8 items-center border-b border-solid border-gray-200 border-opacity-80 align-middle",
+          "group relative overflow-hidden last:border-transparent hover:opacity-80",
+          {
+            "opacity-40": props.isMasked,
+          },
         )}
       >
-        <td class="text-left align-middle w-[120px] group-hover:opacity-80">
+        {/* token info */}
+        <div class="w-[200px] text-left align-middle group-hover:opacity-80">
           <div class="flex items-center">
-            <TokenNetworkIcon asset={assetRef} />
-            {/* <img class="w-4 h-4" src={iconUrlRef.value} /> */}
+            <TokenNetworkIcon asset={ref(props.tokenItem.asset)} />
             <span class="ml-1 uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>
@@ -168,21 +160,20 @@ export default defineComponent({
                 </Button.InlineHelp>
               )}
           </div>
-        </td>
-        {/* update */}
-        <td class="text-right align-middle min-w-[160px]">
-          <div class="inline-flex items-center relative">
+        </div>
+        {/* balance */}
+        <div class="flex-1 text-right align-middle">
+          <div class="relative inline-flex items-center">
             <span class="group-hover:opacity-80 group-hover:delay-75">
-              {isNoBalanceRef.value
+              {hasNoBalance.value
                 ? props.tokenItem.pendingImports.length ||
                   props.tokenItem.pendingExports.length
                   ? "..."
                   : null
                 : formatAssetAmount(props.tokenItem.amount)}
             </span>
-
             <div
-              class="absolute top-50% left-[100%] ml-[4px] flex items-center"
+              class="top-50% absolute left-[100%] ml-[4px] flex items-center"
               key={JSON.stringify(props.tokenItem.pendingImports)}
             >
               {props.tokenItem.pendingImports.length > 0 && (
@@ -195,7 +186,7 @@ export default defineComponent({
                   }
                   maxWidth={"none"}
                   content={
-                    <div class="text-left w-[450px]">
+                    <div class="w-[450px] text-left">
                       <p class="mb-1">
                         You have the following pending import transactions.
                         {props.tokenItem.pendingImports.some(
@@ -217,7 +208,7 @@ export default defineComponent({
                           </>
                         )}
                       </p>
-                      <ul class="list-disc list-inside">
+                      <ul class="list-inside list-disc">
                         {props.tokenItem.pendingImports.map(({ bridgeTx }) => (
                           <li>
                             Import {formatAssetAmount(bridgeTx.assetAmount)}{" "}
@@ -227,7 +218,7 @@ export default defineComponent({
                               ` (${bridgeTx.confirmCount} / ${bridgeTx.completionConfirmCount})`}{" "}
                             (
                             <a
-                              class="font-normal text-accent-base hover:text-underline"
+                              class="text-accent-base hover:text-underline font-normal"
                               href={bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
                                 bridgeTx.hash,
                               )}
@@ -248,7 +239,7 @@ export default defineComponent({
                     <AssetIcon
                       size={20}
                       icon="interactive/arrow-down"
-                      class="text-gray-800 animate-pulse-slow"
+                      class="animate-pulse-slow text-gray-800"
                     />
                   </div>
                 </Tooltip>
@@ -264,21 +255,21 @@ export default defineComponent({
                   }
                   maxWidth={"none"}
                   content={
-                    <div class="text-left w-[400px]">
+                    <div class="w-[400px] text-left">
                       <p class="mb-1">
                         You have the following pending export transactions. The
                         exported tokens will usually be available for use on
                         their target chain within 10 minutes, sometimes upwards
                         of 60 minutes.
                       </p>
-                      <ul class="list-disc list-inside">
+                      <ul class="list-inside list-disc">
                         {props.tokenItem.pendingExports.map(({ bridgeTx }) => (
                           <li>
                             Export {formatAssetAmount(bridgeTx.assetAmount)}{" "}
                             {bridgeTx.assetAmount.displaySymbol.toUpperCase()}{" "}
                             to {bridgeTx.toChain.displayName} (
                             <a
-                              class="font-normal text-accent-base hover:text-underline"
+                              class="text-accent-base hover:text-underline font-normal"
                               href={bridgeTx.fromChain.getBlockExplorerUrlForTxHash(
                                 bridgeTx.hash,
                               )}
@@ -299,15 +290,16 @@ export default defineComponent({
                     <AssetIcon
                       size={20}
                       icon="interactive/arrow-up"
-                      class="text-gray-800 animate-pulse-slow"
+                      class="animate-pulse-slow text-gray-800"
                     />
                   </div>
                 </Tooltip>
               )}
             </div>
           </div>
-        </td>
-        <td class="text-right align-middle w-[420px]">
+        </div>
+        {/* controls */}
+        <div class={["min-w-[360px] flex-1 text-right align-middle"]}>
           <div class="inline-flex items-center">
             {buttonsRef.value
               .filter((definition) => definition.visible)
@@ -315,7 +307,7 @@ export default defineComponent({
                 const button = (
                   <Button.Inline
                     key={definition.name}
-                    class="mr-1 animation-fade-in"
+                    class="animation-fade-in mr-1"
                     icon={definition.icon as IconName}
                     {...definition.props}
                   >
@@ -330,37 +322,37 @@ export default defineComponent({
                 );
               })}
             <button
-              key={"expanded-" + expandedRef.value}
+              key={"expanded-" + props.isExpanded}
               class={cx(
-                "order-last w-5 h-5 items-center justify-center cursor-pointer rounded-full transition-all",
-                !expandedRef.value && "bg-transparent",
-                expandedRef.value && "bg-gray-base",
+                "order-last h-5 w-5 cursor-pointer items-center justify-center rounded-full transition-all",
+                !props.isExpanded && "bg-transparent",
+                props.isExpanded && "bg-gray-base",
               )}
               onClick={() => {
-                props.onSetExpandedSymbol(
-                  expandedRef.value ? "" : props.tokenItem.asset.symbol,
+                props.onExpand(
+                  props.isExpanded ? "" : props.tokenItem.asset.symbol,
                 );
               }}
             >
-              {expandedRef.value ? (
+              {props.isExpanded ? (
                 <div style={{ transform: "rotate(-90deg)" }}>
                   <AssetIcon
                     active
                     icon="interactive/chevron-down"
-                    class="w-[22px] h-[22px] animation-fade-in"
+                    class="animation-fade-in h-[22px] w-[22px]"
                   />
                 </div>
               ) : (
                 <AssetIcon
                   active
                   icon="interactive/ellipsis"
-                  class="w-[26px] h-[26px] fill-current text-accent-base animation-fade-in"
+                  class="text-accent-base animation-fade-in h-[26px] w-[26px] fill-current"
                 />
               )}
             </button>
           </div>
-        </td>
-      </tr>
+        </div>
+      </div>
     );
   },
 });

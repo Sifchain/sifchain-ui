@@ -59,3 +59,5 @@ export const TokenIcon = defineComponent({
     );
   },
 });
+
+export default TokenIcon;
