@@ -124,7 +124,7 @@ export const convertToCamelCaseDeep = (obj: any): any => {
   }
   const newObj: any = {};
   for (let prop in obj) {
-    newObj[inflection.underscore(prop)] = convertToCamelCaseDeep(obj[prop]);
+    newObj[inflection.camelize(prop, true)] = convertToCamelCaseDeep(obj[prop]);
   }
   return newObj;
 };
