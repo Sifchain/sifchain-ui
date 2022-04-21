@@ -3,7 +3,6 @@ import { OfflineSigner } from "@cosmjs/proto-signing";
 import { assertIsDeliverTxSuccess } from "@cosmjs/stargate";
 import { SifSigningStargateClient } from "clients";
 import { PoolsReq } from "../../generated/proto/sifnode/clp/v1/querier";
-import { SifchainEncodeObjectRecord } from "./messages";
 import { createQueryClient } from "./queryClient";
 
 describe("Sifchain's client", async () => {
@@ -35,24 +34,24 @@ describe("Sifchain's client", async () => {
       {} as OfflineSigner, // i.e. from Keplr
     );
 
-    const message: SifchainEncodeObjectRecord["MsgAddLiquidity"] = {
-      typeUrl: "/sifnode.clp.v1.MsgAddLiquidity",
-      value: {
-        signer: "signerAddress",
-        nativeAssetAmount: Decimal.fromUserInput(
-          "44",
-          rowan.decimals.toNumber(),
-        ).toString(),
-        externalAssetAmount: Decimal.fromUserInput(
-          "68.5464",
-          juno.decimals.toNumber(),
-        ).toString(),
-      },
-    };
-
     const broadcastResponse = await client.signAndBroadcast(
       "someAddress",
-      [message],
+      [
+        {
+          typeUrl: "/sifnode.clp.v1.MsgAddLiquidity",
+          value: {
+            signer: "signerAddress",
+            nativeAssetAmount: Decimal.fromUserInput(
+              "44",
+              rowan.decimals.toNumber(),
+            ).toString(),
+            externalAssetAmount: Decimal.fromUserInput(
+              "68.5464",
+              juno.decimals.toNumber(),
+            ).toString(),
+          },
+        },
+      ],
       "auto",
     );
 
