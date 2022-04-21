@@ -1,10 +1,10 @@
 import { Decimal } from "@cosmjs/math";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { assertIsDeliverTxSuccess } from "@cosmjs/stargate";
+import { SifSigningStargateClient } from "clients";
 import { PoolsReq } from "../../generated/proto/sifnode/clp/v1/querier";
 import { SifchainEncodeObjectRecord } from "./messages";
 import { createQueryClient } from "./queryClient";
-import { createSigningClient } from "./signingClient";
 
 describe("Sifchain's client", async () => {
   const queryClients = await createQueryClient(
@@ -30,7 +30,7 @@ describe("Sifchain's client", async () => {
         "ibc/330D65554F859FB20E13413C88951CFE774DD2D83F593417A0552C0607C92225",
     )!;
 
-    const client = await createSigningClient(
+    const client = await SifSigningStargateClient.connectWithSigner(
       "https://rpc-testnet.sifchain.finance",
       {} as OfflineSigner, // i.e. from Keplr
     );
