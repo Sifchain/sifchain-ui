@@ -86,7 +86,7 @@ export default defineComponent({
               <Button.Inline
                 key={label}
                 onClick={onClick}
-                class="hover:text-accent-light !bg-transparent font-semibold text-white underline"
+                class="hover:text-accent-light !bg-transparent font-semibold !text-white underline"
               >
                 {label}
               </Button.Inline>
