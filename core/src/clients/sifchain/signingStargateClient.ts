@@ -1,4 +1,5 @@
 import {
+  EncodeObject,
   GeneratedType,
   isTsProtoGeneratedType,
   OfflineSigner,
@@ -15,10 +16,14 @@ import {
   createIbcAminoConverters,
   createStakingAminoConverters,
   defaultRegistryTypes as defaultStargateTypes,
+  DeliverTxResponse,
+  SignerData,
   SigningStargateClient,
   SigningStargateClientOptions,
+  StdFee,
 } from "@cosmjs/stargate";
 import { HttpEndpoint, Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import * as clpTx from "../../generated/proto/sifnode/clp/v1/tx";
 import * as dispensationTx from "../../generated/proto/sifnode/dispensation/v1/tx";
 import * as ethBridgeTx from "../../generated/proto/sifnode/ethbridge/v1/tx";
@@ -29,6 +34,7 @@ import {
   createAminoTypeNameFromProtoTypeUrl,
 } from "../native";
 import { DEFAULT_GAS_PRICE } from "./fees";
+import { SifchainEncodeObject } from "./messages";
 
 const MODULES = [clpTx, dispensationTx, ethBridgeTx, tokenRegistryTx];
 
@@ -81,7 +87,7 @@ export class SifSigningStargateClient extends SigningStargateClient {
     endpoint: string | HttpEndpoint,
     signer: OfflineSigner,
     options: SigningStargateClientOptions = {},
-  ): Promise<SifSigningStargateClient> {
+  ) {
     const tmClient = await Tendermint34Client.connect(endpoint);
     return new this(tmClient, signer, options);
   }
@@ -89,7 +95,7 @@ export class SifSigningStargateClient extends SigningStargateClient {
   static override async offline(
     signer: OfflineSigner,
     options: SigningStargateClientOptions = {},
-  ): Promise<SifSigningStargateClient> {
+  ) {
     return new this(undefined, signer, options);
   }
 
@@ -105,5 +111,32 @@ export class SifSigningStargateClient extends SigningStargateClient {
       gasPrice: DEFAULT_GAS_PRICE,
       ...options,
     });
+  }
+
+  override simulate(
+    signerAddress: string,
+    messages: readonly SifchainEncodeObject[],
+    memo: string | undefined,
+  ) {
+    return super.simulate(signerAddress, messages, memo);
+  }
+
+  override sign(
+    signerAddress: string,
+    messages: readonly SifchainEncodeObject[],
+    fee: StdFee,
+    memo: string,
+    explicitSignerData?: SignerData,
+  ) {
+    return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
+  }
+
+  override signAndBroadcast(
+    signerAddress: string,
+    messages: readonly SifchainEncodeObject[],
+    fee: number | StdFee | "auto",
+    memo?: string,
+  ) {
+    return super.signAndBroadcast(signerAddress, messages, fee, memo);
   }
 }
