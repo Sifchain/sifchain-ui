@@ -23,7 +23,7 @@ export function _Inline(
         props.class,
         props.disabled &&
           "!text-gray-disabled pointer-events-none !bg-transparent",
-        props.active && !props.disabled && "bg-accent-gradient text-white",
+        props.active && !props.disabled && "bg-accent-gradient !text-white",
       ]}
     >
       {!!props.icon && (

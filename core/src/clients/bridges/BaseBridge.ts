@@ -1,8 +1,8 @@
-import { IAssetAmount, TransactionStatus, Chain } from "../../entities";
 import { EventEmitter } from "events";
-import TypedEmitter from "typed-emitter";
-import { Log } from "@cosmjs/stargate/build/logs";
-import { WalletProvider } from "../wallets";
+import type TypedEmitter from "typed-emitter";
+import type { Log } from "@cosmjs/stargate/build/logs";
+
+import { IAssetAmount, TransactionStatus, Chain } from "../../entities";
 
 export type BridgeApproveStartedEvent = { type: "approve_started" };
 export type BridgeApprovedEvent = { type: "approved" };
@@ -54,10 +54,11 @@ export type EthBridgeTx = BaseBridgeTx & {
 
 export type BridgeTx = IBCBridgeTx | EthBridgeTx;
 
-export interface BridgeTxEvents {
+export type BridgeTxEvents = {
   tx_sent: (tx: BridgeTx) => void;
   tx_complete: (tx: BridgeTx) => void;
-}
+};
+
 export const bridgeTxEmitter =
   new EventEmitter() as TypedEmitter<BridgeTxEvents>;
 
