@@ -301,9 +301,9 @@ export function useSwapCalculator(input: {
         slippage.add(priceImpact),
       );
 
-      minAmount = effeciveSlippageRate
-        .multiply(swapResult.value)
-        .subtract(providerFee.value);
+      const deductedSwapResult = swapResult.value.subtract(providerFee.value);
+
+      minAmount = effeciveSlippageRate.multiply(deductedSwapResult);
     } else {
       // default minAmount calculation:
       // only subtracts the slippage from the swap result

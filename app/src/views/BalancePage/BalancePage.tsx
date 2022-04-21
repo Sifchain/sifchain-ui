@@ -151,6 +151,7 @@ export default defineComponent({
               />
             </div>
           }
+          class="w-screen" // force full width
         >
           <RecyclerView
             data={allBalances}
@@ -215,7 +216,7 @@ export default defineComponent({
               />
             )}
             emptyState={
-              <div class="mb-1 grid flex-1 place-items-center rounded-md bg-gray-200 p-4 text-center">
+              <div class="grid flex-1 place-items-center rounded-md bg-gray-200 p-4 text-center">
                 {isLoadingBalances.value ? (
                   <span class="text-accent-base flex items-center gap-1 text-lg">
                     Loading Balances

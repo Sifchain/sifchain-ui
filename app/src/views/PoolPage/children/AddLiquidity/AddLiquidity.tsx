@@ -128,7 +128,7 @@ export default defineComponent({
           headingAction={
             <div class="flex items-center gap-2">
               <Toggle
-                label="Pool Equaly"
+                label="Pool Equally"
                 active={data.symmetricalPooling.value}
                 onChange={(_active) => {
                   data.toggleAsyncPooling();
@@ -163,7 +163,7 @@ export default defineComponent({
               <div class="my-[4px] flex justify-center">
                 <AssetIcon
                   size={20}
-                  class=" text-white"
+                  class="text-white"
                   icon="interactive/plus"
                 />
               </div>

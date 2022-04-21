@@ -364,7 +364,7 @@ export default defineComponent({
             class="bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]"
           >
             <div>
-              <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+              <div class="border-gray-input_outline align w-[442px] self-center rounded-sm border border-solid">
                 {this.details.map(([key, value], index) => (
                   <div
                     key={index}
@@ -380,7 +380,7 @@ export default defineComponent({
                   <header class="mt-2 mb-0.5">
                     <p class="text-md font-bold">Unbonding request</p>
                   </header>
-                  <div class="border-gray-input_outline align w-[482px] self-center rounded-sm border border-solid">
+                  <div class="border-gray-input_outline align w-[442px] self-center rounded-sm border border-solid">
                     <div class={tableItemClass}>
                       <span>Unbonding assets</span>
                       <span class="flex items-center">

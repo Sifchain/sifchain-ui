@@ -111,7 +111,8 @@ export default defineComponent({
         <div
           ref={sidebarRef}
           class={[
-            "align-center w-sidebar container fixed left-0 top-0 bottom-0 z-30 h-full flex-row justify-center overflow-y-scroll bg-black font-sans text-white transition-transform sm:translate-x-[-100%] sm:duration-500",
+            "align-center w-sidebar container fixed left-0 top-0 bottom-0 z-50 h-full font-sans text-white",
+            "flex-row justify-center overflow-y-scroll bg-black transition-transform sm:translate-x-[-100%] sm:duration-500",
             isOpenRef.value && "!translate-x-0",
           ]}
         >

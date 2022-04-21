@@ -46,16 +46,17 @@ export default defineComponent({
     });
 
     return () => (
-      <div class="absolute top-[90px] 2xl:top-[130px]">
+      <div class="absolute md:top-[90px] 2xl:top-[130px]">
         <div
           key="view-layer"
           class={[
-            `relative w-[50vw] min-w-[531px] max-w-[800px] flex-col items-center justify-start rounded-[10px] bg-black p-4 text-white shadow-2xl transition-all`,
+            "relative max-w-4xl flex-col items-center justify-start md:rounded-lg",
+            "bg-black p-4 pt-0 text-white shadow-2xl transition-all",
             props.class,
           ]}
           style={props.style}
         >
-          <div class="sticky top-0 z-10 w-full bg-black">
+          <div class="sticky top-0 z-10 w-full bg-black pt-2">
             {!!props.heading && (
               <div class="flex w-full flex-row items-center justify-between pb-[10px]">
                 <div class="flex items-center">

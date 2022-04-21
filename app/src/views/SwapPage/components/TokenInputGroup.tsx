@@ -65,7 +65,7 @@ export const TokenInputGroup = defineComponent({
           ]}
         >
           <div class="flex w-full items-baseline justify-between">
-            <div class=" text-md font-sans font-medium capitalize text-white">
+            <div class="text-md font-sans font-medium capitalize text-white">
               {props.heading}
             </div>
             <div
@@ -89,7 +89,7 @@ export const TokenInputGroup = defineComponent({
             ]}
           >
             <Button.Select
-              class="w-[186px]"
+              class="flex-1"
               active={selectIsOpen.value}
               disabled={props.selectDisabled}
               chevronIcon={
@@ -105,7 +105,7 @@ export const TokenInputGroup = defineComponent({
             >
               <div class="flex items-center justify-between">
                 <TokenNetworkIcon size={38} asset={propRefs.asset} />
-                <div class="ml-[8px] font-sans text-[18px] font-medium uppercase text-white">
+                <div class="ml-[8px] font-sans text-lg font-medium uppercase text-white">
                   {props.asset?.displaySymbol}
                 </div>
               </div>
@@ -113,7 +113,7 @@ export const TokenInputGroup = defineComponent({
             <Input.Base
               placeholder={"0"}
               inputRef={inputRef}
-              class="token-input flex-1 opacity-100"
+              class="token-input min-w-[150px] opacity-100 md:min-w-[280px]"
               disabled={props.inputDisabled}
               startContent={
                 Boolean(props.onSetToMaxAmount) && !props.inputDisabled ? (

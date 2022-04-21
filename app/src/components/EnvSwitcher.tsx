@@ -33,7 +33,6 @@ export default defineComponent({
       [NetworkEnv.TESTNET_042_IBC]: styles.testnet,
       [NetworkEnv.DEVNET]: styles.devnet,
       [NetworkEnv.DEVNET_042]: styles.devnet,
-      [NetworkEnv.TEMPNET_PMTP]: styles.devnet,
     };
 
     const classNames = classesByNetworkEnv[networkEnv];
@@ -43,7 +42,7 @@ export default defineComponent({
       : null;
 
     return () => (
-      <div class="fixed bottom-0 left-64 h-6 w-36 overflow-hidden rounded-t shadow">
+      <div class="fixed bottom-0 left-4 h-6 w-36 overflow-hidden rounded-t shadow md:left-64">
         {selected && (
           <div
             class={[

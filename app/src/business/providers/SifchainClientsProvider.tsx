@@ -1,3 +1,5 @@
+import { useCore } from "@/hooks/useCore";
+import { createQueryClient, SifSigningStargateClient } from "@sifchain/sdk";
 import {
   defineComponent,
   inject,
@@ -7,9 +9,6 @@ import {
   reactive,
 } from "vue";
 
-import { useCore } from "@/hooks/useCore";
-import { createQueryClient, createSigningClient } from "@sifchain/sdk";
-
 type QueryClients = Awaited<ReturnType<typeof createQueryClient>>;
 
 type QueryClientsState =
@@ -18,12 +17,10 @@ type QueryClientsState =
     } & QueryClients)
   | { queryClientStatus?: "pending" | "rejected" };
 
-type SigningClient = Awaited<ReturnType<typeof createSigningClient>>;
-
 type SigningClientState =
   | {
       signingClientStatus: "fulfilled";
-      signingClient: SigningClient;
+      signingClient: SifSigningStargateClient;
     }
   | {
       signingClientStatus?: "pending" | "rejected";
@@ -34,7 +31,7 @@ export type ClientsState = QueryClientsState & SigningClientState;
 export const sifchainClientsSymbol: InjectionKey<
   ClientsState & {
     getOrInitQueryClients: () => Promise<QueryClients>;
-    getOrInitSigningClient: () => Promise<SigningClient>;
+    getOrInitSigningClient: () => Promise<SifSigningStargateClient>;
   }
 > = Symbol("sifchainClients");
 
@@ -72,8 +69,10 @@ export const SifchainClientsProvider = defineComponent((_, { slots }) => {
 
     state.signingClientStatus = "pending";
     return services.wallet.keplrProvider
-      .getSendingSigner(services.chains.nativeChain)
-      .then((x) => createSigningClient(config.sifRpcUrl, x))
+      .getOfflineSignerAuto(services.chains.nativeChain)
+      .then((x) =>
+        SifSigningStargateClient.connectWithSigner(config.sifRpcUrl, x),
+      )
       .then((signingClient) => {
         Object.assign(state, {
           signingClient,

@@ -95,6 +95,19 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     return sendingSigner;
   }
 
+  async getOfflineSignerAuto(chain: Chain) {
+    const chainConfig = this.getIBCChainConfig(chain);
+    const keplr = await getKeplrProvider();
+    const sendingSigner = await keplr?.getOfflineSignerAuto(
+      chainConfig.chainId,
+    );
+
+    if (sendingSigner === undefined)
+      throw new Error(`Failed to get sendingSigner for ${chainConfig.chainId}`);
+
+    return sendingSigner;
+  }
+
   async tryConnectAll(...chains: Chain[]) {
     const keplr = await getKeplrProvider();
     const chainIds = chains
