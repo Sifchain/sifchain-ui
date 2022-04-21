@@ -1,4 +1,3 @@
-import { AminoMsg } from "@cosmjs/amino";
 import {
   GeneratedType,
   isTsProtoGeneratedType,
@@ -19,6 +18,7 @@ import {
   SigningStargateClient,
   SigningStargateClientOptions,
 } from "@cosmjs/stargate";
+import { HttpEndpoint, Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import * as clpTx from "../../generated/proto/sifnode/clp/v1/tx";
 import * as dispensationTx from "../../generated/proto/sifnode/dispensation/v1/tx";
 import * as ethBridgeTx from "../../generated/proto/sifnode/ethbridge/v1/tx";
@@ -50,13 +50,13 @@ const createSifchainAminoConverters = (): AminoConverters =>
       x.typeUrl,
       {
         aminoType: createAminoTypeNameFromProtoTypeUrl(x.typeUrl),
-        toAmino: (value: any): AminoMsg => convertToSnakeCaseDeep(value),
-        fromAmino: (value: AminoMsg): any => convertToCamelCaseDeep(value),
+        toAmino: (value) => convertToSnakeCaseDeep(value),
+        fromAmino: (value) => convertToCamelCaseDeep(value),
       },
     ]),
   );
 
-const createDefaultTypes = (prefix: string = "sif") =>
+export const createDefaultTypes = (prefix: string) =>
   new AminoTypes({
     ...createAuthzAminoConverters(),
     ...createBankAminoConverters(),
@@ -68,7 +68,7 @@ const createDefaultTypes = (prefix: string = "sif") =>
     ...createSifchainAminoConverters(),
   });
 
-const createDefaultRegistry = () => {
+export const createDefaultRegistry = () => {
   const registry = new Registry(defaultStargateTypes);
   MODULES.flatMap(generateTypeUrlAndTypeRecords).forEach((x) =>
     registry.register(x.typeUrl, x.type),
@@ -76,14 +76,34 @@ const createDefaultRegistry = () => {
   return registry;
 };
 
-export const createSigningClient = (
-  rpcUrl: string,
-  signer: OfflineSigner,
-  options?: SigningStargateClientOptions,
-) =>
-  SigningStargateClient.connectWithSigner(rpcUrl, signer, {
-    registry: createDefaultRegistry(),
-    aminoTypes: createDefaultTypes(options?.prefix),
-    gasPrice: DEFAULT_GAS_PRICE,
-    ...options,
-  });
+export class SifSigningStargateClient extends SigningStargateClient {
+  static override async connectWithSigner(
+    endpoint: string | HttpEndpoint,
+    signer: OfflineSigner,
+    options: SigningStargateClientOptions = {},
+  ): Promise<SifSigningStargateClient> {
+    const tmClient = await Tendermint34Client.connect(endpoint);
+    return new this(tmClient, signer, options);
+  }
+
+  static override async offline(
+    signer: OfflineSigner,
+    options: SigningStargateClientOptions = {},
+  ): Promise<SifSigningStargateClient> {
+    return new this(undefined, signer, options);
+  }
+
+  protected constructor(
+    tmClient: Tendermint34Client | undefined,
+    signer: OfflineSigner,
+    options: SigningStargateClientOptions,
+  ) {
+    super(tmClient, signer, {
+      prefix: "sif",
+      registry: createDefaultRegistry(),
+      aminoTypes: createDefaultTypes(options.prefix ?? "sif"),
+      gasPrice: DEFAULT_GAS_PRICE,
+      ...options,
+    });
+  }
+}
