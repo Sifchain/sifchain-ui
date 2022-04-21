@@ -1,33 +1,34 @@
-import { BaseBridge, BridgeTx, EthBridgeTx, BridgeParams } from "../BaseBridge";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
+import Long from "long";
+import Web3 from "web3";
+import { provider } from "web3-core";
+import { Contract } from "web3-eth-contract";
+
 import {
+  AssetAmount,
+  EthChainConfig,
   IAsset,
   IAssetAmount,
   Network,
   TransactionStatus,
-  AssetAmount,
-  EthChainConfig,
 } from "../../../entities";
-import { provider } from "web3-core";
-import Web3 from "web3";
+import {
+  parseEthereumTxFailure,
+  parseTxFailure,
+} from "../../../utils/parseTxFailure";
+import { confirmTx, getConfirmations } from "../../bridges/EthBridge/confirmTx";
 import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
 } from "../../bridges/EthBridge/PegTxEventEmitter";
-import { confirmTx, getConfirmations } from "../../bridges/EthBridge/confirmTx";
-import { Contract } from "web3-eth-contract";
+import { NativeDexClient, NativeDexTransaction } from "../../native";
+import { TokenRegistry } from "../../native/TokenRegistry";
+import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
+import { Web3Transaction, Web3WalletProvider } from "../../wallets/ethereum";
 import { erc20TokenAbi } from "../../wallets/ethereum/erc20TokenAbi";
+import { BaseBridge, BridgeParams, BridgeTx, EthBridgeTx } from "../BaseBridge";
 import { getBridgeBankContract } from "./bridgebankContract";
 import { isOriginallySifchainNativeToken } from "./isOriginallySifchainNativeToken";
-import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
-import Long from "long";
-import {
-  parseTxFailure,
-  parseEthereumTxFailure,
-} from "../../../utils/parseTxFailure";
-import { isBroadcastTxFailure } from "@cosmjs/launchpad";
-import { Web3WalletProvider, Web3Transaction } from "../../wallets/ethereum";
-import { NativeDexTransaction, NativeDexClient } from "../../native";
-import { TokenRegistry } from "../../native/TokenRegistry";
 
 export type EthBridgeContext = {
   sifApiUrl: string;
