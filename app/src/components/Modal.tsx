@@ -76,7 +76,8 @@ export default defineComponent({
         <div class="animate-fade-in fixed inset-0 z-20 h-screen overflow-hidden bg-white bg-opacity-25 duration-300" />
         <div
           class={[
-            "left-sidebar shorter:py-[4vh] animate-fade-in animate-fade-in-up fixed inset-0 z-20 flex h-screen items-center justify-center overflow-y-scroll duration-500 sm:left-0",
+            "left-sidebar shorter:py-[4vh] animate-fade-in animate-fade-in-up fixed inset-0 z-20",
+            "flex h-screen items-center justify-center overflow-y-scroll duration-500 sm:left-0",
             props.containerClass,
           ]}
           onClick={() => {
@@ -84,9 +85,11 @@ export default defineComponent({
           }}
         >
           <div
-            class={`relative w-[530px] flex-col items-center justify-start rounded-[10px] bg-black p-4 text-white ${
-              props.class || ""
-            }`}
+            class={[
+              "relative flex-col items-center justify-start md:w-[530px]",
+              "rounded-lg bg-black p-4 text-white",
+              props.class,
+            ]}
             onClick={(e) => e.stopPropagation()}
           >
             {!!props.heading && (
@@ -95,7 +98,7 @@ export default defineComponent({
                   {props.icon ? (
                     <AssetIcon icon={props.icon} active size={32} />
                   ) : null}
-                  <span class="text-accent-base ml-[10px] font-sans text-[26px] font-semibold">
+                  <span class="text-accent-base ml-2 font-sans text-[26px] font-semibold">
                     {props.heading}
                   </span>
                 </div>

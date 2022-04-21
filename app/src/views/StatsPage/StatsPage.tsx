@@ -100,9 +100,9 @@ export default defineComponent({
       return (
         <Layout>
           <PageCard
+            class="w-screen"
             heading="Pool Stats"
             iconName="navigation/pool-stats"
-            class="!w-[940px] !min-w-[940px] !max-w-[940px]"
             withOverflowSpace
             headerContent={
               <>
