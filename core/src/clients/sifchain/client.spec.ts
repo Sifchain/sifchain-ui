@@ -1,9 +1,9 @@
 import { Decimal } from "@cosmjs/math";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { assertIsDeliverTxSuccess } from "@cosmjs/stargate";
-import { SifSigningStargateClient } from "clients";
 import { PoolsReq } from "../../generated/proto/sifnode/clp/v1/querier";
 import { createQueryClient } from "./queryClient";
+import { SifSigningStargateClient } from "./signingStargateClient";
 
 describe("Sifchain's client", async () => {
   const queryClients = await createQueryClient(
@@ -12,13 +12,13 @@ describe("Sifchain's client", async () => {
 
   test("query client", async () => {
     expect(() =>
-      queryClients.clpQueryClient.GetPools(PoolsReq.fromPartial({})),
+      queryClients.clp.GetPools(PoolsReq.fromPartial({})),
     ).not.toThrowError();
   });
 
   // TODO: setup integration test
   test.skip("signing client", async () => {
-    const tokenEntries = await queryClients.tokenRegistryQueryClient
+    const tokenEntries = await queryClients.tokenRegistry
       .Entries({})
       .then((x) => x.registry?.entries);
 
