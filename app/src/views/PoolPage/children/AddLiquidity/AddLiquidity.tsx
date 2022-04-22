@@ -128,7 +128,7 @@ export default defineComponent({
           headingAction={
             <div class="flex items-center gap-2">
               <Toggle
-                label="Pool Equally"
+                label="Pool Equal Ratios"
                 active={data.symmetricalPooling.value}
                 onChange={(_active) => {
                   data.toggleAsyncPooling();
