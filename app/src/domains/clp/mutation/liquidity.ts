@@ -50,11 +50,10 @@ export const useUnlockLiquidityMutation = () => {
       );
 
       // TODO: remove manual multi-unlock prevention on FE
-      const liquidityProvider =
-        await queryClients.clpQueryClient.GetLiquidityProvider({
-          lpAddress: signer,
-          symbol: externalTokenEntry?.denom ?? "",
-        });
+      const liquidityProvider = await queryClients.clp.GetLiquidityProvider({
+        lpAddress: signer,
+        symbol: externalTokenEntry?.denom ?? "",
+      });
 
       if (
         liquidityProvider.liquidityProvider !== undefined &&
@@ -140,9 +139,7 @@ export const useRemoveLiquidityMutation = (
         services.chains.nativeChain,
       );
 
-      const tokenEntries = await queryClients.tokenRegistryQueryClient.Entries(
-        {},
-      );
+      const tokenEntries = await queryClients.tokenRegistry.Entries({});
       const tokenEntry = tokenEntries.registry?.entries.find(
         (x) => x.baseDenom === externalAssetSymbol,
       );

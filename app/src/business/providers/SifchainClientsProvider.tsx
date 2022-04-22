@@ -9,12 +9,13 @@ import {
   reactive,
 } from "vue";
 
-type QueryClients = Awaited<ReturnType<typeof createQueryClient>>;
+type QueryClient = Awaited<ReturnType<typeof createQueryClient>>;
 
 type QueryClientsState =
-  | ({
+  | {
       queryClientStatus: "fulfilled";
-    } & QueryClients)
+      queryClient: QueryClient;
+    }
   | { queryClientStatus?: "pending" | "rejected" };
 
 type SigningClientState =
@@ -30,7 +31,7 @@ export type ClientsState = QueryClientsState & SigningClientState;
 
 export const sifchainClientsSymbol: InjectionKey<
   ClientsState & {
-    getOrInitQueryClients: () => Promise<QueryClients>;
+    getOrInitQueryClients: () => Promise<QueryClient>;
     getOrInitSigningClient: () => Promise<SifSigningStargateClient>;
   }
 > = Symbol("sifchainClients");
@@ -50,12 +51,12 @@ export const SifchainClientsProvider = defineComponent((_, { slots }) => {
 
     state.queryClientStatus = "pending";
     return createQueryClient(config.sifRpcUrl)
-      .then((queryClients) => {
+      .then((queryClient) => {
         Object.assign(state, {
-          ...queryClients,
+          queryClient,
           queryClientStatus: "fulfilled",
         });
-        return queryClients;
+        return queryClient;
       })
       .catch((error) => {
         state.queryClientStatus = "rejected";
@@ -122,13 +123,3 @@ export const useSifchainClients = () => {
     ),
   );
 };
-
-export function useQueryClient<K extends keyof QueryClients>(clientKind: K) {
-  const clientState = useSifchainClients();
-
-  if (!clientState) return;
-
-  if (clientState.queryClientStatus === "fulfilled") {
-    return clientState[clientKind];
-  }
-}
