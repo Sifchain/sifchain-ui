@@ -203,11 +203,11 @@ export function useReactivePoolCalculator(input: {
 
     const [native, external] = poolAmounts.value;
 
-    const { swapPrices } = preExistingPool.value;
+    // const { swapPrices } = preExistingPool.value;
 
-    if (swapPrices) {
-      return swapPrices.native;
-    }
+    // if (swapPrices) {
+    //   return swapPrices.native;
+    // }
 
     const derivedNative = native.toDerived();
     const derivedExternal = external.toDerived();
@@ -230,11 +230,12 @@ export function useReactivePoolCalculator(input: {
 
     const [native, external] = poolAmounts.value;
 
-    const { swapPrices } = preExistingPool.value;
+    // const { swapPrices } = preExistingPool.value;
 
-    if (swapPrices) {
-      return swapPrices.external;
-    }
+    // if (swapPrices) {
+    //   return swapPrices.external;
+    // }
+
     const derivedNative = native.toDerived();
     const derivedExternal = external.toDerived();
 
