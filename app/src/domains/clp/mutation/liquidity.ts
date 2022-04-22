@@ -9,7 +9,7 @@ import {
   isDeliverTxFailure,
   isDeliverTxSuccess,
 } from "@cosmjs/stargate";
-import { DEFAULT_FEE, SifchainEncodeObjectRecord } from "@sifchain/sdk";
+import { DEFAULT_FEE } from "@sifchain/sdk";
 import { Network } from "@sifchain/sdk/src";
 import produce from "immer";
 import { useMutation, UseMutationOptions, useQueryClient } from "vue-query";
@@ -50,11 +50,10 @@ export const useUnlockLiquidityMutation = () => {
       );
 
       // TODO: remove manual multi-unlock prevention on FE
-      const liquidityProvider =
-        await queryClients.clpQueryClient.GetLiquidityProvider({
-          lpAddress: signer,
-          symbol: externalTokenEntry?.denom ?? "",
-        });
+      const liquidityProvider = await queryClients.clp.GetLiquidityProvider({
+        lpAddress: signer,
+        symbol: externalTokenEntry?.denom ?? "",
+      });
 
       if (
         liquidityProvider.liquidityProvider !== undefined &&
@@ -74,16 +73,20 @@ export const useUnlockLiquidityMutation = () => {
         }
       }
 
-      const message: SifchainEncodeObjectRecord["MsgUnlockLiquidityRequest"] = {
-        typeUrl: "/sifnode.clp.v1.MsgUnlockLiquidityRequest",
-        value: {
-          signer,
-          units,
-          externalAsset: { symbol: externalTokenEntry?.denom ?? "" },
-        },
-      };
-
-      return signingClient.signAndBroadcast(signer, [message], DEFAULT_FEE);
+      return signingClient.signAndBroadcast(
+        signer,
+        [
+          {
+            typeUrl: "/sifnode.clp.v1.MsgUnlockLiquidityRequest",
+            value: {
+              signer,
+              units,
+              externalAsset: { symbol: externalTokenEntry?.denom ?? "" },
+            },
+          },
+        ],
+        DEFAULT_FEE,
+      );
     },
     {
       onSettled: (data, error) => {
@@ -136,23 +139,25 @@ export const useRemoveLiquidityMutation = (
         services.chains.nativeChain,
       );
 
-      const tokenEntries = await queryClients.tokenRegistryQueryClient.Entries(
-        {},
-      );
+      const tokenEntries = await queryClients.tokenRegistry.Entries({});
       const tokenEntry = tokenEntries.registry?.entries.find(
         (x) => x.baseDenom === externalAssetSymbol,
       );
 
-      const message: SifchainEncodeObjectRecord["MsgRemoveLiquidityUnits"] = {
-        typeUrl: "/sifnode.clp.v1.MsgRemoveLiquidityUnits",
-        value: {
-          signer,
-          externalAsset: { symbol: tokenEntry?.denom ?? "" },
-          withdrawUnits: units,
-        },
-      };
-
-      return signingClient.signAndBroadcast(signer, [message], DEFAULT_FEE);
+      return signingClient.signAndBroadcast(
+        signer,
+        [
+          {
+            typeUrl: "/sifnode.clp.v1.MsgRemoveLiquidityUnits",
+            value: {
+              signer,
+              externalAsset: { symbol: tokenEntry?.denom ?? "" },
+              withdrawUnits: units,
+            },
+          },
+        ],
+        DEFAULT_FEE,
+      );
     },
     {
       ...options,

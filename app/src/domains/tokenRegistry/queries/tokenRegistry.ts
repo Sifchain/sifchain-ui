@@ -15,7 +15,7 @@ export const useTokenRegistryEntriesQuery = (
     () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
 
-      return sifchainClients.tokenRegistryQueryClient.Entries({});
+      return sifchainClients.queryClient.tokenRegistry.Entries({});
     },
     {
       enabled: computed(

@@ -6,11 +6,9 @@ export function useTVL() {
   const { services } = useCore();
 
   const loadTVL = async () => {
-    const tokenStats = await services.data.getTokenStats();
+    const tokenStats = await services.data.getTokenStatsPMTP();
 
     const pools = tokenStats.body.pools ?? [];
-
-    console.log({ pools });
 
     const total = pools.reduce(
       (acc, { poolTVL, poolDepth }) =>

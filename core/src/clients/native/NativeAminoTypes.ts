@@ -60,7 +60,13 @@ export class NativeAminoTypes extends AminoTypes {
   }
 }
 
-const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
+export const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
+  // TODO: remove specific case override
+  // once sifnode fix the proto name convention for this type
+  if (typeUrl === "/sifnode.clp.v1.MsgUnlockLiquidityRequest") {
+    return "clp/UnlockLiquidity";
+  }
+
   if (typeUrl.startsWith("/ibc")) {
     return typeUrl
       .split(".")
@@ -95,7 +101,7 @@ const createAminoTypeNameFromProtoTypeUrl = (typeUrl: string) => {
   }
 };
 
-const convertToSnakeCaseDeep = (obj: any): any => {
+export const convertToSnakeCaseDeep = (obj: any): any => {
   if (typeof obj !== "object") {
     return obj;
   }
@@ -109,7 +115,7 @@ const convertToSnakeCaseDeep = (obj: any): any => {
   return newObj;
 };
 
-const convertToCamelCaseDeep = (obj: any): any => {
+export const convertToCamelCaseDeep = (obj: any): any => {
   if (typeof obj !== "object") {
     return obj;
   }
@@ -118,7 +124,7 @@ const convertToCamelCaseDeep = (obj: any): any => {
   }
   const newObj: any = {};
   for (let prop in obj) {
-    newObj[inflection.underscore(prop)] = convertToCamelCaseDeep(obj[prop]);
+    newObj[inflection.camelize(prop, true)] = convertToCamelCaseDeep(obj[prop]);
   }
   return newObj;
 };

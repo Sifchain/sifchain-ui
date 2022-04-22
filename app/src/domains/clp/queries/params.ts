@@ -14,7 +14,7 @@ export const useRewardsParamsQuery = () => {
     REWARD_PARAMS_KEY,
     () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
-      return sifchainClients.clpQueryClient.GetRewardParams({});
+      return sifchainClients.queryClient.clp.GetRewardParams({});
     },
     {
       enabled: computed(
@@ -35,7 +35,9 @@ export const useCurrentRewardPeriod = () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
 
       const currentHeight = await sifchainClients.signingClient.getHeight();
-      const response = await sifchainClients.clpQueryClient.GetRewardParams({});
+      const response = await sifchainClients.queryClient.clp.GetRewardParams(
+        {},
+      );
 
       const currentRewardPeriod = response.params?.rewardPeriods.find((x) => {
         const startBlock = x.rewardPeriodStartBlock.toNumber();

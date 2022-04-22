@@ -22,3 +22,17 @@ export type EncodeObjectRecord<T extends ProtoPackageAndMessages<T>> = {
       : void;
   };
 };
+
+export type Rpc = {
+  request(
+    service: string,
+    method: string,
+    data: Uint8Array,
+  ): Promise<Uint8Array>;
+};
+
+export type StringLiteral<T> = T extends string
+  ? string extends T
+    ? never
+    : T
+  : never;

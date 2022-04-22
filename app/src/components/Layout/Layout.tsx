@@ -1,10 +1,9 @@
-import clsx from "clsx";
 import { defineComponent, HtmlHTMLAttributes, PropType } from "vue";
 
-import { useCurrentRouteBannerMessage } from "@/hooks/useCurrentRouteBannerMessage";
 import BetaWarningBanner from "@/components/BetaWarningBanner";
 
 import LayoutBackground from "./LayoutBackground";
+import AlertBanner from "../AlertBanner";
 
 export default defineComponent({
   name: "Layout",
@@ -15,8 +14,6 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const bannerMessageRef = useCurrentRouteBannerMessage();
-
     return () => (
       <>
         <div
@@ -25,23 +22,7 @@ export default defineComponent({
         >
           {context.slots.default?.()}
           <div id="modal-target" />
-
-          {bannerMessageRef.value && (
-            <div
-              class={clsx(
-                "bg-info-base/60  z-10 p-2 font-semibold text-white backdrop-blur-md",
-                {
-                  "absolute left-0 right-0 md:p-4":
-                    !bannerMessageRef.value?.meta?.fullScreen,
-                  "fixed inset-0 grid h-screen place-items-center text-lg md:p-24":
-                    bannerMessageRef.value?.meta?.fullScreen,
-                  "pointer-events-none": "",
-                },
-              )}
-            >
-              <p class="max-w-6xl">{bannerMessageRef.value.message}</p>
-            </div>
-          )}
+          <AlertBanner />
         </div>
         <BetaWarningBanner />
         <LayoutBackground />

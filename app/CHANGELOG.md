@@ -1,3 +1,8 @@
+## Release 2022.04.21
+- Fix add liquidity 'Pool Equally' ratio
+- Improved PMTP 'minimum received' estimate based on price impact and slippage
+- Security updates to cosmjs as web3.js
+  
 ## Release 2022.04.19
 - Sif’s Ascension and PMTP are now live!
 - Rewards will be auto-distributed back into the pools at every block

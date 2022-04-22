@@ -11,12 +11,12 @@ import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { Tooltip } from "@/components/Tooltip";
 import Toggle from "@/components/Toggle";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
-import { AssetPair, RiskWarning } from "./AddLiquidityNext";
+import AssetPair from "./AssetPair";
+import RiskWarning from "./RiskWarning";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -128,7 +128,7 @@ export default defineComponent({
           headingAction={
             <div class="flex items-center gap-2">
               <Toggle
-                label="Pool Equaly"
+                label="Pool Equal Ratios"
                 active={data.symmetricalPooling.value}
                 onChange={(_active) => {
                   data.toggleAsyncPooling();
@@ -163,7 +163,7 @@ export default defineComponent({
               <div class="my-[4px] flex justify-center">
                 <AssetIcon
                   size={20}
-                  class=" text-white"
+                  class="text-white"
                   icon="interactive/plus"
                 />
               </div>

@@ -19,7 +19,7 @@ export const usePoolQuery = (
     ["pool", externalAssetBaseDenom],
     () => {
       dangerouslyAssert<"fulfilled">(sifchainClients?.queryClientStatus);
-      return sifchainClients.clpQueryClient.GetPool({
+      return sifchainClients.queryClient.clp.GetPool({
         symbol: tokenRegistryEntry.value?.denom ?? "",
       });
     },

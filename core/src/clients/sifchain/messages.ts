@@ -8,3 +8,6 @@ export type SifchainEncodeObjectRecord = EncodeObjectRecord<typeof clpTx> &
   EncodeObjectRecord<typeof dispensationTx> &
   EncodeObjectRecord<typeof ethBridgeTx> &
   EncodeObjectRecord<typeof tokenRegistryTx>;
+
+export type SifchainEncodeObject =
+  SifchainEncodeObjectRecord[keyof SifchainEncodeObjectRecord];
