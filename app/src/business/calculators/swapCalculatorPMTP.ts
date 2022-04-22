@@ -295,15 +295,15 @@ export function useSwapCalculator(input: {
         fromField.value.fieldAmount,
       );
 
-      const priceImpact = basePriceImpact.divide(Amount("100"));
+      const priceImpact = basePriceImpact.divide("100");
 
       const effeciveSlippageRate = Amount("1").subtract(
         slippage.add(priceImpact),
       );
 
-      const deductedSwapResult = swapResult.value.subtract(providerFee.value);
-
-      minAmount = effeciveSlippageRate.multiply(deductedSwapResult);
+      minAmount = effeciveSlippageRate
+        .multiply(swapResult.value)
+        .subtract(providerFee.value);
     } else {
       // default minAmount calculation:
       // only subtracts the slippage from the swap result
