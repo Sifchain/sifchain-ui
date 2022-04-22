@@ -1,19 +1,39 @@
-import { createProtobufRpcClient, QueryClient } from "@cosmjs/stargate";
+import {
+  createProtobufRpcClient,
+  QueryClient,
+  setupAuthExtension,
+  setupBankExtension,
+  setupStakingExtension,
+  setupTxExtension,
+} from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { QueryClientImpl as ClpQueryClient } from "../../generated/proto/sifnode/clp/v1/querier";
 import { QueryClientImpl as DispensationQueryClient } from "../../generated/proto/sifnode/dispensation/v1/query";
 import { QueryClientImpl as EthBridgeQueryClient } from "../../generated/proto/sifnode/ethbridge/v1/query";
 import { QueryClientImpl as TokenRegistryQueryClient } from "../../generated/proto/sifnode/tokenregistry/v1/query";
+import { Rpc, StringLiteral } from "./types";
 
-export const createQueryClient = async (url: string) => {
-  const tendermintClient = await Tendermint34Client.connect(url);
-  const queryClient = new QueryClient(tendermintClient);
-  const rpcClient = createProtobufRpcClient(queryClient);
-
-  return {
-    clpQueryClient: new ClpQueryClient(rpcClient),
-    dispensationQueryClient: new DispensationQueryClient(rpcClient),
-    ethBridgeQueryClient: new EthBridgeQueryClient(rpcClient),
-    tokenRegistryQueryClient: new TokenRegistryQueryClient(rpcClient),
+const setupBareExtension =
+  <TModule, TClient>(
+    moduleName: StringLiteral<TModule>,
+    client: { new (rpc: Rpc): TClient },
+  ) =>
+  (base: QueryClient) => {
+    const rpc = createProtobufRpcClient(base);
+    return {
+      [moduleName]: new client(rpc),
+    } as { [P in StringLiteral<TModule>]: TClient };
   };
-};
+
+export const createQueryClient = async (url: string) =>
+  QueryClient.withExtensions(
+    await Tendermint34Client.connect(url),
+    setupAuthExtension,
+    setupBankExtension,
+    setupStakingExtension,
+    setupTxExtension,
+    setupBareExtension("clp", ClpQueryClient),
+    setupBareExtension("dispensation", DispensationQueryClient),
+    setupBareExtension("ethBridge", EthBridgeQueryClient),
+    setupBareExtension("tokenRegistry", TokenRegistryQueryClient),
+  );
