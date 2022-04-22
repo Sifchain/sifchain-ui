@@ -5,29 +5,25 @@ import {
   ref,
   watch,
 } from "vue";
+import { RouterView, useRouter } from "vue-router";
+
+import { useCore } from "@/hooks/useCore";
+import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
+
 import PageCard from "@/components/PageCard";
+import Layout from "@/components/Layout";
+import AssetIcon from "@/components/AssetIcon";
+import Button from "@/components/Button";
+
+import { SwapDetails } from "./components/SwapDetails";
+import { SlippageTolerance } from "./components/SlippageTolerance";
 import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
-import Layout from "@/components/Layout";
-import { SlippageTolerance } from "./components/SlippageTolerance";
-import { SwapDetails } from "./components/SwapDetails";
-import AssetIcon from "@/components/AssetIcon";
-import { Button } from "@/components/Button/Button";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { RouterView, useRouter } from "vue-router";
-import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
-import { useCore } from "@/hooks/useCore";
-
-// This is a little generic but these UI Flows
-// might be different depending on our page functionality
-// It would be better not to share them but instead derive state based on them in this file/domain.
-// Currently some of these are used in down tree components but until we convert to JSX
-// We will need to manage these manually
 
 export default defineComponent({
   name: "SwapPage",
   setup() {
-    // const data = useSwapPageModule();
     const data = useSwapPageData();
     const swapIcon = ref<ComponentPublicInstance>();
     const appWalletPicker = useAppWalletPicker();
@@ -52,111 +48,106 @@ export default defineComponent({
         }
       }
     });
+
     return () => (
       <Layout>
-        <PageCard heading="Swap" iconName="navigation/swap" class="w-[531px]">
-          {/* <TransitionGroup name="flip-list"> */}
-          <TokenInputGroup
-            onSelectAsset={(asset) => {
-              data.fromSymbol.value = asset.symbol;
-            }}
-            class="overflow-hidden mb-[-12px]"
-            tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
-            onFocus={() => data.handleFromFocused()}
-            onBlur={() => data.handleBlur()}
-            heading="From"
-            // key={data.fromSymbol.value}
-            onSetToMaxAmount={() => {
-              data.handleFromMaxClicked();
-            }}
-            onInputAmount={(val) => {
-              data.fromAmount.value = val;
-            }}
-            amount={data.fromAmount.value}
-            asset={data.fromAsset.value}
-            formattedBalance={data.formattedFromTokenBalance.value || undefined}
-          />
-          <div
-            key="button"
-            class="flex relative items-center justify-center w-full overflow-hidden"
-          >
-            <button
-              // onMouseover={() => {
-              //   console.log("m2");
-              // }}
-              // onMouseout={() => {
-              //   console.log("m1");
-              //   isHoveringOverInvertButtonRef.value = false;
-              // }}
-              class="origin-center actidve:rotate-180 flex items-center relative bg-gray-base border-gray-input_outline py-[4px] px-[9px] box-content border-[1px] rounded-[10px] hover:border-accent-base"
-              key="button"
-              onClick={async (e: MouseEvent) => {
-                data.handleArrowClicked();
-                isInverted.value = !isInverted.value;
-              }}
-            >
-              <div
-                style={{
-                  transform: `scaleY(${isInverted.value ? -1 : 1})`,
+        <PageCard heading="Swap" iconName="navigation/swap">
+          <div class="grid gap-4">
+            <div class="grid gap-2">
+              <TokenInputGroup
+                onSelectAsset={(asset) => {
+                  data.fromSymbol.value = asset.symbol;
                 }}
+                class="-mb-4 overflow-hidden"
+                tokenIconUrl={data.fromTokenIconUrl.value ?? ""}
+                onFocus={() => data.handleFromFocused()}
+                onBlur={() => data.handleBlur()}
+                heading="From"
+                onSetToMaxAmount={() => {
+                  data.handleFromMaxClicked();
+                }}
+                onInputAmount={(val) => {
+                  data.fromAmount.value = val;
+                }}
+                amount={data.fromAmount.value}
+                asset={data.fromAsset.value}
+                formattedBalance={
+                  data.formattedFromTokenBalance.value || undefined
+                }
+              />
+              <div
+                key="button"
+                class="relative z-10 flex w-full scale-125 items-center justify-center overflow-hidden"
               >
-                <AssetIcon
-                  vectorRef={swapIcon}
-                  size={22}
-                  class=" text-accent-base"
-                  icon="navigation/swap"
-                ></AssetIcon>
+                <button
+                  class="actidve:rotate-180 bg-gray-base border-gray-input_outline hover:border-accent-base relative box-content flex origin-center items-center rounded-[10px] border-[1px] py-[4px] px-[9px]"
+                  key="button"
+                  onClick={() => {
+                    data.handleArrowClicked();
+                    isInverted.value = !isInverted.value;
+                  }}
+                >
+                  <div
+                    style={{
+                      transform: `scaleY(${isInverted.value ? -1 : 1})`,
+                    }}
+                  >
+                    <AssetIcon
+                      vectorRef={swapIcon}
+                      size={22}
+                      class="text-accent-base"
+                      icon="navigation/swap"
+                    />
+                  </div>
+                </button>
               </div>
-            </button>
-          </div>
+              <TokenInputGroup
+                onSelectAsset={(asset) => {
+                  data.toSymbol.value = asset.symbol;
+                }}
+                class="-mt-4 overflow-hidden"
+                tokenIconUrl={data.toTokenIconUrl.value ?? ""}
+                onFocus={data.handleToFocused}
+                onBlur={data.handleBlur}
+                heading="To"
+                onInputAmount={(val) => {
+                  data.toAmount.value = val;
+                }}
+                amount={data.toAmount.value}
+                asset={data.toAsset.value}
+                formattedBalance={
+                  data.formattedToTokenBalance.value || undefined
+                }
+              />
+            </div>
 
-          <TokenInputGroup
-            onSelectAsset={(asset) => {
-              data.toSymbol.value = asset.symbol;
-            }}
-            class="overflow-hidden mt-[-12px] "
-            tokenIconUrl={data.toTokenIconUrl.value ?? ""}
-            onFocus={() => data.handleToFocused()}
-            onBlur={() => data.handleBlur()}
-            heading="To"
-            // key={data.toSymbol.value}
-            // key={data.modules.fromTokenInputGroup.state.symbol}
-            onInputAmount={(val) => {
-              data.toAmount.value = val;
-            }}
-            amount={data.toAmount.value}
-            asset={data.toAsset.value}
-            formattedBalance={data.formattedToTokenBalance.value || undefined}
-          />
-          {/* </TransitionGroup> */}
-          <SlippageTolerance
-            slippage={data.slippage.value || "0"}
-            onUpdate={(v) => {
-              data.slippage.value = v || "0";
-            }}
-          ></SlippageTolerance>
-          <SwapDetails
-            fromAsset={data.fromAsset}
-            toAsset={data.toAsset}
-            priceRatio={data.priceRatio}
-            priceImpact={(data.priceImpact.value ?? "") + "%"}
-            liquidityProviderFee={data.providerFee.value ?? ""}
-            minimumReceived={data.minimumReceived.value}
-          />
-          <Button.CallToAction
-            onClick={() => {
-              if (!data.nextStepAllowed.value) {
-                return appWalletPicker.show();
-              }
-              data.handleNextStepClicked();
-            }}
-            disabled={!data.nextStepAllowed.value}
-            class="mt-[10px]"
-          >
-            {data.nextStepMessage.value}
-          </Button.CallToAction>
-          <RouterView></RouterView>
-          <div class="pb-4" />
+            <SlippageTolerance
+              slippage={data.slippage.value || "0"}
+              onUpdate={(v) => {
+                data.slippage.value = v || "0";
+              }}
+            />
+            <SwapDetails
+              fromAsset={data.fromAsset}
+              toAsset={data.toAsset}
+              priceRatio={data.priceRatio}
+              priceImpact={(data.priceImpact.value ?? "") + "%"}
+              liquidityProviderFee={data.providerFee.value ?? ""}
+              minimumReceived={data.minimumReceived.value}
+            />
+            <Button.CallToAction
+              onClick={() => {
+                if (!data.nextStepAllowed.value) {
+                  return appWalletPicker.show();
+                }
+                data.handleNextStepClicked();
+              }}
+              disabled={!data.nextStepAllowed.value}
+            >
+              {data.nextStepMessage.value}
+            </Button.CallToAction>
+            <RouterView />
+          </div>
         </PageCard>
       </Layout>
     );

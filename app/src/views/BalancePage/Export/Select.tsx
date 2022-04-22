@@ -198,7 +198,7 @@ export default defineComponent({
         style={{
           pointerEvents: optionsRef.value.length === 1 ? "none" : "auto",
         }}
-        class="w-full relative capitalize pl-[16px] mt-[10px]"
+        class="relative mt-[10px] w-full pl-[16px] capitalize"
         active={networkOpenRef.value}
       >
         {useChains().get(exportParams.value.network).displayName}
@@ -212,15 +212,15 @@ export default defineComponent({
         onClose={exportData.exitExport}
         showClose
       >
-        <section class="bg-gray-base p-4 rounded">
+        <section class="bg-gray-base rounded p-4">
           <label
             for="exportAmount"
-            class={"flex relative items-center justify-between"}
+            class={"relative flex items-center justify-between"}
           >
             <span>Amount</span>
             {Boolean(exportTokenRef.value) && (
               <span
-                class="text-base opacity-50 hover:text-accent-base cursor-pointer self-end"
+                class="hover:text-accent-base cursor-pointer self-end text-base opacity-50"
                 onClick={handleSetMax}
               >
                 Balance:{" "}
@@ -259,7 +259,7 @@ export default defineComponent({
             }}
           />
 
-          <div class="block mt-[10px]">
+          <div class="mt-[10px] block">
             Network
             <SelectDropdown
               key={optionsRef.value.map((o) => o.value).join("")}
@@ -284,19 +284,19 @@ export default defineComponent({
           </div>
         </section>
 
-        <section class="bg-gray-base p-4 rounded mt-[10px]">
+        <section class="bg-gray-base mt-[10px] rounded p-4">
           <Form.Details details={exportData.detailsRef.value} />
         </section>
 
-        <section class="bg-gray-base p-4 rounded mt-[10px]">
-          <div class="text-white capitalize">
+        <section class="bg-gray-base mt-[10px] rounded p-4">
+          <div class="capitalize text-white">
             {exportParams.value.network} Recipient Address
           </div>
-          <div class="relative border h-[54px] rounded border-solid border-gray-input_outline focus-within:border-white bg-gray-input mt-[10px]">
+          <div class="border-gray-input_outline bg-gray-input relative mt-[10px] h-[54px] rounded border border-solid focus-within:border-white">
             <input
               readonly
               value={targetAddressRef.value}
-              class="absolute top-0 left-0 w-full h-full bg-transparent p-[16px] font-mono outline-none text-md"
+              class="text-md absolute top-0 left-0 h-full w-full bg-transparent p-[16px] font-mono outline-none"
               onClick={(e) => {
                 (e.target as HTMLInputElement).setSelectionRange(0, 99999999);
               }}
@@ -308,7 +308,7 @@ export default defineComponent({
           {!!buttonRef.value.icon && (
             <AssetIcon
               icon={buttonRef.value.icon}
-              class="w-[20px] h-[20px] mr-[4px]"
+              class="mr-[4px] h-[20px] w-[20px]"
             />
           )}{" "}
           {buttonRef.value.name}

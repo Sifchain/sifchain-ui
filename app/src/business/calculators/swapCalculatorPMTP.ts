@@ -295,7 +295,7 @@ export function useSwapCalculator(input: {
         fromField.value.fieldAmount,
       );
 
-      const priceImpact = basePriceImpact.divide(Amount("100"));
+      const priceImpact = basePriceImpact.divide("100");
 
       const effeciveSlippageRate = Amount("1").subtract(
         slippage.add(priceImpact),

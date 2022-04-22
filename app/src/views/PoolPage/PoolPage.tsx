@@ -160,21 +160,20 @@ export default defineComponent({
           </div>
         ) : (
           <PageCard
-            style={{ width: "unset", maxWidth: "unset" }}
             heading="Pool"
             iconName="navigation/pool"
             withOverflowSpace
-            // headerAction={
-            //   <Button.Inline
-            //     to={{ name: "AddLiquidity", params: {} }}
-            //     active
-            //     replace
-            //     class={["text-md !h-[40px] px-[17px]"]}
-            //     icon="interactive/plus"
-            //   >
-            //     <div class="font-semibold">Add Liquidity</div>
-            //   </Button.Inline>
-            // }
+            headerAction={
+              <Button.Inline
+                to={{ name: "AddLiquidity", params: {} }}
+                active
+                replace
+                class={["text-md !h-[40px] px-[17px]"]}
+                icon="interactive/plus"
+              >
+                <div class="font-semibold">Add Liquidity</div>
+              </Button.Inline>
+            }
             headerContent={
               <>
                 <SearchBox

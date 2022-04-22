@@ -1,5 +1,8 @@
 const SIDEBAR_WIDTH = "210px";
 
+/**
+ * @type {import("tailwindcss/tailwind-config").TailwindConfig}
+ */
 module.exports = {
   mode: "jit",
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],

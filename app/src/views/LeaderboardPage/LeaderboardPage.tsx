@@ -207,8 +207,8 @@ export default defineComponent({
     if (this.isLoading) {
       return (
         <Layout>
-          <div class="absolute left-0 top-[180px] w-full flex justify-center">
-            <div class="flex items-center justify-center bg-black bg-opacity-50 rounded-lg h-[80px] w-[80px]">
+          <div class="absolute left-0 top-[180px] flex w-full justify-center">
+            <div class="flex h-[80px] w-[80px] items-center justify-center rounded-lg bg-black bg-opacity-50">
               <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
             </div>
           </div>
@@ -275,14 +275,14 @@ export default defineComponent({
               >
                 <div
                   class={[
-                    "flex items-center cursor-pointer min-w-[350px]",
+                    "flex min-w-[350px] cursor-pointer items-center",
                     this.isSelectOpen ? "text-opacity-80" : "",
                   ]}
                 >
                   {heading}
                   <AssetIcon
                     class={[
-                      "ml-[6px] transition-all duration-100 flex-shrink-0 opacity-50",
+                      "ml-[6px] flex-shrink-0 opacity-50 transition-all duration-100",
                       this.isSelectOpen && "rotate-180",
                     ]}
                     size={24}
@@ -294,15 +294,15 @@ export default defineComponent({
           })()}
           headingClass={"!text-lg"}
           class={[
-            "max-w-none w-[950px] rounded-t-none",
-            !this.hasAgreed && "filter blur-md",
+            "w-[950px] max-w-none rounded-t-none",
+            !this.hasAgreed && "blur-md filter",
           ]}
           headerAction={
             Boolean(this.currentCompetition) ? (
               <div class="flex items-center">
                 <div class="mr-[84px] flex items-center">
                   <div class="text-accent-base">Days Remaining</div>
-                  <div class="ml-[4px] bg-accent-base h-[25px] px-[8px] rounded-[20px] text-gray-300 flex items-center font-medium">
+                  <div class="bg-accent-base ml-[4px] flex h-[25px] items-center rounded-[20px] px-[8px] font-medium text-gray-300">
                     {this.daysRemaining}
                   </div>
                 </div>
@@ -321,7 +321,7 @@ export default defineComponent({
                       }),
                     },
                   }}
-                  class="!h-[48px] !text-lg !px-[16px]"
+                  class="!h-[48px] !px-[16px] !text-lg"
                 >
                   Swap
                 </Button.Inline>
@@ -337,7 +337,7 @@ export default defineComponent({
           >
             <div
               class={[
-                "cursor-pointer h-[32px] px-[30px] flex items-center text-bold rounded-t-sm ml-[1px] text-accent-base bg-black hover:underline",
+                "text-bold text-accent-base ml-[1px] flex h-[32px] cursor-pointer items-center rounded-t-sm bg-black px-[30px] hover:underline",
               ]}
               onClick={() => (this.isAgreeModalOpen = true)}
             >
@@ -359,10 +359,10 @@ export default defineComponent({
                     },
                   }}
                   class={[
-                    "cursor-pointer h-[32px] px-[30px] flex items-center text-bold rounded-t-sm ml-[1px]",
+                    "text-bold ml-[1px] flex h-[32px] cursor-pointer items-center rounded-t-sm px-[30px]",
                     this.currentType === competition.type
                       ? "text-accent-base bg-black"
-                      : "bg-gray-300 text-gray-825 hover:opacity-80",
+                      : "text-gray-825 bg-gray-300 hover:opacity-80",
                   ]}
                 >
                   {COMPETITION_TYPE_DISPLAY_DATA[competition.type].title(
@@ -388,7 +388,7 @@ export default defineComponent({
               ))}
             </section>
           </div>
-          <div class={[this.isReloading && "filter blur-[3px] opacity-50"]}>
+          <div class={[this.isReloading && "opacity-50 blur-[3px] filter"]}>
             {this.items.length >= 3 && (
               <div class="flex items-end justify-around">
                 {[this.items[1], this.items[0], this.items[2]].map((item) => (
