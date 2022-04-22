@@ -1,3 +1,6 @@
+## Release 2022.04.22
+- Fix unbonding liquidity
+
 ## Release 2022.04.21
 - Fix add liquidity 'Pool Equally' ratio
 - Improved PMTP 'minimum received' estimate based on price impact and slippage
