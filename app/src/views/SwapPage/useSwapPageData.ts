@@ -8,6 +8,7 @@ import {
   toBaseUnits,
   format,
   NativeDexClient,
+  Amount,
 } from "@sifchain/sdk";
 import { useWalletButton } from "@/hooks/useWalletButton";
 import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
@@ -328,7 +329,9 @@ export const useSwapPageData = () => {
   const formattedMinimumReceived = computed(() => {
     if (!minimumReceived.value) return "";
     const { amount, asset } = minimumReceived.value;
-    return format(amount, asset, { mantissa: 18, trimMantissa: true });
+    return amount.greaterThanOrEqual(Amount("0"))
+      ? format(amount, asset, { mantissa: 18, trimMantissa: true })
+      : "Price impact too high";
   });
 
   return {
