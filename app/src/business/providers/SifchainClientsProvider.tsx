@@ -46,7 +46,7 @@ export const SifchainClientsProvider = defineComponent((_, { slots }) => {
 
   const getOrInitQueryClients = () => {
     if (state.queryClientStatus === "fulfilled") {
-      return Promise.resolve(state);
+      return Promise.resolve(state.queryClient);
     }
 
     state.queryClientStatus = "pending";
