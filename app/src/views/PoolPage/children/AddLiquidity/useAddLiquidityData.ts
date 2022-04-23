@@ -17,8 +17,14 @@ import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { formatAssetAmount, formatNumber } from "@/components/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
+import { useQueryClient } from "vue-query";
+import {
+  LIQUIDITY_PROVIDERS_KEY,
+  LIQUIDITY_PROVIDER_KEY,
+} from "@/domains/clp/queries/liquidityProvider";
 
 export const useAddLiquidityData = () => {
+  const queryClient = useQueryClient();
   const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
   const selectedField = ref<"from" | "to" | null>(null);
   const lastFocusedTokenField = ref<"A" | "B" | null>(null);
@@ -182,6 +188,11 @@ export const useAddLiquidityData = () => {
         tokenAField.value.fieldAmount,
       );
     }
+
+    await Promise.all([
+      queryClient.invalidateQueries(LIQUIDITY_PROVIDER_KEY),
+      queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY),
+    ]);
 
     if (!tokenAField.value.fieldAmount || !tokenBField.value.fieldAmount) {
       throw new Error("Token A or Token B field amount is not defined");
