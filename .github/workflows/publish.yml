@@ -1,0 +1,36 @@
+name: NPM publish
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  test:
+    uses: ./.github/workflows/core.yml
+    secrets:
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      IS_SNAPSHOT: ${{ github.event_name != 'push' || github.ref != 'refs/heads/master' }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          cache: yarn
+
+      - if: ${{ fromJSON(env.IS_SNAPSHOT) }}
+        run: yarn workspaces foreach version 0.0.0-snapshot.$(git rev-parse --short HEAD)
+
+      - run: yarn install --immutable
+      - run: yarn build
+      - run: yarn config set npmAuthToken ${{ secrets.NPM_TOKEN }}
+      - run: yarn workspaces foreach --no-private npm publish --tolerate-republish --access public ${{ fromJSON(env.IS_SNAPSHOT) && '--tag snapshot' || '' }}
