@@ -27,11 +27,10 @@ jobs:
           node-version: "16.x"
           cache: yarn
 
-      - run: yarn install --immutable
-
       - if: ${{ fromJSON(env.IS_SNAPSHOT) }}
         run: yarn workspaces foreach version 0.0.0-snapshot.$(git rev-parse --short HEAD)
 
+      - run: yarn install --immutable
       - run: yarn build
       - run: yarn config set npmAuthToken ${{ secrets.NPM_TOKEN }}
       - run: yarn workspaces foreach npm publish --tolerate-republish --access public ${{ fromJSON(env.IS_SNAPSHOT) && '--tag snapshot' || '' }}
