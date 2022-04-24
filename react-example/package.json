@@ -1,11 +1,11 @@
 {
   "name": "vite-react-ts-tailwind-starter",
   "version": "0.0.1",
+  "private": true,
   "license": "MIT",
   "author": {
     "name": "TeXmeijin"
   },
-  "private": true,
   "workspaces": {
     "nohoist": [
       "@types/react",

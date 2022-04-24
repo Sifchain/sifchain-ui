@@ -1,12 +1,17 @@
+## Release 2022.04.24
+- Fix ethereum imports
+
 ## Release 2022.04.22
 - Fix unbonding liquidity
 
 ## Release 2022.04.21
+
 - Fix add liquidity 'Pool Equally' ratio
 - Improved PMTP 'minimum received' estimate based on price impact and slippage
 - Security updates to cosmjs as web3.js
-  
+
 ## Release 2022.04.19
+
 - Sif’s Ascension and PMTP are now live!
 - Rewards will be auto-distributed back into the pools at every block
 - All liquidity is now subject to 7-day unbonding periods
@@ -15,14 +20,15 @@
   - Fix decimal formatting of ibc tokens on 'Unbond liquidity' page
   - Fix decimal formatting of ibc tokens on 'Unbonding request' section on 'Pools' page
   - Remove keplr provider websocket dependency
-  
+
 ## Release 2022.04.06
+
 - Fixed display of individual 'Dispensed rewards' by rewards program
-  
+
 ## Release 2022.04.05
 
 - Fixed display of 'Dispensed rewards' on rewards page
-  
+
 ## Release 2022.04.04
 
 - Fixed issue processing add liquidity transactions
