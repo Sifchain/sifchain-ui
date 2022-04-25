@@ -1073,6 +1073,17 @@ const assets: {
         "https://assets.coingecko.com/coins/images/13722/small/logo-200x200.jpg?1626095888",
     },
     {
+      symbol: "uiov",
+      displaySymbol: "iov",
+      decimals: 6,
+      name: "iov",
+      network: "sifchain",
+      homeNetwork: "Starname",
+      label: "iov",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/12660/small/iov.png?1601862353",
+    },
+    {
       symbol: "eeur",
       displaySymbol: "eeur",
       decimals: 6,
