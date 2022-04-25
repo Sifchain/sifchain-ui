@@ -1078,7 +1078,7 @@ const assets: {
       decimals: 6,
       name: "iov",
       network: "sifchain",
-      homeNetwork: "Starname",
+      homeNetwork: "starname",
       label: "iov",
       imageUrl:
         "https://assets.coingecko.com/coins/images/12660/small/iov.png?1601862353",
