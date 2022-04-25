@@ -14,37 +14,33 @@ export default defineComponent({
     label: {
       type: String,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
     const inner = (
       <button
+        disabled={props.disabled}
         class={[
-          `flex h-[16px] w-[28px] cursor-pointer items-center rounded-full border-[1px] border-solid  transition-all active:bg-opacity-20`,
-          props.active
+          `flex h-[16px] w-[28px] cursor-pointer items-center rounded-full border-[1px] border-solid transition-all active:bg-opacity-20`,
+          props.active && !props.disabled
             ? `border-connected-base active:bg-connected-base`
             : `border-gray-800 active:bg-gray-800`,
+          props.disabled ? "pointer-events-none" : "",
         ]}
         onClick={() => props.onChange(!props.active)}
       >
         <TransitionGroup name="flip-list--fast">
-          {props.active && (
-            <div
-              key="pod"
-              class={[
-                `m-[1px] ml-auto  h-[12px] w-[12px] rounded-full transition-all`,
-                props.active ? `bg-connected-base` : `bg-gray-800`,
-              ]}
-            ></div>
-          )}
-          {!props.active && (
-            <div
-              key="pod"
-              class={[
-                `m-[1px] h-[12px] w-[12px] rounded-full transition-all`,
-                props.active ? `bg-[connected-base]` : `bg-gray-800`,
-              ]}
-            />
-          )}
+          <div
+            key="pod"
+            class={[
+              `m-[1px] h-[12px] w-[12px] rounded-full transition-all`,
+              props.active ? "bg-connected-base ml-auto" : "bg-gray-800",
+              props.disabled ? "bg-gray-800" : "",
+            ]}
+          />
         </TransitionGroup>
       </button>
     );

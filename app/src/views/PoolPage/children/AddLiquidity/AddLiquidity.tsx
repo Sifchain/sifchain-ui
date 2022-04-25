@@ -17,6 +17,7 @@ import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
+import { Tooltip } from "@/components/Tooltip";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -127,14 +128,21 @@ export default defineComponent({
           showClose
           headingAction={
             <div class="flex items-center gap-2">
-              <Toggle
-                label="Pool Equal Ratios"
-                active={data.symmetricalPooling.value}
-                onChange={(_active) => {
-                  data.toggleAsyncPooling();
-                  data.handleTokenAFocused();
-                }}
-              />
+              <Tooltip
+                content={
+                  <>Adding liquidity asymmetrically is temporarily disabled</>
+                }
+              >
+                <Toggle
+                  disabled
+                  label="Pool Equal Ratios"
+                  active={data.symmetricalPooling.value}
+                  onChange={(_active) => {
+                    // data.toggleAsyncPooling();
+                    // data.handleTokenAFocused();
+                  }}
+                />
+              </Tooltip>
               <AssetPair hideTokenSymbol asset={data.fromAsset} />
             </div>
           }
