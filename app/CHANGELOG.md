@@ -1,7 +1,10 @@
 ## Release 2022.04.24
+
 - Fix ethereum imports
+- Temporarily disable adding liquidity asymetrically
 
 ## Release 2022.04.22
+
 - Fix unbonding liquidity
 
 ## Release 2022.04.21
