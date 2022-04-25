@@ -21,6 +21,7 @@ export const useTokenRegistryEntriesQuery = (
       enabled: computed(
         () => sifchainClients?.queryClientStatus === "fulfilled",
       ),
+      staleTime: Infinity,
       ...options,
     },
   );
@@ -34,6 +35,7 @@ export const useTokenRegistryEntryQuery = (
 
   return {
     ...registryQuery,
+    staleTime: Infinity,
     data: computed(() =>
       registryQuery.data.value?.registry?.entries.find(
         (x) => x.baseDenom === unref(baseDenom),
