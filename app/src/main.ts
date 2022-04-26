@@ -1,4 +1,3 @@
-import { secondsToMilliseconds } from "date-fns";
 import { createApp } from "vue";
 import { VueQueryPlugin, VueQueryPluginOptions } from "vue-query";
 import App from "./App";
@@ -30,7 +29,7 @@ app.use(VueQueryPlugin, {
   queryClientConfig: {
     defaultOptions: {
       queries: {
-        staleTime: secondsToMilliseconds(10),
+        staleTime: 10000,
       },
     },
   },
