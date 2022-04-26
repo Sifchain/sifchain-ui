@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import { VueQueryPlugin } from "vue-query";
+import { VueQueryPlugin, VueQueryPluginOptions } from "vue-query";
 import App from "./App";
 import router from "./router";
 import "./scss/index.css";
@@ -25,6 +25,15 @@ console.log(
   import.meta.env.VITE_APP_SHA,
 );
 
-app.use(VueQueryPlugin);
+app.use(VueQueryPlugin, {
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        staleTime: 10000,
+      },
+    },
+  },
+} as VueQueryPluginOptions);
+
 app.use(vuexStore);
 app.use(router).mount("#app");
