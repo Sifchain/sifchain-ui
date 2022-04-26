@@ -278,29 +278,7 @@ export default defineComponent({
                 </Button.InlineHelp>
               )}
             <div class="ml-[10px]" />
-            {this.bonusRewardPrograms.map((program) => (
-              <Tooltip
-                content={
-                  <div class="text-sm">
-                    <span class="font-semibold">{program.displayName}</span>: +
-                    {program.summaryAPY.toFixed(2)}% APR
-                    <br />
-                    <div class="mt-[6px]">{program.description}</div>
-                  </div>
-                }
-                key={program.rewardProgramName}
-              >
-                <AssetIcon
-                  class="mr-[4px] opacity-70"
-                  size={16}
-                  icon={
-                    getRewardProgramDisplayData(program.rewardProgramName).icon
-                  }
-                />
-              </Tooltip>
-            ))}
           </div>
-
           <div
             class={[
               COLUMNS_LOOKUP.poolTvl.class,
@@ -314,7 +292,6 @@ export default defineComponent({
                 })
               : "..."}
           </div>
-
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
@@ -322,7 +299,6 @@ export default defineComponent({
               ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
-
           <div
             class={[
               COLUMNS_LOOKUP.userShare.class,
