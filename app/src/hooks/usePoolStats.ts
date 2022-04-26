@@ -123,7 +123,9 @@ export function usePoolStats() {
         if (!hasLoggedError[poolStat.symbol]) {
           // Don't spam logs for not-found stats, because this happens a lot
           hasLoggedError[poolStat.symbol] = true;
-          console.log("Found no asset match for poolStat", poolStat);
+          if (process.env.NODE_ENV !== "production") {
+            console.log("Found no asset match for poolStat", poolStat);
+          }
         }
         return;
       }
