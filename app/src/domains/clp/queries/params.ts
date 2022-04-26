@@ -1,7 +1,7 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
 import { useBlockTimeQuery } from "@/domains/statistics/queries/blockTime";
 import dangerouslyAssert from "@/utils/dangerouslyAssert";
-import { addMilliseconds } from "date-fns";
+import { addMilliseconds, minutesToMilliseconds } from "date-fns";
 import { computed } from "vue";
 import { useQuery } from "vue-query";
 
@@ -20,6 +20,7 @@ export const useRewardsParamsQuery = () => {
       enabled: computed(
         () => sifchainClients.queryClientStatus === "fulfilled",
       ),
+      staleTime: minutesToMilliseconds(5),
     },
   );
 };
@@ -27,6 +28,7 @@ export const useRewardsParamsQuery = () => {
 export const useCurrentRewardPeriod = () => {
   const sifchainClients = useSifchainClients();
   const { data: blockTime } = useBlockTimeQuery();
+  const { data: rewardsParams } = useRewardsParamsQuery();
 
   return useQuery(
     "currentRewardPeriod",
@@ -35,16 +37,14 @@ export const useCurrentRewardPeriod = () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
 
       const currentHeight = await sifchainClients.signingClient.getHeight();
-      const response = await sifchainClients.queryClient.clp.GetRewardParams(
-        {},
-      );
 
-      const currentRewardPeriod = response.params?.rewardPeriods.find((x) => {
-        const startBlock = x.rewardPeriodStartBlock.toNumber();
-        const endBlock = x.rewardPeriodEndBlock.toNumber();
+      const currentRewardPeriod =
+        rewardsParams.value?.params?.rewardPeriods.find((x) => {
+          const startBlock = x.rewardPeriodStartBlock.toNumber();
+          const endBlock = x.rewardPeriodEndBlock.toNumber();
 
-        return startBlock <= currentHeight && currentHeight < endBlock;
-      });
+          return startBlock <= currentHeight && currentHeight < endBlock;
+        });
 
       if (currentRewardPeriod === undefined) return;
 
@@ -62,7 +62,8 @@ export const useCurrentRewardPeriod = () => {
         () =>
           sifchainClients.queryClientStatus === "fulfilled" &&
           sifchainClients.signingClientStatus === "fulfilled" &&
-          blockTime.value !== undefined,
+          blockTime.value !== undefined &&
+          rewardsParams.value !== undefined,
       ),
     },
   );
