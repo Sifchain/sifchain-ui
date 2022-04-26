@@ -209,7 +209,6 @@ export class Web3WalletProvider extends WalletProvider<Web3Transaction> {
   }
 
   async fetchBalances(chain: Chain, address: string): Promise<IAssetAmount[]> {
-    console.log("running");
     return Promise.all(
       chain.assets.map(async (asset) =>
         this.fetchBalance(chain, address, asset.symbol),
