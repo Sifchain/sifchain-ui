@@ -1,8 +1,10 @@
-import { computed, unref } from "vue";
-import { DeliverTxResponse, TransactionStatus } from "@sifchain/sdk";
-import { Ref, ComputedRef } from "vue";
+import {
+  DeliverTxResponse,
+  TransactionStatus,
+  transactionStatusFromDeliverTxResponse,
+} from "@sifchain/sdk";
 import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
-import { transactionStatusFromDeliverTxResponse } from "@sifchain/sdk/src/clients/native/SifClient";
+import { computed, ComputedRef, Ref, unref } from "vue";
 import { MaybeRef } from "vue-query/lib/vue/types";
 
 export function useBridgeEventDetails(props: {
