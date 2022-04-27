@@ -51,11 +51,11 @@ Attaching a query string var `_env` will set cookies to point your build to any 
 
 | url                                  | env                    |
 | ------------------------------------ | ---------------------- |
-| http://localhost:8080?\_env=mainnet  | MAINNET                |
-| http://localhost:8080?\_env=testnet  | TESTNET                |
-| http://localhost:8080?\_env=devnet   | DEVNET                 |
-| http://localhost:8080?\_env=localnet | LOCALNET               |
-| http://localhost:8080?\_env=\_       | DEFAULT (Based on url) |
+| http://localhost:8080?_env=mainnet  | MAINNET                |
+| http://localhost:8080?_env=testnet  | TESTNET                |
+| http://localhost:8080?_env=devnet   | DEVNET                 |
+| http://localhost:8080?_env=localnet | LOCALNET               |
+| http://localhost:8080?_env=\_       | DEFAULT (Based on url) |
 
 We recommend using bookmarklets:
 
