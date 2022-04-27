@@ -2,6 +2,7 @@ import { Services } from "@/business/services";
 import { Store } from "@/business/store";
 import { PoolStore } from "@/business/store/pools";
 import { useCore } from "@/hooks/useCore";
+import runCatching from "@/utils/runCatching";
 import {
   createPoolKey,
   DEFAULT_FEE,
@@ -90,11 +91,15 @@ export function AddLiquidity(
       sif.unSignedClient.rpcUrl,
       await wallet.keplrProvider.getOfflineSignerAuto(chains.nativeChain),
     );
-    const sentTx = await signingClient.signAndBroadcast(
-      address,
-      txDraft.msgs as any,
-      DEFAULT_FEE,
+    const [error, sentTx] = await runCatching(() =>
+      signingClient.signAndBroadcast(address, txDraft.msgs as any, DEFAULT_FEE),
     );
+
+    if (error !== undefined) {
+      return {
+        state: "rejected",
+      };
+    }
 
     const txStatus = transactionStatusFromDeliverTxResponse(sentTx);
     if (txStatus.state !== "accepted") {
