@@ -12,12 +12,14 @@ import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import Toggle from "@/components/Toggle";
+import { Tooltip } from "@/components/Tooltip";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
-import { Tooltip } from "@/components/Tooltip";
+
+const UNBONDING_PERIOD_DAYS = 7;
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -104,19 +106,32 @@ export default defineComponent({
               </div>
             }
           >
-            <div class="bg-gray-base grid gap-4 rounded-lg p-4">
-              <Form.Details details={detailsRef.value} />
-              {!data.symmetricalPooling.value && (
-                <RiskWarning riskFactorStatus={data.riskFactorStatus} />
-              )}
+            <div class="grid gap-4">
+              <div class="bg-gray-base grid gap-4 rounded-lg p-4">
+                <Form.Details details={detailsRef.value} />
+                {!data.symmetricalPooling.value && (
+                  <RiskWarning riskFactorStatus={data.riskFactorStatus} />
+                )}
+              </div>
+              <div class="flex items-center justify-between overflow-hidden rounded border border-gray-500 p-4">
+                <span class="flex items-center text-slate-300">
+                  Once added, all liquidity will be subject to a{" "}
+                  {UNBONDING_PERIOD_DAYS} day unbonding period.
+                </span>
+                <AssetIcon
+                  icon="interactive/warning"
+                  class="text-slate-300"
+                  size={22}
+                />
+              </div>
+              <Button.CallToAction
+                onClick={() => {
+                  data.handleAskConfirmClicked();
+                }}
+              >
+                Confirm
+              </Button.CallToAction>
             </div>
-            <Button.CallToAction
-              onClick={() => {
-                data.handleAskConfirmClicked();
-              }}
-            >
-              Confirm
-            </Button.CallToAction>
           </Modal>
         );
       }
