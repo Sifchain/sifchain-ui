@@ -1,5 +1,9 @@
 ## Release 2022.04.24
 
+- Remove mentions to old rewards programs on `Pool` page
+
+## Release 2022.04.24
+
 - Improved remote caching
 
 ## Release 2022.04.24
