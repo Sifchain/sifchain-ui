@@ -4,6 +4,7 @@ import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { useUnlockLiquidityMutation } from "@/domains/clp/mutation/liquidity";
+import { useCurrentRewardPeriodStatistics } from "@/domains/clp/queries/params";
 import { useUnlockLiquidityByPercentage } from "@/domains/clp/queries/unlockLiquidityByPercentage";
 import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
@@ -12,6 +13,7 @@ import { useDeliverTxDetails } from "@/hooks/useTransactionDetails";
 import { useWalletButton } from "@/hooks/useWalletButton";
 import { accountStore } from "@/store/modules/accounts";
 import { Network } from "@sifchain/sdk";
+import { formatDistance } from "date-fns";
 import { computed, defineComponent, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -38,6 +40,8 @@ const UnbondLiquidity = defineComponent({
     );
 
     const unlockLiquidityMutation = useUnlockLiquidityMutation();
+
+    const { data: currentRewardPeriod } = useCurrentRewardPeriodStatistics();
 
     const poolStats = usePoolStats();
     const { connected } = useWalletButton();
@@ -217,9 +221,22 @@ const UnbondLiquidity = defineComponent({
             style="text-align-last: center"
           >
             Liquidity will be equally removed from all pooled assets. Unbonding
-            requests take 7 days to process. Once your funds are ready, you will
-            have 72 hours to remove them before the request is canceled. Please
-            check back periodically to ensure you don't miss your window!
+            requests take{" "}
+            {currentRewardPeriod.value?.estimatedLockMs === undefined
+              ? "..."
+              : formatDistance(
+                  0,
+                  currentRewardPeriod.value?.estimatedLockMs,
+                )}{" "}
+            to process. Once your funds are ready, you will have{" "}
+            {currentRewardPeriod.value?.estimatedCancelMs === undefined
+              ? "..."
+              : formatDistance(
+                  0,
+                  currentRewardPeriod.value?.estimatedCancelMs,
+                )}{" "}
+            to remove them before the request is canceled. Please check back
+            periodically to ensure you don't miss your window!
           </p>
           {!sifAccountRef.value.connected ? (
             <Button.CallToAction
