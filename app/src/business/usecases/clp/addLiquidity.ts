@@ -10,6 +10,7 @@ import {
   getErrorMessage,
   IAssetAmount,
   SifSigningStargateClient,
+  TransactionStatus,
   transactionStatusFromDeliverTxResponse,
 } from "@sifchain/sdk";
 import { ReportTransactionError } from "../utils";
@@ -48,7 +49,7 @@ export function AddLiquidity(
   return async (
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
-  ) => {
+  ): TransactionStatus => {
     const client = await sif.loadNativeDexClient();
     const address = await wallet.keplrProvider.connect(chains.nativeChain);
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
@@ -98,6 +99,7 @@ export function AddLiquidity(
     if (error !== undefined) {
       return {
         state: "rejected",
+        hash: "",
       };
     }
 
