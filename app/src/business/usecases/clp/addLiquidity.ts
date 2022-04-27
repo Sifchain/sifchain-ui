@@ -49,7 +49,7 @@ export function AddLiquidity(
   return async (
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
-  ): TransactionStatus => {
+  ): Promise<TransactionStatus> => {
     const client = await sif.loadNativeDexClient();
     const address = await wallet.keplrProvider.connect(chains.nativeChain);
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
