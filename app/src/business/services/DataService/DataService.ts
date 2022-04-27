@@ -69,24 +69,6 @@ type ProgramConfigMap = Record<
   }
 >;
 
-export const REWARDS_PROGRAMS_CONFIG: ProgramConfigMap = {
-  harvest_expansion: {
-    displayName: "Sif's Expansion",
-    description: "100% APR. All pools.",
-    documentationURL:
-      "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs",
-    summaryAPY: 100,
-  },
-  expansion_v4_bonus: {
-    displayName: "Pools of the People (v4)",
-    description:
-      "300% total APR (Expansion included). 5 pools. Selected by the community.",
-    documentationURL:
-      "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/rewards/liquidity-mining-rewards-programs",
-    summaryAPY: 200,
-  },
-};
-
 const MINUTE = 60;
 const HOUR = MINUTE * 60;
 const DAY = HOUR * 24;
@@ -201,15 +183,12 @@ export default class DataService {
       return sorted.map((program) => {
         const isUniversal = program.config.tokens[0] === "ALL";
 
-        const config = REWARDS_PROGRAMS_CONFIG[program.reward_program];
-
         return {
           isUniversal,
           rewardProgramName: program.reward_program,
           startDateTimeISO: program.config.start_date_utc,
           endDateTimeISO: program.config.end_date_utc,
           incentivizedPoolSymbols: isUniversal ? ["*"] : program.config.symbol,
-          ...(config || {}),
         };
       });
     } catch (error) {
