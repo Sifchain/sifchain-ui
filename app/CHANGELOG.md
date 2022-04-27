@@ -1,9 +1,9 @@
-## Release 2022.04.24
+## Release 2022.04.27
 
+- Add unbonding period disclaimer based to relevant components
+- Fix transaction cancellation error on `Add Liquidity` page
+## Release 2022.04.26
 - Remove mentions to old rewards programs on `Pool` page
-
-## Release 2022.04.24
-
 - Improved remote caching
 
 ## Release 2022.04.24
