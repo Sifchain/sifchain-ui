@@ -1,14 +1,18 @@
-import {
-  ErrorCode,
-  getErrorMessage,
-  IAssetAmount,
-  createPoolKey,
-} from "@sifchain/sdk";
-
 import { Services } from "@/business/services";
 import { Store } from "@/business/store";
 import { PoolStore } from "@/business/store/pools";
-
+import { useCore } from "@/hooks/useCore";
+import runCatching from "@/utils/runCatching";
+import {
+  createPoolKey,
+  DEFAULT_FEE,
+  ErrorCode,
+  getErrorMessage,
+  IAssetAmount,
+  SifSigningStargateClient,
+  TransactionStatus,
+  transactionStatusFromDeliverTxResponse,
+} from "@sifchain/sdk";
 import { ReportTransactionError } from "../utils";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
@@ -45,7 +49,7 @@ export function AddLiquidity(
   return async (
     nativeAssetAmount: IAssetAmount,
     externalAssetAmount: IAssetAmount,
-  ) => {
+  ): Promise<TransactionStatus> => {
     const client = await sif.loadNativeDexClient();
     const address = await wallet.keplrProvider.connect(chains.nativeChain);
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(
@@ -84,15 +88,22 @@ export function AddLiquidity(
           address,
         );
 
-    const signedTx = await wallet.keplrProvider.sign(
-      chains.nativeChain,
-      txDraft,
+    const signingClient = await SifSigningStargateClient.connectWithSigner(
+      sif.unSignedClient.rpcUrl,
+      await wallet.keplrProvider.getOfflineSignerAuto(chains.nativeChain),
     );
-    const sentTx = await wallet.keplrProvider.broadcast(
-      chains.nativeChain,
-      signedTx,
+    const [error, sentTx] = await runCatching(() =>
+      signingClient.signAndBroadcast(address, txDraft.msgs as any, DEFAULT_FEE),
     );
-    const txStatus = client.parseTxResult(sentTx);
+
+    if (error !== undefined) {
+      return {
+        state: "rejected",
+        hash: "",
+      };
+    }
+
+    const txStatus = transactionStatusFromDeliverTxResponse(sentTx);
     if (txStatus.state !== "accepted") {
       // Edge case where we have run out of native balance and need to represent that
       if (txStatus.code === ErrorCode.TX_FAILED_USER_NOT_ENOUGH_BALANCE) {
