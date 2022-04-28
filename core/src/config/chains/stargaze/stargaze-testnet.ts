@@ -23,8 +23,8 @@ export const STARGAZE_TESTNET: IBCChainConfig = {
       coinDecimals: 6,
       coinGeckoId: "pool:ustarx",
     },
-    walletUrl: "https://wallet.keplr.app/#/starx-mainnet/stake",
-    walletUrlForStaking: "https://wallet.keplr.app/#/starx-mainnet/stake",
+    walletUrl: "https://wallet.keplr.app/#/stargaze/stake",
+    walletUrlForStaking: "https://wallet.keplr.app/#/stargaze/stake",
     bip44: {
       coinType: 118,
     },
