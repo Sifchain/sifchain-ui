@@ -1,5 +1,6 @@
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
+import { formatDistance } from "date-fns";
 import { Network } from "@sifchain/sdk";
 
 import { useTransactionDetails } from "@/hooks/useTransactionDetails";
@@ -12,12 +13,15 @@ import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import Toggle from "@/components/Toggle";
+import { Tooltip } from "@/components/Tooltip";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
+import { useCurrentRewardPeriodStatistics } from "@/domains/clp/queries/params";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
-import { Tooltip } from "@/components/Tooltip";
+
+const UNBONDING_PERIOD_DAYS = 7;
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -78,6 +82,8 @@ export default defineComponent({
       ],
     }));
 
+    const { data: rewardsPeriod } = useCurrentRewardPeriodStatistics();
+
     return () => {
       if (data.modalStatus.value === "processing") {
         return (
@@ -104,19 +110,43 @@ export default defineComponent({
               </div>
             }
           >
-            <div class="bg-gray-base grid gap-4 rounded-lg p-4">
-              <Form.Details details={detailsRef.value} />
-              {!data.symmetricalPooling.value && (
-                <RiskWarning riskFactorStatus={data.riskFactorStatus} />
-              )}
+            <div class="grid gap-4">
+              <div class="bg-gray-base grid gap-4 rounded-lg p-4">
+                <Form.Details details={detailsRef.value} />
+                {!data.symmetricalPooling.value && (
+                  <RiskWarning riskFactorStatus={data.riskFactorStatus} />
+                )}
+              </div>
+              <div class="flex items-center justify-between overflow-hidden rounded border border-gray-500 p-4">
+                <span class="flex items-center text-slate-300">
+                  Once added, all liquidity will be subject to a{" "}
+                  {formatDistance(0, rewardsPeriod.value?.estimatedLockMs ?? 0)}{" "}
+                  unbonding period. Once your funds are ready, you will have{" "}
+                  {rewardsPeriod.value?.estimatedCancelMs === undefined
+                    ? "..."
+                    : formatDistance(
+                        0,
+                        rewardsPeriod.value?.estimatedCancelMs,
+                      )}{" "}
+                  to remove them before the request is canceled. Please check
+                  back periodically to ensure you don't miss your window!
+                </span>
+                <div>
+                  <AssetIcon
+                    icon="interactive/warning"
+                    class="text-slate-300"
+                    size={22}
+                  />
+                </div>
+              </div>
+              <Button.CallToAction
+                onClick={() => {
+                  data.handleAskConfirmClicked();
+                }}
+              >
+                Confirm
+              </Button.CallToAction>
             </div>
-            <Button.CallToAction
-              onClick={() => {
-                data.handleAskConfirmClicked();
-              }}
-            >
-              Confirm
-            </Button.CallToAction>
           </Modal>
         );
       }

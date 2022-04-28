@@ -25,6 +25,33 @@ export const useRewardsParamsQuery = () => {
   );
 };
 
+export const useCurrentRewardPeriodStatistics = () => {
+  const { data: rewardsParams } = useRewardsParamsQuery();
+  const { data: blockTimeMs } = useBlockTimeQuery();
+
+  return useQuery(
+    "currentRewardPeriodStatistics",
+    () => {
+      const lockPeriod =
+        rewardsParams.value?.params?.liquidityRemovalLockPeriod.toNumber() ?? 0;
+      const cancelPeriod =
+        rewardsParams.value?.params?.liquidityRemovalCancelPeriod.toNumber() ??
+        0;
+
+      return {
+        estimatedLockMs: lockPeriod * (blockTimeMs.value ?? 0),
+        estimatedCancelMs: cancelPeriod * (blockTimeMs.value ?? 0),
+      };
+    },
+    {
+      enabled: computed(
+        () =>
+          rewardsParams.value !== undefined && blockTimeMs.value !== undefined,
+      ),
+    },
+  );
+};
+
 export const useCurrentRewardPeriod = () => {
   const sifchainClients = useSifchainClients();
   const { data: blockTime } = useBlockTimeQuery();
