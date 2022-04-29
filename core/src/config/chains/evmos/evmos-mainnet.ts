@@ -18,13 +18,13 @@ export const EVMOS_MAINNET: IBCChainConfig = {
     stakeCurrency: {
       coinDenom: "evmos",
       coinMinimalDenom: "aevmos",
-      coinDecimals: 6,
+      coinDecimals: 18,
       coinGeckoId: "evmos",
     },
     walletUrl: "https://wallet.keplr.app/#/evmos/stake",
     walletUrlForStaking: "https://wallet.keplr.app/#/evmos/stake",
     bip44: {
-      coinType: 118,
+      coinType: 60,
     },
     bech32Config: {
       bech32PrefixAccAddr: "evmos",
