@@ -127,7 +127,10 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
     const denomTracesRestPromise = (async () => {
       try {
         const denomTracesRes = await fetch(
-          `${chainConfig.restUrl}/ibc/applications/transfer/v1beta1/denom_traces`,
+          `${chainConfig.restUrl}${
+            chainConfig.denomTracesPath ??
+            "/ibc/applications/transfer/v1beta1/denom_traces"
+          }`,
         );
         if (!denomTracesRes.ok)
           throw new Error(

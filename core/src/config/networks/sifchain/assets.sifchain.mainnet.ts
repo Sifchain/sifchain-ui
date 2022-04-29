@@ -1094,6 +1094,17 @@ const assets: {
       imageUrl:
         "https://assets.coingecko.com/coins/images/18817/small/eeur.jpg?1633508407",
     },
+    {
+      symbol: "aevmos",
+      displaySymbol: "evmos",
+      decimals: 6,
+      name: "EVMOS",
+      network: "sifchain",
+      homeNetwork: "evmos",
+      label: "evmos",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/24023/small/Evmos_Token_Orange_RGB.png?1651162025",
+    }
   ],
 };
 
