@@ -15,6 +15,7 @@ export default defineComponent({
           <>{tvl.data.value ? `${tvl.data.value.formatted}` : "..."} TVL</>
         }
         icon="interactive/lock"
+        nonInteractable
       />
     );
   },

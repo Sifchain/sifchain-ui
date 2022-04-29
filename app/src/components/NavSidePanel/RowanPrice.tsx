@@ -20,6 +20,7 @@ export default defineComponent({
           </>
         }
         icon="navigation/rowan"
+        nonInteractable
       />
     );
   },
