@@ -22,3 +22,4 @@ export * from "./ComdexChain";
 export * from "./ChihuahuaChain";
 export * from "./KiChain";
 export * from "./StargazeChain";
+export * from "./EvmosChain";
