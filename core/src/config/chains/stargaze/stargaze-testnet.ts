@@ -9,6 +9,7 @@ export const STARGAZE_TESTNET: IBCChainConfig = {
   chainId: "stargazesif-1",
   rpcUrl: "https://proxies.sifchain.finance/api/stargazesif-1/rpc",
   restUrl: "https://proxies.sifchain.finance/api/stargazesif-1/rest",
+  denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   features: {
     erc20Transfers: true,
   },
@@ -23,8 +24,8 @@ export const STARGAZE_TESTNET: IBCChainConfig = {
       coinDecimals: 6,
       coinGeckoId: "pool:ustarx",
     },
-    walletUrl: "https://wallet.keplr.app/#/starx-mainnet/stake",
-    walletUrlForStaking: "https://wallet.keplr.app/#/starx-mainnet/stake",
+    walletUrl: "https://wallet.keplr.app/#/stargaze/stake",
+    walletUrlForStaking: "https://wallet.keplr.app/#/stargaze/stake",
     bip44: {
       coinType: 118,
     },
