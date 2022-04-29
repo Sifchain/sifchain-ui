@@ -9,6 +9,7 @@ export const STARGAZE_TESTNET: IBCChainConfig = {
   chainId: "stargazesif-1",
   rpcUrl: "https://proxies.sifchain.finance/api/stargazesif-1/rpc",
   restUrl: "https://proxies.sifchain.finance/api/stargazesif-1/rest",
+  denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   features: {
     erc20Transfers: true,
   },
