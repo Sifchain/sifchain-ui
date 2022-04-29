@@ -9,6 +9,7 @@ export const EVMOS_MAINNET: IBCChainConfig = {
   chainId: "evmos_9001-2",
   rpcUrl: "https://proxies.sifchain.finance/api/evmos/rpc",
   restUrl: "https://proxies.sifchain.finance/api/evmos/rest",
+  denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/evmos/rpc",
     rest: "https://proxies.sifchain.finance/api/evmos/rest",
