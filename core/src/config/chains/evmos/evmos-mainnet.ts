@@ -38,7 +38,7 @@ export const EVMOS_MAINNET: IBCChainConfig = {
       {
         coinDenom: "evmos",
         coinMinimalDenom: "aevmos",
-        coinDecimals: 6,
+        coinDecimals: 18,
         coinGeckoId: "evmos",
       },
     ],
@@ -46,11 +46,11 @@ export const EVMOS_MAINNET: IBCChainConfig = {
       {
         coinDenom: "evmos",
         coinMinimalDenom: "aevmos",
-        coinDecimals: 6,
+        coinDecimals: 18,
         coinGeckoId: "evmos",
       },
     ],
-    coinType: 118,
+    coinType: 60,
     features: ["stargate", "ibc-transfer"],
   },
 };
