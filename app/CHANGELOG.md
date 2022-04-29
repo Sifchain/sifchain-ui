@@ -1,4 +1,6 @@
 ## Release 2022.04.27
+- Add EVMOS chain
+## Release 2022.04.27
 
 - Add unbonding period disclaimer to relevant components
 - Fix transaction cancellation error on Add Liquidity page
