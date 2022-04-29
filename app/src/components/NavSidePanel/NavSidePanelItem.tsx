@@ -30,6 +30,10 @@ export default defineComponent({
     onClick: {
       type: Function as PropType<() => void>,
     },
+    nonInteractable: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
     const isExternal = computed(() => props.href?.startsWith("http"));
@@ -61,12 +65,10 @@ export default defineComponent({
           })}
           {...(props.onClick && { onClick: props.onClick })}
           class={[
-            `mt-[10px] flex h-[32px] w-full cursor-pointer items-center whitespace-nowrap  rounded px-[8px] text-left text-sm font-semibold transition-colors duration-75 hover:bg-gray-200`,
+            `mt-[10px] flex h-[32px] w-full items-center whitespace-nowrap rounded px-[8px] text-left text-sm font-semibold transition-colors duration-75 hover:bg-gray-200`,
             isActive.value && "text-accent-base bg-gray-200",
+            props.nonInteractable ? "pointer-events-none" : "cursor-pointer",
             props.class,
-            Cmp.value === "button" && !props.onClick
-              ? "pointer-events-none"
-              : "",
           ]}
         >
           <AssetIcon

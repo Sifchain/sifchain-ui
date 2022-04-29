@@ -21,6 +21,7 @@ export type IBCChainConfig = BaseChainConfig & {
   rpcUrl: string;
   restUrl: string;
   keplrChainInfo: ChainInfo;
+  denomTracesPath?: string;
   features?: {
     erc20Transfers: boolean;
   };
