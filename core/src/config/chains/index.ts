@@ -47,6 +47,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.BITSONG]: bitsong[env],
         [Network.LIKECOIN]: likecoin[env],
         [Network.EMONEY]: emoney[env],
+        [Network.EVMOS]: evmos[env],
         [Network.STARNAME]: starname[env],
         [Network.CERBERUS]: cerberus[env],
         [Network.CHIHUAHUA]: chihuahua[env],
