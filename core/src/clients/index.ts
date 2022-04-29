@@ -22,6 +22,7 @@ import {
   ChihuahuaChain,
   KiChain,
   StargazeChain,
+  EvmosChain,
 } from "../clients/chains";
 
 import { Network } from "..";
@@ -50,6 +51,7 @@ export const networkChainCtorLookup = {
   [Network.CHIHUAHUA]: ChihuahuaChain,
   [Network.KI]: KiChain,
   [Network.STARGAZE]: StargazeChain,
+  [Network.EVMOS]: EvmosChain,
 };
 
 export * from "./chains";
