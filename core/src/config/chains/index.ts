@@ -23,6 +23,7 @@ import chihuahua from "./chihuahua";
 import comdex from "./comdex";
 import ki from "./ki";
 import stargaze from "./stargaze";
+import evmos from "./evmos";
 
 export const chainConfigByNetworkEnv = Object.fromEntries(
   Object.values(NetworkEnv).map((env) => {
