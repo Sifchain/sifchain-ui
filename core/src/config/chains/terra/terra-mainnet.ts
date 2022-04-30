@@ -4,7 +4,6 @@ export const TERRA_MAINNET: IBCChainConfig = {
   network: Network.TERRA,
   chainType: "ibc",
   displayName: "Terra",
-  underMaintenance: true,
   blockExplorerUrl: "https://terra.stake.id/",
   nativeAssetSymbol: "uluna",
   chainId: "columbus-4",
