@@ -5,9 +5,6 @@ import { JUNO_TESTNET } from "./juno-testnet";
 
 export default <NetEnvChainConfigLookup>{
   [NetworkEnv.LOCALNET]: JUNO_TESTNET,
-  [NetworkEnv.TESTNET_042_IBC]: JUNO_TESTNET,
-  [NetworkEnv.DEVNET_042]: JUNO_TESTNET,
-  [NetworkEnv.DEVNET_042]: JUNO_TESTNET,
   [NetworkEnv.DEVNET]: JUNO_TESTNET,
   [NetworkEnv.TESTNET]: JUNO_TESTNET,
   [NetworkEnv.MAINNET]: JUNO_MAINNET,

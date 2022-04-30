@@ -6,8 +6,6 @@ export enum NetworkEnv {
   TESTNET = "testnet",
   DEVNET = "devnet",
   LOCALNET = "localnet",
-  DEVNET_042 = "devnet_042",
-  TESTNET_042_IBC = "testnet_042_ibc",
 }
 
 // NOTE(ajoslin): support legacy `?_env=n` urls
@@ -16,8 +14,6 @@ export const networkEnvsByIndex = [
   NetworkEnv.TESTNET,
   NetworkEnv.DEVNET,
   NetworkEnv.LOCALNET,
-  NetworkEnv.DEVNET_042,
-  NetworkEnv.TESTNET_042_IBC,
 ];
 
 type AssetTag = `${Network}.${NetworkEnv}`;
@@ -38,18 +34,6 @@ export const profileLookup: ProfileLookup = {
     ethAssetTag: "ethereum.mainnet",
     sifAssetTag: "sifchain.mainnet",
     cosmoshubAssetTag: "cosmoshub.mainnet",
-  },
-  [NetworkEnv.DEVNET_042]: {
-    tag: NetworkEnv.DEVNET_042,
-    ethAssetTag: "ethereum.devnet",
-    sifAssetTag: "sifchain.devnet",
-    cosmoshubAssetTag: "cosmoshub.testnet",
-  },
-  [NetworkEnv.TESTNET_042_IBC]: {
-    tag: NetworkEnv.TESTNET_042_IBC,
-    ethAssetTag: "ethereum.testnet_042_ibc",
-    sifAssetTag: "sifchain.devnet",
-    cosmoshubAssetTag: "cosmoshub.testnet",
   },
   [NetworkEnv.TESTNET]: {
     tag: NetworkEnv.TESTNET,
@@ -76,7 +60,6 @@ const hostDefaultEnvs = [
   { test: /dex\.sifchain\.finance$/, net: NetworkEnv.MAINNET },
   { test: /testnet\.sifchain\.finance$/, net: NetworkEnv.TESTNET },
   { test: /devnet\.sifchain\.finance$/, net: NetworkEnv.DEVNET },
-  { test: /dex-v2.*?\.sifchain\.finance$/, net: NetworkEnv.TESTNET_042_IBC },
   { test: /sifchain\.vercel\.app$/, net: NetworkEnv.DEVNET },
   { test: /gateway\.pinata\.cloud$/, net: NetworkEnv.DEVNET },
   { test: /localhost$/, net: NetworkEnv.DEVNET },

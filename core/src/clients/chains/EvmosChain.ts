@@ -1,6 +1,7 @@
+import { urlJoin } from "url-join-ts";
+
 import { Chain } from "../../entities";
 import { BaseChain } from "./_BaseChain";
-import { urlJoin } from "url-join-ts";
 
 export class EvmosChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {

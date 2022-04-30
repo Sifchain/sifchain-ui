@@ -1,4 +1,6 @@
-export default {
+import { ChainAssetConfig } from "./types";
+
+const assets: ChainAssetConfig = {
   assets: [
     {
       symbol: "rowan",
@@ -74,3 +76,5 @@ export default {
     },
   ],
 };
+
+export default assets;
