@@ -121,20 +121,7 @@ export default defineComponent({
               <div class="shorter:mt-[7.5vmin] mt-[38px] flex justify-center">
                 <Logo class="shorter:w-[90px] w-[119px]" />
               </div>
-              {/* <div class="mt-[38px] shorter:mt-[7.5vmin] flex justify-center">
-                <Logo class="w-full h-[50px]" />
-              </div> */}
               <div class="shorter:mt-[7.5vmin] mt-[9.3vmin]">
-                {/* <NavSidePanelItem
-                  displayName="Dashboard"
-                  icon="navigation/dashboard"
-                  class="pointer-events-none opacity-50"
-                  action={
-                    <div class="text-info-base border-info-base mr-[8px] justify-self-end rounded-full border-[1px] border-solid py-[2px] px-[6px] text-sm">
-                      Soon
-                    </div>
-                  }
-                /> */}
                 <NavSidePanelItem
                   displayName="Swap"
                   icon="navigation/swap"
@@ -163,7 +150,9 @@ export default defineComponent({
                 />
                 <NavSidePanelItem
                   icon="navigation/changelog"
-                  onClick={() => (changelogOpenRef.value = true)}
+                  onClick={() => {
+                    changelogOpenRef.value = true;
+                  }}
                   displayName={<div class="flex items-center">Changelog</div>}
                   action={
                     changelogViewedVersion.isLatest() ? undefined : (
@@ -190,7 +179,6 @@ export default defineComponent({
                   />
                 )}
                 {!accountStore.state.sifchain.connecting &&
-                  // PLESE UPDATESILSJFOIjio03wr[90qij30[i9q23jiq34jio3jioofaf]]
                   accountStore.state.sifchain.hasLoadedBalancesOnce &&
                   !accountStore.state.sifchain.balances.some(
                     // does not have rowan
@@ -227,7 +215,7 @@ export default defineComponent({
                       instance.popper.querySelector(".tippy-content");
                     if (content) {
                       content.className +=
-                        " w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
+                        "w-[180px] font-medium bg-gray-200 px-[16px] py-[12px] rounded-none rounded-b-sm";
                     }
                   }}
                   content={
