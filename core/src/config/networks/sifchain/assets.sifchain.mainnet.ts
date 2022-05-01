@@ -1,11 +1,6 @@
-import { IAsset, Network } from "../../../entities";
+import { ChainAssetConfig } from "./types";
 
-const assets: {
-  assets: (Omit<IAsset, "homeNetwork" | "network"> & {
-    network: "sifchain";
-    homeNetwork: string;
-  })[];
-} = {
+const assets: ChainAssetConfig = {
   assets: [
     {
       symbol: "rowan",
@@ -1097,14 +1092,14 @@ const assets: {
     {
       symbol: "aevmos",
       displaySymbol: "evmos",
-      decimals: 6,
+      decimals: 18,
       name: "EVMOS",
       network: "sifchain",
       homeNetwork: "evmos",
       label: "evmos",
       imageUrl:
         "https://assets.coingecko.com/coins/images/24023/small/Evmos_Token_Orange_RGB.png?1651162025",
-    }
+    },
   ],
 };
 

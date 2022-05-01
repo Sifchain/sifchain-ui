@@ -8,11 +8,11 @@ export default defineComponent({
   name: "WalletPicker",
   setup() {
     return () => (
-      <div class="w-[304px]">
+      <div class="max-h-[85vh] w-[304px] overflow-y-scroll">
         {walletConnections
-          .filter((connection) => {
-            return !isChainFlaggedDisabled(connection.getChain());
-          })
+          .filter(
+            (connection) => !isChainFlaggedDisabled(connection.getChain()),
+          )
           .map((connection) => (
             <WalletConnection
               connection={connection}
