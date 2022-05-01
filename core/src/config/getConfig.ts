@@ -1,16 +1,13 @@
 // TODO - Conditional load or build-time tree shake
 import localnetconfig from "./networks/sifchain/config.localnet.json";
 import devnetconfig from "./networks/sifchain/config.devnet.json";
-import devnet042config from "./networks/sifchain/config.devnet-042.json";
 
-import testnet042ibcconfig from "./networks/sifchain/config.testnet-042-ibc.json";
 import testnetconfig from "./networks/sifchain/config.testnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 
 import assetsEthereumLocalnet from "./networks/ethereum/assets.ethereum.localnet.json";
 import assetsEthereumDevnet from "./networks/ethereum/assets.ethereum.sifchain-devnet.json";
 import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.sifchain-testnet.json";
-import assetsEthereumTestnet042IBC from "./networks/ethereum/assets.ethereum.sifchain-testnet-042.json";
 import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.json";
 
 import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet";
@@ -58,9 +55,6 @@ export function getConfig(
     ),
     "ethereum.testnet": parseAssets(
       assetsEthereumTestnet.assets as AssetConfig[],
-    ),
-    "ethereum.testnet_042_ibc": parseAssets(
-      assetsEthereumTestnet042IBC.assets as AssetConfig[],
     ),
     "ethereum.mainnet": parseAssets(
       assetsEthereumMainnet.assets as AssetConfig[],
@@ -113,12 +107,6 @@ export function getConfig(
       chainConfigByNetworkEnv[NetworkEnv.DEVNET],
       peggyCompatibleCosmosBaseDenoms,
     ),
-    devnet_042: parseConfig(
-      devnet042config as CoreConfig,
-      allAssets,
-      chainConfigByNetworkEnv[NetworkEnv.DEVNET_042],
-      peggyCompatibleCosmosBaseDenoms,
-    ),
     testnet: parseConfig(
       testnetconfig as CoreConfig,
       allAssets,
@@ -129,12 +117,6 @@ export function getConfig(
       mainnnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.MAINNET],
-      peggyCompatibleCosmosBaseDenoms,
-    ),
-    testnet_042_ibc: parseConfig(
-      testnet042ibcconfig as CoreConfig,
-      allAssets,
-      chainConfigByNetworkEnv[NetworkEnv.TESTNET_042_IBC],
       peggyCompatibleCosmosBaseDenoms,
     ),
   };
