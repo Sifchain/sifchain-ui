@@ -1092,7 +1092,7 @@ const assets: ChainAssetConfig = {
     {
       symbol: "aevmos",
       displaySymbol: "evmos",
-      decimals: 6,
+      decimals: 18,
       name: "EVMOS",
       network: "sifchain",
       homeNetwork: "evmos",
