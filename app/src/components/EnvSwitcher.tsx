@@ -30,9 +30,7 @@ export default defineComponent({
       [NetworkEnv.MAINNET]: styles.mainnet,
       [NetworkEnv.LOCALNET]: styles.localnet,
       [NetworkEnv.TESTNET]: styles.testnet,
-      [NetworkEnv.TESTNET_042_IBC]: styles.testnet,
       [NetworkEnv.DEVNET]: styles.devnet,
-      [NetworkEnv.DEVNET_042]: styles.devnet,
     };
 
     const classNames = classesByNetworkEnv[networkEnv];
@@ -42,12 +40,13 @@ export default defineComponent({
       : null;
 
     return () => (
-      <div class="fixed bottom-0 left-4 h-6 w-36 overflow-hidden rounded-t shadow md:left-64">
+      <div class="fixed bottom-0 left-4 w-36 overflow-hidden rounded-t-lg shadow md:left-64">
         {selected && (
           <div
+            role="button"
             class={[
-              "grid h-full place-items-center font-semibold",
-              classNames ?? "",
+              "grid h-full w-full place-items-center p-2 font-semibold",
+              classNames,
             ]}
           >
             {selected}

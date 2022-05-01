@@ -43,38 +43,40 @@ export default defineComponent({
         <NavSidePanelItem
           icon="interactive/wallet"
           displayName={
-            connectedNetworkCount.value === 0 ? (
-              "Connect Wallets"
-            ) : accountStore.getters.isConnecting ? (
-              "Connecting..."
-            ) : (
-              <>
-                <div>Connected Wallets</div>
-                <div class="mt-[-2px] w-full text-left text-sm font-semibold opacity-50">
-                  {!accountStore.state.sifchain.connecting &&
-                    accountStore.state.sifchain.hasLoadedBalancesOnce && (
-                      <>
-                        {accountStore.state.sifchain.balances
-                          .filter(
-                            // does not have rowan
-                            (b) => b.asset.symbol.includes("rowan"),
-                          )
-                          .map((asset) => {
-                            const formatted = formatAssetAmount(asset);
-                            if (formatted.length > 6) {
-                              return Intl.NumberFormat("en", {
-                                notation: "compact",
-                              }).format(+formatted);
-                            }
-                          })[0] || 0}{" "}
-                        ROWAN
-                      </>
-                    )}
-                </div>
-              </>
-            )
+            <>
+              {connectedNetworkCount.value === 0 ? (
+                "Connect Wallets"
+              ) : accountStore.getters.isConnecting ? (
+                "Connecting..."
+              ) : (
+                <>
+                  <div>Connected Wallets</div>
+                  <div class="w-full text-left text-sm font-semibold opacity-50">
+                    {!accountStore.state.sifchain.connecting &&
+                      accountStore.state.sifchain.hasLoadedBalancesOnce && (
+                        <>
+                          {accountStore.state.sifchain.balances
+                            .filter(
+                              // does not have rowan
+                              (b) => b.asset.symbol.includes("rowan"),
+                            )
+                            .map((asset) => {
+                              const formatted = formatAssetAmount(asset);
+                              if (formatted.length > 6) {
+                                return Intl.NumberFormat("en", {
+                                  notation: "compact",
+                                }).format(+formatted);
+                              }
+                            })[0] || 0}{" "}
+                          ROWAN
+                        </>
+                      )}
+                  </div>
+                </>
+              )}
+            </>
           }
-          class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-700"]}
+          class={[appWalletPicker.isOpen.value && "bg-gray-700"]}
           action={
             connectedNetworkCount.value === 0 ? (
               <AssetIcon
@@ -95,9 +97,10 @@ export default defineComponent({
             ) : (
               <div
                 class={`
-                border-connected-base text-connected-base border-solid" ml-auto flex h-[20px] w-[20px] 
-                flex-shrink-0 items-center justify-center rounded-full border
-              `}
+                border-connected-base text-connected-base text-xs] 
+                ml-auto grid h-[22px] w-[22px] place-items-center rounded-full
+                border
+                `}
               >
                 {connectedNetworkCount.value}
               </div>

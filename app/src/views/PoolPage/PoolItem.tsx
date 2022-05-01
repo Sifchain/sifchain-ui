@@ -351,7 +351,7 @@ export default defineComponent({
                   </div>
                 ))}
               </div>
-              {this.unlock !== undefined && (
+              {this.unlock && (
                 <section>
                   <header class="mt-2 mb-0.5">
                     <p class="text-md font-bold">Unbonding request</p>
