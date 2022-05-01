@@ -1,5 +1,6 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useQueryClient } from "vue-query";
 import {
   format,
   Amount,
@@ -17,7 +18,6 @@ import { getMaxAmount } from "@/views/utils/getMaxAmount";
 import { formatAssetAmount, formatNumber } from "@/components/utils";
 import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
 import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
-import { useQueryClient } from "vue-query";
 import {
   LIQUIDITY_PROVIDERS_KEY,
   LIQUIDITY_PROVIDER_KEY,

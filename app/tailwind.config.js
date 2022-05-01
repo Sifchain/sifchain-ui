@@ -13,9 +13,9 @@ module.exports = {
         "accent-gradient": `linear-gradient(180deg, #D4B553 0%, #C1A04F 100%);`,
       },
       screens: {
-        sm: { raw: "(max-width: 1000px)" },
-        shorter: { raw: "(max-height: 900px)" },
-        // => @media (orientation: portrait) { ... }
+        shorter: {
+          raw: "(max-height: 900px)",
+        },
       },
       fontFamily: {
         DEFAULT: "sans",
@@ -30,14 +30,6 @@ module.exports = {
         noatan: ["Noatan"],
       },
       spacing: {
-        1: "8px",
-        2: "12px",
-        3: "16px",
-        4: "20px",
-        5: "24px",
-        6: "28px",
-        7: "32px",
-        8: "48px",
         sidebar: SIDEBAR_WIDTH,
       },
       width: {
@@ -70,52 +62,17 @@ module.exports = {
           bad: "#cccc0e",
         },
         gray: {
-          // Ash Black
-          100: "#171717",
-          base: "#171717",
-
           action_button: "#191919",
-
-          200: "#232323",
           input: "#232323",
-
-          ring: "#272727",
-          250: "#2B2B2B",
-
-          300: "#353535",
           input_outline: "#353535",
-
-          500: "#565656",
-          disabled: "#565656",
-
-          600: "#636363",
-
-          800: "#808080",
-
-          825: "#969696",
-
-          850: "#AFAFAF",
-
-          900: "#F9F9F9",
           active_outline: "#F9F9F9",
+          disabled: "#565656",
+          ring: "#272727",
+          base: "#171717",
         },
       },
-      fontSize: {
-        xs: "10px",
-        sm: "12px",
-        base: "14px",
-        md: "16px",
-        lg: "18px",
-        xl: "20px",
-        "2xl": "24px",
-        "3xl": "26px",
-      },
-      borderRadius: {
-        xs: "2px",
-        sm: "4px",
-        DEFAULT: "6px",
-        lg: "10px",
-      },
+      fontSize: {},
+      borderRadius: {},
       animation: {
         "fade-in": "fadeIn 150ms ease-out 1",
         "fade-in-up": "fadeInUp 200ms ease-out 1",

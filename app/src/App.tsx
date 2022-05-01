@@ -113,7 +113,7 @@ export default defineComponent({
     };
 
     return () => (
-      <div class="min-h-screen">
+      <div class="flex min-h-screen">
         <SifchainClientsProvider>
           <SideBar />
           <router-view />

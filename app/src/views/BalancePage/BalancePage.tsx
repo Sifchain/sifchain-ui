@@ -216,7 +216,7 @@ export default defineComponent({
               />
             )}
             emptyState={
-              <div class="grid flex-1 place-items-center rounded-md bg-gray-200 p-4 text-center">
+              <div class="grid flex-1 place-items-center rounded-md bg-white/20 p-4 text-center">
                 {isLoadingBalances.value ? (
                   <span class="text-accent-base flex items-center gap-1 text-lg">
                     Loading Balances

@@ -74,7 +74,7 @@ export default defineComponent({
               </>
             )
           }
-          class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-200"]}
+          class={["mt-0", appWalletPicker.isOpen.value && "bg-gray-700"]}
           action={
             connectedNetworkCount.value === 0 ? (
               <AssetIcon
@@ -93,7 +93,12 @@ export default defineComponent({
                 />
               </div>
             ) : (
-              <div class="border-connected-base text-connected-base ml-auto flex h-[20px] w-[20px] flex-shrink-0 items-center justify-center rounded-full border border-solid">
+              <div
+                class={`
+                border-connected-base text-connected-base border-solid" ml-auto flex h-[20px] w-[20px] 
+                flex-shrink-0 items-center justify-center rounded-full border
+              `}
+              >
                 {connectedNetworkCount.value}
               </div>
             )
