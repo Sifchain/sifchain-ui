@@ -61,16 +61,6 @@ export default defineComponent({
         ) {
           return;
         }
-
-        program.incentivizedPoolSymbols.forEach((symbol) => {
-          const asset = useNativeChain().findAssetWithLikeSymbol(symbol);
-
-          if (asset) {
-            let list = lookup[asset.symbol];
-            if (!list) list = lookup[asset.symbol] = [];
-            list.push(program);
-          }
-        });
       });
 
       for (const symbol in lookup) {

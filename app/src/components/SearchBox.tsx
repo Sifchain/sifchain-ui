@@ -93,7 +93,7 @@ export const SearchBox = defineComponent({
       <div
         {...containerProps}
         class={[
-          "bg-gray-input border-gray-input_outline relative flex h-8 items-center overflow-hidden rounded border border-solid focus-within:border-white",
+          "bg-gray-input border-gray-input_outline relative flex items-center overflow-hidden rounded border border-solid py-3 focus-within:border-white",
           containerProps?.class,
           containerClass,
         ]}

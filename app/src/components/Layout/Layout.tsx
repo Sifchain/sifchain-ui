@@ -15,7 +15,7 @@ export default defineComponent({
     return () => (
       <>
         <div
-          class="grid w-full place-items-center bg-gray-800"
+          class="grid h-screen w-full place-items-center overflow-y-scroll bg-gray-800"
           onScroll={props.onScroll}
         >
           {context.slots.default?.()}

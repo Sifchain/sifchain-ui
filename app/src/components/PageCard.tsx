@@ -46,50 +46,46 @@ export default defineComponent({
     });
 
     return () => (
-      <div class="absolute md:top-[90px] 2xl:top-[130px]">
-        <div
-          key="view-layer"
-          class={[
-            "relative max-w-4xl flex-col items-center justify-start md:rounded-lg",
-            "bg-black p-4 pt-0 text-white shadow-2xl transition-all",
-            props.class,
-          ]}
-          style={props.style}
-        >
-          <div class="sticky top-0 z-10 w-full bg-black pt-2">
-            {!!props.heading && (
-              <div class="flex w-full flex-row items-center justify-between pb-[10px]">
-                <div class="flex items-center">
-                  {!!props.iconName &&
-                    (props.iconType === "AssetIcon" ? (
-                      <AssetIcon
-                        icon={props.iconName as IconName}
-                        size={32}
-                        active
-                      />
-                    ) : (
-                      <TokenIcon
-                        assetValue={props.iconName as IAsset}
-                        size={32}
-                      />
-                    ))}
-                  <span
-                    class={[
-                      "text-accent-base ml-[10px] font-sans text-[26px] font-semibold",
-                      props.headingClass,
-                    ]}
-                  >
-                    {props.heading}
-                  </span>
-                </div>
-                <div class="flex items-center">{props.headerAction}</div>
+      <div
+        class={[
+          "relative max-w-4xl flex-col items-center justify-start md:rounded-lg",
+          "bg-black p-4 pt-0 text-white shadow-2xl transition-all",
+          props.class,
+        ]}
+        style={props.style}
+      >
+        <div class="sticky top-0 z-10 w-full bg-black pt-2">
+          {!!props.heading && (
+            <div class="flex w-full flex-row items-center justify-between pb-[10px]">
+              <div class="flex items-center">
+                {!!props.iconName &&
+                  (props.iconType === "AssetIcon" ? (
+                    <AssetIcon
+                      icon={props.iconName as IconName}
+                      size={32}
+                      active
+                    />
+                  ) : (
+                    <TokenIcon
+                      assetValue={props.iconName as IAsset}
+                      size={32}
+                    />
+                  ))}
+                <span
+                  class={[
+                    "text-accent-base ml-[10px] font-sans text-[26px] font-semibold",
+                    props.headingClass,
+                  ]}
+                >
+                  {props.heading}
+                </span>
               </div>
-            )}
-            {props.headerContent}
-          </div>
-          <div class="w-full">{context.slots.default?.()}</div>
+              <div class="flex items-center">{props.headerAction}</div>
+            </div>
+          )}
+          {props.headerContent}
         </div>
-        {props.withOverflowSpace && <div class="h-[90px] 2xl:h-[130px]" />}
+        <div class="w-full">{context.slots.default?.()}</div>
       </div>
     );
   },

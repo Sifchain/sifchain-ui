@@ -119,7 +119,7 @@ export default defineComponent({
                 href="/swap"
               />
               <NavSidePanelItem
-                displayName={<>Balances</>}
+                displayName="Balances"
                 icon="navigation/balances"
                 href="/balances"
               />
@@ -127,16 +127,6 @@ export default defineComponent({
                 displayName="Pool"
                 icon="navigation/pool"
                 href="/pool"
-              />
-              <NavSidePanelItem
-                displayName="Pool Stats"
-                icon="navigation/pool-stats"
-                href="/stats"
-              />
-              <NavSidePanelItem
-                displayName="Rewards"
-                icon="navigation/rewards"
-                href="/rewards"
               />
               <NavSidePanelItem
                 icon="navigation/changelog"

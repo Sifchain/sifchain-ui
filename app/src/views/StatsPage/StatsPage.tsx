@@ -7,6 +7,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { Tooltip } from "@/components/Tooltip";
 import { SearchBox } from "@/components/SearchBox";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import RecyclerView from "@/components/RecyclerView";
 
 export default defineComponent({
   name: "StatsPage",
@@ -160,68 +161,63 @@ export default defineComponent({
               </>
             }
           >
-            <table class="w-full">
-              <thead>
-                <tr>
+            <RecyclerView
+              rowHeight={40}
+              data={finalStats}
+              emptyState={<div>...</div>}
+              header={
+                <div class="flex">
                   {columns.map((column, index) => (
-                    <td
+                    <div
                       ref={column.ref}
-                      class={[column.class]}
+                      class={["flex-1", column.class]}
                       key={column.name}
                     />
                   ))}
-                </tr>
-              </thead>
-              <tbody class="w-full text-base font-medium">
-                {finalStats.value.map((item) => {
-                  return (
-                    <tr
-                      key={item.asset.symbol}
-                      class="h-8 border-b border-solid border-gray-600 border-opacity-80 align-middle last:border-transparent hover:opacity-80"
-                    >
-                      <td class="align-middle">
-                        <div class="flex items-center">
-                          <TokenNetworkIcon
-                            assetValue={item.asset}
-                            size={22}
-                            class="mr-[10px]"
-                          />
-                          {(
-                            item.asset.displaySymbol || item.asset.symbol
-                          ).toUpperCase()}
-                        </div>
-                      </td>
-                      <td class="text-mono text-right align-middle">
-                        ${prettyNumber(item.price, 3)}
-                      </td>
-                      <td
-                        class={[
-                          "text-mono text-right align-middle",
-                          item.arbitrage == null
-                            ? "text-gray-800"
-                            : item.arbitrage < 0
-                            ? `text-connected-base`
-                            : `text-danger-base`,
-                        ]}
-                      >
-                        {item.arbitrage == null
-                          ? "N/A"
-                          : `${prettyNumber(Math.abs(item.arbitrage))}%`}
-                      </td>
-                      <td class="text-mono text-right align-middle">
-                        ${prettyNumber(item.tvl)}
-                      </td>
-                      <td class="text-mono text-right align-middle">
-                        ${prettyNumber(item.volume)}
-                      </td>
-                      <td class="text-mono text-right align-middle">
-                        {item.poolApr}%
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                </div>
+              }
+              renderItem={(item) => (
+                <div
+                  key={item.asset.symbol}
+                  class="flex gap-2 border-b border-gray-600 p-2 py-4 font-mono last:border-b-0"
+                >
+                  <div class="flex-1 items-center">
+                    <div class="flex items-center">
+                      <TokenNetworkIcon
+                        assetValue={item.asset}
+                        size={22}
+                        class="mr-2"
+                      />
+                      {(
+                        item.asset.displaySymbol || item.asset.symbol
+                      ).toUpperCase()}
+                    </div>
+                  </div>
+                  <div class="flex-1 text-right">
+                    ${prettyNumber(item.price, 3)}
+                  </div>
+                  <div
+                    class={[
+                      "text-right",
+                      item.arbitrage == null
+                        ? "text-gray-800"
+                        : item.arbitrage < 0
+                        ? `text-connected-base`
+                        : `text-danger-base`,
+                    ]}
+                  >
+                    {item.arbitrage == null
+                      ? "N/A"
+                      : `${prettyNumber(Math.abs(item.arbitrage))}%`}
+                  </div>
+                  <div class="flex-1 text-right">${prettyNumber(item.tvl)}</div>
+                  <div class="flex-1 text-right">
+                    ${prettyNumber(item.volume)}
+                  </div>
+                  <div class="flex-1 text-right">{item.poolApr}%</div>
+                </div>
+              )}
+            />
           </PageCard>
         </Layout>
       );
