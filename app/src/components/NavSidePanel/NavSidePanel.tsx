@@ -76,7 +76,7 @@ export default defineComponent({
           class={clsx(
             [
               "ease fixed z-40 flex h-screen w-full flex-col transition-transform md:max-w-[240px]",
-              "gap-12 bg-black p-4 shadow-slate-900 sm:shadow-lg",
+              "gap-6 bg-black p-4 shadow-slate-900 sm:shadow-lg md:gap-12",
             ],
             {
               "-translate-x-[100%]": !isOpenRef.value,
@@ -87,7 +87,7 @@ export default defineComponent({
           <button
             onClick={() => (isOpenRef.value = !isOpenRef.value)}
             class={clsx(
-              "absolute top-1.5 right-0 h-8 w-8 translate-x-[100%] rounded-r-md bg-slate-600 p-1 sm:top-16",
+              "absolute right-0 top-16 h-8 w-8 translate-x-[100%] rounded-r-md bg-slate-600 p-1",
               "z-40 transition-transform",
               {
                 "translate-x-0 -scale-x-[1] bg-white text-gray-900":
