@@ -63,10 +63,8 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   // Temporary mobile support
   // TODO: implement wallet switcher
   async getKeplr() {
-    const windowKeplr = await getKeplrProvider();
-
-    if (!isNil(windowKeplr) || !/Mobi|Android/i.test(navigator.userAgent)) {
-      return windowKeplr;
+    if (await this.shouldUseWalletConnect()) {
+      return await getKeplrProvider();
     }
 
     if (this.wcKeplrPromise !== undefined) {
@@ -135,9 +133,9 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   async getOfflineSignerAuto(chain: Chain) {
     const chainConfig = this.getIBCChainConfig(chain);
     const keplr = await this.getKeplr();
-    const sendingSigner = await keplr?.getOfflineSignerAuto(
-      chainConfig.chainId,
-    );
+    const sendingSigner = (await this.shouldUseWalletConnect())
+      ? keplr?.getOfflineSignerOnlyAmino(chainConfig.chainId)
+      : await keplr?.getOfflineSignerAuto(chainConfig.chainId);
 
     if (sendingSigner === undefined)
       throw new Error(`Failed to get sendingSigner for ${chainConfig.chainId}`);
@@ -432,5 +430,11 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           transactionHash: result.transactionHash,
           data: result.data,
         };
+  }
+
+  private async shouldUseWalletConnect() {
+    const windowKeplr = await getKeplrProvider();
+
+    return isNil(windowKeplr) && /Mobi|Android/i.test(navigator.userAgent);
   }
 }
