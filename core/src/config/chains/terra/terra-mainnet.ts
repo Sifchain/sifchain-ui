@@ -4,7 +4,7 @@ export const TERRA_MAINNET: IBCChainConfig = {
   network: Network.TERRA,
   chainType: "ibc",
   displayName: "Terra",
-  blockExplorerUrl: "https://terra.stake.id/",
+  blockExplorerUrl: "https://finder.terra.money/mainnet/",
   nativeAssetSymbol: "uluna",
   chainId: "columbus-4",
   rpcUrl: "https://proxies.sifchain.finance/api/columbus-5/rpc",
