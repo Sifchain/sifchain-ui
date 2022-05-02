@@ -102,11 +102,11 @@ export default defineComponent({
             />
           </button>
 
-          <div class="grid flex-1 content-start gap-12">
-            <div class="flex justify-center py-8">
+          <div class="grid flex-1 content-start gap-8 md:gap-12">
+            <div class="flex justify-center py-2 md:py-8">
               <Logo class="shorter:w-[90px] w-[119px]" />
             </div>
-            <div class="grid gap-3">
+            <div class="grid gap-2 md:gap-3">
               <NavSidePanelItem
                 displayName="Swap"
                 icon="navigation/swap"
@@ -192,7 +192,7 @@ export default defineComponent({
               </Tooltip>
             </div>
           </div>
-          <div class="grid gap-3">
+          <div class="grid gap-2 md:gap-3">
             <TVL />
             <PmtpParam />
             <RowanPrice />
