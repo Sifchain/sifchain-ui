@@ -51,7 +51,7 @@ export default defineComponent({
         ]}
         style={props.style}
       >
-        <div class="sticky top-0 z-10 grid w-full gap-4 bg-black/90">
+        <div class="sticky top-0 z-10 grid w-full gap-4 bg-black/90 pb-2">
           {Boolean(props.heading) && (
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
