@@ -10,8 +10,12 @@
     "@cosmjs/proto-signing": "^0.28.4",
     "@cosmjs/stargate": "^0.28.4",
     "@cosmjs/tendermint-rpc": "^0.28.4",
-    "@keplr-wallet/cosmos": "^0.9.16",
-    "@keplr-wallet/stores": "^0.9.18",
-    "@sifchain/sdk": "workspace:*"
+    "@keplr-wallet/cosmos": "^0.10.3",
+    "@keplr-wallet/stores": "^0.10.3",
+    "@keplr-wallet/types": "^0.10.3",
+    "@keplr-wallet/wc-client": "^0.10.3",
+    "@keplr-wallet/wc-qrcode-modal": "^0.10.3",
+    "@sifchain/sdk": "workspace:*",
+    "@walletconnect/client": "^1.7.8"
   }
 }
