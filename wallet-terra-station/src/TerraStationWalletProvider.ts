@@ -1,42 +1,32 @@
+import {
+  BroadcastTxFailure,
+  BroadcastTxResult,
+  BroadcastTxSuccess,
+} from "@cosmjs/launchpad";
+import {
+  EncodeObject,
+  OfflineDirectSigner,
+  OfflineSigner,
+} from "@cosmjs/proto-signing";
+import { IndexedTx, StargateClient } from "@cosmjs/stargate";
+import { parseRawLog } from "@cosmjs/stargate/build/logs";
+import { Chain } from "@sifchain/sdk";
+import {
+  NativeAminoTypes,
+  NativeDexSignedTransaction,
+  NativeDexTransaction,
+} from "@sifchain/sdk/src/clients";
 import { CosmosWalletProvider } from "@sifchain/sdk/src/clients/wallets/cosmos/CosmosWalletProvider";
 import { WalletProviderContext } from "@sifchain/sdk/src/clients/wallets/WalletProvider";
-
+import { KeplrWalletProvider } from "@sifchain/wallet-keplr";
+import { Coin } from "@terra-money/terra.js/dist/core/Coin";
+import { MsgTransfer } from "@terra-money/terra.js/dist/core/ibc-transfer/msgs/MsgTransfer";
+import * as TWP from "@terra-money/wallet-provider";
 import {
   ChromeExtensionController,
   ChromeExtensionStatus,
 } from "@terra-money/wallet-provider/modules/chrome-extension";
-
-import {
-  LCDClient,
-  Coins,
-  Msg,
-  BankMsg,
-  CreateTxOptions,
-} from "@terra-money/terra.js";
-import { MsgTransfer } from "@terra-money/terra.js/dist/core/ibc-transfer/msgs/MsgTransfer";
-import { Coin } from "@terra-money/terra.js/dist/core/Coin";
-
-import * as TWP from "@terra-money/wallet-provider";
-import { Chain, AssetAmount } from "@sifchain/sdk";
-import { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
-import {
-  NativeDexTransaction,
-  NativeDexSignedTransaction,
-  NativeAminoTypes,
-} from "@sifchain/sdk/src/clients";
-import { EncodeObject } from "@cosmjs/proto-signing";
-import {
-  BroadcastTxResult,
-  BroadcastTxSuccess,
-  BroadcastTxFailure,
-} from "@cosmjs/launchpad";
-import {
-  SigningStargateClient,
-  StargateClient,
-  IndexedTx,
-} from "@cosmjs/stargate";
-import { KeplrWalletProvider } from "@sifchain/wallet-keplr";
-import { parseRawLog } from "@cosmjs/stargate/build/logs";
+import { firstValueFrom } from "rxjs";
 
 export class TerraStationWalletProvider extends CosmosWalletProvider {
   async isInstalled(chain: Chain) {
@@ -46,7 +36,7 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
       return (
         controller._status.getValue() !== ChromeExtensionStatus.UNAVAILABLE
       );
-    } catch (error) {
+    } catch (error: any) {
       if (/Provider not set/.test(error.message)) {
         return false;
       }
@@ -79,28 +69,28 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
   }
 
   async connect(chain: Chain) {
-    let address: string | boolean;
-    try {
-      address = await this.getExtensionController(chain).connect();
-    } catch (error) {
-      console.error(error);
-      address = false;
-    }
+    const controller = this.getExtensionController(chain);
 
-    if (!address) {
+    const connected = await controller.connect();
+
+    if (!connected) {
       throw new Error("Chrome extension not installed");
     }
-    return address;
+
+    return (await firstValueFrom(controller.terraAddress())) ?? "";
   }
+
   async hasConnected(chain: Chain): Promise<boolean> {
     const controller = this.getExtensionController(chain);
 
     await controller.checkStatus();
     return typeof controller._terraAddress.value === "string";
   }
+
   canDisconnect(chain: Chain): boolean {
     return false;
   }
+
   disconnect(chain: Chain): Promise<void> {
     throw new Error("Method not implemented.");
   }
