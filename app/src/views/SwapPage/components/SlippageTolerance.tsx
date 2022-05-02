@@ -20,11 +20,12 @@ export const SlippageTolerance = (props: {
             onClick={(e) => {
               props.onUpdate(opt);
             }}
-            class={`text-md rounded border border-transparent py-1 px-1.5 font-mono font-medium text-white transition-all ${
+            class={[
+              "text-md rounded border border-transparent py-1 px-1.5 font-mono font-medium text-white transition-all",
               Number(opt) === Number(props.slippage)
                 ? "bg-accent-gradient"
-                : "bg-gray-input border-gray-input_outline bg-gradient-to-b from-transparent to-transparent"
-            }`}
+                : "bg-gray-input border-gray-input_outline bg-gradient-to-b from-transparent to-transparent",
+            ]}
           >
             {opt}%
           </button>

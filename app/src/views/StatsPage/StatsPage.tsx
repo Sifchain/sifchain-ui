@@ -104,7 +104,6 @@ export default defineComponent({
             class="w-screen"
             heading="Pool Stats"
             iconName="navigation/pool-stats"
-            withOverflowSpace
             headerContent={
               <>
                 <SearchBox

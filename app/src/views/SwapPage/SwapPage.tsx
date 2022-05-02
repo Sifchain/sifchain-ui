@@ -51,7 +51,7 @@ export default defineComponent({
 
     return () => (
       <Layout>
-        <PageCard heading="Swap" iconName="navigation/swap">
+        <PageCard heading="Swap" iconName="navigation/swap" class="max-w-lg">
           <div class="grid gap-4">
             <div class="grid gap-2">
               <TokenInputGroup
@@ -77,10 +77,13 @@ export default defineComponent({
               />
               <div
                 key="button"
-                class="relative z-10 flex w-full scale-125 items-center justify-center overflow-hidden"
+                class="relative z-10 flex w-full items-center justify-center overflow-hidden"
               >
                 <button
-                  class="actidve:rotate-180 bg-gray-base border-gray-input_outline hover:border-accent-base relative box-content flex origin-center items-center rounded-[10px] border-[1px] py-[4px] px-[9px]"
+                  class={`
+                    actidve:rotate-180 bg-gray-base border-gray-input_outline hover:border-accent-base 
+                    relative box-content flex origin-center items-center rounded-lg border py-1 px-2
+                  `}
                   key="button"
                   onClick={() => {
                     data.handleArrowClicked();
@@ -120,7 +123,6 @@ export default defineComponent({
                 }
               />
             </div>
-
             <SlippageTolerance
               slippage={data.slippage.value || "0"}
               onUpdate={(v) => {

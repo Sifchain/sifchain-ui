@@ -3,7 +3,6 @@ import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
-import { Tooltip } from "@/components/Tooltip";
 import { formatAssetAmount } from "@/components/utils";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
@@ -255,10 +254,10 @@ export default defineComponent({
       "border-gray-input_outline flex h-7 items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
 
     return (
-      <div class="group w-full border-b border-solid border-white/20 border-opacity-80 py-3 align-middle last:border-none">
+      <div class="group w-full border-b border-solid border-white/20 border-opacity-80 py-3 align-middle text-sm last:border-none">
         <div
           onClick={() => this.toggleExpanded()}
-          class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
+          class="flex h-8 w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
             <TokenIcon assetValue={this.nativeAmount.asset} size={22} />

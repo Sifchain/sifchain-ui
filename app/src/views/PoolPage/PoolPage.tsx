@@ -152,7 +152,6 @@ export default defineComponent({
           <PageCard
             heading="Pool"
             iconName="navigation/pool"
-            withOverflowSpace
             headerAction={
               <Button.Inline
                 to={{ name: "AddLiquidity", params: {} }}
@@ -167,15 +166,15 @@ export default defineComponent({
             headerContent={
               <>
                 <SearchBox
-                  containerClass="mb-4"
-                  value={this.searchQuery}
+                  containerClass="my-4"
                   placeholder="Search Pool..."
+                  value={this.searchQuery}
                   onInput={(e: Event) => {
                     this.searchQuery = (e.target as HTMLInputElement).value;
                   }}
                 />
-                <div class="mb-[-5px] flex w-full flex-row justify-start pb-[5px]">
-                  {COLUMNS.map((column, index) => (
+                <div class="flex w-full justify-start">
+                  {COLUMNS.map((column) => (
                     <div
                       key={column.name}
                       onClick={() => {
@@ -189,7 +188,7 @@ export default defineComponent({
                       }}
                       class={[
                         column.class,
-                        "flex items-center opacity-50",
+                        "flex items-center text-sm opacity-50",
                         column.sortable && "cursor-pointer",
                       ]}
                     >
@@ -200,7 +199,7 @@ export default defineComponent({
                       <AssetIcon
                         icon="interactive/arrow-down"
                         class={[
-                          "mr-[-22px] pl-[2px]",
+                          "pl-0.5",
                           (!column.sortable || this.sortBy !== column.id) &&
                             "invisible",
                           this.sortReverse && "rotate-180",

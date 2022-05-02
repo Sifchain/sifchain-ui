@@ -328,7 +328,6 @@ export default defineComponent({
               </div>
             ) : undefined
           }
-          withOverflowSpace
         >
           <div
             class={[

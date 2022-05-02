@@ -48,6 +48,7 @@ export type PoolPageColumn = {
   help?: string | JSX.Element;
   sortable?: boolean;
 };
+
 export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",

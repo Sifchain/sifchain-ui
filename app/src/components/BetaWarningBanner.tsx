@@ -8,7 +8,7 @@ export default defineComponent({
 
     return () => (
       <div
-        class="absolute top-0 right-14 z-20 flex w-48 flex-col items-end drop-shadow-lg transition-all"
+        class="absolute top-0 right-14 z-20 hidden w-48 flex-col items-end drop-shadow-lg transition-all md:flex"
         style={{
           transform: `translateY(${
             expandedRef.value ? 0 : "calc(-100% + 40px)"
