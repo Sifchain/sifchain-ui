@@ -114,7 +114,7 @@ export default defineComponent({
       if (!visibleRows.value && !props.visibleRows) {
         // dynamically set visibleRows based on the screen height when a default value isn't present
 
-        const maxHeight = document.body.clientHeight * 0.8 - props.offsetTop;
+        const maxHeight = document.body.clientHeight * 0.725 - props.offsetTop;
         visibleRows.value = Math.floor(maxHeight / props.rowHeight);
 
         window.addEventListener("resize", () => {

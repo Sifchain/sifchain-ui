@@ -51,10 +51,10 @@ export default defineComponent({
         ]}
         style={props.style}
       >
-        <div class="sticky top-0 z-10 grid w-full gap-4 bg-black/90 py-2">
+        <div class="sticky top-0 z-10 grid w-full gap-4 bg-black/90">
           {Boolean(props.heading) && (
             <div class="flex items-center justify-between">
-              <div class="flex items-center">
+              <div class="flex items-center gap-2">
                 {Boolean(props.iconName) &&
                   (props.iconType === "AssetIcon" ? (
                     <AssetIcon

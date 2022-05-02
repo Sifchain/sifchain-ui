@@ -151,6 +151,8 @@ export default defineComponent({
           iconName="navigation/pool"
           headerAction={
             <Button.Inline
+              class="relative !h-[40px] px-4 !text-lg"
+              iconClass="!w-[24px] !h-[24px] transform translate-y-[1px]"
               to={{ name: "AddLiquidity", params: {} }}
               active
               replace
@@ -160,24 +162,20 @@ export default defineComponent({
             </Button.Inline>
           }
           headerContent={
-            <div>
-              <SearchBox
-                containerClass="my-4"
-                placeholder="Search Pool..."
-                value={this.searchQuery}
-                onInput={(e: Event) => {
-                  this.searchQuery = (e.target as HTMLInputElement).value;
-                }}
-              />
-            </div>
+            <SearchBox
+              placeholder="Search Pool..."
+              value={this.searchQuery}
+              onInput={(e: Event) => {
+                this.searchQuery = (e.target as HTMLInputElement).value;
+              }}
+            />
           }
         >
           <RecyclerView
             rowHeight={57}
-            visibleRows={20}
             class="flex min-h-[calc(80vh-130px)] w-full flex-col py-2"
             emptyState={
-              <div class="grid w-full flex-1 place-items-center rounded-md bg-white/20 p-4 text-center">
+              <div class="grid w-full flex-1 place-items-center rounded-md bg-white/10 p-4 text-center">
                 {!this.isLoaded ? (
                   <span class="text-accent-base flex items-center gap-1 text-lg">
                     Loading Pools

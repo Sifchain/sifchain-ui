@@ -90,9 +90,9 @@ export default defineComponent({
     return () => (
       <Layout>
         <PageCard
-          heading={<div class="flex items-center">Balances</div>}
+          heading="Balances"
           headerAction={
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 md:gap-4">
               <Tooltip
                 content={
                   <>
@@ -104,7 +104,7 @@ export default defineComponent({
               >
                 <AssetIcon
                   icon="interactive/help"
-                  class="hover:text-accent-base mt-[4px] mr-[2px] cursor-pointer text-gray-300 opacity-100 transition-all hover:opacity-50"
+                  class="hover:text-accent-base mt-1 mr-0.5 cursor-pointer text-gray-500 transition-all hover:opacity-60"
                   size={24}
                 />
               </Tooltip>
@@ -120,7 +120,7 @@ export default defineComponent({
               />
               <Button.Inline
                 onClick={() => {}}
-                class="text-md relative !h-[40px] px-[17px]"
+                class="relative !h-[40px] px-4 !text-lg"
                 icon="interactive/plus"
                 iconClass="!w-[24px] !h-[24px] transform translate-y-[1px]"
                 to={getImportLocation("select", {
@@ -216,7 +216,7 @@ export default defineComponent({
               />
             )}
             emptyState={
-              <div class="grid flex-1 place-items-center rounded-md bg-white/20 p-4 text-center">
+              <div class="grid flex-1 place-items-center rounded-md bg-white/10 p-4 text-center">
                 {isLoadingBalances.value ? (
                   <span class="text-accent-base flex items-center gap-1 text-lg">
                     Loading Balances

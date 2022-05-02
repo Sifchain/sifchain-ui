@@ -51,7 +51,7 @@ export default defineComponent({
 
     return () => (
       <Layout>
-        <PageCard heading="Swap" iconName="navigation/swap" class="max-w-lg">
+        <PageCard heading="Swap" iconName="navigation/swap" class="max-w-xl">
           <div class="grid gap-4">
             <div class="grid gap-2">
               <TokenInputGroup
