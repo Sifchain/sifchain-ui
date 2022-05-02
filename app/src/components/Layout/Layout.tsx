@@ -3,6 +3,7 @@ import BetaWarningBanner from "@/components/BetaWarningBanner";
 
 import AlertBanner from "../AlertBanner";
 import NavSidePanel from "../NavSidePanel";
+import LayoutBackground from "./LayoutBackground";
 
 export default defineComponent({
   name: "Layout",
@@ -16,7 +17,7 @@ export default defineComponent({
     return () => (
       <>
         <div
-          class="flex min-h-screen w-full bg-slate-100 subpixel-antialiased dark:bg-slate-900/95 dark:text-slate-100"
+          class="flex min-h-screen w-full bg-slate-100 subpixel-antialiased dark:bg-slate-900/60 dark:text-slate-100"
           onScroll={props.onScroll}
         >
           <NavSidePanel />
@@ -26,6 +27,8 @@ export default defineComponent({
           <div id="modal-target" />
           <AlertBanner />
         </div>
+
+        <LayoutBackground />
         <BetaWarningBanner />
       </>
     );
