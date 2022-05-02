@@ -6,13 +6,13 @@ export const TERRA_MAINNET: IBCChainConfig = {
   displayName: "Terra",
   blockExplorerUrl: "https://finder.terra.money/mainnet/",
   nativeAssetSymbol: "uluna",
-  chainId: "columbus-4",
+  chainId: "columbus-5",
   rpcUrl: "https://proxies.sifchain.finance/api/columbus-5/rpc",
   restUrl: "https://proxies.sifchain.finance/api/columbus-5/rest",
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/columbus-5/rpc",
     rest: "https://proxies.sifchain.finance/api/columbus-5/rest",
-    chainId: "columbus-4",
+    chainId: "columbus-5",
     chainName: "Terra",
     stakeCurrency: {
       coinDenom: "LUNA",
