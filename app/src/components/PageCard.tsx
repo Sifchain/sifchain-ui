@@ -46,12 +46,12 @@ export default defineComponent({
     return () => (
       <div
         class={[
-          "mx-auto w-full max-w-4xl rounded-2xl bg-black p-4 md:mt-[10vh] md:p-6",
+          "mx-auto w-full max-w-4xl rounded-2xl bg-black p-4 md:mt-[8vh] md:p-6",
           props.class,
         ]}
         style={props.style}
       >
-        <div class="sticky top-0 z-10 grid w-full gap-2 bg-black/90 py-2">
+        <div class="sticky top-0 z-10 grid w-full gap-4 bg-black/90 py-2">
           {Boolean(props.heading) && (
             <div class="flex items-center justify-between">
               <div class="flex items-center">
@@ -80,6 +80,7 @@ export default defineComponent({
               <div class="flex items-center">{props.headerAction}</div>
             </div>
           )}
+          <div>{props.headerContent}</div>
         </div>
         <div class="w-full max-w-[calc(100vw-16px)] overflow-x-scroll">
           {context.slots.default?.()}

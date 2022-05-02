@@ -1,16 +1,18 @@
+import BigNumber from "bignumber.js";
+import { formatDistance } from "date-fns";
+import { computed, defineComponent } from "vue";
+import { RouterView } from "vue-router";
+
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
+import RecyclerView from "@/components/RecyclerView";
 import { SearchBox } from "@/components/SearchBox";
 import { useRemoveLiquidityMutation } from "@/domains/clp/mutation/liquidity";
 import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
-import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-import BigNumber from "bignumber.js";
-import { formatDistance } from "date-fns";
-import { defineComponent } from "vue";
-import { RouterView } from "vue-router";
+import { ElementOf } from "@/utils/types";
 import {
   CompetitionsBySymbolLookup,
   useLeaderboardCompetitions,
@@ -23,13 +25,15 @@ import {
   usePoolPageData,
 } from "./usePoolPageData";
 
+type PoolDataArray = ReturnType<
+  typeof usePoolPageData
+>["allPoolsData"]["value"];
+
 export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      allPoolsData: [] as ReturnType<
-        typeof usePoolPageData
-      >["allPoolsData"]["value"],
+      allPoolsData: [] as PoolDataArray,
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
@@ -72,9 +76,7 @@ export default defineComponent({
     symbolCompetitionsLookup(): CompetitionsBySymbolLookup | null {
       return this.competitionsRes.data?.value || null;
     },
-    sanitizedPoolData(): ReturnType<
-      typeof usePoolPageData
-    >["allPoolsData"]["value"] {
+    sanitizedPoolData(): PoolDataArray {
       if (!this.isLoaded) return [];
 
       const result = this.allPoolsData
@@ -131,6 +133,7 @@ export default defineComponent({
   },
 
   render() {
+    const data = computed(() => this.sanitizedPoolData);
     return (
       <Layout>
         <RouterView
@@ -142,156 +145,173 @@ export default defineComponent({
               : undefined
           }
         />
-        {!this.isLoaded && !this.sanitizedPoolData.length ? (
-          <div class="absolute left-0 top-[180px] flex w-full justify-center">
-            <div class="flex h-[80px] w-[80px] items-center justify-center rounded-lg bg-black bg-opacity-50">
-              <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
+
+        <PageCard
+          heading="Pool"
+          iconName="navigation/pool"
+          headerAction={
+            <Button.Inline
+              to={{ name: "AddLiquidity", params: {} }}
+              active
+              replace
+              icon="interactive/plus"
+            >
+              <div class="font-semibold">Add Liquidity</div>
+            </Button.Inline>
+          }
+          headerContent={
+            <div>
+              <SearchBox
+                containerClass="my-4"
+                placeholder="Search Pool..."
+                value={this.searchQuery}
+                onInput={(e: Event) => {
+                  this.searchQuery = (e.target as HTMLInputElement).value;
+                }}
+              />
             </div>
-          </div>
-        ) : (
-          <PageCard
-            heading="Pool"
-            iconName="navigation/pool"
-            headerAction={
-              <Button.Inline
-                to={{ name: "AddLiquidity", params: {} }}
-                active
-                replace
-                class={["text-md !h-[40px] px-[17px]"]}
-                icon="interactive/plus"
-              >
-                <div class="font-semibold">Add Liquidity</div>
-              </Button.Inline>
+          }
+        >
+          <RecyclerView
+            rowHeight={57}
+            visibleRows={20}
+            class="flex min-h-[calc(80vh-130px)] w-full flex-col py-2"
+            emptyState={
+              <div class="grid w-full flex-1 place-items-center rounded-md bg-white/20 p-4 text-center">
+                {!this.isLoaded ? (
+                  <span class="text-accent-base flex items-center gap-1 text-lg">
+                    Loading Pools
+                    <AssetIcon icon="interactive/anim-racetrack-spinner" />
+                  </span>
+                ) : this.searchQuery ? (
+                  <span class="text-accent-base text-lg">
+                    We can't seem to find that token.
+                    <br /> Search for another token to continue
+                  </span>
+                ) : (
+                  <span class="text-accent-base text-lg">
+                    Please import assets to view balances
+                  </span>
+                )}
+              </div>
             }
-            headerContent={
-              <>
-                <SearchBox
-                  containerClass="my-4"
-                  placeholder="Search Pool..."
-                  value={this.searchQuery}
-                  onInput={(e: Event) => {
-                    this.searchQuery = (e.target as HTMLInputElement).value;
-                  }}
-                />
-                <div class="flex w-full justify-start">
-                  {COLUMNS.map((column) => (
-                    <div
-                      key={column.name}
-                      onClick={() => {
-                        if (!column.sortable) return;
-                        if (this.sortBy === column.id) {
-                          this.sortReverse = !this.sortReverse;
-                        } else {
-                          this.sortReverse = false;
-                          this.sortBy = column.id;
-                        }
-                      }}
+            header={
+              <div class="flex justify-start">
+                {COLUMNS.map((column) => (
+                  <div
+                    key={column.name}
+                    onClick={() => {
+                      if (!column.sortable) return;
+                      if (this.sortBy === column.id) {
+                        this.sortReverse = !this.sortReverse;
+                      } else {
+                        this.sortReverse = false;
+                        this.sortBy = column.id;
+                      }
+                    }}
+                    class={[
+                      column.class,
+                      "flex items-center text-sm opacity-50",
+                      column.sortable && "cursor-pointer",
+                    ]}
+                  >
+                    {column.name}
+                    {column.help && (
+                      <Button.InlineHelp>{column.help}</Button.InlineHelp>
+                    )}
+                    <AssetIcon
+                      icon="interactive/arrow-down"
                       class={[
-                        column.class,
-                        "flex items-center text-sm opacity-50",
-                        column.sortable && "cursor-pointer",
+                        "pl-0.5",
+                        (!column.sortable || this.sortBy !== column.id) &&
+                          "invisible",
+                        this.sortReverse && "rotate-180",
                       ]}
-                    >
-                      {column.name}
-                      {column.help && (
-                        <Button.InlineHelp>{column.help}</Button.InlineHelp>
-                      )}
-                      <AssetIcon
-                        icon="interactive/arrow-down"
-                        class={[
-                          "pl-0.5",
-                          (!column.sortable || this.sortBy !== column.id) &&
-                            "invisible",
-                          this.sortReverse && "rotate-180",
-                        ]}
-                      />
-                    </div>
-                  ))}
-                  <div class="w-[24px]" />
-                </div>
-              </>
+                    />
+                  </div>
+                ))}
+                <div class="w-[24px]" />
+              </div>
             }
-          >
-            <div class="w-full max-w-max overflow-x-scroll">
-              {this.sanitizedPoolData.map((item) => {
-                const rewardsPrograms =
-                  this.poolRewardProgramLookup[
-                    item.pool.externalAmount!.symbol
-                  ] ?? [];
+            data={data}
+            renderItem={(item: ElementOf<PoolDataArray>) => {
+              const rewardsPrograms =
+                this.poolRewardProgramLookup[
+                  item.pool.externalAmount!.symbol
+                ] ?? [];
 
-                const itemLp = item.liquidityProvider?.liquidityProvider;
-                const filteredUnlock =
-                  item.liquidityProvider?.liquidityProvider?.unlocks.filter(
-                    (x) => !x.expired,
-                  );
-                const isUnlockable =
-                  new BigNumber(
-                    itemLp?.liquidityProviderUnits ?? 0,
-                  ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
-                const unlock = filteredUnlock?.[0];
-
-                const currentRewardPeriod = this.currentRewardPeriod.data.value;
-
-                return (
-                  <PoolItem
-                    currentRewardPeriod={
-                      currentRewardPeriod === undefined
-                        ? undefined
-                        : {
-                            endEta: formatDistance(
-                              new Date(),
-                              currentRewardPeriod.estimatedRewardPeriodEndDate,
-                            ),
-                          }
-                    }
-                    unLockable={isUnlockable}
-                    unlock={
-                      unlock === undefined
-                        ? undefined
-                        : {
-                            ...unlock,
-                            nativeAssetAmount:
-                              unlock.nativeAssetAmount.toFixed(6),
-                            externalAssetAmount:
-                              unlock.externalAssetAmount.toFixed(6),
-                            expiration:
-                              unlock.expiration === undefined
-                                ? undefined
-                                : formatDistance(new Date(), unlock.expiration),
-                            eta:
-                              unlock.eta === undefined
-                                ? undefined
-                                : formatDistance(new Date(), unlock.eta),
-                            isRemovalInProgress:
-                              this.removeLiquidityMutation.isLoading.value,
-                            isActiveRemoval:
-                              this.removeLiquidityMutation.variables.value
-                                ?.requestHeight === unlock.requestHeight,
-                            onRemoveRequest: () =>
-                              this.removeLiquidityMutation.mutate({
-                                requestHeight: unlock.requestHeight,
-                                externalAssetSymbol:
-                                  item.pool.externalAmount!.symbol,
-                                units: unlock.units,
-                              }),
-                          }
-                    }
-                    bonusRewardPrograms={rewardsPrograms}
-                    competitionsLookup={
-                      this.symbolCompetitionsLookup?.[
-                        item.pool.externalAmount!.symbol
-                      ]
-                    }
-                    pool={item.pool}
-                    poolStat={item.poolStat}
-                    accountPool={item.accountPool}
-                    key={item.pool.symbol()}
-                  />
+              const itemLp = item.liquidityProvider?.liquidityProvider;
+              const filteredUnlock =
+                item.liquidityProvider?.liquidityProvider?.unlocks.filter(
+                  (x) => !x.expired,
                 );
-              })}
-            </div>
-          </PageCard>
-        )}
+              const isUnlockable =
+                new BigNumber(
+                  itemLp?.liquidityProviderUnits ?? 0,
+                ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
+              const unlock = filteredUnlock?.[0];
+
+              const currentRewardPeriod = this.currentRewardPeriod.data.value;
+
+              return (
+                <PoolItem
+                  currentRewardPeriod={
+                    currentRewardPeriod === undefined
+                      ? undefined
+                      : {
+                          endEta: formatDistance(
+                            new Date(),
+                            currentRewardPeriod.estimatedRewardPeriodEndDate,
+                          ),
+                        }
+                  }
+                  unLockable={isUnlockable}
+                  unlock={
+                    unlock === undefined
+                      ? undefined
+                      : {
+                          ...unlock,
+                          nativeAssetAmount:
+                            unlock.nativeAssetAmount.toFixed(6),
+                          externalAssetAmount:
+                            unlock.externalAssetAmount.toFixed(6),
+                          expiration:
+                            unlock.expiration === undefined
+                              ? undefined
+                              : formatDistance(new Date(), unlock.expiration),
+                          eta:
+                            unlock.eta === undefined
+                              ? undefined
+                              : formatDistance(new Date(), unlock.eta),
+                          isRemovalInProgress:
+                            this.removeLiquidityMutation.isLoading.value,
+                          isActiveRemoval:
+                            this.removeLiquidityMutation.variables.value
+                              ?.requestHeight === unlock.requestHeight,
+                          onRemoveRequest: () =>
+                            this.removeLiquidityMutation.mutate({
+                              requestHeight: unlock.requestHeight,
+                              externalAssetSymbol:
+                                item.pool.externalAmount!.symbol,
+                              units: unlock.units,
+                            }),
+                        }
+                  }
+                  bonusRewardPrograms={rewardsPrograms}
+                  competitionsLookup={
+                    this.symbolCompetitionsLookup?.[
+                      item.pool.externalAmount!.symbol
+                    ]
+                  }
+                  pool={item.pool}
+                  poolStat={item.poolStat}
+                  accountPool={item.accountPool}
+                  key={item.pool.symbol()}
+                />
+              );
+            }}
+          />
+        </PageCard>
       </Layout>
     );
   },
