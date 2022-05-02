@@ -94,7 +94,7 @@ export const SelectDropdown = defineComponent({
           <div
             onClick={() => tooltipInstance.value?.hide()}
             class={[
-              "bg-gray-input_outline overflow-hidden rounded-sm border border-solid border-gray-500",
+              "bg-gray-input_outline overflow-hidden rounded border border-solid border-gray-500",
               props.class,
             ]}
           >

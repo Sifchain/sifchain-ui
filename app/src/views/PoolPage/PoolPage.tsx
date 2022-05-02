@@ -142,7 +142,7 @@ export default defineComponent({
               : undefined
           }
         />
-        {!this.isLoaded ? (
+        {!this.isLoaded && !this.sanitizedPoolData.length ? (
           <div class="absolute left-0 top-[180px] flex w-full justify-center">
             <div class="flex h-[80px] w-[80px] items-center justify-center rounded-lg bg-black bg-opacity-50">
               <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
@@ -213,82 +213,84 @@ export default defineComponent({
               </>
             }
           >
-            {this.sanitizedPoolData.map((item) => {
-              const rewardsPrograms =
-                this.poolRewardProgramLookup[
-                  item.pool.externalAmount!.symbol
-                ] ?? [];
+            <div class="w-full max-w-max overflow-x-scroll">
+              {this.sanitizedPoolData.map((item) => {
+                const rewardsPrograms =
+                  this.poolRewardProgramLookup[
+                    item.pool.externalAmount!.symbol
+                  ] ?? [];
 
-              const itemLp = item.liquidityProvider?.liquidityProvider;
-              const filteredUnlock =
-                item.liquidityProvider?.liquidityProvider?.unlocks.filter(
-                  (x) => !x.expired,
+                const itemLp = item.liquidityProvider?.liquidityProvider;
+                const filteredUnlock =
+                  item.liquidityProvider?.liquidityProvider?.unlocks.filter(
+                    (x) => !x.expired,
+                  );
+                const isUnlockable =
+                  new BigNumber(
+                    itemLp?.liquidityProviderUnits ?? 0,
+                  ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
+                const unlock = filteredUnlock?.[0];
+
+                const currentRewardPeriod = this.currentRewardPeriod.data.value;
+
+                return (
+                  <PoolItem
+                    currentRewardPeriod={
+                      currentRewardPeriod === undefined
+                        ? undefined
+                        : {
+                            endEta: formatDistance(
+                              new Date(),
+                              currentRewardPeriod.estimatedRewardPeriodEndDate,
+                            ),
+                          }
+                    }
+                    unLockable={isUnlockable}
+                    unlock={
+                      unlock === undefined
+                        ? undefined
+                        : {
+                            ...unlock,
+                            nativeAssetAmount:
+                              unlock.nativeAssetAmount.toFixed(6),
+                            externalAssetAmount:
+                              unlock.externalAssetAmount.toFixed(6),
+                            expiration:
+                              unlock.expiration === undefined
+                                ? undefined
+                                : formatDistance(new Date(), unlock.expiration),
+                            eta:
+                              unlock.eta === undefined
+                                ? undefined
+                                : formatDistance(new Date(), unlock.eta),
+                            isRemovalInProgress:
+                              this.removeLiquidityMutation.isLoading.value,
+                            isActiveRemoval:
+                              this.removeLiquidityMutation.variables.value
+                                ?.requestHeight === unlock.requestHeight,
+                            onRemoveRequest: () =>
+                              this.removeLiquidityMutation.mutate({
+                                requestHeight: unlock.requestHeight,
+                                externalAssetSymbol:
+                                  item.pool.externalAmount!.symbol,
+                                units: unlock.units,
+                              }),
+                          }
+                    }
+                    bonusRewardPrograms={rewardsPrograms}
+                    competitionsLookup={
+                      this.symbolCompetitionsLookup?.[
+                        item.pool.externalAmount!.symbol
+                      ]
+                    }
+                    pool={item.pool}
+                    poolStat={item.poolStat}
+                    accountPool={item.accountPool}
+                    key={item.pool.symbol()}
+                  />
                 );
-              const isUnlockable =
-                new BigNumber(
-                  itemLp?.liquidityProviderUnits ?? 0,
-                ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
-              const unlock = filteredUnlock?.[0];
-
-              const currentRewardPeriod = this.currentRewardPeriod.data.value;
-
-              return (
-                <PoolItem
-                  currentRewardPeriod={
-                    currentRewardPeriod === undefined
-                      ? undefined
-                      : {
-                          endEta: formatDistance(
-                            new Date(),
-                            currentRewardPeriod.estimatedRewardPeriodEndDate,
-                          ),
-                        }
-                  }
-                  unLockable={isUnlockable}
-                  unlock={
-                    unlock === undefined
-                      ? undefined
-                      : {
-                          ...unlock,
-                          nativeAssetAmount:
-                            unlock.nativeAssetAmount.toFixed(6),
-                          externalAssetAmount:
-                            unlock.externalAssetAmount.toFixed(6),
-                          expiration:
-                            unlock.expiration === undefined
-                              ? undefined
-                              : formatDistance(new Date(), unlock.expiration),
-                          eta:
-                            unlock.eta === undefined
-                              ? undefined
-                              : formatDistance(new Date(), unlock.eta),
-                          isRemovalInProgress:
-                            this.removeLiquidityMutation.isLoading.value,
-                          isActiveRemoval:
-                            this.removeLiquidityMutation.variables.value
-                              ?.requestHeight === unlock.requestHeight,
-                          onRemoveRequest: () =>
-                            this.removeLiquidityMutation.mutate({
-                              requestHeight: unlock.requestHeight,
-                              externalAssetSymbol:
-                                item.pool.externalAmount!.symbol,
-                              units: unlock.units,
-                            }),
-                        }
-                  }
-                  bonusRewardPrograms={rewardsPrograms}
-                  competitionsLookup={
-                    this.symbolCompetitionsLookup?.[
-                      item.pool.externalAmount!.symbol
-                    ]
-                  }
-                  pool={item.pool}
-                  poolStat={item.poolStat}
-                  accountPool={item.accountPool}
-                  key={item.pool.symbol()}
-                />
-              );
-            })}
+              })}
+            </div>
           </PageCard>
         )}
       </Layout>

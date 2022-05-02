@@ -151,7 +151,7 @@ export default defineComponent({
               />
             </div>
           }
-          class="w-screen" // force full width
+          class="w-full max-w-4xl" // force full width
         >
           <RecyclerView
             data={allBalances}

@@ -44,8 +44,9 @@ export default defineComponent({
           icon="navigation/changelog"
           showClose
           onClose={props.onClose}
+          class="w-screen max-w-4xl"
         >
-          <div class="w-[calc(100% + 4px)] max-h-[70vh] overflow-y-scroll">
+          <div class="max-h-[70vh] w-full overflow-y-scroll">
             <div
               class="prose prose-invert text-left"
               innerHTML={changelog.data.value?.changelog || ""}

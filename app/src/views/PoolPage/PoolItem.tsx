@@ -17,7 +17,6 @@ import {
   Competition,
   CompetitionsLookup,
 } from "../LeaderboardPage/useCompetitionData";
-import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
 import { COLUMNS_LOOKUP, PoolRewardProgram } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 
@@ -256,7 +255,7 @@ export default defineComponent({
       "border-gray-input_outline flex h-7 items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
 
     return (
-      <div class="group w-full border-b border-solid border-white/20 border-opacity-80 py-3 align-middle last:border-none last:border-transparent">
+      <div class="group w-full border-b border-solid border-white/20 border-opacity-80 py-3 align-middle last:border-none">
         <div
           onClick={() => this.toggleExpanded()}
           class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
@@ -341,10 +340,10 @@ export default defineComponent({
           >
             <div>
               <div class="border-gray-input_outline align w-[442px] self-center rounded border border-solid">
-                {this.details.map(([key, value], index) => (
+                {this.details.map(([key, value]) => (
                   <div
-                    key={index}
-                    class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
+                    key={key}
+                    class="border-gray-input_outline flex items-center justify-between border-b border-solid p-2.5 text-sm font-medium last:border-none"
                   >
                     <span>{key}</span>
                     <span>{value}</span>
@@ -408,7 +407,7 @@ export default defineComponent({
                 </section>
               )}
             </div>
-            <div class="p-[4px]">
+            <div class="flex w-36 flex-col gap-2 p-1">
               {!this.externalAmount.decommissioned && (
                 <Button.Inline
                   to={{
@@ -418,7 +417,7 @@ export default defineComponent({
                     },
                   }}
                   replace
-                  class="!text-accent-base w-[140px] !bg-black"
+                  class="!text-accent-base w-full !bg-black"
                   icon="interactive/plus"
                 >
                   Add Liquidity
@@ -435,7 +434,7 @@ export default defineComponent({
                         },
                       }}
                       replace
-                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      class="!text-accent-base w-full !bg-black"
                       icon="interactive/minus"
                     >
                       Unbond Liquidity
@@ -451,7 +450,7 @@ export default defineComponent({
                         },
                       }}
                       replace
-                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      class="!text-accent-base w-full !bg-black"
                       icon="interactive/minus"
                     >
                       Remove Liquidity

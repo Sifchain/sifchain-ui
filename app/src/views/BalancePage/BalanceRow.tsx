@@ -148,9 +148,9 @@ export default defineComponent({
       >
         {/* token info */}
         <div class="w-[200px] text-left align-middle group-hover:opacity-80">
-          <div class="flex items-center">
+          <div class="flex items-center gap-2">
             <TokenNetworkIcon asset={ref(props.tokenItem.asset)} />
-            <span class="ml-1 uppercase">
+            <span class="uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>
             {props.tokenItem.asset.decommissioned &&

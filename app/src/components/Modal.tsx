@@ -64,8 +64,6 @@ export default defineComponent({
       }
     };
     onMounted(() => {
-      // document.body.style.setProperty("height", "100vh");
-      // document.body.style.setProperty("overflow", "hidden");
       document.body.addEventListener("keydown", onKeypress);
     });
     onUnmounted(() => {
@@ -73,11 +71,11 @@ export default defineComponent({
     });
     return () => (
       <div class="fixed inset-0 z-20">
-        <div class="animate-fade-in fixed inset-0 z-20 h-screen overflow-hidden bg-white bg-opacity-25 duration-300" />
+        <div class="animate-fade-in fixed inset-0 z-20 h-screen overflow-hidden bg-slate-800/25 backdrop-blur-sm duration-300" />
         <div
           class={[
-            "left-sidebar shorter:py-[4vh] animate-fade-in animate-fade-in-up fixed inset-0 z-20",
-            "flex h-screen items-center justify-center overflow-y-scroll duration-500 sm:left-0",
+            "shorter:py-[4vh] animate-fade-in animate-fade-in-up fixed inset-0 z-20",
+            "flex h-screen items-center justify-center overflow-y-scroll duration-500",
             props.containerClass,
           ]}
           onClick={() => {
@@ -86,14 +84,14 @@ export default defineComponent({
         >
           <div
             class={[
-              "relative flex-col items-center justify-start md:w-[530px]",
-              "rounded-lg bg-black p-4 text-white",
+              "relative grid w-full max-w-xl items-center",
+              "rounded-lg bg-black p-6 text-white md:left-[140px]",
               props.class,
             ]}
             onClick={(e) => e.stopPropagation()}
           >
-            {!!props.heading && (
-              <div class="flex w-full flex-row items-center justify-between pb-4">
+            {Boolean(props.heading) && (
+              <div class="flex w-full items-center justify-between pb-4">
                 <div class="flex items-center">
                   {props.icon ? (
                     <AssetIcon icon={props.icon} active size={32} />

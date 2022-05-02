@@ -5,7 +5,6 @@ import { Amount } from "@sifchain/sdk";
 import { useInitialize } from "@/hooks/useInitialize";
 
 import EnvSwitcher from "@/components/EnvSwitcher";
-import SideBar from "@/components/NavSidePanel";
 import Notifications from "@/components/Notifications";
 import Flags from "@/components/Flags";
 
@@ -115,7 +114,6 @@ export default defineComponent({
     return () => (
       <div class="flex min-h-screen">
         <SifchainClientsProvider>
-          <SideBar />
           <router-view />
           {shouldShowOnboardingModal.value && (
             <OnboardingModal onClose={onCloseOnboardingModal} />

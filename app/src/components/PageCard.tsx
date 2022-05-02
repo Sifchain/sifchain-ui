@@ -41,6 +41,7 @@ export default defineComponent({
   setup: function PageCard(props, context: SetupContext) {
     const router = useRouter();
     const initialRoute = ref("");
+
     onMounted(() => {
       initialRoute.value = router.currentRoute.value.path;
     });
@@ -48,8 +49,8 @@ export default defineComponent({
     return () => (
       <div
         class={[
-          "relative max-w-4xl flex-col items-center justify-start md:rounded-lg",
-          "bg-black p-4 pt-0 text-white shadow-2xl transition-all",
+          "relative m-auto grid max-w-6xl md:mx-auto md:rounded-lg",
+          "bg-black p-8 text-white shadow-2xl transition-all",
           props.class,
         ]}
         style={props.style}

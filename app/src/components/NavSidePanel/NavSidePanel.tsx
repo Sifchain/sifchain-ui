@@ -1,13 +1,13 @@
-import { defineComponent, onMounted, ref, watch, computed } from "vue";
+import { defineComponent, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
+import clsx from "clsx";
 
 import { accountStore } from "@/store/modules/accounts";
 import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
 import useChangeLog from "@/hooks/useChangeLog";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import { Button } from "@/components/Button/Button";
+import Tooltip from "@/components/Tooltip";
 import { VotingModal } from "@/components/VotingModal/VotingModal";
 import ChangelogModal, {
   changelogViewedVersion,
@@ -30,8 +30,7 @@ export default defineComponent({
   setup() {
     const moreMenuRef = ref();
 
-    const sidebarRef = ref();
-    const isOpenRef = ref(false);
+    const isOpenRef = ref(true);
 
     const proposalData = computed(() => governanceStore.getters.activeProposal);
 
@@ -62,20 +61,6 @@ export default defineComponent({
       { immediate: true },
     );
 
-    onMounted(() => {
-      document.addEventListener("click", (ev) => {
-        setTimeout(() => {
-          const target = ev.target as HTMLElement;
-          const btn = document.getElementById("open-button");
-          if (!isOpenRef.value) return;
-          if (btn && btn.contains(target)) return;
-          if (sidebarRef.value.contains(target)) return;
-
-          isOpenRef.value = false;
-        }, 1);
-      });
-    });
-
     const changelog = useChangeLog();
 
     return () => (
@@ -86,29 +71,38 @@ export default defineComponent({
         {votingOpenRef.value && (
           <VotingModal onClose={() => (votingOpenRef.value = false)} />
         )}
-        <Button.Inline
-          id="open-button"
-          class={[
-            "fixed top-[8px] left-0 z-40 hidden transform rounded-bl-none rounded-tl-none transition-all duration-500 sm:block",
-            isOpenRef.value ? "translate-x-[-100%]" : "translate-x-none",
-            isOpenRef.value ? "ml-sidebar left-[-8px]" : "ml-0",
-            isOpenRef.value ? "!rounded" : "",
-          ]}
-          onClick={() => (isOpenRef.value = !isOpenRef.value)}
+
+        <aside
+          class={clsx(
+            [
+              "ease fixed flex h-screen w-full flex-col transition-transform md:max-w-[240px]",
+              "gap-12 bg-black p-4 shadow-slate-900 sm:shadow-lg",
+            ],
+            {
+              "-translate-x-[100%]": !isOpenRef.value,
+              "md:relative": isOpenRef.value,
+            },
+          )}
         >
-          <AssetIcon
-            icon="interactive/chevron-down"
-            size={20}
-            style={{
-              transform: `rotate(${isOpenRef.value ? 90 : -90}deg)`,
-            }}
-          />
-        </Button.Inline>
-        <div
-          ref={sidebarRef}
-          class={["flex flex-1 flex-col justify-between p-4 shadow-xl"]}
-        >
-          <div class="grid gap-12">
+          <button
+            onClick={() => (isOpenRef.value = !isOpenRef.value)}
+            class={clsx(
+              "absolute top-1.5 right-0 h-8 w-8 translate-x-[100%] rounded-r-md bg-slate-600 p-1 sm:top-16 md:hidden",
+              "z-40 transition-transform",
+              {
+                "translate-x-0 -scale-x-[1] bg-white text-gray-900":
+                  isOpenRef.value,
+              },
+            )}
+          >
+            <AssetIcon
+              icon="interactive/chevron-down"
+              size={20}
+              class="-rotate-90"
+            />
+          </button>
+
+          <div class="grid flex-1 content-start gap-12">
             <div class="flex justify-center py-8">
               <Logo class="shorter:w-[90px] w-[119px]" />
             </div>
@@ -190,14 +184,6 @@ export default defineComponent({
                 animation={undefined}
                 ref={moreMenuRef}
                 offset={[0, -2]}
-                onShow={(instance: TooltipInstance) => {
-                  const content =
-                    instance.popper.querySelector(".tippy-content");
-                  if (content) {
-                    content.className +=
-                      "w-[180px] font-medium bg-gray-800 text-white px-8 py-[12px] rounded-none rounded-b-sm";
-                  }
-                }}
                 content={
                   <MoreMenu onAction={() => moreMenuRef.value.tippy?.hide()} />
                 }
@@ -211,14 +197,14 @@ export default defineComponent({
             <PmtpParam />
             <RowanPrice />
             <ConnectedWallets />
-            {changelog.isSuccess.value && (
-              <div class="mt-[24px] pb-[10px] font-mono text-sm opacity-20 hover:opacity-100">
-                {`V.${changelog.data.value?.version?.toUpperCase()} © 
-                  ${new Date().getFullYear()} Sifchain`}
-              </div>
-            )}
           </div>
-        </div>
+          {changelog.isSuccess.value && (
+            <div class="text-center font-mono text-xs opacity-40 hover:opacity-100">
+              {`V.${changelog.data.value?.version?.toUpperCase()} © 
+                  ${new Date().getFullYear()} Sifchain`}
+            </div>
+          )}
+        </aside>
       </>
     );
   },

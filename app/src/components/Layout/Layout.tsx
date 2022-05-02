@@ -2,6 +2,7 @@ import { defineComponent, HtmlHTMLAttributes, PropType } from "vue";
 import BetaWarningBanner from "@/components/BetaWarningBanner";
 
 import AlertBanner from "../AlertBanner";
+import NavSidePanel from "../NavSidePanel";
 
 export default defineComponent({
   name: "Layout",
@@ -15,10 +16,13 @@ export default defineComponent({
     return () => (
       <>
         <div
-          class="grid h-screen w-full place-items-center overflow-y-scroll bg-gray-800"
+          class="flex min-h-screen w-full bg-slate-100 subpixel-antialiased dark:bg-slate-900/95 dark:text-slate-100"
           onScroll={props.onScroll}
         >
-          {context.slots.default?.()}
+          <NavSidePanel />
+          <section class="flex h-screen w-full flex-1 flex-col overflow-y-scroll">
+            {context.slots.default?.()}
+          </section>
           <div id="modal-target" />
           <AlertBanner />
         </div>
