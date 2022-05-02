@@ -65,7 +65,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   // Temporary mobile support
   // TODO: implement wallet switcher
   async getKeplr() {
-    if (await this.shouldUseWalletConnect()) {
+    if (!(await this.shouldUseWalletConnect())) {
       return await getKeplrProvider();
     }
 
