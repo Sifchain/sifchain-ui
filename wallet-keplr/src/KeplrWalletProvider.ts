@@ -29,10 +29,12 @@ import {
   NativeDexSignedTransaction,
   NativeDexTransaction,
 } from "@sifchain/sdk/src/clients";
+import { CosmosWalletProvider } from "@sifchain/sdk/src/clients/wallets";
 import {
-  CosmosWalletProvider,
-  WalletProviderContext,
-} from "@sifchain/sdk/src/clients/wallets";
+  isAndroid as checkIsAndroid,
+  isMobile as checkIsMobile,
+} from "@walletconnect/browser-utils";
+import { Buffer } from "buffer/";
 import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { PubKey } from "cosmjs-types/cosmos/crypto/secp256k1/keys";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
@@ -71,21 +73,23 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       return this.wcKeplrPromise;
     }
 
-    this.wcKeplrPromise = getWCKeplr(async (chainId, tx, mode) => {
-      const chain = this.context.chains.find(
-        (x) => x.chainConfig.chainId === chainId,
-      )!;
-      const ibcConfig = this.getIBCChainConfig(chain);
+    this.wcKeplrPromise = getWCKeplr({
+      sendTx: async (chainId, tx, mode) => {
+        const chain = this.context.chains.find(
+          (x) => x.chainConfig.chainId === chainId,
+        )!;
+        const ibcConfig = this.getIBCChainConfig(chain);
 
-      const url = new URL("txs", ibcConfig.restUrl);
-      url.searchParams.append("tx", JSON.stringify(tx));
-      url.searchParams.append("mode", JSON.stringify(mode));
+        const url = new URL("txs", ibcConfig.restUrl);
+        url.searchParams.append("tx", JSON.stringify(tx));
+        url.searchParams.append("mode", JSON.stringify(mode));
 
-      const result = await fetch(url.toString(), {
-        method: "post",
-      }).then((x) => x.json());
+        const result = await fetch(url.toString(), {
+          method: "post",
+        }).then((x) => x.json());
 
-      return Buffer.from(result.txhash, "hex");
+        return Buffer.from(result.txhash, "hex");
+      },
     });
 
     return this.wcKeplrPromise;
@@ -435,6 +439,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   private async shouldUseWalletConnect() {
     const windowKeplr = await getKeplrProvider();
 
-    return isNil(windowKeplr) && /Mobi|Android/i.test(navigator.userAgent);
+    return isNil(windowKeplr) && checkIsMobile();
   }
 }

@@ -3,7 +3,9 @@ import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import { KeplrQRCodeModalV1 } from "@keplr-wallet/wc-qrcode-modal";
 import WalletConnect from "@walletconnect/client";
 
-export function getWCKeplr(sendTx: Keplr["sendTx"]): Promise<Keplr> {
+export function getWCKeplr(
+  options: ConstructorParameters<typeof KeplrWalletConnectV1>["1"],
+): Promise<Keplr> {
   const connector = new WalletConnect({
     bridge: "https://bridge.walletconnect.org",
     signingMethods: [
@@ -14,7 +16,7 @@ export function getWCKeplr(sendTx: Keplr["sendTx"]): Promise<Keplr> {
   });
 
   if (connector.connected) {
-    return Promise.resolve(new KeplrWalletConnectV1(connector, { sendTx }));
+    return Promise.resolve(new KeplrWalletConnectV1(connector, options));
   }
 
   connector.createSession();
@@ -24,7 +26,7 @@ export function getWCKeplr(sendTx: Keplr["sendTx"]): Promise<Keplr> {
       if (error) {
         reject(error);
       } else {
-        resolve(new KeplrWalletConnectV1(connector, { sendTx }));
+        resolve(new KeplrWalletConnectV1(connector, options));
       }
     });
   });
