@@ -4,7 +4,7 @@ export const TERRA_TESTNET: IBCChainConfig = {
   network: Network.TERRA,
   chainType: "ibc",
   displayName: "Terra",
-  blockExplorerUrl: "https://bombay.stake.id/",
+  blockExplorerUrl: "https://finder.terra.money/testnet/",
   nativeAssetSymbol: "uluna",
   chainId: "bombay-12",
   rpcUrl: "https://proxies.sifchain.finance/api/bombay-12/rpc",

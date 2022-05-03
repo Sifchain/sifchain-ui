@@ -165,7 +165,7 @@ export default defineComponent({
               >
                 <Toggle
                   disabled
-                  label="Pool Equal Ratios"
+                  label="Pool at pool ratios"
                   active={data.symmetricalPooling.value}
                   onChange={(_active) => {
                     // data.toggleAsyncPooling();

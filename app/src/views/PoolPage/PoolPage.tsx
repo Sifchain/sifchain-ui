@@ -41,15 +41,18 @@ export default defineComponent({
   },
   setup() {
     const data = usePoolPageData();
+    const currentRewardPeriod = useCurrentRewardPeriod();
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
-      currentRewardPeriod: useCurrentRewardPeriod(),
+      currentRewardPeriod,
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
-      isLoaded: data.isLoaded,
+      isLoading: computed(
+        () => data.isLoading.value || currentRewardPeriod.isLoading.value,
+      ),
     };
   },
   computed: {
@@ -77,7 +80,7 @@ export default defineComponent({
       return this.competitionsRes.data?.value || null;
     },
     sanitizedPoolData(): PoolDataArray {
-      if (!this.isLoaded) return [];
+      if (this.isLoading && !this.allPoolsData.length) return [];
 
       const result = this.allPoolsData
         .filter((item) => {
@@ -140,7 +143,7 @@ export default defineComponent({
           name={
             flagsStore.state.allowEmptyLiquidityAdd
               ? undefined
-              : !this.isLoaded
+              : this.isLoading
               ? "DISABLED_WHILE_LOADING"
               : undefined
           }
@@ -176,7 +179,7 @@ export default defineComponent({
             class="flex min-h-[calc(80vh-130px)] w-full flex-col py-2"
             emptyState={
               <div class="grid w-full flex-1 place-items-center rounded-md bg-white/10 p-4 text-center">
-                {!this.isLoaded ? (
+                {!this.isLoading ? (
                   <span class="text-accent-base flex items-center gap-1 text-lg">
                     Loading Pools
                     <AssetIcon icon="interactive/anim-racetrack-spinner" />
