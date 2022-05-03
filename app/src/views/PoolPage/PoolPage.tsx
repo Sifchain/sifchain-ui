@@ -9,7 +9,7 @@ import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import BigNumber from "bignumber.js";
 import { formatDistance } from "date-fns";
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { RouterView } from "vue-router";
 import {
   CompetitionsBySymbolLookup,
@@ -37,15 +37,18 @@ export default defineComponent({
   },
   setup() {
     const data = usePoolPageData();
+    const currentRewardPeriod = useCurrentRewardPeriod();
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
-      currentRewardPeriod: useCurrentRewardPeriod(),
+      currentRewardPeriod,
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
-      isLoaded: data.isLoaded,
+      isLoaded: computed(
+        () => data.isLoaded.value && !currentRewardPeriod.isLoading.value,
+      ),
     };
   },
   computed: {
