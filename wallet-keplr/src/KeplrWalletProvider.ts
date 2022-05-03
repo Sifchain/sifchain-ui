@@ -93,7 +93,8 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async isInstalled(chain: Chain) {
-    return (window as any).keplr != null;
+    const shouldUseWalletConnect = await this.shouldUseWalletConnect();
+    return shouldUseWalletConnect || (window as any).keplr != null;
   }
 
   async hasConnected(chain: Chain) {
