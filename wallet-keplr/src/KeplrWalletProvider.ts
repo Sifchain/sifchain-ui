@@ -30,10 +30,7 @@ import {
   NativeDexTransaction,
 } from "@sifchain/sdk/src/clients";
 import { CosmosWalletProvider } from "@sifchain/sdk/src/clients/wallets";
-import {
-  isAndroid as checkIsAndroid,
-  isMobile as checkIsMobile,
-} from "@walletconnect/browser-utils";
+import { isMobile as checkIsMobile } from "@walletconnect/browser-utils";
 import { Buffer } from "buffer/";
 import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { PubKey } from "cosmjs-types/cosmos/crypto/secp256k1/keys";
@@ -42,7 +39,7 @@ import { AuthInfo, TxBody, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
 import { getKeplrProvider } from "./getKeplrProvider";
-import { getWCKeplr } from "./getWcKeplr";
+import { getWalletConnect, getWCKeplr } from "./getWcKeplr";
 
 export class KeplrWalletProvider extends CosmosWalletProvider {
   wcKeplrPromise?: Promise<Keplr> = undefined;
@@ -100,8 +97,12 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async hasConnected(chain: Chain) {
+    if ((await this.shouldUseWalletConnect()) && !getWalletConnect().connected)
+      return false;
+
     const chainConfig = this.getIBCChainConfig(chain);
     const keplr = await this.getKeplr();
+
     try {
       await keplr?.getKey(chainConfig.keplrChainInfo.chainId);
       return true;
