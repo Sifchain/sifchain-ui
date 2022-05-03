@@ -1,5 +1,3 @@
-import { WalletServiceContext } from "@/business/services/WalletService";
-import { isNil } from "@/utils/assertion";
 import { toHex } from "@cosmjs/encoding";
 import {
   BroadcastMode,
@@ -24,6 +22,7 @@ import {
 import { parseLogs } from "@cosmjs/stargate/build/logs";
 import { Keplr } from "@keplr-wallet/types";
 import { Chain, Network } from "@sifchain/sdk";
+import { WalletProviderContext } from "@sifchain/sdk/build/typescript/clients/wallets/WalletProvider";
 import {
   NativeAminoTypes,
   NativeDexSignedTransaction,
@@ -41,14 +40,17 @@ import Long from "long";
 import { getKeplrProvider } from "./getKeplrProvider";
 import { getWalletConnect, getWCKeplr } from "./getWcKeplr";
 
+export type KeplrWalletProviderContext = WalletProviderContext & {
+  chains: Chain[];
+};
 export class KeplrWalletProvider extends CosmosWalletProvider {
   wcKeplrPromise?: Promise<Keplr> = undefined;
 
-  static create(context: WalletServiceContext) {
+  static create(context: KeplrWalletProviderContext) {
     return new KeplrWalletProvider(context);
   }
 
-  constructor(public context: WalletServiceContext) {
+  constructor(public context: KeplrWalletProviderContext) {
     super(context);
   }
 
@@ -127,7 +129,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     chain: Chain,
   ): Promise<OfflineSigner & OfflineDirectSigner> {
     const chainConfig = this.getIBCChainConfig(chain);
-    const keplr = await this.getKeplr();
+    const keplr = await this.enableChain(chain);
     const sendingSigner = keplr?.getOfflineSigner(chainConfig.chainId);
 
     if (!sendingSigner)
@@ -138,7 +140,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
   async getOfflineSignerAuto(chain: Chain) {
     const chainConfig = this.getIBCChainConfig(chain);
-    const keplr = await this.getKeplr();
+    const keplr = await this.enableChain(chain);
     const sendingSigner = (await this.shouldUseWalletConnect())
       ? keplr?.getOfflineSignerOnlyAmino(chainConfig.chainId)
       : await keplr?.getOfflineSignerAuto(chainConfig.chainId);
@@ -155,23 +157,18 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       .filter((c) => c.chainConfig.chainType === "ibc")
       .map((c) => c.chainConfig.chainId);
 
-    // @ts-ignore
     return keplr?.enable(chainIds);
   }
+
   async connect(chain: Chain) {
-    const keplr = await this.getKeplr();
-    const chainConfig = this.getIBCChainConfig(chain);
-
-    try {
-      await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
-    } catch {}
-
+    const keplr = await this.enableChain(chain);
     const key = await keplr?.getKey(chain.chainConfig.chainId);
-    let address = key?.bech32Address;
+
+    const address = key?.bech32Address;
 
     if (!address) {
       const sendingSigner = await this.getSendingSigner(chain);
-      address = (await sendingSigner.getAccounts())[0]?.address;
+      return (await sendingSigner.getAccounts())[0]?.address;
     }
 
     if (!address) {
@@ -438,9 +435,24 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         };
   }
 
+  private async enableChain(chain: Chain) {
+    const chainConfig = this.getIBCChainConfig(chain);
+    const keplr = await this.getKeplr();
+
+    await keplr?.enable(chain.chainConfig.chainId);
+
+    try {
+      await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
+    } catch (error) {
+      console.error(error);
+    }
+
+    return keplr;
+  }
+
   private async shouldUseWalletConnect() {
     const windowKeplr = await getKeplrProvider();
 
-    return isNil(windowKeplr) && checkIsMobile();
+    return windowKeplr && checkIsMobile();
   }
 }
