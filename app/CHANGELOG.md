@@ -1,3 +1,5 @@
+## Release 2022.05.02
+- Fix Terra Station integration
 ## Release 2022.04.30
 - Fix EVMOS chain display decimals
 ## Release 2022.04.27
