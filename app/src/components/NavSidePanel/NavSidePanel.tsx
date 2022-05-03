@@ -87,11 +87,10 @@ export default defineComponent({
           <button
             onClick={() => (isOpenRef.value = !isOpenRef.value)}
             class={clsx(
-              "absolute right-0 top-16 h-8 w-8 translate-x-[100%] rounded-r-md bg-slate-600 p-1",
-              "z-40 transition-transform",
+              "absolute right-0 top-36 h-8 w-8 translate-x-[100%] rounded-r-md bg-slate-800 p-1",
+              "z-40 opacity-80 transition-all hover:opacity-100",
               {
-                "translate-x-0 -scale-x-[1] bg-white text-gray-900":
-                  isOpenRef.value,
+                "-right-0.5 translate-x-0 -scale-x-[1]": isOpenRef.value,
               },
             )}
           >

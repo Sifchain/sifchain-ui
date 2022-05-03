@@ -26,7 +26,7 @@ export const Flags = defineComponent({
   methods: {
     async toggleGui() {
       if (!this.gui) {
-        const createGui = await loadGui();
+        const createGui = loadGui();
         this.gui = createGui();
         document.body.appendChild(this.gui.domElement);
         this.gui.domElement.className = this.gui.domElement.className.replace(
@@ -95,7 +95,7 @@ export const Flags = defineComponent({
     return (
       <Button.Inline
         icon="interactive/settings"
-        class="fixed top-[8px] right-[8px]"
+        class="fixed top-2 right-2 z-30"
         onClick={() => this.toggleGui()}
       />
     );

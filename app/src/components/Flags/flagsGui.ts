@@ -8,7 +8,7 @@ export const createGui = () => {
       closed: true,
     },
     autoPlace: false,
-    width: 400,
+    // width: 320,
   });
 
   gui.useLocalStorage = true;
@@ -19,7 +19,7 @@ export const createGui = () => {
     top: "48px",
     right: 0,
   });
-  gui.domElement.querySelector(".close-button")?.remove();
+  // gui.domElement.querySelector(".close-button")?.remove();
   gui.show();
 
   Object.keys(flagsStore.state).forEach((key) => {

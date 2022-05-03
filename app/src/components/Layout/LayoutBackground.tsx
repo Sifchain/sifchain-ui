@@ -16,7 +16,11 @@ import { Tooltip, TooltipInstance } from "@/components/Tooltip";
 const layoutBgKey = "layout_bg";
 const layoutBgDefault = "default";
 
-type LayoutCmpProps = { bg: Ref<LayoutBg>; src: Ref<string> };
+type LayoutCmpProps = {
+  bg: Ref<LayoutBg>;
+  src: Ref<string>;
+};
+
 type LayoutBg = {
   key: string;
   src: string[];
@@ -52,6 +56,7 @@ const ImageBg = defineComponent({
         loadedCache.set(props.src.value, true);
       };
     });
+
     const getStyle = (src: string) => ({
       backgroundImage: `url(${src})`,
       backgroundSize: "cover",
@@ -203,6 +208,7 @@ export default defineComponent({
     onMounted(() => {
       window.addEventListener("resize", updateWidth);
     });
+
     onUnmounted(() => {
       window.removeEventListener("resize", updateWidth);
     });
@@ -232,7 +238,7 @@ export default defineComponent({
       <>
         <div
           id="layout-bg"
-          class="fixed top-0 left-0 z-[-1] h-screen w-full transition-all duration-500"
+          class="fixed top-0 left-0 z-[-1] hidden h-screen w-full transition-all duration-500 sm:block"
         >
           {!!srcRef.value && (
             <bgRef.value.Cmp key={srcRef.value} src={srcRef} bg={bgRef} />
