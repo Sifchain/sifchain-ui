@@ -9,7 +9,7 @@ import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import BigNumber from "bignumber.js";
 import { formatDistance } from "date-fns";
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { RouterView } from "vue-router";
 import {
   CompetitionsBySymbolLookup,
@@ -37,15 +37,18 @@ export default defineComponent({
   },
   setup() {
     const data = usePoolPageData();
+    const currentRewardPeriod = useCurrentRewardPeriod();
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
-      currentRewardPeriod: useCurrentRewardPeriod(),
+      currentRewardPeriod,
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
-      isLoaded: data.isLoaded,
+      isLoading: computed(
+        () => data.isLoading.value || currentRewardPeriod.isLoading.value,
+      ),
     };
   },
   computed: {
@@ -85,7 +88,7 @@ export default defineComponent({
     sanitizedPoolData(): ReturnType<
       typeof usePoolPageData
     >["allPoolsData"]["value"] {
-      if (!this.isLoaded) return [];
+      if (this.isLoading) return [];
 
       const result = this.allPoolsData
         .filter((item) => {
@@ -147,12 +150,12 @@ export default defineComponent({
           name={
             flagsStore.state.allowEmptyLiquidityAdd
               ? undefined
-              : !this.isLoaded
+              : this.isLoading
               ? "DISABLED_WHILE_LOADING"
               : undefined
           }
         />
-        {!this.isLoaded ? (
+        {this.isLoading ? (
           <div class="absolute left-0 top-[180px] flex w-full justify-center">
             <div class="flex h-[80px] w-[80px] items-center justify-center rounded-lg bg-black bg-opacity-50">
               <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />

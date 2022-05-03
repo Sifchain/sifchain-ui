@@ -1,7 +1,7 @@
+import { defineComponent } from "vue";
+
 import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
-import { defineComponent } from "vue";
-import { RouterLink } from "vue-router";
 
 export default defineComponent({
   name: "RewardsPage",
@@ -16,11 +16,19 @@ export default defineComponent({
         >
           <div class="grid place-items-center p-8">
             <p class="pt-1 pb-3 md:text-lg">
-              Rewards have moved! Please visit the{" "}
-              <RouterLink class="text-accent-dark" to="pool">
-                Pools
-              </RouterLink>{" "}
-              page to see rewards.
+              With Sif’s Ascension, ROWAN rewards are injected directly into the
+              pools and auto-compounded every block (~6 seconds). To learn more
+              about Sif's Ascension and to access tools for tracking rewards,
+              please visit our documents site{" "}
+              <a
+                class="text-accent-base hover:underline"
+                href="https://docs.sifchain.finance/project/about-sifchain/community-run-tools-and-products"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                here
+              </a>
+              .
             </p>
           </div>
         </PageCard>
