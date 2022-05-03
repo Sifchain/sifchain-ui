@@ -1,11 +1,12 @@
+import { urlJoin } from "url-join-ts";
 import { Chain } from "../../entities";
 import { BaseChain } from "./_BaseChain";
 
 export class TerraChain extends BaseChain implements Chain {
   getBlockExplorerUrlForAddress(address: string) {
-    return this.chainConfig.blockExplorerUrl + `#/address/${address}`;
+    return urlJoin(this.chainConfig.blockExplorerUrl, "address", address);
   }
   getBlockExplorerUrlForTxHash(hash: string) {
-    return this.chainConfig.blockExplorerUrl + `#/tx/${hash}`;
+    return urlJoin(this.chainConfig.blockExplorerUrl, "tx", hash);
   }
 }

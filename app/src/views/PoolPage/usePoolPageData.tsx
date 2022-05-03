@@ -151,14 +151,14 @@ export const usePoolPageData = () => {
 
   return {
     rewardProgramsRes,
-    isLoaded: computed(() => {
+    isLoading: computed(() => {
       return (
-        !statsRes.isLoading.value &&
-        !syncUserPoolQuery.isLoading.value &&
-        allPoolsData.value.length > 0 &&
-        !accountStore.state.sifchain.connecting &&
-        !liquidityProvidersQuery.isLoading.value &&
-        !tokenRegistryEntriesQuery.isLoading.value
+        allPoolsData.value.length === 0 ||
+        statsRes.isLoading.value ||
+        syncUserPoolQuery.isLoading.value ||
+        accountStore.state.sifchain.connecting ||
+        liquidityProvidersQuery.isLoading.value ||
+        tokenRegistryEntriesQuery.isLoading.value
       );
     }),
     allPoolsData,
