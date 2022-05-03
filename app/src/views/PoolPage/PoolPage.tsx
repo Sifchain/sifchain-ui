@@ -46,8 +46,8 @@ export default defineComponent({
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
-      isLoaded: computed(
-        () => data.isLoaded.value && !currentRewardPeriod.isLoading.value,
+      isLoading: computed(
+        () => data.isLoading.value || currentRewardPeriod.isLoading.value,
       ),
     };
   },
@@ -88,7 +88,7 @@ export default defineComponent({
     sanitizedPoolData(): ReturnType<
       typeof usePoolPageData
     >["allPoolsData"]["value"] {
-      if (!this.isLoaded) return [];
+      if (this.isLoading) return [];
 
       const result = this.allPoolsData
         .filter((item) => {
@@ -150,12 +150,12 @@ export default defineComponent({
           name={
             flagsStore.state.allowEmptyLiquidityAdd
               ? undefined
-              : !this.isLoaded
+              : this.isLoading
               ? "DISABLED_WHILE_LOADING"
               : undefined
           }
         />
-        {!this.isLoaded ? (
+        {this.isLoading ? (
           <div class="absolute left-0 top-[180px] flex w-full justify-center">
             <div class="flex h-[80px] w-[80px] items-center justify-center rounded-lg bg-black bg-opacity-50">
               <AssetIcon icon="interactive/anim-racetrack-spinner" size={64} />
