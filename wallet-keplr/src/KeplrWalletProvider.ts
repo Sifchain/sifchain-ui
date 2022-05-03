@@ -210,22 +210,23 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const protoMsg = {
       typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-      value: MsgTransfer.encode({
-        timeoutTimestamp: Long.fromNumber(0),
-        sourcePort: aminoMsg.value.source_port,
-        sourceChannel: aminoMsg.value.source_channel,
-        token: aminoMsg.value.token,
-        sender: aminoMsg.value.sender,
-        receiver: aminoMsg.value.receiver,
-        timeoutHeight: {
-          revisionNumber: Long.fromString(
-            aminoMsg.value.timeout_height.revision_number,
-          ),
-          revisionHeight: Long.fromString(
-            aminoMsg.value.timeout_height.revision_height,
-          ),
-        },
-      }).finish(),
+      value: MsgTransfer.encode(
+        MsgTransfer.fromPartial({
+          sourcePort: aminoMsg.value.source_port,
+          sourceChannel: aminoMsg.value.source_channel,
+          token: aminoMsg.value.token,
+          sender: aminoMsg.value.sender,
+          receiver: aminoMsg.value.receiver,
+          timeoutHeight: {
+            revisionNumber: Long.fromString(
+              aminoMsg.value.timeout_height.revision_number,
+            ),
+            revisionHeight: Long.fromString(
+              aminoMsg.value.timeout_height.revision_height,
+            ),
+          },
+        }),
+      ).finish(),
     };
 
     if (
@@ -259,40 +260,39 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     );
 
     const signedTx = TxRaw.encode({
-      bodyBytes: TxBody.encode({
-        messages: [protoMsg],
-        memo: signResponse.signed.memo,
-        timeoutHeight: Long.fromNumber(0),
-        extensionOptions: [],
-        nonCriticalExtensionOptions: [],
-      }).finish(),
-      authInfoBytes: AuthInfo.encode({
-        signerInfos: [
-          {
-            publicKey: {
-              typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-              value: PubKey.encode({
-                key: Buffer.from(
-                  signResponse.signature.pub_key.value,
-                  "base64",
-                ),
-              }).finish(),
-            },
-            modeInfo: {
-              single: {
-                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+      bodyBytes: TxBody.encode(
+        TxBody.fromPartial({
+          messages: [protoMsg],
+          memo: signResponse.signed.memo,
+        }),
+      ).finish(),
+      authInfoBytes: AuthInfo.encode(
+        AuthInfo.fromPartial({
+          signerInfos: [
+            {
+              publicKey: {
+                typeUrl: "/cosmos.crypto.secp256k1.PubKey",
+                value: PubKey.encode({
+                  key: Buffer.from(
+                    signResponse.signature.pub_key.value,
+                    "base64",
+                  ),
+                }).finish(),
               },
+              modeInfo: {
+                single: {
+                  mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+                },
+              },
+              sequence: Long.fromString(signResponse.signed.sequence),
             },
-            sequence: Long.fromString(signResponse.signed.sequence),
+          ],
+          fee: {
+            amount: signResponse.signed.fee.amount as Coin[],
+            gasLimit: Long.fromString(signResponse.signed.fee.gas),
           },
-        ],
-        fee: {
-          payer: "",
-          granter: "",
-          amount: signResponse.signed.fee.amount as Coin[],
-          gasLimit: Long.fromString(signResponse.signed.fee.gas),
-        },
-      }).finish(),
+        }),
+      ).finish(),
       signatures: [Buffer.from(signResponse.signature.signature, "base64")],
     }).finish();
 
