@@ -453,6 +453,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   private async shouldUseWalletConnect() {
     const windowKeplr = await getKeplrProvider();
 
-    return windowKeplr && checkIsMobile();
+    return windowKeplr === null && checkIsMobile();
   }
 }
