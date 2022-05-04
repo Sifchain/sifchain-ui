@@ -249,6 +249,16 @@ export default defineComponent({
 
               const currentRewardPeriod = this.currentRewardPeriod.data.value;
 
+              const isRemovalInProgress =
+                this.removeLiquidityMutation.variables.value?.requestHeight ===
+                  unlock?.requestHeight &&
+                this.removeLiquidityMutation.isLoading.value;
+
+              const isCancelInProgress =
+                this.cancelLiquidityUnlockMutation.variables.value
+                  ?.requestHeight === unlock?.requestHeight &&
+                this.cancelLiquidityUnlockMutation.isLoading.value;
+
               return (
                 <PoolItem
                   currentRewardPeriod={
@@ -279,11 +289,10 @@ export default defineComponent({
                             unlock.eta === undefined
                               ? undefined
                               : formatDistance(new Date(), unlock.eta),
-                          isRemovalInProgress:
-                            this.removeLiquidityMutation.isLoading.value,
-                          isActiveRemoval:
-                            this.removeLiquidityMutation.variables.value
-                              ?.requestHeight === unlock.requestHeight,
+                          isRemovalDisabled:
+                            this.removeLiquidityMutation.isLoading.value ||
+                            isCancelInProgress,
+                          isRemovalInProgress,
                           onRemoveRequest: () =>
                             this.removeLiquidityMutation.mutate({
                               requestHeight: unlock.requestHeight,
@@ -291,11 +300,10 @@ export default defineComponent({
                                 item.pool.externalAmount.symbol,
                               units: unlock.units,
                             }),
-                          isCancelInProgress:
-                            this.cancelLiquidityUnlockMutation.isLoading.value,
-                          isActiveCancel:
-                            this.cancelLiquidityUnlockMutation.variables.value
-                              ?.requestHeight === unlock.requestHeight,
+                          isCancelDisabled:
+                            this.cancelLiquidityUnlockMutation.isLoading
+                              .value || isRemovalInProgress,
+                          isCancelInProgress,
                           onCancelRequest: () =>
                             this.cancelLiquidityUnlockMutation.mutate({
                               requestHeight: unlock.requestHeight,

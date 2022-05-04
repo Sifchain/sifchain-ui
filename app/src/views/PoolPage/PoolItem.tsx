@@ -31,11 +31,11 @@ export default defineComponent({
         eta?: string;
         expiration?: string;
         onRemoveRequest: () => any;
+        isRemovalDisabled: boolean;
         isRemovalInProgress: boolean;
-        isActiveRemoval: boolean;
         onCancelRequest: () => any;
+        isCancelDisabled: boolean;
         isCancelInProgress: boolean;
-        isActiveCancel: boolean;
       }>,
       required: false,
     },
@@ -392,15 +392,10 @@ export default defineComponent({
                       {this.$store.state.flags.liquidityUnlockCancellation && (
                         <Button.CallToActionSecondary
                           class="text-danger-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
-                          disabled={
-                            this.unlock.isCancelInProgress ||
-                            (this.unlock.isRemovalInProgress &&
-                              this.unlock.isActiveRemoval)
-                          }
+                          disabled={this.unlock.isCancelDisabled}
                           onClick={this.unlock.onCancelRequest}
                         >
-                          {this.unlock.isCancelInProgress &&
-                          this.unlock.isActiveCancel ? (
+                          {this.unlock.isCancelInProgress ? (
                             <AssetIcon
                               size={36}
                               icon="interactive/anim-racetrack-spinner"
@@ -413,15 +408,10 @@ export default defineComponent({
                       {this.unlock.ready && (
                         <Button.CallToActionSecondary
                           class="text-connected-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
-                          disabled={
-                            this.unlock.isRemovalInProgress ||
-                            (this.unlock.isCancelInProgress &&
-                              this.unlock.isActiveCancel)
-                          }
+                          disabled={this.unlock.isRemovalDisabled}
                           onClick={this.unlock.onRemoveRequest}
                         >
-                          {this.unlock.isRemovalInProgress &&
-                          this.unlock.isActiveRemoval ? (
+                          {this.unlock.isRemovalInProgress ? (
                             <AssetIcon
                               size={36}
                               icon="interactive/anim-racetrack-spinner"
