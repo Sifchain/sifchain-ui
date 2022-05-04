@@ -57,11 +57,11 @@ export default defineComponent({
                 <div class="flex items-center gap-2">
                   <span
                     class={[
-                      "text-accent-base font-sans text-xl font-semibold md:text-2xl",
+                      "text-accent-base font-sans text-lg font-semibold md:text-xl",
                       props.headingClass,
                     ]}
                   >
-                    {props.heading}
+                    / {props.heading}
                   </span>
                 </div>
                 <div class="flex items-center">{props.headerAction}</div>
