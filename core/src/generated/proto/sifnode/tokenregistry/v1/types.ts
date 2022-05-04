@@ -48,8 +48,52 @@ export function permissionToJSON(object: Permission): string {
   }
 }
 
+export enum AdminType {
+  CLPDEX = 0,
+  PMTPREWARDS = 1,
+  TOKENREGISTRY = 2,
+  ETHBRIDGE = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function adminTypeFromJSON(object: any): AdminType {
+  switch (object) {
+    case 0:
+    case "CLPDEX":
+      return AdminType.CLPDEX;
+    case 1:
+    case "PMTPREWARDS":
+      return AdminType.PMTPREWARDS;
+    case 2:
+    case "TOKENREGISTRY":
+      return AdminType.TOKENREGISTRY;
+    case 3:
+    case "ETHBRIDGE":
+      return AdminType.ETHBRIDGE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return AdminType.UNRECOGNIZED;
+  }
+}
+
+export function adminTypeToJSON(object: AdminType): string {
+  switch (object) {
+    case AdminType.CLPDEX:
+      return "CLPDEX";
+    case AdminType.PMTPREWARDS:
+      return "PMTPREWARDS";
+    case AdminType.TOKENREGISTRY:
+      return "TOKENREGISTRY";
+    case AdminType.ETHBRIDGE:
+      return "ETHBRIDGE";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 export interface GenesisState {
-  adminAccount: string;
+  adminAccounts?: AdminAccounts;
   registry?: Registry;
 }
 
@@ -95,8 +139,17 @@ export interface RegistryEntry {
   ibcCounterpartyChainId: string;
 }
 
+export interface AdminAccount {
+  adminType: AdminType;
+  adminAddress: string;
+}
+
+export interface AdminAccounts {
+  adminAccounts: AdminAccount[];
+}
+
 function createBaseGenesisState(): GenesisState {
-  return { adminAccount: "", registry: undefined };
+  return { adminAccounts: undefined, registry: undefined };
 }
 
 export const GenesisState = {
@@ -104,8 +157,11 @@ export const GenesisState = {
     message: GenesisState,
     writer: _m0.Writer = _m0.Writer.create(),
   ): _m0.Writer {
-    if (message.adminAccount !== "") {
-      writer.uint32(10).string(message.adminAccount);
+    if (message.adminAccounts !== undefined) {
+      AdminAccounts.encode(
+        message.adminAccounts,
+        writer.uint32(10).fork(),
+      ).ldelim();
     }
     if (message.registry !== undefined) {
       Registry.encode(message.registry, writer.uint32(18).fork()).ldelim();
@@ -121,7 +177,7 @@ export const GenesisState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.adminAccount = reader.string();
+          message.adminAccounts = AdminAccounts.decode(reader, reader.uint32());
           break;
         case 2:
           message.registry = Registry.decode(reader, reader.uint32());
@@ -136,9 +192,9 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     return {
-      adminAccount: isSet(object.adminAccount)
-        ? String(object.adminAccount)
-        : "",
+      adminAccounts: isSet(object.adminAccounts)
+        ? AdminAccounts.fromJSON(object.adminAccounts)
+        : undefined,
       registry: isSet(object.registry)
         ? Registry.fromJSON(object.registry)
         : undefined,
@@ -147,8 +203,10 @@ export const GenesisState = {
 
   toJSON(message: GenesisState): unknown {
     const obj: any = {};
-    message.adminAccount !== undefined &&
-      (obj.adminAccount = message.adminAccount);
+    message.adminAccounts !== undefined &&
+      (obj.adminAccounts = message.adminAccounts
+        ? AdminAccounts.toJSON(message.adminAccounts)
+        : undefined);
     message.registry !== undefined &&
       (obj.registry = message.registry
         ? Registry.toJSON(message.registry)
@@ -160,7 +218,10 @@ export const GenesisState = {
     object: I,
   ): GenesisState {
     const message = createBaseGenesisState();
-    message.adminAccount = object.adminAccount ?? "";
+    message.adminAccounts =
+      object.adminAccounts !== undefined && object.adminAccounts !== null
+        ? AdminAccounts.fromPartial(object.adminAccounts)
+        : undefined;
     message.registry =
       object.registry !== undefined && object.registry !== null
         ? Registry.fromPartial(object.registry)
@@ -475,6 +536,140 @@ export const RegistryEntry = {
     message.unitDenom = object.unitDenom ?? "";
     message.ibcCounterpartyDenom = object.ibcCounterpartyDenom ?? "";
     message.ibcCounterpartyChainId = object.ibcCounterpartyChainId ?? "";
+    return message;
+  },
+};
+
+function createBaseAdminAccount(): AdminAccount {
+  return { adminType: 0, adminAddress: "" };
+}
+
+export const AdminAccount = {
+  encode(
+    message: AdminAccount,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.adminType !== 0) {
+      writer.uint32(8).int32(message.adminType);
+    }
+    if (message.adminAddress !== "") {
+      writer.uint32(18).string(message.adminAddress);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AdminAccount {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminAccount();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.adminType = reader.int32() as any;
+          break;
+        case 2:
+          message.adminAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminAccount {
+    return {
+      adminType: isSet(object.adminType)
+        ? adminTypeFromJSON(object.adminType)
+        : 0,
+      adminAddress: isSet(object.adminAddress)
+        ? String(object.adminAddress)
+        : "",
+    };
+  },
+
+  toJSON(message: AdminAccount): unknown {
+    const obj: any = {};
+    message.adminType !== undefined &&
+      (obj.adminType = adminTypeToJSON(message.adminType));
+    message.adminAddress !== undefined &&
+      (obj.adminAddress = message.adminAddress);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AdminAccount>, I>>(
+    object: I,
+  ): AdminAccount {
+    const message = createBaseAdminAccount();
+    message.adminType = object.adminType ?? 0;
+    message.adminAddress = object.adminAddress ?? "";
+    return message;
+  },
+};
+
+function createBaseAdminAccounts(): AdminAccounts {
+  return { adminAccounts: [] };
+}
+
+export const AdminAccounts = {
+  encode(
+    message: AdminAccounts,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    for (const v of message.adminAccounts) {
+      AdminAccount.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AdminAccounts {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdminAccounts();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.adminAccounts.push(
+            AdminAccount.decode(reader, reader.uint32()),
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminAccounts {
+    return {
+      adminAccounts: Array.isArray(object?.adminAccounts)
+        ? object.adminAccounts.map((e: any) => AdminAccount.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: AdminAccounts): unknown {
+    const obj: any = {};
+    if (message.adminAccounts) {
+      obj.adminAccounts = message.adminAccounts.map((e) =>
+        e ? AdminAccount.toJSON(e) : undefined,
+      );
+    } else {
+      obj.adminAccounts = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AdminAccounts>, I>>(
+    object: I,
+  ): AdminAccounts {
+    const message = createBaseAdminAccounts();
+    message.adminAccounts =
+      object.adminAccounts?.map((e) => AdminAccount.fromPartial(e)) || [];
     return message;
   },
 };
