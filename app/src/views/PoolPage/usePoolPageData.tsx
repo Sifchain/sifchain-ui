@@ -157,8 +157,8 @@ export const usePoolPageData = () => {
         statsRes.isLoading.value ||
         syncUserPoolQuery.isLoading.value ||
         accountStore.state.sifchain.connecting ||
-        !liquidityProvidersQuery.isSuccess.value ||
-        !tokenRegistryEntriesQuery.isSuccess.value
+        liquidityProvidersQuery.isLoading.value ||
+        tokenRegistryEntriesQuery.isLoading.value
       );
     }),
     allPoolsData,
