@@ -72,9 +72,9 @@ export default defineComponent({
       uiDismissed.value ? null : (
         <div
           class={clsx(
-            "bg-info-base/60 z-10 font-semibold text-white backdrop-blur-md",
+            "bg-info-base/60 z-40 font-semibold text-white backdrop-blur-md",
             {
-              "absolute left-0 right-0 p-4 pt-8": !isFullScreen.value,
+              "absolute left-0 right-0 p-2 pb-8 md:p-4": !isFullScreen.value,
               "fixed inset-0 grid h-screen place-items-center text-lg md:p-24":
                 isFullScreen.value,
               "pointer-events-none": isFullScreen.value,
@@ -92,7 +92,7 @@ export default defineComponent({
               </Button.Inline>
             ))}
           </div>
-          <p class="max-w-6xl pr-8">{bannerMessageRef.value.message}</p>
+          <p class="max-w-6xl p-2 md:p-4">{bannerMessageRef.value.message}</p>
         </div>
       );
   },

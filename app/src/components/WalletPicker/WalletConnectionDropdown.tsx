@@ -53,16 +53,6 @@ export default defineComponent({
           onClick: handleCopied,
         },
       },
-      // Some wallets have no disconnect..
-      // {
-      //   hide: !props.connection.disconnect,
-      //   tag: "button",
-      //   name: "Disconnect",
-      //   icon: "interactive/link" as IconName,
-      //   props: {
-      //     onClick: props.connection.disconnect,
-      //   },
-      // },
       {
         tag: "a",
         name: "Block Explorer",
@@ -78,19 +68,18 @@ export default defineComponent({
     return () => (
       <div class="w-[124px]" onClick={() => props.onAction()}>
         {actionsRef.value.map((item) => {
-          // if (item.hide) return null;
           const Cmp = item.tag as any;
           return (
             <Cmp
               key={item.name}
               {...item.props}
               class={[
-                "height-[20px] active:text-accent-base mt-[4px] flex w-full cursor-pointer items-center justify-between px-[4px] text-sm font-normal text-gray-800 first:mt-0 hover:text-white",
+                "active:text-accent-base mt-1 flex w-full cursor-pointer items-center justify-between px-1 text-sm font-normal text-gray-400 first:mt-0 hover:text-white",
                 item.props.class,
               ]}
             >
               <span>{item.name}</span>
-              <AssetIcon icon={item.icon} class="h-[16px] w-[16px]" />
+              <AssetIcon icon={item.icon} class="h-4 w-4" />
             </Cmp>
           );
         })}
