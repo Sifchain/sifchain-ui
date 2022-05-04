@@ -47,7 +47,7 @@ export default defineComponent({
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       isLoading: computed(
-        () => data.isLoading.value || currentRewardPeriod.isLoading.value,
+        () => data.isLoading.value || !currentRewardPeriod.isSuccess.value,
       ),
     };
   },
