@@ -3,7 +3,10 @@ import { Button } from "@/components/Button/Button";
 import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
-import { useRemoveLiquidityMutation } from "@/domains/clp/mutation/liquidity";
+import {
+  useCancelLiquidityUnlockMutation,
+  useRemoveLiquidityMutation,
+} from "@/domains/clp/mutation/liquidity";
 import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
@@ -42,6 +45,7 @@ export default defineComponent({
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
+      cancelLiquidityUnlockMutation: useCancelLiquidityUnlockMutation(),
       currentRewardPeriod,
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
@@ -284,7 +288,19 @@ export default defineComponent({
                             this.removeLiquidityMutation.mutate({
                               requestHeight: unlock.requestHeight,
                               externalAssetSymbol:
-                                item.pool.externalAmount!.symbol,
+                                item.pool.externalAmount.symbol,
+                              units: unlock.units,
+                            }),
+                          isCancelInProgress:
+                            this.cancelLiquidityUnlockMutation.isLoading.value,
+                          isActiveCancel:
+                            this.cancelLiquidityUnlockMutation.variables.value
+                              ?.requestHeight === unlock.requestHeight,
+                          onCancelRequest: () =>
+                            this.cancelLiquidityUnlockMutation.mutate({
+                              requestHeight: unlock.requestHeight,
+                              externalAssetSymbol:
+                                item.pool.externalAmount.symbol,
                               units: unlock.units,
                             }),
                         }

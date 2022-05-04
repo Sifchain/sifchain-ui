@@ -3,7 +3,6 @@ import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
-import { Tooltip } from "@/components/Tooltip";
 import { formatAssetAmount } from "@/components/utils";
 import { useChains, useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
@@ -17,7 +16,6 @@ import {
   Competition,
   CompetitionsLookup,
 } from "../LeaderboardPage/useCompetitionData";
-import { getRewardProgramDisplayData } from "../RewardsPage/components/RewardSection";
 import { COLUMNS_LOOKUP, PoolRewardProgram } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 
@@ -35,6 +33,9 @@ export default defineComponent({
         onRemoveRequest: () => any;
         isRemovalInProgress: boolean;
         isActiveRemoval: boolean;
+        onCancelRequest: () => any;
+        isCancelInProgress: boolean;
+        isActiveCancel: boolean;
       }>,
       required: false,
     },
@@ -387,23 +388,48 @@ export default defineComponent({
                             <span>{this.unlock.eta}</span>
                           </div>
                         )}
-                    {this.unlock.ready && (
+                    <div class="flex flex-row align-middle">
                       <Button.CallToActionSecondary
-                        class="h-[46px] text-[17px] disabled:bg-inherit"
-                        disabled={this.unlock.isRemovalInProgress}
-                        onClick={this.unlock.onRemoveRequest}
+                        class="text-danger-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
+                        disabled={
+                          this.unlock.isCancelInProgress ||
+                          (this.unlock.isRemovalInProgress &&
+                            this.unlock.isActiveRemoval)
+                        }
+                        onClick={this.unlock.onCancelRequest}
                       >
-                        {this.unlock.isRemovalInProgress &&
-                        this.unlock.isActiveRemoval ? (
+                        {this.unlock.isCancelInProgress &&
+                        this.unlock.isActiveCancel ? (
                           <AssetIcon
                             size={36}
                             icon="interactive/anim-racetrack-spinner"
                           />
                         ) : (
-                          "Claim unlocked liquidity"
+                          "Cancel"
                         )}
                       </Button.CallToActionSecondary>
-                    )}
+                      {this.unlock.ready && (
+                        <Button.CallToActionSecondary
+                          class="text-connected-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
+                          disabled={
+                            this.unlock.isRemovalInProgress ||
+                            (this.unlock.isCancelInProgress &&
+                              this.unlock.isActiveCancel)
+                          }
+                          onClick={this.unlock.onRemoveRequest}
+                        >
+                          {this.unlock.isRemovalInProgress &&
+                          this.unlock.isActiveRemoval ? (
+                            <AssetIcon
+                              size={36}
+                              icon="interactive/anim-racetrack-spinner"
+                            />
+                          ) : (
+                            "Claim"
+                          )}
+                        </Button.CallToActionSecondary>
+                      )}
+                    </div>
                   </div>
                 </section>
               )}
