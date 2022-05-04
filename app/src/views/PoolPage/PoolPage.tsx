@@ -1,29 +1,26 @@
-import BigNumber from "bignumber.js";
-import { formatDistance } from "date-fns";
-import { computed, defineComponent } from "vue";
+import { useRowanPrice } from "@/hooks/useRowanPrice";
+import { ElementOf } from "@/utils/types";
+import { computed, defineComponent, PropType, ref } from "vue";
 import { RouterView } from "vue-router";
 
-import AssetIcon from "@/components/AssetIcon";
-import { Button } from "@/components/Button/Button";
-import Layout from "@/components/Layout";
-import PageCard from "@/components/PageCard";
-import RecyclerView from "@/components/RecyclerView";
-import { SearchBox } from "@/components/SearchBox";
-import { useRemoveLiquidityMutation } from "@/domains/clp/mutation/liquidity";
-import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
-import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-import { ElementOf } from "@/utils/types";
+import AssetPair from "~/components/AssetPair";
+import { Button } from "~/components/Button/Button";
+import Layout from "~/components/Layout";
+import PageCard from "~/components/PageCard";
+import { SearchBox } from "~/components/SearchBox";
+import { useRemoveLiquidityMutation } from "~/domains/clp/mutation/liquidity";
+import { useCurrentRewardPeriod } from "~/domains/clp/queries/params";
+import { flagsStore, isAssetFlaggedDisabled } from "~/store/modules/flags";
 import {
   CompetitionsBySymbolLookup,
   useLeaderboardCompetitions,
 } from "../LeaderboardPage/useCompetitionData";
-import PoolItem from "./PoolItem";
 import {
-  COLUMNS,
   PoolPageColumnId,
   PoolRewardProgram,
   usePoolPageData,
 } from "./usePoolPageData";
+import { useUserPoolData } from "./useUserPoolData";
 
 type PoolDataArray = ReturnType<
   typeof usePoolPageData
@@ -133,6 +130,13 @@ export default defineComponent({
 
       return result;
     },
+    usePools(): PoolDataArray {
+      return this.sanitizedPoolData.filter((x) => x.accountPool);
+    },
+
+    publicPools(): PoolDataArray {
+      return this.sanitizedPoolData.filter((x) => !x.accountPool);
+    },
   },
 
   render() {
@@ -148,7 +152,6 @@ export default defineComponent({
               : undefined
           }
         />
-
         <PageCard
           heading="Pool"
           iconName="navigation/pool"
@@ -174,146 +177,94 @@ export default defineComponent({
             />
           }
         >
-          <RecyclerView
-            rowHeight={57}
-            class="flex min-h-[calc(80vh-130px)] w-full flex-col py-2"
-            emptyState={
-              <div class="grid w-full flex-1 place-items-center rounded-md bg-white/10 p-4 text-center">
-                {!this.isLoading ? (
-                  <span class="text-accent-base flex items-center gap-1 text-lg">
-                    Loading Pools
-                    <AssetIcon icon="interactive/anim-racetrack-spinner" />
-                  </span>
-                ) : this.searchQuery ? (
-                  <span class="text-accent-base text-lg">
-                    We can't seem to find that token.
-                    <br /> Search for another token to continue
-                  </span>
-                ) : (
-                  <span class="text-accent-base text-lg">
-                    Please import assets to view balances
-                  </span>
-                )}
-              </div>
-            }
-            header={
-              <div class="flex justify-start">
-                {COLUMNS.map((column) => (
-                  <div
-                    key={column.name}
-                    onClick={() => {
-                      if (!column.sortable) return;
-                      if (this.sortBy === column.id) {
-                        this.sortReverse = !this.sortReverse;
-                      } else {
-                        this.sortReverse = false;
-                        this.sortBy = column.id;
-                      }
-                    }}
-                    class={[
-                      column.class,
-                      "flex items-center text-sm opacity-50",
-                      column.sortable && "cursor-pointer",
-                    ]}
-                  >
-                    {column.name}
-                    {column.help && (
-                      <Button.InlineHelp>{column.help}</Button.InlineHelp>
-                    )}
-                    <AssetIcon
-                      icon="interactive/arrow-down"
-                      class={[
-                        "pl-0.5",
-                        (!column.sortable || this.sortBy !== column.id) &&
-                          "invisible",
-                        this.sortReverse && "rotate-180",
-                      ]}
-                    />
-                  </div>
+          {this.isLoading && !data.value.length && (
+            <div class="flex justify-center p-8">Loading pools...</div>
+          )}
+
+          {this.usePools.length > 0 && (
+            <section>
+              <ul class="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+                {this.usePools.map((item) => (
+                  <OwnPool key={item.pool.symbol()} context={item} />
                 ))}
-                <div class="w-[24px]" />
-              </div>
-            }
-            data={data}
-            renderItem={(item: ElementOf<PoolDataArray>) => {
-              const rewardsPrograms =
-                this.poolRewardProgramLookup[
-                  item.pool.externalAmount!.symbol
-                ] ?? [];
-
-              const itemLp = item.liquidityProvider?.liquidityProvider;
-              const filteredUnlock =
-                item.liquidityProvider?.liquidityProvider?.unlocks.filter(
-                  (x) => !x.expired,
-                );
-              const isUnlockable =
-                new BigNumber(
-                  itemLp?.liquidityProviderUnits ?? 0,
-                ).isGreaterThan(0) && (filteredUnlock?.length ?? 0) === 0;
-              const unlock = filteredUnlock?.[0];
-
-              const currentRewardPeriod = this.currentRewardPeriod.data.value;
-
-              return (
-                <PoolItem
-                  currentRewardPeriod={
-                    currentRewardPeriod === undefined
-                      ? undefined
-                      : {
-                          endEta: formatDistance(
-                            new Date(),
-                            currentRewardPeriod.estimatedRewardPeriodEndDate,
-                          ),
-                        }
-                  }
-                  unLockable={isUnlockable}
-                  unlock={
-                    unlock === undefined
-                      ? undefined
-                      : {
-                          ...unlock,
-                          nativeAssetAmount:
-                            unlock.nativeAssetAmount.toFixed(6),
-                          externalAssetAmount:
-                            unlock.externalAssetAmount.toFixed(6),
-                          expiration:
-                            unlock.expiration === undefined
-                              ? undefined
-                              : formatDistance(new Date(), unlock.expiration),
-                          eta:
-                            unlock.eta === undefined
-                              ? undefined
-                              : formatDistance(new Date(), unlock.eta),
-                          isRemovalInProgress:
-                            this.removeLiquidityMutation.isLoading.value,
-                          isActiveRemoval:
-                            this.removeLiquidityMutation.variables.value
-                              ?.requestHeight === unlock.requestHeight,
-                          onRemoveRequest: () =>
-                            this.removeLiquidityMutation.mutate({
-                              requestHeight: unlock.requestHeight,
-                              externalAssetSymbol:
-                                item.pool.externalAmount!.symbol,
-                              units: unlock.units,
-                            }),
-                        }
-                  }
-                  bonusRewardPrograms={rewardsPrograms}
-                  competitionsLookup={
-                    this.symbolCompetitionsLookup?.[
-                      item.pool.externalAmount!.symbol
-                    ]
-                  }
-                  pool={item.pool}
-                  poolStat={item.poolStat}
-                  accountPool={item.accountPool}
-                  key={item.pool.symbol()}
-                />
-              );
-            }}
-          />
+              </ul>
+            </section>
+          )}
+          {/* {this.publicPools.length > 0 && (
+            <section>
+              <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {this.publicPools.map((item) => (
+                  <li
+                    role="article"
+                    key={item.pool.symbol()}
+                    class="bg-gray-sif_800 grid rounded-lg p-4"
+                  >
+                    <header class="flex items-center p-2">
+                      <AssetPair
+                        asset={ref(item.pool.externalAmount.asset)}
+                        invert
+                      />
+                    </header>
+                    <main>
+                      <ul>{}</ul>
+                    </main>
+                    <footer></footer>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )} */}
         </PageCard>
       </Layout>
+    );
+  },
+});
+
+const OwnPool = defineComponent({
+  props: {
+    context: {
+      type: Object as PropType<ElementOf<PoolDataArray>>,
+      required: true,
+    },
+  },
+
+  setup(props) {
+    const userPoolData = useUserPoolData({
+      externalAsset: computed(() => props.context.pool.externalAmount.symbol),
+    });
+    const rowanPrice = useRowanPrice();
+    const { pool, accountPool } = props.context;
+
+    const details = [
+      ["Your pool share %", `${userPoolData.myPoolShare.value ?? "0"}%`],
+      ["Your pool value", `${userPoolData.myPoolShare.value ?? "0"}%`],
+      ["Rewards earned", `${userPoolData.myPoolShare.value ?? "0"}%`],
+      ["Performance", `${userPoolData.myPoolShare.value ?? "0"}%`],
+    ];
+    return () => (
+      <li
+        role="article"
+        class="flex h-[312px] flex-col gap-4 rounded-lg bg-gray-900 p-4"
+      >
+        <header class="flex items-center p-2">
+          <AssetPair asset={ref(pool.externalAmount.asset)} invert />
+        </header>
+        <main class="flex-1">
+          <ul class="grid w-full gap-2">
+            {details.map(([label, value]) => (
+              <li class="flex items-center justify-between">
+                <div class="text-gray-sif_200 text-left">{label}</div>
+                <div class="text-right">{value}</div>
+              </li>
+            ))}
+          </ul>
+        </main>
+        <footer class="">
+          {pool.externalAmount.displaySymbol.startsWith("a") && (
+            <Button.CallToAction>Claim</Button.CallToAction>
+          )}
+        </footer>
+      </li>
     );
   },
 });

@@ -6,7 +6,7 @@ const SIDEBAR_WIDTH = "210px";
 module.exports = {
   mode: "jit",
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx,svg}"],
-  darkMode: "media",
+  darkMode: "class",
   theme: {
     extend: {
       backgroundImage: {
@@ -69,6 +69,9 @@ module.exports = {
           disabled: "#565656",
           ring: "#272727",
           base: "#171717",
+          sif_200: "#CFD3DD",
+          sif_800: "#21242F",
+          sif_900: "#0A0E17",
         },
       },
       fontSize: {},

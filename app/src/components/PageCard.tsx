@@ -11,8 +11,7 @@ import {
 } from "vue";
 import { useRouter } from "vue-router";
 
-import AssetIcon, { IconName } from "./AssetIcon";
-import TokenIcon from "./TokenIcon";
+import { IconName } from "./AssetIcon";
 
 export default defineComponent({
   props: {
@@ -46,44 +45,35 @@ export default defineComponent({
     return () => (
       <div
         class={[
-          "absolute inset-0 mx-auto w-full max-w-4xl overflow-y-scroll bg-black p-4 md:relative md:mt-[8vh] md:overflow-y-auto md:rounded-2xl md:p-6",
+          "bg-gray-sif_800/10 flex h-screen w-full flex-col items-start gap-4",
           props.class,
         ]}
         style={props.style}
       >
-        <div class="sticky -top-4 z-10 grid w-full gap-4 bg-black/90 pb-2 md:top-0">
-          {Boolean(props.heading) && (
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                {Boolean(props.iconName) &&
-                  (props.iconType === "AssetIcon" ? (
-                    <AssetIcon
-                      icon={props.iconName as IconName}
-                      size={32}
-                      active
-                    />
-                  ) : (
-                    <TokenIcon
-                      assetValue={props.iconName as IAsset}
-                      size={32}
-                    />
-                  ))}
-                <span
-                  class={[
-                    "text-accent-base font-sans text-xl font-semibold md:text-2xl",
-                    props.headingClass,
-                  ]}
-                >
-                  {props.heading}
-                </span>
+        <div class="bg-gray-sif_900 w-full p-4 md:p-8">
+          <div class="mx-auto grid w-full max-w-7xl gap-4">
+            {Boolean(props.heading) && (
+              <div class="bg-gray-sif_900 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span
+                    class={[
+                      "text-accent-base font-sans text-xl font-semibold md:text-2xl",
+                      props.headingClass,
+                    ]}
+                  >
+                    {props.heading}
+                  </span>
+                </div>
+                <div class="flex items-center">{props.headerAction}</div>
               </div>
-              <div class="flex items-center">{props.headerAction}</div>
-            </div>
-          )}
-          <div>{props.headerContent}</div>
+            )}
+            <div>{props.headerContent}</div>
+          </div>
         </div>
-        <div class="w-full max-w-[calc(100vw-16px)] overflow-x-scroll">
-          {context.slots.default?.()}
+        <div class="w-full flex-1 overflow-x-scroll p-4 md:p-8">
+          <div class="mx-auto w-full max-w-7xl">
+            {context.slots.default?.()}
+          </div>
         </div>
       </div>
     );

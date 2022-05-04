@@ -16,7 +16,7 @@ export const createGui = () => {
   Object.assign(gui.domElement.style, {
     zIndex: 30,
     position: "fixed",
-    top: "48px",
+    bottom: "48px",
     right: 0,
   });
   // gui.domElement.querySelector(".close-button")?.remove();

@@ -95,7 +95,7 @@ export const Flags = defineComponent({
     return (
       <Button.Inline
         icon="interactive/settings"
-        class="fixed top-2 right-2 z-30"
+        class="fixed bottom-2 right-2 z-30"
         onClick={() => this.toggleGui()}
       />
     );

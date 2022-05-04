@@ -20,6 +20,7 @@ import ConnectedWallets from "./ConnectedWallets";
 import RowanPrice from "./RowanPrice";
 import PmtpParam from "./PmtpParam";
 import TVL from "./TVL";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -197,6 +198,7 @@ export default defineComponent({
             <PmtpParam />
             <RowanPrice />
             <ConnectedWallets />
+            <ThemeSwitcher />
           </div>
           {changelog.isSuccess.value && (
             <div class="text-center font-mono text-xs opacity-40 hover:opacity-100">
