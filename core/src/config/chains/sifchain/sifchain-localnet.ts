@@ -3,15 +3,15 @@ import { Network, IBCChainConfig } from "../../../entities";
 export const SIFCHAIN_LOCALNET: IBCChainConfig = {
   network: Network.SIFCHAIN,
   chainType: "ibc",
-  displayName: "sifchain-local",
+  displayName: "Sifchain",
   blockExplorerUrl: "https://www.mintscan.io/sifchain",
   nativeAssetSymbol: "rowan",
-  chainId: "sifchain-local",
+  chainId: "localnet",
   rpcUrl: "http://localhost:3000/api/sifchain-local/rpc",
   restUrl: "http://localhost:3000/api/sifchain-local/rest",
   keplrChainInfo: {
-    chainName: "sifchain-local",
-    chainId: "sifchain-local",
+    chainName: "Sifchain Local",
+    chainId: "localnet",
     rpc: "http://localhost:3000/api/sifchain-local/rpc",
     rest: "http://localhost:3000/api/sifchain-local/rest",
     stakeCurrency: {

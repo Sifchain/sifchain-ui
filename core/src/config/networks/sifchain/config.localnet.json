@@ -1,6 +1,6 @@
 {
   "sifAddrPrefix": "sif",
-  "sifChainId": "sifchain-local",
+  "sifChainId": "localnet",
   "sifApiUrl": "http://localhost:3000/api/sifchain-local/rest",
   "sifRpcUrl": "http://localhost:3000/api/sifchain-local/rpc",
   "web3Provider": "metamask",
@@ -9,8 +9,8 @@
   "blockExplorerUrl": "https://blockexplorer.sifchain.finance",
   "bridgebankContractAddress": "0x30753E4A8aad7F8597332E813735Def5dD395028",
   "keplrChainConfig": {
-    "chainName": "SifchainLocal",
-    "chainId": "sifchain-local",
+    "chainName": "Sifchain Local",
+    "chainId": "localnet",
     "rpc": "http://localhost:3000/api/sifchain-local/rpc",
     "rest": "http://localhost:3000/api/sifchain-local/rest",
     "stakeCurrency": {
