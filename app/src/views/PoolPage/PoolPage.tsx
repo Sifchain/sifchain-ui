@@ -3,7 +3,10 @@ import { Button } from "@/components/Button/Button";
 import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
-import { useRemoveLiquidityMutation } from "@/domains/clp/mutation/liquidity";
+import {
+  useCancelLiquidityUnlockMutation,
+  useRemoveLiquidityMutation,
+} from "@/domains/clp/mutation/liquidity";
 import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
@@ -42,6 +45,7 @@ export default defineComponent({
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
+      cancelLiquidityUnlockMutation: useCancelLiquidityUnlockMutation(),
       currentRewardPeriod,
       competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
@@ -245,6 +249,16 @@ export default defineComponent({
 
               const currentRewardPeriod = this.currentRewardPeriod.data.value;
 
+              const isRemovalInProgress =
+                this.removeLiquidityMutation.variables.value?.requestHeight ===
+                  unlock?.requestHeight &&
+                this.removeLiquidityMutation.isLoading.value;
+
+              const isCancelInProgress =
+                this.cancelLiquidityUnlockMutation.variables.value
+                  ?.requestHeight === unlock?.requestHeight &&
+                this.cancelLiquidityUnlockMutation.isLoading.value;
+
               return (
                 <PoolItem
                   currentRewardPeriod={
@@ -275,16 +289,26 @@ export default defineComponent({
                             unlock.eta === undefined
                               ? undefined
                               : formatDistance(new Date(), unlock.eta),
-                          isRemovalInProgress:
-                            this.removeLiquidityMutation.isLoading.value,
-                          isActiveRemoval:
-                            this.removeLiquidityMutation.variables.value
-                              ?.requestHeight === unlock.requestHeight,
+                          isRemovalDisabled:
+                            this.removeLiquidityMutation.isLoading.value ||
+                            isCancelInProgress,
+                          isRemovalInProgress,
                           onRemoveRequest: () =>
                             this.removeLiquidityMutation.mutate({
                               requestHeight: unlock.requestHeight,
                               externalAssetSymbol:
-                                item.pool.externalAmount!.symbol,
+                                item.pool.externalAmount.symbol,
+                              units: unlock.units,
+                            }),
+                          isCancelDisabled:
+                            this.cancelLiquidityUnlockMutation.isLoading
+                              .value || isRemovalInProgress,
+                          isCancelInProgress,
+                          onCancelRequest: () =>
+                            this.cancelLiquidityUnlockMutation.mutate({
+                              requestHeight: unlock.requestHeight,
+                              externalAssetSymbol:
+                                item.pool.externalAmount.symbol,
                               units: unlock.units,
                             }),
                         }
