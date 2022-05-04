@@ -389,25 +389,27 @@ export default defineComponent({
                           </div>
                         )}
                     <div class="flex flex-row align-middle">
-                      <Button.CallToActionSecondary
-                        class="text-danger-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
-                        disabled={
-                          this.unlock.isCancelInProgress ||
-                          (this.unlock.isRemovalInProgress &&
-                            this.unlock.isActiveRemoval)
-                        }
-                        onClick={this.unlock.onCancelRequest}
-                      >
-                        {this.unlock.isCancelInProgress &&
-                        this.unlock.isActiveCancel ? (
-                          <AssetIcon
-                            size={36}
-                            icon="interactive/anim-racetrack-spinner"
-                          />
-                        ) : (
-                          "Cancel"
-                        )}
-                      </Button.CallToActionSecondary>
+                      {this.$store.state.flags.liquidityUnlockCancellation && (
+                        <Button.CallToActionSecondary
+                          class="text-danger-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
+                          disabled={
+                            this.unlock.isCancelInProgress ||
+                            (this.unlock.isRemovalInProgress &&
+                              this.unlock.isActiveRemoval)
+                          }
+                          onClick={this.unlock.onCancelRequest}
+                        >
+                          {this.unlock.isCancelInProgress &&
+                          this.unlock.isActiveCancel ? (
+                            <AssetIcon
+                              size={36}
+                              icon="interactive/anim-racetrack-spinner"
+                            />
+                          ) : (
+                            "Cancel"
+                          )}
+                        </Button.CallToActionSecondary>
+                      )}
                       {this.unlock.ready && (
                         <Button.CallToActionSecondary
                           class="text-connected-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
