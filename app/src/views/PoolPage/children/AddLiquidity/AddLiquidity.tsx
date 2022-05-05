@@ -233,30 +233,30 @@ export default defineComponent({
                     [
                       <span>
                         <span class="uppercase">
-                          {data.fromAsset.value?.displaySymbol}
-                        </span>{" "}
-                        per{" "}
-                        <span class="uppercase">
                           {data.toAsset.value?.displaySymbol}
                         </span>
-                      </span>,
-                      <div class="flex items-center gap-[4px] font-mono">
-                        <div>{data.aPerBRatioMessage.value}</div>
-                        <TokenIcon asset={data.fromAsset}></TokenIcon>
-                      </div>,
-                    ],
-                    [
-                      <span>
-                        <span class="uppercase">
-                          {data.toAsset.value?.displaySymbol}
-                        </span>{" "}
-                        per{" "}
+                        :
                         <span class="uppercase">
                           {data.fromAsset.value?.displaySymbol}
-                        </span>
+                        </span>{" "}
+                        ratio
+                        <Tooltip
+                          content={
+                            <>
+                              The ratio of the pool that you are adding
+                              liquidity. Meaning you must match{" "}
+                              {data.bPerARatioMessage.value}{" "}
+                              {data.toAsset.value?.displaySymbol.toUpperCase()}{" "}
+                              for every {data.aPerBRatioMessage.value}{" "}
+                              {data.fromAsset.value?.displaySymbol.toUpperCase()}
+                            </>
+                          }
+                        >
+                          <Button.InlineHelp />
+                        </Tooltip>
                       </span>,
                       <div class="flex items-center gap-[4px] font-mono">
-                        <div>{data.bPerARatioMessage.value}</div>
+                        <div>{data.bPerARatioMessage.value}:1</div>
                         <TokenIcon asset={data.toAsset}></TokenIcon>
                       </div>,
                     ],
