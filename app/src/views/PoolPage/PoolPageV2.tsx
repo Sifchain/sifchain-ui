@@ -138,30 +138,8 @@ export default defineComponent({
     const data = computed(() => this.sanitizedPoolData);
     return (
       <Layout>
-        <RouterView
-          name={
-            flagsStore.state.allowEmptyLiquidityAdd
-              ? undefined
-              : this.isLoading
-              ? "DISABLED_WHILE_LOADING"
-              : undefined
-          }
-        />
         <PageCard
-          heading="Pool"
-          iconName="navigation/pool"
-          headerAction={
-            <Button.Inline
-              class="relative !h-[40px] px-4 !text-lg"
-              iconClass="!w-[24px] !h-[24px] transform translate-y-[1px]"
-              to={{ name: "AddLiquidity", params: {} }}
-              active
-              replace
-              icon="interactive/plus"
-            >
-              <div class="font-semibold">Add Liquidity</div>
-            </Button.Inline>
-          }
+          breadCrumbs={["Pool"]}
           headerContent={
             <SearchBox
               placeholder="Search Pool..."
@@ -178,7 +156,7 @@ export default defineComponent({
 
           {this.usePools.length > 0 && (
             <section>
-              <ul class="grid gap-2 md:grid-cols-3 lg:gap-4 xl:gap-6">
+              <ul class="4xl:grid-cols-4 grid gap-2 md:grid-cols-2 lg:grid-cols-3 lg:gap-4 2xl:gap-6">
                 {this.usePools.map((item) => (
                   <OwnPool key={item.pool.symbol()} context={item} />
                 ))}
@@ -192,7 +170,7 @@ export default defineComponent({
                   <li
                     role="article"
                     key={item.pool.symbol()}
-                    class="bg-gray-sif_800 grid rounded-lg p-4"
+                    class="bg-gray-sif800 grid rounded-lg p-4"
                   >
                     <header class="flex items-center p-2">
                       <AssetPair

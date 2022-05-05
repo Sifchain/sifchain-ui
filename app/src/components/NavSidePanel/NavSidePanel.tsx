@@ -77,7 +77,7 @@ export default defineComponent({
           class={clsx(
             [
               "ease fixed z-40 flex h-screen w-full flex-col transition-transform md:max-w-[240px]",
-              "gap-6 bg-black p-4 shadow-slate-900 sm:shadow-lg md:gap-12",
+              "ring-gray-sif600/20 gap-6 bg-black p-4 sm:ring-1 md:gap-12",
             ],
             {
               "-translate-x-[100%]": !isOpenRef.value,
@@ -119,9 +119,9 @@ export default defineComponent({
                 href="/balances"
               />
               <NavSidePanelItem
-                displayName="Pool"
+                displayName="Pools"
                 icon="navigation/pool"
-                href="/pool"
+                href="/pools"
               />
               <NavSidePanelItem
                 icon="navigation/changelog"

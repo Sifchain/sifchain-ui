@@ -65,9 +65,10 @@ export default defineComponent({
           })}
           {...(props.onClick && { onClick: props.onClick })}
           class={[
-            `flex w-full items-center whitespace-nowrap rounded-md px-2 text-left text-sm font-semibold transition-colors duration-75 hover:bg-white/30`,
+            `flex w-full cursor-pointer items-center whitespace-nowrap 
+             rounded-md px-2 text-left text-sm font-semibold`,
             isActive.value && "text-accent-base bg-white/20",
-            props.nonInteractable ? "pointer-events-none" : "cursor-pointer",
+
             props.class,
           ]}
         >

@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { ButtonHTMLAttributes, mergeProps, SetupContext } from "vue";
 
 export const _CallToAction = (
@@ -6,10 +7,16 @@ export const _CallToAction = (
 ) => (
   <button
     {...props}
-    class={[
-      `bg-accent-gradient disabled:bg-gray-disabled flex h-[62px] w-full items-center justify-center rounded-[4px] font-sans text-[18px] font-semibold text-white disabled:bg-none disabled:text-gray-900`,
+    disabled={props.disabled}
+    class={clsx([
+      `disabled:bg-gray-sif300 disabled:text-gray-sif600 flex h-11 w-full items-center justify-center 
+       rounded px-4 py-3 text-sm font-semibold disabled:cursor-not-allowed
+       md:h-12 md:text-base`,
+      {
+        "bg-gray-sif100 text-gray-sif900": !props.disabled,
+      },
       props.class,
-    ]}
+    ])}
     style={
       mergeProps(
         {

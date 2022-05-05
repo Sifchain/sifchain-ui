@@ -133,23 +133,21 @@ export default defineComponent({
               </Button.Inline>
             </div>
           }
-          iconName="navigation/balances"
+          breadCrumbs={["Balances"]}
           headerContent={
-            <div class="grid w-full gap-4">
-              <SearchBox
-                enableKeyBindings
-                id="search-token"
-                value={state.searchQuery}
-                disabled={isDisabled}
-                placeholder="Search Token..."
-                onInput={(e: Event) => {
-                  state.searchQuery = (e.target as HTMLInputElement).value;
-                  if (state.expandedSymbol) {
-                    state.expandedSymbol = "";
-                  }
-                }}
-              />
-            </div>
+            <SearchBox
+              enableKeyBindings
+              id="search-token"
+              value={state.searchQuery}
+              disabled={isDisabled}
+              placeholder="Search Token..."
+              onInput={(e: Event) => {
+                state.searchQuery = (e.target as HTMLInputElement).value;
+                if (state.expandedSymbol) {
+                  state.expandedSymbol = "";
+                }
+              }}
+            />
           }
         >
           <RecyclerView

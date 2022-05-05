@@ -51,8 +51,8 @@ export default defineComponent({
 
     return () => (
       <Layout>
-        <PageCard heading="Swap" iconName="navigation/swap">
-          <div class="mx-auto grid max-w-xl gap-4 bg-gray-800 p-4 md:rounded-xl">
+        <PageCard breadCrumbs={["Swap"]}>
+          <div class="bg-gray-sif750 mx-auto grid max-w-lg gap-4 p-4 md:rounded-xl">
             <div class="grid gap-2">
               <TokenInputGroup
                 onSelectAsset={(asset) => {

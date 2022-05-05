@@ -23,6 +23,7 @@ import Swap from "@/views/SwapPage";
 import { ApproveSwap } from "@/views/SwapPage/children/Approve";
 import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
 import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
+import PoolDetailtsPage from "@/views/PoolPage/children/PoolDetailsPage";
 
 type SwapPageMeta = {
   title: string;
@@ -74,11 +75,12 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     ],
   },
   {
-    path: "/pool",
-    name: "Pool",
+    path: "/pools",
+    name: "Pools",
+    strict: true,
     component: Pool,
     meta: {
-      title: "Pool - Sifchain",
+      title: "Pools - Sifchain",
     },
     children: [
       {
@@ -115,6 +117,15 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
             },
           },
     ],
+  },
+  {
+    path: "/pools/:poolId",
+    name: "PoolDetails",
+    strict: true,
+    component: PoolDetailtsPage,
+    meta: {
+      title: "Pool Details - Sifchain",
+    },
   },
   {
     path: "/balances",

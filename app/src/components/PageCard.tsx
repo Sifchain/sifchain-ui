@@ -11,13 +11,14 @@ import {
 } from "vue";
 import { useRouter } from "vue-router";
 
-import { IconName } from "./AssetIcon";
+import AssetIcon, { IconName } from "./AssetIcon";
+import Button from "./Button";
 
 export default defineComponent({
   props: {
     heading: {
       type: Object as PropType<JSX.Element | string>,
-      required: true,
+      required: false,
     },
     headingClass: {
       type: String,
@@ -25,12 +26,15 @@ export default defineComponent({
     headerContent: {
       type: Object as PropType<JSX.Element>,
     },
-    headerAction: Object as PropType<Component | JSX.Element>,
-    iconName: String as PropType<IconName | IAsset>,
-    iconType: {
-      type: String as PropType<"AssetIcon" | "TokenIcon">,
-      default: "AssetIcon",
+    withBackButton: {
+      type: Boolean,
+      default: false,
     },
+    breadCrumbs: {
+      type: Array as PropType<string[]>,
+      required: false,
+    },
+    headerAction: Object as PropType<Component | JSX.Element>,
     class: String as PropType<HTMLAttributes["class"]>,
     style: Object as PropType<StyleValue>,
   },
@@ -45,29 +49,34 @@ export default defineComponent({
     return () => (
       <div
         class={[
-          "bg-gray-sif_800/10 flex h-screen w-full flex-col items-start gap-4",
+          "bg-gray-sif800/10 flex h-screen w-full flex-col items-start gap-4",
           props.class,
         ]}
         style={props.style}
       >
-        <div class="bg-gray-sif_900 w-full p-4 md:p-8">
+        <div class="bg-gray-sif900 flex w-full p-4 md:p-8">
           <div class="mx-auto grid w-full max-w-7xl gap-4">
-            {Boolean(props.heading) && (
-              <div class="bg-gray-sif_900 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span
-                    class={[
-                      "text-accent-base font-sans text-lg font-semibold md:text-xl",
-                      props.headingClass,
-                    ]}
-                  >
-                    / {props.heading}
-                  </span>
+            <div class="flex items-center gap-4">
+              {props.withBackButton && (
+                <Button.Inline onClick={() => router.go(-1)}>
+                  <AssetIcon
+                    icon="interactive/arrow-up"
+                    class="-rotate-90"
+                    size={24}
+                  />
+                </Button.Inline>
+              )}
+              {props.breadCrumbs && (
+                <div class="flex flex-1 items-center gap-4">
+                  {props.breadCrumbs.map((crumb) => (
+                    <span class="text-gray-sif200 last:text-gray-sif50 text-sm font-normal last:font-medium">
+                      / {crumb}
+                    </span>
+                  ))}
                 </div>
-                <div class="flex items-center">{props.headerAction}</div>
-              </div>
-            )}
-            <div>{props.headerContent}</div>
+              )}
+              <div class="flex-1">{props.headerContent}</div>
+            </div>
           </div>
         </div>
         <div class="w-full flex-1 overflow-x-scroll p-4 md:p-8">

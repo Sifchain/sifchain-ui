@@ -1,5 +1,6 @@
 import { AssetAmount, Network } from "@sifchain/sdk";
 import { computed, defineComponent, PropType, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import AssetPair from "~/components/AssetPair";
 import { Button } from "~/components/Button/Button";
@@ -7,7 +8,6 @@ import { useChains } from "~/hooks/useChains";
 import { useRowanPrice } from "~/hooks/useRowanPrice";
 import { prettyNumber } from "~/utils/prettyNumber";
 import { ElementOf } from "~/utils/types";
-
 import { PoolDataArray } from "../usePoolPageData";
 import { useUserPoolData } from "../useUserPoolData";
 
@@ -66,10 +66,21 @@ export default defineComponent({
         </span>,
       ],
     ];
+
+    const router = useRouter();
+
     return () => (
       <li
-        role="article"
+        role="button"
         class="flex h-[312px] flex-col gap-4 rounded-lg bg-gray-900 p-4"
+        onClick={() => {
+          router.push({
+            name: "PoolDetails",
+            params: {
+              poolId: pool.symbol(),
+            },
+          });
+        }}
       >
         <header class="flex items-center p-2">
           <AssetPair asset={ref(pool.externalAmount.asset)} invert />
@@ -78,7 +89,7 @@ export default defineComponent({
           <ul class="grid w-full gap-2">
             {details.map(([label, value]) => (
               <li class="flex items-center justify-between">
-                <div class="text-gray-sif_200 text-left">{label}</div>
+                <div class="text-gray-sif200 text-left">{label}</div>
                 <div class="text-right">{value}</div>
               </li>
             ))}

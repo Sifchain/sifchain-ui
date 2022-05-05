@@ -16,7 +16,7 @@ export default defineComponent({
     return () => (
       <>
         <div
-          class="dark:bg-gray-sif_900/60 flex min-h-screen w-full subpixel-antialiased dark:text-slate-100"
+          class="dark:bg-gray-sif900/60 flex min-h-screen w-full subpixel-antialiased dark:text-slate-100"
           onScroll={props.onScroll}
         >
           <NavSidePanel />
