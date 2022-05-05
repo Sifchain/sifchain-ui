@@ -20,6 +20,10 @@ export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
+export type PoolDataArray = ReturnType<
+  typeof usePoolPageData
+>["allPoolsData"]["value"];
+
 export type PoolPageColumnId =
   | "token"
   | "apy"
