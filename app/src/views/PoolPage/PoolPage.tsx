@@ -183,7 +183,7 @@ export default defineComponent({
 
           {this.usePools.length > 0 && (
             <section>
-              <ul class="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+              <ul class="grid gap-2 md:grid-cols-3 lg:gap-4 xl:gap-6">
                 {this.usePools.map((item) => (
                   <OwnPool key={item.pool.symbol()} context={item} />
                 ))}
