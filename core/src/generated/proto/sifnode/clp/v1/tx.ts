@@ -6,6 +6,14 @@ import { RewardPeriod } from "../../../sifnode/clp/v1/params";
 
 export const protobufPackage = "sifnode.clp.v1";
 
+export interface MsgUpdateStakingRewardParams {
+  signer: string;
+  minter: string;
+  params: string;
+}
+
+export interface MsgUpdateStakingRewardParamsResponse {}
+
 export interface MsgRemoveLiquidity {
   signer: string;
   externalAsset?: Asset;
@@ -101,6 +109,143 @@ export interface MsgAddRewardPeriodRequest {
 }
 
 export interface MsgAddRewardPeriodResponse {}
+
+export interface MsgSetSymmetryThreshold {
+  signer: string;
+  threshold: string;
+}
+
+export interface MsgSetSymmetryThresholdResponse {}
+
+export interface MsgCancelUnlock {
+  signer: string;
+  externalAsset?: Asset;
+  units: string;
+}
+
+export interface MsgCancelUnlockResponse {}
+
+function createBaseMsgUpdateStakingRewardParams(): MsgUpdateStakingRewardParams {
+  return { signer: "", minter: "", params: "" };
+}
+
+export const MsgUpdateStakingRewardParams = {
+  encode(
+    message: MsgUpdateStakingRewardParams,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.minter !== "") {
+      writer.uint32(18).string(message.minter);
+    }
+    if (message.params !== "") {
+      writer.uint32(26).string(message.params);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateStakingRewardParams {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateStakingRewardParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.minter = reader.string();
+          break;
+        case 3:
+          message.params = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateStakingRewardParams {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      minter: isSet(object.minter) ? String(object.minter) : "",
+      params: isSet(object.params) ? String(object.params) : "",
+    };
+  },
+
+  toJSON(message: MsgUpdateStakingRewardParams): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.minter !== undefined && (obj.minter = message.minter);
+    message.params !== undefined && (obj.params = message.params);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateStakingRewardParams>, I>>(
+    object: I,
+  ): MsgUpdateStakingRewardParams {
+    const message = createBaseMsgUpdateStakingRewardParams();
+    message.signer = object.signer ?? "";
+    message.minter = object.minter ?? "";
+    message.params = object.params ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgUpdateStakingRewardParamsResponse(): MsgUpdateStakingRewardParamsResponse {
+  return {};
+}
+
+export const MsgUpdateStakingRewardParamsResponse = {
+  encode(
+    _: MsgUpdateStakingRewardParamsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateStakingRewardParamsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateStakingRewardParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateStakingRewardParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateStakingRewardParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<
+    I extends Exact<DeepPartial<MsgUpdateStakingRewardParamsResponse>, I>,
+  >(_: I): MsgUpdateStakingRewardParamsResponse {
+    const message = createBaseMsgUpdateStakingRewardParamsResponse();
+    return message;
+  },
+};
 
 function createBaseMsgRemoveLiquidity(): MsgRemoveLiquidity {
   return {
@@ -1640,6 +1785,246 @@ export const MsgAddRewardPeriodResponse = {
   },
 };
 
+function createBaseMsgSetSymmetryThreshold(): MsgSetSymmetryThreshold {
+  return { signer: "", threshold: "" };
+}
+
+export const MsgSetSymmetryThreshold = {
+  encode(
+    message: MsgSetSymmetryThreshold,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.threshold !== "") {
+      writer.uint32(18).string(message.threshold);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgSetSymmetryThreshold {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetSymmetryThreshold();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.threshold = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSetSymmetryThreshold {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      threshold: isSet(object.threshold) ? String(object.threshold) : "",
+    };
+  },
+
+  toJSON(message: MsgSetSymmetryThreshold): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.threshold !== undefined && (obj.threshold = message.threshold);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSetSymmetryThreshold>, I>>(
+    object: I,
+  ): MsgSetSymmetryThreshold {
+    const message = createBaseMsgSetSymmetryThreshold();
+    message.signer = object.signer ?? "";
+    message.threshold = object.threshold ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgSetSymmetryThresholdResponse(): MsgSetSymmetryThresholdResponse {
+  return {};
+}
+
+export const MsgSetSymmetryThresholdResponse = {
+  encode(
+    _: MsgSetSymmetryThresholdResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgSetSymmetryThresholdResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetSymmetryThresholdResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSetSymmetryThresholdResponse {
+    return {};
+  },
+
+  toJSON(_: MsgSetSymmetryThresholdResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSetSymmetryThresholdResponse>, I>>(
+    _: I,
+  ): MsgSetSymmetryThresholdResponse {
+    const message = createBaseMsgSetSymmetryThresholdResponse();
+    return message;
+  },
+};
+
+function createBaseMsgCancelUnlock(): MsgCancelUnlock {
+  return { signer: "", externalAsset: undefined, units: "" };
+}
+
+export const MsgCancelUnlock = {
+  encode(
+    message: MsgCancelUnlock,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.externalAsset !== undefined) {
+      Asset.encode(message.externalAsset, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.units !== "") {
+      writer.uint32(26).string(message.units);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelUnlock {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgCancelUnlock();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.externalAsset = Asset.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.units = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgCancelUnlock {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      units: isSet(object.units) ? String(object.units) : "",
+    };
+  },
+
+  toJSON(message: MsgCancelUnlock): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.externalAsset !== undefined &&
+      (obj.externalAsset = message.externalAsset
+        ? Asset.toJSON(message.externalAsset)
+        : undefined);
+    message.units !== undefined && (obj.units = message.units);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgCancelUnlock>, I>>(
+    object: I,
+  ): MsgCancelUnlock {
+    const message = createBaseMsgCancelUnlock();
+    message.signer = object.signer ?? "";
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.units = object.units ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgCancelUnlockResponse(): MsgCancelUnlockResponse {
+  return {};
+}
+
+export const MsgCancelUnlockResponse = {
+  encode(
+    _: MsgCancelUnlockResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgCancelUnlockResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgCancelUnlockResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgCancelUnlockResponse {
+    return {};
+  },
+
+  toJSON(_: MsgCancelUnlockResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgCancelUnlockResponse>, I>>(
+    _: I,
+  ): MsgCancelUnlockResponse {
+    const message = createBaseMsgCancelUnlockResponse();
+    return message;
+  },
+};
+
 export interface Msg {
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
@@ -1668,6 +2053,15 @@ export interface Msg {
   UpdatePmtpParams(
     request: MsgUpdatePmtpParams,
   ): Promise<MsgUpdatePmtpParamsResponse>;
+  UpdateStakingRewardParams(
+    request: MsgUpdateStakingRewardParams,
+  ): Promise<MsgUpdateStakingRewardParamsResponse>;
+  SetSymmetryThreshold(
+    request: MsgSetSymmetryThreshold,
+  ): Promise<MsgSetSymmetryThresholdResponse>;
+  CancelUnlockLiquidity(
+    request: MsgCancelUnlock,
+  ): Promise<MsgCancelUnlockResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1685,6 +2079,9 @@ export class MsgClientImpl implements Msg {
     this.AddRewardPeriod = this.AddRewardPeriod.bind(this);
     this.ModifyPmtpRates = this.ModifyPmtpRates.bind(this);
     this.UpdatePmtpParams = this.UpdatePmtpParams.bind(this);
+    this.UpdateStakingRewardParams = this.UpdateStakingRewardParams.bind(this);
+    this.SetSymmetryThreshold = this.SetSymmetryThreshold.bind(this);
+    this.CancelUnlockLiquidity = this.CancelUnlockLiquidity.bind(this);
   }
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
@@ -1821,6 +2218,48 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgUpdatePmtpParamsResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  UpdateStakingRewardParams(
+    request: MsgUpdateStakingRewardParams,
+  ): Promise<MsgUpdateStakingRewardParamsResponse> {
+    const data = MsgUpdateStakingRewardParams.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "UpdateStakingRewardParams",
+      data,
+    );
+    return promise.then((data) =>
+      MsgUpdateStakingRewardParamsResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  SetSymmetryThreshold(
+    request: MsgSetSymmetryThreshold,
+  ): Promise<MsgSetSymmetryThresholdResponse> {
+    const data = MsgSetSymmetryThreshold.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "SetSymmetryThreshold",
+      data,
+    );
+    return promise.then((data) =>
+      MsgSetSymmetryThresholdResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  CancelUnlockLiquidity(
+    request: MsgCancelUnlock,
+  ): Promise<MsgCancelUnlockResponse> {
+    const data = MsgCancelUnlock.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "CancelUnlockLiquidity",
+      data,
+    );
+    return promise.then((data) =>
+      MsgCancelUnlockResponse.decode(new _m0.Reader(data)),
     );
   }
 }

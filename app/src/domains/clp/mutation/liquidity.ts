@@ -11,8 +11,12 @@ import {
 } from "@cosmjs/stargate";
 import { DEFAULT_FEE } from "@sifchain/sdk";
 import { Network } from "@sifchain/sdk/src";
-import produce from "immer";
-import { useMutation, UseMutationOptions, useQueryClient } from "vue-query";
+import {
+  QueryClient,
+  useMutation,
+  UseMutationOptions,
+  useQueryClient,
+} from "vue-query";
 import {
   LIQUIDITY_PROVIDERS_KEY,
   LIQUIDITY_PROVIDER_KEY,
@@ -21,6 +25,7 @@ import {
 } from "../queries/liquidityProvider";
 import { useRewardsParamsQuery } from "../queries/params";
 import { addDetailToLiquidityProvider } from "../utils";
+import { produce } from "immer";
 
 export type UnlockLiquidityParams = {
   units: string;
@@ -106,11 +111,13 @@ export const useUnlockLiquidityMutation = () => {
           });
         }
       },
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         if (isDeliverTxFailure(data)) return;
 
-        queryClient.invalidateQueries(LIQUIDITY_PROVIDER_KEY);
-        queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY);
+        await Promise.all([
+          queryClient.invalidateQueries(LIQUIDITY_PROVIDER_KEY),
+          queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY),
+        ]);
       },
     },
   );
@@ -177,50 +184,135 @@ export const useRemoveLiquidityMutation = (
           });
         }
       },
-      onSuccess: (data, variables, context) => {
+      onSuccess: async (data, variables, context) => {
         options?.onSuccess?.(data, variables, context);
         if (isDeliverTxFailure(data)) return;
 
-        const { requestHeight, externalAssetSymbol } = variables;
-
-        const oldLiquidityProviders = queryClient.getQueryData<
-          UseQueryDataType<typeof useLiquidityProvidersQuery>
-        >(LIQUIDITY_PROVIDERS_KEY);
-
-        if (oldLiquidityProviders !== undefined) {
-          queryClient.setQueryData(
-            LIQUIDITY_PROVIDERS_KEY,
-            produce(oldLiquidityProviders, (x) => {
-              x.liquidityProviderData.forEach((y) => {
-                if (y.liquidityProvider !== undefined) {
-                  y.liquidityProvider.unlocks =
-                    y.liquidityProvider.unlocks.filter(
-                      (x) => x.requestHeight !== requestHeight,
-                    );
-                }
-              });
-            }),
-          );
-        }
-
-        const oldLiquidityProvider = queryClient.getQueryData<
-          UseQueryDataType<typeof useLiquidityProviderQuery>
-        >([LIQUIDITY_PROVIDER_KEY, externalAssetSymbol]);
-
-        if (oldLiquidityProvider !== undefined) {
-          queryClient.setQueriesData(
-            LIQUIDITY_PROVIDER_KEY,
-            produce(oldLiquidityProvider, (x) => {
-              if (x.liquidityProvider !== undefined) {
-                x.liquidityProvider.unlocks =
-                  x.liquidityProvider.unlocks.filter(
-                    (y) => y.requestHeight !== requestHeight,
-                  );
-              }
-            }),
-          );
-        }
+        removeUnlockRequestFromCache(
+          queryClient,
+          variables.externalAssetSymbol,
+          variables.requestHeight,
+        );
+        await Promise.all([
+          queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY),
+          queryClient.invalidateQueries(LIQUIDITY_PROVIDER_KEY),
+        ]);
       },
     },
   );
+};
+
+export const useCancelLiquidityUnlockMutation = () => {
+  const sifchainClients = useSifchainClients();
+  const tokenEntriesQuery = useTokenRegistryEntriesQuery({ enabled: false });
+  const queryClient = useQueryClient();
+  const { services } = useCore();
+
+  return useMutation(
+    async ({
+      units,
+      externalAssetSymbol,
+    }: UnlockLiquidityParams & { requestHeight: number }) => {
+      const client = await sifchainClients.getOrInitSigningClient();
+      const signer = await services.wallet.keplrProvider.connect(
+        services.chains.nativeChain,
+      );
+      const externalAsset = await tokenEntriesQuery.refetch
+        .value()
+        .then((x) =>
+          x.data?.registry?.entries.find(
+            (x) => x.baseDenom === externalAssetSymbol,
+          ),
+        );
+
+      return client.signAndBroadcast(
+        signer,
+        [
+          {
+            typeUrl: "/sifnode.clp.v1.MsgCancelUnlock",
+            value: {
+              signer,
+              externalAsset: { symbol: externalAsset?.denom ?? "" },
+              units,
+            },
+          },
+        ],
+        DEFAULT_FEE,
+      );
+    },
+    {
+      onSettled: (data, error) => {
+        if (!isNil(error) || (data !== undefined && isDeliverTxFailure(data))) {
+          return services.bus.dispatch({
+            type: "ErrorEvent",
+            payload: { message: "Failed to cancel liquidity unlock request" },
+          });
+        }
+
+        if (data !== undefined && isDeliverTxSuccess(data)) {
+          return services.bus.dispatch({
+            type: "SuccessEvent",
+            payload: {
+              message: "Successfully cancel liquidity unlock request",
+            },
+          });
+        }
+      },
+      onSuccess: async (data, variables) => {
+        if (isDeliverTxFailure(data)) return;
+
+        removeUnlockRequestFromCache(
+          queryClient,
+          variables.externalAssetSymbol,
+          variables.requestHeight,
+        );
+        await Promise.all([
+          queryClient.invalidateQueries(LIQUIDITY_PROVIDER_KEY),
+          queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY),
+        ]);
+      },
+    },
+  );
+};
+
+const removeUnlockRequestFromCache = (
+  queryClient: QueryClient,
+  externalAssetSymbol: string,
+  requestHeight: number,
+) => {
+  const oldLiquidityProviders = queryClient.getQueryData<
+    UseQueryDataType<typeof useLiquidityProvidersQuery>
+  >(LIQUIDITY_PROVIDERS_KEY);
+
+  if (oldLiquidityProviders !== undefined) {
+    queryClient.setQueryData(
+      LIQUIDITY_PROVIDERS_KEY,
+      produce(oldLiquidityProviders, (x) => {
+        x.liquidityProviderData.forEach((y) => {
+          if (y.liquidityProvider !== undefined) {
+            y.liquidityProvider.unlocks = y.liquidityProvider.unlocks.filter(
+              (x) => x.requestHeight !== requestHeight,
+            );
+          }
+        });
+      }),
+    );
+  }
+
+  const oldLiquidityProvider = queryClient.getQueryData<
+    UseQueryDataType<typeof useLiquidityProviderQuery>
+  >([LIQUIDITY_PROVIDER_KEY, externalAssetSymbol]);
+
+  if (oldLiquidityProvider !== undefined) {
+    queryClient.setQueriesData(
+      LIQUIDITY_PROVIDER_KEY,
+      produce(oldLiquidityProvider, (x) => {
+        if (x.liquidityProvider !== undefined) {
+          x.liquidityProvider.unlocks = x.liquidityProvider.unlocks.filter(
+            (y) => y.requestHeight !== requestHeight,
+          );
+        }
+      }),
+    );
+  }
 };

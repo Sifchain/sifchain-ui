@@ -15,6 +15,8 @@ export interface RewardParams {
   /** in blocks */
   liquidityRemovalCancelPeriod: Long;
   rewardPeriods: RewardPeriod[];
+  /** start time of the current (or last) reward period */
+  rewardPeriodStartTime: string;
 }
 
 /** These params are non-governable and are calculated on chain */
@@ -111,6 +113,7 @@ function createBaseRewardParams(): RewardParams {
     liquidityRemovalLockPeriod: Long.UZERO,
     liquidityRemovalCancelPeriod: Long.UZERO,
     rewardPeriods: [],
+    rewardPeriodStartTime: "",
   };
 }
 
@@ -127,6 +130,9 @@ export const RewardParams = {
     }
     for (const v of message.rewardPeriods) {
       RewardPeriod.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.rewardPeriodStartTime !== "") {
+      writer.uint32(42).string(message.rewardPeriodStartTime);
     }
     return writer;
   },
@@ -149,6 +155,9 @@ export const RewardParams = {
             RewardPeriod.decode(reader, reader.uint32()),
           );
           break;
+        case 5:
+          message.rewardPeriodStartTime = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -168,6 +177,9 @@ export const RewardParams = {
       rewardPeriods: Array.isArray(object?.rewardPeriods)
         ? object.rewardPeriods.map((e: any) => RewardPeriod.fromJSON(e))
         : [],
+      rewardPeriodStartTime: isSet(object.rewardPeriodStartTime)
+        ? String(object.rewardPeriodStartTime)
+        : "",
     };
   },
 
@@ -188,6 +200,8 @@ export const RewardParams = {
     } else {
       obj.rewardPeriods = [];
     }
+    message.rewardPeriodStartTime !== undefined &&
+      (obj.rewardPeriodStartTime = message.rewardPeriodStartTime);
     return obj;
   },
 
@@ -207,6 +221,7 @@ export const RewardParams = {
         : Long.UZERO;
     message.rewardPeriods =
       object.rewardPeriods?.map((e) => RewardPeriod.fromPartial(e)) || [];
+    message.rewardPeriodStartTime = object.rewardPeriodStartTime ?? "";
     return message;
   },
 };

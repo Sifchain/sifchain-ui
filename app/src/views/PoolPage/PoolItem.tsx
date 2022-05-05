@@ -31,8 +31,11 @@ export default defineComponent({
         eta?: string;
         expiration?: string;
         onRemoveRequest: () => any;
+        isRemovalDisabled: boolean;
         isRemovalInProgress: boolean;
-        isActiveRemoval: boolean;
+        onCancelRequest: () => any;
+        isCancelDisabled: boolean;
+        isCancelInProgress: boolean;
       }>,
       required: false,
     },
@@ -385,23 +388,40 @@ export default defineComponent({
                             <span>{this.unlock.eta}</span>
                           </div>
                         )}
-                    {this.unlock.ready && (
-                      <Button.CallToActionSecondary
-                        class="h-[46px] text-[17px] disabled:bg-inherit"
-                        disabled={this.unlock.isRemovalInProgress}
-                        onClick={this.unlock.onRemoveRequest}
-                      >
-                        {this.unlock.isRemovalInProgress &&
-                        this.unlock.isActiveRemoval ? (
-                          <AssetIcon
-                            size={36}
-                            icon="interactive/anim-racetrack-spinner"
-                          />
-                        ) : (
-                          "Claim unlocked liquidity"
-                        )}
-                      </Button.CallToActionSecondary>
-                    )}
+                    <div class="flex flex-row align-middle">
+                      {this.$store.state.flags.liquidityUnlockCancellation && (
+                        <Button.CallToActionSecondary
+                          class="text-danger-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
+                          disabled={this.unlock.isCancelDisabled}
+                          onClick={this.unlock.onCancelRequest}
+                        >
+                          {this.unlock.isCancelInProgress ? (
+                            <AssetIcon
+                              size={36}
+                              icon="interactive/anim-racetrack-spinner"
+                            />
+                          ) : (
+                            "Cancel"
+                          )}
+                        </Button.CallToActionSecondary>
+                      )}
+                      {this.unlock.ready && (
+                        <Button.CallToActionSecondary
+                          class="text-connected-base h-[36px] text-[14px] uppercase disabled:bg-inherit"
+                          disabled={this.unlock.isRemovalDisabled}
+                          onClick={this.unlock.onRemoveRequest}
+                        >
+                          {this.unlock.isRemovalInProgress ? (
+                            <AssetIcon
+                              size={36}
+                              icon="interactive/anim-racetrack-spinner"
+                            />
+                          ) : (
+                            "Claim"
+                          )}
+                        </Button.CallToActionSecondary>
+                      )}
+                    </div>
                   </div>
                 </section>
               )}
