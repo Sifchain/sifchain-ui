@@ -90,11 +90,26 @@ export default defineComponent({
       };
     });
 
-    const externalInputUSD = computed(
+    const fromTokenUSD = computed(
       () => Number(data.fromAmount.value) * poolPrices.value.externalPrice,
     );
-    const nativeInputUSD = computed(
+    const toTokenUSD = computed(
       () => Number(data.toAmount.value) * poolPrices.value.nativePrice,
+    );
+
+    const fromTokenLabel = computed(() =>
+      (
+        data.fromAsset.value?.displaySymbol ??
+        data.fromAsset.value?.symbol ??
+        ""
+      ).toUpperCase(),
+    );
+    const toTokenLabel = computed(() =>
+      (
+        data.toAsset.value?.displaySymbol ??
+        data.toAsset.value?.symbol ??
+        ""
+      ).toUpperCase(),
     );
 
     const detailsRef = computed<FormDetailsType>(() => ({
@@ -102,36 +117,24 @@ export default defineComponent({
         [
           <div class="flex items-center">
             <TokenIcon asset={data.fromAsset} size={18} />
-            <span class="ml-[4px]">
-              {(
-                data.fromAsset.value?.displaySymbol ||
-                data.fromAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>
+            <span class="ml-[4px]">{fromTokenLabel.value}</span>
           </div>,
           <div class="text-right">
             <div class="font-mono">{data.fromAmount.value}</div>
             <div class="font-mono text-sm text-white/60">
-              ≈${prettyNumber(externalInputUSD.value)}
+              ≈${prettyNumber(fromTokenUSD.value)}
             </div>
           </div>,
         ],
         [
           <div class="flex items-center">
             <TokenIcon asset={data.toAsset} size={18} />
-            <span class="ml-[4px]">
-              {(
-                data.toAsset.value?.displaySymbol ||
-                data.toAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>
+            <span class="ml-[4px]">{toTokenLabel.value}</span>
           </div>,
           <div class="text-right">
             <div class="font-mono">{data.toAmount.value}</div>
             <div class="font-mono text-sm text-white/60">
-              ≈${prettyNumber(nativeInputUSD.value)}
+              ≈${prettyNumber(toTokenUSD.value)}
             </div>
           </div>,
         ],
@@ -252,7 +255,7 @@ export default defineComponent({
               <TokenInputGroup
                 shouldShowNumberInputOnLeft
                 excludeSymbols={["rowan"]}
-                heading=""
+                heading={fromTokenLabel.value}
                 asset={data.fromAsset.value}
                 amount={data.fromAmount.value}
                 formattedBalance={formattedFromTokenBalance.value}
@@ -265,7 +268,7 @@ export default defineComponent({
                 onSelectAsset={(asset) => {
                   data.fromSymbol.value = asset.symbol;
                 }}
-                dollarValue={externalInputUSD.value}
+                dollarValue={fromTokenUSD.value}
                 class="relative"
               />
               <div class="my-[4px] flex justify-center">
@@ -278,7 +281,7 @@ export default defineComponent({
               <TokenInputGroup
                 selectDisabled
                 shouldShowNumberInputOnLeft
-                heading=""
+                heading={toTokenLabel.value}
                 asset={data.toAsset.value}
                 amount={data.toAmount.value}
                 formattedBalance={formattedToTokenBalance.value}
@@ -293,7 +296,7 @@ export default defineComponent({
                 onSelectAsset={(asset) => {
                   data.toSymbol.value = asset.symbol;
                 }}
-                dollarValue={nativeInputUSD.value}
+                dollarValue={toTokenUSD.value}
               />
             </div>
             <div class="bg-gray-base grid gap-4 rounded-lg p-4">
@@ -310,7 +313,7 @@ export default defineComponent({
                       </>,
                     ],
                     [
-                      <>{data.fromAsset.value?.displaySymbol.toUpperCase()}</>,
+                      <>{fromTokenLabel.value}</>,
                       <>
                         {poolPrices.value.externalTVL
                           ? `$${prettyNumber(poolPrices.value.externalTVL)}`
@@ -319,7 +322,7 @@ export default defineComponent({
                       </>,
                     ],
                     [
-                      <>{data.toAsset.value?.displaySymbol.toUpperCase()}</>,
+                      <>{toTokenLabel.value}</>,
                       <>
                         {poolPrices.value.nativeTVL
                           ? `$${prettyNumber(poolPrices.value.nativeTVL)}`
