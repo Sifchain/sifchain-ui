@@ -24,4 +24,5 @@ export enum Network {
   CHIHUAHUA = "chihuahua",
   KI = "ki",
   STARGAZE = "stargaze",
+  SECRET = "secret",
 }

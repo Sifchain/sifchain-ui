@@ -21,5 +21,6 @@ export * from "./SentinelChain";
 export * from "./SifchainChain";
 export * from "./StargazeChain";
 export * from "./StarnameChain";
+export * from "./SecretChain";
 export * from "./TerraChain";
 export * from "./_BaseChain";
