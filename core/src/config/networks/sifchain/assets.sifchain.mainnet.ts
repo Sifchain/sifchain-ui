@@ -1100,6 +1100,17 @@ const assets: ChainAssetConfig = {
       imageUrl:
         "https://assets.coingecko.com/coins/images/24023/small/Evmos_Token_Orange_RGB.png?1651162025",
     },
+    {
+      symbol: "uscrt",
+      displaySymbol: "scrt",
+      decimals: 6,
+      name: "scrt",
+      network: "sifchain",
+      homeNetwork: "scrt",
+      label: "scrt",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/11871/small/Secret.png?1595520186",
+    },
   ],
 };
 

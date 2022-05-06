@@ -24,6 +24,7 @@ import comdex from "./comdex";
 import ki from "./ki";
 import stargaze from "./stargaze";
 import evmos from "./evmos";
+import secret from "./secret";
 
 export const chainConfigByNetworkEnv = Object.fromEntries(
   Object.values(NetworkEnv).map((env) => {
@@ -54,6 +55,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.COMDEX]: comdex[env],
         [Network.KI]: ki[env],
         [Network.STARGAZE]: stargaze[env],
+        [Network.SECRET]: secret[env],
       },
     ];
   }),
