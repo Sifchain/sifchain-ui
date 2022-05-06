@@ -1106,7 +1106,7 @@ const assets: ChainAssetConfig = {
       decimals: 6,
       name: "scrt",
       network: "sifchain",
-      homeNetwork: "scrt",
+      homeNetwork: "secret",
       label: "scrt",
       imageUrl:
         "https://assets.coingecko.com/coins/images/11871/small/Secret.png?1595520186",
