@@ -22,7 +22,7 @@ export default defineComponent({
           {props.hideTokenSymbol
             ? null
             : props.asset.value.displaySymbol.toUpperCase()}{" "}
-          <span class="z-10 translate-x-1">
+          <span class="z-10 h-[32px] w-[32px] translate-x-1 overflow-hidden rounded-full bg-black ring-2 ring-black/80">
             <TokenIcon asset={props.asset} size={32} />
           </span>
           <span class="overflow-hidden rounded-full bg-black ring ring-black">
