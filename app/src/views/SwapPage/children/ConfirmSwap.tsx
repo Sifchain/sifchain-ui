@@ -56,9 +56,9 @@ export const ConfirmSwap = defineComponent({
                 <Tooltip
                   content={
                     <>
-                      {data.effectiveToAmount.value} = Swap result (
+                      {data.effectiveToAmount.value} = (Swap result (
                       {data.toAmount.value}) - price impact (
-                      {data.priceImpact.value}% price impact) - LP fee (
+                      {data.priceImpact.value}%)) - LP fee (
                       {data.providerFee.value})
                     </>
                   }

@@ -331,7 +331,7 @@ export const useSwapPageData = () => {
     if (!minimumReceived.value) return "";
     const { amount, asset } = minimumReceived.value;
     return amount.greaterThanOrEqual(Amount("0"))
-      ? format(amount, asset, { mantissa: 18, trimMantissa: true })
+      ? format(amount, asset, { mantissa: 6, trimMantissa: true })
       : "Price impact too high";
   });
 
@@ -339,7 +339,7 @@ export const useSwapPageData = () => {
     if (!effectiveMinimumReceived.value) return "";
     const { amount, asset } = effectiveMinimumReceived.value;
     return amount.greaterThanOrEqual(Amount("0"))
-      ? format(amount, asset, { mantissa: 18, trimMantissa: true })
+      ? format(amount, asset, { mantissa: 6, trimMantissa: true })
       : "Price impact too high";
   });
 
