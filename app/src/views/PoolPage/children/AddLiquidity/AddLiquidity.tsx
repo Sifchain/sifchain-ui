@@ -232,19 +232,8 @@ export default defineComponent({
                 </>
               }
             >
-              <div class="flex items-center justify-end gap-2 md:min-w-[200px]">
+              <div class="flex flex-1 items-center justify-end px-2">
                 <AssetPair hideTokenSymbol asset={data.fromAsset} />
-                <div class="grid gap-0.5">
-                  <div class="text-accent-muted text-sm font-semibold">
-                    Pool composition
-                  </div>
-                  <span class="text-xs">
-                    {data.fromAsset.value?.displaySymbol.toUpperCase()}{" "}
-                    {poolPrices.value.externalRatio.toFixed(2)}% :{" "}
-                    {data.toAsset.value?.displaySymbol.toUpperCase()}{" "}
-                    {poolPrices.value.nativeRatio.toFixed(2)}%
-                  </span>
-                </div>
               </div>
             </Tooltip>
           }
@@ -302,16 +291,12 @@ export default defineComponent({
             <div class="bg-gray-base grid gap-4 rounded-lg p-4">
               <Form.Details
                 details={{
-                  label: "",
+                  label: (
+                    <span class="text-accent-base font-semibold">
+                      Pool composition
+                    </span>
+                  ),
                   details: [
-                    [
-                      <>Pool TVL</>,
-                      <>
-                        {poolPrices.value.tvlUsd
-                          ? `$${prettyNumber(poolPrices.value.tvlUsd)}`
-                          : "0"}
-                      </>,
-                    ],
                     [
                       <>{fromTokenLabel.value}</>,
                       <>

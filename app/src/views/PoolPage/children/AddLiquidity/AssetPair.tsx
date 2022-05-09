@@ -22,12 +22,12 @@ export default defineComponent({
           {props.hideTokenSymbol
             ? null
             : props.asset.value.displaySymbol.toUpperCase()}{" "}
-          <span class="z-10 h-[32px] w-[32px] translate-x-1 overflow-hidden rounded-full bg-black ring-2 ring-black/80">
+          <div class="z-10 translate-x-1 overflow-hidden rounded-full bg-black ring-2 ring-black/90">
             <TokenIcon asset={props.asset} size={32} />
-          </span>
-          <span class="overflow-hidden rounded-full bg-black ring ring-black">
+          </div>
+          <div class="grid place-items-center overflow-hidden rounded-full bg-black ring ring-black/90">
             <TokenIcon asset={ref(Asset("rowan"))} size={30} />
-          </span>
+          </div>
         </div>
       );
   },

@@ -102,8 +102,7 @@ export default defineComponent({
                     {props.heading}
                   </span>
                 </div>
-                <div>{props.headingAction}</div>
-
+                <div class="flex-1">{props.headingAction}</div>
                 <div class="flex items-center">
                   {props.showClose && (
                     <button onClick={() => props.onClose?.()}>
