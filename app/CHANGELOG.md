@@ -1,9 +1,20 @@
+## Release 2022.05.09
+
+- Add more information about price impact on Swap's confirmation step
+- Include "pool composition" information to Add Liquidity widget
+
 ## Release 2022.05.02
+
 - Fix Terra Station integration
+
 ## Release 2022.04.30
+
 - Fix EVMOS chain display decimals
+
 ## Release 2022.04.27
+
 - Add EVMOS chain
+
 ## Release 2022.04.27
 
 - Add unbonding period disclaimer to relevant components
@@ -103,15 +114,16 @@
 ## Release 2021.11.04
 
 - Enabled E-Money
+
   - EEUR
   - NGM
 
-* Sif's Bonus Pool - EEUR:
+- Sif's Bonus Pool - EEUR:
   - Import EEUR
   - Pool EEUR
   - Earn Rowan
 
-## Release 2021.10.29
+## Release 2021.10.29\
 
 - Enabled OH token from oh.finance
 
@@ -120,7 +132,7 @@
 - Enabled Terra via Terra Station Wallet: UST, LUNA
 - Sif's Bonus Pools for UST and LUNA
 
-## Release 2021.10.18
+## Release 2021.10.20
 
 - Enabled OSMO
 - Sif's Bonus Pool - OSMO:
