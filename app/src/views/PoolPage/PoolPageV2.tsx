@@ -1,19 +1,17 @@
 import { computed, defineComponent } from "vue";
-import { RouterView } from "vue-router";
 
-import { Button } from "~/components/Button/Button";
 import Layout from "~/components/Layout";
 import PageCard from "~/components/PageCard";
 import { SearchBox } from "~/components/SearchBox";
 import { useRemoveLiquidityMutation } from "~/domains/clp/mutation/liquidity";
 import { useCurrentRewardPeriod } from "~/domains/clp/queries/params";
-import { flagsStore, isAssetFlaggedDisabled } from "~/store/modules/flags";
+import { isAssetFlaggedDisabled } from "~/store/modules/flags";
 
 import {
   CompetitionsBySymbolLookup,
   useLeaderboardCompetitions,
 } from "../LeaderboardPage/useCompetitionData";
-import OwnPool from "./children/OwnPool";
+import PoolCard from "./children/PoolCard";
 import {
   PoolDataArray,
   PoolPageColumnId,
@@ -48,30 +46,7 @@ export default defineComponent({
     };
   },
   computed: {
-    poolRewardProgramLookup(): Record<string, PoolRewardProgram[]> {
-      const lookup: Record<string, PoolRewardProgram[]> = {};
-
-      this.rewardProgramsRes.data.value?.forEach((program) => {
-        if (program.isUniversal) return;
-
-        if (
-          new Date() < new Date(program.startDateTimeISO ?? "") ||
-          new Date() > new Date(program.endDateTimeISO ?? "")
-        ) {
-          return;
-        }
-      });
-
-      for (const symbol in lookup) {
-        lookup[symbol.slice(1)] = lookup[symbol];
-      }
-
-      return lookup;
-    },
-    symbolCompetitionsLookup(): CompetitionsBySymbolLookup | null {
-      return this.competitionsRes.data?.value || null;
-    },
-    sanitizedPoolData(): PoolDataArray {
+    poolEntries(): PoolDataArray {
       if (this.isLoading && !this.allPoolsData.length) return [];
 
       const result = this.allPoolsData
@@ -125,17 +100,10 @@ export default defineComponent({
 
       return result;
     },
-    usePools(): PoolDataArray {
-      return this.sanitizedPoolData.filter((x) => x.accountPool);
-    },
-
-    publicPools(): PoolDataArray {
-      return this.sanitizedPoolData.filter((x) => !x.accountPool);
-    },
   },
 
   render() {
-    const data = computed(() => this.sanitizedPoolData);
+    const data = computed(() => this.poolEntries);
     return (
       <Layout>
         <PageCard
@@ -154,39 +122,15 @@ export default defineComponent({
             <div class="flex justify-center p-8">Loading pools...</div>
           )}
 
-          {this.usePools.length > 0 && (
+          {this.poolEntries.length > 0 && (
             <section>
               <ul class="4xl:grid-cols-4 grid gap-2 md:grid-cols-2 lg:grid-cols-3 lg:gap-4 2xl:gap-6">
-                {this.usePools.map((item) => (
-                  <OwnPool key={item.pool.symbol()} context={item} />
+                {this.poolEntries.map((item) => (
+                  <PoolCard key={item.pool.symbol()} context={item} />
                 ))}
               </ul>
             </section>
           )}
-          {/* {this.publicPools.length > 0 && (
-            <section>
-              <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {this.publicPools.map((item) => (
-                  <li
-                    role="article"
-                    key={item.pool.symbol()}
-                    class="bg-gray-sif800 grid rounded-lg p-4"
-                  >
-                    <header class="flex items-center p-2">
-                      <AssetPair
-                        asset={ref(item.pool.externalAmount.asset)}
-                        invert
-                      />
-                    </header>
-                    <main>
-                      <ul>{}</ul>
-                    </main>
-                    <footer></footer>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )} */}
         </PageCard>
       </Layout>
     );

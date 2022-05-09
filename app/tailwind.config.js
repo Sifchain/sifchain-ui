@@ -77,11 +77,13 @@ module.exports = {
           sif700: "#2A2D39",
           sif750: "#2A2D39",
           sif800: "#21242F",
+          sif850: "#10131C",
           sif900: "#0A0E17",
         },
+        green: {
+          sif400: "#4ADE80",
+        },
       },
-      fontSize: {},
-      borderRadius: {},
       animation: {
         "fade-in": "fadeIn 150ms ease-out 1",
         "fade-in-up": "fadeInUp 200ms ease-out 1",
