@@ -46,7 +46,7 @@ export default defineComponent({
 
     const poolPageData = usePoolPageData();
 
-    const poolPrices = computed(() => {
+    const poolComposition = computed(() => {
       const defaultPrices = {
         nativeTVL: 0,
         nativePrice: 0,
@@ -90,11 +90,11 @@ export default defineComponent({
       };
     });
 
-    const fromTokenUSD = computed(
-      () => Number(data.fromAmount.value) * poolPrices.value.externalPrice,
+    const fromTokenPriceUSD = computed(
+      () => Number(data.fromAmount.value) * poolComposition.value.externalPrice,
     );
-    const toTokenUSD = computed(
-      () => Number(data.toAmount.value) * poolPrices.value.nativePrice,
+    const toTokenPriceUSD = computed(
+      () => Number(data.toAmount.value) * poolComposition.value.nativePrice,
     );
 
     const fromTokenLabel = computed(() =>
@@ -122,7 +122,7 @@ export default defineComponent({
           <div class="text-right">
             <div class="font-mono">{data.fromAmount.value}</div>
             <div class="font-mono text-sm text-white/60">
-              ≈${prettyNumber(fromTokenUSD.value)}
+              ≈${prettyNumber(fromTokenPriceUSD.value)}
             </div>
           </div>,
         ],
@@ -134,7 +134,7 @@ export default defineComponent({
           <div class="text-right">
             <div class="font-mono">{data.toAmount.value}</div>
             <div class="font-mono text-sm text-white/60">
-              ≈${prettyNumber(toTokenUSD.value)}
+              ≈${prettyNumber(toTokenPriceUSD.value)}
             </div>
           </div>,
         ],
@@ -227,13 +227,24 @@ export default defineComponent({
                 <>
                   You will pool in equal amounts based on this composition
                   ratio. Your liquidity position is more impacted by price
-                  movements of the token that makes up the larger piece of the
+                  movements of the token that makes up the larger portion of the
                   composition.
                 </>
               }
             >
-              <div class="flex flex-1 items-center justify-end px-2">
+              <div class="flex items-center justify-center gap-2">
                 <AssetPair hideTokenSymbol asset={data.fromAsset} />
+                <div class="grid gap-0.5">
+                  <div class="text-accent-base/80 text-sm !font-semibold">
+                    Pool composition
+                  </div>
+                  <span class="text-xs">
+                    {data.fromAsset.value?.displaySymbol.toUpperCase()}{" "}
+                    {poolComposition.value.externalRatio.toFixed(2)}% :{" "}
+                    {data.toAsset.value?.displaySymbol.toUpperCase()}{" "}
+                    {poolComposition.value.nativeRatio.toFixed(2)}%
+                  </span>
+                </div>
               </div>
             </Tooltip>
           }
@@ -257,7 +268,7 @@ export default defineComponent({
                 onSelectAsset={(asset) => {
                   data.fromSymbol.value = asset.symbol;
                 }}
-                dollarValue={fromTokenUSD.value}
+                dollarValue={fromTokenPriceUSD.value}
                 class="relative"
               />
               <div class="my-[4px] flex justify-center">
@@ -285,34 +296,45 @@ export default defineComponent({
                 onSelectAsset={(asset) => {
                   data.toSymbol.value = asset.symbol;
                 }}
-                dollarValue={toTokenUSD.value}
+                dollarValue={toTokenPriceUSD.value}
               />
             </div>
             <div class="bg-gray-base grid gap-4 rounded-lg p-4">
               <Form.Details
                 details={{
                   label: (
-                    <span class="text-accent-base font-semibold">
-                      Pool composition
-                    </span>
+                    <div class="flex flex-1 items-center justify-between">
+                      <span class="text-accent-base/80 font-semibold">
+                        Pool composition
+                      </span>
+                      <span class="text-white/60">
+                        {poolComposition.value.tvlUsd
+                          ? `$${prettyNumber(
+                              poolComposition.value.tvlUsd,
+                            )} TVL `
+                          : "..."}
+                      </span>
+                    </div>
                   ),
                   details: [
                     [
                       <>{fromTokenLabel.value}</>,
                       <>
-                        {poolPrices.value.externalTVL
-                          ? `$${prettyNumber(poolPrices.value.externalTVL)}`
+                        {poolComposition.value.externalTVL
+                          ? `$${prettyNumber(
+                              poolComposition.value.externalTVL,
+                            )}`
                           : "0"}{" "}
-                        ({poolPrices.value.externalRatio.toFixed(2)}%)
+                        ({poolComposition.value.externalRatio.toFixed(2)}%)
                       </>,
                     ],
                     [
                       <>{toTokenLabel.value}</>,
                       <>
-                        {poolPrices.value.nativeTVL
-                          ? `$${prettyNumber(poolPrices.value.nativeTVL)}`
+                        {poolComposition.value.nativeTVL
+                          ? `$${prettyNumber(poolComposition.value.nativeTVL)}`
                           : "0"}{" "}
-                        ({poolPrices.value.nativeRatio.toFixed(2)}%)
+                        ({poolComposition.value.nativeRatio.toFixed(2)}%)
                       </>,
                     ],
                   ],
