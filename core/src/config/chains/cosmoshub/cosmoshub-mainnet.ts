@@ -9,6 +9,7 @@ export const COSMOSHUB_MAINNET: IBCChainConfig = {
   chainId: "cosmoshub-4",
   rpcUrl: "https://proxies.sifchain.finance/api/cosmoshub-4/rpc",
   restUrl: "https://proxies.sifchain.finance/api/cosmoshub-4/rest",
+  denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/cosmoshub-4/rpc",
     rest: "https://proxies.sifchain.finance/api/cosmoshub-4/rest",

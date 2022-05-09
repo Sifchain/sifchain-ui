@@ -22,10 +22,11 @@ import {
   LIQUIDITY_PROVIDERS_KEY,
   LIQUIDITY_PROVIDER_KEY,
 } from "@/domains/clp/queries/liquidityProvider";
+import { usePoolStats } from "@/hooks/usePoolStats";
 
 export const useAddLiquidityData = () => {
   const queryClient = useQueryClient();
-  const { usecases, poolFinder, accountPoolFinder, store, config } = useCore();
+  const { usecases, poolFinder, accountPoolFinder, config } = useCore();
   const selectedField = ref<"from" | "to" | null>(null);
   const lastFocusedTokenField = ref<"A" | "B" | null>(null);
 
@@ -34,6 +35,8 @@ export const useAddLiquidityData = () => {
 
   const symmetricalPooling = ref<boolean>(true);
   const router = useRouter();
+
+  const poolStats = usePoolStats();
 
   const {
     fromSymbol: _fromSymbol,

@@ -177,6 +177,7 @@ export const useSwapPageData = () => {
     priceImpact,
     providerFee,
     minimumReceived,
+    effectiveMinimumReceived,
   } = useSwapCalculator({
     balances: computed(() => store.wallet.get(Network.SIFCHAIN).balances),
     fromAmount,
@@ -330,7 +331,15 @@ export const useSwapPageData = () => {
     if (!minimumReceived.value) return "";
     const { amount, asset } = minimumReceived.value;
     return amount.greaterThanOrEqual(Amount("0"))
-      ? format(amount, asset, { mantissa: 18, trimMantissa: true })
+      ? format(amount, asset, { mantissa: 6, trimMantissa: true })
+      : "Price impact too high";
+  });
+
+  const formattedEffectiveToAmount = computed(() => {
+    if (!effectiveMinimumReceived.value) return "";
+    const { amount, asset } = effectiveMinimumReceived.value;
+    return amount.greaterThanOrEqual(Amount("0"))
+      ? format(amount, asset, { mantissa: 6, trimMantissa: true })
       : "Price impact too high";
   });
 
@@ -374,6 +383,7 @@ export const useSwapPageData = () => {
     toAsset,
     fromAmount,
     toAmount,
+    effectiveToAmount: formattedEffectiveToAmount,
     fromSymbol,
     fromTokenIconUrl,
     toTokenIconUrl,
