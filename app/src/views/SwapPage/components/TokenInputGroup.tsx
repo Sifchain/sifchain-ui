@@ -7,6 +7,7 @@ import { Input } from "@/components/Input/Input";
 import { Button } from "@/components/Button/Button";
 import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { prettyNumber } from "@/utils/prettyNumber";
 
 function required<T>(type: T) {
   return {
@@ -41,6 +42,7 @@ export const TokenInputGroup = defineComponent({
     shouldShowNumberInputOnLeft: optional(Boolean),
     selectDisabled: optional(Boolean),
     inputDisabled: optional(Boolean),
+    dollarValue: optional(Number),
   },
   setup(props) {
     const propRefs = toRefs(props);
@@ -84,7 +86,7 @@ export const TokenInputGroup = defineComponent({
           </div>
           <div
             class={[
-              `relative mt-[10px] flex flex-row gap-[10px] overflow-visible`,
+              `relative mt-[10px] flex flex-row gap-[10px] overflow-visible pb-2`,
               props.shouldShowNumberInputOnLeft ? "flex-row-reverse" : "",
             ]}
           >
@@ -110,37 +112,44 @@ export const TokenInputGroup = defineComponent({
                 </div>
               </div>
             </Button.Select>
-            <Input.Base
-              placeholder={"0"}
-              inputRef={inputRef}
-              class="token-input min-w-[150px] opacity-100 md:min-w-[280px]"
-              disabled={props.inputDisabled}
-              startContent={
-                Boolean(props.onSetToMaxAmount) && !props.inputDisabled ? (
-                  <Button.Pill
-                    onClick={() =>
-                      props.onSetToMaxAmount && props.onSetToMaxAmount()
-                    }
-                  >
-                    MAX
-                  </Button.Pill>
-                ) : null
-              }
-              onFocus={props.onFocus}
-              onBlur={props.onBlur}
-              type="number"
-              min="0"
-              style={{
-                textAlign: "right",
-              }}
-              onInput={(e) => {
-                let v = (e.target as HTMLInputElement).value;
-                if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
-                  v = "0";
+            <div class="relative grid gap-1">
+              <Input.Base
+                placeholder="0"
+                inputRef={inputRef}
+                class="token-input min-w-[150px] opacity-100 md:min-w-[280px]"
+                disabled={props.inputDisabled}
+                startContent={
+                  Boolean(props.onSetToMaxAmount) && !props.inputDisabled ? (
+                    <Button.Pill
+                      onClick={() =>
+                        props.onSetToMaxAmount && props.onSetToMaxAmount()
+                      }
+                    >
+                      MAX
+                    </Button.Pill>
+                  ) : null
                 }
-                props.onInputAmount(v || "");
-              }}
-            />
+                onFocus={props.onFocus}
+                onBlur={props.onBlur}
+                type="number"
+                min="0"
+                style={{
+                  textAlign: "right",
+                }}
+                onInput={(e) => {
+                  let v = (e.target as HTMLInputElement).value;
+                  if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
+                    v = "0";
+                  }
+                  props.onInputAmount(v || "");
+                }}
+              />
+              {Boolean(props.dollarValue) && (
+                <div class="absolute right-2 -bottom-5 text-sm">
+                  ≈${prettyNumber(props.dollarValue ?? 0)}
+                </div>
+              )}
+            </div>
           </div>
           <TokenSelectDropdown
             excludeSymbols={props.excludeSymbols}

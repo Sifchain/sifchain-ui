@@ -271,6 +271,43 @@ export function useSwapCalculator(input: {
     );
   });
 
+  const effectiveMinimumReceived = computed(() => {
+    if (
+      !input.slippage.value ||
+      !toField.value.asset ||
+      !swapResult.value ||
+      !providerFee.value ||
+      !pool.value ||
+      !fromField.value.fieldAmount
+    )
+      return null;
+
+    const slippage = Amount(input.slippage.value).divide(Amount("100"));
+
+    let minAmount = Amount("0");
+
+    if (flagsStore.state.pmtp) {
+      const priceImpact = pool.value
+        .calcPriceImpact(fromField.value.fieldAmount)
+        .divide("100");
+
+      const effectivePriceImpactRate = Amount("1").subtract(priceImpact);
+
+      minAmount = swapResult.value
+        .multiply(effectivePriceImpactRate)
+        .subtract(providerFee.value);
+    } else {
+      // default minAmount calculation:
+      // only subtracts the slippage from the swap result
+
+      const effeciveSlippageRate = Amount("1").subtract(slippage);
+
+      minAmount = effeciveSlippageRate.multiply(swapResult.value);
+    }
+
+    return AssetAmount(toField.value.asset, minAmount);
+  });
+
   // minimumReceived
   const minimumReceived = computed(() => {
     if (
@@ -383,6 +420,7 @@ export function useSwapCalculator(input: {
     priceImpact,
     providerFee: formattedProviderFee,
     minimumReceived,
+    effectiveMinimumReceived,
     swapResult,
     reverseSwapResult,
     priceRatio,
