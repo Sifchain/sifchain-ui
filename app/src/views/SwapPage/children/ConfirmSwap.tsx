@@ -7,6 +7,7 @@ import AssetIcon from "@/components/AssetIcon";
 import { defineComponent } from "vue";
 import { SwapDetails } from "../components/SwapDetails";
 import { useSwapPageData } from "../useSwapPageData";
+import { Tooltip } from "@/components/Tooltip";
 
 export const ConfirmSwap = defineComponent({
   setup() {
@@ -40,20 +41,32 @@ export const ConfirmSwap = defineComponent({
                   class="text-accent-base"
                   icon="interactive/chevron-down"
                   size={20}
-                ></AssetIcon>
+                />
               </div>
               <div class="flex w-full flex-row justify-between">
                 <div class="flex items-center">
                   {data.toAsset.value && (
-                    <TokenIcon asset={data.toAsset} size={22}></TokenIcon>
+                    <TokenIcon asset={data.toAsset} size={22} />
                   )}
                   <span class="text-md ml-[10px] font-medium">
                     {data.toAsset?.value?.displaySymbol?.toUpperCase()}
                   </span>
                 </div>
-                <div class="font-mono">
-                  {data.toFieldAmount && formatAssetAmount(data.toFieldAmount)}
-                </div>
+
+                <Tooltip
+                  content={
+                    <>
+                      This is the estimated amount you will receive after
+                      subtracting the price impact and LP fee from the initial
+                      swap result.
+                    </>
+                  }
+                >
+                  <div class="font-mono">
+                    {data.effectiveToAmount.value &&
+                      data.effectiveToAmount.value}
+                  </div>
+                </Tooltip>
               </div>
             </div>
           </Form.FieldSet>

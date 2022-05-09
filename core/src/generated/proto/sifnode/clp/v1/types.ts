@@ -15,6 +15,7 @@ export interface Pool {
   poolUnits: string;
   swapPriceNative: string;
   swapPriceExternal: string;
+  rewardPeriodNativeDistributed: string;
 }
 
 export interface LiquidityProvider {
@@ -107,6 +108,7 @@ function createBasePool(): Pool {
     poolUnits: "",
     swapPriceNative: "",
     swapPriceExternal: "",
+    rewardPeriodNativeDistributed: "",
   };
 }
 
@@ -129,6 +131,9 @@ export const Pool = {
     }
     if (message.swapPriceExternal !== "") {
       writer.uint32(50).string(message.swapPriceExternal);
+    }
+    if (message.rewardPeriodNativeDistributed !== "") {
+      writer.uint32(58).string(message.rewardPeriodNativeDistributed);
     }
     return writer;
   },
@@ -158,6 +163,9 @@ export const Pool = {
         case 6:
           message.swapPriceExternal = reader.string();
           break;
+        case 7:
+          message.rewardPeriodNativeDistributed = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -184,6 +192,9 @@ export const Pool = {
       swapPriceExternal: isSet(object.swapPriceExternal)
         ? String(object.swapPriceExternal)
         : "",
+      rewardPeriodNativeDistributed: isSet(object.rewardPeriodNativeDistributed)
+        ? String(object.rewardPeriodNativeDistributed)
+        : "",
     };
   },
 
@@ -202,6 +213,9 @@ export const Pool = {
       (obj.swapPriceNative = message.swapPriceNative);
     message.swapPriceExternal !== undefined &&
       (obj.swapPriceExternal = message.swapPriceExternal);
+    message.rewardPeriodNativeDistributed !== undefined &&
+      (obj.rewardPeriodNativeDistributed =
+        message.rewardPeriodNativeDistributed);
     return obj;
   },
 
@@ -216,6 +230,8 @@ export const Pool = {
     message.poolUnits = object.poolUnits ?? "";
     message.swapPriceNative = object.swapPriceNative ?? "";
     message.swapPriceExternal = object.swapPriceExternal ?? "";
+    message.rewardPeriodNativeDistributed =
+      object.rewardPeriodNativeDistributed ?? "";
     return message;
   },
 };

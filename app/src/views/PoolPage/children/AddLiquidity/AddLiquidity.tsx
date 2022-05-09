@@ -12,16 +12,15 @@ import Modal from "@/components/Modal";
 import { TokenIcon } from "@/components/TokenIcon";
 import AssetIcon from "@/components/AssetIcon";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import Toggle from "@/components/Toggle";
 import { Tooltip } from "@/components/Tooltip";
 import { TokenInputGroup } from "@/views/SwapPage/components/TokenInputGroup";
 import { useCurrentRewardPeriodStatistics } from "@/domains/clp/queries/params";
+import { prettyNumber } from "@/utils/prettyNumber";
 
 import { useAddLiquidityData } from "./useAddLiquidityData";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
-
-const UNBONDING_PERIOD_DAYS = 7;
+import { usePoolPageData } from "../../usePoolPageData";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -45,33 +44,99 @@ export default defineComponent({
       });
     };
 
+    const poolPageData = usePoolPageData();
+
+    const poolComposition = computed(() => {
+      const defaultPrices = {
+        nativeTVL: 0,
+        nativePrice: 0,
+        nativeRatio: 0,
+        externalTVL: 0,
+        externalPrice: 0,
+        externalRatio: 0,
+        tvlUsd: 0,
+      };
+
+      if (!poolPageData.allPoolsData.value) {
+        return defaultPrices;
+      }
+
+      const pool = poolPageData.allPoolsData.value.find(
+        (x) => x.poolStat.symbol === data.fromSymbol.value,
+      );
+
+      if (!pool) {
+        return defaultPrices;
+      }
+
+      const poolTVL = pool.poolStat.poolTVL;
+
+      const externalTVL = pool.pool.externalAmount
+        .toDerived()
+        .multiply(pool.poolStat.priceToken ?? "0")
+        .toNumber();
+
+      const nativeTVL = poolTVL - externalTVL;
+      const baseRatio = poolTVL / 100;
+
+      return {
+        externalTVL,
+        nativeTVL,
+        tvlUsd: poolTVL,
+        nativeRatio: nativeTVL / baseRatio,
+        externalRatio: externalTVL / baseRatio,
+        externalPrice: pool.poolStat.priceToken ?? 0,
+        nativePrice: pool.poolStat.rowanUSD ?? 0,
+      };
+    });
+
+    const fromTokenPriceUSD = computed(
+      () => Number(data.fromAmount.value) * poolComposition.value.externalPrice,
+    );
+    const toTokenPriceUSD = computed(
+      () => Number(data.toAmount.value) * poolComposition.value.nativePrice,
+    );
+
+    const fromTokenLabel = computed(() =>
+      (
+        data.fromAsset.value?.displaySymbol ??
+        data.fromAsset.value?.symbol ??
+        ""
+      ).toUpperCase(),
+    );
+    const toTokenLabel = computed(() =>
+      (
+        data.toAsset.value?.displaySymbol ??
+        data.toAsset.value?.symbol ??
+        ""
+      ).toUpperCase(),
+    );
+
     const detailsRef = computed<FormDetailsType>(() => ({
       details: [
         [
           <div class="flex items-center">
             <TokenIcon asset={data.fromAsset} size={18} />
-            <span class="ml-[4px]">
-              {(
-                data.fromAsset.value?.displaySymbol ||
-                data.fromAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>
+            <span class="ml-[4px]">{fromTokenLabel.value}</span>
           </div>,
-          <span class="font-mono">{data.fromAmount.value}</span>,
+          <div class="text-right">
+            <div class="font-mono">{data.fromAmount.value}</div>
+            <div class="font-mono text-sm text-white/60">
+              ≈${prettyNumber(fromTokenPriceUSD.value)}
+            </div>
+          </div>,
         ],
         [
           <div class="flex items-center">
             <TokenIcon asset={data.toAsset} size={18} />
-            <span class="ml-[4px]">
-              {(
-                data.toAsset.value?.displaySymbol ||
-                data.toAsset.value?.symbol ||
-                ""
-              ).toUpperCase()}
-            </span>
+            <span class="ml-[4px]">{toTokenLabel.value}</span>
           </div>,
-          <span class="font-mono">{data.toAmount.value}</span>,
+          <div class="text-right">
+            <div class="font-mono">{data.toAmount.value}</div>
+            <div class="font-mono text-sm text-white/60">
+              ≈${prettyNumber(toTokenPriceUSD.value)}
+            </div>
+          </div>,
         ],
         [
           <span>Est. pool share</span>,
@@ -157,24 +222,31 @@ export default defineComponent({
           icon="interactive/plus"
           showClose
           headingAction={
-            <div class="flex items-center gap-2">
-              <Tooltip
-                content={
-                  <>Adding liquidity asymmetrically is temporarily disabled</>
-                }
-              >
-                <Toggle
-                  disabled
-                  label="Pool at pool ratios"
-                  active={data.symmetricalPooling.value}
-                  onChange={(_active) => {
-                    // data.toggleAsyncPooling();
-                    // data.handleTokenAFocused();
-                  }}
-                />
-              </Tooltip>
-              <AssetPair hideTokenSymbol asset={data.fromAsset} />
-            </div>
+            <Tooltip
+              content={
+                <>
+                  You will pool in equal amounts based on this composition
+                  ratio. Your liquidity position is more impacted by price
+                  movements of the token that makes up the larger portion of the
+                  composition.
+                </>
+              }
+            >
+              <div class="flex items-center justify-center gap-2">
+                <AssetPair hideTokenSymbol asset={data.fromAsset} />
+                <div class="grid gap-0.5">
+                  <div class="text-accent-base/80 text-sm !font-semibold">
+                    Pool composition
+                  </div>
+                  <span class="text-xs">
+                    {data.fromAsset.value?.displaySymbol.toUpperCase()}{" "}
+                    {poolComposition.value.externalRatio.toFixed(2)}% :{" "}
+                    {data.toAsset.value?.displaySymbol.toUpperCase()}{" "}
+                    {poolComposition.value.nativeRatio.toFixed(2)}%
+                  </span>
+                </div>
+              </div>
+            </Tooltip>
           }
           onClose={() => close()}
         >
@@ -183,7 +255,7 @@ export default defineComponent({
               <TokenInputGroup
                 shouldShowNumberInputOnLeft
                 excludeSymbols={["rowan"]}
-                heading="Input"
+                heading={fromTokenLabel.value}
                 asset={data.fromAsset.value}
                 amount={data.fromAmount.value}
                 formattedBalance={formattedFromTokenBalance.value}
@@ -193,10 +265,11 @@ export default defineComponent({
                 onInputAmount={(v) => {
                   data.fromAmount.value = v;
                 }}
-                class=""
                 onSelectAsset={(asset) => {
                   data.fromSymbol.value = asset.symbol;
                 }}
+                dollarValue={fromTokenPriceUSD.value}
+                class="relative"
               />
               <div class="my-[4px] flex justify-center">
                 <AssetIcon
@@ -208,7 +281,7 @@ export default defineComponent({
               <TokenInputGroup
                 selectDisabled
                 shouldShowNumberInputOnLeft
-                heading="Input"
+                heading={toTokenLabel.value}
                 asset={data.toAsset.value}
                 amount={data.toAmount.value}
                 formattedBalance={formattedToTokenBalance.value}
@@ -223,42 +296,46 @@ export default defineComponent({
                 onSelectAsset={(asset) => {
                   data.toSymbol.value = asset.symbol;
                 }}
+                dollarValue={toTokenPriceUSD.value}
               />
             </div>
             <div class="bg-gray-base grid gap-4 rounded-lg p-4">
               <Form.Details
                 details={{
-                  label: "",
+                  label: (
+                    <div class="flex flex-1 items-center justify-between">
+                      <span class="text-accent-base/80 font-semibold">
+                        Pool composition
+                      </span>
+                      <span class="text-white/60">
+                        {poolComposition.value.tvlUsd
+                          ? `$${prettyNumber(
+                              poolComposition.value.tvlUsd,
+                            )} TVL `
+                          : "..."}
+                      </span>
+                    </div>
+                  ),
                   details: [
                     [
-                      <span>
-                        <span class="uppercase">
-                          {data.fromAsset.value?.displaySymbol}
-                        </span>{" "}
-                        per{" "}
-                        <span class="uppercase">
-                          {data.toAsset.value?.displaySymbol}
-                        </span>
-                      </span>,
-                      <div class="flex items-center gap-[4px] font-mono">
-                        <div>{data.aPerBRatioMessage.value}</div>
-                        <TokenIcon asset={data.fromAsset}></TokenIcon>
-                      </div>,
+                      <>{fromTokenLabel.value}</>,
+                      <>
+                        {poolComposition.value.externalTVL
+                          ? `$${prettyNumber(
+                              poolComposition.value.externalTVL,
+                            )}`
+                          : "0"}{" "}
+                        ({poolComposition.value.externalRatio.toFixed(2)}%)
+                      </>,
                     ],
                     [
-                      <span>
-                        <span class="uppercase">
-                          {data.toAsset.value?.displaySymbol}
-                        </span>{" "}
-                        per{" "}
-                        <span class="uppercase">
-                          {data.fromAsset.value?.displaySymbol}
-                        </span>
-                      </span>,
-                      <div class="flex items-center gap-[4px] font-mono">
-                        <div>{data.bPerARatioMessage.value}</div>
-                        <TokenIcon asset={data.toAsset}></TokenIcon>
-                      </div>,
+                      <>{toTokenLabel.value}</>,
+                      <>
+                        {poolComposition.value.nativeTVL
+                          ? `$${prettyNumber(poolComposition.value.nativeTVL)}`
+                          : "0"}{" "}
+                        ({poolComposition.value.nativeRatio.toFixed(2)}%)
+                      </>,
                     ],
                   ],
                 }}

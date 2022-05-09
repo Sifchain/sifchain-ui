@@ -1,19 +1,19 @@
 import { Network, IBCChainConfig } from "../../../entities";
 
-export const SIFCHAIN_DEVNET_042: IBCChainConfig = {
+export const SIFCHAIN_LOCALNET: IBCChainConfig = {
   network: Network.SIFCHAIN,
   chainType: "ibc",
   displayName: "Sifchain",
   blockExplorerUrl: "https://www.mintscan.io/sifchain",
   nativeAssetSymbol: "rowan",
-  chainId: "sifchain-devnet-042",
-  rpcUrl: "https://rpc-devnet-042.sifchain.finance",
-  restUrl: "https://api-devnet-042.sifchain.finance",
+  chainId: "localnet",
+  rpcUrl: "http://localhost:3000/api/sifchain-local/rpc",
+  restUrl: "http://localhost:3000/api/sifchain-local/rest",
   keplrChainInfo: {
-    chainName: "SifchainDevnet-042",
-    chainId: "sifchain-devnet-042",
-    rpc: "https://rpc-devnet-042.sifchain.finance",
-    rest: "https://api-devnet-042.sifchain.finance",
+    chainName: "Sifchain Local",
+    chainId: "localnet",
+    rpc: "http://localhost:3000/api/sifchain-local/rpc",
+    rest: "http://localhost:3000/api/sifchain-local/rest",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",
@@ -50,5 +50,6 @@ export const SIFCHAIN_DEVNET_042: IBCChainConfig = {
       average: 6500000000000,
       high: 8000000000000,
     },
+    features: ["stargate", "ibc-transfer"],
   },
 };

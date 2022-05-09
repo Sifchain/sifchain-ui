@@ -21,6 +21,7 @@ interface Body {
 export interface PoolStat {
   symbol: string;
   priceToken: number;
+  rowanUSD: number;
   poolDepth: number;
   poolTVL: number;
   volume: number;
@@ -61,7 +62,7 @@ export function useDataServicesPoolStats() {
 }
 
 export function usePoolStats() {
-  const { store, services } = useCore();
+  const { store } = useCore();
 
   const isPMTPEnabled = flagsStore.state.pmtp;
 
@@ -75,10 +76,8 @@ export function usePoolStats() {
       }
       const { body: poolData } = poolStatsQuery.data.value;
 
-      const rewardPrograms = await services.data.getRewardsPrograms();
-
       const response = {
-        poolData: poolData,
+        poolData,
         liqAPY: 0,
         rowanUsd: poolData.rowanUSD,
       };
@@ -133,19 +132,24 @@ export function usePoolStats() {
       poolStatLookup[asset.symbol] = {
         ...poolStat,
         symbol: asset.symbol,
+        rowanUSD: parseFloat(poolStatsRes.data.value?.rowanUsd ?? "0"),
       };
     });
 
     // poolStats endpoint might not have data for EVERY pool that exists
     // in store.pools. so use store.pools as source of truth for which pools
     // exist, then if poolStats doesn't have data default to empty.
-    const pools = Object.values(store.pools);
+    const pools = Object.values(store.pools).map((pool) => ({
+      ...pool,
+      rowanUSD: poolStatsRes.data.value?.rowanUsd || 0,
+    }));
     return pools.map((pool) => {
       const [, externalAssetAmount] = pool.amounts;
       return (
         poolStatLookup[externalAssetAmount.asset.symbol] || {
           symbol: externalAssetAmount.asset.symbol,
           priceToken: null,
+          rowanUSD: null,
           poolDepth: null,
           volume: null,
           arb: null,
