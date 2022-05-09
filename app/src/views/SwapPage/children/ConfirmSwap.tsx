@@ -56,10 +56,9 @@ export const ConfirmSwap = defineComponent({
                 <Tooltip
                   content={
                     <>
-                      {data.effectiveToAmount.value} = (Swap result (
-                      {data.toAmount.value}) - price impact (
-                      {data.priceImpact.value}%)) - LP fee (
-                      {data.providerFee.value})
+                      This is the estimated amount you will receive after
+                      subtracting the price impact and LP fee from the initial
+                      swap result.
                     </>
                   }
                 >
