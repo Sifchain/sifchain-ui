@@ -54,7 +54,10 @@ export const TokenIcon = defineComponent({
             ? "invert(100%) hue-rotate(-180deg)"
             : "",
         }}
-        class={[`transition-all duration-100`, this.class]}
+        class={[
+          `overflow-hidden rounded-full ring-1 ring-black/90 transition-all duration-100`,
+          this.class,
+        ]}
       />
     );
   },

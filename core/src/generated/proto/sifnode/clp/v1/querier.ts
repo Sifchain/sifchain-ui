@@ -103,6 +103,7 @@ export interface ParamsReq {}
 
 export interface ParamsRes {
   params?: Params;
+  symmetryThreshold: string;
 }
 
 export interface RewardParamsReq {}
@@ -1332,7 +1333,7 @@ export const ParamsReq = {
 };
 
 function createBaseParamsRes(): ParamsRes {
-  return { params: undefined };
+  return { params: undefined, symmetryThreshold: "" };
 }
 
 export const ParamsRes = {
@@ -1342,6 +1343,9 @@ export const ParamsRes = {
   ): _m0.Writer {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.symmetryThreshold !== "") {
+      writer.uint32(18).string(message.symmetryThreshold);
     }
     return writer;
   },
@@ -1356,6 +1360,9 @@ export const ParamsRes = {
         case 1:
           message.params = Params.decode(reader, reader.uint32());
           break;
+        case 2:
+          message.symmetryThreshold = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1367,6 +1374,9 @@ export const ParamsRes = {
   fromJSON(object: any): ParamsRes {
     return {
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+      symmetryThreshold: isSet(object.symmetryThreshold)
+        ? String(object.symmetryThreshold)
+        : "",
     };
   },
 
@@ -1374,6 +1384,8 @@ export const ParamsRes = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    message.symmetryThreshold !== undefined &&
+      (obj.symmetryThreshold = message.symmetryThreshold);
     return obj;
   },
 
@@ -1385,6 +1397,7 @@ export const ParamsRes = {
       object.params !== undefined && object.params !== null
         ? Params.fromPartial(object.params)
         : undefined;
+    message.symmetryThreshold = object.symmetryThreshold ?? "";
     return message;
   },
 };

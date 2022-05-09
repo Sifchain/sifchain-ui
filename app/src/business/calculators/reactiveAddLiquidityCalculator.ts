@@ -188,10 +188,9 @@ export function useReactivePoolCalculator(input: {
     }
 
     if (!preExistingPool.value.contains(tokenAField.value.asset)) return null;
-    const externalBalance = preExistingPool.value.getAmount(
-      tokenAField.value.asset,
-    );
-    const nativeBalance = preExistingPool.value.getAmount("rowan");
+    const externalBalance = preExistingPool.value.externalAmount;
+
+    const nativeBalance = preExistingPool.value.nativeAmount;
 
     return [nativeBalance, externalBalance];
   });

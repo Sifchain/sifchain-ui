@@ -1,8 +1,9 @@
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
 import dangerouslyAssert from "@/utils/dangerouslyAssert";
+import useDependentQuery from "@/utils/useDependentQuery";
 import { QueryEntriesResponse } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/tokenregistry/v1/query";
 import { computed, unref } from "vue";
-import { useQuery, UseQueryOptions } from "vue-query";
+import { UseQueryOptions } from "vue-query";
 import { MaybeRef } from "vue-query/lib/vue/types";
 
 export const useTokenRegistryEntriesQuery = (
@@ -10,7 +11,8 @@ export const useTokenRegistryEntriesQuery = (
 ) => {
   const sifchainClients = useSifchainClients();
 
-  return useQuery(
+  return useDependentQuery(
+    [computed(() => sifchainClients?.queryClientStatus === "fulfilled")],
     "tokenRegistryEntries",
     () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
@@ -18,9 +20,6 @@ export const useTokenRegistryEntriesQuery = (
       return sifchainClients.queryClient.tokenRegistry.Entries({});
     },
     {
-      enabled: computed(
-        () => sifchainClients?.queryClientStatus === "fulfilled",
-      ),
       staleTime: Infinity,
       ...options,
     },
@@ -35,7 +34,6 @@ export const useTokenRegistryEntryQuery = (
 
   return {
     ...registryQuery,
-    staleTime: Infinity,
     data: computed(() =>
       registryQuery.data.value?.registry?.entries.find(
         (x) => x.baseDenom === unref(baseDenom),
