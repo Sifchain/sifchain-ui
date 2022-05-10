@@ -1067,6 +1067,17 @@
       "homeNetwork": "ethereum",
       "label": "Gala",
       "imageUrl": "https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png?1600233435"
+    },
+    {
+      "address": "0xf418588522d5dd018b425E472991E52EBBeEEEEE",
+      "symbol": "cpush",
+      "displaySymbol": "push",
+      "decimals": 18,
+      "name": "Ethereum Push Notification Service - EPNS",
+      "network": "sifchain",
+      "homeNetwork": "ethereum",
+      "label": "Ethereum Push Notification Service - EPNS",
+      "imageUrl": "https://assets.coingecko.com/coins/images/14769/small/epns_logo.jpg?1618330344"
     }
   ]
 }
