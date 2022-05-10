@@ -1056,6 +1056,17 @@
       "homeNetwork": "ethereum",
       "label": "New Order",
       "imageUrl": "https://assets.coingecko.com/coins/images/21440/small/new-order-icon-256px.png?1639125759"
+    },
+    {
+      "address": "0x15D4c048F83bd7e37d49eA4C83a07267Ec4203dA",
+      "symbol": "cgala",
+      "displaySymbol": "gala",
+      "decimals": 8,
+      "name": "Gala",
+      "network": "sifchain",
+      "homeNetwork": "ethereum",
+      "label": "Gala",
+      "imageUrl": "https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png?1600233435"
     }
   ]
 }
