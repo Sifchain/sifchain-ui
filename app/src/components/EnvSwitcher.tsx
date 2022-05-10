@@ -27,9 +27,7 @@ export default defineComponent({
       [NetworkEnv.MAINNET]: styles.mainnet,
       [NetworkEnv.LOCALNET]: styles.localnet,
       [NetworkEnv.TESTNET]: styles.testnet,
-      [NetworkEnv.TESTNET_042_IBC]: styles.testnet,
       [NetworkEnv.DEVNET]: styles.devnet,
-      [NetworkEnv.DEVNET_042]: styles.devnet,
     };
 
     const classNames = classesByNetworkEnv[networkEnv];
