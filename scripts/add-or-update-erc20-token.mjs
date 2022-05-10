@@ -85,7 +85,7 @@ async function updateAssetByNetwork(network, env, assetConfig) {
     });
   }
 
-  const nextAssets = uniqBy((x) => x.address, assets.concat(assetConfig));
+  const nextAssets = uniqBy((x) => x.symbol, assets.concat(assetConfig));
 
   const encodedFile = JSON.stringify({ assets: nextAssets }, null, 2);
 
