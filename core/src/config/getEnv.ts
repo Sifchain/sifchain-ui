@@ -8,14 +8,6 @@ export enum NetworkEnv {
   LOCALNET = "localnet",
 }
 
-// NOTE(ajoslin): support legacy `?_env=n` urls
-export const networkEnvsByIndex = [
-  NetworkEnv.MAINNET,
-  NetworkEnv.TESTNET,
-  NetworkEnv.DEVNET,
-  NetworkEnv.LOCALNET,
-];
-
 type AssetTag = `${Network}.${NetworkEnv}`;
 
 type ProfileLookup = Record<
@@ -75,9 +67,7 @@ export function getNetworkEnv(hostname: string) {
 }
 
 export function isNetworkEnvSymbol(a: any): a is NetworkEnv {
-  return (
-    Object.values(NetworkEnv).includes(a) || !!networkEnvsByIndex[a as number]
-  );
+  return Object.values(NetworkEnv).includes(a);
 }
 
 type GetEnvArgs = {
@@ -94,10 +84,7 @@ export function getEnv({
 
   let sifEnv: NetworkEnv | null;
 
-  if (cookieEnv != null && networkEnvsByIndex[+cookieEnv]) {
-    console.log({ cookieEnv });
-    sifEnv = networkEnvsByIndex[+cookieEnv];
-  } else if (isNetworkEnvSymbol(cookieEnv)) {
+  if (isNetworkEnvSymbol(cookieEnv)) {
     sifEnv = cookieEnv;
   } else {
     sifEnv = defaultNetworkEnv;
