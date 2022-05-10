@@ -64,6 +64,19 @@ export function getConfig(
   const sifchainAssets = assetMap[sifchainAssetTag] || [];
   const ethereumAssets = assetMap[ethereumAssetTag] || [];
 
+  if (process.env.NODE_ENV === "development") {
+    console.log(
+      "Using development config",
+      applicationNetworkEnv,
+      sifchainAssetTag,
+      ethereumAssetTag,
+      {
+        sifchainAssets,
+        ethereumAssets,
+      },
+    );
+  }
+
   const allAssets = [...sifchainAssets, ...ethereumAssets];
 
   Object.values(Network)
