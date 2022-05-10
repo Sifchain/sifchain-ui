@@ -46,17 +46,6 @@
       "name": "Chainlink",
       "address": "0xBd2c938B9F6Bfc1A66368D08CB44dC3EB2aE27bE",
       "network": "ethereum"
-    },
-    {
-      "address": "0xABe580E7ee158dA464b51ee1a83Ac0289622e6be",
-      "symbol": "xft",
-      "displaySymbol": "xft",
-      "decimals": 18,
-      "name": "Offshift",
-      "network": "ethereum",
-      "homeNetwork": "ethereum",
-      "label": "Offshift",
-      "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441"
     }
   ]
 }

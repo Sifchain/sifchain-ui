@@ -657,60 +657,12 @@
       "transferLimit": "99999999999999999999999"
     },
     {
-      "address": "",
-      "decimals": 6,
-      "imageUrl": "https://assets.coingecko.com/coins/images/12785/small/akash-logo.png?1615447676",
-      "name": "AKT",
-      "network": "ethereum",
-      "homeNetwork": "akash",
-      "priceUsd": 0,
-      "symbol": "uakt",
-      "displaySymbol": "akt",
-      "transferLimit": "99999999999999999999999"
-    },
-    {
-      "symbol": "uiris",
-      "decimals": 6,
-      "name": "IRIS",
-      "network": "ethereum",
-      "label": "IRIS",
-      "imageUrl": "https://assets.coingecko.com/coins/images/5135/small/IRIS.png?1557999365",
-      "displaySymbol": "iris",
-      "homeNetwork": "iris",
-      "transferLimit": "99999999999999999999999",
-      "address": ""
-    },
-    {
-      "symbol": "uxprt",
-      "displaySymbol": "xprt",
-      "decimals": 6,
-      "name": "xprt",
-      "network": "ethereum",
-      "label": "xprt",
-      "imageUrl": "https://persistence.one/favicon.png",
-      "homeNetwork": "persistence",
-      "transferLimit": "99999999999999999999999",
-      "address": ""
-    },
-    {
-      "symbol": "uregen",
-      "displaySymbol": "regen",
-      "decimals": 6,
-      "name": "regen",
-      "network": "ethereum",
-      "label": "regen",
-      "imageUrl": "https://assets.coingecko.com/coins/images/16733/small/REGEN.png?1624861317",
-      "homeNetwork": "regen",
-      "transferLimit": "99999999999999999999999",
-      "address": ""
-    },
-    {
       "address": "0xa47c8bf37f92abed4a126bda807a7b7498661acd",
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
       "name": "Terra USD",
       "network": "ethereum",
-      "priceUsd": 1.0,
+      "priceUsd": 1,
       "symbol": "UST",
       "transferLimit": "99999999999999999999999999999",
       "homeNetwork": "ethereum"
@@ -722,7 +674,7 @@
       "name": "Frax",
       "hasDarkIcon": true,
       "network": "ethereum",
-      "priceUsd": 1.0,
+      "priceUsd": 1,
       "symbol": "FRAX",
       "transferLimit": "99999999999999999999999999999",
       "homeNetwork": "ethereum"
@@ -733,7 +685,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/13423/small/frax_share.png?1608478989",
       "name": "Frax Share",
       "network": "ethereum",
-      "priceUsd": 1.0,
+      "priceUsd": 1,
       "symbol": "FXS",
       "transferLimit": "99999999999999999999999",
       "homeNetwork": "ethereum"
@@ -744,7 +696,7 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/14830/small/7xjpHaG.png?1618564961",
       "name": "Unizen",
       "network": "ethereum",
-      "priceUsd": 1.0,
+      "priceUsd": 1,
       "symbol": "ZCX",
       "transferLimit": "99999999999999999999999",
       "homeNetwork": "ethereum"
@@ -754,7 +706,7 @@
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/15482/small/donkey_logo.jpg?1621012824",
       "name": "Don-key",
-      "priceUsd": 1.0,
+      "priceUsd": 1,
       "symbol": "DON",
       "transferLimit": "99999999999999999999999",
       "network": "ethereum",
@@ -924,50 +876,6 @@
       "decimals": 18
     },
     {
-      "address": "",
-      "symbol": "uosmo",
-      "displaySymbol": "osmo",
-      "decimals": 6,
-      "name": "osmo",
-      "network": "ethereum",
-      "label": "osmo",
-      "imageUrl": "https://assets.coingecko.com/coins/images/16724/small/osmo.png?1632763885",
-      "homeNetwork": "osmosis"
-    },
-    {
-      "address": "",
-      "symbol": "uixo",
-      "displaySymbol": "ixo",
-      "decimals": 6,
-      "name": "ixo",
-      "network": "ethereum",
-      "label": "ixo",
-      "imageUrl": "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
-      "homeNetwork": "ixo"
-    },
-    {
-      "address": "",
-      "symbol": "udvpn",
-      "decimals": 6,
-      "name": "Sentinel",
-      "network": "ethereum",
-      "label": "Sentinel",
-      "imageUrl": "https://assets.coingecko.com/coins/images/14879/small/Sentinel_512X512.png?1622174499",
-      "displaySymbol": "dvpn",
-      "homeNetwork": "sentinel"
-    },
-    {
-      "address": "",
-      "symbol": "ujuno",
-      "displaySymbol": "juno",
-      "decimals": 6,
-      "name": "juno",
-      "network": "ethereum",
-      "label": "juno",
-      "imageUrl": "https://junoscan.com/icons/safari-pinned-tab.svg",
-      "homeNetwork": "juno"
-    },
-    {
       "address": "0xd01cb3d113a864763dd3977fe1e725860013b0ed",
       "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
       "symbol": "ratom",
@@ -996,16 +904,6 @@
       "homeNetwork": "ethereum",
       "label": "ngm",
       "imageUrl": "https://assets.coingecko.com/coins/images/13722/small/logo-200x200.jpg?1626095888"
-    },
-    {
-      "symbol": "eeur",
-      "displaySymbol": "eeur",
-      "decimals": 6,
-      "name": "e-Money EUR",
-      "network": "ethereum",
-      "homeNetwork": "ethereum",
-      "label": "e-Money EUR",
-      "imageUrl": "https://assets.coingecko.com/coins/images/18817/small/eeur.jpg?1633508407"
     },
     {
       "address": "0x4461cfd640da24d1a4642fa5f9ea3e6da966b831",
@@ -1042,6 +940,17 @@
       "label": "Offshift",
       "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441",
       "decommissioned": false
+    },
+    {
+      "address": "0xd13c7342e1ef687c5ad21b27c2b65d772cab5c8c",
+      "symbol": "uos",
+      "displaySymbol": "uos",
+      "decimals": 4,
+      "name": "Ultra",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "Ultra",
+      "imageUrl": "https://assets.coingecko.com/coins/images/4480/small/Ultra.png?1563356418"
     }
   ]
 }
