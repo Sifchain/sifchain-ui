@@ -1023,6 +1023,17 @@
       "homeNetwork": "ethereum",
       "label": "Offshift",
       "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441"
+    },
+    {
+      "address": "0xf1b99e3e573a1a9c5e6b2ce818b617f0e664e86b",
+      "symbol": "cosqth",
+      "displaySymbol": "osqth",
+      "decimals": 18,
+      "name": "Opyn Squeeth",
+      "network": "sifchain",
+      "homeNetwork": "ethereum",
+      "label": "Opyn Squeeth",
+      "imageUrl": "https://assets.coingecko.com/coins/images/22806/small/DyVT5XPV_400x400.jpg?1642656239"
     }
   ]
 }
