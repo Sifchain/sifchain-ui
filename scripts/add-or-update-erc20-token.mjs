@@ -5,11 +5,37 @@ import Web3 from "web3";
 import { uniqBy } from "ramda";
 import path from "path";
 import fs from "fs/promises";
+import { createInterface } from "readline";
 
 import { arg } from "./lib.mjs";
 import { ERC20_ABI } from "./erc20TokenAbi.mjs";
 
 const coingecko = new Coingecko();
+
+/**
+ *
+ * @param {String} message
+ * @returns {Promise<String>}
+ */
+const prompt = (message = "", options = ["y", "n"], defaultAnswer = "y") =>
+  new Promise((resolve) => {
+    const rl = createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    const body = `${message} [${options.join("/")}]`;
+
+    rl.question(body, (answer) => {
+      rl.close();
+
+      if (options.includes(answer.toLowerCase())) {
+        resolve(answer.toLowerCase());
+      } else {
+        resolve(defaultAnswer);
+      }
+    });
+  });
 
 const args = arg(
   {
@@ -95,7 +121,7 @@ async function updateAssetByNetwork(network, env, assetConfig) {
   return;
 }
 
-async function addOrUpdateToken(address = "", envs = []) {
+async function addOrUpdateToken({ id = "", address = "", envs = [] }) {
   if (!envs.length) {
     throw new Error("At least one env is required");
   }
@@ -157,6 +183,24 @@ async function addOrUpdateToken(address = "", envs = []) {
       symbol: `c${ethAssetConfig.symbol}`,
     };
 
+    console.log("Asset config preview:", {
+      "EVM config": ethAssetConfig,
+      "Sifchain config": sifAssetConfig,
+    });
+
+    const { name, symbol } = ethAssetConfig;
+
+    const answer = await prompt(
+      `Add "${name}" (${symbol.toUpperCase()}) to envs (${envs.join(", ")})?`,
+      ["y", "n"],
+      "y",
+    );
+
+    if (answer !== "y") {
+      console.log("maybe next time");
+      return;
+    }
+
     for (let env of envs) {
       const promises = ["ethereum", "sifchain"].map((network) => {
         const assetConfig =
@@ -171,7 +215,10 @@ async function addOrUpdateToken(address = "", envs = []) {
   }
 }
 
-await addOrUpdateToken(
-  args["--address"],
-  (args["--envs"] ?? "").split(",").filter((env) => VALID_ENVS.includes(env)),
-);
+await addOrUpdateToken({
+  id: args["--id"],
+  address: args["--address"],
+  envs: (args["--envs"] ?? "")
+    .split(",")
+    .filter((env) => VALID_ENVS.includes(env)),
+});
