@@ -951,6 +951,17 @@
       "homeNetwork": "ethereum",
       "label": "Opyn Squeeth",
       "imageUrl": "https://assets.coingecko.com/coins/images/22806/small/DyVT5XPV_400x400.jpg?1642656239"
+    },
+    {
+      "address": "0xd13c7342e1ef687c5ad21b27c2b65d772cab5c8c",
+      "symbol": "uos",
+      "displaySymbol": "uos",
+      "decimals": 4,
+      "name": "Ultra",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "Ultra",
+      "imageUrl": "https://assets.coingecko.com/coins/images/4480/small/Ultra.png?1563356418"
     }
   ]
 }
