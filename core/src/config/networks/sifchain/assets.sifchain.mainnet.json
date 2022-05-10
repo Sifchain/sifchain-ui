@@ -1078,6 +1078,17 @@
       "homeNetwork": "ethereum",
       "label": "Ethereum Push Notification Service - EPNS",
       "imageUrl": "https://assets.coingecko.com/coins/images/14769/small/epns_logo.jpg?1618330344"
+    },
+    {
+      "address": "0x949d48eca67b17269629c7194f4b727d4ef9e5d6",
+      "symbol": "cmc",
+      "displaySymbol": "mc",
+      "decimals": 18,
+      "name": "Merit Circle",
+      "network": "sifchain",
+      "homeNetwork": "ethereum",
+      "label": "Merit Circle",
+      "imageUrl": "https://assets.coingecko.com/coins/images/19304/small/Db4XqML.png?1634972154"
     }
   ]
 }
