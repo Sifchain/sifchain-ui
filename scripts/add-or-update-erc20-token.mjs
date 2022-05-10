@@ -4,7 +4,7 @@ import Coingecko from "coingecko-api";
 import Web3 from "web3";
 import { uniqBy } from "ramda";
 import path from "path";
-import fs from "fs";
+import fs from "fs/promises";
 
 import { arg } from "./lib.mjs";
 import { ERC20_ABI } from "./erc20TokenAbi.mjs";
@@ -18,7 +18,7 @@ const args = arg(
     "--address": String,
     "--envs": String,
     // aliases
-    "-id": "--id",
+    "-i": "--id",
     "-e": "--envs",
     "-a": "--address",
   },
@@ -66,23 +66,60 @@ function getAssetFilePath(network, env) {
   return filePath;
 }
 
-async function addOrUpdateToken(coinId, address = "", envs = []) {
+async function updateAssetByNetwork(network, env, assetConfig) {
+  console.log("updating network  asset", { network, env });
+
+  const filePath = getAssetFilePath(network, env);
+  const assetRaw = await fs.readFile(filePath);
+  const { assets } = JSON.parse(assetRaw);
+
+  const existingAsset = assets.find(
+    (asset) => asset.address === assetConfig.address,
+  );
+
+  if (existingAsset) {
+    console.log("asset already exists", {
+      network,
+      env,
+      address: assetConfig.address,
+    });
+  }
+
+  const nextAssets = uniqBy((x) => x.address, assets.concat(assetConfig));
+
+  const encodedFile = JSON.stringify({ assets: nextAssets }, null, 2);
+
+  await fs.writeFile(filePath, encodedFile);
+
+  console.log("updated network asset", { network, env });
+  return;
+}
+
+async function addOrUpdateToken(address = "", envs = []) {
   if (!envs.length) {
     throw new Error("At least one env is required");
+  }
+
+  if (!address) {
+    throw new Error("Address is required");
   }
 
   try {
     const token = await getERC20Info(address);
 
+    console.log("token", token);
+
+    const coinInfo = await coingecko.coins.fetchCoinContractInfo(address);
+
+    const coinId = coinInfo?.data?.id;
+
     if (!coinId) {
-      console.info(`coinId not provided, using token name: ${token.name}`);
+      throw new Error("Coin id is not found for address", { address });
     }
 
-    const response = await coingecko.coins.fetch(
-      coinId ?? token.name.toLowerCase(),
-    );
+    const response = await coingecko.coins.fetch(coinId);
 
-    if (!response.code === 200) {
+    if (response.code !== 200) {
       console.log("something went weird", {
         code: response.code,
         message: response.message,
@@ -99,11 +136,10 @@ async function addOrUpdateToken(coinId, address = "", envs = []) {
     //   "network": "ethereum",
     //   "homeNetwork": "ethereum",
     //   "label": "Offshift",
-    //   "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441",
-    //   "decommissioned": false
+    //   "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441"
     // }
 
-    const assetConfig = {
+    const ethAssetConfig = {
       address,
       symbol: response.data.symbol,
       displaySymbol: response.data.symbol,
@@ -115,32 +151,20 @@ async function addOrUpdateToken(coinId, address = "", envs = []) {
       imageUrl: response.data.image.small,
     };
 
-    function updateNetwork(network, env) {
-      console.log("updating network  asset", { network, env });
-
-      const filePath = getAssetFilePath(network, env);
-
-      const assetRaw = fs.readFileSync(filePath);
-
-      const { assets } = JSON.parse(assetRaw);
-
-      const nextAssets = uniqBy((x) => x.address, assets.concat(assetConfig));
-
-      const file = JSON.stringify(
-        {
-          assets: nextAssets,
-        },
-        null,
-        2,
-      );
-
-      fs.writeFileSync(filePath, file);
-    }
+    const sifAssetConfig = {
+      ...ethAssetConfig,
+      network: "sifchain",
+      symbol: `c${ethAssetConfig.symbol}`,
+    };
 
     for (let env of envs) {
-      await Promise.all(
-        ["ethereum", "sifchain"].map((network) => updateNetwork(network, env)),
-      );
+      const promises = ["ethereum", "sifchain"].map((network) => {
+        const assetConfig =
+          network === "ethereum" ? ethAssetConfig : sifAssetConfig;
+
+        return updateAssetByNetwork(network, env, assetConfig);
+      });
+      await Promise.all(promises);
     }
   } catch (error) {
     console.error(error);
@@ -148,7 +172,6 @@ async function addOrUpdateToken(coinId, address = "", envs = []) {
 }
 
 await addOrUpdateToken(
-  args["--id"],
   args["--address"],
   (args["--envs"] ?? "").split(",").filter((env) => VALID_ENVS.includes(env)),
 );
