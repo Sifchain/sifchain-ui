@@ -1006,6 +1006,17 @@
       "homeNetwork": "ethereum",
       "label": "Merit Circle",
       "imageUrl": "https://assets.coingecko.com/coins/images/19304/small/Db4XqML.png?1634972154"
+    },
+    {
+      "address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+      "symbol": "inj",
+      "displaySymbol": "inj",
+      "decimals": 18,
+      "name": "Injective",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "Injective",
+      "imageUrl": "https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png?1628233237"
     }
   ]
 }
