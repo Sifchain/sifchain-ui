@@ -962,6 +962,17 @@
       "homeNetwork": "ethereum",
       "label": "Ultra",
       "imageUrl": "https://assets.coingecko.com/coins/images/4480/small/Ultra.png?1563356418"
+    },
+    {
+      "address": "0x98585dFc8d9e7D48F0b1aE47ce33332CF4237D96",
+      "symbol": "newo",
+      "displaySymbol": "newo",
+      "decimals": 18,
+      "name": "New Order",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "label": "New Order",
+      "imageUrl": "https://assets.coingecko.com/coins/images/21440/small/new-order-icon-256px.png?1639125759"
     }
   ]
 }
