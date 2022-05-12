@@ -5823,6 +5823,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/coingecko-api@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "@types/coingecko-api@npm:1.0.10"
+  checksum: e9683f9ea9ce2f855f6565089981dd3fceb6c4674365438f3fc3877d089a2fb82cdea011b59d59c7baa1635dc610860cd29a10a4b7a650ff96521ead46f22a50
+  languageName: node
+  linkType: hard
+
 "@types/color-hash@npm:^1.0.2":
   version: 1.0.2
   resolution: "@types/color-hash@npm:1.0.2"
@@ -22399,6 +22406,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ramda@npm:^0.28.0":
+  version: 0.28.0
+  resolution: "ramda@npm:0.28.0"
+  checksum: 44ea6e5010bba70151b6a92d8114a91915e8b5a16105cce65fae58c9d7386b812c429645e35f21141d7087568550ce383bc10ee1a65cdec951f4b69ea457e6a4
+  languageName: node
+  linkType: hard
+
 "randombytes@npm:^2.0.0, randombytes@npm:^2.0.1, randombytes@npm:^2.0.5, randombytes@npm:^2.1.0":
   version: 2.1.0
   resolution: "randombytes@npm:2.1.0"
@@ -23884,6 +23898,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "sifchain-ui@workspace:."
   dependencies:
+    "@types/coingecko-api": ^1.0.10
     "@types/jsonp": ^0.2.1
     arg: ^5.0.1
     codecov: ^3.8.3
@@ -23895,6 +23910,7 @@ __metadata:
     patch-package: ^6.4.7
     prettier: ^2.6.2
     pretty-quick: ^3.1.3
+    ramda: ^0.28.0
     serve: ^13.0.2
     truffle: ^5.5.12
     turbo: ^1.2.6
