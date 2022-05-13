@@ -427,7 +427,7 @@ export default defineComponent({
               )}
             </div>
             <div class="p-[4px]">
-              {!this.externalAmount.decommissioned && (
+              {!this.externalAmount.asset.decommissioned && (
                 <Button.Inline
                   to={{
                     name: "AddLiquidity",
