@@ -1,3 +1,7 @@
+## Release 2022.05.12
+
+- Decomission UST and LUNA
+
 ## Release 2022.05.09
 
 - Add more information about price impact on Swap's confirmation step

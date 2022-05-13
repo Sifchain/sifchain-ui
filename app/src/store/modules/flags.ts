@@ -11,8 +11,13 @@ export const isChainFlaggedDisabled = (chain: Chain) => {
   );
 };
 
+const DISABLED_ASSETS: string[] = [];
+
 export const isAssetFlaggedDisabled = (asset: IAsset) => {
   if (!asset.homeNetwork) return false;
+  if (DISABLED_ASSETS.includes(asset.symbol.toLowerCase())) {
+    return false;
+  }
   return isChainFlaggedDisabled(useChains().get(asset.homeNetwork));
 };
 
@@ -32,7 +37,7 @@ export const flagsStore = Vuextra.createStore({
     allowEmptyLiquidityAdd: false,
     voting: true,
     enableTestChains: {
-      // band: false,
+      // terra: false,
       // likecoin: false,
     },
     balancePageV2: true,
