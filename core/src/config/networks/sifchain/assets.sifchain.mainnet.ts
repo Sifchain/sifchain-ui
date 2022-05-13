@@ -878,7 +878,7 @@ const assets: ChainAssetConfig = {
         "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072",
       homeNetwork: "terra",
       decommissioned: true,
-      decommissionReason: "Temporarily decomissioned due to Terra instability",
+      decommissionReason: "Temporarily decommissioned due to Terra instability",
     },
     {
       symbol: "uusd",
@@ -891,7 +891,7 @@ const assets: ChainAssetConfig = {
         "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
       homeNetwork: "terra",
       decommissioned: true,
-      decommissionReason: "Temporarily decomissioned due to Terra instability",
+      decommissionReason: "Temporarily decommissioned due to Terra instability",
     },
     {
       address: "0x05079687d35b93538cbd59fe5596380cae9054a9",
