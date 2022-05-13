@@ -1,6 +1,6 @@
 ## Release 2022.05.12
 
-- Decomission UST and LUNA
+- Decommission UST and LUNA
 
 ## Release 2022.05.09
 
