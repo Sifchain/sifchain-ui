@@ -683,6 +683,8 @@ const assets: ChainAssetConfig = {
       displaySymbol: "UST",
       symbol: "cust",
       homeNetwork: "ethereum",
+      decommissioned: true,
+      decommissionReason: "Temporarily disabled due to Terra instability",
     },
     {
       address: "0x853d955acef822db058eb8505911ed77f175b99e",
