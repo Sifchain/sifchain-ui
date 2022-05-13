@@ -78,6 +78,7 @@ export const useTokenList = (params: TokenListParams) => {
           if (params.showDecomissionedAssets) {
             return true;
           }
+
           return (
             params.showDecomissionedAssetsWithBalance &&
             parseFloat(token.amount.amount.toString()) > 0
