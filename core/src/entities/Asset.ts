@@ -14,7 +14,7 @@ export type IAsset = {
   label?: string;
   hasDarkIcon?: boolean;
   homeNetwork: Network;
-  decommissioned?: true;
+  decommissioned?: boolean;
   decommissionReason?: string;
 };
 
