@@ -1,6 +1,6 @@
 import { Asset, IAsset } from "../entities";
 
-export const createPoolKey = (a: IAsset | string, b: IAsset | string) => {
+export function createPoolKey(a: IAsset | string, b: IAsset | string) {
   if (typeof a === "string") a = Asset.get(a);
   if (typeof b === "string") b = Asset.get(b);
 
@@ -8,4 +8,4 @@ export const createPoolKey = (a: IAsset | string, b: IAsset | string) => {
     .map((asset) => asset.symbol.toLowerCase())
     .sort()
     .join("_");
-};
+}
