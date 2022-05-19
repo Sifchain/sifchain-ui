@@ -38,12 +38,9 @@ export interface Chain {
   nativeAsset: IAsset;
   assets: IAsset[];
   assetMap: Map<string, IAsset>;
-
   forceGetAsset: (symbol: string) => IAsset;
-
   lookupAsset(symbol: string): IAsset | undefined;
   lookupAssetOrThrow(symbol: string): IAsset;
-
   findAssetWithLikeSymbol(symbol: string): IAsset | undefined;
   findAssetWithLikeSymbolOrThrow(symbol: string): IAsset;
   getBlockExplorerUrlForTxHash(hash: string): string;
