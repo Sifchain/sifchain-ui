@@ -98,7 +98,7 @@ export const useUnlockLiquidityMutation = () => {
         if (!isNil(error) || (data !== undefined && isDeliverTxFailure(data))) {
           return services.bus.dispatch({
             type: "ErrorEvent",
-            payload: { message: "Unlock liquidity request failed" },
+            payload: { message: "Unbond liquidity request failed" },
           });
         }
 
@@ -106,7 +106,7 @@ export const useUnlockLiquidityMutation = () => {
           return services.bus.dispatch({
             type: "SuccessEvent",
             payload: {
-              message: "Successfully requested liquidity unlock",
+              message: "Successfully requested liquidity unbond",
             },
           });
         }
@@ -245,7 +245,7 @@ export const useCancelLiquidityUnlockMutation = () => {
         if (!isNil(error) || (data !== undefined && isDeliverTxFailure(data))) {
           return services.bus.dispatch({
             type: "ErrorEvent",
-            payload: { message: "Failed to cancel liquidity unlock request" },
+            payload: { message: "Failed to cancel liquidity unbond request" },
           });
         }
 
@@ -253,7 +253,7 @@ export const useCancelLiquidityUnlockMutation = () => {
           return services.bus.dispatch({
             type: "SuccessEvent",
             payload: {
-              message: "Successfully cancel liquidity unlock request",
+              message: "Successfully cancel liquidity unbond request",
             },
           });
         }
