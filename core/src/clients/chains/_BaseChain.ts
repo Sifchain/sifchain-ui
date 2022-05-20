@@ -37,6 +37,7 @@ export class BaseChain implements Chain {
   lookupAsset(symbol: string) {
     return this.assetMap.get(symbol.toLowerCase());
   }
+
   lookupAssetOrThrow(symbol: string) {
     const asset = this.lookupAsset(symbol);
     if (!asset) {
@@ -50,6 +51,7 @@ export class BaseChain implements Chain {
   findAssetWithLikeSymbol(symbol: string) {
     return this.assets.find((asset) => isLikeSymbol(asset.symbol, symbol));
   }
+
   findAssetWithLikeSymbolOrThrow(symbol: string) {
     const asset = this.assets.find((asset) =>
       isLikeSymbol(asset.symbol, symbol),
@@ -62,6 +64,7 @@ export class BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {
     return urlJoin(this.chainConfig.blockExplorerUrl, "transactions", hash);
   }
+
   getBlockExplorerUrlForAddress(address: string) {
     return urlJoin(this.chainConfig.blockExplorerUrl, "accounts", address);
   }

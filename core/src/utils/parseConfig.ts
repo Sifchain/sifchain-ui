@@ -1,28 +1,22 @@
 import { Network, NetworkChainConfigLookup, IAsset, Asset } from "../entities";
 import { getMetamaskProvider } from "../clients/wallets/ethereum/getMetamaskProvider";
 
-type TokenConfig = {
+type BaseAssetConfig = {
+  name: string;
   symbol: string;
   displaySymbol: string;
-  label?: string;
   decimals: number;
+  label?: string;
   imageUrl?: string;
-  name: string;
-  address: string;
   network: Network;
   homeNetwork: Network;
 };
 
-type CoinConfig = {
-  label?: string;
-  symbol: string;
-  displaySymbol: string;
-  decimals: number;
-  imageUrl?: string;
-  name: string;
-  network: Network;
-  homeNetwork: Network;
+type TokenConfig = BaseAssetConfig & {
+  address: string;
 };
+
+type CoinConfig = BaseAssetConfig & {};
 
 export type AssetConfig = CoinConfig | TokenConfig;
 
