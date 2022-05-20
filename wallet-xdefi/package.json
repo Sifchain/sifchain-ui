@@ -1,0 +1,19 @@
+{
+  "name": "@sifchain/wallet-xdefi",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@cosmjs/launchpad": "^0.27.1",
+    "@cosmjs/proto-signing": "^0.28.4",
+    "@cosmjs/stargate": "^0.28.4",
+    "@cosmjs/tendermint-rpc": "^0.28.4",
+    "@sifchain/sdk": "workspace:*",
+    "@sifchain/wallet-keplr": "workspace:*",
+    "@terra-money/terra.js": "3.0.12",
+    "@terra-money/terra.proto": "0.2.0-beta.0",
+    "@terra-money/wallet-provider": "3.8.1"
+  }
+}

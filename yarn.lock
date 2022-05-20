@@ -3430,7 +3430,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@improbable-eng/grpc-web@npm:^0.14.0":
+"@improbable-eng/grpc-web@npm:^0.14.0, @improbable-eng/grpc-web@npm:^0.14.1":
   version: 0.14.1
   resolution: "@improbable-eng/grpc-web@npm:0.14.1"
   dependencies:
@@ -4657,6 +4657,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@sifchain/wallet-xdefi@workspace:*, @sifchain/wallet-xdefi@workspace:wallet-xdefi":
+  version: 0.0.0-use.local
+  resolution: "@sifchain/wallet-xdefi@workspace:wallet-xdefi"
+  dependencies:
+    "@cosmjs/launchpad": ^0.27.1
+    "@cosmjs/proto-signing": ^0.28.4
+    "@cosmjs/stargate": ^0.28.4
+    "@cosmjs/tendermint-rpc": ^0.28.4
+    "@sifchain/sdk": "workspace:*"
+    "@sifchain/wallet-keplr": "workspace:*"
+    "@terra-money/terra.js": 3.0.12
+    "@terra-money/terra.proto": 0.2.0-beta.0
+    "@terra-money/wallet-provider": 3.8.1
+  languageName: unknown
+  linkType: soft
+
 "@sindresorhus/is@npm:^0.14.0":
   version: 0.14.0
   resolution: "@sindresorhus/is@npm:0.14.0"
@@ -4855,6 +4871,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@terra-money/terra.js@npm:3.0.12":
+  version: 3.0.12
+  resolution: "@terra-money/terra.js@npm:3.0.12"
+  dependencies:
+    "@terra-money/terra.proto": ^0.1.7
+    axios: ^0.26.1
+    bech32: ^2.0.0
+    bip32: ^2.0.6
+    bip39: ^3.0.3
+    bufferutil: ^4.0.3
+    decimal.js: ^10.2.1
+    jscrypto: ^1.0.1
+    readable-stream: ^3.6.0
+    secp256k1: ^4.0.2
+    tmp: ^0.2.1
+    utf-8-validate: ^5.0.5
+    ws: ^7.5.5
+  checksum: 7ba920fd90fd01b60332c7d66c33a59dc35bcbc9a3a97c5004741057992735d70191363af2524974fb4984ff3e0cca59e3f70a182d61f847b2960868948bfddd
+  languageName: node
+  linkType: hard
+
+"@terra-money/terra.proto@npm:0.2.0-beta.0":
+  version: 0.2.0-beta.0
+  resolution: "@terra-money/terra.proto@npm:0.2.0-beta.0"
+  dependencies:
+    "@improbable-eng/grpc-web": ^0.14.1
+    google-protobuf: ^3.17.3
+    long: ^4.0.0
+    protobufjs: ~6.11.2
+  checksum: f9553ec76d2f77a0e1227c3d9c79b769f64686cd536611acc4cd4901c0d9201d2ad193266448d7bd17e265a7ed5a025110495df5beba3ce1cb4422cb758eb679
+  languageName: node
+  linkType: hard
+
 "@terra-money/terra.proto@npm:^0.1.7":
   version: 0.1.7
   resolution: "@terra-money/terra.proto@npm:0.1.7"
@@ -4863,6 +4912,55 @@ __metadata:
     long: ^4.0.0
     protobufjs: ~6.11.2
   checksum: c6ad15f559008e5159137aea6fa0b3edd8699b2638cfbe7361c3b53a523bcf7b1f92e2977f4f022532f61a5f57a74bdd3e3db7d3eb5b97df743106aa40764bd0
+  languageName: node
+  linkType: hard
+
+"@terra-money/use-wallet@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/use-wallet@npm:3.8.1"
+  dependencies:
+    "@terra-money/wallet-types": ^3.8.1
+  peerDependencies:
+    "@terra-money/terra.js": ^3.0.0
+    react: ">=17.0.0"
+  checksum: 6785e27dd75b58f9ff8ad3bffb3572b92712194ca333d7cbe4adc7e0cc982c4c43db4d24838ea2fd7f92cb3473924676cd8c423032d99ca49435766bf4e1aa3b
+  languageName: node
+  linkType: hard
+
+"@terra-money/wallet-controller@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/wallet-controller@npm:3.8.1"
+  dependencies:
+    "@terra-money/wallet-types": ^3.8.1
+    "@terra-money/web-extension-interface": ^3.8.1
+    "@walletconnect/core": ^1.6.6
+    "@walletconnect/iso-crypto": ^1.6.6
+    "@walletconnect/types": ^1.6.6
+    "@walletconnect/utils": ^1.6.6
+    bowser: ^2.11.0
+    fast-deep-equal: ^3.1.3
+    jscrypto: ^1.0.0
+    mobile-detect: ^1.4.5
+    qrcode: ^1.5.0
+    rxjs: ^7.0.0
+    secp256k1: ^4.0.0
+    ws: ^7.5.5
+  peerDependencies:
+    "@terra-money/terra.js": ^3.0.0
+  checksum: 7f408cba75ed1b7cbf0d3ffc3015fad310218ffa79bed904fddfd167b946cf31cd87ef30fdb1326dd27f38cc8091fb3b73a83af1cecc32790589e44ef2b5da0e
+  languageName: node
+  linkType: hard
+
+"@terra-money/wallet-provider@npm:3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/wallet-provider@npm:3.8.1"
+  dependencies:
+    "@terra-money/use-wallet": ^3.8.1
+    "@terra-money/wallet-controller": ^3.8.1
+    "@terra-money/web-extension-interface": ^3.8.1
+  peerDependencies:
+    react: ">=17.0.0"
+  checksum: 96d081146becfdb41d62beb024fd763eb1c301a6a5a2effd05257cb6c15518b33ddeaa7639999e7298f8828a9805f27f3d134b0823f459f2d58e363182d52c4a
   languageName: node
   linkType: hard
 
@@ -4888,6 +4986,26 @@ __metadata:
     react-router-dom:
       optional: true
   checksum: d6c38756a0f21219e245820479a796f595cfb261762ce394ff8327c52f2d396a9f8eef9956a4160c0997dc7f8dd6b62bc5467d53e1ee7925b3889ff69e4cf168
+  languageName: node
+  linkType: hard
+
+"@terra-money/wallet-types@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/wallet-types@npm:3.8.1"
+  peerDependencies:
+    "@terra-money/terra.js": ^3.0.0
+  checksum: dbba122544467ab470a32ab25e5215fe482819fca73c0def06f349e69cf6c2c17f03ac54d8d019f28b2be029b7da90aabafd29ebc9b29231327280d8413a9194
+  languageName: node
+  linkType: hard
+
+"@terra-money/web-extension-interface@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/web-extension-interface@npm:3.8.1"
+  dependencies:
+    rxjs: ^7.0.0
+  peerDependencies:
+    "@terra-money/terra.js": ^3.0.0
+  checksum: 3b46adc4ab39f99ffd699cbb4f350dd71ca265d114f6e964bdaee3706c057653e1b3ed9ef34542ad1213daa0100527d2d92e6f15850a514a5266b45230bfb5ad
   languageName: node
   linkType: hard
 
@@ -7650,6 +7768,7 @@ __metadata:
     "@sifchain/wallet-keplr": "workspace:*"
     "@sifchain/wallet-metamask": "workspace:*"
     "@sifchain/wallet-terra-station": "workspace:*"
+    "@sifchain/wallet-xdefi": "workspace:*"
     "@tailwindcss/typography": ^0.5.2
     "@types/color-hash": ^1.0.2
     "@types/dat.gui": ^0.7.7
@@ -11379,6 +11498,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dijkstrajs@npm:^1.0.1":
+  version: 1.0.2
+  resolution: "dijkstrajs@npm:1.0.2"
+  checksum: 8cd822441a26f190da24d69bfab7b433d080b09e069e41e046ac84e152f182a1ed9478d531b34126e000adaa7b73114a0f85fcac117a7d25b3edf302d57c0d09
+  languageName: node
+  linkType: hard
+
 "dir-glob@npm:^3.0.1":
   version: 3.0.1
   resolution: "dir-glob@npm:3.0.1"
@@ -11787,6 +11913,13 @@ __metadata:
   version: 3.0.0
   resolution: "emojis-list@npm:3.0.0"
   checksum: ddaaa02542e1e9436c03970eeed445f4ed29a5337dfba0fe0c38dfdd2af5da2429c2a0821304e8a8d1cadf27fdd5b22ff793571fa803ae16852a6975c65e8e70
+  languageName: node
+  linkType: hard
+
+"encode-utf8@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "encode-utf8@npm:1.0.3"
+  checksum: 550224bf2a104b1d355458c8a82e9b4ea07f9fc78387bc3a49c151b940ad26473de8dc9e121eefc4e84561cb0b46de1e4cd2bc766f72ee145e9ea9541482817f
   languageName: node
   linkType: hard
 
@@ -17560,7 +17693,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jscrypto@npm:^1.0.1":
+"jscrypto@npm:^1.0.0, jscrypto@npm:^1.0.1":
   version: 1.0.3
   resolution: "jscrypto@npm:1.0.3"
   bin:
@@ -22321,6 +22454,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qrcode@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "qrcode@npm:1.5.0"
+  dependencies:
+    dijkstrajs: ^1.0.1
+    encode-utf8: ^1.0.3
+    pngjs: ^5.0.0
+    yargs: ^15.3.1
+  bin:
+    qrcode: bin/qrcode
+  checksum: a0857713d4390937900a2789d5a065700f7cf78cd760e773bf8524c0e907ff629db19c9bdd4210aac55b8eef53ec1c7bcaa2acf01f340ef049c53098388a45a0
+  languageName: node
+  linkType: hard
+
 "qs@npm:6.10.3, qs@npm:^6.4.0":
   version: 6.10.3
   resolution: "qs@npm:6.10.3"
@@ -23364,7 +23511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:*, rxjs@npm:7.5.5, rxjs@npm:^7.5.4, rxjs@npm:^7.5.5":
+"rxjs@npm:*, rxjs@npm:7.5.5, rxjs@npm:^7.0.0, rxjs@npm:^7.5.4, rxjs@npm:^7.5.5":
   version: 7.5.5
   resolution: "rxjs@npm:7.5.5"
   dependencies:
@@ -28579,7 +28726,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^15.0.2":
+"yargs@npm:^15.0.2, yargs@npm:^15.3.1":
   version: 15.4.1
   resolution: "yargs@npm:15.4.1"
   dependencies:
