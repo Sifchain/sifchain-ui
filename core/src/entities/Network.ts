@@ -1,4 +1,4 @@
-export const enum Network {
+export enum Network {
   SIFCHAIN = "sifchain",
   ETHEREUM = "ethereum",
   // The rest... sort by name
