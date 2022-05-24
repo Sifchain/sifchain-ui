@@ -8,7 +8,6 @@ describe("Pair", () => {
   const ATK = Asset({
     decimals: 6,
     symbol: "atk",
-    label: "ATK",
     displaySymbol: "ATK",
     name: "AppleToken",
     address: "123",
@@ -18,7 +17,6 @@ describe("Pair", () => {
   const BTK = Asset({
     decimals: 18,
     symbol: "btk",
-    label: "BTK",
     displaySymbol: "BTK",
     name: "BananaToken",
     address: "1234",
@@ -29,7 +27,6 @@ describe("Pair", () => {
     decimals: 18,
     symbol: "eth",
     displaySymbol: "ETH",
-    label: "ETH",
     name: "Ethereum",
     network: Network.ETHEREUM,
     homeNetwork: Network.ETHEREUM,
@@ -38,7 +35,6 @@ describe("Pair", () => {
     decimals: 18,
     symbol: "rowan",
     displaySymbol: "ROWAN",
-    label: "ROWAN",
     name: "Rowan",
     network: Network.SIFCHAIN,
     homeNetwork: Network.ETHEREUM,

@@ -1,6 +1,6 @@
 import { IAmount, Amount, _ExposeInternal } from "./Amount";
 import { IAsset, Asset } from "./Asset";
-import { IFraction } from "./fraction/Fraction";
+import { IFraction } from "./fraction";
 import { fromBaseUnits } from "../utils/decimalShift";
 
 import JSBI from "jsbi";
@@ -113,10 +113,6 @@ export function AssetAmount(
 
     get symbol() {
       return _asset.symbol;
-    },
-
-    get label() {
-      return _asset.label;
     },
 
     toDerived() {

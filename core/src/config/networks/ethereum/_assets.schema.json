@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    }
+  },
+  "required": ["assets"],
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "The address of the asset."
+        },
+        "decimals": {
+          "type": "integer",
+          "description": "The number of decimals of the asset."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "The image url of the asset."
+        },
+        "name": {
+          "type": "string",
+          "description": "The project name of the asset. For example Bitcoin."
+        },
+        "network": {
+          "type": "string",
+          "description": "The network of the asset. For example ethereum."
+        },
+        "homeNetwork": {
+          "type": "string",
+          "description": "[OPTIONAL] The origin network for the asset."
+        },
+        "symbol": {
+          "type": "string",
+          "description": "The symbol of an asset. For example BTC."
+        },
+        "displaySymbol": {
+          "type": "string",
+          "description": "[OPTIONAL] Display symbol of an asset."
+        }
+      },
+      "required": [
+        "address",
+        "decimals",
+        "imageUrl",
+        "name",
+        "network",
+        "symbol"
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 ## Release 2022.05.24
 
 - Re-enable UST and LUNA
+- Enable cancelling unbonding requests
 
 ## Release 2022.05.12
 

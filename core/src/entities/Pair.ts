@@ -16,7 +16,9 @@ export class Pair {
     const otherAsset = this.amounts.find(
       (amount) => amount.symbol !== asset.symbol,
     );
-    if (!otherAsset) throw new Error("Asset doesnt exist in pair");
+    if (!otherAsset) {
+      throw new Error("Asset doesnt exist in pair");
+    }
     return otherAsset;
   }
 

@@ -4,10 +4,8 @@
   "sifRpcUrl": "https://rpc-devnet.sifchain.finance",
   "sifChainId": "sifchain-devnet-1",
   "web3Provider": "metamask",
-  "web3Provider--option2": "https://ropsten.infura.io/v3/f2e434009a9c4db8bfbd1b03ef572170",
   "nativeAsset": "rowan",
   "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
-  "cryptoeconomicsUrl": "https://api-cryptoeconomics.sifchain.finance/api",
   "bridgebankContractAddress": "0x96DC6f02C66Bbf2dfbA934b8DafE7B2c08715A73",
   "keplrChainConfig": {
     "chainName": "Sifchain Devnet",
