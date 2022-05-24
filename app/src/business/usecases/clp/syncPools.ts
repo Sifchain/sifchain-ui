@@ -146,7 +146,7 @@ export function SyncPools(
         throw new Error("Missing liquidity provider");
       }
 
-      const lp = LiquidityProvider(
+      const lp = new LiquidityProvider(
         asset,
         Amount(lpItem.liquidityProvider.liquidityProviderUnits),
         address,
