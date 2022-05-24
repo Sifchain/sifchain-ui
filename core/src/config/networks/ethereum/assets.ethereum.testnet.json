@@ -566,7 +566,6 @@
       "name": "Offshift",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "Offshift",
       "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441",
       "decommissioned": false
     },
@@ -578,7 +577,6 @@
       "name": "Opyn Squeeth",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "Opyn Squeeth",
       "imageUrl": "https://assets.coingecko.com/coins/images/22806/small/DyVT5XPV_400x400.jpg?1642656239"
     },
     {
@@ -589,7 +587,6 @@
       "name": "Ultra",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "Ultra",
       "imageUrl": "https://assets.coingecko.com/coins/images/4480/small/Ultra.png?1563356418"
     },
     {
@@ -600,7 +597,6 @@
       "name": "New Order",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "New Order",
       "imageUrl": "https://assets.coingecko.com/coins/images/21440/small/new-order-icon-256px.png?1639125759"
     },
     {
@@ -611,7 +607,6 @@
       "name": "Gala",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "Gala",
       "imageUrl": "https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png?1600233435"
     },
     {
@@ -622,7 +617,6 @@
       "name": "Ethereum Push Notification Service - EPNS",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "Ethereum Push Notification Service - EPNS",
       "imageUrl": "https://assets.coingecko.com/coins/images/14769/small/epns_logo.jpg?1618330344"
     },
     {
@@ -633,7 +627,6 @@
       "name": "Merit Circle",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "Merit Circle",
       "imageUrl": "https://assets.coingecko.com/coins/images/19304/small/Db4XqML.png?1634972154"
     },
     {
@@ -644,7 +637,6 @@
       "name": "Injective",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "label": "Injective",
       "imageUrl": "https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png?1628233237"
     }
   ]

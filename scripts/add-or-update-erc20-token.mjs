@@ -161,7 +161,6 @@ async function addOrUpdateToken({ id = "", address = "", envs = [] }) {
     //   "name": "Offshift",
     //   "network": "ethereum",
     //   "homeNetwork": "ethereum",
-    //   "label": "Offshift",
     //   "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441"
     // }
 
@@ -173,7 +172,6 @@ async function addOrUpdateToken({ id = "", address = "", envs = [] }) {
       name: response.data.name,
       network: "ethereum",
       homeNetwork: "ethereum",
-      label: response.data.name,
       imageUrl: response.data.image.small,
     };
 
