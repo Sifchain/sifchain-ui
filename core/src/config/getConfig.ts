@@ -1,18 +1,17 @@
 // TODO - Conditional load or build-time tree shake
 import localnetconfig from "./networks/sifchain/config.localnet.json";
 import devnetconfig from "./networks/sifchain/config.devnet.json";
-
 import testnetconfig from "./networks/sifchain/config.testnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 
 import assetsEthereumLocalnet from "./networks/ethereum/assets.ethereum.localnet.json";
-import assetsEthereumDevnet from "./networks/ethereum/assets.ethereum.sifchain-devnet.json";
-import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.sifchain-testnet.json";
 import assetsEthereumMainnet from "./networks/ethereum/assets.ethereum.mainnet.json";
+import assetsEthereumDevnet from "./networks/ethereum/assets.ethereum.devnet.json";
+import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.testnet.json";
 
-import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet";
-import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet";
-import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet";
+import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet.json";
+import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet.json";
+import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet.json";
 
 import {
   parseConfig,
@@ -63,6 +62,19 @@ export function getConfig(
 
   const sifchainAssets = assetMap[sifchainAssetTag] || [];
   const ethereumAssets = assetMap[ethereumAssetTag] || [];
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(
+      "Using development config",
+      applicationNetworkEnv,
+      sifchainAssetTag,
+      ethereumAssetTag,
+      {
+        sifchainAssets,
+        ethereumAssets,
+      },
+    );
+  }
 
   const allAssets = [...sifchainAssets, ...ethereumAssets];
 

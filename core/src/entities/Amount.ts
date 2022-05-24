@@ -1,7 +1,7 @@
 import JSBI from "jsbi";
 import Big from "big.js";
 
-import { Fraction, IFraction } from "./fraction/Fraction";
+import { Fraction, IFraction } from "./fraction";
 import { isAssetAmount } from "./AssetAmount";
 import { decimalShift, floorDecimal } from "../utils/decimalShift";
 

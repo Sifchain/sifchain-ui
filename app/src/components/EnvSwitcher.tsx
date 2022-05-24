@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { AppCookies, NetworkEnv, networkEnvsByIndex } from "@sifchain/sdk";
+import { AppCookies, NetworkEnv } from "@sifchain/sdk";
 
 // This is for internal testing & development only.
 // Once we release the ability to switch environments
@@ -14,9 +14,6 @@ export default defineComponent({
     }
 
     let networkEnv: NetworkEnv = env as NetworkEnv;
-    if (env && networkEnvsByIndex[+env]) {
-      networkEnv = networkEnvsByIndex[+env];
-    }
 
     const styles = {
       mainnet: "bg-green-500 text-white",
@@ -30,9 +27,7 @@ export default defineComponent({
       [NetworkEnv.MAINNET]: styles.mainnet,
       [NetworkEnv.LOCALNET]: styles.localnet,
       [NetworkEnv.TESTNET]: styles.testnet,
-      [NetworkEnv.TESTNET_042_IBC]: styles.testnet,
       [NetworkEnv.DEVNET]: styles.devnet,
-      [NetworkEnv.DEVNET_042]: styles.devnet,
     };
 
     const classNames = classesByNetworkEnv[networkEnv];

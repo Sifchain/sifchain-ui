@@ -103,7 +103,7 @@ export class BaseLiquidityClient {
       lpAddress: params.address,
       symbol: entry.denom,
     });
-    return LiquidityProvider(
+    return new LiquidityProvider(
       params.asset,
       Amount(res.liquidityProvider?.liquidityProviderUnits || "0"),
       params.address,
