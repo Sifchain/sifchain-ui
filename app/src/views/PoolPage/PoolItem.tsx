@@ -16,7 +16,7 @@ import {
   Competition,
   CompetitionsLookup,
 } from "../LeaderboardPage/useCompetitionData";
-import { COLUMNS_LOOKUP, PoolRewardProgram } from "./usePoolPageData";
+import { COLUMNS_LOOKUP } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 
 export default defineComponent({
@@ -59,10 +59,6 @@ export default defineComponent({
     accountPool: {
       type: Object as PropType<AccountPool>,
       required: false,
-    },
-    bonusRewardPrograms: {
-      type: Array as PropType<PoolRewardProgram[]>,
-      required: true,
     },
     competitionsLookup: {
       type: Object as PropType<CompetitionsLookup>,

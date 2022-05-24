@@ -1,7 +1,8 @@
 ## Release 2022.05.24
 
-- Re-enable UST and LUNA
 - Enable cancelling unbonding requests
+- Re-enable UST and LUNA
+- Fix pool share & pool value display
 
 ## Release 2022.05.12
 
