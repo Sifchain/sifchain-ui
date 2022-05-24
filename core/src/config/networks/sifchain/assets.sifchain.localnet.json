@@ -23,7 +23,6 @@
       "decimals": 18,
       "imageUrl": "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
       "name": "Terra USD",
-      "label": "Terra USD",
       "network": "sifchain",
       "displaySymbol": "UST (ERC-20)",
       "symbol": "cust",
