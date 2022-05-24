@@ -86,7 +86,6 @@ export type CoreConfig = {
   sifApiUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
-  cryptoeconomicsUrl: string;
   blockExplorerUrl: string;
   web3Provider: "metamask" | string;
   nativeAsset: string; // symbol
@@ -133,7 +132,6 @@ export function parseConfig(
     sifApiUrl: config.sifApiUrl,
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
-    cryptoeconomicsUrl: config.cryptoeconomicsUrl,
     blockExplorerUrl: config.blockExplorerUrl,
     getWeb3Provider:
       config.web3Provider === "metamask"
