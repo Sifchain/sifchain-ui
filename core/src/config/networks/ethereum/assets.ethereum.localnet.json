@@ -1,4 +1,5 @@
 {
+  "$schema": "./_assets.schema.json",
   "assets": [
     {
       "symbol": "erowan",
@@ -13,6 +14,7 @@
       "symbol": "eth",
       "imageUrl": "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
       "network": "ethereum",
+      "address": "",
       "decimals": 18
     },
     {

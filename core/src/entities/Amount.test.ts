@@ -8,7 +8,6 @@ beforeEach(() => {
   Asset({
     address: "1234568",
     decimals: 18,
-    label: "ETH",
     name: "Ethereum",
     displaySymbol: "ETH",
     network: Network.ETHEREUM,
