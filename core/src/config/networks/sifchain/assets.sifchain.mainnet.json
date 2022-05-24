@@ -783,9 +783,7 @@
       "network": "sifchain",
       "label": "luna",
       "imageUrl": "https://assets.coingecko.com/coins/images/8284/small/luna1557227471663.png?1567147072",
-      "homeNetwork": "terra",
-      "decommissioned": true,
-      "decommissionReason": "Temporarily disabled due to Terra instability"
+      "homeNetwork": "terra"
     },
     {
       "symbol": "uusd",
@@ -795,9 +793,7 @@
       "network": "sifchain",
       "label": "TerraUSD",
       "imageUrl": "https://assets.coingecko.com/coins/images/12681/small/UST.png?1601612407",
-      "homeNetwork": "terra",
-      "decommissioned": true,
-      "decommissionReason": "Temporarily disabled due to Terra instability"
+      "homeNetwork": "terra"
     },
     {
       "imageUrl": "https://assets.coingecko.com/coins/images/5041/large/logo_-_2021-01-10T210801.390.png?1610284134",
