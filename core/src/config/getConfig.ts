@@ -1,7 +1,6 @@
 // TODO - Conditional load or build-time tree shake
 import localnetconfig from "./networks/sifchain/config.localnet.json";
 import devnetconfig from "./networks/sifchain/config.devnet.json";
-
 import testnetconfig from "./networks/sifchain/config.testnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 

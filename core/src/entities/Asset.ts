@@ -11,10 +11,9 @@ export type IAsset = {
   ibcDenom?: string;
   displaySymbol: string;
   lowercasePrefixLength?: number;
-  label?: string;
   hasDarkIcon?: boolean;
   homeNetwork: Network;
-  decommissioned?: true;
+  decommissioned?: boolean;
   decommissionReason?: string;
 };
 

@@ -1,50 +1,29 @@
 import { Network, NetworkChainConfigLookup, IAsset, Asset } from "../entities";
 import { getMetamaskProvider } from "../clients/wallets/ethereum/getMetamaskProvider";
 
-type TokenConfig = {
+type BaseAssetConfig = {
+  name: string;
   symbol: string;
   displaySymbol: string;
-  label?: string;
   decimals: number;
+  label?: string;
   imageUrl?: string;
-  name: string;
-  address: string;
   network: Network;
   homeNetwork: Network;
 };
 
-type CoinConfig = {
-  label?: string;
-  symbol: string;
-  displaySymbol: string;
-  decimals: number;
-  imageUrl?: string;
-  name: string;
-  network: Network;
-  homeNetwork: Network;
+type TokenConfig = BaseAssetConfig & {
+  address: string;
 };
+
+type CoinConfig = BaseAssetConfig & {};
 
 export type AssetConfig = CoinConfig | TokenConfig;
-
-/**
- * Convert asset config to label with appropriate capitalization
- */
-function parseLabel(a: AssetConfig) {
-  if (a.network === Network.SIFCHAIN) {
-    return a.symbol.indexOf("c") === 0
-      ? "c" + a.symbol.slice(1).toUpperCase()
-      : a.symbol.toUpperCase();
-  }
-
-  // network is ethereum
-  return a.symbol === "erowan" ? "eROWAN" : a.symbol.toUpperCase();
-}
 
 function parseAsset(a: AssetConfig): IAsset {
   return Asset({
     ...a,
     displaySymbol: a.displaySymbol || a.symbol,
-    label: parseLabel(a),
   });
 }
 
@@ -92,7 +71,6 @@ export type CoreConfig = {
   sifApiUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
-  cryptoeconomicsUrl: string;
   blockExplorerUrl: string;
   web3Provider: "metamask" | string;
   nativeAsset: string; // symbol
@@ -139,7 +117,6 @@ export function parseConfig(
     sifApiUrl: config.sifApiUrl,
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
-    cryptoeconomicsUrl: config.cryptoeconomicsUrl,
     blockExplorerUrl: config.blockExplorerUrl,
     getWeb3Provider:
       config.web3Provider === "metamask"

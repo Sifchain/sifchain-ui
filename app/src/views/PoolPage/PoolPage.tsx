@@ -8,23 +8,13 @@ import {
   useRemoveLiquidityMutation,
 } from "@/domains/clp/mutation/liquidity";
 import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
-import { useNativeChain } from "@/hooks/useChains";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import BigNumber from "bignumber.js";
 import { formatDistance } from "date-fns";
 import { computed, defineComponent } from "vue";
 import { RouterView } from "vue-router";
-import {
-  CompetitionsBySymbolLookup,
-  useLeaderboardCompetitions,
-} from "../LeaderboardPage/useCompetitionData";
 import PoolItem from "./PoolItem";
-import {
-  COLUMNS,
-  PoolPageColumnId,
-  PoolRewardProgram,
-  usePoolPageData,
-} from "./usePoolPageData";
+import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
 
 export default defineComponent({
   name: "PoolsPage",
@@ -47,7 +37,6 @@ export default defineComponent({
       }),
       cancelLiquidityUnlockMutation: useCancelLiquidityUnlockMutation(),
       currentRewardPeriod,
-      competitionsRes: useLeaderboardCompetitions(),
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       isLoading: computed(
@@ -56,39 +45,6 @@ export default defineComponent({
     };
   },
   computed: {
-    poolRewardProgramLookup(): Record<string, PoolRewardProgram[]> {
-      const lookup: Record<string, PoolRewardProgram[]> = {};
-
-      this.rewardProgramsRes.data.value?.forEach((program) => {
-        if (program.isUniversal) return;
-
-        if (
-          new Date() < new Date(program.startDateTimeISO ?? "") ||
-          new Date() > new Date(program.endDateTimeISO ?? "")
-        ) {
-          return;
-        }
-
-        program.incentivizedPoolSymbols.forEach((symbol) => {
-          const asset = useNativeChain().findAssetWithLikeSymbol(symbol);
-
-          if (asset) {
-            let list = lookup[asset.symbol];
-            if (!list) list = lookup[asset.symbol] = [];
-            list.push(program);
-          }
-        });
-      });
-
-      for (const symbol in lookup) {
-        lookup[symbol.slice(1)] = lookup[symbol];
-      }
-
-      return lookup;
-    },
-    symbolCompetitionsLookup(): CompetitionsBySymbolLookup | null {
-      return this.competitionsRes.data?.value || null;
-    },
     sanitizedPoolData(): ReturnType<
       typeof usePoolPageData
     >["allPoolsData"]["value"] {
@@ -230,11 +186,6 @@ export default defineComponent({
             }
           >
             {this.sanitizedPoolData.map((item) => {
-              const rewardsPrograms =
-                this.poolRewardProgramLookup[
-                  item.pool.externalAmount!.symbol
-                ] ?? [];
-
               const itemLp = item.liquidityProvider?.liquidityProvider;
               const filteredUnlock =
                 item.liquidityProvider?.liquidityProvider?.unlocks.filter(
@@ -311,12 +262,6 @@ export default defineComponent({
                               units: unlock.units,
                             }),
                         }
-                  }
-                  bonusRewardPrograms={rewardsPrograms}
-                  competitionsLookup={
-                    this.symbolCompetitionsLookup?.[
-                      item.pool.externalAmount!.symbol
-                    ]
                   }
                   pool={item.pool}
                   poolStat={item.poolStat}

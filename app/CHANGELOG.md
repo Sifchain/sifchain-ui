@@ -1,3 +1,13 @@
+## Release 2022.05.24
+
+- Enable cancelling unbonding requests
+- Re-enable UST and LUNA
+- Fix pool share & pool value display
+
+## Release 2022.05.12
+
+- Decommission UST and LUNA
+
 ## Release 2022.05.09
 
 - Add more information about price impact on Swap's confirmation step

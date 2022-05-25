@@ -16,7 +16,6 @@ function mockAsset(decimals: number) {
     decimals,
     address: "12345678",
     displaySymbol: "FOO",
-    label: "cFOO",
     name: "Foo",
     network: Network.ETHEREUM,
     homeNetwork: Network.ETHEREUM,

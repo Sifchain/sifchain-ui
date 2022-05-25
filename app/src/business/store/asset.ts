@@ -1,8 +1,8 @@
 import { reactive } from "@vue/reactivity";
-import { Asset } from "@sifchain/sdk";
+import { IAsset } from "@sifchain/sdk";
 
 export type AssetStore = {
-  topTokens: Asset[];
+  topTokens: IAsset[];
 };
 
 export const asset = reactive({
