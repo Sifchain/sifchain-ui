@@ -49,7 +49,7 @@ describe("useRemoveLiquidityCalculator", () => {
   });
 
   test("displays the correct withdrawal amounts", async () => {
-    liquidityProvider.value = LiquidityProvider(
+    liquidityProvider.value = new LiquidityProvider(
       CATK,
       Amount("100000000000000000000000"),
       "sif123456876512341234",

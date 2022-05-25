@@ -162,7 +162,7 @@ export class ClpService {
     const { liquidity_provider_units, liquidity_provider_address } =
       liquidity_provider;
 
-    return LiquidityProvider(
+    return new LiquidityProvider(
       params.asset,
       Amount(liquidity_provider_units),
       liquidity_provider_address,

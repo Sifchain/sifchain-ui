@@ -27,6 +27,26 @@
       "displaySymbol": "UST (ERC-20)",
       "symbol": "cust",
       "homeNetwork": "ethereum"
+    },
+    {
+      "symbol": "catk",
+      "displaySymbol": "ATK",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png",
+      "name": "Apple Coin",
+      "address": "0xB529f14AA8096f943177c09Ca294Ad66d2E08b1f",
+      "network": "ethereum",
+      "homeNetwork": "ethereum"
+    },
+    {
+      "symbol": "ctest",
+      "displaySymbol": "TEST",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png",
+      "name": "Test Coin",
+      "address": "0xB529f14AA8096f943177c09Ca294Ad66d2E08b1f",
+      "network": "ethereum",
+      "homeNetwork": "ethereum"
     }
   ]
 }
