@@ -924,6 +924,15 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/12660/small/iov.png?1601862353"
     },
     {
+      "symbol": "ugraviton",
+      "displaySymbol": "graviton",
+      "decimals": 6,
+      "name": "graviton",
+      "network": "sifchain",
+      "homeNetwork": "gravity",
+      "imageUrl": "https://assets.coingecko.com/coins/images/24818/small/Graviton_-_Blue_200x200i.png?1649038479"
+    },
+    {
       "symbol": "eeur",
       "displaySymbol": "eeur",
       "decimals": 6,

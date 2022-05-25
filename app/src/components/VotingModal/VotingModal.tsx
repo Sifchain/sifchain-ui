@@ -50,14 +50,10 @@ export const VotingModal = defineComponent({
         return "symbol";
       }
       return (a: TokenListItem, b: TokenListItem) => {
-        return (
-          parseFloat(
-            this.poolStatsLookup[b.asset.symbol.toLowerCase()]?.volume || "0",
-          ) -
-          parseFloat(
-            this.poolStatsLookup[a.asset.symbol.toLowerCase()]?.volume || "0",
-          )
-        );
+        const aPool = this.poolStatsLookup[a.asset.symbol.toLowerCase()];
+        const bPool = this.poolStatsLookup[b.asset.symbol.toLowerCase()];
+
+        return (bPool?.volume ?? 0) - (aPool?.volume ?? 0);
       };
     },
     proposal() {

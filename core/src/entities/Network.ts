@@ -25,4 +25,5 @@ export enum Network {
   KI = "ki",
   STARGAZE = "stargaze",
   SECRET = "secret",
+  GRAVITY = "gravity",
 }

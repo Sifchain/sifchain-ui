@@ -23,4 +23,5 @@ export * from "./StargazeChain";
 export * from "./StarnameChain";
 export * from "./SecretChain";
 export * from "./TerraChain";
+export * from "./GravityChain";
 export * from "./_BaseChain";
