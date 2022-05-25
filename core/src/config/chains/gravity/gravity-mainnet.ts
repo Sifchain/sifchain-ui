@@ -2,7 +2,7 @@ import { Network, IBCChainConfig } from "../../../entities";
 
 export const GRAVITY_MAINNET: IBCChainConfig = {
   chainType: "ibc",
-  network: Network.Gravity,
+  network: Network.GRAVITY,
   displayName: "Gravity-Bridge",
   blockExplorerUrl: "https://www.mintscan.io/gravity-bridge/",
   nativeAssetSymbol: "ugraviton",
