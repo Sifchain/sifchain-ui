@@ -115,10 +115,6 @@ export function AssetAmount(
       return _asset.symbol;
     },
 
-    get label() {
-      return _asset.label;
-    },
-
     toDerived() {
       return _amount.multiply(fromBaseUnits("1", _asset));
     },

@@ -45,7 +45,7 @@ describe("addLiquidityCalculator", () => {
   const shareOfPoolPercent: Ref<string> = ref("");
   const state: Ref<PoolState> = ref(PoolState.SELECT_TOKENS);
   const liquidityProvider = ref(
-    LiquidityProvider(ATK, ZERO, akasha.address, ZERO, ZERO),
+    new LiquidityProvider(ATK, ZERO, akasha.address, ZERO, ZERO),
   ) as Ref<LiquidityProvider | null>; // ? not sure why we need to cast
 
   beforeEach(() => {
@@ -398,7 +398,7 @@ describe("addLiquidityCalculator", () => {
           ];
           liquidityProvider.value = !preexistingLiquidity
             ? null
-            : LiquidityProvider(
+            : new LiquidityProvider(
                 ATK,
                 Amount(preexistingLiquidity.units),
                 akasha.address,
@@ -484,7 +484,7 @@ describe("addLiquidityCalculator", () => {
     );
 
     // Liquidity provider already owns 1000 pool units (1000000 from another investor)
-    liquidityProvider.value = LiquidityProvider(
+    liquidityProvider.value = new LiquidityProvider(
       ATK,
       Amount("500000000000000000000000"),
       akasha.address,
@@ -548,7 +548,7 @@ describe("addLiquidityCalculator", () => {
   });
 
   test("Can handle division by zero", () => {
-    liquidityProvider.value = LiquidityProvider(ATK, ZERO, "", ZERO, ZERO);
+    liquidityProvider.value = new LiquidityProvider(ATK, ZERO, "", ZERO, ZERO);
     tokenAAmount.value = "0";
     tokenBAmount.value = "0";
     tokenASymbol.value = "atk";

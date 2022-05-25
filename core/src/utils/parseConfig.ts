@@ -20,25 +20,10 @@ type CoinConfig = BaseAssetConfig & {};
 
 export type AssetConfig = CoinConfig | TokenConfig;
 
-/**
- * Convert asset config to label with appropriate capitalization
- */
-function parseLabel(a: AssetConfig) {
-  if (a.network === Network.SIFCHAIN) {
-    return a.symbol.indexOf("c") === 0
-      ? "c" + a.symbol.slice(1).toUpperCase()
-      : a.symbol.toUpperCase();
-  }
-
-  // network is ethereum
-  return a.symbol === "erowan" ? "eROWAN" : a.symbol.toUpperCase();
-}
-
 function parseAsset(a: AssetConfig): IAsset {
   return Asset({
     ...a,
     displaySymbol: a.displaySymbol || a.symbol,
-    label: parseLabel(a),
   });
 }
 
@@ -86,7 +71,6 @@ export type CoreConfig = {
   sifApiUrl: string;
   sifRpcUrl: string;
   sifChainId: string;
-  cryptoeconomicsUrl: string;
   blockExplorerUrl: string;
   web3Provider: "metamask" | string;
   nativeAsset: string; // symbol
@@ -133,7 +117,6 @@ export function parseConfig(
     sifApiUrl: config.sifApiUrl,
     sifRpcUrl: config.sifRpcUrl,
     sifChainId: config.sifChainId,
-    cryptoeconomicsUrl: config.cryptoeconomicsUrl,
     blockExplorerUrl: config.blockExplorerUrl,
     getWeb3Provider:
       config.web3Provider === "metamask"

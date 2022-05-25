@@ -1,7 +1,4 @@
-import { computed, Ref } from "@vue/reactivity";
-import ColorHash from "color-hash";
 import {
-  Asset,
   IAssetAmount,
   Network,
   toBaseUnits,
@@ -47,12 +44,6 @@ export function formatAssetAmount(value: IAssetAmount) {
     : format(amount, asset, { mantissa: 6 });
 }
 
-// TODO: These could be replaced with a look up table
-export function getPeggedSymbol(symbol: string) {
-  if (symbol.toLowerCase() === "erowan") return "ROWAN";
-  return "c" + symbol.toUpperCase();
-}
-
 export function getUnpeggedSymbol(symbol: string) {
   if (symbol.toLowerCase() === "rowan") return "eROWAN";
   return symbol.indexOf("c") === 0 ? symbol.slice(1) : symbol;
@@ -71,33 +62,6 @@ export function getAssetLabel(t: IAsset) {
   }
 
   return t.displaySymbol.toUpperCase();
-}
-
-export function useAssetItem(symbol: Ref<string | undefined>) {
-  const token = computed(() =>
-    symbol.value ? Asset.get(symbol.value) : undefined,
-  );
-
-  const tokenLabel = computed(() => {
-    if (!token.value) return "";
-    return getAssetLabel(token.value);
-  });
-
-  const backgroundStyle = computed(() => {
-    if (!symbol.value) return "";
-
-    const colorHash = new ColorHash();
-
-    const color = symbol ? colorHash.hex(symbol.value) : [];
-
-    return `background: ${color};`;
-  });
-
-  return {
-    token: token,
-    label: tokenLabel,
-    background: backgroundStyle,
-  };
 }
 
 export function getBlockExplorerUrl(

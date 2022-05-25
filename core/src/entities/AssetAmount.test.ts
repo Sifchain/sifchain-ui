@@ -11,7 +11,6 @@ describe("AssetAmount", () => {
     Asset({
       address: "1234568",
       decimals: 18,
-      label: "ETH",
       displaySymbol: "ETH",
       name: "Ethereum",
       network: Network.ETHEREUM,
@@ -24,7 +23,6 @@ describe("AssetAmount", () => {
   test("Asset values", () => {
     const bal = AssetAmount("eth", "12345678");
     expect(bal.symbol).toBe("eth");
-    expect(bal.label).toBe("ETH");
     expect(bal.network).toBe("ethereum");
     expect(bal.imageUrl).toBe("http://fooo");
     expect(bal.decimals).toBe(18);
