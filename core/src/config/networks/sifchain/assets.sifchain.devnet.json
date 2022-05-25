@@ -754,75 +754,83 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/12660/small/iov.png?1601862353"
     },
     {
-      "symbol": "xft",
+      "address": "0xABe580E7ee158dA464b51ee1a83Ac0289622e6be",
+      "symbol": "cxft",
       "displaySymbol": "xft",
       "decimals": 18,
       "name": "Offshift",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441",
-      "decommissioned": false
+      "label": "Offshift",
+      "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441"
     },
     {
-      "symbol": "osqth",
+      "address": "0xf1b99e3e573a1a9c5e6b2ce818b617f0e664e86b",
+      "symbol": "cosqth",
       "displaySymbol": "osqth",
       "decimals": 18,
       "name": "Opyn Squeeth",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/22806/small/DyVT5XPV_400x400.jpg?1642656239"
     },
     {
-      "symbol": "uos",
+      "address": "0xd13c7342e1ef687c5ad21b27c2b65d772cab5c8c",
+      "symbol": "cuos",
       "displaySymbol": "uos",
       "decimals": 4,
       "name": "Ultra",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/4480/small/Ultra.png?1563356418"
     },
     {
-      "symbol": "newo",
+      "address": "0x98585dFc8d9e7D48F0b1aE47ce33332CF4237D96",
+      "symbol": "cnewo",
       "displaySymbol": "newo",
       "decimals": 18,
       "name": "New Order",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/21440/small/new-order-icon-256px.png?1639125759"
     },
     {
-      "symbol": "gala",
+      "address": "0x15D4c048F83bd7e37d49eA4C83a07267Ec4203dA",
+      "symbol": "cgala",
       "displaySymbol": "gala",
       "decimals": 8,
       "name": "Gala",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png?1600233435"
     },
     {
-      "symbol": "push",
+      "address": "0xf418588522d5dd018b425E472991E52EBBeEEEEE",
+      "symbol": "cpush",
       "displaySymbol": "push",
       "decimals": 18,
       "name": "Ethereum Push Notification Service - EPNS",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/14769/small/epns_logo.jpg?1618330344"
     },
     {
-      "symbol": "mc",
+      "address": "0x949d48eca67b17269629c7194f4b727d4ef9e5d6",
+      "symbol": "cmc",
       "displaySymbol": "mc",
       "decimals": 18,
       "name": "Merit Circle",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/19304/small/Db4XqML.png?1634972154"
     },
     {
-      "symbol": "inj",
+      "address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+      "symbol": "cinj",
       "displaySymbol": "inj",
       "decimals": 18,
       "name": "Injective",
-      "network": "ethereum",
+      "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png?1628233237"
     }
