@@ -6010,7 +6010,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-schema@npm:*, @types/json-schema@npm:^7.0.7, @types/json-schema@npm:^7.0.8":
+"@types/json-schema@npm:*, @types/json-schema@npm:^7.0.7":
   version: 7.0.9
   resolution: "@types/json-schema@npm:7.0.9"
   checksum: 259d0e25f11a21ba5c708f7ea47196bd396e379fddb79c76f9f4f62c945879dc21657904914313ec2754e443c5018ea8372362f323f30e0792897fdb2098a705
@@ -6530,50 +6530,50 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/build-utils@npm:2.16.0":
-  version: 2.16.0
-  resolution: "@vercel/build-utils@npm:2.16.0"
-  checksum: eb2ebfe6820796462eb830d10c1173f26271af11e04d36efc465e9200f6432b0e2c0cb997d10c3cc5f5eac92ae957d88a72eb43784e5450b6f3e8e7bae58f245
+"@vercel/build-utils@npm:3.1.0":
+  version: 3.1.0
+  resolution: "@vercel/build-utils@npm:3.1.0"
+  checksum: 0613b1dac6680d82a94545eb9088dfb2adb7d97a01cc777fa0fc8324c960ded00075d448fcd2980f9801b2b683144de71d150816266c9e072468d7492711b4ca
   languageName: node
   linkType: hard
 
-"@vercel/go@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@vercel/go@npm:1.4.0"
-  checksum: a69afdd535297541b46ee0fd309f6205580e0015d01f29e249fce5b6481a247b1a8f827ec129e77b6470c545383ad5a8aa96ee8a93ddf47413dfa2b7979e0b38
+"@vercel/go@npm:1.4.3":
+  version: 1.4.3
+  resolution: "@vercel/go@npm:1.4.3"
+  checksum: 4fa240d8b515b617b6f9c2b9ad1200a90af9d4a9b1b7acf3255969e2bea795c7709aeee607c1ca940d2760797a231fc6a7540044b5fda6d945996a7190475399
   languageName: node
   linkType: hard
 
-"@vercel/node-bridge@npm:2.2.1":
-  version: 2.2.1
-  resolution: "@vercel/node-bridge@npm:2.2.1"
-  checksum: f7301a1d4f9405bfc5863c18379aa97e415ebd14dbedd75a4435ba41026756b879082c60d61b6d7ce36d66acb645f1733dc190a44dc16a1cc7494050ae51f606
+"@vercel/node-bridge@npm:2.2.2":
+  version: 2.2.2
+  resolution: "@vercel/node-bridge@npm:2.2.2"
+  checksum: a512cf631f82a27dee0a0addba0be13431980f97ef3e1733f0e6dd8a8e7cf55629fc520c9135a4d3859c1721db4929608fb4b6acc72a00b97560536bcc47a6df
   languageName: node
   linkType: hard
 
-"@vercel/node@npm:1.15.0":
-  version: 1.15.0
-  resolution: "@vercel/node@npm:1.15.0"
+"@vercel/node@npm:1.15.3":
+  version: 1.15.3
+  resolution: "@vercel/node@npm:1.15.3"
   dependencies:
     "@types/node": "*"
-    "@vercel/node-bridge": 2.2.1
+    "@vercel/node-bridge": 2.2.2
     ts-node: 8.9.1
     typescript: 4.3.4
-  checksum: 41cc34953e29c1c4fb3ec265a183132b6593b503224556b6c0d5c87cfdf2be6cd6a640ed36512d97bec62a52f1048c68d3c8e5f292e16c70256079d17a366157
+  checksum: 4ac5da66b48aedc724772d1a9edcfd47636e3bd88a640209ca557548adf57729e65e9d5f37a4a4fe5aa0fef575e0d08e3db4721a89dcdbce51c82e9df33ac069
   languageName: node
   linkType: hard
 
-"@vercel/python@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@vercel/python@npm:2.3.0"
-  checksum: 5821d430f205913b161e77dc3658b8fdcdeb18e6c0af5d08dbeb9d432504ef65a04097d070508def4233eb5340bd50c9a19b0e5327318129e71d5af7b09519f0
+"@vercel/python@npm:2.3.3":
+  version: 2.3.3
+  resolution: "@vercel/python@npm:2.3.3"
+  checksum: 73b031ceb312b95581177a15d79d0dda4b16eaa815db7b902d6d2838688477fb6afa79de845ab6c4aef277e0a6a4f031cfb301e6b8e0ec93a7dae42a4a0a8bf1
   languageName: node
   linkType: hard
 
-"@vercel/ruby@npm:1.3.3":
-  version: 1.3.3
-  resolution: "@vercel/ruby@npm:1.3.3"
-  checksum: efe1d31dc6ef6b859be6f8afffd189777f638a1498d158c08485f150cde0443caf40aafcf3926c2a5d04b82b17a6331c1e2a741a22300d76e9074635a8d406eb
+"@vercel/ruby@npm:1.3.6":
+  version: 1.3.6
+  resolution: "@vercel/ruby@npm:1.3.6"
+  checksum: 4b56495acdb19871dc9195faede08fdf2d54c4b753004008e82d68beb15c674641af7c0909f503171c8dab487cf71bf0bb69fe9c0a5819b4a5bdbe84be5b5001
   languageName: node
   linkType: hard
 
@@ -7319,7 +7319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv-keywords@npm:^3.1.0, ajv-keywords@npm:^3.5.2":
+"ajv-keywords@npm:^3.1.0":
   version: 3.5.2
   resolution: "ajv-keywords@npm:3.5.2"
   peerDependencies:
@@ -7328,7 +7328,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:6.12.6, ajv@npm:^6.1.0, ajv@npm:^6.10.0, ajv@npm:^6.10.2, ajv@npm:^6.12.3, ajv@npm:^6.12.4, ajv@npm:^6.12.5":
+"ajv@npm:6.12.6, ajv@npm:^6.1.0, ajv@npm:^6.10.0, ajv@npm:^6.10.2, ajv@npm:^6.12.3, ajv@npm:^6.12.4":
   version: 6.12.6
   resolution: "ajv@npm:6.12.6"
   dependencies:
@@ -10267,21 +10267,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "concurrently@npm:7.1.0"
+"concurrently@npm:^7.2.1":
+  version: 7.2.1
+  resolution: "concurrently@npm:7.2.1"
   dependencies:
     chalk: ^4.1.0
     date-fns: ^2.16.1
     lodash: ^4.17.21
     rxjs: ^6.6.3
+    shell-quote: ^1.7.3
     spawn-command: ^0.0.2-1
     supports-color: ^8.1.0
     tree-kill: ^1.2.2
-    yargs: ^16.2.0
+    yargs: ^17.3.1
   bin:
     concurrently: dist/bin/concurrently.js
-  checksum: 723996afc73af7ea914a03726c75b63be6ce83f0825b0bc54de0568ba89490e217ca88523f251fe1e5c30ee2780572dce830b530ef35e435e64c1f94cfd4e4af
+  checksum: 384e9f48f2c53a7c46b1bb1143b9dba734953c587e0c080db0c6e71dd4a58f556d096fe4fd9d2d9c601ba7ae8e6c06d452c162bbc2b6a4b16c080c1c4b8e81b4
   languageName: node
   linkType: hard
 
@@ -10702,26 +10703,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^5.2.7":
-  version: 5.2.7
-  resolution: "css-loader@npm:5.2.7"
-  dependencies:
-    icss-utils: ^5.1.0
-    loader-utils: ^2.0.0
-    postcss: ^8.2.15
-    postcss-modules-extract-imports: ^3.0.0
-    postcss-modules-local-by-default: ^4.0.0
-    postcss-modules-scope: ^3.0.0
-    postcss-modules-values: ^4.0.0
-    postcss-value-parser: ^4.1.0
-    schema-utils: ^3.0.0
-    semver: ^7.3.5
-  peerDependencies:
-    webpack: ^4.27.0 || ^5.0.0
-  checksum: fb0742b30ac0919f94b99a323bdefe6d48ae46d66c7d966aae59031350532f368f8bba5951fcd268f2e053c5e6e4655551076268e9073ccb58e453f98ae58f8e
-  languageName: node
-  linkType: hard
-
 "css-select@npm:^4.1.3, css-select@npm:^4.2.1":
   version: 4.2.1
   resolution: "css-select@npm:4.2.1"
@@ -10944,7 +10925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:2.6.9, debug@npm:^2.1.3, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.8":
+"debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.8":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
   dependencies:
@@ -15399,15 +15380,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"icss-utils@npm:^5.0.0, icss-utils@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "icss-utils@npm:5.1.0"
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: 5c324d283552b1269cfc13a503aaaa172a280f914e5b81544f3803bc6f06a3b585fb79f66f7c771a2c052db7982c18bf92d001e3b47282e3abbbb4c4cc488d68
-  languageName: node
-  linkType: hard
-
 "idna-uts46-hx@npm:^2.3.1":
   version: 2.3.1
   resolution: "idna-uts46-hx@npm:2.3.1"
@@ -17867,15 +17839,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonp@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "jsonp@npm:0.2.1"
-  dependencies:
-    debug: ^2.1.3
-  checksum: 90aabd9deb3a9ba83aedf8d40e1aaff1fc29f3f3fe42985a661782498dde526a7cd9b7bec4b8721f7d0beafab9e5ccfdafd46640f7dd6c58d529a6bb5238e2b8
-  languageName: node
-  linkType: hard
-
 "jsprim@npm:^1.2.2":
   version: 1.4.2
   resolution: "jsprim@npm:1.4.2"
@@ -18379,17 +18342,6 @@ __metadata:
     emojis-list: ^3.0.0
     json5: ^1.0.1
   checksum: d150b15e7a42ac47d935c8b484b79e44ff6ab4c75df7cc4cb9093350cf014ec0b17bdb60c5d6f91a37b8b218bd63b973e263c65944f58ca2573e402b9a27e717
-  languageName: node
-  linkType: hard
-
-"loader-utils@npm:^2.0.0":
-  version: 2.0.2
-  resolution: "loader-utils@npm:2.0.2"
-  dependencies:
-    big.js: ^5.2.2
-    emojis-list: ^3.0.0
-    json5: ^2.1.2
-  checksum: 9078d1ed47cadc57f4c6ddbdb2add324ee7da544cea41de3b7f1128e8108fcd41cd3443a85b7ee8d7d8ac439148aa221922774efe4cf87506d4fb054d5889303
   languageName: node
   linkType: hard
 
@@ -21444,50 +21396,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-modules-extract-imports@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "postcss-modules-extract-imports@npm:3.0.0"
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: 4b65f2f1382d89c4bc3c0a1bdc5942f52f3cb19c110c57bd591ffab3a5fee03fcf831604168205b0c1b631a3dce2255c70b61aaae3ef39d69cd7eb450c2552d2
-  languageName: node
-  linkType: hard
-
-"postcss-modules-local-by-default@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "postcss-modules-local-by-default@npm:4.0.0"
-  dependencies:
-    icss-utils: ^5.0.0
-    postcss-selector-parser: ^6.0.2
-    postcss-value-parser: ^4.1.0
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: 6cf570badc7bc26c265e073f3ff9596b69bb954bc6ac9c5c1b8cba2995b80834226b60e0a3cbb87d5f399dbb52e6466bba8aa1d244f6218f99d834aec431a69d
-  languageName: node
-  linkType: hard
-
-"postcss-modules-scope@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "postcss-modules-scope@npm:3.0.0"
-  dependencies:
-    postcss-selector-parser: ^6.0.4
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: 330b9398dbd44c992c92b0dc612c0626135e2cc840fee41841eb61247a6cfed95af2bd6f67ead9dd9d0bb41f5b0367129d93c6e434fa3e9c58ade391d9a5a138
-  languageName: node
-  linkType: hard
-
-"postcss-modules-values@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "postcss-modules-values@npm:4.0.0"
-  dependencies:
-    icss-utils: ^5.0.0
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: f7f2cdf14a575b60e919ad5ea52fed48da46fe80db2733318d71d523fc87db66c835814940d7d05b5746b0426e44661c707f09bdb83592c16aea06e859409db6
-  languageName: node
-  linkType: hard
-
 "postcss-nested@npm:5.0.6":
   version: 5.0.6
   resolution: "postcss-nested@npm:5.0.6"
@@ -21509,7 +21417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-selector-parser@npm:^6.0.2, postcss-selector-parser@npm:^6.0.4, postcss-selector-parser@npm:^6.0.6":
+"postcss-selector-parser@npm:^6.0.6":
   version: 6.0.9
   resolution: "postcss-selector-parser@npm:6.0.9"
   dependencies:
@@ -21519,14 +21427,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
+"postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.2.0":
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
   checksum: 819ffab0c9d51cf0acbabf8996dffbfafbafa57afc0e4c98db88b67f2094cb44488758f06e5da95d7036f19556a4a732525e84289a425f4f6fd8e412a9d7442f
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.1.10, postcss@npm:^8.2.15":
+"postcss@npm:^8.1.10":
   version: 8.4.6
   resolution: "postcss@npm:8.4.6"
   dependencies:
@@ -23488,17 +23396,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^3.0.0":
-  version: 3.1.1
-  resolution: "schema-utils@npm:3.1.1"
-  dependencies:
-    "@types/json-schema": ^7.0.8
-    ajv: ^6.12.5
-    ajv-keywords: ^3.5.2
-  checksum: fb73f3d759d43ba033c877628fe9751620a26879f6301d3dbeeb48cf2a65baec5cdf99da65d1bf3b4ff5444b2e59cbe4f81c2456b5e0d2ba7d7fd4aed5da29ce
-  languageName: node
-  linkType: hard
-
 "scrypt-async@npm:^2.0.1":
   version: 2.0.1
   resolution: "scrypt-async@npm:2.0.1"
@@ -23847,6 +23744,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shell-quote@npm:^1.7.3":
+  version: 1.7.3
+  resolution: "shell-quote@npm:1.7.3"
+  checksum: aca58e73a3a5d933d02e0bdddedc53ee14f7c2ec264f97ac915b9d4482d077a38e422aa664631d60a672cd3cdb4054eb2e6c0303f54882453dacb6483e482d34
+  languageName: node
+  linkType: hard
+
 "shelljs@npm:^0.8.5":
   version: 0.8.5
   resolution: "shelljs@npm:0.8.5"
@@ -23899,23 +23803,20 @@ __metadata:
   resolution: "sifchain-ui@workspace:."
   dependencies:
     "@types/coingecko-api": ^1.0.10
-    "@types/jsonp": ^0.2.1
     arg: ^5.0.1
     codecov: ^3.8.3
-    concurrently: ^7.1.0
-    css-loader: ^5.2.7
+    concurrently: ^7.2.1
     ganache-cli: ^6.12.2
     husky: ^7.0.4
-    jsonp: ^0.2.1
     patch-package: ^6.4.7
     prettier: ^2.6.2
     pretty-quick: ^3.1.3
     ramda: ^0.28.0
     serve: ^13.0.2
     truffle: ^5.5.12
-    turbo: ^1.2.6
+    turbo: ^1.2.12
     untildify: ^4.0.0
-    vercel: ^24.2.0
+    vercel: ^24.2.4
     wait-on: ^6.0.1
     wscat: ^5.1.0
     zx: ^6.1.0
@@ -25552,114 +25453,114 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-darwin-64@npm:1.2.6"
+"turbo-darwin-64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-darwin-64@npm:1.2.12"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-darwin-arm64@npm:1.2.6"
+"turbo-darwin-arm64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-darwin-arm64@npm:1.2.12"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-freebsd-64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-freebsd-64@npm:1.2.6"
+"turbo-freebsd-64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-freebsd-64@npm:1.2.12"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-freebsd-arm64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-freebsd-arm64@npm:1.2.6"
+"turbo-freebsd-arm64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-freebsd-arm64@npm:1.2.12"
   conditions: os=freebsd & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-32@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-linux-32@npm:1.2.6"
+"turbo-linux-32@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-linux-32@npm:1.2.12"
   conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-linux-64@npm:1.2.6"
+"turbo-linux-64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-linux-64@npm:1.2.12"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-linux-arm64@npm:1.2.6"
+"turbo-linux-arm64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-linux-arm64@npm:1.2.12"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-linux-arm@npm:1.2.6"
+"turbo-linux-arm@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-linux-arm@npm:1.2.12"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"turbo-linux-mips64le@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-linux-mips64le@npm:1.2.6"
+"turbo-linux-mips64le@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-linux-mips64le@npm:1.2.12"
   conditions: os=linux & cpu=mips64el
   languageName: node
   linkType: hard
 
-"turbo-linux-ppc64le@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-linux-ppc64le@npm:1.2.6"
+"turbo-linux-ppc64le@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-linux-ppc64le@npm:1.2.12"
   conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
 
-"turbo-windows-32@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-windows-32@npm:1.2.6"
+"turbo-windows-32@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-windows-32@npm:1.2.12"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-windows-64@npm:1.2.6"
+"turbo-windows-64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-windows-64@npm:1.2.12"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.2.6":
-  version: 1.2.6
-  resolution: "turbo-windows-arm64@npm:1.2.6"
+"turbo-windows-arm64@npm:1.2.12":
+  version: 1.2.12
+  resolution: "turbo-windows-arm64@npm:1.2.12"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^1.2.6":
-  version: 1.2.6
-  resolution: "turbo@npm:1.2.6"
+"turbo@npm:^1.2.12":
+  version: 1.2.12
+  resolution: "turbo@npm:1.2.12"
   dependencies:
-    turbo-darwin-64: 1.2.6
-    turbo-darwin-arm64: 1.2.6
-    turbo-freebsd-64: 1.2.6
-    turbo-freebsd-arm64: 1.2.6
-    turbo-linux-32: 1.2.6
-    turbo-linux-64: 1.2.6
-    turbo-linux-arm: 1.2.6
-    turbo-linux-arm64: 1.2.6
-    turbo-linux-mips64le: 1.2.6
-    turbo-linux-ppc64le: 1.2.6
-    turbo-windows-32: 1.2.6
-    turbo-windows-64: 1.2.6
-    turbo-windows-arm64: 1.2.6
+    turbo-darwin-64: 1.2.12
+    turbo-darwin-arm64: 1.2.12
+    turbo-freebsd-64: 1.2.12
+    turbo-freebsd-arm64: 1.2.12
+    turbo-linux-32: 1.2.12
+    turbo-linux-64: 1.2.12
+    turbo-linux-arm: 1.2.12
+    turbo-linux-arm64: 1.2.12
+    turbo-linux-mips64le: 1.2.12
+    turbo-linux-ppc64le: 1.2.12
+    turbo-windows-32: 1.2.12
+    turbo-windows-64: 1.2.12
+    turbo-windows-arm64: 1.2.12
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -25689,7 +25590,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 67c9311faf14b43ca76ebb9b8a4a6ba00cc92024b2b4093b1afd96154e8f3e708ccdc19d2d431360298c656ebbacc580a2c2e457cc196da6ef2ea8f46070e476
+  checksum: 75ad427d0165b96f9381e50e8a67f70230b8cef749f247aa38b4af5499168ca61a26a88629543b6478c0bbc8992523319a52917407b413fe988173f1a5e9ff80
   languageName: node
   linkType: hard
 
@@ -26484,20 +26385,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vercel@npm:^24.2.0":
-  version: 24.2.0
-  resolution: "vercel@npm:24.2.0"
+"vercel@npm:^24.2.4":
+  version: 24.2.4
+  resolution: "vercel@npm:24.2.4"
   dependencies:
-    "@vercel/build-utils": 2.16.0
-    "@vercel/go": 1.4.0
-    "@vercel/node": 1.15.0
-    "@vercel/python": 2.3.0
-    "@vercel/ruby": 1.3.3
+    "@vercel/build-utils": 3.1.0
+    "@vercel/go": 1.4.3
+    "@vercel/node": 1.15.3
+    "@vercel/python": 2.3.3
+    "@vercel/ruby": 1.3.6
     update-notifier: 4.1.0
   bin:
     vc: dist/index.js
     vercel: dist/index.js
-  checksum: 129b7e8d3643c8f602d900a8db36b423f16fd1784cfc741d906d8c3374058744546ccf7c57e825f6cfc9eebfff22582810ff630c4a6611edea1b5584da1f5c65
+  checksum: 9cb802433841f6c2256733df83fdf3b2d29e4e54d535e57f2f867483d25ef9a54cb66ee21bc07b35fd10c44e5ee8483e23fcd7c37776f1f4f67ba254717d501f
   languageName: node
   linkType: hard
 
