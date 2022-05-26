@@ -1,3 +1,7 @@
+## Release 2022.05.26
+
+- Fix ethereum assetlist configuration for tokens missing 'homeNetwork'
+
 ## Release 2022.05.24
 
 - Enable cancelling unbonding requests
