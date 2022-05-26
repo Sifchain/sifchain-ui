@@ -609,9 +609,7 @@
       "network": "sifchain",
       "displaySymbol": "UST",
       "symbol": "cust",
-      "homeNetwork": "ethereum",
-      "decommissioned": true,
-      "decommissionReason": "Temporarily disabled due to Terra instability"
+      "homeNetwork": "ethereum"
     },
     {
       "decimals": 18,

@@ -526,7 +526,8 @@
       "imageUrl": "https://etherscan.io/token/images/dogekiller_32.png",
       "name": "DOGE KILLER",
       "network": "ethereum",
-      "symbol": "LEASH"
+      "symbol": "LEASH",
+      "homeNetwork": "ethereum"
     },
     {
       "address": "",
@@ -566,8 +567,7 @@
       "name": "Offshift",
       "network": "ethereum",
       "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441",
-      "decommissioned": false
+      "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441"
     },
     {
       "address": "0xf1b99e3e573a1a9c5e6b2ce818b617f0e664e86b",
