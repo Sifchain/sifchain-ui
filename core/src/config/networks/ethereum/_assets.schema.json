@@ -36,7 +36,7 @@
         },
         "homeNetwork": {
           "type": "string",
-          "description": "[OPTIONAL] The origin network for the asset."
+          "description": "The origin network for the asset."
         },
         "symbol": {
           "type": "string",
@@ -53,6 +53,7 @@
         "imageUrl",
         "name",
         "network",
+        "homeNetwork",
         "symbol"
       ]
     }
