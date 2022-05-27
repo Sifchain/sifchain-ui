@@ -65,9 +65,10 @@ export default defineComponent({
           })}
           {...(props.onClick && { onClick: props.onClick })}
           class={[
-            `mt-[10px] flex h-[32px] w-full items-center whitespace-nowrap rounded px-[8px] text-left text-sm font-semibold transition-colors duration-75 hover:bg-gray-200`,
-            isActive.value && "text-accent-base bg-gray-200",
-            props.nonInteractable ? "pointer-events-none" : "cursor-pointer",
+            `flex w-full cursor-pointer items-center whitespace-nowrap 
+             rounded-md px-2 text-left text-sm font-semibold`,
+            isActive.value && "text-accent-base bg-white/20",
+
             props.class,
           ]}
         >
@@ -76,9 +77,10 @@ export default defineComponent({
             icon={props.icon}
             active={isActive.value}
           />
-
-          <span class="py-[8.5px] px-[10px]">{props.displayName}</span>
-          {!!props.action && props.action}
+          <label class="flex w-full items-center justify-between gap-2 p-2 px-2.5">
+            <span>{props.displayName}</span>
+            {!!props.action && props.action}
+          </label>
         </Cmp.value>
       );
     };

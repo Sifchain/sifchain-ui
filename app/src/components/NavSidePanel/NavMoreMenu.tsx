@@ -1,5 +1,5 @@
-import { flagsStore } from "@/store/modules/flags";
 import { defineComponent } from "vue";
+import AssetIcon from "../AssetIcon";
 
 export default defineComponent({
   name: "NavMoreMenu",
@@ -38,27 +38,33 @@ export default defineComponent({
         name: "Privacy Policy",
         href: "https://assets.website-files.com/60ec70152eafa8dd30cb2fb5/610027e2774f5414365608b0_Sifchain-Website-Privacy-Policy.pdf",
       },
-      {
-        name: "Rewards Calculator",
-        href: "#/calculator",
-        hidden: !flagsStore.state.rewardsCalculator,
-      },
-    ].filter((x) => !x.hidden);
+    ];
 
     return () => (
-      <div onClick={() => props.onAction?.()}>
+      <ul onClick={() => props.onAction?.()} class="w-sidebar grid gap-1">
         {items.map((item) => (
-          <a
+          <li
             key={item.name}
-            class="active:text-accent-base flex h-[23px] cursor-pointer items-center text-sm text-gray-800 no-underline hover:text-white"
-            href={item.href}
-            rel={item.href.startsWith("#") ? undefined : "noreferrer noopener"}
-            target={item.href.startsWith("#") ? undefined : "_blank"}
+            class="group rounded-md p-1.5 px-3 hover:bg-black/80"
           >
-            {item.name}
-          </a>
+            <a
+              class="active:text-accent-base flex h-[23px] cursor-pointer items-center text-sm text-gray-400 no-underline hover:text-white"
+              href={item.href}
+              rel={
+                item.href.startsWith("#") ? undefined : "noreferrer noopener"
+              }
+              target={item.href.startsWith("#") ? undefined : "_blank"}
+            >
+              {item.name}
+
+              <AssetIcon
+                icon="interactive/open-external"
+                class="absolute right-4 text-gray-500 opacity-0 transition-opacity group-hover:opacity-100"
+              />
+            </a>
+          </li>
         ))}
-      </div>
+      </ul>
     );
   },
 });

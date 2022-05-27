@@ -174,10 +174,10 @@ body {
   width: 9px;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-600 rounded-sm;
+  @apply bg-gray-600 rounded;
 }
 ::-webkit-scrollbar-track {
-  @apply rounded-sm bg-transparent;
+  @apply rounded bg-transparent;
 }
 
 @tailwind base;

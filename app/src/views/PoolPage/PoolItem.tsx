@@ -250,22 +250,22 @@ export default defineComponent({
 
   render() {
     const tableItemClass =
-      "border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
+      "border-gray-input_outline flex h-7 items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none";
 
     return (
-      <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent">
+      <div class="group w-full border-b border-solid border-white/20 border-opacity-80 py-3 align-middle text-sm last:border-none">
         <div
           onClick={() => this.toggleExpanded()}
-          class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
+          class="flex h-8 w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
             <TokenIcon assetValue={this.nativeAmount.asset} size={22} />
             <TokenNetworkIcon
               assetValue={this.externalAmount.asset}
               size={22}
-              class="ml-[4px]"
+              class="ml-1"
             />
-            <div class="ml-[10px] font-sans uppercase">
+            <div class="ml-3 font-sans uppercase">
               ROWAN / {this.externalAmount.displaySymbol.toUpperCase()}
             </div>
             {this.externalAmount.asset.decommissioned &&
@@ -274,7 +274,7 @@ export default defineComponent({
                   {this.externalAmount.asset.decommissionReason}
                 </Button.InlineHelp>
               )}
-            <div class="ml-[10px]" />
+            <div class="ml-3" />
           </div>
           <div
             class={[
@@ -337,23 +337,23 @@ export default defineComponent({
             class="bg-gray-base pointer-events-auto mt-[10px] flex w-full flex-row justify-between overflow-hidden rounded p-[12px]"
           >
             <div>
-              <div class="border-gray-input_outline align w-[442px] self-center rounded-sm border border-solid">
-                {this.details.map(([key, value], index) => (
+              <div class="border-gray-input_outline align w-[442px] self-center rounded border border-solid">
+                {this.details.map(([key, value]) => (
                   <div
-                    key={index}
-                    class="border-gray-input_outline flex h-[28px] items-center justify-between border-b border-solid px-[6px] text-sm font-medium last:border-none"
+                    key={key}
+                    class="border-gray-input_outline flex items-center justify-between border-b border-solid p-2.5 text-sm font-medium last:border-none"
                   >
                     <span>{key}</span>
                     <span>{value}</span>
                   </div>
                 ))}
               </div>
-              {this.unlock !== undefined && (
+              {this.unlock && (
                 <section>
                   <header class="mt-2 mb-0.5">
                     <p class="text-md font-bold">Unbonding request</p>
                   </header>
-                  <div class="border-gray-input_outline align w-[442px] self-center rounded-sm border border-solid">
+                  <div class="border-gray-input_outline align w-[442px] self-center rounded border border-solid">
                     <div class={tableItemClass}>
                       <span>Unbonding assets</span>
                       <span class="flex items-center">
@@ -422,8 +422,8 @@ export default defineComponent({
                 </section>
               )}
             </div>
-            <div class="p-[4px]">
-              {!this.externalAmount.asset.decommissioned && (
+            <div class="flex w-36 flex-col gap-2 p-1">
+              {!this.externalAmount.decommissioned && (
                 <Button.Inline
                   to={{
                     name: "AddLiquidity",
@@ -432,7 +432,7 @@ export default defineComponent({
                     },
                   }}
                   replace
-                  class="!text-accent-base w-[140px] !bg-black"
+                  class="!text-accent-base w-full !bg-black"
                   icon="interactive/plus"
                 >
                   Add Liquidity
@@ -449,7 +449,7 @@ export default defineComponent({
                         },
                       }}
                       replace
-                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      class="!text-accent-base w-full !bg-black"
                       icon="interactive/minus"
                     >
                       Unbond Liquidity
@@ -465,7 +465,7 @@ export default defineComponent({
                         },
                       }}
                       replace
-                      class="!text-accent-base mt-[6px] w-[140px] !bg-black"
+                      class="!text-accent-base w-full !bg-black"
                       icon="interactive/minus"
                     >
                       Remove Liquidity

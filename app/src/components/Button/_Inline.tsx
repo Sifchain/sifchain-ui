@@ -19,7 +19,7 @@ export function _Inline(
     <Cmp
       {...props}
       class={[
-        "button text-accent-base bg-gray-action_button active:bg-accent-gradient flex h-[32px] items-center rounded px-[8px] text-sm font-semibold active:text-white",
+        "button text-accent-base bg-gray-action_button active:bg-accent-gradient flex h-[32px] items-center whitespace-nowrap rounded px-[8px] text-sm font-semibold active:text-white",
         props.class,
         props.disabled &&
           "!text-gray-disabled pointer-events-none !bg-transparent",

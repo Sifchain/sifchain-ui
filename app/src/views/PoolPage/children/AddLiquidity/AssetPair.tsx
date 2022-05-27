@@ -1,4 +1,4 @@
-import { defineComponent, PropType, ComputedRef, ref } from "vue";
+import { defineComponent, PropType, ComputedRef, ref, Ref } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
 
 import { TokenIcon } from "@/components/TokenIcon";
@@ -10,8 +10,14 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       default: false,
     },
+    invert: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
     asset: {
-      type: Object as PropType<ComputedRef<IAsset | undefined>>,
+      type: Object as PropType<
+        ComputedRef<IAsset | undefined> | Ref<IAsset | undefined>
+      >,
       required: true,
     },
   },

@@ -53,7 +53,7 @@ export default defineComponent({
         >
           <div
             class={[
-              "border-accent-base mr-[6px] flex h-[16px] w-[16px] items-center justify-center rounded-sm border border-solid transition-all duration-500",
+              "border-accent-base mr-[6px] flex h-[16px] w-[16px] items-center justify-center rounded border border-solid transition-all duration-500",
             ]}
           >
             {this.isAgreed && "✓"}

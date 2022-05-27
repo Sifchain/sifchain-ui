@@ -116,11 +116,11 @@ export default function SwapPage() {
 
   return (
     <Layout>
-      <div className="mx-auto mt-8 border border-solid p-4 w-[500px]">
+      <div className="mx-auto mt-8 w-[500px] border border-solid p-4">
         <h3 className="text-xl font-bold">Swap</h3>
         <hr className="mt-4" />
-        <div className="flex flex-col items-center w-full">
-          <div className="flex w-full justify-between items-center">
+        <div className="flex w-full flex-col items-center">
+          <div className="flex w-full items-center justify-between">
             <b>From</b>
             <select
               className="bg-gray-200"
@@ -143,7 +143,7 @@ export default function SwapPage() {
               ))}
             </select>
           </div>
-          <div className="flex w-full justify-between items-center">
+          <div className="flex w-full items-center justify-between">
             <b>
               Available:{" "}
               {formatAssetAmount(
@@ -160,7 +160,7 @@ export default function SwapPage() {
             />
           </div>
           <button
-            className="bg-gray-200 p-1 cursor-pointer"
+            className="cursor-pointer bg-gray-200 p-1"
             onClick={() => {
               setFromAsset(toAsset);
               setToAsset(fromAsset);
@@ -174,7 +174,7 @@ export default function SwapPage() {
           >
             Switch
           </button>
-          <div className="flex w-full justify-between items-center">
+          <div className="flex w-full items-center justify-between">
             <b>To</b>
             <select
               className="bg-gray-200"
@@ -197,7 +197,7 @@ export default function SwapPage() {
               ))}
             </select>
           </div>
-          <div className="flex w-full justify-between items-center">
+          <div className="flex w-full items-center justify-between">
             <b>
               Available:{" "}
               {formatAssetAmount(
@@ -268,11 +268,11 @@ export default function SwapPage() {
         <button
           onClick={handleSwap}
           className={[
-            "text-lg bg-gray-200 p-1 w-full",
-            !!validationError && "bg-gray-400 cursor-not-allowed",
+            "w-full bg-gray-200 p-1 text-lg",
+            !!validationError && "cursor-not-allowed bg-gray-400",
           ]
             .filter(Boolean)
-            .join(" ")}
+            .join("")}
           disabled={!!validationError}
         >
           {validationError || "Swap!"}

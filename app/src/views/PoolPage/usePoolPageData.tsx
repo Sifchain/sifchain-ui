@@ -20,6 +20,10 @@ export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
+export type PoolDataArray = ReturnType<
+  typeof usePoolPageData
+>["allPoolsData"]["value"];
+
 export type PoolPageColumnId =
   | "token"
   | "apy"
@@ -48,6 +52,7 @@ export type PoolPageColumn = {
   help?: string | JSX.Element;
   sortable?: boolean;
 };
+
 export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",

@@ -1,28 +1,29 @@
 import { DeepReadonly } from "vue";
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
+import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
 import { flagsStore } from "@/store/modules/flags";
-import Swap from "@/views/SwapPage";
 import Balance from "@/views/BalancePage";
-import RewardsPage from "@/views/RewardsPage/RewardsPage";
-import StatsPage from "@/views/StatsPage/StatsPage";
-import Pool from "@/views/PoolPage/PoolPage";
-import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity/AddLiquidity";
-import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity/RemoveLiquidity";
-import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
-import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
-import { ApproveSwap } from "@/views/SwapPage/children/Approve";
-import LeaderboardPage from "@/views/LeaderboardPage/LeaderboardPage";
-import ImportSelect from "@/views/BalancePage/Import/Select";
-import ImportConfirm from "@/views/BalancePage/Import/Confirm";
-import ImportProcessing from "@/views/BalancePage/Import/Processing";
-import ExportSelect from "@/views/BalancePage/Export/Select";
 import ExportConfirm from "@/views/BalancePage/Export/Confirm";
 import ExportProcessing from "@/views/BalancePage/Export/Processing";
-import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
+import ExportSelect from "@/views/BalancePage/Export/Select";
 import GetRowanModal from "@/views/BalancePage/GetRowan/GetRowanModal";
-import { WalletInstallModal } from "@/components/WalletInstallModal/WalletInstallModal";
+import ImportConfirm from "@/views/BalancePage/Import/Confirm";
+import ImportProcessing from "@/views/BalancePage/Import/Processing";
+import ImportSelect from "@/views/BalancePage/Import/Select";
+import LeaderboardPage from "@/views/LeaderboardPage/LeaderboardPage";
+import Pool from "@/views/PoolPage";
+import Pool_AddLiquidity from "@/views/PoolPage/children/AddLiquidity";
+import Pool_RemoveLiquidity from "@/views/PoolPage/children/RemoveLiquidity";
 import UnbondLiquidity from "@/views/PoolPage/children/UnbondLiquidity";
+import RewardsCalculatorPage from "@/views/RewardsCalculatorPage/RewardsCalculatorPage";
+import RewardsPage from "@/views/RewardsPage/RewardsPage";
+import StatsPage from "@/views/StatsPage";
+import Swap from "@/views/SwapPage";
+import { ApproveSwap } from "@/views/SwapPage/children/Approve";
+import { ConfirmSwap } from "@/views/SwapPage/children/ConfirmSwap";
+import { SwapPageState } from "@/views/SwapPage/useSwapPageData";
+import PoolDetailtsPage from "@/views/PoolPage/children/PoolDetailsPage";
 
 type SwapPageMeta = {
   title: string;
@@ -74,11 +75,12 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
     ],
   },
   {
-    path: "/pool",
-    name: "Pool",
+    path: "/pools",
+    name: "Pools",
+    strict: true,
     component: Pool,
     meta: {
-      title: "Pool - Sifchain",
+      title: "Pools - Sifchain",
     },
     children: [
       {
@@ -115,6 +117,15 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
             },
           },
     ],
+  },
+  {
+    path: "/pools/:poolId",
+    name: "PoolDetails",
+    strict: true,
+    component: PoolDetailtsPage,
+    meta: {
+      title: "Pool Details - Sifchain",
+    },
   },
   {
     path: "/balances",

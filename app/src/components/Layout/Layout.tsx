@@ -1,9 +1,8 @@
 import { defineComponent, HtmlHTMLAttributes, PropType } from "vue";
+// import BetaWarningBanner from "@/components/BetaWarningBanner";
 
-import BetaWarningBanner from "@/components/BetaWarningBanner";
-
-import LayoutBackground from "./LayoutBackground";
 import AlertBanner from "../AlertBanner";
+import NavSidePanel from "../NavSidePanel";
 
 export default defineComponent({
   name: "Layout",
@@ -17,15 +16,17 @@ export default defineComponent({
     return () => (
       <>
         <div
-          class="left-sidebar bg-gray-background absolute top-0 right-0 bottom-0 flex justify-center overflow-y-scroll bg-black bg-opacity-40 sm:left-0"
-          onScroll={props.onScroll as HtmlHTMLAttributes["onScroll"]}
+          class="dark:bg-gray-sif900/60 flex min-h-screen w-full subpixel-antialiased dark:text-slate-100"
+          onScroll={props.onScroll}
         >
-          {context.slots.default?.()}
+          <NavSidePanel />
+          <section class="grid w-full flex-1 flex-col">
+            {context.slots.default?.()}
+          </section>
           <div id="modal-target" />
           <AlertBanner />
         </div>
-        <BetaWarningBanner />
-        <LayoutBackground />
+        {/* <BetaWarningBanner /> */}
       </>
     );
   },

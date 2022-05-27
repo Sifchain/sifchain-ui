@@ -62,7 +62,7 @@ export const TokenInputGroup = defineComponent({
           onSubmit={(e) => e.preventDefault()}
           ref={selfRef}
           class={[
-            "bg-gray-base border-gray-input_outline z-0 overflow-visible rounded-lg border-[1px] border-solid p-[20px]",
+            "bg-gray-sif900 border-gray-input_outline z-0 overflow-visible rounded-lg p-4",
             props.class,
           ]}
         >
@@ -91,7 +91,7 @@ export const TokenInputGroup = defineComponent({
             ]}
           >
             <Button.Select
-              class="flex-1"
+              class="max-w-[50%] flex-1"
               active={selectIsOpen.value}
               disabled={props.selectDisabled}
               chevronIcon={
@@ -106,8 +106,8 @@ export const TokenInputGroup = defineComponent({
               }}
             >
               <div class="flex items-center justify-between">
-                <TokenNetworkIcon size={38} asset={propRefs.asset} />
-                <div class="ml-[8px] font-sans text-lg font-medium uppercase text-white">
+                <TokenNetworkIcon size={32} asset={propRefs.asset} />
+                <div class="text-md ml-[8px] font-sans font-medium uppercase text-white md:text-lg">
                   {props.asset?.displaySymbol}
                 </div>
               </div>

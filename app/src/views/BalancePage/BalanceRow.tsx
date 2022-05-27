@@ -139,7 +139,7 @@ export default defineComponent({
           }
         }}
         class={cx(
-          "list-complete-item flex h-8 items-center border-b border-solid border-gray-200 border-opacity-80 align-middle",
+          "list-complete-item flex h-[50px] items-center border-b border-solid border-white/20 align-middle",
           "group relative overflow-hidden last:border-transparent hover:opacity-80",
           {
             "opacity-40": props.isMasked,
@@ -148,9 +148,9 @@ export default defineComponent({
       >
         {/* token info */}
         <div class="w-[200px] text-left align-middle group-hover:opacity-80">
-          <div class="flex items-center">
+          <div class="flex items-center gap-2">
             <TokenNetworkIcon asset={ref(props.tokenItem.asset)} />
-            <span class="ml-1 uppercase">
+            <span class="uppercase">
               {getAssetLabel(props.tokenItem.asset)}
             </span>
             {props.tokenItem.asset.decommissioned &&

@@ -16,7 +16,11 @@ import { Tooltip, TooltipInstance } from "@/components/Tooltip";
 const layoutBgKey = "layout_bg";
 const layoutBgDefault = "default";
 
-type LayoutCmpProps = { bg: Ref<LayoutBg>; src: Ref<string> };
+type LayoutCmpProps = {
+  bg: Ref<LayoutBg>;
+  src: Ref<string>;
+};
+
 type LayoutBg = {
   key: string;
   src: string[];
@@ -52,6 +56,7 @@ const ImageBg = defineComponent({
         loadedCache.set(props.src.value, true);
       };
     });
+
     const getStyle = (src: string) => ({
       backgroundImage: `url(${src})`,
       backgroundSize: "cover",
@@ -203,6 +208,7 @@ export default defineComponent({
     onMounted(() => {
       window.addEventListener("resize", updateWidth);
     });
+
     onUnmounted(() => {
       window.removeEventListener("resize", updateWidth);
     });
@@ -232,13 +238,13 @@ export default defineComponent({
       <>
         <div
           id="layout-bg"
-          class="fixed top-0 left-0 z-[-1] h-[100vh] w-full transition-all duration-500"
+          class="fixed top-0 left-0 z-[-1] hidden h-screen w-full transition-all duration-500 sm:block"
         >
           {!!srcRef.value && (
             <bgRef.value.Cmp key={srcRef.value} src={srcRef} bg={bgRef} />
           )}
         </div>
-        <div class="absolute bottom-4 right-4 h-[36px] w-[36px]">
+        <div class="absolute bottom-4 right-4 h-9 w-9">
           <Tooltip
             placement="top-end"
             animation="scale"
@@ -259,7 +265,7 @@ export default defineComponent({
                     key={bg.key}
                     onClick={() => (backgroundKeyRef.value = bg.key)}
                     class={[
-                      "relative h-[94px] w-1/3 w-[133px] cursor-pointer rounded-sm p-[8px] hover:bg-gray-600",
+                      "relative h-24 w-1/3 max-w-[133px] cursor-pointer rounded p-2 hover:bg-gray-600",
                     ]}
                   >
                     <bg.Cmp src={ref(bg.thumb)} bg={ref(bg)} />

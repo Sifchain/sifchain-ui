@@ -125,7 +125,6 @@ export default defineComponent({
           <PageCard
             heading="Pool"
             iconName="navigation/pool"
-            withOverflowSpace
             headerAction={
               <Button.Inline
                 to={{ name: "AddLiquidity", params: {} }}

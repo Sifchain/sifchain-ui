@@ -93,7 +93,7 @@ export const SearchBox = defineComponent({
       <div
         {...containerProps}
         class={[
-          "bg-gray-input border-gray-input_outline relative flex h-8 items-center overflow-hidden rounded border border-solid focus-within:border-white",
+          "bg-gray-input border-gray-input_outline relative flex items-center overflow-hidden rounded border border-solid py-3 focus-within:border-white",
           containerProps?.class,
           containerClass,
         ]}
@@ -112,7 +112,7 @@ export const SearchBox = defineComponent({
           {...(inputProps as Partial<InputHTMLAttributes>)}
           value={props.value}
           class={[
-            "text-md absolute top-0 bottom-0 left-0 right-0 box-border h-full w-full bg-transparent pl-8 pr-3 font-sans font-medium text-white outline-none",
+            "text-md absolute top-0 bottom-0 left-0 right-0 box-border h-full flex-1 bg-transparent pl-8 pr-3 font-sans font-medium text-white outline-none",
             props.class,
           ]}
         />

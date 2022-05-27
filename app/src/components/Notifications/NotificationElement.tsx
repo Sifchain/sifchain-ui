@@ -110,7 +110,7 @@ export const NotificationElement = defineComponent({
                 removeRef.value();
                 ev.stopPropagation();
               }}
-              class="hover:bg-gray-action_button ml-[8px] cursor-pointer rounded-sm p-[2px] text-white"
+              class="hover:bg-gray-action_button ml-[8px] cursor-pointer rounded p-0.5 text-white"
             >
               <AssetIcon
                 icon="interactive/close"
