@@ -1,5 +1,4 @@
 {
-  "$schema": "./_assets.schema.json",
   "assets": [
     {
       "symbol": "rowan",
@@ -1028,6 +1027,16 @@
       "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png?1628233237"
+    },
+    {
+      "address": "0x817bbdbc3e8a1204f3691d14bb44992841e3db35",
+      "symbol": "ccudos",
+      "displaySymbol": "cudos",
+      "decimals": 18,
+      "name": "Cudos",
+      "network": "sifchain",
+      "homeNetwork": "ethereum",
+      "imageUrl": "https://assets.coingecko.com/coins/images/13651/small/CudosIconTransparent.png?1610631426"
     }
   ]
 }
