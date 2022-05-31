@@ -71,6 +71,10 @@ export default defineComponent({
 
       const poolTVL = pool.poolStat.poolTVL;
 
+      if (!poolTVL) {
+        return defaultPrices;
+      }
+
       const externalTVL = pool.pool.externalAmount
         .toDerived()
         .multiply(pool.poolStat.priceToken ?? "0")
