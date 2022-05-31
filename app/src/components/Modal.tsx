@@ -64,8 +64,6 @@ export default defineComponent({
       }
     };
     onMounted(() => {
-      // document.body.style.setProperty("height", "100vh");
-      // document.body.style.setProperty("overflow", "hidden");
       document.body.addEventListener("keydown", onKeypress);
     });
     onUnmounted(() => {
@@ -86,7 +84,7 @@ export default defineComponent({
         >
           <div
             class={[
-              "relative flex-col items-center justify-start md:w-[538px]",
+              "relative flex-col items-center justify-start",
               "rounded-lg bg-black p-4 text-white",
               props.class,
             ]}
