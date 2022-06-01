@@ -84,7 +84,7 @@ export default defineComponent({
         >
           <div
             class={[
-              "relative flex-col items-center justify-start",
+              "relative flex-col items-center justify-start md:w-[578px]",
               "rounded-lg bg-black p-4 text-white",
               props.class,
             ]}
