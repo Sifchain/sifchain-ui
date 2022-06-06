@@ -921,15 +921,6 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/12660/small/iov.png?1601862353"
     },
     {
-      "symbol": "ugraviton",
-      "displaySymbol": "graviton",
-      "decimals": 6,
-      "name": "graviton",
-      "network": "sifchain",
-      "homeNetwork": "gravity",
-      "imageUrl": "https://assets.coingecko.com/coins/images/24818/small/Graviton_-_Blue_200x200i.png?1649038479"
-    },
-    {
       "symbol": "eeur",
       "displaySymbol": "eeur",
       "decimals": 6,
@@ -937,15 +928,6 @@
       "network": "sifchain",
       "homeNetwork": "emoney",
       "imageUrl": "https://assets.coingecko.com/coins/images/18817/small/eeur.jpg?1633508407"
-    },
-    {
-      "symbol": "aevmos",
-      "displaySymbol": "evmos",
-      "decimals": 18,
-      "name": "EVMOS",
-      "network": "sifchain",
-      "homeNetwork": "evmos",
-      "imageUrl": "https://assets.coingecko.com/coins/images/24023/small/Evmos_Token_Orange_RGB.png?1651162025"
     },
     {
       "symbol": "uscrt",
