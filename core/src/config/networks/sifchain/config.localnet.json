@@ -1,14 +1,15 @@
 {
   "sifAddrPrefix": "sif",
-  "sifChainId": "localnet",
   "sifApiUrl": "http://localhost:3000/api/sifchain-local/rest",
   "sifRpcUrl": "http://localhost:3000/api/sifchain-local/rpc",
+  "sifChainId": "localnet",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
-  "blockExplorerUrl": "https://blockexplorer.sifchain.finance",
-  "bridgebankContractAddress": "0x30753E4A8aad7F8597332E813735Def5dD395028",
+  "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
+  "bridgebankContractAddress": "0x96DC6f02C66Bbf2dfbA934b8DafE7B2c08715A73",
+  "denomTracesPath": "/ibc/apps/transfer/v1/denom_traces",
   "keplrChainConfig": {
-    "chainName": "Sifchain Local",
+    "chainName": "Sifchain Localnet",
     "chainId": "localnet",
     "rpc": "http://localhost:3000/api/sifchain-local/rpc",
     "rest": "http://localhost:3000/api/sifchain-local/rest",
@@ -28,7 +29,13 @@
       "bech32PrefixConsAddr": "sifvalcons",
       "bech32PrefixConsPub": "sifvalconspub"
     },
-    "currencies": [],
+    "currencies": [
+      {
+        "coinDenom": "ROWAN",
+        "coinMinimalDenom": "rowan",
+        "coinDecimals": 18
+      }
+    ],
     "feeCurrencies": [
       {
         "coinDenom": "ROWAN",
@@ -38,35 +45,9 @@
     ],
     "coinType": 118,
     "gasPriceStep": {
-      "low": 0.5,
-      "average": 0.65,
-      "high": 0.8
+      "low": 5000000000000,
+      "average": 6500000000000,
+      "high": 8000000000000
     }
-  },
-  "chains": [
-    {
-      "id": "sifchain",
-      "displayName": "Sifchain",
-      "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
-      "nativeAssetSymbol": "rowan"
-    },
-    {
-      "id": "ethereum",
-      "displayName": "Ethereum",
-      "blockExplorerUrl": "https://ropsten.etherscan.io",
-      "nativeAssetSymbol": "eth"
-    },
-    {
-      "id": "cosmoshub",
-      "displayName": "Cosmoshub",
-      "blockExplorerUrl": "https://mintscan.io/cosmos",
-      "nativeAssetSymbol": "uphoton"
-    },
-    {
-      "id": "iris",
-      "displayName": "Iris",
-      "blockExplorerUrl": "https://nyancat.iobscan.io/",
-      "nativeAssetSymbol": "nyan"
-    }
-  ]
+  }
 }
