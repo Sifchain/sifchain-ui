@@ -958,9 +958,9 @@
     },
     {
       "symbol": "ustars",
-      "displaySymbol": "STARS",
+      "displaySymbol": "stars",
       "decimals": 6,
-      "name": "STARS",
+      "name": "stars",
       "network": "sifchain",
       "imageUrl": "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
       "homeNetwork": "stargaze"
