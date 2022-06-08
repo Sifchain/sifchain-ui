@@ -1037,6 +1037,15 @@
       "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/13651/small/CudosIconTransparent.png?1610631426"
+    },
+    {
+      "symbol": "ustarx",
+      "displaySymbol": "starx",
+      "decimals": 6,
+      "name": "starx",
+      "network": "sifchain",
+      "imageUrl": "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+      "homeNetwork": "stargaze"
     }
   ]
 }
