@@ -948,15 +948,6 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/22806/small/DyVT5XPV_400x400.jpg?1642656239"
     },
     {
-      "symbol": "ucmdx",
-      "displaySymbol": "cmdx",
-      "decimals": 6,
-      "name": "cmdx",
-      "network": "sifchain",
-      "imageUrl": "https://assets.coingecko.com/coins/images/21540/small/_ooQky6B_400x400.jpg?1639447618",
-      "homeNetwork": "comdex"
-    },
-    {
       "symbol": "ustars",
       "displaySymbol": "stars",
       "decimals": 6,
