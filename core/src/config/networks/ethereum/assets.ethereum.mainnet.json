@@ -1,5 +1,4 @@
 {
-  "$schema": "./_assets.schema.json",
   "assets": [
     {
       "symbol": "erowan",
@@ -797,8 +796,17 @@
       "decimals": 18,
       "name": "LGCY Network",
       "network": "ethereum",
-      "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/12181/small/LGCY_network.jpg?1597926587"
+    },
+    {
+      "address": "0xf1b99e3e573a1a9c5e6b2ce818b617f0e664e86b",
+      "symbol": "osqth",
+      "displaySymbol": "osqth",
+      "decimals": 18,
+      "name": "Opyn Squeeth",
+      "network": "ethereum",
+      "homeNetwork": "ethereum",
+      "imageUrl": "https://assets.coingecko.com/coins/images/22806/small/DyVT5XPV_400x400.jpg?1642656239"
     }
   ]
 }
