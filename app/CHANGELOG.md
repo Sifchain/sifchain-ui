@@ -1,4 +1,4 @@
-## Release 2022.06.06
+## Release 2022.06.08
 
 - Add OSQTH token
 - Add COMDEX token
