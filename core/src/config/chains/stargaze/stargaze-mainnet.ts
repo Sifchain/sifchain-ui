@@ -5,7 +5,7 @@ export const STARGAZE_MAINNET: IBCChainConfig = {
   network: Network.STARGAZE,
   displayName: "Stargaze",
   blockExplorerUrl: "https://www.mintscan.io/stargaze",
-  nativeAssetSymbol: "ustarx",
+  nativeAssetSymbol: "ustars",
   chainId: "stargaze-1",
   rpcUrl: "https://proxies.sifchain.finance/api/stargaze-1/rpc",
   restUrl: "https://proxies.sifchain.finance/api/stargaze-1/rest",
@@ -19,8 +19,8 @@ export const STARGAZE_MAINNET: IBCChainConfig = {
     chainId: "stargaze-1",
     chainName: "Stargaze",
     stakeCurrency: {
-      coinDenom: "STARX",
-      coinMinimalDenom: "ustarx",
+      coinDenom: "STARS",
+      coinMinimalDenom: "ustars",
       coinDecimals: 6,
       coinGeckoId: "pool:ustarx",
     },
@@ -39,16 +39,16 @@ export const STARGAZE_MAINNET: IBCChainConfig = {
     },
     currencies: [
       {
-        coinDenom: "STARX",
-        coinMinimalDenom: "ustarx",
+        coinDenom: "STARS",
+        coinMinimalDenom: "ustars",
         coinDecimals: 6,
         coinGeckoId: "pool:ustarx",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "STARX",
-        coinMinimalDenom: "ustarx",
+        coinDenom: "STARS",
+        coinMinimalDenom: "ustars",
         coinDecimals: 6,
         coinGeckoId: "pool:ustarx",
       },

@@ -1039,10 +1039,10 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/13651/small/CudosIconTransparent.png?1610631426"
     },
     {
-      "symbol": "ustarx",
-      "displaySymbol": "starx",
+      "symbol": "ustars",
+      "displaySymbol": "STARS",
       "decimals": 6,
-      "name": "starx",
+      "name": "STARS",
       "network": "sifchain",
       "imageUrl": "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
       "homeNetwork": "stargaze"
