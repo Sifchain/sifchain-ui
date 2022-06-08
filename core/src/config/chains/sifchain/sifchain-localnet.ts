@@ -9,8 +9,9 @@ export const SIFCHAIN_LOCALNET: IBCChainConfig = {
   chainId: "localnet",
   rpcUrl: "http://localhost:3000/api/sifchain-local/rpc",
   restUrl: "http://localhost:3000/api/sifchain-local/rest",
+  denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   keplrChainInfo: {
-    chainName: "Sifchain Local",
+    chainName: "Sifchain Localnet",
     chainId: "localnet",
     rpc: "http://localhost:3000/api/sifchain-local/rpc",
     rest: "http://localhost:3000/api/sifchain-local/rest",

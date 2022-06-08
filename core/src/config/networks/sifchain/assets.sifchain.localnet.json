@@ -11,6 +11,15 @@
       "homeNetwork": "sifchain"
     },
     {
+      "decimals": 6,
+      "imageUrl": "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707",
+      "name": "Tether USDT",
+      "network": "sifchain",
+      "symbol": "cusdt",
+      "displaySymbol": "usdt",
+      "homeNetwork": "ethereum"
+    },
+    {
       "imageUrl": "https://assets.coingecko.com/coins/images/17103/small/DINO.png?1626244014",
       "name": "DinoSwap",
       "displaySymbol": "DINO",
