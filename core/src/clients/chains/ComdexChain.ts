@@ -5,6 +5,6 @@ import { BaseChain } from "./_BaseChain";
 
 export class ComdexChain extends BaseChain implements Chain {
   getBlockExplorerUrlForTxHash(hash: string) {
-    return urlJoin(this.chainConfig.blockExplorerUrl, "tx", hash);
+    return urlJoin(this.chainConfig.blockExplorerUrl, "txs", hash);
   }
 }
