@@ -955,6 +955,15 @@
       "network": "sifchain",
       "imageUrl": "https://assets.coingecko.com/coins/images/21540/small/_ooQky6B_400x400.jpg?1639447618",
       "homeNetwork": "comdex"
+    },
+    {
+      "symbol": "ustarx",
+      "displaySymbol": "starx",
+      "decimals": 6,
+      "name": "starx",
+      "network": "sifchain",
+      "imageUrl": "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+      "homeNetwork": "stargaze"
     }
   ]
 }
