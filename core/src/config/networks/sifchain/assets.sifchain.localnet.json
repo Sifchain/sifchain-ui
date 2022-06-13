@@ -11,6 +11,15 @@
       "homeNetwork": "sifchain"
     },
     {
+      "decimals": 6,
+      "imageUrl": "https://assets.coingecko.com/coins/images/325/thumb/Tether-logo.png?1598003707",
+      "name": "Tether USDT",
+      "network": "sifchain",
+      "symbol": "cusdt",
+      "displaySymbol": "usdt",
+      "homeNetwork": "ethereum"
+    },
+    {
       "imageUrl": "https://assets.coingecko.com/coins/images/17103/small/DINO.png?1626244014",
       "name": "DinoSwap",
       "displaySymbol": "DINO",
@@ -26,6 +35,26 @@
       "network": "sifchain",
       "displaySymbol": "UST (ERC-20)",
       "symbol": "cust",
+      "homeNetwork": "ethereum"
+    },
+    {
+      "symbol": "catk",
+      "displaySymbol": "ATK",
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png",
+      "name": "Apple Coin",
+      "address": "0xB529f14AA8096f943177c09Ca294Ad66d2E08b1f",
+      "network": "ethereum",
+      "homeNetwork": "ethereum"
+    },
+    {
+      "symbol": "ctest",
+      "displaySymbol": "TEST",
+      "decimals": 6,
+      "imageUrl": "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png",
+      "name": "Test Coin",
+      "address": "0xB529f14AA8096f943177c09Ca294Ad66d2E08b1f",
+      "network": "ethereum",
       "homeNetwork": "ethereum"
     }
   ]

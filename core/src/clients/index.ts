@@ -24,6 +24,7 @@ import {
   StargazeChain,
   EvmosChain,
   SecretChain,
+  GravityChain,
 } from "../clients/chains";
 
 import { Network } from "..";
@@ -54,6 +55,7 @@ export const networkChainCtorLookup = {
   [Network.STARGAZE]: StargazeChain,
   [Network.EVMOS]: EvmosChain,
   [Network.SECRET]: SecretChain,
+  [Network.GRAVITY]: GravityChain,
 };
 
 export * from "./chains";

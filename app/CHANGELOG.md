@@ -1,3 +1,8 @@
+## Release 2022.06.08
+
+- Add OSQTH token
+- Add COMDEX token
+
 ## Release 2022.05.26
 
 - Fix ethereum assetlist configuration for tokens missing 'homeNetwork'
