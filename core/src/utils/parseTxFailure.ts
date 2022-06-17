@@ -106,6 +106,24 @@ export function parseTxFailure(txFailure: {
     };
   }
 
+  if (txFailure.rawLog?.endsWith("(40)")) {
+    return {
+      code: ErrorCode.MAX_LIQUIDITY_THRESHOLD_REACHED,
+      hash: txFailure.transactionHash,
+      memo: getErrorMessage(ErrorCode.MAX_LIQUIDITY_THRESHOLD_REACHED),
+      state: "failed",
+    };
+  }
+
+  if (txFailure.rawLog?.endsWith("(41)")) {
+    return {
+      code: ErrorCode.ASSET_POOL_DOES_NOT_EXIST,
+      hash: txFailure.transactionHash,
+      memo: getErrorMessage(ErrorCode.ASSET_POOL_DOES_NOT_EXIST),
+      state: "failed",
+    };
+  }
+
   return {
     code: ErrorCode.UNKNOWN_FAILURE,
     hash: txFailure.transactionHash,

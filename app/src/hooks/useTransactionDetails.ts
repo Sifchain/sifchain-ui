@@ -1,5 +1,6 @@
 import {
   DeliverTxResponse,
+  ErrorCode,
   TransactionStatus,
   transactionStatusFromDeliverTxResponse,
 } from "@sifchain/sdk";
@@ -115,6 +116,22 @@ export function getTransactionDetails(
   const payload = {
     tx,
   };
+
+  switch (tx?.code) {
+    case ErrorCode.MAX_LIQUIDITY_THRESHOLD_REACHED:
+      return {
+        isError: true,
+        heading: "Unable to Swap",
+        description: "Reached maximum Rowan liquidity threshold",
+      };
+    case ErrorCode.ASSET_POOL_DOES_NOT_EXIST:
+      return {
+        isError: true,
+        heading: "Unable to Swap",
+        description: "Asset pool does not exist",
+      };
+  }
+
   const state = tx?.state || null;
   Object.assign(
     payload,
