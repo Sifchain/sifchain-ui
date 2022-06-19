@@ -921,15 +921,6 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/12660/small/iov.png?1601862353"
     },
     {
-      "symbol": "ugraviton",
-      "displaySymbol": "graviton",
-      "decimals": 6,
-      "name": "graviton",
-      "network": "sifchain",
-      "homeNetwork": "gravity",
-      "imageUrl": "https://assets.coingecko.com/coins/images/24818/small/Graviton_-_Blue_200x200i.png?1649038479"
-    },
-    {
       "symbol": "eeur",
       "displaySymbol": "eeur",
       "decimals": 6,
@@ -937,15 +928,6 @@
       "network": "sifchain",
       "homeNetwork": "emoney",
       "imageUrl": "https://assets.coingecko.com/coins/images/18817/small/eeur.jpg?1633508407"
-    },
-    {
-      "symbol": "aevmos",
-      "displaySymbol": "evmos",
-      "decimals": 18,
-      "name": "EVMOS",
-      "network": "sifchain",
-      "homeNetwork": "evmos",
-      "imageUrl": "https://assets.coingecko.com/coins/images/24023/small/Evmos_Token_Orange_RGB.png?1651162025"
     },
     {
       "symbol": "uscrt",
@@ -957,15 +939,6 @@
       "imageUrl": "https://assets.coingecko.com/coins/images/11871/small/Secret.png?1595520186"
     },
     {
-      "symbol": "cxft",
-      "displaySymbol": "xft",
-      "decimals": 18,
-      "name": "Offshift",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/11977/small/CsBrPiA.png?1614570441"
-    },
-    {
       "symbol": "cosqth",
       "displaySymbol": "osqth",
       "decimals": 18,
@@ -973,70 +946,6 @@
       "network": "sifchain",
       "homeNetwork": "ethereum",
       "imageUrl": "https://assets.coingecko.com/coins/images/22806/small/DyVT5XPV_400x400.jpg?1642656239"
-    },
-    {
-      "symbol": "cuos",
-      "displaySymbol": "uos",
-      "decimals": 4,
-      "name": "Ultra",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/4480/small/Ultra.png?1563356418"
-    },
-    {
-      "symbol": "cnewo",
-      "displaySymbol": "newo",
-      "decimals": 18,
-      "name": "New Order",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/21440/small/new-order-icon-256px.png?1639125759"
-    },
-    {
-      "symbol": "cgala",
-      "displaySymbol": "gala",
-      "decimals": 8,
-      "name": "Gala",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png?1600233435"
-    },
-    {
-      "symbol": "cpush",
-      "displaySymbol": "push",
-      "decimals": 18,
-      "name": "Ethereum Push Notification Service - EPNS",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/14769/small/epns_logo.jpg?1618330344"
-    },
-    {
-      "symbol": "cmc",
-      "displaySymbol": "mc",
-      "decimals": 18,
-      "name": "Merit Circle",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/19304/small/Db4XqML.png?1634972154"
-    },
-    {
-      "symbol": "cinj",
-      "displaySymbol": "inj",
-      "decimals": 18,
-      "name": "Injective",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png?1628233237"
-    },
-    {
-      "address": "0x817bbdbc3e8a1204f3691d14bb44992841e3db35",
-      "symbol": "ccudos",
-      "displaySymbol": "cudos",
-      "decimals": 18,
-      "name": "Cudos",
-      "network": "sifchain",
-      "homeNetwork": "ethereum",
-      "imageUrl": "https://assets.coingecko.com/coins/images/13651/small/CudosIconTransparent.png?1610631426"
     },
     {
       "symbol": "ustars",

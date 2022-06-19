@@ -16,7 +16,7 @@ export const COMDEX_MAINNET: IBCChainConfig = {
     rpc: "https://proxies.sifchain.finance/api/comdex-1/rpc",
     rest: "https://proxies.sifchain.finance/api/comdex-1/rest",
     chainId: "comdex-1",
-    chainName: "Comdex Testnet (Sifchain)",
+    chainName: "Comdex",
     stakeCurrency: {
       coinDenom: "CMDX",
       coinMinimalDenom: "ucmdx",
