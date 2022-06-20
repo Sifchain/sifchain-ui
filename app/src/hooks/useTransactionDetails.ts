@@ -128,7 +128,7 @@ export function getTransactionDetails(
       return {
         isError: true,
         heading: "Unable to Swap",
-        description: "Asset pool does not exist",
+        description: "Max rowan liquidity threshold asset pool does not exist",
       };
   }
 
