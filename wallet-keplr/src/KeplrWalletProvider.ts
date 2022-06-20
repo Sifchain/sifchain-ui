@@ -1,38 +1,35 @@
 import {
-  StargateClient,
-  SigningStargateClient,
   IndexedTx,
+  SigningStargateClient,
+  StargateClient,
 } from "@cosmjs/stargate";
 import { cosmos, ibc } from "@keplr-wallet/cosmos";
-import { Uint53 } from "@cosmjs/math";
 
 import { Chain, Network } from "@sifchain/sdk";
 import {
-  NativeDexTransaction,
-  NativeDexSignedTransaction,
   NativeAminoTypes,
+  NativeDexSignedTransaction,
+  NativeDexTransaction,
 } from "@sifchain/sdk/src/clients";
 import {
-  WalletProviderContext,
   CosmosWalletProvider,
+  WalletProviderContext,
 } from "@sifchain/sdk/src/clients/wallets";
 
 import { toHex } from "@cosmjs/encoding";
 import {
-  OfflineSigner,
-  OfflineDirectSigner,
-  EncodeObject,
-} from "@cosmjs/proto-signing";
-import {
+  BroadcastMode,
+  BroadcastTxResult,
   makeSignDoc,
   makeStdTx,
-  BroadcastMode,
-  isBroadcastTxSuccess,
-  isBroadcastTxFailure,
   StdTx,
 } from "@cosmjs/launchpad";
-import { BroadcastTxResult } from "@cosmjs/launchpad";
-import { parseLogs } from "@cosmjs/stargate/build/logs";
+import {
+  EncodeObject,
+  OfflineDirectSigner,
+  OfflineSigner,
+} from "@cosmjs/proto-signing";
+import { parseRawLog } from "@cosmjs/stargate/build/logs";
 
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { getKeplrProvider } from "./getKeplrProvider";
@@ -367,33 +364,18 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         "Received ill-formatted txhash. Must be non-empty upper-case hex",
       );
     }
-    const result: BroadcastTxResult = {
-      ...resultRaw,
-      logs: JSON.parse(resultRaw.rawLog),
-      height: resultRaw.height,
-      transactionHash: resultRaw.hash,
-    };
-    if (isBroadcastTxSuccess(result)) {
-      result.logs.forEach((log) => {
-        // @ts-ignore
-        log.msg_index = 0;
-        // @ts-ignore
-        log.log = "";
-      });
-    }
 
-    return isBroadcastTxFailure(result)
+    return !!resultRaw.code
       ? {
-          height: Uint53.fromString(result.height + "").toNumber(),
-          transactionHash: result.transactionHash,
-          code: result.code,
-          rawLog: result.rawLog || "",
+          height: resultRaw.height,
+          transactionHash: resultRaw.hash,
+          code: resultRaw.code,
+          rawLog: resultRaw.rawLog,
         }
       : {
-          logs: result.logs ? parseLogs(result.logs) : [],
-          rawLog: result.rawLog || "",
-          transactionHash: result.transactionHash,
-          data: result.data,
+          logs: parseRawLog(resultRaw.rawLog),
+          rawLog: resultRaw.rawLog || "",
+          transactionHash: resultRaw.hash,
         };
   }
 }
