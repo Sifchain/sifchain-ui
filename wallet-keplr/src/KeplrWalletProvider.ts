@@ -1,49 +1,56 @@
-import {
-  StargateClient,
-  SigningStargateClient,
-  IndexedTx,
-} from "@cosmjs/stargate";
-import { cosmos, ibc } from "@keplr-wallet/cosmos";
-import { Uint53 } from "@cosmjs/math";
-
-import { Chain, Network } from "@sifchain/sdk";
-import {
-  NativeDexTransaction,
-  NativeDexSignedTransaction,
-  NativeAminoTypes,
-} from "@sifchain/sdk/src/clients";
-import {
-  WalletProviderContext,
-  CosmosWalletProvider,
-} from "@sifchain/sdk/src/clients/wallets";
-
 import { toHex } from "@cosmjs/encoding";
 import {
-  OfflineSigner,
-  OfflineDirectSigner,
-  EncodeObject,
-} from "@cosmjs/proto-signing";
-import {
+  BroadcastMode,
+  BroadcastTxResult,
+  isBroadcastTxFailure,
+  isBroadcastTxSuccess,
   makeSignDoc,
   makeStdTx,
-  BroadcastMode,
-  isBroadcastTxSuccess,
-  isBroadcastTxFailure,
   StdTx,
 } from "@cosmjs/launchpad";
-import { BroadcastTxResult } from "@cosmjs/launchpad";
+import { Uint53 } from "@cosmjs/math";
+import {
+  EncodeObject,
+  OfflineDirectSigner,
+  OfflineSigner,
+} from "@cosmjs/proto-signing";
+import {
+  IndexedTx,
+  SigningStargateClient,
+  StargateClient,
+} from "@cosmjs/stargate";
 import { parseLogs } from "@cosmjs/stargate/build/logs";
-
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { getKeplrProvider } from "./getKeplrProvider";
-
+import { Keplr } from "@keplr-wallet/types";
+import { Chain, Network } from "@sifchain/sdk";
+import { WalletProviderContext } from "@sifchain/sdk/build/typescript/clients/wallets/WalletProvider";
+import {
+  NativeAminoTypes,
+  NativeDexSignedTransaction,
+  NativeDexTransaction,
+} from "@sifchain/sdk/src/clients";
+import { CosmosWalletProvider } from "@sifchain/sdk/src/clients/wallets";
+import { isMobile as checkIsMobile } from "@walletconnect/browser-utils";
+import { Buffer } from "buffer/";
+import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
+import { PubKey } from "cosmjs-types/cosmos/crypto/secp256k1/keys";
+import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
+import { AuthInfo, TxBody, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
+import { getKeplrProvider } from "./getKeplrProvider";
+import { getWalletConnect, getWCKeplr } from "./getWcKeplr";
 
+export type KeplrWalletProviderContext = WalletProviderContext & {
+  chains: Chain[];
+};
 export class KeplrWalletProvider extends CosmosWalletProvider {
-  static create(context: WalletProviderContext) {
+  wcKeplrPromise?: Promise<Keplr> = undefined;
+
+  static create(context: KeplrWalletProviderContext) {
     return new KeplrWalletProvider(context);
   }
-  constructor(public context: WalletProviderContext) {
+
+  constructor(public context: KeplrWalletProviderContext) {
     super(context);
   }
 
@@ -54,13 +61,51 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     } catch (e) {}
   }
 
+  // Temporary mobile support
+  // TODO: implement wallet switcher
+  async getKeplr() {
+    if (!(await this.shouldUseWalletConnect())) {
+      return await getKeplrProvider();
+    }
+
+    if (this.wcKeplrPromise !== undefined) {
+      return this.wcKeplrPromise;
+    }
+
+    this.wcKeplrPromise = getWCKeplr({
+      sendTx: async (chainId, tx, mode) => {
+        const chain = this.context.chains.find(
+          (x) => x.chainConfig.chainId === chainId,
+        )!;
+        const ibcConfig = this.getIBCChainConfig(chain);
+
+        const url = new URL("txs", ibcConfig.restUrl);
+        url.searchParams.append("tx", JSON.stringify(tx));
+        url.searchParams.append("mode", JSON.stringify(mode));
+
+        const result = await fetch(url.toString(), {
+          method: "post",
+        }).then((x) => x.json());
+
+        return Buffer.from(result.txhash, "hex");
+      },
+    });
+
+    return this.wcKeplrPromise;
+  }
+
   async isInstalled(chain: Chain) {
-    return (window as any).keplr != null;
+    const shouldUseWalletConnect = await this.shouldUseWalletConnect();
+    return shouldUseWalletConnect || (window as any).keplr != null;
   }
 
   async hasConnected(chain: Chain) {
+    if ((await this.shouldUseWalletConnect()) && !getWalletConnect().connected)
+      return false;
+
     const chainConfig = this.getIBCChainConfig(chain);
-    const keplr = await getKeplrProvider();
+    const keplr = await this.getKeplr();
+
     try {
       await keplr?.getKey(chainConfig.keplrChainInfo.chainId);
       return true;
@@ -84,9 +129,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     chain: Chain,
   ): Promise<OfflineSigner & OfflineDirectSigner> {
     const chainConfig = this.getIBCChainConfig(chain);
-    const keplr = await getKeplrProvider();
-    await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
-    await keplr?.enable(chainConfig.chainId);
+    const keplr = await this.enableChain(chain);
     const sendingSigner = keplr?.getOfflineSigner(chainConfig.chainId);
 
     if (!sendingSigner)
@@ -97,10 +140,10 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
   async getOfflineSignerAuto(chain: Chain) {
     const chainConfig = this.getIBCChainConfig(chain);
-    const keplr = await getKeplrProvider();
-    const sendingSigner = await keplr?.getOfflineSignerAuto(
-      chainConfig.chainId,
-    );
+    const keplr = await this.enableChain(chain);
+    const sendingSigner = (await this.shouldUseWalletConnect())
+      ? keplr?.getOfflineSignerOnlyAmino(chainConfig.chainId)
+      : await keplr?.getOfflineSignerAuto(chainConfig.chainId);
 
     if (sendingSigner === undefined)
       throw new Error(`Failed to get sendingSigner for ${chainConfig.chainId}`);
@@ -109,31 +152,23 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async tryConnectAll(...chains: Chain[]) {
-    const keplr = await getKeplrProvider();
+    const keplr = await this.getKeplr();
     const chainIds = chains
       .filter((c) => c.chainConfig.chainType === "ibc")
       .map((c) => c.chainConfig.chainId);
 
-    // @ts-ignore
     return keplr?.enable(chainIds);
   }
+
   async connect(chain: Chain) {
-    // try to get the address quietly
-    const keplr = await getKeplrProvider();
-    const chainConfig = this.getIBCChainConfig(chain);
-    await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
+    const keplr = await this.enableChain(chain);
     const key = await keplr?.getKey(chain.chainConfig.chainId);
-    let address = key?.bech32Address;
-    // if quiet get fails, try to enable the wallet
+
+    const address = key?.bech32Address;
+
     if (!address) {
       const sendingSigner = await this.getSendingSigner(chain);
-      address = (await sendingSigner.getAccounts())[0]?.address;
-    }
-    // if enabling & quiet get fails, throw.
-    // if quiet get fails, try to enable the wallet
-    if (!address) {
-      const sendingSigner = await this.getSendingSigner(chain);
-      address = (await sendingSigner.getAccounts())[0]?.address;
+      return (await sendingSigner.getAccounts())[0]?.address;
     }
 
     if (!address) {
@@ -143,8 +178,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     }
 
     return address;
-    // console.log("txhash!", txhash);
-    // f
   }
 
   /*
@@ -166,30 +199,32 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const converter = new NativeAminoTypes();
 
-    const keplr = (await getKeplrProvider())!;
+    const keplr = (await this.getKeplr())!;
     const key = await keplr?.getKey(chainConfig.chainId);
     const bech32Address = key!.bech32Address;
 
-    const aminoMsgs = tx.msgs.map(converter.toAmino.bind(converter));
+    const aminoMsgs = tx.msgs.map((x) => converter.toAmino(x));
     const aminoMsg = aminoMsgs[0];
 
     const protoMsg = {
-      type_url: "/ibc.applications.transfer.v1.MsgTransfer",
-      value: ibc.applications.transfer.v1.MsgTransfer.encode({
-        sourcePort: aminoMsg.value.source_port,
-        sourceChannel: aminoMsg.value.source_channel,
-        token: aminoMsg.value.token,
-        sender: aminoMsg.value.sender,
-        receiver: aminoMsg.value.receiver,
-        timeoutHeight: {
-          revisionNumber: Long.fromString(
-            aminoMsg.value.timeout_height.revision_number,
-          ),
-          revisionHeight: Long.fromString(
-            aminoMsg.value.timeout_height.revision_height,
-          ),
-        },
-      }).finish(),
+      typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+      value: MsgTransfer.encode(
+        MsgTransfer.fromPartial({
+          sourcePort: aminoMsg.value.source_port,
+          sourceChannel: aminoMsg.value.source_channel,
+          token: aminoMsg.value.token,
+          sender: aminoMsg.value.sender,
+          receiver: aminoMsg.value.receiver,
+          timeoutHeight: {
+            revisionNumber: Long.fromString(
+              aminoMsg.value.timeout_height.revision_number,
+            ),
+            revisionHeight: Long.fromString(
+              aminoMsg.value.timeout_height.revision_height,
+            ),
+          },
+        }),
+      ).finish(),
     };
 
     if (
@@ -222,37 +257,40 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       signDoc,
     );
 
-    const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-      bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-        messages: [protoMsg],
-        memo: signResponse.signed.memo,
-      }).finish(),
-      authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
-        signerInfos: [
-          {
-            publicKey: {
-              type_url: "/cosmos.crypto.secp256k1.PubKey",
-              value: cosmos.crypto.secp256k1.PubKey.encode({
-                key: Buffer.from(
-                  signResponse.signature.pub_key.value,
-                  "base64",
-                ),
-              }).finish(),
-            },
-            modeInfo: {
-              single: {
-                mode: cosmos.tx.signing.v1beta1.SignMode
-                  .SIGN_MODE_LEGACY_AMINO_JSON,
+    const signedTx = TxRaw.encode({
+      bodyBytes: TxBody.encode(
+        TxBody.fromPartial({
+          messages: [protoMsg],
+          memo: signResponse.signed.memo,
+        }),
+      ).finish(),
+      authInfoBytes: AuthInfo.encode(
+        AuthInfo.fromPartial({
+          signerInfos: [
+            {
+              publicKey: {
+                typeUrl: "/cosmos.crypto.secp256k1.PubKey",
+                value: PubKey.encode({
+                  key: Buffer.from(
+                    signResponse.signature.pub_key.value,
+                    "base64",
+                  ),
+                }).finish(),
               },
+              modeInfo: {
+                single: {
+                  mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+                },
+              },
+              sequence: Long.fromString(signResponse.signed.sequence),
             },
-            sequence: Long.fromString(signResponse.signed.sequence),
+          ],
+          fee: {
+            amount: signResponse.signed.fee.amount as Coin[],
+            gasLimit: Long.fromString(signResponse.signed.fee.gas),
           },
-        ],
-        fee: {
-          amount: signResponse.signed.fee.amount as cosmos.base.v1beta1.ICoin[],
-          gasLimit: Long.fromString(signResponse.signed.fee.gas),
-        },
-      }).finish(),
+        }),
+      ).finish(),
       signatures: [Buffer.from(signResponse.signature.signature, "base64")],
     }).finish();
 
@@ -276,7 +314,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const converter = new NativeAminoTypes();
 
-    const msgs = tx.msgs.map(converter.toAmino.bind(converter));
+    const msgs = tx.msgs.map((x) => converter.toAmino(x));
 
     const fee = {
       amount: [tx.fee.price],
@@ -291,7 +329,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
         `This account (${tx.fromAddress}) does not yet exist on-chain. Please send some funds to it before proceeding.`,
       );
     }
-    const keplr = await getKeplrProvider();
+    const keplr = await this.getKeplr();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const signDoc = makeSignDoc(
       msgs,
@@ -343,11 +381,11 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     }
 
     const chainConfig = this.getIBCChainConfig(chain);
-    const keplr = await getKeplrProvider();
+    const keplr = await this.getKeplr();
 
     const txHashUInt8Array = await keplr!.sendTx(
       chainConfig.chainId,
-      tx.signed as Uint8Array | StdTx,
+      tx.signed as Uint8Array,
       BroadcastMode.Sync,
     );
     const txHashHex = toHex(txHashUInt8Array).toUpperCase();
@@ -395,5 +433,26 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
           transactionHash: result.transactionHash,
           data: result.data,
         };
+  }
+
+  private async enableChain(chain: Chain) {
+    const chainConfig = this.getIBCChainConfig(chain);
+    const keplr = await this.getKeplr();
+
+    await keplr?.enable(chain.chainConfig.chainId);
+
+    try {
+      await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
+    } catch (error) {
+      console.error(error);
+    }
+
+    return keplr;
+  }
+
+  private async shouldUseWalletConnect() {
+    const windowKeplr = await getKeplrProvider();
+
+    return windowKeplr === null && checkIsMobile();
   }
 }
