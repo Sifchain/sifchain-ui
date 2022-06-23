@@ -1,3 +1,7 @@
+## Release 2022.06.22
+
+- Add matomo analytics for FE providers
+
 ## Release 2022.06.08
 
 - Add OSQTH token
