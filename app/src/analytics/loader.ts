@@ -36,7 +36,7 @@ export default async function loadAnalytics() {
 
     if (
       providerConfig &&
-      providerConfig.analytics.enabled &&
+      (providerConfig.analytics.enabled ?? true) &&
       !document.getElementById(ANALYTICS_SCRIPT_ID)
     ) {
       const scriptSrc = createMatomoScript(providerConfig.analytics);
