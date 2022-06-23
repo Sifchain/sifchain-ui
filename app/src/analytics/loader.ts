@@ -25,7 +25,6 @@ const ANALYTICS_SCRIPT_ID = "matomo-script";
 
 export default async function loadAnalytics() {
   try {
-    console.time("loadAnalytics");
     const providers: MinimumProviderConfig[] = await fetch(
       `https://registry.sifchain.network/api/providers`,
     ).then((x) => x.json());
@@ -44,9 +43,11 @@ export default async function loadAnalytics() {
       script.id = ANALYTICS_SCRIPT_ID;
       script.innerHTML = scriptSrc;
       document.head.appendChild(script);
+      return true;
     }
-    console.timeEnd("loadAnalytics");
+    return false;
   } catch (error) {
     console.warn("failed to load analytics:", error);
+    return false;
   }
 }

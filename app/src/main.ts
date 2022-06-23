@@ -40,6 +40,10 @@ app.use(VueQueryPlugin, {
 app.use(vuexStore);
 app.use(router).mount("#app");
 
-loadAnalytics().then(() => {
-  console.log("Analytics loaded");
+loadAnalytics().then((loaded) => {
+  if (loaded) {
+    console.log("Analytics loaded");
+  } else {
+    console.log("Analytics not enabled for the current domain");
+  }
 });
