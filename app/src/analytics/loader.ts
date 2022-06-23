@@ -13,6 +13,7 @@ _paq.push(['enableLinkTracking']);
 `;
 
 type MinimumProviderConfig = {
+  url: string;
   analytics: {
     siteId: string;
     baseUrl: string;
@@ -29,9 +30,9 @@ export default async function loadAnalytics() {
       `https://registry.sifchain.network/api/providers`,
     ).then((x) => x.json());
 
-    const url = window.location.origin;
+    const { origin } = window.location;
 
-    const providerConfig = providers.find((x) => x.analytics?.baseUrl === url);
+    const providerConfig = providers.find((x) => x?.url === origin);
 
     if (
       providerConfig &&
