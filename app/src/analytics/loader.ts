@@ -1,11 +1,11 @@
-const createMatomoScript = ({ siteId = "", baseUrl = "", urlSufix = "" }) => `
+const createMatomoScript = ({ siteId = "", baseUrl = "", urlSuffix = "" }) => `
 var _paq = window._paq = window._paq || [];
 /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
 _paq.push(['trackPageView']);
 _paq.push(['enableLinkTracking']);
 (function() {
   var u="${baseUrl.replace(/\/$/, "")}";
-  _paq.push(['setTrackerUrl', u+'/${urlSufix.replace(/^\//, "")}']);
+  _paq.push(['setTrackerUrl', u+'/${urlSuffix.replace(/^\//, "")}']);
   _paq.push(['setSiteId', '${siteId}']);
   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
   g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
@@ -17,7 +17,7 @@ type MinimumProviderConfig = {
   analytics: {
     siteId: string;
     baseUrl: string;
-    urlSufix: string;
+    urlSuffix: string;
     enabled?: boolean;
   };
 };
