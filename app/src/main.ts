@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { VueQueryPlugin, VueQueryPluginOptions } from "vue-query";
+import loadAnalytics from "./analytics/loader";
 import App from "./App";
 import router from "./router";
 import "./scss/index.css";
@@ -38,3 +39,11 @@ app.use(VueQueryPlugin, {
 
 app.use(vuexStore);
 app.use(router).mount("#app");
+
+loadAnalytics().then((loaded) => {
+  if (loaded) {
+    console.log("Analytics loaded");
+  } else {
+    console.log("Analytics not enabled for the current domain");
+  }
+});
