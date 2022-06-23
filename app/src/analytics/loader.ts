@@ -8,7 +8,7 @@ _paq.push(['enableLinkTracking']);
   _paq.push(['setTrackerUrl', u+'/${urlSuffix.replace(/^\//, "")}']);
   _paq.push(['setSiteId', '${siteId}']);
   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  g.async=true; g.src=u+'/matomo.js'; s.parentNode.insertBefore(g,s);
 })();
 `;
 
