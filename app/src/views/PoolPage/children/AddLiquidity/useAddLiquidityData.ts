@@ -334,7 +334,7 @@ export const useAddLiquidityData = () => {
     symmetricalPooling,
 
     requestTransactionModalClose,
-    toggleAsyncPooling: toggleSymmetricPooling,
+    toggleSymmetricPooling,
     handleBlur() {
       selectedField.value = null;
     },
