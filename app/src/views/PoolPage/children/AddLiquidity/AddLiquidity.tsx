@@ -23,6 +23,7 @@ import RiskWarning from "./RiskWarning";
 import { usePoolPageData } from "../../usePoolPageData";
 import SettingsDropdown from "./SettingsDropdown";
 import Toggle from "@/components/Toggle";
+import { flagsStore } from "@/store/modules/flags";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -256,25 +257,27 @@ export default defineComponent({
                   </div>
                 </div>
               </Tooltip>
-              <SettingsDropdown
-                items={[
-                  {
-                    label: "Toggle Asymmetric pooling",
-                    content: (
-                      <>
-                        <Toggle
-                          active={!data.symmetricalPooling.value}
-                          onChange={() => {}}
-                        />
-                        <span>Asymmetric pooling</span>
-                      </>
-                    ),
-                    onClick: () => {
-                      data.toggleSymmetricPooling();
+              {flagsStore.state.asymmetricPooling && (
+                <SettingsDropdown
+                  items={[
+                    {
+                      label: "Toggle Asymmetric pooling",
+                      content: (
+                        <>
+                          <Toggle
+                            active={!data.symmetricalPooling.value}
+                            onChange={() => {}}
+                          />
+                          <span>Asymmetric pooling</span>
+                        </>
+                      ),
+                      onClick: () => {
+                        data.toggleSymmetricPooling();
+                      },
                     },
-                  },
-                ]}
-              />
+                  ]}
+                />
+              )}
             </div>
           }
           onClose={close}
