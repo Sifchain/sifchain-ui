@@ -368,7 +368,7 @@ export function useReactivePoolCalculator(input: {
       return PoolState.ZERO_AMOUNTS_NEW_POOL;
     }
 
-    if (aAmountIsZeroOrFalsy && bAmountIsZeroOrFalsy) {
+    if (aAmountIsZeroOrFalsy || bAmountIsZeroOrFalsy) {
       return PoolState.ZERO_AMOUNTS;
     }
 

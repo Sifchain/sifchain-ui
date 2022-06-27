@@ -21,6 +21,9 @@ import { useAddLiquidityData } from "./useAddLiquidityData";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
 import { usePoolPageData } from "../../usePoolPageData";
+import SettingsDropdown from "./SettingsDropdown";
+import Toggle from "@/components/Toggle";
+import { flagsStore } from "@/store/modules/flags";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -226,33 +229,58 @@ export default defineComponent({
           icon="interactive/plus"
           showClose
           headingAction={
-            <Tooltip
-              content={
-                <>
-                  You will pool in equal amounts based on this composition
-                  ratio. Your liquidity position is more impacted by price
-                  movements of the token that makes up the larger portion of the
-                  composition.
-                </>
-              }
-            >
-              <div class="flex items-center justify-center gap-2">
-                <AssetPair hideTokenSymbol asset={data.fromAsset} />
-                <div class="grid gap-0.5">
-                  <div class="text-accent-base/80 text-sm !font-semibold">
-                    Pool composition
+            <div class="flex items-center justify-between gap-2">
+              <Tooltip
+                content={
+                  data.symmetricalPooling.value ? (
+                    <>
+                      You will pool in equal amounts based on this composition
+                      ratio. Your liquidity position is more impacted by price
+                      movements of the token that makes up the larger portion of
+                      the composition.
+                    </>
+                  ) : undefined
+                }
+              >
+                <div class="flex items-center justify-center gap-2">
+                  <AssetPair hideTokenSymbol asset={data.fromAsset} />
+                  <div class="grid gap-0.5">
+                    <div class="text-accent-base/80 text-sm !font-semibold">
+                      Pool composition
+                    </div>
+                    <span class="text-xs">
+                      {data.fromAsset.value?.displaySymbol.toUpperCase()}{" "}
+                      {poolComposition.value.externalRatio.toFixed(2)}% :{" "}
+                      {data.toAsset.value?.displaySymbol.toUpperCase()}{" "}
+                      {poolComposition.value.nativeRatio.toFixed(2)}%
+                    </span>
                   </div>
-                  <span class="text-xs">
-                    {data.fromAsset.value?.displaySymbol.toUpperCase()}{" "}
-                    {poolComposition.value.externalRatio.toFixed(2)}% :{" "}
-                    {data.toAsset.value?.displaySymbol.toUpperCase()}{" "}
-                    {poolComposition.value.nativeRatio.toFixed(2)}%
-                  </span>
                 </div>
-              </div>
-            </Tooltip>
+              </Tooltip>
+              {flagsStore.state.asymmetricPooling && (
+                <SettingsDropdown
+                  items={[
+                    {
+                      label: "Toggle Asymmetric pooling",
+                      content: (
+                        <>
+                          <Toggle
+                            active={!data.symmetricalPooling.value}
+                            onChange={() => {}}
+                          />
+                          <span>Asymmetric pooling</span>
+                        </>
+                      ),
+                      onClick: () => {
+                        data.toggleSymmetricPooling();
+                      },
+                    },
+                  ]}
+                />
+              )}
+            </div>
           }
-          onClose={() => close()}
+          onClose={close}
         >
           <div class="grid gap-4">
             <div>
