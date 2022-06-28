@@ -36,7 +36,7 @@ export default defineComponent({
         offset={[0, 0]}
         animation="scale"
         content={
-          <ul class="border-gray-input_outline translate-x-2 rounded-lg border bg-black p-2">
+          <ul class="border-gray-input_outline rounded-lg border bg-black p-2">
             {props.items.map((item) => (
               <li
                 key={item.label}
