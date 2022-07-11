@@ -160,7 +160,7 @@ const LAYOUT_BACKGROUNDS: LayoutBg[] = [
     thumb: getUrl("dark-coin-thumb"),
     Cmp: (props) => {
       return (
-        <div class="relative h-full w-full bg-black">
+        <div class="relative h-full w-full bg-[#000]">
           <img src={props.src.value} class="w-[42%]" />
         </div>
       );
