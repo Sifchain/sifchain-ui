@@ -4,6 +4,7 @@ import { provider } from "web3-core";
 import { MetamaskWalletProvider } from "@sifchain/wallet-metamask";
 import { KeplrWalletProvider } from "@sifchain/wallet-keplr";
 import { TerraStationWalletProvider } from "@sifchain/wallet-terra-station";
+import { XdefiWalletProvider } from "@sifchain/wallet-xdefi";
 
 export type WalletServiceContext = {
   sifRpcUrl: string;
@@ -17,11 +18,13 @@ export class WalletService {
   keplrProvider: KeplrWalletProvider;
   metamaskProvider: MetamaskWalletProvider;
   terraProvider: TerraStationWalletProvider;
+  xdefiProvider: XdefiWalletProvider;
 
   protected constructor(public context: WalletServiceContext) {
     this.keplrProvider = new KeplrWalletProvider(context);
     this.metamaskProvider = new MetamaskWalletProvider(context);
     this.terraProvider = new TerraStationWalletProvider(context);
+    this.xdefiProvider = new XdefiWalletProvider(context);
   }
   static create(context: WalletServiceContext) {
     return new this(context);
@@ -33,6 +36,8 @@ export class WalletService {
         return this.metamaskProvider;
       case Network.TERRA:
         return this.terraProvider;
+      case Network.SIFCHAIN:
+        return this.xdefiProvider;
       default:
         return this.keplrProvider;
     }
