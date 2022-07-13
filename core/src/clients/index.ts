@@ -61,3 +61,4 @@ export const networkChainCtorLookup = {
 export * from "./chains";
 export * from "./native";
 export * from "./sifchain";
+export * from "./wallets";
