@@ -25,12 +25,12 @@ export const LIKECOIN_MAINNET: IBCChainConfig = {
       coinType: 118,
     },
     bech32Config: {
-      bech32PrefixAccAddr: "cosmos",
-      bech32PrefixAccPub: "cosmospub",
-      bech32PrefixValAddr: "cosmosvaloper",
-      bech32PrefixValPub: "cosmosvaloperpub",
-      bech32PrefixConsAddr: "cosmosvalcons",
-      bech32PrefixConsPub: "cosmosvalconspub",
+      bech32PrefixAccAddr: "like",
+      bech32PrefixAccPub: "likepub",
+      bech32PrefixValAddr: "likevaloper",
+      bech32PrefixValPub: "likevaloperpub",
+      bech32PrefixConsAddr: "likevalcons",
+      bech32PrefixConsPub: "likevalconspub",
     },
     currencies: [
       {
@@ -50,10 +50,10 @@ export const LIKECOIN_MAINNET: IBCChainConfig = {
     ],
     coinType: 118,
     gasPriceStep: {
-      low: 0.01,
-      average: 1,
+      low: 1,
+      average: 10,
       high: 1000,
     },
-    features: ["stargate", "ibc-transfer"],
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
   },
 };
