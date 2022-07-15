@@ -51,7 +51,7 @@ export class TerraStationWalletProvider extends CosmosWalletProvider {
   private getExtensionController(chain: Chain) {
     const config = this.getIBCChainConfig(chain);
     if (!this.extensionControllerChainIdLookup[config.chainId]) {
-      const name = config.chainId.includes("bombay") ? "testnet" : "mainnet";
+      const name = config.chainId.includes("bombay") ? "testnet" : "classic";
 
       const networkInfo = {
         name,
