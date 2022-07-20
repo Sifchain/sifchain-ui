@@ -9,6 +9,7 @@ export const SIFCHAIN_TESTNET: IBCChainConfig = {
   chainId: "sifchain-testnet-1",
   rpcUrl: "https://rpc-testnet.sifchain.finance",
   restUrl: "https://api-testnet.sifchain.finance",
+  denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   keplrChainInfo: {
     chainName: "Sifchain Testnet",
     chainId: "sifchain-testnet-1",
