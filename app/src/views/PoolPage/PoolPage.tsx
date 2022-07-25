@@ -20,9 +20,6 @@ export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      allPoolsData: [] as ReturnType<
-        typeof usePoolPageData
-      >["allPoolsData"]["value"],
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
@@ -73,8 +70,8 @@ export default defineComponent({
         // First sort by name or apy
         .sort((a, b) => {
           if (this.$data.sortBy === "token") {
-            const aAsset = a.pool.externalAmount!.asset;
-            const bAsset = b.pool.externalAmount!.asset;
+            const aAsset = a.pool.externalAmount?.asset;
+            const bAsset = b.pool.externalAmount?.asset;
             return aAsset.displaySymbol.localeCompare(bAsset.displaySymbol);
           } else if (this.$data.sortBy === "rewardApr") {
             return (b.poolStat?.rewardApr ?? 0) - (a.poolStat?.rewardApr ?? 0);
