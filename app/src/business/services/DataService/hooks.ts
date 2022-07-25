@@ -16,3 +16,14 @@ export function useUserRewards(address: string) {
     dataService.getUserRewards(address),
   );
 }
+
+/**
+ * get LPPD distribution for a given account
+ * @param address {string} account address
+ * @returns
+ */
+export function useLPUserRewards(account: string) {
+  return useAsyncDataCached(`lpUserRewards-${account}`, () =>
+    dataService.getLPUserRewards(account),
+  );
+}
