@@ -1,6 +1,8 @@
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+import { computed, Ref } from "vue";
+import { useQuery } from "vue-query";
 
-import DataService, { LPUserReward, LPUserRewards } from "./DataService";
+import DataService, { LPUserReward } from "./DataService";
 
 const dataService = new DataService();
 
@@ -9,33 +11,33 @@ export function useTokenStats() {
 }
 
 export function useRewardsPrograms() {
-  return useAsyncDataCached("rewardsPrograms", dataService.getRewardsPrograms);
-}
-
-export function useUserRewards(address: string) {
-  return useAsyncDataCached(`userRewards-${address}`, () =>
-    dataService.getUserRewards(address),
-  );
+  return useQuery("rewardsPrograms", dataService.getRewardsPrograms);
 }
 
 /**
  * get LPPD distribution for a given account
  * @param account {string} account address
  */
-export function useLPUserRewards(account: string) {
-  return useAsyncDataCached(`lpUserRewards-${account}`, async () => {
-    const { received } = await dataService.getLPUserRewards(account);
+export function useLPUserRewards(account: Ref<string>) {
+  return useQuery(
+    `lpUserRewards-${account.value}`,
+    async () => {
+      const { received } = await dataService.getLPUserRewards(account.value);
 
-    if (!received) {
-      return {} as Record<string, LPUserReward>;
-    }
+      if (!received) {
+        return {} as Record<string, LPUserReward>;
+      }
 
-    return received.reduce(
-      (acc, x) => ({
-        ...acc,
-        [x.poolDenom]: x,
-      }),
-      {} as Record<string, LPUserReward>,
-    );
-  });
+      return received.reduce(
+        (acc, x) => ({
+          ...acc,
+          [x.poolDenom]: x,
+        }),
+        {} as Record<string, LPUserReward>,
+      );
+    },
+    {
+      enabled: computed(() => account.value !== ""),
+    },
+  );
 }
