@@ -257,6 +257,35 @@ export default class DataService {
         60000 * 5, // cache for 5 minute
       );
 
+      if (Output.recipient !== address) {
+        // return mock data if address is not the recipient (means the endpoint is stubbed)
+        return {
+          recipient: address,
+          received: [
+            {
+              poolDenom: "atom",
+              totalLPDistributionReceivedInRowan: Math.random() * 10000,
+              totalRewardsReceivedInRowan: Math.random() * 10000,
+            },
+            {
+              poolDenom: "usdc",
+              totalLPDistributionReceivedInRowan: Math.random() * 10000,
+              totalRewardsReceivedInRowan: Math.random() * 10000,
+            },
+            {
+              poolDenom: "juno",
+              totalLPDistributionReceivedInRowan: Math.random() * 10000,
+              totalRewardsReceivedInRowan: Math.random() * 10000,
+            },
+            {
+              poolDenom: "eth",
+              totalLPDistributionReceivedInRowan: Math.random() * 10000,
+              totalRewardsReceivedInRowan: Math.random() * 10000,
+            },
+          ],
+        };
+      }
+
       return Output;
     } catch (error) {
       return {
