@@ -1,3 +1,4 @@
+import { LPUserReward } from "@/business/services/DataService";
 import { AccountPool } from "@/business/store/pools";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
@@ -66,6 +67,10 @@ export default defineComponent({
     },
     liquidityProvider: {
       type: Object as PropType<LiquidityProviderData>,
+      required: false,
+    },
+    lppdRewards: {
+      type: Object as PropType<LPUserReward>,
       required: false,
     },
   },
@@ -179,6 +184,22 @@ export default defineComponent({
             />
           </span>,
         ],
+
+        ...(this.lppdRewards
+          ? [
+              [
+                "Your total LP distribution received (ROWAN)",
+                prettyNumber(
+                  this.lppdRewards.totalLPDistributionReceivedInRowan,
+                ),
+              ],
+              [
+                "Your total reward distribution received (ROWAN)",
+                prettyNumber(this.lppdRewards.totalRewardsReceivedInRowan),
+              ],
+            ]
+          : []),
+
         this.currentRewardPeriod !== undefined && [
           "Rewards time remaining for current period",
           <span class="font-mono">{this.currentRewardPeriod.endEta}</span>,
@@ -454,7 +475,7 @@ export default defineComponent({
                       Unbond Liquidity
                     </Button.Inline>
                   )
-                : !!this.userPoolData.myPoolShare?.value && (
+                : Boolean(this.userPoolData.myPoolShare?.value) && (
                     <Button.Inline
                       to={{
                         name: "RemoveLiquidity",

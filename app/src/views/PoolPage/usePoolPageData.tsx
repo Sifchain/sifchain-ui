@@ -1,5 +1,5 @@
 import { useQuery } from "vue-query";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 
 import { AccountPool } from "@/business/store/pools";
@@ -15,6 +15,7 @@ import {
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
+import { useLPUserRewards } from "@/business/services/DataService";
 
 export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
 
@@ -114,6 +115,8 @@ export const usePoolPageData = () => {
     services.data.getRewardsPrograms(),
   );
 
+  const lppdRewards = useLPUserRewards(accountStore.state.sifchain.address);
+
   const allPoolsData = computed(() => {
     const sifchainChain = useChains().get(Network.SIFCHAIN);
     return (statsRes.data?.value?.poolData?.pools || []).map((poolStat) => {
@@ -144,6 +147,9 @@ export const usePoolPageData = () => {
         pool: useCore().store.pools[poolKey],
         accountPool,
         liquidityProvider,
+        lppdRewards: lppdRewards.data?.value
+          ? lppdRewards.data.value[poolStat.symbol]
+          : undefined,
       };
       return item;
     });

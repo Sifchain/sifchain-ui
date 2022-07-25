@@ -265,6 +265,13 @@ export default defineComponent({
                   poolStat={item.poolStat}
                   accountPool={item.accountPool}
                   key={item.pool.symbol()}
+                  lppdRewards={
+                    item.lppdRewards ?? {
+                      poolDenom: item.poolStat.symbol,
+                      totalLPDistributionReceivedInRowan: 1000,
+                      totalRewardsReceivedInRowan: 1000,
+                    }
+                  }
                 />
               );
             })}
