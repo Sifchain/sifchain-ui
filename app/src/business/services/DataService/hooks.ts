@@ -1,5 +1,6 @@
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
-import DataService from "./DataService";
+
+import DataService, { LPUserReward, LPUserRewards } from "./DataService";
 
 const dataService = new DataService();
 
@@ -19,11 +20,22 @@ export function useUserRewards(address: string) {
 
 /**
  * get LPPD distribution for a given account
- * @param address {string} account address
- * @returns
+ * @param account {string} account address
  */
 export function useLPUserRewards(account: string) {
-  return useAsyncDataCached(`lpUserRewards-${account}`, () =>
-    dataService.getLPUserRewards(account),
-  );
+  return useAsyncDataCached(`lpUserRewards-${account}`, async () => {
+    const { received } = await dataService.getLPUserRewards(account);
+
+    if (!received) {
+      return {} as Record<string, LPUserReward>;
+    }
+
+    return received.reduce(
+      (acc, x) => ({
+        ...acc,
+        [x.poolDenom]: x,
+      }),
+      {} as Record<string, LPUserReward>,
+    );
+  });
 }

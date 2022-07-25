@@ -59,13 +59,15 @@ export type UserRewards = {
   totalPending: number;
 };
 
+export type LPUserReward = {
+  poolDenom: string;
+  totalLPDistributionReceivedInRowan: number;
+  totalRewardsReceivedInRowan: number;
+};
+
 export type LPUserRewards = {
   recipient: string;
-  received: {
-    poolDenom: string;
-    totalLPDistributionReceivedInRowan: number;
-    totalRewardsReceivedInRowan: number;
-  }[];
+  received: LPUserReward[];
 };
 
 export type LPUserRewardsResponse = {
