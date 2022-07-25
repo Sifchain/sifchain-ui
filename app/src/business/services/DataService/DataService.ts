@@ -59,15 +59,18 @@ export type UserRewards = {
   totalPending: number;
 };
 
-type ProgramConfigMap = Record<
-  string,
-  {
-    displayName: string;
-    description: string;
-    documentationURL: string;
-    summaryAPY: number;
-  }
->;
+export type LPUserRewards = {
+  recipient: string;
+  received: {
+    poolDenom: string;
+    totalLPDistributionReceivedInRowan: number;
+    totalRewardsReceivedInRowan: number;
+  }[];
+};
+
+export type LPUserRewardsResponse = {
+  Output: LPUserRewards;
+};
 
 const MINUTE = 60;
 const HOUR = MINUTE * 60;
@@ -238,6 +241,26 @@ export default class DataService {
         totalDispensed: 0,
         totalPending: 0,
       };
+    }
+  }
+
+  async getLPUserRewards(address: string): Promise<LPUserRewards> {
+    try {
+      const { Output } = await cached(
+        ["lpUserRewards", address],
+        () =>
+          fetchJSON<LPUserRewardsResponse>(
+            `${this.baseUrl}/beta/network/lppdreward/${address}`,
+          ),
+        60000 * 5, // cache for 5 minute
+      );
+
+      return Output;
+    } catch (error) {
+      return {
+        recipient: address,
+        received: [],
+      } as LPUserRewards;
     }
   }
 }
