@@ -92,7 +92,7 @@ export default defineComponent({
         <PageCard
           heading={<div class="flex items-center">Balances</div>}
           headerAction={
-            <div class="flex items-center gap-2">
+            <div class="flex-end flex items-center gap-2">
               <Tooltip
                 content={
                   <>
