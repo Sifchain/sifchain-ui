@@ -1,38 +1,3 @@
-import * as TokenRegistryV1Query from "../../generated/proto/sifnode/tokenregistry/v1/query";
-import * as TokenRegistryV1Tx from "../../generated/proto/sifnode/tokenregistry/v1/tx";
-import * as CLPV1Query from "../../generated/proto/sifnode/clp/v1/querier";
-import * as CLPV1Tx from "../../generated/proto/sifnode/clp/v1/tx";
-import * as DispensationV1Query from "../../generated/proto/sifnode/dispensation/v1/query";
-import * as DispensationV1Tx from "../../generated/proto/sifnode/dispensation/v1/tx";
-import * as EthbridgeV1Query from "../../generated/proto/sifnode/ethbridge/v1/query";
-import * as EthbridgeV1Tx from "../../generated/proto/sifnode/ethbridge/v1/tx";
-import * as IBCTransferV1Tx from "cosmjs-types/ibc/applications/transfer/v1/tx";
-import * as CosmosBankV1Tx from "cosmjs-types/cosmos/bank/v1beta1/tx";
-import * as CosmosStakingV1Tx from "cosmjs-types/cosmos/staking/v1beta1/tx";
-import * as CosmosStakingV1Query from "cosmjs-types/cosmos/staking/v1beta1/query";
-import * as CosmosDistributionV1Tx from "cosmjs-types/cosmos/distribution/v1beta1/tx";
-import * as CosmosDistributionV1Query from "cosmjs-types/cosmos/distribution/v1beta1/query";
-
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { Registry } from "@cosmjs/proto-signing/build/registry";
-import {
-  GeneratedType,
-  isTsProtoGeneratedType,
-  OfflineSigner as OfflineStargateSigner,
-} from "@cosmjs/proto-signing";
-import {
-  createProtobufRpcClient,
-  defaultRegistryTypes,
-  QueryClient,
-  setupAuthExtension,
-  setupBankExtension,
-  setupIbcExtension,
-  SigningStargateClient,
-} from "@cosmjs/stargate";
-import {
-  NativeDexTransaction,
-  NativeDexTransactionFee,
-} from "./NativeDexTransaction";
 import {
   BroadcastTxResult,
   buildFeeTable,
@@ -40,8 +5,45 @@ import {
   isBroadcastTxFailure,
   OfflineSigner as OfflineLaunchpadSigner,
 } from "@cosmjs/launchpad";
+import {
+  GeneratedType,
+  isTsProtoGeneratedType,
+  OfflineSigner as OfflineStargateSigner,
+} from "@cosmjs/proto-signing";
+import { Registry } from "@cosmjs/proto-signing/build/registry";
+import {
+  createProtobufRpcClient,
+  defaultRegistryTypes,
+  DeliverTxResponse,
+  isDeliverTxFailure,
+  QueryClient,
+  setupAuthExtension,
+  setupBankExtension,
+  setupIbcExtension,
+  SigningStargateClient,
+} from "@cosmjs/stargate";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import * as CosmosBankV1Tx from "cosmjs-types/cosmos/bank/v1beta1/tx";
+import * as CosmosDistributionV1Query from "cosmjs-types/cosmos/distribution/v1beta1/query";
+import * as CosmosDistributionV1Tx from "cosmjs-types/cosmos/distribution/v1beta1/tx";
+import * as CosmosStakingV1Query from "cosmjs-types/cosmos/staking/v1beta1/query";
+import * as CosmosStakingV1Tx from "cosmjs-types/cosmos/staking/v1beta1/tx";
+import * as IBCTransferV1Tx from "cosmjs-types/ibc/applications/transfer/v1/tx";
+
+import { Chain, IBCChainConfig, TransactionStatus } from "../../";
+import * as CLPV1Query from "../../generated/proto/sifnode/clp/v1/querier";
+import * as CLPV1Tx from "../../generated/proto/sifnode/clp/v1/tx";
+import * as DispensationV1Query from "../../generated/proto/sifnode/dispensation/v1/query";
+import * as DispensationV1Tx from "../../generated/proto/sifnode/dispensation/v1/tx";
+import * as EthbridgeV1Query from "../../generated/proto/sifnode/ethbridge/v1/query";
+import * as EthbridgeV1Tx from "../../generated/proto/sifnode/ethbridge/v1/tx";
+import * as TokenRegistryV1Query from "../../generated/proto/sifnode/tokenregistry/v1/query";
+import * as TokenRegistryV1Tx from "../../generated/proto/sifnode/tokenregistry/v1/tx";
 import { parseTxFailure } from "../../utils/parseTxFailure";
-import { TransactionStatus, Chain, IBCChainConfig } from "../../";
+import {
+  NativeDexTransaction,
+  NativeDexTransactionFee,
+} from "./NativeDexTransaction";
 
 type OfflineSigner = OfflineLaunchpadSigner | OfflineStargateSigner;
 
@@ -123,10 +125,15 @@ export class NativeDexClient {
    * @return {*}  {TransactionStatus}
    * @memberof NativeDexClient
    */
-  static parseTxResult(result: BroadcastTxResult): TransactionStatus {
+  static parseTxResult(
+    result: BroadcastTxResult | DeliverTxResponse,
+  ): TransactionStatus {
     try {
-      if (isBroadcastTxFailure(result)) {
-        /* istanbul ignore next */ // TODO: fix coverage
+      if (
+        isDeliverTxFailure(result as DeliverTxResponse) ||
+        isBroadcastTxFailure(result as BroadcastTxResult)
+      ) {
+        //
         return parseTxFailure(result);
       }
       return {
