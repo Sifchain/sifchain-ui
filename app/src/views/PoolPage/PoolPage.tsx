@@ -3,6 +3,7 @@ import { Button } from "@/components/Button/Button";
 import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
+import Toggle from "@/components/Toggle";
 import {
   useCancelLiquidityUnlockMutation,
   useRemoveLiquidityMutation,
@@ -16,6 +17,8 @@ import { RouterView } from "vue-router";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
 
+const SMALL_POOL_CAP = 10_000;
+
 export default defineComponent({
   name: "PoolsPage",
   data() {
@@ -26,6 +29,7 @@ export default defineComponent({
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
+      showSmallPools: false,
     };
   },
   setup() {
@@ -51,6 +55,9 @@ export default defineComponent({
       if (this.isLoading) return [];
 
       const result = this.allPoolsData
+        .filter((item) =>
+          this.showSmallPools ? true : item.poolStat.poolTVL >= SMALL_POOL_CAP,
+        )
         .filter((item) => {
           const asset = item.pool.externalAmount?.asset;
           if (!asset) return;
@@ -127,15 +134,32 @@ export default defineComponent({
             iconName="navigation/pool"
             withOverflowSpace
             headerAction={
-              <Button.Inline
-                to={{ name: "AddLiquidity", params: {} }}
-                active
-                replace
-                class={["text-md !h-[40px] px-[17px]"]}
-                icon="interactive/plus"
-              >
-                <div class="font-semibold">Add Liquidity</div>
-              </Button.Inline>
+              <div class="flex flex-col gap-2">
+                <Button.Inline
+                  to={{ name: "AddLiquidity", params: {} }}
+                  active
+                  replace
+                  class={["text-md !h-[40px] px-[17px]"]}
+                  icon="interactive/plus"
+                >
+                  <div class="font-semibold">Add Liquidity</div>
+                </Button.Inline>
+                <Toggle
+                  class="flex-row-reverse"
+                  label={`Show pools less than ${SMALL_POOL_CAP.toLocaleString(
+                    undefined,
+                    {
+                      style: "currency",
+                      currency: "USD",
+                      maximumFractionDigits: 0,
+                    },
+                  )}`}
+                  active={this.showSmallPools}
+                  onChange={(active) => {
+                    this.showSmallPools = active;
+                  }}
+                />
+              </div>
             }
             headerContent={
               <>
