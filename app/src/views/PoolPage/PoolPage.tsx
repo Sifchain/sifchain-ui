@@ -137,16 +137,7 @@ export default defineComponent({
             iconName="navigation/pool"
             withOverflowSpace
             headerAction={
-              <div class="flex flex-col gap-2">
-                <Button.Inline
-                  to={{ name: "AddLiquidity", params: {} }}
-                  active
-                  replace
-                  class={["text-md !h-[40px] px-[17px]"]}
-                  icon="interactive/plus"
-                >
-                  <div class="font-semibold">Add Liquidity</div>
-                </Button.Inline>
+              <div class="flex-end flex items-center gap-2">
                 <Toggle
                   class="flex-row-reverse"
                   label={`Show pools less than ${SMALL_POOL_CAP.toLocaleString(
@@ -162,6 +153,15 @@ export default defineComponent({
                     this.showSmallPools = active;
                   }}
                 />
+                <Button.Inline
+                  to={{ name: "AddLiquidity", params: {} }}
+                  active
+                  replace
+                  class={["text-md !h-[40px] px-[17px]"]}
+                  icon="interactive/plus"
+                >
+                  <div class="font-semibold">Add Liquidity</div>
+                </Button.Inline>
               </div>
             }
             headerContent={
