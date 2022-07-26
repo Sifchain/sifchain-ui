@@ -1,28 +1,31 @@
-import { ref, watch, watchEffect } from "vue";
-import { computed } from "@vue/reactivity";
-import { useCore } from "@/hooks/useCore";
 import {
-  IAsset,
-  Network,
-  TransactionStatus,
-  toBaseUnits,
-  format,
-  NativeDexClient,
   Amount,
+  DEFAULT_FEE,
+  format,
+  IAsset,
+  NativeDexClient,
+  Network,
+  SifchainEncodeObject,
+  toBaseUnits,
+  TransactionStatus,
 } from "@sifchain/sdk";
-import { useWalletButton } from "@/hooks/useWalletButton";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
+import { computed, ref, watch, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useBoundRoute } from "@/hooks/useBoundRoute";
-import { accountStore } from "@/store/modules/accounts";
-import { useChains, useNativeChain } from "@/hooks/useChains";
-import { formatAssetAmount } from "@/components/utils";
+
 import { ServiceContext } from "@/business";
 import {
   SwapState,
   useSwapCalculator,
 } from "@/business/calculators/swapCalculatorPMTP";
+import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
+import { formatAssetAmount } from "@/components/utils";
+import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { useChains, useNativeChain } from "@/hooks/useChains";
+import { useCore } from "@/hooks/useCore";
+import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
+import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
+import { useWalletButton } from "@/hooks/useWalletButton";
+import { accountStore } from "@/store/modules/accounts";
 import { getMaxAmount } from "../utils/getMaxAmount";
 
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";
@@ -224,20 +227,28 @@ export const useSwapPageData = () => {
       };
 
       try {
-        const tx = await useCore().services.liquidity.swap.prepareSwapTx({
+        const sifchainClients = useSifchainClients();
+        const { liquidity } = useCore().services;
+
+        const tx = await liquidity.swap.prepareSwapTx({
           address: accountStore.state.sifchain.address,
           fromAmount: fromFieldAmount,
           toAsset: toFieldAmount.asset,
           minimumReceived: minimumReceived.value,
         });
-        const signed = await useCore().services.wallet.keplrProvider.sign(
-          useNativeChain(),
-          tx,
+
+        const stargateClient = await sifchainClients.getOrInitSigningClient();
+
+        const res = await stargateClient.signAndBroadcast(
+          tx.fromAddress,
+          tx.msgs as SifchainEncodeObject[],
+          DEFAULT_FEE,
         );
-        const res = await useCore().services.wallet.keplrProvider.broadcast(
-          useNativeChain(),
-          signed,
-        );
+
+        console.log({
+          swapResult: res,
+        });
+
         txStatus.value = NativeDexClient.parseTxResult(res);
       } catch (error) {
         const errorMessage =
@@ -324,6 +335,8 @@ export const useSwapPageData = () => {
         );
       case SwapState.INVALID_SLIPPAGE:
         return swapValidityMessage(false, "Invalid slippage");
+      default:
+        return swapValidityMessage(false, "Unknown");
     }
   });
 
@@ -375,7 +388,7 @@ export const useSwapPageData = () => {
     },
     handleNextStepClicked,
     handleBlur() {
-      if (isFromMaxActive) return;
+      if (isFromMaxActive.value) return;
       selectedField.value = null;
     },
     slippage,
