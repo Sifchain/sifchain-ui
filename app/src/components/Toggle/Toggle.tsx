@@ -3,6 +3,10 @@ import { defineComponent, PropType, TransitionGroup } from "vue";
 export default defineComponent({
   name: "Toggle",
   props: {
+    class: {
+      type: String,
+      required: false,
+    },
     active: {
       type: Boolean,
       required: true,
@@ -46,7 +50,12 @@ export default defineComponent({
     );
     return () =>
       props.label ? (
-        <label class="flex cursor-pointer items-center justify-start gap-1">
+        <label
+          class={[
+            "flex cursor-pointer items-center justify-start gap-1",
+            props.class,
+          ]}
+        >
           {inner}
           <span class="font-medium">{props.label}</span>
         </label>
