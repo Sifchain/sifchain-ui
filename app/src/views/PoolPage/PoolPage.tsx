@@ -56,7 +56,10 @@ export default defineComponent({
 
       const result = this.allPoolsData
         .filter((item) =>
-          this.showSmallPools ? true : item.poolStat.poolTVL >= SMALL_POOL_CAP,
+          this.showSmallPools
+            ? true
+            : item.accountPool?.lp.units.greaterThan(0) ||
+              item.poolStat.poolTVL >= SMALL_POOL_CAP,
         )
         .filter((item) => {
           const asset = item.pool.externalAmount?.asset;
