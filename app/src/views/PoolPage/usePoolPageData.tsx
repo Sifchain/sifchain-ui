@@ -143,14 +143,14 @@ export const usePoolPageData = () => {
           return tokenRegistryEntry?.baseDenom === poolStat.symbol;
         });
 
+      const pool = useCore().store.pools[poolKey];
       const item = {
         poolStat,
-        pool: useCore().store.pools[poolKey],
+        pool,
         accountPool,
         liquidityProvider,
         lppdRewards: lppdRewards?.value
-          ? lppdRewards.value[poolStat.symbol] ??
-            lppdRewards.value[poolStat.symbol.slice(1)]
+          ? lppdRewards.value[pool.externalAmount.displaySymbol]
           : undefined,
       };
       return item;
