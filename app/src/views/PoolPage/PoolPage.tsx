@@ -1,3 +1,8 @@
+import BigNumber from "bignumber.js";
+import { formatDistance } from "date-fns";
+import { computed, defineComponent } from "vue";
+import { RouterView } from "vue-router";
+
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import Layout from "@/components/Layout";
@@ -10,10 +15,6 @@ import {
 } from "@/domains/clp/mutation/liquidity";
 import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-import BigNumber from "bignumber.js";
-import { formatDistance } from "date-fns";
-import { computed, defineComponent } from "vue";
-import { RouterView } from "vue-router";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
 
@@ -142,15 +143,15 @@ export default defineComponent({
             headerAction={
               <div class="flex-end flex items-center gap-2">
                 <Toggle
-                  class="flex-row-reverse"
-                  label={`Show pools less than ${SMALL_POOL_CAP.toLocaleString(
+                  class="flex flex-row-reverse"
+                  label={`Show shallow pools (< ${SMALL_POOL_CAP.toLocaleString(
                     undefined,
                     {
                       style: "currency",
                       currency: "USD",
                       maximumFractionDigits: 0,
                     },
-                  )}`}
+                  )} TVL)`}
                   active={this.showSmallPools}
                   onChange={(active) => {
                     this.showSmallPools = active;
