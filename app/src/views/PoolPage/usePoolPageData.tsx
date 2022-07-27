@@ -1,5 +1,5 @@
 import { useQuery } from "vue-query";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 
 import { AccountPool } from "@/business/store/pools";
@@ -58,6 +58,7 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "poolTvl",
     name: "Pool TVL",
+    sortable: true,
     class: "w-[168px] text-right justify-end",
   },
   {
