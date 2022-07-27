@@ -23,9 +23,6 @@ export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      allPoolsData: [] as ReturnType<
-        typeof usePoolPageData
-      >["allPoolsData"]["value"],
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
@@ -80,16 +77,22 @@ export default defineComponent({
             (asset.decommissioned && item.accountPool?.lp.units)
           );
         })
-        // First sort by name or apy
+        // First sort by name, apr or poolTVL.
         .sort((a, b) => {
-          if (this.$data.sortBy === "token") {
-            const aAsset = a.pool.externalAmount!.asset;
-            const bAsset = b.pool.externalAmount!.asset;
-            return aAsset.displaySymbol.localeCompare(bAsset.displaySymbol);
-          } else if (this.$data.sortBy === "rewardApr") {
-            return (b.poolStat?.rewardApr ?? 0) - (a.poolStat?.rewardApr ?? 0);
-          } else {
-            return (b.poolStat?.poolApr ?? 0) - (a.poolStat?.poolApr ?? 0);
+          switch (this.sortBy) {
+            case "token": {
+              const aAsset = a.pool.externalAmount?.asset.displaySymbol;
+              const bAsset = b.pool.externalAmount?.asset.displaySymbol;
+              return aAsset.localeCompare(bAsset);
+            }
+            case "rewardApr":
+              return (
+                Number(b.poolStat?.rewardApr) - Number(a.poolStat?.rewardApr)
+              );
+            case "poolTvl":
+              return Number(b.poolStat?.poolTVL) - Number(a.poolStat?.poolTVL);
+            default:
+              return Number(b.poolStat?.poolApr) - Number(a.poolStat?.poolApr);
           }
         })
         // Then sort by balance
@@ -175,7 +178,7 @@ export default defineComponent({
                   }}
                 />
                 <div class="mb-[-5px] flex w-full flex-row justify-start pb-[5px]">
-                  {COLUMNS.map((column, index) => (
+                  {COLUMNS.map((column) => (
                     <div
                       key={column.name}
                       onClick={() => {
@@ -189,7 +192,7 @@ export default defineComponent({
                       }}
                       class={[
                         column.class,
-                        "flex items-center opacity-50",
+                        "flex select-none items-center opacity-50",
                         column.sortable && "cursor-pointer",
                       ]}
                     >
