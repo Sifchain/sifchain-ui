@@ -1,22 +1,19 @@
-import { RouterView } from "vue-router";
-import { defineComponent, ref, computed, onMounted } from "vue";
-import { effect } from "@vue/reactivity";
 import { Network } from "@sifchain/sdk";
+import { computed, defineComponent, effect, onMounted, ref } from "vue";
+import { RouterView } from "vue-router";
 
-import Layout from "@/components/Layout";
 import AssetIcon from "@/components/AssetIcon";
-import PageCard from "@/components/PageCard";
-
-import { Tooltip } from "@/components/Tooltip";
-import { SearchBox } from "@/components/SearchBox";
-import RecyclerView from "@/components/RecyclerView";
-import Toggle from "@/components/Toggle";
 import Button from "@/components/Button";
-
-import BalanceRow from "./BalanceRow";
-import { BalancePageState, useBalancePageData } from "./useBalancePageData";
-import { getImportLocation } from "./Import/useImportData";
+import Layout from "@/components/Layout";
+import PageCard from "@/components/PageCard";
+import RecyclerView from "@/components/RecyclerView";
+import { SearchBox } from "@/components/SearchBox";
+import Toggle from "@/components/Toggle";
+import { Tooltip } from "@/components/Tooltip";
 import { TokenListItem } from "@/hooks/useToken";
+import BalanceRow from "./BalanceRow";
+import { getImportLocation } from "./Import/useImportData";
+import { BalancePageState, useBalancePageData } from "./useBalancePageData";
 
 const ROW_HEIGHT = 50;
 
@@ -36,9 +33,8 @@ export default defineComponent({
 
     // There's a bug with refreshing while an import child route is open
     // right as balance page loads... this "fixes" it. TODO: find real cause.
-    let isReady = ref(false);
-    let isDisabled = false;
-
+    const isReady = ref(false);
+    const isDisabled = ref(false);
     const showAllBalances = ref(false);
 
     onMounted(() => {
@@ -109,6 +105,7 @@ export default defineComponent({
                 />
               </Tooltip>
               <Toggle
+                class="flex-row-reverse"
                 label="Show all available"
                 active={showAllBalances.value}
                 onChange={(active) => {
@@ -140,7 +137,7 @@ export default defineComponent({
                 enableKeyBindings
                 id="search-token"
                 value={state.searchQuery}
-                disabled={isDisabled}
+                disabled={isDisabled.value}
                 placeholder="Search Token..."
                 onInput={(e: Event) => {
                   state.searchQuery = (e.target as HTMLInputElement).value;
