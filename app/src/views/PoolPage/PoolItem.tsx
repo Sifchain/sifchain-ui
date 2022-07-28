@@ -169,21 +169,6 @@ export default defineComponent({
             />
           </div>,
         ],
-        [
-          "Rewards paid to the pool for current period",
-          <span class="flex items-center font-mono">
-            {typeof this.poolStat?.rewardPeriodNativeDistributed === "number"
-              ? (
-                  this.poolStat?.rewardPeriodNativeDistributed ?? 0
-                ).toLocaleString()
-              : "..."}
-            <TokenIcon
-              assetValue={useNativeChain().nativeAsset}
-              size={14}
-              class="ml-[3px]"
-            />
-          </span>,
-        ],
 
         ...(this.lppdRewards
           ? [
@@ -198,7 +183,22 @@ export default defineComponent({
                 prettyNumber(this.lppdRewards.totalRewardsReceivedInRowan),
               ],
             ]
-          : []),
+          : [
+              "Rewards paid to the pool for current period",
+              <span class="flex items-center font-mono">
+                {typeof this.poolStat?.rewardPeriodNativeDistributed ===
+                "number"
+                  ? (
+                      this.poolStat?.rewardPeriodNativeDistributed ?? 0
+                    ).toLocaleString()
+                  : "..."}
+                <TokenIcon
+                  assetValue={useNativeChain().nativeAsset}
+                  size={14}
+                  class="ml-[3px]"
+                />
+              </span>,
+            ]),
 
         this.currentRewardPeriod !== undefined && [
           "Rewards time remaining for current period",
