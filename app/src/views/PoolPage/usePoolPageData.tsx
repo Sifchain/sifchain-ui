@@ -61,6 +61,7 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "poolTvl",
     name: "Pool TVL",
+    sortable: true,
     class: "w-[168px] text-right justify-end",
   },
   {
