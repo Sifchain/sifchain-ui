@@ -124,13 +124,10 @@ export default defineComponent({
       );
     },
     externalAmount(): IAssetAmount {
-      return this.$props.pool.externalAmount!;
+      return this.$props.pool.externalAmount;
     },
     nativeAmount(): IAssetAmount {
-      return this.$props.pool.nativeAmount!;
-    },
-    formattedPoolStat() {
-      if (!this.$props.poolStat) return undefined;
+      return this.$props.pool.nativeAmount;
     },
     details(): [string, JSX.Element][] {
       if (!this.expanded) return []; // don't compute unless expanded
@@ -171,7 +168,7 @@ export default defineComponent({
           "Rewards paid to the pool for current period",
           <span class="flex items-center font-mono">
             {typeof this.poolStat?.rewardPeriodNativeDistributed === "number"
-              ? (this.poolStat?.rewardPeriodNativeDistributed).toLocaleString()
+              ? this.poolStat.rewardPeriodNativeDistributed.toLocaleString()
               : "..."}
             <TokenIcon
               assetValue={useNativeChain().nativeAsset}
@@ -302,7 +299,7 @@ export default defineComponent({
               "flex items-center font-mono",
             ]}
           >
-            {!!this.userPoolData.myPoolShare?.value
+            {this.userPoolData.myPoolShare?.value
               ? `${parseFloat(this.userPoolData.myPoolShare.value).toFixed(2)}%`
               : ""}
           </div>
