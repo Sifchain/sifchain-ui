@@ -171,7 +171,7 @@ export default defineComponent({
           "Rewards paid to the pool for current period",
           <span class="flex items-center font-mono">
             {typeof this.poolStat?.rewardPeriodNativeDistributed === "number"
-              ? (this.poolStat?.rewardPeriodNativeDistributed).toLocaleString()
+              ? this.poolStat.rewardPeriodNativeDistributed.toLocaleString()
               : "..."}
             <TokenIcon
               assetValue={useNativeChain().nativeAsset}
