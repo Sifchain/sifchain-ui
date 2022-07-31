@@ -144,14 +144,14 @@ export default defineComponent({
               <div class="flex-end flex items-center gap-2">
                 <Toggle
                   class="flex flex-row-reverse"
-                  label={`Show shallow pools (< ${SMALL_POOL_CAP.toLocaleString(
+                  label={`Show pools under ${SMALL_POOL_CAP.toLocaleString(
                     undefined,
                     {
                       style: "currency",
                       currency: "USD",
                       maximumFractionDigits: 0,
                     },
-                  )} TVL)`}
+                  )} TVL`}
                   active={this.showSmallPools}
                   onChange={(active) => {
                     this.showSmallPools = active;

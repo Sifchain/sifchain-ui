@@ -169,7 +169,6 @@ export default defineComponent({
             />
           </div>,
         ],
-
         ...(this.lppdRewards
           ? [
               [
@@ -199,7 +198,6 @@ export default defineComponent({
                 />
               </span>,
             ]),
-
         this.currentRewardPeriod !== undefined && [
           "Rewards time remaining for current period",
           <span class="font-mono">{this.currentRewardPeriod.endEta}</span>,
