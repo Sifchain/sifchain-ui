@@ -40,6 +40,10 @@ export default defineComponent({
       }>,
       required: false,
     },
+    isRewardsPeriodActive: {
+      type: Boolean,
+      required: false,
+    },
     currentRewardPeriod: {
       type: Object as PropType<
         | {

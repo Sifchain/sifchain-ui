@@ -17,7 +17,6 @@ import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
-import { prettyNumber } from "@/utils/prettyNumber";
 
 const SMALL_POOL_CAP = 10_000;
 
@@ -43,6 +42,7 @@ export default defineComponent({
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       lppdRewards: data.lppdRewards,
+      rewardsParams: data.rewardsParams,
       isLoading: computed(
         () => data.isLoading.value || currentRewardPeriod.isLoading.value,
       ),
@@ -302,6 +302,7 @@ export default defineComponent({
                   accountPool={item.accountPool}
                   key={item.pool.symbol()}
                   lppdRewards={item.lppdRewards}
+                  // isRewardsPeriodActive={this.rewardsParams?.params?}
                 />
               );
             })}

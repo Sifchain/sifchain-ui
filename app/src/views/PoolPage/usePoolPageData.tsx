@@ -18,6 +18,7 @@ import {
   useLPUserRewards,
   useRewardsPrograms,
 } from "@/business/services/DataService";
+import { useRewardsParamsQuery } from "@/domains/clp/queries/params";
 
 export type PoolPageAccountPool = {
   lp: LiquidityProvider;
@@ -122,6 +123,7 @@ export const usePoolPageData = () => {
   const rewardProgramsRes = useRewardsPrograms();
 
   const { data: lppdRewards } = useLPUserRewards(sifAddress);
+  const { data: rewardsParams } = useRewardsParamsQuery();
 
   const allPoolsData = computed(() => {
     const sifchainChain = useChains().get(Network.SIFCHAIN);
@@ -179,6 +181,7 @@ export const usePoolPageData = () => {
     }),
     allPoolsData,
     lppdRewards,
+    rewardsParams,
     reload: () => {
       // NOTE: intentionally left out liquidityProvidersQuery & tokenRegistryEntriesQuery
       // those cache are handled globally, need to refactor usePoolPageData and extract those query out if possible
