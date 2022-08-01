@@ -172,13 +172,13 @@ export default defineComponent({
         ...(this.lppdRewards
           ? [
               [
-                "Your total LP distribution received (ROWAN)",
+                "Your total LP distribution for this pool (ROWAN)",
                 prettyNumber(
                   Number(this.lppdRewards.poolLPDistributionReceivedInRowan),
                 ),
               ],
               [
-                "Your total reward distribution received (ROWAN)",
+                "Your total reward distribution for this pool (ROWAN)",
                 prettyNumber(
                   Number(this.lppdRewards.poolRewardsReceivedInRowan),
                 ),

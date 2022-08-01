@@ -19,7 +19,10 @@ import {
   useRewardsPrograms,
 } from "@/business/services/DataService";
 
-export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
+export type PoolPageAccountPool = {
+  lp: LiquidityProvider;
+  pool: Pool;
+};
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
@@ -100,7 +103,6 @@ export const usePoolPageData = () => {
   const tokenRegistryEntriesQuery = useTokenRegistryEntriesQuery();
 
   const statsRes = usePoolStats();
-  const { services } = useCore();
 
   useUserPoolsSubscriber({});
   usePublicPoolsSubscriber({});
@@ -145,7 +147,8 @@ export const usePoolPageData = () => {
         });
 
       const pool = useCore().store.pools[poolKey];
-      const item = {
+
+      return {
         poolStat,
         pool,
         accountPool,
@@ -154,7 +157,6 @@ export const usePoolPageData = () => {
           ? lppdRewards.value.rewards.byPool[pool.externalAmount.displaySymbol]
           : undefined,
       };
-      return item;
     });
   });
 
@@ -171,6 +173,7 @@ export const usePoolPageData = () => {
       );
     }),
     allPoolsData,
+    lppdRewards,
     reload: () => {
       // NOTE: intentionally left out liquidityProvidersQuery & tokenRegistryEntriesQuery
       // those cache are handled globally, need to refactor usePoolPageData and extract those query out if possible

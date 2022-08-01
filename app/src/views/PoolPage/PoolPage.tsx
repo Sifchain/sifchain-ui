@@ -17,6 +17,7 @@ import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
+import { prettyNumber } from "@/utils/prettyNumber";
 
 const SMALL_POOL_CAP = 10_000;
 
@@ -41,6 +42,7 @@ export default defineComponent({
       currentRewardPeriod,
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
+      lppdRewards: data.lppdRewards,
       isLoading: computed(
         () => data.isLoading.value || currentRewardPeriod.isLoading.value,
       ),
@@ -178,6 +180,39 @@ export default defineComponent({
                     this.searchQuery = (e.target as HTMLInputElement).value;
                   }}
                 />
+                {this.lppdRewards?.hasRewards && (
+                  <div class="mb-4 grid w-full max-w-[55%] gap-1 rounded">
+                    <div class="opacity-50">Rewards</div>
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="col-span-8">
+                        Your total LP distribution received
+                      </span>
+                      <span class="text-right">
+                        {prettyNumber(
+                          Number(
+                            this.lppdRewards.rewards
+                              .totalLPDistributionReceivedInRowan,
+                          ),
+                        )}{" "}
+                        ROWAN
+                      </span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="col-span-8">
+                        Your total reward distribution received
+                      </span>
+                      <span class="text-right">
+                        {prettyNumber(
+                          Number(
+                            this.lppdRewards.rewards
+                              .totalRewardsReceivedInRowan,
+                          ),
+                        )}{" "}
+                        ROWAN
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <div class="mb-[-5px] flex w-full flex-row justify-start pb-[5px]">
                   {COLUMNS.map((column) => (
                     <div
