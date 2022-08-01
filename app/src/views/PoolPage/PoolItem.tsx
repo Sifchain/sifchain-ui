@@ -185,7 +185,7 @@ export default defineComponent({
               ],
             ]
           : [
-              [
+              this.poolStat?.rewardPeriodNativeDistributed && [
                 "Rewards paid to the pool for current period",
                 <span class="flex items-center font-mono">
                   {typeof this.poolStat?.rewardPeriodNativeDistributed ===
