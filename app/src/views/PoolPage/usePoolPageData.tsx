@@ -148,14 +148,19 @@ export const usePoolPageData = () => {
 
       const pool = useCore().store.pools[poolKey];
 
+      const denomOrSymbol =
+        pool.externalAmount.ibcDenom ?? pool.externalAmount.symbol;
+
+      const lppdPoolRewards = lppdRewards?.value?.hasRewards
+        ? lppdRewards.value.rewards.byPool[denomOrSymbol]
+        : undefined;
+
       return {
         poolStat,
         pool,
         accountPool,
         liquidityProvider,
-        lppdRewards: lppdRewards?.value?.hasRewards
-          ? lppdRewards.value.rewards.byPool[pool.externalAmount.displaySymbol]
-          : undefined,
+        lppdRewards: lppdPoolRewards,
       };
     });
   });
