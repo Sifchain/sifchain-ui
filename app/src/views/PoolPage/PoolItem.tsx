@@ -201,11 +201,14 @@ export default defineComponent({
                   />
                 </span>,
               ],
+              this.currentRewardPeriod && [
+                "Rewards time remaining for current period",
+                <span class="font-mono">
+                  {this.currentRewardPeriod.endEta}
+                </span>,
+              ],
             ]),
-        this.currentRewardPeriod && [
-          "Rewards time remaining for current period",
-          <span class="font-mono">{this.currentRewardPeriod.endEta}</span>,
-        ],
+
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">
