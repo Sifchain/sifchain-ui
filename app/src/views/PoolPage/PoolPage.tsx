@@ -181,7 +181,7 @@ export default defineComponent({
                   }}
                 />
                 {this.lppdRewards?.hasRewards && (
-                  <div class="mb-4 grid w-full max-w-[55%] gap-1 rounded">
+                  <div class="mb-4 grid w-full max-w-[52%] gap-1 rounded">
                     <div class="opacity-50">Rewards</div>
                     <div class="flex items-center justify-between gap-2">
                       <span class="col-span-8">
