@@ -20,6 +20,17 @@ import {
 import { COLUMNS_LOOKUP } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 
+const StakeLink = defineComponent(() => () => (
+  <a
+    class="text-accent-muted flex items-center gap-[3px] underline"
+    rel="noopener noreferrer"
+    target="_blank"
+    href="https://wallet.keplr.app/#/sifchain/stake"
+  >
+    stake <AssetIcon icon="interactive/open-external" size={12} />
+  </a>
+));
+
 export default defineComponent({
   name: "PoolItem",
   props: {
@@ -137,23 +148,19 @@ export default defineComponent({
     },
     details(): [string, JSX.Element][] {
       if (!this.expanded) return []; // don't compute unless expanded
+
+      const { nativeAsset } = useNativeChain();
+
       return [
         this.accountPool?.lp && [
           "Your Liquidity",
           <div class="flex items-center">
             {String(
               +formatAssetAmount(
-                AssetAmount(
-                  useNativeChain().nativeAsset,
-                  this.accountPool.lp.nativeAmount,
-                ),
+                AssetAmount(nativeAsset, this.accountPool.lp.nativeAmount),
               ),
             )}
-            <TokenIcon
-              assetValue={useNativeChain().nativeAsset}
-              size={14}
-              class="ml-[2px]"
-            />
+            <TokenIcon assetValue={nativeAsset} size={14} class="ml-[2px]" />
             ,<span class="ml-[4px]" />
             {String(
               +formatAssetAmount(
@@ -173,24 +180,28 @@ export default defineComponent({
         ...(this.lppdRewards
           ? [
               [
-                <>Your total LP distribution for this pool</>,
+                <span class="flex items-center gap-1">
+                  Your total LP distribution for this pool <StakeLink />
+                </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(
                     this.lppdRewards.poolLPDistributionReceivedInRowan,
                   )}
                   <TokenIcon
-                    assetValue={useNativeChain().nativeAsset}
+                    assetValue={nativeAsset}
                     size={14}
                     class="ml-[3px]"
                   />
                 </span>,
               ],
               [
-                <>Your total reward distribution for this pool</>,
+                <span class="flex items-center gap-1">
+                  Your total reward distribution for this pool <StakeLink />
+                </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(this.lppdRewards.poolRewardsReceivedInRowan)}
                   <TokenIcon
-                    assetValue={useNativeChain().nativeAsset}
+                    assetValue={nativeAsset}
                     size={14}
                     class="ml-[3px]"
                   />
@@ -210,7 +221,7 @@ export default defineComponent({
                       ).toLocaleString()
                     : "..."}
                   <TokenIcon
-                    assetValue={useNativeChain().nativeAsset}
+                    assetValue={nativeAsset}
                     size={14}
                     class="ml-[3px]"
                   />
