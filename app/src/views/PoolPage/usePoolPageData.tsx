@@ -150,8 +150,8 @@ export const usePoolPageData = () => {
         pool,
         accountPool,
         liquidityProvider,
-        lppdRewards: lppdRewards?.value
-          ? lppdRewards.value[pool.externalAmount.displaySymbol]
+        lppdRewards: lppdRewards?.value?.hasRewards
+          ? lppdRewards.value.rewards.byPool[pool.externalAmount.displaySymbol]
           : undefined,
       };
       return item;

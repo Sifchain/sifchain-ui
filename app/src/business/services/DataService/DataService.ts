@@ -59,20 +59,45 @@ export type UserRewards = {
   totalPending: number;
 };
 
-export type LPUserReward = {
-  poolDenom: string;
-  totalLPDistributionReceivedInRowan: number;
-  totalRewardsReceivedInRowan: number;
-};
+export type LPUserReward = Pick<
+  LPUserRewards,
+  "poolLPDistributionReceivedInRowan" | "poolRewardsReceivedInRowan"
+>;
 
 export type LPUserRewards = {
-  recipient: string;
-  received: LPUserReward[];
+  address: string;
+  poolDenom: string;
+  totalLPDistributionReceivedInRowan: string;
+  totalRewardsReceivedInRowan: string;
+  poolLPDistributionReceivedInRowan: string;
+  poolRewardsReceivedInRowan: string;
 };
 
 export type LPUserRewardsResponse = {
-  Output: LPUserRewards;
+  Output: LPUserRewards[];
 };
+
+export type LPPDRewardsByPool = Record<string, LPUserReward>;
+
+/**
+ * denormalized result for LPUserRewardsResponse
+ */
+export type LPUserRewardsResult =
+  | {
+      address: string;
+      hasRewards: false;
+      rewards: null;
+    }
+  | {
+      address: string;
+      hasRewards: true;
+      rewards: Pick<
+        LPUserRewards,
+        "totalLPDistributionReceivedInRowan" | "totalRewardsReceivedInRowan"
+      > & {
+        byPool: LPPDRewardsByPool;
+      };
+    };
 
 const MINUTE = 60;
 const HOUR = MINUTE * 60;
@@ -246,7 +271,7 @@ export default class DataService {
     }
   }
 
-  async getLPUserRewards(address: string): Promise<LPUserRewards> {
+  async getLPUserRewards(address: string): Promise<LPUserRewardsResult> {
     try {
       const { Output } = await cached(
         ["lpUserRewards", address],
@@ -257,41 +282,68 @@ export default class DataService {
         60000 * 5, // cache for 5 minute
       );
 
-      if (Output.recipient !== address) {
+      const isTestHost =
+        window.location.hostname.includes(".vercel.app") ||
+        window.location.hostname === "localhost";
+
+      if (!Output?.length && isTestHost) {
         // return mock data if address is not the recipient (means the endpoint is stubbed)
         return {
-          recipient: address,
-          received: [
-            {
-              poolDenom: "atom",
-              totalLPDistributionReceivedInRowan: Math.random() * 10000,
-              totalRewardsReceivedInRowan: Math.random() * 10000,
+          address,
+          hasRewards: true,
+          rewards: {
+            totalLPDistributionReceivedInRowan: String(Math.random() * 10000),
+            totalRewardsReceivedInRowan: String(Math.random() * 10000),
+            byPool: {
+              usdc: {
+                poolLPDistributionReceivedInRowan: String(
+                  Math.random() * 10000,
+                ),
+                poolRewardsReceivedInRowan: String(Math.random() * 10000),
+              },
+              juno: {
+                poolLPDistributionReceivedInRowan: String(
+                  Math.random() * 10000,
+                ),
+                poolRewardsReceivedInRowan: String(Math.random() * 10000),
+              },
+              atom: {
+                poolLPDistributionReceivedInRowan: String(
+                  Math.random() * 10000,
+                ),
+                poolRewardsReceivedInRowan: String(Math.random() * 10000),
+              },
             },
-            {
-              poolDenom: "usdc",
-              totalLPDistributionReceivedInRowan: Math.random() * 10000,
-              totalRewardsReceivedInRowan: Math.random() * 10000,
-            },
-            {
-              poolDenom: "juno",
-              totalLPDistributionReceivedInRowan: Math.random() * 10000,
-              totalRewardsReceivedInRowan: Math.random() * 10000,
-            },
-            {
-              poolDenom: "eth",
-              totalLPDistributionReceivedInRowan: Math.random() * 10000,
-              totalRewardsReceivedInRowan: Math.random() * 10000,
-            },
-          ],
+          },
         };
       }
 
-      return Output;
+      return {
+        address,
+        hasRewards: true,
+        rewards: {
+          totalLPDistributionReceivedInRowan:
+            Output[0].totalLPDistributionReceivedInRowan,
+          totalRewardsReceivedInRowan: Output[0].totalRewardsReceivedInRowan,
+          byPool: Output.reduce<LPPDRewardsByPool>(
+            (acc, entry) => ({
+              ...acc,
+              [entry.poolDenom]: {
+                poolLPDistributionReceivedInRowan:
+                  entry.poolLPDistributionReceivedInRowan,
+                poolRewardsReceivedInRowan: entry.poolRewardsReceivedInRowan,
+              },
+            }),
+            {},
+          ),
+        },
+      };
     } catch (error) {
       return {
-        recipient: address,
-        received: [],
-      } as LPUserRewards;
+        address,
+        hasRewards: false,
+        rewards: null,
+      };
     }
   }
 }

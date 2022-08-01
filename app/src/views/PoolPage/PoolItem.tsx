@@ -174,12 +174,14 @@ export default defineComponent({
               [
                 "Your total LP distribution received (ROWAN)",
                 prettyNumber(
-                  this.lppdRewards.totalLPDistributionReceivedInRowan,
+                  Number(this.lppdRewards.poolLPDistributionReceivedInRowan),
                 ),
               ],
               [
                 "Your total reward distribution received (ROWAN)",
-                prettyNumber(this.lppdRewards.totalRewardsReceivedInRowan),
+                prettyNumber(
+                  Number(this.lppdRewards.poolRewardsReceivedInRowan),
+                ),
               ],
             ]
           : [
