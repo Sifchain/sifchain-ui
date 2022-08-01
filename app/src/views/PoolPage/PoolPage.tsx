@@ -180,39 +180,6 @@ export default defineComponent({
                     this.searchQuery = (e.target as HTMLInputElement).value;
                   }}
                 />
-                {this.lppdRewards?.hasRewards && (
-                  <div class="mb-4 grid w-full max-w-[52%] gap-1 rounded">
-                    <div class="opacity-50">Rewards</div>
-                    <div class="flex items-center justify-between gap-2">
-                      <span class="col-span-8">
-                        Your total LP distribution received
-                      </span>
-                      <span class="text-right">
-                        {prettyNumber(
-                          Number(
-                            this.lppdRewards.rewards
-                              .totalLPDistributionReceivedInRowan,
-                          ),
-                        )}{" "}
-                        ROWAN
-                      </span>
-                    </div>
-                    <div class="flex items-center justify-between gap-2">
-                      <span class="col-span-8">
-                        Your total reward distribution received
-                      </span>
-                      <span class="text-right">
-                        {prettyNumber(
-                          Number(
-                            this.lppdRewards.rewards
-                              .totalRewardsReceivedInRowan,
-                          ),
-                        )}{" "}
-                        ROWAN
-                      </span>
-                    </div>
-                  </div>
-                )}
                 <div class="mb-[-5px] flex w-full flex-row justify-start pb-[5px]">
                   {COLUMNS.map((column) => (
                     <div

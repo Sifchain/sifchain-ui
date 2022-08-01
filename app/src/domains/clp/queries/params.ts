@@ -8,7 +8,7 @@ import { useQuery } from "vue-query";
 
 const REWARD_PARAMS_KEY = "rewardsParams";
 
-export const useRewardsParamsQuery = () => {
+export function useRewardsParamsQuery() {
   const sifchainClients = useSifchainClients();
 
   return useQuery(
@@ -24,9 +24,9 @@ export const useRewardsParamsQuery = () => {
       staleTime: minutesToMilliseconds(5),
     },
   );
-};
+}
 
-export const useCurrentRewardPeriodStatistics = () => {
+export function useCurrentRewardPeriodStatistics() {
   const { data: rewardsParams } = useRewardsParamsQuery();
   const { data: blockTimeMs } = useBlockTimeQuery();
 
@@ -51,9 +51,9 @@ export const useCurrentRewardPeriodStatistics = () => {
       ),
     },
   );
-};
+}
 
-export const useCurrentRewardPeriod = () => {
+export function useCurrentRewardPeriod() {
   const sifchainClients = useSifchainClients();
   const blockTimeQuery = useBlockTimeQuery();
   const rewardsParamsQuery = useRewardsParamsQuery();
@@ -95,4 +95,4 @@ export const useCurrentRewardPeriod = () => {
       return { ...currentRewardPeriod, estimatedRewardPeriodEndDate };
     },
   );
-};
+}
