@@ -235,7 +235,7 @@ export default defineComponent({
               "font-mono",
               this.$props.poolStat?.arb == null
                 ? "text-gray-800"
-                : +(this.$props.poolStat?.arb || 0) < 0
+                : Number(this.$props.poolStat?.arb ?? 0) < 0
                 ? "text-connected-base"
                 : "text-danger-base",
             ]}
