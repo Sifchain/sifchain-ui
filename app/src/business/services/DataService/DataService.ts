@@ -59,10 +59,10 @@ export type UserRewards = {
   totalPending: number;
 };
 
-export type LPUserReward = Pick<
-  LPUserRewards,
-  "poolLPDistributionReceivedInRowan" | "poolRewardsReceivedInRowan"
->;
+export type LPUserReward = {
+  poolLPDistributionReceivedInRowan: number;
+  poolRewardsReceivedInRowan: number;
+};
 
 export type LPUserRewards = {
   address: string;
@@ -91,10 +91,9 @@ export type LPUserRewardsResult =
   | {
       address: string;
       hasRewards: true;
-      rewards: Pick<
-        LPUserRewards,
-        "totalLPDistributionReceivedInRowan" | "totalRewardsReceivedInRowan"
-      > & {
+      rewards: {
+        totalLPDistributionReceivedInRowan: number;
+        totalRewardsReceivedInRowan: number;
         byPool: LPPDRewardsByPool;
       };
     };
@@ -292,26 +291,21 @@ export default class DataService {
           address,
           hasRewards: true,
           rewards: {
-            totalLPDistributionReceivedInRowan: String(Math.random() * 10000),
-            totalRewardsReceivedInRowan: String(Math.random() * 10000),
+            totalLPDistributionReceivedInRowan: Math.random() * 10000,
+            totalRewardsReceivedInRowan: Math.random() * 10000,
             byPool: {
-              usdc: {
-                poolLPDistributionReceivedInRowan: String(
-                  Math.random() * 10000,
-                ),
-                poolRewardsReceivedInRowan: String(Math.random() * 10000),
+              cusdc: {
+                poolLPDistributionReceivedInRowan: Math.random() * 10000,
+
+                poolRewardsReceivedInRowan: Math.random() * 10000,
               },
-              juno: {
-                poolLPDistributionReceivedInRowan: String(
-                  Math.random() * 10000,
-                ),
-                poolRewardsReceivedInRowan: String(Math.random() * 10000),
+              ujuno: {
+                poolLPDistributionReceivedInRowan: Math.random() * 10000,
+                poolRewardsReceivedInRowan: Math.random() * 10000,
               },
-              atom: {
-                poolLPDistributionReceivedInRowan: String(
-                  Math.random() * 10000,
-                ),
-                poolRewardsReceivedInRowan: String(Math.random() * 10000),
+              uatom: {
+                poolLPDistributionReceivedInRowan: Math.random() * 10000,
+                poolRewardsReceivedInRowan: Math.random() * 10000,
               },
             },
           },
@@ -322,16 +316,22 @@ export default class DataService {
         address,
         hasRewards: true,
         rewards: {
-          totalLPDistributionReceivedInRowan:
+          totalLPDistributionReceivedInRowan: Number(
             Output[0].totalLPDistributionReceivedInRowan,
-          totalRewardsReceivedInRowan: Output[0].totalRewardsReceivedInRowan,
+          ),
+          totalRewardsReceivedInRowan: Number(
+            Output[0].totalRewardsReceivedInRowan,
+          ),
           byPool: Output.reduce<LPPDRewardsByPool>(
             (acc, entry) => ({
               ...acc,
               [entry.poolDenom]: {
-                poolLPDistributionReceivedInRowan:
+                poolLPDistributionReceivedInRowan: Number(
                   entry.poolLPDistributionReceivedInRowan,
-                poolRewardsReceivedInRowan: entry.poolRewardsReceivedInRowan,
+                ),
+                poolRewardsReceivedInRowan: Number(
+                  entry.poolRewardsReceivedInRowan,
+                ),
               },
             }),
             {},

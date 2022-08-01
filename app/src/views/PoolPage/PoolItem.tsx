@@ -40,14 +40,11 @@ export default defineComponent({
       }>,
       required: false,
     },
-    isRewardsPeriodActive: {
-      type: Boolean,
-      required: false,
-    },
     currentRewardPeriod: {
       type: Object as PropType<
         | {
             endEta: string;
+            isActive: boolean;
           }
         | undefined
       >,
@@ -176,19 +173,33 @@ export default defineComponent({
         ...(this.lppdRewards
           ? [
               [
-                "Your total LP distribution for this pool (ROWAN)",
-                prettyNumber(
-                  Number(this.lppdRewards.poolLPDistributionReceivedInRowan),
-                ),
+                <>Your total LP distribution for this pool</>,
+                <span class="flex items-center font-mono">
+                  {prettyNumber(
+                    this.lppdRewards.poolLPDistributionReceivedInRowan,
+                  )}
+                  <TokenIcon
+                    assetValue={useNativeChain().nativeAsset}
+                    size={14}
+                    class="ml-[3px]"
+                  />
+                </span>,
               ],
               [
-                "Your total reward distribution for this pool (ROWAN)",
-                prettyNumber(
-                  Number(this.lppdRewards.poolRewardsReceivedInRowan),
-                ),
+                <>Your total reward distribution for this pool</>,
+                <span class="flex items-center font-mono">
+                  {prettyNumber(this.lppdRewards.poolRewardsReceivedInRowan)}
+                  <TokenIcon
+                    assetValue={useNativeChain().nativeAsset}
+                    size={14}
+                    class="ml-[3px]"
+                  />
+                </span>,
               ],
             ]
-          : [
+          : []),
+        ...(this.currentRewardPeriod?.isActive
+          ? [
               this.poolStat?.rewardPeriodNativeDistributed && [
                 "Rewards paid to the pool for current period",
                 <span class="flex items-center font-mono">
@@ -211,8 +222,8 @@ export default defineComponent({
                   {this.currentRewardPeriod.endEta}
                 </span>,
               ],
-            ]),
-
+            ]
+          : []),
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">

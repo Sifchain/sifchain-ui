@@ -42,7 +42,6 @@ export default defineComponent({
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       lppdRewards: data.lppdRewards,
-      rewardsParams: data.rewardsParams,
       isLoading: computed(
         () => data.isLoading.value || currentRewardPeriod.isLoading.value,
       ),
@@ -253,6 +252,7 @@ export default defineComponent({
                             new Date(),
                             currentRewardPeriod.estimatedRewardPeriodEndDate,
                           ),
+                          isActive: currentRewardPeriod.rewardPeriodDistribute,
                         }
                   }
                   unLockable={isUnlockable}
@@ -302,7 +302,6 @@ export default defineComponent({
                   accountPool={item.accountPool}
                   key={item.pool.symbol()}
                   lppdRewards={item.lppdRewards}
-                  // isRewardsPeriodActive={this.rewardsParams?.params?}
                 />
               );
             })}
