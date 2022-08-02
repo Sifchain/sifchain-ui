@@ -245,7 +245,7 @@ export const useSwapPageData = () => {
           DEFAULT_FEE,
         );
 
-        txStatus.value = NativeDexClient.parseTxResult(res);
+        txStatus.value = NativeDexClient.parseTxResult(res as any);
       } catch (error) {
         const errorMessage =
           typeof error === "string" ? error : (error as Error).message;
