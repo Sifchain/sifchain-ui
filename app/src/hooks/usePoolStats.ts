@@ -49,10 +49,7 @@ export function useDataServicesPoolStats() {
 
   return useQuery(
     ["pool-stats", isPMTPEnabled],
-    () =>
-      isPMTPEnabled
-        ? services.data.getTokenStatsPMTP()
-        : services.data.getTokenStats(),
+    () => services.data.getTokenStats(),
     {
       staleTime: 5 * 60 * 1000,
       cacheTime: 5 * 60 * 1000,

@@ -59,15 +59,44 @@ export type UserRewards = {
   totalPending: number;
 };
 
-type ProgramConfigMap = Record<
-  string,
-  {
-    displayName: string;
-    description: string;
-    documentationURL: string;
-    summaryAPY: number;
-  }
->;
+export type LPUserReward = {
+  poolLPDistributionReceivedInRowan: number;
+  poolRewardsReceivedInRowan: number;
+};
+
+export type LPUserRewards = {
+  address: string;
+  poolDenom: string;
+  totalLPDistributionReceivedInRowan: string;
+  totalRewardsReceivedInRowan: string;
+  poolLPDistributionReceivedInRowan: string;
+  poolRewardsReceivedInRowan: string;
+};
+
+export type LPUserRewardsResponse = {
+  Output: LPUserRewards[];
+};
+
+export type LPPDRewardsByPool = Record<string, LPUserReward>;
+
+/**
+ * denormalized result for LPUserRewardsResponse
+ */
+export type LPUserRewardsResult =
+  | {
+      address: string;
+      hasRewards: false;
+      rewards: null;
+    }
+  | {
+      address: string;
+      hasRewards: true;
+      rewards: {
+        totalLPDistributionReceivedInRowan: number;
+        totalRewardsReceivedInRowan: number;
+        byPool: LPPDRewardsByPool;
+      };
+    };
 
 const MINUTE = 60;
 const HOUR = MINUTE * 60;
@@ -134,32 +163,6 @@ export default class DataService {
         60000 * 5, // cache for 5 minutes
       );
       return res;
-    } catch (error) {
-      return {} as PoolStatsResponseData;
-    }
-  }
-
-  async getTokenStatsPMTP() {
-    try {
-      const res = await cached(
-        "tokenStats",
-        () =>
-          fetchJSON<PoolStatsResponseData>(
-            `${this.baseUrl}/beta/asset/tokenStatsPMTP`,
-          ),
-        60000 * 5, // cache for 5 minutes
-      );
-      const { pools } = res.body;
-      return {
-        ...res,
-        body: {
-          ...res.body,
-          pools: pools.map((x) => ({
-            ...x,
-            poolApr: (x.poolApr ?? 0) * 100,
-          })),
-        },
-      };
     } catch (error) {
       return {} as PoolStatsResponseData;
     }
@@ -263,6 +266,83 @@ export default class DataService {
         timeRemaining: "",
         totalDispensed: 0,
         totalPending: 0,
+      };
+    }
+  }
+
+  async getLPUserRewards(address: string): Promise<LPUserRewardsResult> {
+    try {
+      const { Output } = await cached(
+        ["lpUserRewards", address],
+        () =>
+          fetchJSON<LPUserRewardsResponse>(
+            `${this.baseUrl}/beta/network/lppdreward/${address}`,
+          ),
+        60000 * 5, // cache for 5 minute
+      );
+
+      const isTestHost =
+        window.location.hostname.includes(".vercel.app") ||
+        window.location.hostname === "localhost";
+
+      if (!Output?.length && isTestHost) {
+        // return mock data if address is not the recipient (means the endpoint is stubbed)
+        return {
+          address,
+          hasRewards: true,
+          rewards: {
+            totalLPDistributionReceivedInRowan: Math.random() * 10000,
+            totalRewardsReceivedInRowan: Math.random() * 10000,
+            byPool: {
+              cusdc: {
+                poolLPDistributionReceivedInRowan: Math.random() * 10000,
+
+                poolRewardsReceivedInRowan: Math.random() * 10000,
+              },
+              ujuno: {
+                poolLPDistributionReceivedInRowan: Math.random() * 10000,
+                poolRewardsReceivedInRowan: Math.random() * 10000,
+              },
+              uatom: {
+                poolLPDistributionReceivedInRowan: Math.random() * 10000,
+                poolRewardsReceivedInRowan: Math.random() * 10000,
+              },
+            },
+          },
+        };
+      }
+
+      return {
+        address,
+        hasRewards: true,
+        rewards: {
+          totalLPDistributionReceivedInRowan: Number(
+            Output[0].totalLPDistributionReceivedInRowan,
+          ),
+          totalRewardsReceivedInRowan: Number(
+            Output[0].totalRewardsReceivedInRowan,
+          ),
+          byPool: Output.reduce<LPPDRewardsByPool>(
+            (acc, entry) => ({
+              ...acc,
+              [entry.poolDenom]: {
+                poolLPDistributionReceivedInRowan: Number(
+                  entry.poolLPDistributionReceivedInRowan,
+                ),
+                poolRewardsReceivedInRowan: Number(
+                  entry.poolRewardsReceivedInRowan,
+                ),
+              },
+            }),
+            {},
+          ),
+        },
+      };
+    } catch (error) {
+      return {
+        address,
+        hasRewards: false,
+        rewards: null,
       };
     }
   }

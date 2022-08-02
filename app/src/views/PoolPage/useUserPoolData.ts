@@ -1,4 +1,5 @@
-import { computed, ref, ToRefs } from "@vue/reactivity";
+import { computed, ref, ToRefs } from "vue";
+
 import { getAssetLabel, getBlockExplorerUrl } from "@/components/utils";
 import { useCore } from "@/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
@@ -7,7 +8,7 @@ import { useNativeChain } from "@/hooks/useChains";
 
 const DECIMALS = 5;
 
-export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
+export function useUserPoolData(props: ToRefs<{ externalAsset: string }>) {
   const { config, store, accountPoolFinder, poolFinder } = useCore();
 
   const fromSymbol = ref("");
@@ -94,4 +95,4 @@ export const useUserPoolData = (props: ToRefs<{ externalAsset: string }>) => {
     chainId: config.sifChainId,
     getBlockExplorerUrl,
   };
-};
+}
