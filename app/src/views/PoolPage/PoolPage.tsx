@@ -252,7 +252,7 @@ export default defineComponent({
                             new Date(),
                             currentRewardPeriod.estimatedRewardPeriodEndDate,
                           ),
-                          isActive: currentRewardPeriod.rewardPeriodDistribute,
+                          isActive: !currentRewardPeriod.rewardPeriodDistribute,
                         }
                   }
                   unLockable={isUnlockable}
