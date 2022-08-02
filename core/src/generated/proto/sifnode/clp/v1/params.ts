@@ -40,11 +40,35 @@ export interface RewardPeriod {
   rewardPeriodAllocation: string;
   rewardPeriodPoolMultipliers: PoolMultiplier[];
   rewardPeriodDefaultMultiplier: string;
+  rewardPeriodDistribute: boolean;
+  rewardPeriodMod: Long;
 }
 
 export interface PoolMultiplier {
   poolMultiplierAsset: string;
   multiplier: string;
+}
+
+export interface LiquidityProtectionParams {
+  maxRowanLiquidityThreshold: string;
+  maxRowanLiquidityThresholdAsset: string;
+  epochLength: Long;
+  isActive: boolean;
+}
+
+export interface LiquidityProtectionRateParams {
+  currentRowanLiquidityThreshold: string;
+}
+
+export interface ProviderDistributionPeriod {
+  distributionPeriodBlockRate: string;
+  distributionPeriodStartBlock: Long;
+  distributionPeriodEndBlock: Long;
+  distributionPeriodMod: Long;
+}
+
+export interface ProviderDistributionParams {
+  distributionPeriods: ProviderDistributionPeriod[];
 }
 
 function createBaseParams(): Params {
@@ -435,6 +459,8 @@ function createBaseRewardPeriod(): RewardPeriod {
     rewardPeriodAllocation: "",
     rewardPeriodPoolMultipliers: [],
     rewardPeriodDefaultMultiplier: "",
+    rewardPeriodDistribute: false,
+    rewardPeriodMod: Long.UZERO,
   };
 }
 
@@ -460,6 +486,12 @@ export const RewardPeriod = {
     }
     if (message.rewardPeriodDefaultMultiplier !== "") {
       writer.uint32(50).string(message.rewardPeriodDefaultMultiplier);
+    }
+    if (message.rewardPeriodDistribute === true) {
+      writer.uint32(56).bool(message.rewardPeriodDistribute);
+    }
+    if (!message.rewardPeriodMod.isZero()) {
+      writer.uint32(64).uint64(message.rewardPeriodMod);
     }
     return writer;
   },
@@ -490,6 +522,12 @@ export const RewardPeriod = {
           break;
         case 6:
           message.rewardPeriodDefaultMultiplier = reader.string();
+          break;
+        case 7:
+          message.rewardPeriodDistribute = reader.bool();
+          break;
+        case 8:
+          message.rewardPeriodMod = reader.uint64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -523,6 +561,12 @@ export const RewardPeriod = {
       rewardPeriodDefaultMultiplier: isSet(object.rewardPeriodDefaultMultiplier)
         ? String(object.rewardPeriodDefaultMultiplier)
         : "",
+      rewardPeriodDistribute: isSet(object.rewardPeriodDistribute)
+        ? Boolean(object.rewardPeriodDistribute)
+        : false,
+      rewardPeriodMod: isSet(object.rewardPeriodMod)
+        ? Long.fromString(object.rewardPeriodMod)
+        : Long.UZERO,
     };
   },
 
@@ -550,6 +594,12 @@ export const RewardPeriod = {
     message.rewardPeriodDefaultMultiplier !== undefined &&
       (obj.rewardPeriodDefaultMultiplier =
         message.rewardPeriodDefaultMultiplier);
+    message.rewardPeriodDistribute !== undefined &&
+      (obj.rewardPeriodDistribute = message.rewardPeriodDistribute);
+    message.rewardPeriodMod !== undefined &&
+      (obj.rewardPeriodMod = (
+        message.rewardPeriodMod || Long.UZERO
+      ).toString());
     return obj;
   },
 
@@ -575,6 +625,11 @@ export const RewardPeriod = {
       ) || [];
     message.rewardPeriodDefaultMultiplier =
       object.rewardPeriodDefaultMultiplier ?? "";
+    message.rewardPeriodDistribute = object.rewardPeriodDistribute ?? false;
+    message.rewardPeriodMod =
+      object.rewardPeriodMod !== undefined && object.rewardPeriodMod !== null
+        ? Long.fromValue(object.rewardPeriodMod)
+        : Long.UZERO;
     return message;
   },
 };
@@ -641,6 +696,368 @@ export const PoolMultiplier = {
     const message = createBasePoolMultiplier();
     message.poolMultiplierAsset = object.poolMultiplierAsset ?? "";
     message.multiplier = object.multiplier ?? "";
+    return message;
+  },
+};
+
+function createBaseLiquidityProtectionParams(): LiquidityProtectionParams {
+  return {
+    maxRowanLiquidityThreshold: "",
+    maxRowanLiquidityThresholdAsset: "",
+    epochLength: Long.UZERO,
+    isActive: false,
+  };
+}
+
+export const LiquidityProtectionParams = {
+  encode(
+    message: LiquidityProtectionParams,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.maxRowanLiquidityThreshold !== "") {
+      writer.uint32(10).string(message.maxRowanLiquidityThreshold);
+    }
+    if (message.maxRowanLiquidityThresholdAsset !== "") {
+      writer.uint32(18).string(message.maxRowanLiquidityThresholdAsset);
+    }
+    if (!message.epochLength.isZero()) {
+      writer.uint32(24).uint64(message.epochLength);
+    }
+    if (message.isActive === true) {
+      writer.uint32(32).bool(message.isActive);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): LiquidityProtectionParams {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLiquidityProtectionParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.maxRowanLiquidityThreshold = reader.string();
+          break;
+        case 2:
+          message.maxRowanLiquidityThresholdAsset = reader.string();
+          break;
+        case 3:
+          message.epochLength = reader.uint64() as Long;
+          break;
+        case 4:
+          message.isActive = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LiquidityProtectionParams {
+    return {
+      maxRowanLiquidityThreshold: isSet(object.maxRowanLiquidityThreshold)
+        ? String(object.maxRowanLiquidityThreshold)
+        : "",
+      maxRowanLiquidityThresholdAsset: isSet(
+        object.maxRowanLiquidityThresholdAsset,
+      )
+        ? String(object.maxRowanLiquidityThresholdAsset)
+        : "",
+      epochLength: isSet(object.epochLength)
+        ? Long.fromString(object.epochLength)
+        : Long.UZERO,
+      isActive: isSet(object.isActive) ? Boolean(object.isActive) : false,
+    };
+  },
+
+  toJSON(message: LiquidityProtectionParams): unknown {
+    const obj: any = {};
+    message.maxRowanLiquidityThreshold !== undefined &&
+      (obj.maxRowanLiquidityThreshold = message.maxRowanLiquidityThreshold);
+    message.maxRowanLiquidityThresholdAsset !== undefined &&
+      (obj.maxRowanLiquidityThresholdAsset =
+        message.maxRowanLiquidityThresholdAsset);
+    message.epochLength !== undefined &&
+      (obj.epochLength = (message.epochLength || Long.UZERO).toString());
+    message.isActive !== undefined && (obj.isActive = message.isActive);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<LiquidityProtectionParams>, I>>(
+    object: I,
+  ): LiquidityProtectionParams {
+    const message = createBaseLiquidityProtectionParams();
+    message.maxRowanLiquidityThreshold =
+      object.maxRowanLiquidityThreshold ?? "";
+    message.maxRowanLiquidityThresholdAsset =
+      object.maxRowanLiquidityThresholdAsset ?? "";
+    message.epochLength =
+      object.epochLength !== undefined && object.epochLength !== null
+        ? Long.fromValue(object.epochLength)
+        : Long.UZERO;
+    message.isActive = object.isActive ?? false;
+    return message;
+  },
+};
+
+function createBaseLiquidityProtectionRateParams(): LiquidityProtectionRateParams {
+  return { currentRowanLiquidityThreshold: "" };
+}
+
+export const LiquidityProtectionRateParams = {
+  encode(
+    message: LiquidityProtectionRateParams,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.currentRowanLiquidityThreshold !== "") {
+      writer.uint32(10).string(message.currentRowanLiquidityThreshold);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): LiquidityProtectionRateParams {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLiquidityProtectionRateParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.currentRowanLiquidityThreshold = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LiquidityProtectionRateParams {
+    return {
+      currentRowanLiquidityThreshold: isSet(
+        object.currentRowanLiquidityThreshold,
+      )
+        ? String(object.currentRowanLiquidityThreshold)
+        : "",
+    };
+  },
+
+  toJSON(message: LiquidityProtectionRateParams): unknown {
+    const obj: any = {};
+    message.currentRowanLiquidityThreshold !== undefined &&
+      (obj.currentRowanLiquidityThreshold =
+        message.currentRowanLiquidityThreshold);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<LiquidityProtectionRateParams>, I>>(
+    object: I,
+  ): LiquidityProtectionRateParams {
+    const message = createBaseLiquidityProtectionRateParams();
+    message.currentRowanLiquidityThreshold =
+      object.currentRowanLiquidityThreshold ?? "";
+    return message;
+  },
+};
+
+function createBaseProviderDistributionPeriod(): ProviderDistributionPeriod {
+  return {
+    distributionPeriodBlockRate: "",
+    distributionPeriodStartBlock: Long.UZERO,
+    distributionPeriodEndBlock: Long.UZERO,
+    distributionPeriodMod: Long.UZERO,
+  };
+}
+
+export const ProviderDistributionPeriod = {
+  encode(
+    message: ProviderDistributionPeriod,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.distributionPeriodBlockRate !== "") {
+      writer.uint32(10).string(message.distributionPeriodBlockRate);
+    }
+    if (!message.distributionPeriodStartBlock.isZero()) {
+      writer.uint32(16).uint64(message.distributionPeriodStartBlock);
+    }
+    if (!message.distributionPeriodEndBlock.isZero()) {
+      writer.uint32(24).uint64(message.distributionPeriodEndBlock);
+    }
+    if (!message.distributionPeriodMod.isZero()) {
+      writer.uint32(32).uint64(message.distributionPeriodMod);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): ProviderDistributionPeriod {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProviderDistributionPeriod();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.distributionPeriodBlockRate = reader.string();
+          break;
+        case 2:
+          message.distributionPeriodStartBlock = reader.uint64() as Long;
+          break;
+        case 3:
+          message.distributionPeriodEndBlock = reader.uint64() as Long;
+          break;
+        case 4:
+          message.distributionPeriodMod = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProviderDistributionPeriod {
+    return {
+      distributionPeriodBlockRate: isSet(object.distributionPeriodBlockRate)
+        ? String(object.distributionPeriodBlockRate)
+        : "",
+      distributionPeriodStartBlock: isSet(object.distributionPeriodStartBlock)
+        ? Long.fromString(object.distributionPeriodStartBlock)
+        : Long.UZERO,
+      distributionPeriodEndBlock: isSet(object.distributionPeriodEndBlock)
+        ? Long.fromString(object.distributionPeriodEndBlock)
+        : Long.UZERO,
+      distributionPeriodMod: isSet(object.distributionPeriodMod)
+        ? Long.fromString(object.distributionPeriodMod)
+        : Long.UZERO,
+    };
+  },
+
+  toJSON(message: ProviderDistributionPeriod): unknown {
+    const obj: any = {};
+    message.distributionPeriodBlockRate !== undefined &&
+      (obj.distributionPeriodBlockRate = message.distributionPeriodBlockRate);
+    message.distributionPeriodStartBlock !== undefined &&
+      (obj.distributionPeriodStartBlock = (
+        message.distributionPeriodStartBlock || Long.UZERO
+      ).toString());
+    message.distributionPeriodEndBlock !== undefined &&
+      (obj.distributionPeriodEndBlock = (
+        message.distributionPeriodEndBlock || Long.UZERO
+      ).toString());
+    message.distributionPeriodMod !== undefined &&
+      (obj.distributionPeriodMod = (
+        message.distributionPeriodMod || Long.UZERO
+      ).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProviderDistributionPeriod>, I>>(
+    object: I,
+  ): ProviderDistributionPeriod {
+    const message = createBaseProviderDistributionPeriod();
+    message.distributionPeriodBlockRate =
+      object.distributionPeriodBlockRate ?? "";
+    message.distributionPeriodStartBlock =
+      object.distributionPeriodStartBlock !== undefined &&
+      object.distributionPeriodStartBlock !== null
+        ? Long.fromValue(object.distributionPeriodStartBlock)
+        : Long.UZERO;
+    message.distributionPeriodEndBlock =
+      object.distributionPeriodEndBlock !== undefined &&
+      object.distributionPeriodEndBlock !== null
+        ? Long.fromValue(object.distributionPeriodEndBlock)
+        : Long.UZERO;
+    message.distributionPeriodMod =
+      object.distributionPeriodMod !== undefined &&
+      object.distributionPeriodMod !== null
+        ? Long.fromValue(object.distributionPeriodMod)
+        : Long.UZERO;
+    return message;
+  },
+};
+
+function createBaseProviderDistributionParams(): ProviderDistributionParams {
+  return { distributionPeriods: [] };
+}
+
+export const ProviderDistributionParams = {
+  encode(
+    message: ProviderDistributionParams,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    for (const v of message.distributionPeriods) {
+      ProviderDistributionPeriod.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): ProviderDistributionParams {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProviderDistributionParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.distributionPeriods.push(
+            ProviderDistributionPeriod.decode(reader, reader.uint32()),
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProviderDistributionParams {
+    return {
+      distributionPeriods: Array.isArray(object?.distributionPeriods)
+        ? object.distributionPeriods.map((e: any) =>
+            ProviderDistributionPeriod.fromJSON(e),
+          )
+        : [],
+    };
+  },
+
+  toJSON(message: ProviderDistributionParams): unknown {
+    const obj: any = {};
+    if (message.distributionPeriods) {
+      obj.distributionPeriods = message.distributionPeriods.map((e) =>
+        e ? ProviderDistributionPeriod.toJSON(e) : undefined,
+      );
+    } else {
+      obj.distributionPeriods = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProviderDistributionParams>, I>>(
+    object: I,
+  ): ProviderDistributionParams {
+    const message = createBaseProviderDistributionParams();
+    message.distributionPeriods =
+      object.distributionPeriods?.map((e) =>
+        ProviderDistributionPeriod.fromPartial(e),
+      ) || [];
     return message;
   },
 };

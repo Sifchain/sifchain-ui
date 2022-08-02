@@ -6,13 +6,11 @@ import { addMilliseconds, minutesToMilliseconds } from "date-fns";
 import { computed } from "vue";
 import { useQuery } from "vue-query";
 
-const REWARD_PARAMS_KEY = "rewardsParams";
-
-export const useRewardsParamsQuery = () => {
+export function useRewardsParamsQuery() {
   const sifchainClients = useSifchainClients();
 
   return useQuery(
-    REWARD_PARAMS_KEY,
+    "rewardsParams",
     () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
       return sifchainClients.queryClient.clp.GetRewardParams({});
@@ -24,9 +22,27 @@ export const useRewardsParamsQuery = () => {
       staleTime: minutesToMilliseconds(5),
     },
   );
-};
+}
 
-export const useCurrentRewardPeriodStatistics = () => {
+export function useLPDParamsQuery() {
+  const sifchainClients = useSifchainClients();
+
+  return useQuery(
+    "providerDistributionParams",
+    () => {
+      dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
+      return sifchainClients.queryClient.clp.GetProviderDistributionParams({});
+    },
+    {
+      enabled: computed(
+        () => sifchainClients.queryClientStatus === "fulfilled",
+      ),
+      staleTime: minutesToMilliseconds(5),
+    },
+  );
+}
+
+export function useCurrentRewardPeriodStatistics() {
   const { data: rewardsParams } = useRewardsParamsQuery();
   const { data: blockTimeMs } = useBlockTimeQuery();
 
@@ -51,9 +67,9 @@ export const useCurrentRewardPeriodStatistics = () => {
       ),
     },
   );
-};
+}
 
-export const useCurrentRewardPeriod = () => {
+export function useCurrentRewardPeriod() {
   const sifchainClients = useSifchainClients();
   const blockTimeQuery = useBlockTimeQuery();
   const rewardsParamsQuery = useRewardsParamsQuery();
@@ -95,4 +111,50 @@ export const useCurrentRewardPeriod = () => {
       return { ...currentRewardPeriod, estimatedRewardPeriodEndDate };
     },
   );
-};
+}
+
+export function useCurrentLPDPeriod() {
+  const sifchainClients = useSifchainClients();
+  const blockTimeQuery = useBlockTimeQuery();
+  const lpdParamsQuery = useLPDParamsQuery();
+
+  return useDependentQuery(
+    [
+      computed(
+        () =>
+          sifchainClients.queryClientStatus === "fulfilled" &&
+          sifchainClients.signingClientStatus === "fulfilled",
+      ),
+      blockTimeQuery,
+      lpdParamsQuery,
+    ],
+    "currentRewardPeriod",
+    async () => {
+      dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
+      dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
+
+      const currentHeight = await sifchainClients.signingClient.getHeight();
+
+      const currentRewardPeriod =
+        lpdParamsQuery.data.value?.params?.distributionPeriods.find((x) => {
+          const startBlock = x.distributionPeriodStartBlock.toNumber();
+          const endBlock = x.distributionPeriodEndBlock.toNumber();
+
+          return startBlock <= currentHeight && currentHeight < endBlock;
+        });
+
+      if (currentRewardPeriod === undefined) return;
+
+      const blocksRemainingTilInactive =
+        currentRewardPeriod.distributionPeriodEndBlock.toNumber() -
+        currentHeight;
+
+      const estimatedRewardPeriodEndDate = addMilliseconds(
+        new Date(),
+        blocksRemainingTilInactive * (blockTimeQuery.data.value ?? 0),
+      );
+
+      return { ...currentRewardPeriod, estimatedRewardPeriodEndDate };
+    },
+  );
+}

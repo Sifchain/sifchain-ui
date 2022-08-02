@@ -5,7 +5,6 @@ import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 import { AccountPool } from "@/business/store/pools";
 import { useLiquidityProvidersQuery } from "@/domains/clp/queries/liquidityProvider";
 import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
-import { useAsyncData } from "@/hooks/useAsyncData";
 import { useChains } from "@/hooks/useChains";
 import { useCore } from "@/hooks/useCore";
 import {
@@ -15,8 +14,15 @@ import {
 import { usePoolStats } from "@/hooks/usePoolStats";
 import { accountStore } from "@/store/modules/accounts";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
+import {
+  useLPUserRewards,
+  useRewardsPrograms,
+} from "@/business/services/DataService";
 
-export type PoolPageAccountPool = { lp: LiquidityProvider; pool: Pool };
+export type PoolPageAccountPool = {
+  lp: LiquidityProvider;
+  pool: Pool;
+};
 
 export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
@@ -97,37 +103,37 @@ export const usePoolPageData = () => {
   const tokenRegistryEntriesQuery = useTokenRegistryEntriesQuery();
 
   const statsRes = usePoolStats();
-  const { services } = useCore();
 
   useUserPoolsSubscriber({});
   usePublicPoolsSubscriber({});
+
+  const sifAddress = accountStore.refs.sifchain.address.computed();
 
   const syncUserPoolQuery = useQuery(
     ["userPoolsData", accountStore.refs.sifchain.connected.computed()],
     () => {
       const address = accountStore.state.sifchain.address;
       if (!address) return;
+
       return useCore().usecases.clp.syncPools.syncUserPools(address);
     },
   );
 
-  const rewardProgramsRes = useAsyncData(() =>
-    services.data.getRewardsPrograms(),
-  );
+  const rewardProgramsRes = useRewardsPrograms();
+
+  const { data: lppdRewards } = useLPUserRewards(sifAddress);
 
   const allPoolsData = computed(() => {
     const sifchainChain = useChains().get(Network.SIFCHAIN);
+
     return (statsRes.data?.value?.poolData?.pools || []).map((poolStat) => {
       const poolKey = createPoolKey(
         sifchainChain.lookupAssetOrThrow("rowan"),
         sifchainChain.lookupAssetOrThrow(poolStat.symbol),
       );
       let accountPool: AccountPool | undefined = undefined;
-      if (accountStore.state.sifchain.address) {
-        accountPool =
-          useCore().store.accountpools[accountStore.state.sifchain.address][
-            poolKey
-          ];
+      if (sifAddress.value) {
+        accountPool = useCore().store.accountpools[sifAddress.value][poolKey];
       }
 
       const liquidityProvider =
@@ -140,13 +146,22 @@ export const usePoolPageData = () => {
           return tokenRegistryEntry?.baseDenom === poolStat.symbol;
         });
 
-      const item = {
+      const pool = useCore().store.pools[poolKey];
+
+      const denomOrSymbol =
+        pool.externalAmount.ibcDenom ?? pool.externalAmount.symbol;
+
+      const lppdPoolRewards = lppdRewards?.value?.hasRewards
+        ? lppdRewards.value.rewards.byPool[denomOrSymbol]
+        : undefined;
+
+      return {
         poolStat,
-        pool: useCore().store.pools[poolKey],
+        pool,
         accountPool,
         liquidityProvider,
+        lppdRewards: lppdPoolRewards,
       };
-      return item;
     });
   });
 
@@ -163,10 +178,11 @@ export const usePoolPageData = () => {
       );
     }),
     allPoolsData,
+    lppdRewards,
     reload: () => {
       // NOTE: intentionally left out liquidityProvidersQuery & tokenRegistryEntriesQuery
       // those cache are handled globally, need to refactor usePoolPageData and extract those query out if possible
-      rewardProgramsRes.reload.value();
+      rewardProgramsRes.refetch.value();
       syncUserPoolQuery.refetch.value();
     },
   };

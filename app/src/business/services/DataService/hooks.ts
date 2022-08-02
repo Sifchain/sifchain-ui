@@ -1,5 +1,8 @@
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
-import DataService from "./DataService";
+import { computed, Ref } from "vue";
+import { useQuery } from "vue-query";
+
+import DataService, { LPUserReward } from "./DataService";
 
 const dataService = new DataService();
 
@@ -8,11 +11,19 @@ export function useTokenStats() {
 }
 
 export function useRewardsPrograms() {
-  return useAsyncDataCached("rewardsPrograms", dataService.getRewardsPrograms);
+  return useQuery("rewardsPrograms", dataService.getRewardsPrograms);
 }
 
-export function useUserRewards(address: string) {
-  return useAsyncDataCached(`userRewards-${address}`, () =>
-    dataService.getUserRewards(address),
+/**
+ * get LPPD distribution for a given account
+ * @param account {string} account address
+ */
+export function useLPUserRewards(account: Ref<string>) {
+  return useQuery(
+    `lpUserRewards-${account.value}`,
+    async () => await dataService.getLPUserRewards(account.value),
+    {
+      enabled: computed(() => account.value !== ""),
+    },
   );
 }
