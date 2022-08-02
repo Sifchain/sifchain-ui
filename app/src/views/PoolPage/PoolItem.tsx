@@ -51,12 +51,15 @@ export default defineComponent({
       }>,
       required: false,
     },
+    isLPDActive: {
+      type: Boolean,
+      required: true,
+    },
     currentRewardPeriod: {
       type: Object as PropType<
         | {
             endEta: string;
             isDistributingToWallets: boolean;
-            isLPDActive: boolean;
           }
         | undefined
       >,
@@ -181,11 +184,11 @@ export default defineComponent({
         ...(this.lppdRewards
           ? [
               Boolean(
-                this.currentRewardPeriod?.isLPDActive &&
+                this.isLPDActive &&
                   this.lppdRewards.poolLPDistributionReceivedInRowan,
               ) && [
                 <span class="flex items-center gap-1">
-                  Your total LP distribution for this pool <StakeLink />
+                  Your total LP distribution for this pool {/*<StakeLink />*/}
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(
@@ -203,7 +206,8 @@ export default defineComponent({
                   this.lppdRewards.poolRewardsReceivedInRowan,
               ) && [
                 <span class="flex items-center gap-1">
-                  Your total reward distribution for this pool <StakeLink />
+                  Your total reward distribution for this pool{" "}
+                  {/*<StakeLink />*/}
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(this.lppdRewards.poolRewardsReceivedInRowan)}

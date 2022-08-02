@@ -263,11 +263,9 @@ export default defineComponent({
                           ),
                           isDistributingToWallets:
                             currentRewardPeriod.rewardPeriodDistribute,
-                          isLPDActive: Boolean(
-                            this.currentLPDPeriod.data.value,
-                          ),
                         }
                   }
+                  isLPDActive={Boolean(this.currentLPDPeriod.data.value)}
                   unLockable={isUnlockable}
                   unlock={
                     unlock === undefined
