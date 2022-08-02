@@ -466,15 +466,6 @@
     },
     {
       "decimals": 18,
-      "imageUrl": "https://assets.coingecko.com/coins/images/12843/small/image.png?1611212077",
-      "name": "Rally",
-      "network": "sifchain",
-      "symbol": "crly",
-      "displaySymbol": "rly",
-      "homeNetwork": "ethereum"
-    },
-    {
-      "decimals": 18,
       "imageUrl": "https://etherscan.io/token/images/convergence_32.png",
       "name": "Convergence",
       "network": "sifchain",
