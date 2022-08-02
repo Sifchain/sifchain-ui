@@ -245,10 +245,6 @@ export const useSwapPageData = () => {
           DEFAULT_FEE,
         );
 
-        console.log({
-          swapResult: res,
-        });
-
         txStatus.value = NativeDexClient.parseTxResult(res);
       } catch (error) {
         const errorMessage =
