@@ -13,7 +13,10 @@ import {
   useCancelLiquidityUnlockMutation,
   useRemoveLiquidityMutation,
 } from "@/domains/clp/mutation/liquidity";
-import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
+import {
+  useCurrentLPDPeriod,
+  useCurrentRewardPeriod,
+} from "@/domains/clp/queries/params";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
@@ -33,17 +36,23 @@ export default defineComponent({
   setup() {
     const data = usePoolPageData();
     const currentRewardPeriod = useCurrentRewardPeriod();
+    const currentLPDPeriod = useCurrentLPDPeriod();
+
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
       cancelLiquidityUnlockMutation: useCancelLiquidityUnlockMutation(),
       currentRewardPeriod,
+      currentLPDPeriod,
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       lppdRewards: data.lppdRewards,
       isLoading: computed(
-        () => data.isLoading.value || currentRewardPeriod.isLoading.value,
+        () =>
+          data.isLoading.value ||
+          currentRewardPeriod.isLoading.value ||
+          currentLPDPeriod.isLoading.value,
       ),
     };
   },
@@ -252,7 +261,11 @@ export default defineComponent({
                             new Date(),
                             currentRewardPeriod.estimatedRewardPeriodEndDate,
                           ),
-                          isActive: !currentRewardPeriod.rewardPeriodDistribute,
+                          isDistributingToWallets:
+                            currentRewardPeriod.rewardPeriodDistribute,
+                          isLPDActive: Boolean(
+                            this.currentLPDPeriod.data.value,
+                          ),
                         }
                   }
                   unLockable={isUnlockable}

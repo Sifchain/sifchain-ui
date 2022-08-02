@@ -18,7 +18,6 @@ import {
   useLPUserRewards,
   useRewardsPrograms,
 } from "@/business/services/DataService";
-import { useRewardsParamsQuery } from "@/domains/clp/queries/params";
 
 export type PoolPageAccountPool = {
   lp: LiquidityProvider;
