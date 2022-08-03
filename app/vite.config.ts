@@ -48,7 +48,6 @@ export default defineConfig({
     include: ["buffer", "process"],
   },
   build: {
-    brotliSize: false,
     cssCodeSplit: false,
     rollupOptions: {
       output: {
