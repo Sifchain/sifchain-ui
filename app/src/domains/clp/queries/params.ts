@@ -24,7 +24,7 @@ export function useRewardsParamsQuery() {
   );
 }
 
-export function useLPDParamsQuery() {
+export function useProviderDistributionParams() {
   const sifchainClients = useSifchainClients();
 
   return useQuery(
@@ -113,10 +113,10 @@ export function useCurrentRewardPeriod() {
   );
 }
 
-export function useCurrentLPDPeriod() {
+export function useCurrentProviderDistributionPeriod() {
   const sifchainClients = useSifchainClients();
   const blockTimeQuery = useBlockTimeQuery();
-  const lpdParamsQuery = useLPDParamsQuery();
+  const lpdParamsQuery = useProviderDistributionParams();
 
   return useDependentQuery(
     [
@@ -128,7 +128,7 @@ export function useCurrentLPDPeriod() {
       blockTimeQuery,
       lpdParamsQuery,
     ],
-    "currentRewardPeriod",
+    "currentProviderDistributionPeriod",
     async () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
