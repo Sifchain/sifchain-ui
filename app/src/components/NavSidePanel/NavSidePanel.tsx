@@ -151,6 +151,11 @@ export default defineComponent({
                   href="/rewards"
                 />
                 <NavSidePanelItem
+                  displayName="Stake"
+                  icon="navigation/stake"
+                  href="https://wallet.keplr.app/#/sifchain/stake"
+                />
+                <NavSidePanelItem
                   icon="navigation/changelog"
                   onClick={() => {
                     changelogOpenRef.value = true;
@@ -163,11 +168,6 @@ export default defineComponent({
                       </div>
                     )
                   }
-                />
-                <NavSidePanelItem
-                  displayName="Stake"
-                  icon="navigation/stake"
-                  href="https://wallet.keplr.app/#/sifchain/stake"
                 />
                 {changelogOpenRef.value && (
                   <ChangelogModal
