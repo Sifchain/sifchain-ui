@@ -221,10 +221,7 @@ export default defineComponent({
               ) && [
                 <span class="flex items-center gap-1">
                   Your total LP distribution for this pool{" "}
-                  <ExternalLink
-                    href={`/balances?focused=rowan`}
-                    label="view balance"
-                  />
+                  <ExternalLink href={`/balances`} label="view balance" />
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(
@@ -243,10 +240,7 @@ export default defineComponent({
               ) && [
                 <span class="flex items-center gap-1">
                   Your total reward distribution for this pool{" "}
-                  <ExternalLink
-                    href={`/balances?focused=rowan`}
-                    label="view balance"
-                  />
+                  <ExternalLink href={`/balances`} label="view balance" />
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(this.lppdRewards.poolRewardsReceivedInRowan)}
