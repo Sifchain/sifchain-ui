@@ -41,8 +41,8 @@ export const profileLookup: ProfileLookup = {
   },
   [NetworkEnv.LOCALNET]: {
     tag: NetworkEnv.LOCALNET,
-    ethAssetTag: "ethereum.devnet",
-    sifAssetTag: "sifchain.devnet",
+    ethAssetTag: "ethereum.localnet",
+    sifAssetTag: "sifchain.localnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
 } as const;
