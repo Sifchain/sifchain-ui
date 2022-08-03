@@ -14,7 +14,7 @@ import {
   useRemoveLiquidityMutation,
 } from "@/domains/clp/mutation/liquidity";
 import {
-  useCurrentLPDPeriod,
+  useCurrentProviderDistributionPeriod,
   useCurrentRewardPeriod,
 } from "@/domains/clp/queries/params";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
@@ -36,7 +36,8 @@ export default defineComponent({
   setup() {
     const data = usePoolPageData();
     const currentRewardPeriod = useCurrentRewardPeriod();
-    const currentLPDPeriod = useCurrentLPDPeriod();
+    const currentProviderDistributionPeriod =
+      useCurrentProviderDistributionPeriod();
 
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
@@ -44,7 +45,7 @@ export default defineComponent({
       }),
       cancelLiquidityUnlockMutation: useCancelLiquidityUnlockMutation(),
       currentRewardPeriod,
-      currentLPDPeriod,
+      currentLPDPeriod: currentProviderDistributionPeriod,
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       lppdRewards: data.lppdRewards,
@@ -52,7 +53,7 @@ export default defineComponent({
         () =>
           data.isLoading.value ||
           currentRewardPeriod.isLoading.value ||
-          currentLPDPeriod.isLoading.value,
+          currentProviderDistributionPeriod.isLoading.value,
       ),
     };
   },
