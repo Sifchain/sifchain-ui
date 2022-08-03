@@ -95,7 +95,7 @@ export default defineComponent({
                 </Button.CallToAction>
               </a>
               {!!error.value && (
-                <p class="mt-[10px] text-danger-base">{error.value.message}</p>
+                <p class="text-danger-base mt-[10px]">{error.value.message}</p>
               )}
               <Button.CallToActionSecondary
                 disabled={isLoading.value}

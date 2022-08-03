@@ -13,6 +13,7 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import { computed, defineComponent, PropType } from "vue";
+import { useRouter } from "vue-router";
 import {
   Competition,
   CompetitionsLookup,
@@ -20,16 +21,47 @@ import {
 import { COLUMNS_LOOKUP } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 
-const StakeLink = defineComponent(() => () => (
-  <a
-    class="text-accent-muted flex items-center gap-[3px] underline"
-    rel="noopener noreferrer"
-    target="_blank"
-    href="https://wallet.keplr.app/#/sifchain/stake"
-  >
-    stake <AssetIcon icon="interactive/open-external" size={12} />
-  </a>
-));
+const ExternalLink = defineComponent({
+  props: {
+    href: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    label: {
+      type: String as PropType<string>,
+      required: true,
+    },
+  },
+  setup(props) {
+    const router = useRouter();
+    const isExternal = computed(() => props.href?.startsWith("http"));
+
+    const externalIcon = computed(() =>
+      isExternal.value ? (
+        <AssetIcon icon="interactive/open-external" size={12} />
+      ) : null,
+    );
+    return () =>
+      isExternal.value ? (
+        <a
+          class="text-accent-muted flex items-center gap-[3px] underline"
+          rel="noopener noreferrer"
+          target="_blank"
+          href={props.href}
+        >
+          {props.label} {externalIcon.value}
+        </a>
+      ) : (
+        <span
+          role="button"
+          class="text-accent-muted flex items-center gap-[3px] underline"
+          onClick={() => router.push(props.href)}
+        >
+          {props.label} {externalIcon.value}
+        </span>
+      );
+  },
+});
 
 export default defineComponent({
   name: "PoolItem",
@@ -188,7 +220,11 @@ export default defineComponent({
                   this.lppdRewards.poolLPDistributionReceivedInRowan,
               ) && [
                 <span class="flex items-center gap-1">
-                  Your total LP distribution for this pool {/*<StakeLink />*/}
+                  Your total LP distribution for this pool{" "}
+                  <ExternalLink
+                    href={`/balances?focused=rowan`}
+                    label="view balance"
+                  />
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(
@@ -207,7 +243,10 @@ export default defineComponent({
               ) && [
                 <span class="flex items-center gap-1">
                   Your total reward distribution for this pool{" "}
-                  {/*<StakeLink />*/}
+                  <ExternalLink
+                    href={`/balances?focused=rowan`}
+                    label="view balance"
+                  />
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(this.lppdRewards.poolRewardsReceivedInRowan)}
