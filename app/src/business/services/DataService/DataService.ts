@@ -281,11 +281,9 @@ export default class DataService {
         60000 * 5, // cache for 5 minute
       );
 
-      const isTestHost =
-        window.location.hostname.includes(".vercel.app") ||
-        window.location.hostname === "localhost";
+      const isLocalhost = window.location.hostname === "localhost";
 
-      if (!Output?.length && isTestHost) {
+      if (!Output?.length && isLocalhost) {
         // return mock data if address is not the recipient (means the endpoint is stubbed)
         return {
           address,
