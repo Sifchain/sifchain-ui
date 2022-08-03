@@ -7,9 +7,9 @@
   "types": "src/index.ts",
   "dependencies": {
     "@cosmjs/launchpad": "^0.27.1",
-    "@cosmjs/proto-signing": "^0.28.4",
-    "@cosmjs/stargate": "^0.28.4",
-    "@cosmjs/tendermint-rpc": "^0.28.4",
+    "@cosmjs/proto-signing": "^0.28.11",
+    "@cosmjs/stargate": "^0.28.11",
+    "@cosmjs/tendermint-rpc": "^0.28.11",
     "@sifchain/sdk": "workspace:*",
     "@sifchain/wallet-keplr": "workspace:*",
     "@terra-money/terra.js": "2.0.14",
