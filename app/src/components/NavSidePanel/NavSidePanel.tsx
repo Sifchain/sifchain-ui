@@ -146,11 +146,6 @@ export default defineComponent({
                   href="/stats"
                 />
                 <NavSidePanelItem
-                  displayName="Rewards"
-                  icon="navigation/rewards"
-                  href="/rewards"
-                />
-                <NavSidePanelItem
                   displayName="Stake"
                   icon="navigation/stake"
                   href="https://wallet.keplr.app/#/sifchain/stake"
