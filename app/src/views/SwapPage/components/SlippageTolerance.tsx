@@ -5,8 +5,8 @@ export const SlippageTolerance = (props: {
   onUpdate: (val: string) => any;
 }) => {
   return (
-    <div class="flex items-center justify-center flex-row mt-[10px]">
-      <div class="inline-flex mr-[10px] items-center">
+    <div class="mt-[10px] flex flex-row items-center justify-center">
+      <div class="mr-[10px] inline-flex items-center">
         Slippage
         <Button.InlineHelp>
           Your transaction will revert if the price changes unfavorably by more
@@ -20,7 +20,7 @@ export const SlippageTolerance = (props: {
               onClick={(e) => {
                 props.onUpdate(opt);
               }}
-              class={`transition-all box-border text-white text-md mr-[7px] font-mono font-medium w-[57px] h-[33px] border-solid border-[1px] border-transparent rounded-[4px] ${
+              class={`text-md mr-[7px] box-border h-[33px] w-[57px] rounded-[4px] border-[1px] border-solid border-transparent font-mono font-medium text-white transition-all ${
                 +opt === +props.slippage
                   ? "bg-accent-gradient"
                   : "bg-gray-input border-gray-input_outline bg-gradient-to-b from-transparent to-transparent"
@@ -31,17 +31,17 @@ export const SlippageTolerance = (props: {
           );
         })}
       </div>
-      <div class="flex flex-row items-center flex-nowrap box-border border border-solid border-transparent focus-within:border-white text-white font-mono group text-[20px] w-full bg-gray-input rounded-[4px]">
+      <div class="bg-gray-input group box-border flex w-full flex-row flex-nowrap items-center rounded-[4px] border border-solid border-transparent font-mono text-[20px] text-white focus-within:border-white">
         <input
           type="number"
           step="0.1"
-          class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none font-mono text-right text-md font-semibold"
+          class="text-md h-[31px] w-full bg-transparent px-[10px] pr-0 text-right align-middle font-mono font-semibold outline-none"
           value={props.slippage}
           onInput={(e) => {
             props.onUpdate((e.target as HTMLInputElement).value);
           }}
         />
-        <div class="pr-[10px] pointer-events-none select-none">%</div>
+        <div class="pointer-events-none select-none pr-[10px]">%</div>
       </div>
     </div>
   );

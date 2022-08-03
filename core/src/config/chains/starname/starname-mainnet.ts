@@ -56,4 +56,3 @@ export const STARNAME_MAINNET: IBCChainConfig = {
     features: ["stargate", "ibc-transfer"],
   },
 };
-
