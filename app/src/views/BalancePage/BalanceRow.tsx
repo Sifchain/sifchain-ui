@@ -135,7 +135,7 @@ export default defineComponent({
       <div
         onClick={() => {
           if (props.isMasked) {
-            props.onExpand("");
+            props.onExpand?.("");
           }
         }}
         class={cx(
@@ -329,7 +329,7 @@ export default defineComponent({
                 props.isExpanded && "bg-gray-base",
               )}
               onClick={() => {
-                props.onExpand(
+                props.onExpand?.(
                   props.isExpanded ? "" : props.tokenItem.asset.symbol,
                 );
               }}
