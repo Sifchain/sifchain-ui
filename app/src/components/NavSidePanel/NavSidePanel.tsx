@@ -145,6 +145,13 @@ export default defineComponent({
                   icon="navigation/pool-stats"
                   href="/stats"
                 />
+                {flagsStore.state.margin && (
+                  <NavSidePanelItem
+                    displayName="Margin"
+                    icon="navigation/stake"
+                    href="margin.sifchain.network"
+                  />
+                )}
                 <NavSidePanelItem
                   displayName="Stake"
                   icon="navigation/stake"
