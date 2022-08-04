@@ -30,6 +30,8 @@ try {
   // do nothing
 }
 
+const MARGIN_FE_URL = "https://sifchain-dex.vercel.app";
+
 export default defineComponent({
   setup() {
     const moreMenuRef = ref();
@@ -148,8 +150,8 @@ export default defineComponent({
                 {flagsStore.state.margin && (
                   <NavSidePanelItem
                     displayName="Margin"
-                    icon="navigation/stake"
-                    href="margin.sifchain.network"
+                    icon="navigation/harvest"
+                    href={MARGIN_FE_URL}
                   />
                 )}
                 <NavSidePanelItem
