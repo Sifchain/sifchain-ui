@@ -1,5 +1,4 @@
 import {
-  EncodeObject,
   GeneratedType,
   isTsProtoGeneratedType,
   OfflineSigner,
@@ -16,14 +15,12 @@ import {
   createIbcAminoConverters,
   createStakingAminoConverters,
   defaultRegistryTypes as defaultStargateTypes,
-  DeliverTxResponse,
   SignerData,
   SigningStargateClient,
   SigningStargateClientOptions,
   StdFee,
 } from "@cosmjs/stargate";
 import { HttpEndpoint, Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import * as clpTx from "../../generated/proto/sifnode/clp/v1/tx";
 import * as dispensationTx from "../../generated/proto/sifnode/dispensation/v1/tx";
 import * as ethBridgeTx from "../../generated/proto/sifnode/ethbridge/v1/tx";

@@ -1,7 +1,8 @@
+import { defineComponent, HTMLAttributes, PropType } from "vue";
+
 import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 import { TokenIcon } from "@/components/TokenIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
-import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
   Competition,
   COMPETITION_TYPE_DISPLAY_DATA,
@@ -56,8 +57,8 @@ export const LeaderboardPodium = defineComponent({
   },
   render() {
     return (
-      <div class="flex flex-col items-center relative w-1/3">
-        <section class="h-[160px] flex flex-col items-center justify-end">
+      <div class="relative flex w-1/3 flex-col items-center">
+        <section class="flex h-[160px] flex-col items-center justify-end">
           <div class="relative flex flex-col items-center">
             <LeaderboardAvatar
               name={this.item.name}
@@ -77,9 +78,9 @@ export const LeaderboardPodium = defineComponent({
                   background:
                     "linear-gradient(180deg, #FFDC6F 0%, #89691A 100%)",
                 }}
-                class="p-[2px] rounded-[20px] translate-y-[-50%]"
+                class="translate-y-[-50%] rounded-[20px] p-[2px]"
               >
-                <div class="bg-accent-muted h-[18px] p-[10px] flex items-center text-sm color-accent-light rounded-[20px]">
+                <div class="bg-accent-muted color-accent-light flex h-[18px] items-center rounded-[20px] p-[10px] text-sm">
                   {this.placementText}
                 </div>
               </div>
@@ -95,8 +96,8 @@ export const LeaderboardPodium = defineComponent({
               }}
               class={[
                 this.isFirst
-                  ? "w-[185px] h-[152px] mt-[-110px]"
-                  : "w-[98px] h-[21px] mt-[7px]",
+                  ? "mt-[-110px] h-[152px] w-[185px]"
+                  : "mt-[7px] h-[21px] w-[98px]",
               ]}
             />
           </div>
@@ -104,7 +105,7 @@ export const LeaderboardPodium = defineComponent({
 
         <div
           class={[
-            "mt-[10px] text-accent-base text-center whitespace-nowrap cursor-pointer h-[42px] w-full",
+            "text-accent-base mt-[10px] h-[42px] w-full cursor-pointer whitespace-nowrap text-center",
           ]}
           onMouseenter={(e) => {
             this.isHovering = true;
@@ -116,12 +117,12 @@ export const LeaderboardPodium = defineComponent({
           <ResourcefulTextTransition text={this.displayLines[0]} />
           <ResourcefulTextTransition text={this.displayLines[1]} />
         </div>
-        <div class="mt-[4px] text-sm font-mono">
+        <div class="mt-[4px] font-mono text-sm">
           {COMPETITION_TYPE_DISPLAY_DATA[this.competition.type].renderValue(
             this.item.value,
           )}
         </div>
-        <div class="mt-[4px] bg-gray-ring h-[28px] px-[10px] flex items-center text-accent-base font-mono rounded-[20px]">
+        <div class="bg-gray-ring text-accent-base mt-[4px] flex h-[28px] items-center rounded-[20px] px-[10px] font-mono">
           <TokenIcon size={20} assetValue={this.competition.rewardAsset} />
           <div class="ml-[4px] translate-y-[-1px]">
             {prettyNumber(this.pendingReward, 0)}

@@ -1,3 +1,4 @@
+import { LPUserReward } from "@/business/services/DataService";
 import { AccountPool } from "@/business/store/pools";
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
@@ -12,12 +13,55 @@ import { prettyNumber } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import { computed, defineComponent, PropType } from "vue";
+import { useRouter } from "vue-router";
 import {
   Competition,
   CompetitionsLookup,
 } from "../LeaderboardPage/useCompetitionData";
 import { COLUMNS_LOOKUP } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
+
+const ExternalLink = defineComponent({
+  props: {
+    href: {
+      type: String as PropType<string>,
+      required: true,
+    },
+    label: {
+      type: String as PropType<string>,
+      required: true,
+    },
+  },
+  setup(props) {
+    const router = useRouter();
+    const isExternal = computed(() => props.href?.startsWith("http"));
+
+    const externalIcon = computed(() =>
+      isExternal.value ? (
+        <AssetIcon icon="interactive/open-external" size={12} />
+      ) : null,
+    );
+    return () =>
+      isExternal.value ? (
+        <a
+          class="text-accent-muted flex items-center gap-[3px] underline"
+          rel="noopener noreferrer"
+          target="_blank"
+          href={props.href}
+        >
+          {props.label} {externalIcon.value}
+        </a>
+      ) : (
+        <span
+          role="button"
+          class="text-accent-muted flex items-center gap-[3px] underline"
+          onClick={() => router.push(props.href)}
+        >
+          {props.label} {externalIcon.value}
+        </span>
+      );
+  },
+});
 
 export default defineComponent({
   name: "PoolItem",
@@ -39,10 +83,15 @@ export default defineComponent({
       }>,
       required: false,
     },
+    isLPDActive: {
+      type: Boolean,
+      required: true,
+    },
     currentRewardPeriod: {
       type: Object as PropType<
         | {
             endEta: string;
+            isDistributingToWallets: boolean;
           }
         | undefined
       >,
@@ -68,6 +117,10 @@ export default defineComponent({
       type: Object as PropType<LiquidityProviderData>,
       required: false,
     },
+    lppdRewards: {
+      type: Object as PropType<LPUserReward>,
+      required: false,
+    },
   },
   data() {
     return {
@@ -77,7 +130,7 @@ export default defineComponent({
   setup(props) {
     return {
       userPoolData: useUserPoolData({
-        externalAsset: computed(() => props.pool.externalAmount!.symbol),
+        externalAsset: computed(() => props.pool.externalAmount?.symbol),
       }),
       rowanPrice: useRowanPrice(),
     };
@@ -124,33 +177,26 @@ export default defineComponent({
       );
     },
     externalAmount(): IAssetAmount {
-      return this.$props.pool.externalAmount!;
+      return this.$props.pool.externalAmount;
     },
     nativeAmount(): IAssetAmount {
-      return this.$props.pool.nativeAmount!;
-    },
-    formattedPoolStat() {
-      if (!this.$props.poolStat) return undefined;
+      return this.$props.pool.nativeAmount;
     },
     details(): [string, JSX.Element][] {
       if (!this.expanded) return []; // don't compute unless expanded
+
+      const { nativeAsset } = useNativeChain();
+
       return [
         this.accountPool?.lp && [
           "Your Liquidity",
           <div class="flex items-center">
             {String(
               +formatAssetAmount(
-                AssetAmount(
-                  useNativeChain().nativeAsset,
-                  this.accountPool.lp.nativeAmount,
-                ),
+                AssetAmount(nativeAsset, this.accountPool.lp.nativeAmount),
               ),
             )}
-            <TokenIcon
-              assetValue={useNativeChain().nativeAsset}
-              size={14}
-              class="ml-[2px]"
-            />
+            <TokenIcon assetValue={nativeAsset} size={14} class="ml-[2px]" />
             ,<span class="ml-[4px]" />
             {String(
               +formatAssetAmount(
@@ -167,23 +213,72 @@ export default defineComponent({
             />
           </div>,
         ],
-        [
-          "Rewards paid to the pool for current period",
-          <span class="flex items-center font-mono">
-            {typeof this.poolStat?.rewardPeriodNativeDistributed === "number"
-              ? (this.poolStat?.rewardPeriodNativeDistributed).toLocaleString()
-              : "..."}
-            <TokenIcon
-              assetValue={useNativeChain().nativeAsset}
-              size={14}
-              class="ml-[3px]"
-            />
-          </span>,
-        ],
-        this.currentRewardPeriod !== undefined && [
-          "Rewards time remaining for current period",
-          <span class="font-mono">{this.currentRewardPeriod.endEta}</span>,
-        ],
+        ...(this.lppdRewards
+          ? [
+              Boolean(
+                this.isLPDActive &&
+                  this.lppdRewards.poolLPDistributionReceivedInRowan,
+              ) && [
+                <span class="flex items-center gap-1">
+                  Your total LP distribution for this pool{" "}
+                  <ExternalLink href={`/balances`} label="view balance" />
+                </span>,
+                <span class="flex items-center font-mono">
+                  {prettyNumber(
+                    this.lppdRewards.poolLPDistributionReceivedInRowan,
+                  )}
+                  <TokenIcon
+                    assetValue={nativeAsset}
+                    size={14}
+                    class="ml-[3px]"
+                  />
+                </span>,
+              ],
+              Boolean(
+                this.currentRewardPeriod?.isDistributingToWallets &&
+                  this.lppdRewards.poolRewardsReceivedInRowan,
+              ) && [
+                <span class="flex items-center gap-1">
+                  Your total reward distribution for this pool{" "}
+                  <ExternalLink href={`/balances`} label="view balance" />
+                </span>,
+                <span class="flex items-center font-mono">
+                  {prettyNumber(this.lppdRewards.poolRewardsReceivedInRowan)}
+                  <TokenIcon
+                    assetValue={nativeAsset}
+                    size={14}
+                    class="ml-[3px]"
+                  />
+                </span>,
+              ],
+            ]
+          : []),
+        ...(!this.currentRewardPeriod?.isDistributingToWallets
+          ? [
+              this.poolStat?.rewardPeriodNativeDistributed && [
+                "Rewards paid to the pool for current period",
+                <span class="flex items-center font-mono">
+                  {typeof this.poolStat?.rewardPeriodNativeDistributed ===
+                  "number"
+                    ? (
+                        this.poolStat?.rewardPeriodNativeDistributed ?? 0
+                      ).toLocaleString()
+                    : "..."}
+                  <TokenIcon
+                    assetValue={nativeAsset}
+                    size={14}
+                    class="ml-[3px]"
+                  />
+                </span>,
+              ],
+              this.currentRewardPeriod && [
+                "Rewards time remaining for current period",
+                <span class="font-mono">
+                  {this.currentRewardPeriod.endEta}
+                </span>,
+              ],
+            ]
+          : []),
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">
@@ -215,7 +310,7 @@ export default defineComponent({
               "font-mono",
               this.$props.poolStat?.arb == null
                 ? "text-gray-800"
-                : +(this.$props.poolStat?.arb || 0) < 0
+                : Number(this.$props.poolStat?.arb ?? 0) < 0
                 ? "text-connected-base"
                 : "text-danger-base",
             ]}
@@ -302,7 +397,7 @@ export default defineComponent({
               "flex items-center font-mono",
             ]}
           >
-            {!!this.userPoolData.myPoolShare?.value
+            {this.userPoolData.myPoolShare?.value
               ? `${parseFloat(this.userPoolData.myPoolShare.value).toFixed(2)}%`
               : ""}
           </div>
@@ -455,7 +550,7 @@ export default defineComponent({
                       Unbond Liquidity
                     </Button.Inline>
                   )
-                : !!this.userPoolData.myPoolShare?.value && (
+                : Boolean(this.userPoolData.myPoolShare?.value) && (
                     <Button.Inline
                       to={{
                         name: "RemoveLiquidity",

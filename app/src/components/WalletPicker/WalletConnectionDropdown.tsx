@@ -76,7 +76,7 @@ export default defineComponent({
     ]);
 
     return () => (
-      <div class="w-[124px]" onClick={() => props.onAction()}>
+      <div class="w-[124px]" onClick={() => props.onAction?.()}>
         {actionsRef.value.map((item) => {
           // if (item.hide) return null;
           const Cmp = item.tag as any;

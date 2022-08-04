@@ -43,99 +43,141 @@ export default defineComponent({
       props.tokenItem.asset.network,
     );
 
+    const swapItem = computed(() => ({
+      icon: "navigation/swap",
+      name: "Swap",
+      id: "swap",
+      tag: RouterLink,
+      visible: props.isExpanded,
+      help: null,
+      props: {
+        disabled: props.tokenItem.asset.decommissioned,
+        to: {
+          name: "Swap",
+          query: { fromSymbol: props.tokenItem.asset.symbol },
+        },
+      },
+    }));
+
+    const importItem = computed(() => ({
+      tag: RouterLink,
+      icon: "interactive/arrow-down",
+      name: "Import",
+      visible: true,
+      help: chainConfig.underMaintenance
+        ? `${displayName} Connection Under Maintenance`
+        : null,
+      props: {
+        disabled:
+          props.tokenItem.asset.decommissioned || chainConfig.underMaintenance,
+        replace: false,
+        to: getImportLocation("select", {
+          symbol: props.tokenItem.asset.symbol,
+          network:
+            props.tokenItem.asset.homeNetwork === Network.SIFCHAIN
+              ? Network.ETHEREUM
+              : props.tokenItem.asset.homeNetwork,
+        }),
+      },
+    }));
+
     // Always render all buttons, expandedRef.value or not, they will just be hidden.
-    const buttonsRef = computed(() => [
-      {
-        tag: RouterLink,
-        icon: "interactive/arrow-down",
-        name: "Import",
-        visible: true,
-        help: chainConfig.underMaintenance
-          ? `${displayName} Connection Under Maintenance`
-          : null,
-        props: {
-          disabled:
-            props.tokenItem.asset.decommissioned ||
-            chainConfig.underMaintenance,
-          replace: false,
-          to: getImportLocation("select", {
-            symbol: props.tokenItem.asset.symbol,
-            network:
-              props.tokenItem.asset.homeNetwork === Network.SIFCHAIN
-                ? Network.ETHEREUM
-                : props.tokenItem.asset.homeNetwork,
-          }),
-        },
-      },
-      hasNoBalance.value
-        ? {
-            tag: "button",
-            icon: "interactive/arrow-up",
-            name: "Export",
-            visible: true,
-            props: { disabled: true, class: "" },
-          }
-        : {
-            tag: RouterLink,
-            icon: "interactive/arrow-up",
-            name: "Export",
-            visible: true,
-            help: chainConfig.underMaintenance
-              ? `${displayName} Connection Under Maintenance`
-              : null,
-            props: {
-              disabled: useChains().get(props.tokenItem.asset.homeNetwork)
-                .chainConfig.underMaintenance,
-              replace: false,
-              to: getExportLocation("setup", {
-                symbol: props.tokenItem.asset.symbol,
-                network:
-                  props.tokenItem.asset.homeNetwork === Network.SIFCHAIN
-                    ? Network.ETHEREUM
-                    : props.tokenItem.asset.homeNetwork,
-              }),
+    const buttonsRef = computed(() =>
+      props.tokenItem.asset.displaySymbol === "rowan" && !props.isExpanded
+        ? [
+            hasNoBalance.value
+              ? importItem.value
+              : {
+                  tag: "a",
+                  icon: "navigation/stake",
+                  name: "Stake",
+                  visible: true,
+                  help: null,
+                  props: {
+                    href: "https://wallet.keplr.app/#/sifchain/stake",
+                    target: "_blank",
+                    rel: "noreferrer noopener",
+                  },
+                },
+            {
+              ...swapItem.value,
+              visible: true,
             },
-          },
-      {
-        icon: "navigation/pool",
-        name: "Pool",
-        id: "pool",
-        visible: props.isExpanded,
-        tag: RouterLink,
-        props: {
-          disabled: props.tokenItem.asset.decommissioned,
-          to: {
-            name: "AddLiquidity",
-            params: {
-              externalAsset:
-                props.tokenItem.asset.symbol === "rowan"
-                  ? ""
-                  : props.tokenItem.asset.symbol,
+          ]
+        : [
+            importItem.value,
+            hasNoBalance.value
+              ? {
+                  tag: "button",
+                  icon: "interactive/arrow-up",
+                  name: "Export",
+                  visible: true,
+                  help: null,
+                  props: { disabled: true, class: "" },
+                }
+              : {
+                  tag: RouterLink,
+                  icon: "interactive/arrow-up",
+                  name: "Export",
+                  visible: true,
+                  help: chainConfig.underMaintenance
+                    ? `${displayName} Connection Under Maintenance`
+                    : null,
+                  props: {
+                    disabled: useChains().get(props.tokenItem.asset.homeNetwork)
+                      .chainConfig.underMaintenance,
+                    replace: false,
+                    to: getExportLocation("setup", {
+                      symbol: props.tokenItem.asset.symbol,
+                      network:
+                        props.tokenItem.asset.homeNetwork === Network.SIFCHAIN
+                          ? Network.ETHEREUM
+                          : props.tokenItem.asset.homeNetwork,
+                    }),
+                  },
+                },
+            {
+              tag: RouterLink,
+              icon: "navigation/pool",
+              name: "Pool",
+              id: "pool",
+              help: null,
+              visible: props.isExpanded,
+              props: {
+                disabled: props.tokenItem.asset.decommissioned,
+                to: {
+                  name: "AddLiquidity",
+                  params: {
+                    externalAsset:
+                      props.tokenItem.asset.symbol === "rowan"
+                        ? ""
+                        : props.tokenItem.asset.symbol,
+                  },
+                },
+              },
             },
-          },
-        },
-      },
-      {
-        icon: "navigation/swap",
-        name: "Swap",
-        id: "swap",
-        tag: RouterLink,
-        visible: props.isExpanded,
-        props: {
-          disabled: props.tokenItem.asset.decommissioned,
-          to: {
-            name: "Swap",
-            query: { fromSymbol: props.tokenItem.asset.symbol },
-          },
-        },
-      },
-    ]);
+            {
+              icon: "navigation/swap",
+              name: "Swap",
+              id: "swap",
+              tag: RouterLink,
+              visible: props.isExpanded,
+              props: {
+                disabled: props.tokenItem.asset.decommissioned,
+                to: {
+                  name: "Swap",
+                  query: { fromSymbol: props.tokenItem.asset.symbol },
+                },
+              },
+            },
+          ],
+    );
 
     return () => (
       <div
         onClick={() => {
           if (props.isMasked) {
-            props.onExpand("");
+            props.onExpand?.("");
           }
         }}
         class={cx(
@@ -298,25 +340,24 @@ export default defineComponent({
             </div>
           </div>
         </div>
-        {/* controls */}
         <div class={["min-w-[360px] flex-1 text-right align-middle"]}>
           <div class="inline-flex items-center">
-            {buttonsRef.value
-              .filter((definition) => definition.visible)
-              .map((definition) => {
+            {[...buttonsRef.value]
+              .filter((btn) => btn.visible)
+              .map((btn) => {
                 const button = (
                   <Button.Inline
-                    key={definition.name}
+                    key={btn.name}
                     class="animation-fade-in mr-1"
-                    icon={definition.icon as IconName}
-                    {...definition.props}
+                    icon={btn.icon as IconName}
+                    {...btn.props}
                   >
-                    {definition.name}
+                    {btn.name}
                   </Button.Inline>
                 );
-                if (!definition.help) return button;
+                if (!btn.help) return button;
                 return (
-                  <Tooltip key={definition.name} content={definition.help}>
+                  <Tooltip key={btn.name} content={btn.help}>
                     {button}
                   </Tooltip>
                 );
@@ -329,7 +370,7 @@ export default defineComponent({
                 props.isExpanded && "bg-gray-base",
               )}
               onClick={() => {
-                props.onExpand(
+                props.onExpand?.(
                   props.isExpanded ? "" : props.tokenItem.asset.symbol,
                 );
               }}

@@ -26,7 +26,9 @@ import TVL from "./TVL";
 let VOTE_PARAM_IN_URL = false;
 try {
   VOTE_PARAM_IN_URL = window.location.href.includes("vote=1");
-} catch (_) {}
+} catch (_) {
+  // do nothing
+}
 
 export default defineComponent({
   setup() {
@@ -44,7 +46,7 @@ export default defineComponent({
 
     watch([router.currentRoute], () => {
       // add ?vote=anything to any hash route to open the voting modal
-      if (!!router.currentRoute.value?.query?.vote) {
+      if (router.currentRoute.value?.query?.vote) {
         votingOpenRef.value = true;
       }
     });
@@ -147,6 +149,11 @@ export default defineComponent({
                   displayName="Rewards"
                   icon="navigation/rewards"
                   href="/rewards"
+                />
+                <NavSidePanelItem
+                  displayName="Stake"
+                  icon="navigation/stake"
+                  href="https://wallet.keplr.app/#/sifchain/stake"
                 />
                 <NavSidePanelItem
                   icon="navigation/changelog"

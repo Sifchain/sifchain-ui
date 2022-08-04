@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { defineComponent, PropType, HTMLAttributes, computed } from "vue";
 import { useLink, RouterLink } from "vue-router";
 import AssetIcon, { IconName } from "../AssetIcon";
@@ -65,7 +66,7 @@ export default defineComponent({
           })}
           {...(props.onClick && { onClick: props.onClick })}
           class={[
-            `mt-[10px] flex h-[32px] w-full items-center whitespace-nowrap rounded px-[8px] text-left text-sm font-semibold transition-colors duration-75 hover:bg-gray-200`,
+            `group mt-[10px] flex h-[32px] w-full items-center whitespace-nowrap rounded px-[8px] text-left text-sm font-semibold transition-colors duration-75 hover:bg-gray-200`,
             isActive.value && "text-accent-base bg-gray-200",
             props.nonInteractable ? "pointer-events-none" : "cursor-pointer",
             props.class,
@@ -77,7 +78,21 @@ export default defineComponent({
             active={isActive.value}
           />
 
-          <span class="py-[8.5px] px-[10px]">{props.displayName}</span>
+          <span
+            class={clsx("py-[8.5px] px-2.5", {
+              "flex w-full justify-between pr-0": isExternal.value,
+            })}
+          >
+            {props.displayName}
+
+            {isExternal.value && (
+              <AssetIcon
+                icon="interactive/open-external"
+                size={16}
+                class="opacity-0 transition-opacity group-hover:opacity-100"
+              />
+            )}
+          </span>
           {!!props.action && props.action}
         </Cmp.value>
       );
