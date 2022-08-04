@@ -31,7 +31,7 @@ export default defineComponent({
       details: [
         [
           <div class="uppercase">{data.nativeAsset?.value?.displaySymbol}</div>,
-          <div class="flex gap-[4px] flex-row font-mono">
+          <div class="flex flex-row gap-[4px] font-mono">
             <div>{data.withdrawNativeAssetAmount.value}</div>
             <TokenIcon asset={data.nativeAsset}></TokenIcon>
           </div>,
@@ -40,7 +40,7 @@ export default defineComponent({
           <div class="uppercase">
             {data.externalAsset?.value?.displaySymbol}
           </div>,
-          <div class="flex gap-[4px] flex-row font-mono">
+          <div class="flex flex-row gap-[4px] font-mono">
             <div>{data.withdrawExternalAssetAmount.value}</div>
             <TokenIcon asset={data.externalAsset}></TokenIcon>
           </div>,
@@ -75,7 +75,7 @@ export default defineComponent({
             showClose
             onClose={close}
           >
-            <div class="p-4 bg-gray-base rounded-lg">
+            <div class="bg-gray-base rounded-lg p-4">
               <Form.Details details={detailsRef.value} />
             </div>
             <Button.CallToAction
@@ -99,9 +99,9 @@ export default defineComponent({
         >
           <Form.FieldSet>
             <Form.Label class="w-full">Withdraw Amount</Form.Label>
-            <div class="w-full flex flex-row">
-              <div class="w-full mt-[18px]">
-                <div class="w-full relative">
+            <div class="flex w-full flex-row">
+              <div class="mt-[18px] w-full">
+                <div class="relative w-full">
                   <input
                     type="range"
                     ref={amountRangeRef}
@@ -119,7 +119,7 @@ export default defineComponent({
                     }}
                   />
                   <div
-                    class="absolute left-0 top-1/2 bg-accent-base rounded-lg rounded-r-none pointer-events-none"
+                    class="bg-accent-base pointer-events-none absolute left-0 top-1/2 rounded-lg rounded-r-none"
                     style={{
                       height: amountRangeRef.value?.offsetHeight + "px",
                       transform: "translateY(-50%)",
@@ -132,26 +132,26 @@ export default defineComponent({
                 </div>
                 <div class="flex justify-between">
                   <div
-                    class="text-white text-left text-opacity-50 cursor-pointer hover:text-opacity-70"
+                    class="cursor-pointer text-left text-white text-opacity-50 hover:text-opacity-70"
                     onClick={() => (data.wBasisPoints.value = "0")}
                   >
                     0%
                   </div>
                   <div
-                    class="text-white text-left text-opacity-50 cursor-pointer hover:text-opacity-70"
+                    class="cursor-pointer text-left text-white text-opacity-50 hover:text-opacity-70"
                     onClick={() => (data.wBasisPoints.value = "10000")}
                   >
                     100%
                   </div>
                 </div>
               </div>
-              <div class="relative text-[20px] flex items-center w-[100px] ml-[20px] h-[54px] p-[8px] pl-0 rounded-[4px] bg-gray-input border-solid border-gray-input_outline border-[1px]">
+              <div class="bg-gray-input border-gray-input_outline relative ml-[20px] flex h-[54px] w-[100px] items-center rounded-[4px] border-[1px] border-solid p-[8px] pl-0 text-[20px]">
                 <input
                   type="number"
                   step="1"
                   min="0"
                   max="100"
-                  class="px-[10px] pr-0 h-[31px] w-full align-middle bg-transparent outline-none  text-right"
+                  class="h-[31px] w-full bg-transparent px-[10px] pr-0 text-right align-middle  outline-none"
                   value={((+data.wBasisPoints.value / 10000) * 100).toFixed(0)}
                   onInput={(e) => {
                     const input = e.target as HTMLInputElement;
@@ -170,14 +170,14 @@ export default defineComponent({
                     ).toString();
                   }}
                 />
-                <div class="pr-[10px] pointer-events-none select-none">%</div>
+                <div class="pointer-events-none select-none pr-[10px]">%</div>
               </div>
             </div>
           </Form.FieldSet>
           <Form.FieldSet class="mt-[10px]">
             <Form.Label class="w-full">Withdraw Ratio</Form.Label>
-            <div class="w-full flex flex-row">
-              <div class="w-full mt-[18px]">
+            <div class="flex w-full flex-row">
+              <div class="mt-[18px] w-full">
                 <div class="w-full">
                   <input
                     type="range"
@@ -198,19 +198,19 @@ export default defineComponent({
                 </div>
                 <div class="flex">
                   <div
-                    class="text-white text-opacity-50 cursor-pointer hover:text-opacity-70 flex-1 text-left"
+                    class="flex-1 cursor-pointer text-left text-white text-opacity-50 hover:text-opacity-70"
                     onClick={() => (data.asymmetry.value = "-10000")}
                   >
                     All ROWAN
                   </div>
                   <div
-                    class="text-white text-opacity-50 cursor-pointer hover:text-opacity-70 flex-1 text-center"
+                    class="flex-1 cursor-pointer text-center text-white text-opacity-50 hover:text-opacity-70"
                     onClick={() => (data.asymmetry.value = "0")}
                   >
                     Equal
                   </div>
                   <div
-                    class="text-white text-opacity-50 cursor-pointer hover:text-opacity-70 flex-1 text-right"
+                    class="flex-1 cursor-pointer text-right text-white text-opacity-50 hover:text-opacity-70"
                     onClick={() => (data.asymmetry.value = "10000")}
                   >
                     All{" "}

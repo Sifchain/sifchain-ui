@@ -45,6 +45,8 @@ export const flagsStore = Vuextra.createStore({
     pmtp: true,
     newLiquidityUnlockProcess: true,
     liquidityUnlockCancellation: true,
+    asymmetricPooling: false,
+    lppdRewards: true,
   },
   getters: (state) => ({}),
   mutations: (state) => ({

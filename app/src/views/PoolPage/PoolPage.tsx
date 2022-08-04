@@ -1,46 +1,59 @@
+import BigNumber from "bignumber.js";
+import { formatDistance } from "date-fns";
+import { computed, defineComponent } from "vue";
+import { RouterView } from "vue-router";
+
 import AssetIcon from "@/components/AssetIcon";
 import { Button } from "@/components/Button/Button";
 import Layout from "@/components/Layout";
 import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
+import Toggle from "@/components/Toggle";
 import {
   useCancelLiquidityUnlockMutation,
   useRemoveLiquidityMutation,
 } from "@/domains/clp/mutation/liquidity";
-import { useCurrentRewardPeriod } from "@/domains/clp/queries/params";
+import {
+  useCurrentProviderDistributionPeriod,
+  useCurrentRewardPeriod,
+} from "@/domains/clp/queries/params";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-import BigNumber from "bignumber.js";
-import { formatDistance } from "date-fns";
-import { computed, defineComponent } from "vue";
-import { RouterView } from "vue-router";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
+
+const SMALL_POOL_CAP = 10_000;
 
 export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      allPoolsData: [] as ReturnType<
-        typeof usePoolPageData
-      >["allPoolsData"]["value"],
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
+      showSmallPools: false,
     };
   },
   setup() {
     const data = usePoolPageData();
     const currentRewardPeriod = useCurrentRewardPeriod();
+    const currentProviderDistributionPeriod =
+      useCurrentProviderDistributionPeriod();
+
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
       }),
       cancelLiquidityUnlockMutation: useCancelLiquidityUnlockMutation(),
       currentRewardPeriod,
+      currentLPDPeriod: currentProviderDistributionPeriod,
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
+      lppdRewards: data.lppdRewards,
       isLoading: computed(
-        () => data.isLoading.value || currentRewardPeriod.isLoading.value,
+        () =>
+          data.isLoading.value ||
+          currentRewardPeriod.isLoading.value ||
+          currentProviderDistributionPeriod.isLoading.value,
       ),
     };
   },
@@ -51,6 +64,12 @@ export default defineComponent({
       if (this.isLoading) return [];
 
       const result = this.allPoolsData
+        .filter((item) =>
+          this.showSmallPools
+            ? true
+            : item.accountPool?.lp.units.greaterThan(0) ||
+              item.poolStat.poolTVL >= SMALL_POOL_CAP,
+        )
         .filter((item) => {
           const asset = item.pool.externalAmount?.asset;
           if (!asset) return;
@@ -70,16 +89,22 @@ export default defineComponent({
             (asset.decommissioned && item.accountPool?.lp.units)
           );
         })
-        // First sort by name or apy
+        // First sort by name, apr or poolTVL.
         .sort((a, b) => {
-          if (this.$data.sortBy === "token") {
-            const aAsset = a.pool.externalAmount!.asset;
-            const bAsset = b.pool.externalAmount!.asset;
-            return aAsset.displaySymbol.localeCompare(bAsset.displaySymbol);
-          } else if (this.$data.sortBy === "rewardApr") {
-            return (b.poolStat?.rewardApr ?? 0) - (a.poolStat?.rewardApr ?? 0);
-          } else {
-            return (b.poolStat?.poolApr ?? 0) - (a.poolStat?.poolApr ?? 0);
+          switch (this.sortBy) {
+            case "token": {
+              const aAsset = a.pool.externalAmount?.asset.displaySymbol;
+              const bAsset = b.pool.externalAmount?.asset.displaySymbol;
+              return aAsset.localeCompare(bAsset);
+            }
+            case "rewardApr":
+              return (
+                Number(b.poolStat?.rewardApr) - Number(a.poolStat?.rewardApr)
+              );
+            case "poolTvl":
+              return Number(b.poolStat?.poolTVL) - Number(a.poolStat?.poolTVL);
+            default:
+              return Number(b.poolStat?.poolApr) - Number(a.poolStat?.poolApr);
           }
         })
         // Then sort by balance
@@ -127,15 +152,32 @@ export default defineComponent({
             iconName="navigation/pool"
             withOverflowSpace
             headerAction={
-              <Button.Inline
-                to={{ name: "AddLiquidity", params: {} }}
-                active
-                replace
-                class={["text-md !h-[40px] px-[17px]"]}
-                icon="interactive/plus"
-              >
-                <div class="font-semibold">Add Liquidity</div>
-              </Button.Inline>
+              <div class="flex-end flex items-center gap-2">
+                <Toggle
+                  class="flex flex-row-reverse"
+                  label={`Show pools under ${SMALL_POOL_CAP.toLocaleString(
+                    undefined,
+                    {
+                      style: "currency",
+                      currency: "USD",
+                      maximumFractionDigits: 0,
+                    },
+                  )} TVL`}
+                  active={this.showSmallPools}
+                  onChange={(active) => {
+                    this.showSmallPools = active;
+                  }}
+                />
+                <Button.Inline
+                  to={{ name: "AddLiquidity", params: {} }}
+                  active
+                  replace
+                  class={["text-md !h-[40px] px-[17px]"]}
+                  icon="interactive/plus"
+                >
+                  <div class="font-semibold">Add Liquidity</div>
+                </Button.Inline>
+              </div>
             }
             headerContent={
               <>
@@ -148,7 +190,7 @@ export default defineComponent({
                   }}
                 />
                 <div class="mb-[-5px] flex w-full flex-row justify-start pb-[5px]">
-                  {COLUMNS.map((column, index) => (
+                  {COLUMNS.map((column) => (
                     <div
                       key={column.name}
                       onClick={() => {
@@ -162,7 +204,7 @@ export default defineComponent({
                       }}
                       class={[
                         column.class,
-                        "flex items-center opacity-50",
+                        "flex select-none items-center opacity-50",
                         column.sortable && "cursor-pointer",
                       ]}
                     >
@@ -220,8 +262,11 @@ export default defineComponent({
                             new Date(),
                             currentRewardPeriod.estimatedRewardPeriodEndDate,
                           ),
+                          isDistributingToWallets:
+                            currentRewardPeriod.rewardPeriodDistribute,
                         }
                   }
+                  isLPDActive={Boolean(this.currentLPDPeriod.data.value)}
                   unLockable={isUnlockable}
                   unlock={
                     unlock === undefined
@@ -268,6 +313,7 @@ export default defineComponent({
                   poolStat={item.poolStat}
                   accountPool={item.accountPool}
                   key={item.pool.symbol()}
+                  lppdRewards={item.lppdRewards}
                 />
               );
             })}

@@ -7,11 +7,11 @@ export const PERSISTENCE_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://explorer.persistence.one/",
   nativeAssetSymbol: "uxprt",
   chainId: "core-1",
-  rpcUrl: "https://rpc-persistence.keplr.app/",
-  restUrl: "https://lcd-persistence.keplr.app/",
+  rpcUrl: "https://proxies.sifchain.finance/api/core-1/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/core-1/rest",
   keplrChainInfo: {
-    rpc: "https://rpc-persistence.keplr.app/",
-    rest: "https://lcd-persistence.keplr.app/",
+    rpc: "https://proxies.sifchain.finance/api/core-1/rpc",
+    rest: "https://proxies.sifchain.finance/api/core-1/rest",
     chainId: "core-1",
     chainName: "Persistence",
     stakeCurrency: {

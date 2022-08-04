@@ -6,7 +6,7 @@ export function useTVL() {
   const { services } = useCore();
 
   const loadTVL = async () => {
-    const tokenStats = await services.data.getTokenStatsPMTP();
+    const tokenStats = await services.data.getTokenStats();
 
     const pools = tokenStats.body.pools ?? [];
 

@@ -1,7 +1,8 @@
+import { defineComponent, HTMLAttributes, PropType } from "vue";
+
 import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
 import { TokenIcon } from "@/components/TokenIcon";
 import { prettyNumber } from "@/utils/prettyNumber";
-import { defineComponent, HTMLAttributes, PropType } from "vue";
 import {
   Competition,
   COMPETITION_TYPE_DISPLAY_DATA,
@@ -45,13 +46,12 @@ export const LeaderboardRow = defineComponent({
     },
   },
   render: function LeaderboardRow() {
-    const props = this;
     const content = (
       <div
         class={[
-          "h-[40px] px-[16px] flex items-center text-base rounded-[30px]",
+          "flex h-[40px] items-center rounded-[30px] px-[16px] text-base",
           this.isMyself
-            ? "border border-solid border-accent-base"
+            ? "border-accent-base border border-solid"
             : "bg-gray-100",
           this.class,
         ]}
@@ -69,13 +69,13 @@ export const LeaderboardRow = defineComponent({
             // Width of the maximumRank's char width (if self is rank 5000, ensure all placements are offset to fit 5000)
             width: prettyNumber(this.maximumRank, 0).length + "ch",
           }}
-          class="transition-all font-mono"
+          class="font-mono transition-all"
         >
           {prettyNumber(this.item.rank, 0)}
         </section>
 
-        <section class="w-[350px] flex items-center ml-[16px] whitespace-nowrap">
-          <LeaderboardAvatar size={30} name={props.item.name} />
+        <section class="ml-[16px] flex w-[350px] items-center whitespace-nowrap">
+          <LeaderboardAvatar size={30} name={this.item.name} />
           <div
             onMouseenter={(e) => {
               this.isHovering = true;
@@ -83,11 +83,11 @@ export const LeaderboardRow = defineComponent({
             onMouseleave={(e) => {
               this.isHovering = false;
             }}
-            class={[`cursor-pointer ml-[8px] translate-y-[-1px]`]}
+            class={[`ml-[8px] translate-y-[-1px] cursor-pointer`]}
           >
             {/* {props.item.name} */}
             <ResourcefulTextTransition
-              class="w-[200px] inline-block"
+              class="inline-block w-[200px]"
               text={this.displayedText + (this.isMyself ? ` (you)` : "")}
             />
           </div>
@@ -96,39 +96,23 @@ export const LeaderboardRow = defineComponent({
         <section class="ml-[32px] flex items-center">
           <TokenIcon assetValue={this.competition.rewardAsset} size={19} />
           <div
-            class={[
-              "ml-[8px] font-mono",
-              !props.isMyself && "text-accent-base",
-            ]}
+            class={["ml-[8px] font-mono", !this.isMyself && "text-accent-base"]}
           >
             <ResourcefulTextTransition
-              class="w-[200px] inline-block"
-              text={prettyNumber(props.pendingReward, 0)}
+              class="inline-block w-[200px]"
+              text={prettyNumber(this.pendingReward, 0)}
             />
             {/* {prettyNumber(props.item.pendingReward, 0)} */}
           </div>
         </section>
 
-        <section class="flex-1 flex items-center justify-end font-mono">
-          {COMPETITION_TYPE_DISPLAY_DATA[props.item.type].renderValue(
-            props.item.value,
+        <section class="flex flex-1 items-center justify-end font-mono">
+          {COMPETITION_TYPE_DISPLAY_DATA[this.item.type].renderValue(
+            this.item.value,
           )}
         </section>
       </div>
     );
-
-    // if (props.isMyself) {
-    //   return (
-    //     <Tooltip
-    //       followCursor
-    //       interactive
-    //       delay={100}
-    //       content={accountStore.state.sifchain.address}
-    //     >
-    //       {content}
-    //     </Tooltip>
-    //   );
-    // }
 
     return content;
   },

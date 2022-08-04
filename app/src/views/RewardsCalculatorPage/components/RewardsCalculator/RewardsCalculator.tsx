@@ -79,11 +79,11 @@ export const RewardsCalculator = (props: Props) => {
           </div>
         </header>
         <main class="grid gap-4">
-          <div class="grid md:grid-cols-2 md:grid-rows-2 gap-4">
+          <div class="grid gap-4 md:grid-cols-2 md:grid-rows-2">
             <InputLabel label={`${props.tokenInSymbol} Amount`}>
               <Input.Base
                 placeholder={"0"}
-                class="text-right overflow-hidden"
+                class="overflow-hidden text-right"
                 type="number"
                 min="0"
                 value={props.tokenInAmount}
@@ -265,9 +265,9 @@ export const RewardsCalculator = (props: Props) => {
 };
 
 const HeaderInfoItem = (props: { title: string; value: string }) => (
-  <div class={"text-center grid gap-1 bg-gray-input/80 rounded-lg flex-1 p-4"}>
+  <div class={"bg-gray-input/80 grid flex-1 gap-1 rounded-lg p-4 text-center"}>
     <div class="text-md text-accent-base font-semibold">{props.title}</div>
-    <div class="font-bold text-xl">{props.value}</div>
+    <div class="text-xl font-bold">{props.value}</div>
   </div>
 );
 
@@ -280,7 +280,7 @@ const FooterInfoItem = (props: {
     <div class="text-md">{props.title}</div>
     <div
       class={clsx({
-        "text-accent-base font-bold text-lg text-right": props.highlight,
+        "text-accent-base text-right text-lg font-bold": props.highlight,
       })}
     >
       {props.value}

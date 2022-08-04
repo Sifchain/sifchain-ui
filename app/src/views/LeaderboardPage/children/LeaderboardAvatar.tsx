@@ -8,7 +8,7 @@ export function LeaderboardAvatar(props: {
   return (
     <div
       class={[
-        "translate-y-[1px] flex items-center justify-center rounded-full",
+        "flex translate-y-[1px] items-center justify-center rounded-full",
         props.class,
       ]}
       style={{
@@ -19,7 +19,7 @@ export function LeaderboardAvatar(props: {
       }}
     >
       <div
-        class="flex items-center justify-center rounded-full font-noatan text-base font-thin whitespace-pre text-accent-light tracking-wide"
+        class="font-noatan text-accent-light flex items-center justify-center whitespace-pre rounded-full text-base font-thin tracking-wide"
         style={{
           background: "linear-gradient(180deg, #DAAB16 0%, #A78A30 100%)",
           width: innerSize + "px",

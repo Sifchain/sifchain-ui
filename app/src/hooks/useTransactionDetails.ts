@@ -1,5 +1,6 @@
 import {
   DeliverTxResponse,
+  ErrorCode,
   TransactionStatus,
   transactionStatusFromDeliverTxResponse,
 } from "@sifchain/sdk";
@@ -115,6 +116,24 @@ export function getTransactionDetails(
   const payload = {
     tx,
   };
+
+  switch (tx?.code) {
+    case ErrorCode.MAX_LIQUIDITY_THRESHOLD_REACHED:
+      return {
+        isError: true,
+        heading: "Unable to Swap",
+        description:
+          "Sorry, we are unable to process your transaction at this time due to current swap limits. This limit resets every block (every ~6 seconds) so please try again shortly.",
+      };
+    case ErrorCode.ASSET_POOL_DOES_NOT_EXIST:
+      return {
+        isError: true,
+        heading: "Unable to Swap",
+        description:
+          "Sorry, we are unable to process your transaction at this time due to current swap limits. This limit resets every block (every ~6 seconds) so please try again shortly.",
+      };
+  }
+
   const state = tx?.state || null;
   Object.assign(
     payload,

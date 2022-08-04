@@ -466,15 +466,6 @@
     },
     {
       "decimals": 18,
-      "imageUrl": "https://assets.coingecko.com/coins/images/12843/small/image.png?1611212077",
-      "name": "Rally",
-      "network": "sifchain",
-      "symbol": "crly",
-      "displaySymbol": "rly",
-      "homeNetwork": "ethereum"
-    },
-    {
-      "decimals": 18,
       "imageUrl": "https://etherscan.io/token/images/convergence_32.png",
       "name": "Convergence",
       "network": "sifchain",
@@ -682,12 +673,12 @@
       "homeNetwork": "likecoin"
     },
     {
-      "symbol": "ustarx",
-      "displaySymbol": "starx",
+      "symbol": "ustars",
+      "displaySymbol": "stars",
       "decimals": 6,
-      "name": "starx",
+      "name": "stars",
       "network": "sifchain",
-      "imageUrl": "https://assets.coingecko.com/coins/images/10212/small/likecoin.png?1576640519",
+      "imageUrl": "https://assets.coingecko.com/coins/images/22363/small/stars.png?1645256657",
       "homeNetwork": "stargaze"
     },
     {
