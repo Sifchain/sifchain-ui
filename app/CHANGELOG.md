@@ -1,3 +1,9 @@
+## Release 2022.08.04
+
+- Auto-hide pools < $10k
+- Preparations for margin
+- Removed rewards page
+
 ## Release 2022.06.08
 
 - Add OSQTH token
