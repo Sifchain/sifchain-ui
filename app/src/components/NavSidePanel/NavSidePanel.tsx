@@ -192,16 +192,6 @@ export default defineComponent({
                       displayName="Rowan Faucet"
                       icon="navigation/rowan"
                       href="https://stakely.io/faucet/sifchain-rowan"
-                      class="group"
-                      action={
-                        <div class="hidden flex-1 items-center justify-end group-hover:flex">
-                          <AssetIcon
-                            icon="interactive/open-external"
-                            size={16}
-                            class="opacity-50"
-                          />
-                        </div>
-                      }
                     />
                   )}
                 <Tooltip
