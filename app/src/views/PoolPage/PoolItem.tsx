@@ -121,6 +121,9 @@ export default defineComponent({
       type: Object as PropType<LPUserReward>,
       required: false,
     },
+    isUnbondingRequired: {
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -533,7 +536,8 @@ export default defineComponent({
                   Add Liquidity
                 </Button.Inline>
               )}
-              {this.$store.state.flags.newLiquidityUnlockProcess
+              {this.$store.state.flags.newLiquidityUnlockProcess &&
+              this.isUnbondingRequired
                 ? this.$props.unLockable && (
                     <Button.Inline
                       to={{
