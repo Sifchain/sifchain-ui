@@ -30,7 +30,7 @@ try {
   // do nothing
 }
 
-const MARGIN_FE_URL = "https://sifchain-dex.vercel.app";
+const MARGIN_FE_URL = "https://sifchain-dex.vercel.app/margin";
 
 export default defineComponent({
   setup() {
