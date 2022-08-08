@@ -49,19 +49,7 @@ export function useDataServicesPoolStats() {
 
   return useQuery(
     ["pool-stats", isPMTPEnabled],
-    async () => {
-      const stats = await services.data.getTokenStats();
-      return {
-        ...stats,
-        body: {
-          ...stats.body,
-          pools: stats.body.pools.map((pool) => ({
-            ...pool,
-            poolApr: (pool.poolApr ?? 0) * 100,
-          })),
-        },
-      };
-    },
+    () => services.data.getTokenStats(),
     {
       staleTime: 5 * 60 * 1000,
       cacheTime: 5 * 60 * 1000,
