@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: GRAVITY_MAINNET,
   [NetworkEnv.TESTNET]: GRAVITY_MAINNET,
   [NetworkEnv.MAINNET]: GRAVITY_MAINNET,
+  [NetworkEnv.TEMPNET]: GRAVITY_MAINNET,
 };
