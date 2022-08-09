@@ -2,6 +2,7 @@
 import localnetconfig from "./networks/sifchain/config.localnet.json";
 import devnetconfig from "./networks/sifchain/config.devnet.json";
 import testnetconfig from "./networks/sifchain/config.testnet.json";
+import tempnetconfig from "./networks/sifchain/config.tempnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 
 import assetsEthereumLocalnet from "./networks/ethereum/assets.ethereum.localnet.json";
@@ -12,6 +13,7 @@ import assetsEthereumTestnet from "./networks/ethereum/assets.ethereum.testnet.j
 import assetsSifchainLocalnet from "./networks/sifchain/assets.sifchain.localnet.json";
 import assetsSifchainMainnet from "./networks/sifchain/assets.sifchain.mainnet.json";
 import assetsSifchainDevnet from "./networks/sifchain/assets.sifchain.devnet.json";
+import assetsSifchainTempnet from "./networks/sifchain/assets.sifchain.tempnet.json";
 
 import {
   parseConfig,
@@ -43,8 +45,14 @@ export function getConfig(
     "sifchain.mainnet": parseAssets(
       assetsSifchainMainnet.assets as AssetConfig[],
     ),
+    "sifchain.testnet": parseAssets(
+      assetsSifchainDevnet.assets as AssetConfig[],
+    ),
     "sifchain.devnet": parseAssets(
       assetsSifchainDevnet.assets as AssetConfig[],
+    ),
+    "sifchain.tempnet": parseAssets(
+      assetsSifchainTempnet.assets as AssetConfig[],
     ),
     "ethereum.localnet": parseAssets(
       assetsEthereumLocalnet.assets as AssetConfig[],
@@ -123,6 +131,12 @@ export function getConfig(
       testnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET],
+      peggyCompatibleCosmosBaseDenoms,
+    ),
+    tempnet: parseConfig(
+      tempnetconfig as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.TEMPNET],
       peggyCompatibleCosmosBaseDenoms,
     ),
     mainnet: parseConfig(

@@ -7,13 +7,13 @@ import { AppCookies, NetworkEnv } from "@sifchain/sdk";
 export default defineComponent({
   setup() {
     const appCookies = AppCookies();
-    let env = appCookies.getEnv();
+    const env = appCookies.getEnv();
 
     if (typeof env === "undefined") {
       return () => null;
     }
 
-    let networkEnv: NetworkEnv = env as NetworkEnv;
+    const networkEnv: NetworkEnv = env as NetworkEnv;
 
     const styles = {
       mainnet: "bg-green-500 text-white",
@@ -21,6 +21,7 @@ export default defineComponent({
       testnet: "bg-yellow-500 text-white",
       localnet: "bg-orange-500 text-white",
       panel: "bg-red-500 text-white",
+      tempnet: "bg-indigo-500 text-white",
     };
 
     const classesByNetworkEnv = {
@@ -28,6 +29,7 @@ export default defineComponent({
       [NetworkEnv.LOCALNET]: styles.localnet,
       [NetworkEnv.TESTNET]: styles.testnet,
       [NetworkEnv.DEVNET]: styles.devnet,
+      [NetworkEnv.TEMPNET]: styles.tempnet,
     };
 
     const classNames = classesByNetworkEnv[networkEnv];

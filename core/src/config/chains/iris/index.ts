@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: IRIS_TESTNET,
   [NetworkEnv.TESTNET]: IRIS_TESTNET,
   [NetworkEnv.MAINNET]: IRIS_MAINNET,
+  [NetworkEnv.TEMPNET]: IRIS_TESTNET,
 };

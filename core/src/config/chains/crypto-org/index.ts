@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: CRYPTO_ORG_MAINNET,
   [NetworkEnv.TESTNET]: CRYPTO_ORG_MAINNET,
   [NetworkEnv.MAINNET]: CRYPTO_ORG_MAINNET,
+  [NetworkEnv.TEMPNET]: CRYPTO_ORG_MAINNET,
 };

@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: EMONEY_MAINNET,
   [NetworkEnv.TESTNET]: EMONEY_MAINNET,
   [NetworkEnv.MAINNET]: EMONEY_MAINNET,
+  [NetworkEnv.TEMPNET]: EMONEY_MAINNET,
 };
