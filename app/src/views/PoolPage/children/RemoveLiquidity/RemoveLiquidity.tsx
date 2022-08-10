@@ -112,10 +112,10 @@ export default defineComponent({
                     min="0"
                     max="10000"
                     value={data.wBasisPoints.value}
+                    step="10"
                     onInput={(e) => {
-                      data.wBasisPoints.value = (
-                        e.target as HTMLInputElement
-                      ).value;
+                      const { value } = e.target as HTMLInputElement;
+                      data.wBasisPoints.value = value;
                     }}
                   />
                   <div
@@ -190,9 +190,8 @@ export default defineComponent({
                     max="10000"
                     value={data.asymmetry.value}
                     onInput={(e) => {
-                      data.asymmetry.value = (
-                        e.target as HTMLInputElement
-                      ).value;
+                      const { value } = e.target as HTMLInputElement;
+                      data.asymmetry.value = value;
                     }}
                   />
                 </div>
