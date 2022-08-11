@@ -12,9 +12,10 @@ import { useTransactionDetails } from "@/hooks/useTransactionDetails";
 import TransactionDetailsModal from "@/components/TransactionDetailsModal";
 import { accountStore } from "@/store/modules/accounts";
 import { PoolState } from "@/business/calculators";
+import { flagsStore } from "@/store/modules/flags";
 
 export default defineComponent({
-  setup(props) {
+  setup() {
     const data = useRemoveLiquidityData();
     const router = useRouter();
     const appWalletPicker = useAppWalletPicker();
@@ -53,6 +54,8 @@ export default defineComponent({
         name: "Pool",
       });
     };
+
+    const isAsymetricPoolingEnabled = flagsStore.state.asymmetricPooling;
 
     return () => {
       if (data.modalStatus.value === "processing") {
@@ -174,55 +177,57 @@ export default defineComponent({
               </div>
             </div>
           </Form.FieldSet>
-          <Form.FieldSet class="mt-[10px]">
-            <Form.Label class="w-full">Withdraw Ratio</Form.Label>
-            <div class="flex w-full flex-row">
-              <div class="mt-[18px] w-full">
-                <div class="w-full">
-                  <input
-                    type="range"
-                    disabled={
-                      !data.connected.value ||
-                      data.state.value === PoolState.NO_LIQUIDITY
-                    }
-                    step="50"
-                    min="-10000"
-                    max="10000"
-                    value={data.asymmetry.value}
-                    onInput={(e) => {
-                      const { value } = e.target as HTMLInputElement;
-                      data.asymmetry.value = value;
-                    }}
-                  />
-                </div>
-                <div class="flex">
-                  <div
-                    class="flex-1 cursor-pointer text-left text-white text-opacity-50 hover:text-opacity-70"
-                    onClick={() => (data.asymmetry.value = "-10000")}
-                  >
-                    All ROWAN
+          {isAsymetricPoolingEnabled && (
+            <Form.FieldSet class="mt-[10px]">
+              <Form.Label class="w-full">Withdraw Ratio</Form.Label>
+              <div class="flex w-full flex-row">
+                <div class="mt-[18px] w-full">
+                  <div class="w-full">
+                    <input
+                      type="range"
+                      disabled={
+                        !data.connected.value ||
+                        data.state.value === PoolState.NO_LIQUIDITY
+                      }
+                      step="50"
+                      min="-10000"
+                      max="10000"
+                      value={data.asymmetry.value}
+                      onInput={(e) => {
+                        const { value } = e.target as HTMLInputElement;
+                        data.asymmetry.value = value;
+                      }}
+                    />
                   </div>
-                  <div
-                    class="flex-1 cursor-pointer text-center text-white text-opacity-50 hover:text-opacity-70"
-                    onClick={() => (data.asymmetry.value = "0")}
-                  >
-                    Equal
-                  </div>
-                  <div
-                    class="flex-1 cursor-pointer text-right text-white text-opacity-50 hover:text-opacity-70"
-                    onClick={() => (data.asymmetry.value = "10000")}
-                  >
-                    All{" "}
-                    {(
-                      data.externalAsset.value?.displaySymbol ||
-                      data.externalAsset.value?.symbol ||
-                      ""
-                    ).toUpperCase()}
+                  <div class="flex">
+                    <div
+                      class="flex-1 cursor-pointer text-left text-white text-opacity-50 hover:text-opacity-70"
+                      onClick={() => (data.asymmetry.value = "-10000")}
+                    >
+                      All ROWAN
+                    </div>
+                    <div
+                      class="flex-1 cursor-pointer text-center text-white text-opacity-50 hover:text-opacity-70"
+                      onClick={() => (data.asymmetry.value = "0")}
+                    >
+                      Equal
+                    </div>
+                    <div
+                      class="flex-1 cursor-pointer text-right text-white text-opacity-50 hover:text-opacity-70"
+                      onClick={() => (data.asymmetry.value = "10000")}
+                    >
+                      All{" "}
+                      {(
+                        data.externalAsset.value?.displaySymbol ||
+                        data.externalAsset.value?.symbol ||
+                        ""
+                      ).toUpperCase()}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Form.FieldSet>
+            </Form.FieldSet>
+          )}
           <Form.Details class="mt-[10px]" details={detailsRef.value} />
           {!sifAccountRef.value.connected ? (
             <Button.CallToAction
