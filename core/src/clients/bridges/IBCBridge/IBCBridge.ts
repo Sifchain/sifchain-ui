@@ -130,7 +130,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     sequence: string | number,
   ) {
     const didReceive = Promise.resolve()
-      .then(async (e) => {
+      .then(async () => {
         const queryClient = await this.loadQueryClientByNetwork(network);
         const receipt = await queryClient.ibc.channel.packetReceipt(
           receivingPort,
@@ -139,7 +139,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         );
         return receipt.received;
       })
-      .catch((e) => {
+      .catch(() => {
         return fetch(
           `${
             this.loadChainConfigByNetwork(network).restUrl
@@ -209,12 +209,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     provider: CosmosWalletProvider,
     _params: BridgeParams,
     // Load testing options
-    {
-      shouldBatchTransfers = false,
-      maxMsgsPerBatch = 800,
-      maxAmountPerMsg = `9223372036854775807`,
-      gasPerBatch = undefined,
-    } = {},
+    { maxMsgsPerBatch = 800 } = {},
   ): Promise<BroadcastTxResult[]> {
     const params = await this.resolveBridgeParamsForImport(_params);
     const toChainConfig = provider.getIBCChainConfig(params.toChain);
@@ -298,37 +293,11 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       }),
     ];
 
-    const feeAmount = await this.estimateFees(provider, params);
-
-    // if (feeAmount?.amount.greaterThan("0")) {
-    //   const feeEntry = registry.find(
-    //     (item) => item.baseDenom === feeAmount.asset.symbol,
-    //   );
-    //   if (!feeEntry) {
-    //     throw new Error(
-    //       "Failed to find whiteliste entry for fee symbol " +
-    //         feeAmount.asset.symbol,
-    //     );
-    //   }
-    //   const sendFeeMsg = client.tx.bank.Send.createRawEncodeObject({
-    //     fromAddress: params.fromAddress,
-    //     toAddress: IBC_EXPORT_FEE_ADDRESS,
-    //     amount: [
-    //       {
-    //         denom: feeEntry.denom,
-    //         amount: feeAmount.toBigInt().toString(),
-    //       },
-    //     ],
-    //   });
-    //   encodeMsgs.unshift(sendFeeMsg);
-    // }
-
     const batches = [];
     while (encodeMsgs.length) {
       batches.push(encodeMsgs.splice(0, maxMsgsPerBatch));
     }
 
-    console.log({ batches });
     const responses: BroadcastTxResult[] = [];
 
     for (let batch of batches) {
@@ -349,8 +318,6 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
               ? "500000"
               : gasAssetAmount.toBigInt().toString(),
         });
-
-        console.log(txDraft.fee);
 
         const signedTx = await provider.sign(params.fromChain, txDraft);
 
