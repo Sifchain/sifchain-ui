@@ -1,8 +1,14 @@
-import { isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
 import Long from "long";
 import Web3 from "web3";
 import { provider } from "web3-core";
 import { Contract } from "web3-eth-contract";
+
+import {
+  DEFAULT_FEE,
+  SifchainEncodeObject,
+  SifSigningStargateClient,
+} from "../../../clients/sifchain";
 
 import {
   AssetAmount,
@@ -142,7 +148,7 @@ export class EthBridge extends BaseBridge<
     if (wallet instanceof CosmosWalletProvider) {
       const tx = await this.exportToEth(wallet, params);
 
-      if (isBroadcastTxFailure(tx)) {
+      if (isBroadcastTxFailure(tx as BroadcastTxResult)) {
         throw new Error(parseTxFailure(tx).memo);
       }
 
@@ -232,10 +238,21 @@ export class EthBridge extends BaseBridge<
           params.fromAddress,
         );
 
-    const signed = await provider.sign(nativeChain, tx);
-    const sent = await provider.broadcast(nativeChain, signed);
+    const stargateClient = await SifSigningStargateClient.connectWithSigner(
+      this.context.sifRpcUrl,
+      await provider.getSendingSigner(nativeChain),
+    );
 
-    return sent;
+    return await stargateClient.signAndBroadcast(
+      params.fromAddress,
+      tx.msgs as SifchainEncodeObject[],
+      tx.fee
+        ? {
+            amount: [tx.fee.price],
+            gas: tx.fee.gas,
+          }
+        : DEFAULT_FEE,
+    );
   }
 
   private async importFromEth(

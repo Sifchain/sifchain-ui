@@ -42,7 +42,7 @@ export function RemoveLiquidity({
     */
     const { address } = sif.getState();
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(asset);
-    const txDraft = client.tx.clp.RemoveLiquidity(
+    const tx = client.tx.clp.RemoveLiquidity(
       {
         asymmetry,
         wBasisPoints,
@@ -60,9 +60,14 @@ export function RemoveLiquidity({
     );
     const [error, sentTx] = await runCatching(() =>
       stargateClient.signAndBroadcast(
-        txDraft.fromAddress,
-        txDraft.msgs as SifchainEncodeObject[],
-        DEFAULT_FEE,
+        tx.fromAddress,
+        tx.msgs as SifchainEncodeObject[],
+        tx.fee
+          ? {
+              amount: [tx.fee.price],
+              gas: tx.fee.gas,
+            }
+          : DEFAULT_FEE,
       ),
     );
 
