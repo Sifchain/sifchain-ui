@@ -6,9 +6,8 @@ import {
   TransactionStatus,
 } from "@sifchain/sdk";
 
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import { Services } from "../../services";
 import runCatching from "@/utils/runCatching";
+import { Services } from "../../services";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
 type PickSif = Pick<
