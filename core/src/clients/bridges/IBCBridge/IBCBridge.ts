@@ -2,38 +2,41 @@ import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import {
   IndexedTx,
-  SigningStargateClient,
-  StargateClient,
-} from "@cosmjs/stargate";
-import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
-import {
   QueryClient,
   setupAuthExtension,
   setupBankExtension,
   setupIbcExtension,
+  SigningStargateClient,
+  StargateClient,
 } from "@cosmjs/stargate";
+import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { fetch } from "cross-fetch";
 import {
-  IBCChainConfig,
-  Network,
-  NetworkChainConfigLookup,
   AssetAmount,
   Chain,
   IAsset,
+  IBCChainConfig,
+  Network,
+  NetworkChainConfigLookup,
 } from "../../../entities";
 import { calculateIBCExportFee } from "../../../utils/ibcExportFees";
-import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
-import { BaseBridge, BridgeParams, IBCBridgeTx, BridgeTx } from "../BaseBridge";
-import { getTransferTimeoutData } from "./getTransferTimeoutData";
-import { TokenRegistry } from "../../native/TokenRegistry";
+import { parseTxFailure } from "../../../utils/parseTxFailure";
 import {
+  NativeAminoTypes,
   NativeDexClient,
   NativeDexTransaction,
-  NativeAminoTypes,
 } from "../../native";
-import { parseTxFailure } from "../../../utils/parseTxFailure";
 import { SifUnSignedClient } from "../../native/SifClient";
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { TokenRegistry } from "../../native/TokenRegistry";
+import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
+import { BaseBridge, BridgeParams, BridgeTx, IBCBridgeTx } from "../BaseBridge";
+import { getTransferTimeoutData } from "./getTransferTimeoutData";
+import {
+  DEFAULT_FEE,
+  SifchainEncodeObject,
+  SifSigningStargateClient,
+} from "../../../clients/sifchain";
 
 export type IBCBridgeContext = {
   sifRpcUrl: string;
@@ -130,7 +133,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     sequence: string | number,
   ) {
     const didReceive = Promise.resolve()
-      .then(async (e) => {
+      .then(async () => {
         const queryClient = await this.loadQueryClientByNetwork(network);
         const receipt = await queryClient.ibc.channel.packetReceipt(
           receivingPort,
@@ -139,7 +142,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         );
         return receipt.received;
       })
-      .catch((e) => {
+      .catch(() => {
         return fetch(
           `${
             this.loadChainConfigByNetwork(network).restUrl
@@ -209,12 +212,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     provider: CosmosWalletProvider,
     _params: BridgeParams,
     // Load testing options
-    {
-      shouldBatchTransfers = false,
-      maxMsgsPerBatch = 800,
-      maxAmountPerMsg = `9223372036854775807`,
-      gasPerBatch = undefined,
-    } = {},
+    { maxMsgsPerBatch = 800 } = {},
   ): Promise<BroadcastTxResult[]> {
     const params = await this.resolveBridgeParamsForImport(_params);
     const toChainConfig = provider.getIBCChainConfig(params.toChain);
@@ -298,44 +296,18 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       }),
     ];
 
-    const feeAmount = await this.estimateFees(provider, params);
-
-    // if (feeAmount?.amount.greaterThan("0")) {
-    //   const feeEntry = registry.find(
-    //     (item) => item.baseDenom === feeAmount.asset.symbol,
-    //   );
-    //   if (!feeEntry) {
-    //     throw new Error(
-    //       "Failed to find whiteliste entry for fee symbol " +
-    //         feeAmount.asset.symbol,
-    //     );
-    //   }
-    //   const sendFeeMsg = client.tx.bank.Send.createRawEncodeObject({
-    //     fromAddress: params.fromAddress,
-    //     toAddress: IBC_EXPORT_FEE_ADDRESS,
-    //     amount: [
-    //       {
-    //         denom: feeEntry.denom,
-    //         amount: feeAmount.toBigInt().toString(),
-    //       },
-    //     ],
-    //   });
-    //   encodeMsgs.unshift(sendFeeMsg);
-    // }
-
     const batches = [];
     while (encodeMsgs.length) {
       batches.push(encodeMsgs.splice(0, maxMsgsPerBatch));
     }
 
-    console.log({ batches });
     const responses: BroadcastTxResult[] = [];
 
     for (let batch of batches) {
       try {
         const gasAssetAmount = await this.fetchTransferGasFee(params.fromChain);
 
-        const txDraft = new NativeDexTransaction(params.fromAddress, batch, {
+        const tx = new NativeDexTransaction(params.fromAddress, batch, {
           price: {
             denom: params.fromChain.nativeAsset.symbol,
             amount:
@@ -350,13 +322,23 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
               : gasAssetAmount.toBigInt().toString(),
         });
 
-        console.log(txDraft.fee);
+        if (params.fromChain.chainConfig.chainType === "ibc") {
+          const client = await SigningStargateClient?.connectWithSigner(
+            params.fromChain.chainConfig.rpcUrl,
+            await provider.getSendingSigner(params.fromChain),
+          );
 
-        const signedTx = await provider.sign(params.fromChain, txDraft);
+          const sentTx = await client.signAndBroadcast(
+            tx.fromAddress,
+            tx.msgs,
+            {
+              amount: [tx.fee.price],
+              gas: tx.fee.gas,
+            },
+          );
 
-        const sentTx = await provider.broadcast(params.fromChain, signedTx);
-
-        responses.push(sentTx);
+          responses.push(sentTx as BroadcastTxResult);
+        }
       } catch (err) {
         console.error(err);
         const e = err as {
