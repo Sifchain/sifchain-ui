@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: REGEN_MAINNET,
   [NetworkEnv.TESTNET]: REGEN_MAINNET,
   [NetworkEnv.MAINNET]: REGEN_MAINNET,
+  [NetworkEnv.TEMPNET]: REGEN_MAINNET,
 };

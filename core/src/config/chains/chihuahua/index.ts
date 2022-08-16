@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: CHIHUAHUA_TESTNET,
   [NetworkEnv.TESTNET]: CHIHUAHUA_TESTNET,
   [NetworkEnv.MAINNET]: CHIHUAHUA_TESTNET,
+  [NetworkEnv.TEMPNET]: CHIHUAHUA_TESTNET,
 };

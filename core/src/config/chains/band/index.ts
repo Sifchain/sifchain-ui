@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: BAND_TESTNET,
   [NetworkEnv.TESTNET]: BAND_TESTNET,
   [NetworkEnv.MAINNET]: BAND_TESTNET,
+  [NetworkEnv.TEMPNET]: BAND_TESTNET,
 };

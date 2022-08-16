@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: STARGAZE_TESTNET,
   [NetworkEnv.TESTNET]: STARGAZE_TESTNET,
   [NetworkEnv.MAINNET]: STARGAZE_MAINNET,
+  [NetworkEnv.TEMPNET]: STARGAZE_TESTNET,
 };

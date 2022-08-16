@@ -6,6 +6,7 @@ export enum NetworkEnv {
   TESTNET = "testnet",
   DEVNET = "devnet",
   LOCALNET = "localnet",
+  TEMPNET = "tempnet",
 }
 
 type AssetTag = `${Network}.${NetworkEnv}`;
@@ -43,6 +44,12 @@ export const profileLookup: ProfileLookup = {
     tag: NetworkEnv.LOCALNET,
     ethAssetTag: "ethereum.devnet",
     sifAssetTag: "sifchain.devnet",
+    cosmoshubAssetTag: "cosmoshub.testnet",
+  },
+  [NetworkEnv.TEMPNET]: {
+    tag: NetworkEnv.TEMPNET,
+    ethAssetTag: "ethereum.testnet",
+    sifAssetTag: "sifchain.tempnet",
     cosmoshubAssetTag: "cosmoshub.testnet",
   },
 } as const;
