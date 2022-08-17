@@ -32,11 +32,6 @@ import { TokenRegistry } from "../../native/TokenRegistry";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import { BaseBridge, BridgeParams, BridgeTx, IBCBridgeTx } from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";
-import {
-  DEFAULT_FEE,
-  SifchainEncodeObject,
-  SifSigningStargateClient,
-} from "../../../clients/sifchain";
 
 export type IBCBridgeContext = {
   sifRpcUrl: string;
