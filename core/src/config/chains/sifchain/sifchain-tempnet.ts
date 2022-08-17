@@ -6,13 +6,13 @@ export const SIFCHAIN_TEMPNET: IBCChainConfig = {
   displayName: "Sifchain",
   blockExplorerUrl: "https://www.mintscan.io/sifchain",
   nativeAssetSymbol: "rowan",
-  chainId: "sifchain-margin-tempnet",
+  chainId: "sifchain-tempnet-2c36798",
   rpcUrl: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
   restUrl: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
   denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   keplrChainInfo: {
     chainName: "Sifchain Tempnet (margin)",
-    chainId: "sifchain-margin-tempnet",
+    chainId: "sifchain-tempnet-2c36798",
     rpc: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
     rest: "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
     stakeCurrency: {
