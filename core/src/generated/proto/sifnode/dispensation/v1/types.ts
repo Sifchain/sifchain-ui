@@ -1,7 +1,7 @@
 /* eslint-disable */
-import Long from "long";
-import * as _m0 from "protobufjs/minimal";
 import { Coin } from "../../../cosmos/base/coin";
+import Long from "long";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.dispensation.v1";
 
@@ -49,8 +49,9 @@ export function distributionTypeToJSON(object: DistributionType): string {
       return "DISTRIBUTION_TYPE_VALIDATOR_SUBSIDY";
     case DistributionType.DISTRIBUTION_TYPE_LIQUIDITY_MINING:
       return "DISTRIBUTION_TYPE_LIQUIDITY_MINING";
+    case DistributionType.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -98,8 +99,9 @@ export function distributionStatusToJSON(object: DistributionStatus): string {
       return "DISTRIBUTION_STATUS_COMPLETED";
     case DistributionStatus.DISTRIBUTION_STATUS_FAILED:
       return "DISTRIBUTION_STATUS_FAILED";
+    case DistributionStatus.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -360,10 +362,10 @@ export const DistributionRecord = {
         ? object.coins.map((e: any) => Coin.fromJSON(e))
         : [],
       distributionStartHeight: isSet(object.distributionStartHeight)
-        ? Long.fromString(object.distributionStartHeight)
+        ? Long.fromValue(object.distributionStartHeight)
         : Long.ZERO,
       distributionCompletedHeight: isSet(object.distributionCompletedHeight)
-        ? Long.fromString(object.distributionCompletedHeight)
+        ? Long.fromValue(object.distributionCompletedHeight)
         : Long.ZERO,
       authorizedRunner: isSet(object.authorizedRunner)
         ? String(object.authorizedRunner)
@@ -865,10 +867,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

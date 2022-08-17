@@ -1,6 +1,4 @@
 /* eslint-disable */
-import Long from "long";
-import * as _m0 from "protobufjs/minimal";
 import {
   DistributionStatus,
   DistributionRecords,
@@ -11,7 +9,9 @@ import {
   distributionStatusToJSON,
   distributionTypeFromJSON,
   distributionTypeToJSON,
-} from "../../../sifnode/dispensation/v1/types";
+} from "./types";
+import Long from "long";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.dispensation.v1";
 
@@ -146,7 +146,7 @@ export const QueryAllDistributionsResponse = {
       distributions: Array.isArray(object?.distributions)
         ? object.distributions.map((e: any) => Distribution.fromJSON(e))
         : [],
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.ZERO,
     };
   },
 
@@ -303,7 +303,7 @@ export const QueryRecordsByDistributionNameResponse = {
       distributionRecords: isSet(object.distributionRecords)
         ? DistributionRecords.fromJSON(object.distributionRecords)
         : undefined,
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.ZERO,
     };
   },
 
@@ -445,7 +445,7 @@ export const QueryRecordsByRecipientAddrResponse = {
       distributionRecords: isSet(object.distributionRecords)
         ? DistributionRecords.fromJSON(object.distributionRecords)
         : undefined,
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.ZERO,
     };
   },
 
@@ -581,7 +581,7 @@ export const QueryClaimsResponse = {
       claims: Array.isArray(object?.claims)
         ? object.claims.map((e: any) => UserClaim.fromJSON(e))
         : [],
-      height: isSet(object.height) ? Long.fromString(object.height) : Long.ZERO,
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.ZERO,
     };
   },
 
@@ -723,10 +723,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

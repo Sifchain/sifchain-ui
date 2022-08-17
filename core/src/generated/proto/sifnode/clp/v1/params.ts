@@ -1,12 +1,13 @@
 /* eslint-disable */
 import Long from "long";
-import * as _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.clp.v1";
 
 /** Params - used for initializing default parameter for clp at genesis */
 export interface Params {
   minCreatePoolThreshold: Long;
+  enableRemovalQueue: boolean;
 }
 
 export interface RewardParams {
@@ -72,7 +73,7 @@ export interface ProviderDistributionParams {
 }
 
 function createBaseParams(): Params {
-  return { minCreatePoolThreshold: Long.UZERO };
+  return { minCreatePoolThreshold: Long.UZERO, enableRemovalQueue: false };
 }
 
 export const Params = {
@@ -82,6 +83,9 @@ export const Params = {
   ): _m0.Writer {
     if (!message.minCreatePoolThreshold.isZero()) {
       writer.uint32(8).uint64(message.minCreatePoolThreshold);
+    }
+    if (message.enableRemovalQueue === true) {
+      writer.uint32(16).bool(message.enableRemovalQueue);
     }
     return writer;
   },
@@ -96,6 +100,9 @@ export const Params = {
         case 1:
           message.minCreatePoolThreshold = reader.uint64() as Long;
           break;
+        case 2:
+          message.enableRemovalQueue = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -107,8 +114,11 @@ export const Params = {
   fromJSON(object: any): Params {
     return {
       minCreatePoolThreshold: isSet(object.minCreatePoolThreshold)
-        ? Long.fromString(object.minCreatePoolThreshold)
+        ? Long.fromValue(object.minCreatePoolThreshold)
         : Long.UZERO,
+      enableRemovalQueue: isSet(object.enableRemovalQueue)
+        ? Boolean(object.enableRemovalQueue)
+        : false,
     };
   },
 
@@ -118,6 +128,8 @@ export const Params = {
       (obj.minCreatePoolThreshold = (
         message.minCreatePoolThreshold || Long.UZERO
       ).toString());
+    message.enableRemovalQueue !== undefined &&
+      (obj.enableRemovalQueue = message.enableRemovalQueue);
     return obj;
   },
 
@@ -128,6 +140,7 @@ export const Params = {
       object.minCreatePoolThreshold !== null
         ? Long.fromValue(object.minCreatePoolThreshold)
         : Long.UZERO;
+    message.enableRemovalQueue = object.enableRemovalQueue ?? false;
     return message;
   },
 };
@@ -193,10 +206,10 @@ export const RewardParams = {
   fromJSON(object: any): RewardParams {
     return {
       liquidityRemovalLockPeriod: isSet(object.liquidityRemovalLockPeriod)
-        ? Long.fromString(object.liquidityRemovalLockPeriod)
+        ? Long.fromValue(object.liquidityRemovalLockPeriod)
         : Long.UZERO,
       liquidityRemovalCancelPeriod: isSet(object.liquidityRemovalCancelPeriod)
-        ? Long.fromString(object.liquidityRemovalCancelPeriod)
+        ? Long.fromValue(object.liquidityRemovalCancelPeriod)
         : Long.UZERO,
       rewardPeriods: Array.isArray(object?.rewardPeriods)
         ? object.rewardPeriods.map((e: any) => RewardPeriod.fromJSON(e))
@@ -397,13 +410,13 @@ export const PmtpParams = {
         ? String(object.pmtpPeriodGovernanceRate)
         : "",
       pmtpPeriodEpochLength: isSet(object.pmtpPeriodEpochLength)
-        ? Long.fromString(object.pmtpPeriodEpochLength)
+        ? Long.fromValue(object.pmtpPeriodEpochLength)
         : Long.ZERO,
       pmtpPeriodStartBlock: isSet(object.pmtpPeriodStartBlock)
-        ? Long.fromString(object.pmtpPeriodStartBlock)
+        ? Long.fromValue(object.pmtpPeriodStartBlock)
         : Long.ZERO,
       pmtpPeriodEndBlock: isSet(object.pmtpPeriodEndBlock)
-        ? Long.fromString(object.pmtpPeriodEndBlock)
+        ? Long.fromValue(object.pmtpPeriodEndBlock)
         : Long.ZERO,
     };
   },
@@ -543,10 +556,10 @@ export const RewardPeriod = {
         ? String(object.rewardPeriodId)
         : "",
       rewardPeriodStartBlock: isSet(object.rewardPeriodStartBlock)
-        ? Long.fromString(object.rewardPeriodStartBlock)
+        ? Long.fromValue(object.rewardPeriodStartBlock)
         : Long.UZERO,
       rewardPeriodEndBlock: isSet(object.rewardPeriodEndBlock)
-        ? Long.fromString(object.rewardPeriodEndBlock)
+        ? Long.fromValue(object.rewardPeriodEndBlock)
         : Long.UZERO,
       rewardPeriodAllocation: isSet(object.rewardPeriodAllocation)
         ? String(object.rewardPeriodAllocation)
@@ -565,7 +578,7 @@ export const RewardPeriod = {
         ? Boolean(object.rewardPeriodDistribute)
         : false,
       rewardPeriodMod: isSet(object.rewardPeriodMod)
-        ? Long.fromString(object.rewardPeriodMod)
+        ? Long.fromValue(object.rewardPeriodMod)
         : Long.UZERO,
     };
   },
@@ -770,7 +783,7 @@ export const LiquidityProtectionParams = {
         ? String(object.maxRowanLiquidityThresholdAsset)
         : "",
       epochLength: isSet(object.epochLength)
-        ? Long.fromString(object.epochLength)
+        ? Long.fromValue(object.epochLength)
         : Long.UZERO,
       isActive: isSet(object.isActive) ? Boolean(object.isActive) : false,
     };
@@ -935,13 +948,13 @@ export const ProviderDistributionPeriod = {
         ? String(object.distributionPeriodBlockRate)
         : "",
       distributionPeriodStartBlock: isSet(object.distributionPeriodStartBlock)
-        ? Long.fromString(object.distributionPeriodStartBlock)
+        ? Long.fromValue(object.distributionPeriodStartBlock)
         : Long.UZERO,
       distributionPeriodEndBlock: isSet(object.distributionPeriodEndBlock)
-        ? Long.fromString(object.distributionPeriodEndBlock)
+        ? Long.fromValue(object.distributionPeriodEndBlock)
         : Long.UZERO,
       distributionPeriodMod: isSet(object.distributionPeriodMod)
-        ? Long.fromString(object.distributionPeriodMod)
+        ? Long.fromValue(object.distributionPeriodMod)
         : Long.UZERO,
     };
   },
@@ -1086,10 +1099,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

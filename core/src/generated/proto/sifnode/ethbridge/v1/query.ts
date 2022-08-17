@@ -1,8 +1,8 @@
 /* eslint-disable */
+import { Status } from "../../oracle/v1/types";
 import Long from "long";
-import * as _m0 from "protobufjs/minimal";
-import { Status } from "../../../sifnode/oracle/v1/types";
-import { EthBridgeClaim } from "../../../sifnode/ethbridge/v1/types";
+import { EthBridgeClaim } from "./types";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.ethbridge.v1";
 
@@ -108,12 +108,12 @@ export const QueryEthProphecyRequest = {
   fromJSON(object: any): QueryEthProphecyRequest {
     return {
       ethereumChainId: isSet(object.ethereumChainId)
-        ? Long.fromString(object.ethereumChainId)
+        ? Long.fromValue(object.ethereumChainId)
         : Long.ZERO,
       bridgeContractAddress: isSet(object.bridgeContractAddress)
         ? String(object.bridgeContractAddress)
         : "",
-      nonce: isSet(object.nonce) ? Long.fromString(object.nonce) : Long.ZERO,
+      nonce: isSet(object.nonce) ? Long.fromValue(object.nonce) : Long.ZERO,
       symbol: isSet(object.symbol) ? String(object.symbol) : "",
       tokenContractAddress: isSet(object.tokenContractAddress)
         ? String(object.tokenContractAddress)
@@ -435,10 +435,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
