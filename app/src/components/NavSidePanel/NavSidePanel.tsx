@@ -2,7 +2,7 @@ import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
 import { accountStore } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
+import { flagsStore, MARGIN_FE_URL } from "@/store/modules/flags";
 import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
 import useChangeLog from "@/hooks/useChangeLog";
@@ -29,8 +29,6 @@ try {
 } catch (_) {
   // do nothing
 }
-
-const MARGIN_FE_URL = "https://sifchain-margin.vercel.app";
 
 export default defineComponent({
   setup() {
