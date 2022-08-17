@@ -189,6 +189,7 @@ export class EthBridge extends BaseBridge<
     provider: CosmosWalletProvider,
     params: BridgeParams,
   ) {
+    console.group("EthBridge.exportToEth");
     const feeAmount = await this.estimateFees(provider, params);
     const nativeChain = params.fromChain;
 
@@ -232,8 +233,15 @@ export class EthBridge extends BaseBridge<
           params.fromAddress,
         );
 
+    console.log({ unsignedTx: tx });
+
     const signed = await provider.sign(nativeChain, tx);
+
+    console.log({ signedTx: signed });
+
     const sent = await provider.broadcast(nativeChain, signed);
+
+    console.log({ sentTx: sent });
 
     return sent;
   }
