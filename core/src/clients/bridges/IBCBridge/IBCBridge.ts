@@ -318,13 +318,6 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         });
 
         if (params.fromChain.chainConfig.chainType === "ibc") {
-          // ibc import
-
-          const client = await SigningStargateClient?.connectWithSigner(
-            params.fromChain.chainConfig.rpcUrl,
-            await provider.getSendingSigner(params.fromChain),
-          );
-
           const signedTx = await provider.sign(params.fromChain, txDraft);
 
           const sentTx = await provider.broadcast(params.fromChain, signedTx);
