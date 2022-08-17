@@ -1,14 +1,8 @@
-import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { isBroadcastTxFailure } from "@cosmjs/launchpad";
 import Long from "long";
 import Web3 from "web3";
 import { provider } from "web3-core";
 import { Contract } from "web3-eth-contract";
-
-import {
-  DEFAULT_FEE,
-  SifchainEncodeObject,
-  SifSigningStargateClient,
-} from "../../../clients/sifchain";
 
 import {
   AssetAmount,
@@ -148,7 +142,7 @@ export class EthBridge extends BaseBridge<
     if (wallet instanceof CosmosWalletProvider) {
       const tx = await this.exportToEth(wallet, params);
 
-      if (isBroadcastTxFailure(tx as BroadcastTxResult)) {
+      if (isBroadcastTxFailure(tx)) {
         throw new Error(parseTxFailure(tx).memo);
       }
 
@@ -195,7 +189,7 @@ export class EthBridge extends BaseBridge<
     provider: CosmosWalletProvider,
     params: BridgeParams,
   ) {
-    const feeAmount = await this.estimateFees(provider, params);
+    const feeAmount = this.estimateFees(provider, params);
     const nativeChain = params.fromChain;
 
     const client = await NativeDexClient.connectByChain(nativeChain);
@@ -206,11 +200,10 @@ export class EthBridge extends BaseBridge<
 
     const entry = await this.tokenRegistry.findAssetEntryOrThrow(sifAsset);
 
-    const tx = isOriginallySifchainNativeToken(params.assetAmount.asset)
+    const txDraft = isOriginallySifchainNativeToken(params.assetAmount.asset)
       ? client.tx.ethbridge.Lock(
           {
             ethereumReceiver: params.toAddress,
-
             amount: params.assetAmount.toBigInt().toString(),
             symbol: entry.denom,
             cosmosSender: params.fromAddress,
@@ -238,21 +231,10 @@ export class EthBridge extends BaseBridge<
           params.fromAddress,
         );
 
-    const stargateClient = await SifSigningStargateClient.connectWithSigner(
-      this.context.sifRpcUrl,
-      await provider.getSendingSigner(nativeChain),
-    );
+    const signed = await provider.sign(nativeChain, txDraft);
+    const sent = await provider.broadcast(nativeChain, signed);
 
-    return await stargateClient.signAndBroadcast(
-      params.fromAddress,
-      tx.msgs as SifchainEncodeObject[],
-      tx.fee
-        ? {
-            amount: [tx.fee.price],
-            gas: tx.fee.gas,
-          }
-        : DEFAULT_FEE,
-    );
+    return sent;
   }
 
   private async importFromEth(
