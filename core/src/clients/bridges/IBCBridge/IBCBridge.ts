@@ -327,9 +327,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
 
           const signedTx = await provider.sign(params.fromChain, txDraft);
 
-          const sentTx = await client.broadcastTx(
-            signedTx.signed as Uint8Array,
-          );
+          const sentTx = await provider.broadcast(params.fromChain, signedTx);
 
           responses.push(sentTx as BroadcastTxResult);
         }
