@@ -54,10 +54,13 @@ export default defineComponent({
       return !isExternal.value && linkRef?.isActive?.value;
     });
 
+    const isMarginUrl = props.href === MARGIN_FE_URL;
     let rel = "noopener noreferrer";
+    let target = "_blank";
 
-    if (props.href === MARGIN_FE_URL) {
+    if (isMarginUrl) {
       rel = "noopener";
+      target = "_self";
     }
 
     return () => {
@@ -66,7 +69,7 @@ export default defineComponent({
           {...(isExternal.value && {
             href: props.href,
             rel,
-            target: "_blank",
+            target,
           })}
           {...(Cmp.value === RouterLink && {
             to: props.href,
@@ -92,7 +95,7 @@ export default defineComponent({
           >
             {props.displayName}
 
-            {isExternal.value && (
+            {isExternal.value && !isMarginUrl (
               <AssetIcon
                 icon="interactive/open-external"
                 size={16}
