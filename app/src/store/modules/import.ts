@@ -120,6 +120,8 @@ export const runTransfer = async (
   params: BridgeParams,
   onBridgeEvent: (ev: BridgeEvent) => void,
 ) => {
+  console.group("runTransfer");
+
   if (!params.assetAmount || !params.assetAmount.greaterThan("0")) {
     throw new Error("Please provide an amount");
   }
@@ -131,11 +133,15 @@ export const runTransfer = async (
     params.fromChain,
     params.toChain,
   );
+  console.log({ params, bridge });
   onBridgeEvent({ type: "approve_started" });
   try {
     await bridge.approveTransfer(params);
     onBridgeEvent({ type: "approve_started" });
   } catch (error) {
+    console.log({
+      approveTransferError: error,
+    });
     return onBridgeEvent({
       type: "approve_error",
       tx: {
@@ -148,6 +154,8 @@ export const runTransfer = async (
   onBridgeEvent({ type: "signing" });
   try {
     const tx = await bridge.transfer(params);
+
+    console.log("signing", { tx });
     onBridgeEvent({
       type: "sent",
       tx: {
@@ -165,4 +173,6 @@ export const runTransfer = async (
       },
     });
   }
+
+  console.groupEnd();
 };

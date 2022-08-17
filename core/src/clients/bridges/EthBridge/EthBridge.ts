@@ -143,11 +143,15 @@ export class EthBridge extends BaseBridge<
     wallet: CosmosWalletProvider | Web3WalletProvider,
     params: BridgeParams,
   ) {
+    console.group("EthBridge.transfer");
+
+    console.log("transfer", { params });
     this.assertValidBridgeParams(wallet, params);
 
     if (wallet instanceof CosmosWalletProvider) {
       const tx = await this.exportToEth(wallet, params);
 
+      console.log({ tx });
       if (isBroadcastTxFailure(tx as BroadcastTxResult)) {
         throw new Error(parseTxFailure(tx).memo);
       }
@@ -195,7 +199,8 @@ export class EthBridge extends BaseBridge<
     provider: CosmosWalletProvider,
     params: BridgeParams,
   ) {
-    const feeAmount = await this.estimateFees(provider, params);
+    console.log("exportToEth", { params, provider });
+    const feeAmount = this.estimateFees(provider, params);
     const nativeChain = params.fromChain;
 
     const client = await NativeDexClient.connectByChain(nativeChain);

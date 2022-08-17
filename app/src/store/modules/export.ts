@@ -92,6 +92,7 @@ export const exportStore = Vuextra.createStore({
       Object.assign(state.draft, nextDraft);
     },
     setUnpegEvent(unpegEvent: BridgeEvent | undefined) {
+      console.log("setUnpegEvent", { unpegEvent });
       state.draft.unpegEvent = unpegEvent;
     },
   }),

@@ -1,13 +1,6 @@
 import { UsecaseContext } from "..";
-import { IAssetAmount, Chain, Network, TransactionStatus } from "@sifchain/sdk";
-import {
-  EthereumChain,
-  SifchainChain,
-  CosmoshubChain,
-  IrisChain,
-  AkashChain,
-  SentinelChain,
-} from "@sifchain/sdk/src/clients/chains";
+import { Chain, Network } from "@sifchain/sdk";
+import { SifchainChain } from "@sifchain/sdk/src/clients/chains";
 import InterchainTxManager from "./txManager";
 import {
   BridgeTx,
@@ -31,10 +24,12 @@ export default function InterchainUsecase(context: UsecaseContext) {
     },
     async approveTransfer(params: BridgeParams) {},
     async transfer(params: BridgeParams) {
+      console.log("transfer", { params });
       const result = await context.services.ibc.transfer(
         getIbcWallet(params.fromChain),
         params,
       );
+      console.log("transfer result", { result });
       bridgeTxEmitter.emit("tx_sent", result);
       return result;
     },
