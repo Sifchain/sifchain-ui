@@ -2,14 +2,14 @@
   "sifAddrPrefix": "sif",
   "sifApiUrl": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
   "sifRpcUrl": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
-  "sifChainId": "sifchain-margin-tempnet",
+  "sifChainId": "sifchain-tempnet-2c36798",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
   "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
   "bridgebankContractAddress": "0x96DC6f02C66Bbf2dfbA934b8DafE7B2c08715A73",
   "keplrChainConfig": {
     "chainName": "Sifchain Tempnet (margin)",
-    "chainId": "sifchain-margin-tempnet",
+    "chainId": "sifchain-tempnet-2c36798",
     "rpc": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
     "rest": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
     "stakeCurrency": {
