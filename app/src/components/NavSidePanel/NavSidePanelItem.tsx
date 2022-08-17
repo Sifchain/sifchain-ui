@@ -53,12 +53,18 @@ export default defineComponent({
       return !isExternal.value && linkRef?.isActive?.value;
     });
 
+    let rel = "noopener noreferrer";
+
+    if (props.href.includes("-margin.")) {
+      rel = "noopener";
+    }
+
     return () => {
       return (
         <Cmp.value
           {...(isExternal.value && {
             href: props.href,
-            rel: "noopener noreferrer",
+            rel,
             target: "_blank",
           })}
           {...(Cmp.value === RouterLink && {
