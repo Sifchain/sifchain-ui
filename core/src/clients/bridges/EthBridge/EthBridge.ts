@@ -200,6 +200,12 @@ export class EthBridge extends BaseBridge<
     provider: CosmosWalletProvider,
     params: BridgeParams,
   ) {
+    console.group("EthBridge.exportToEth");
+
+    console.log({
+      params,
+    });
+
     const feeAmount = this.estimateFees(provider, params);
     const nativeChain = params.fromChain;
 
@@ -210,6 +216,14 @@ export class EthBridge extends BaseBridge<
     );
 
     const entry = await this.tokenRegistry.findAssetEntryOrThrow(sifAsset);
+
+    if (!feeAmount) {
+      throw new Error("Fee amount not found");
+    }
+
+    console.log({
+      feeAmount,
+    });
 
     const txDraft = isOriginallySifchainNativeToken(params.assetAmount.asset)
       ? client.tx.ethbridge.Lock(
@@ -222,7 +236,7 @@ export class EthBridge extends BaseBridge<
               `${parseInt(params.toChain.chainConfig.chainId)}`,
             ),
             // ethereumReceiver: tokenAddress,
-            cethAmount: feeAmount!.toBigInt().toString(),
+            cethAmount: feeAmount.toBigInt().toString(),
           },
           params.fromAddress,
         )
@@ -241,21 +255,9 @@ export class EthBridge extends BaseBridge<
           params.fromAddress,
         );
 
-    console.group("EthBridge.exportToEth");
-
-    console.log({ txDraft });
-
-    const signedTx = await provider.sign(nativeChain, txDraft);
-
-    console.log({ signedTx });
-    // return provider.broadcast(nativeChain, signedTx);
-
-    if (signedTx.signed && "authInfoBytes" in signedTx.signed) {
-      console.log("Signed with authInfoBytes");
-      return provider.broadcast(nativeChain, signedTx);
-    }
-
     const sendingSigner = await provider.getSendingSigner(nativeChain);
+
+    console.log({ txDraft, sendingSigner });
 
     const nativeStargateClient =
       await SifSigningStargateClient.connectWithSigner(
@@ -266,7 +268,7 @@ export class EthBridge extends BaseBridge<
         },
       );
 
-    return nativeStargateClient.signAndBroadcast(
+    const txResult = await nativeStargateClient.signAndBroadcast(
       params.fromAddress,
       txDraft.msgs as SifchainEncodeObject[],
       txDraft.fee
@@ -276,6 +278,11 @@ export class EthBridge extends BaseBridge<
           }
         : DEFAULT_FEE,
     );
+
+    console.log({
+      txResult,
+    });
+    return txResult;
   }
 
   private async importFromEth(
