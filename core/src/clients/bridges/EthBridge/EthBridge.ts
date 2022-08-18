@@ -3,7 +3,6 @@ import Long from "long";
 import Web3 from "web3";
 import { provider } from "web3-core";
 import { Contract } from "web3-eth-contract";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 import {
   DEFAULT_FEE,
@@ -40,6 +39,7 @@ import { erc20TokenAbi } from "../../wallets/ethereum/erc20TokenAbi";
 import { BaseBridge, BridgeParams, BridgeTx, EthBridgeTx } from "../BaseBridge";
 import { getBridgeBankContract } from "./bridgebankContract";
 import { isOriginallySifchainNativeToken } from "./isOriginallySifchainNativeToken";
+import { StdFee } from "@cosmjs/stargate";
 
 export type EthBridgeContext = {
   sifApiUrl: string;
@@ -266,28 +266,16 @@ export class EthBridge extends BaseBridge<
         },
       );
 
-    // const stargate = await SigningStargateClient.connectWithSigner(
-    //   chainConfig.rpcUrl,
-    //   signer,
-    // );
-    // const result = await stargate.broadcastTx(
-    //   Uint8Array.from(TxRaw.encode(tx.signed as TxRaw).finish()),
-    // );
-    // return result as BroadcastTxResult;
-
-    const encodedMsg = Uint8Array.from(
-      TxRaw.encode(signedTx.signed as TxRaw).finish(),
+    return nativeStargateClient.signAndBroadcast(
+      params.fromAddress,
+      txDraft.msgs as SifchainEncodeObject[],
+      txDraft.fee
+        ? {
+            amount: [txDraft.fee.price],
+            gas: txDraft.fee.gas,
+          }
+        : DEFAULT_FEE,
     );
-
-    console.log({ encodedMsg });
-
-    const txResult = (await nativeStargateClient.broadcastTx(
-      encodedMsg,
-    )) as BroadcastTxResult;
-
-    console.log({ txResult });
-
-    return txResult;
   }
 
   private async importFromEth(
