@@ -11,6 +11,10 @@ import {
 } from "@cosmjs/stargate";
 import { findAttribute, parseRawLog } from "@cosmjs/stargate/build/logs";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import {
+  SifchainEncodeObject,
+  SifSigningStargateClient,
+} from "../../../clients/sifchain";
 import { fetch } from "cross-fetch";
 import {
   AssetAmount,
@@ -332,7 +336,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
             responses.push(sentTx);
           } else {
             const sendingClient =
-              await SigningStargateClient?.connectWithSigner(
+              await SifSigningStargateClient.connectWithSigner(
                 params.fromChain.chainConfig.rpcUrl,
                 await provider.getSendingSigner(params.fromChain),
                 {
@@ -343,7 +347,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
               );
             const sentTx = await sendingClient.signAndBroadcast(
               txDraft.fromAddress,
-              txDraft.msgs,
+              txDraft.msgs as SifchainEncodeObject[],
               {
                 amount: [txDraft.fee.price],
                 gas: txDraft.fee.gas,
