@@ -215,7 +215,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     const receivingSigner = await provider.getSendingSigner(params.toChain);
 
     const receivingStargateCient =
-      await SigningStargateClient?.connectWithSigner(
+      await SigningStargateClient.connectWithSigner(
         toChainConfig.rpcUrl,
         receivingSigner,
         {
@@ -229,6 +229,10 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       fromChain: params.fromChain,
       toChain: params.toChain,
     });
+
+    if (!channelId) {
+      throw new Error("Channel id not found");
+    }
 
     const symbol = params.assetAmount.asset.symbol;
     const registry = await this.tokenRegistry.load();
@@ -270,15 +274,15 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     }
 
     const sifConfig = this.loadChainConfigByNetwork(Network.SIFCHAIN);
-    const client = await NativeDexClient.connect(
+
+    const nativeClient = await NativeDexClient.connect(
       sifConfig.rpcUrl,
       sifConfig.restUrl,
       sifConfig.chainId,
     );
-    if (!channelId) throw new Error("Channel id not found");
 
-    let encodeMsgs: EncodeObject[] = [
-      client.tx.ibc.Transfer.createRawEncodeObject({
+    const encodeMsgs: EncodeObject[] = [
+      nativeClient.tx.ibc.Transfer.createRawEncodeObject({
         sourcePort: "transfer",
         sourceChannel: channelId,
         sender: params.fromAddress,
@@ -318,11 +322,35 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         });
 
         if (params.fromChain.chainConfig.chainType === "ibc") {
-          const signedTx = await provider.sign(params.fromChain, txDraft);
+          const isImport =
+            params.toChain.chainConfig.chainId === sifConfig.chainId;
 
-          const sentTx = await provider.broadcast(params.fromChain, signedTx);
+          if (isImport) {
+            const signedTx = await provider.sign(params.fromChain, txDraft);
 
-          responses.push(sentTx as BroadcastTxResult);
+            const sentTx = await provider.broadcast(params.fromChain, signedTx);
+            responses.push(sentTx);
+          } else {
+            const sendingClient =
+              await SigningStargateClient?.connectWithSigner(
+                params.fromChain.chainConfig.rpcUrl,
+                await provider.getSendingSigner(params.fromChain),
+                {
+                  // we create amino additions, but these will not be used, because IBC types are already included & assigned
+                  // on top of the amino additions by default
+                  aminoTypes: new NativeAminoTypes(),
+                },
+              );
+            const sentTx = await sendingClient.signAndBroadcast(
+              txDraft.fromAddress,
+              txDraft.msgs,
+              {
+                amount: [txDraft.fee.price],
+                gas: txDraft.fee.gas,
+              },
+            );
+            responses.push(sentTx as BroadcastTxResult);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -416,7 +444,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
     );
 
     const config = tx.toChain.chainConfig as IBCChainConfig;
-    const client = await SigningStargateClient?.connectWithSigner(
+    const client = await SigningStargateClient.connectWithSigner(
       config.rpcUrl,
       await provider.getSendingSigner(tx.toChain),
     );

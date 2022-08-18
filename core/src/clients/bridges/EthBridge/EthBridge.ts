@@ -1,8 +1,14 @@
-import { isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
 import Long from "long";
 import Web3 from "web3";
 import { provider } from "web3-core";
 import { Contract } from "web3-eth-contract";
+
+import {
+  DEFAULT_FEE,
+  SifchainEncodeObject,
+  SifSigningStargateClient,
+} from "../../../clients/sifchain";
 
 import {
   AssetAmount,
@@ -21,7 +27,11 @@ import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
 } from "../../bridges/EthBridge/PegTxEventEmitter";
-import { NativeDexClient, NativeDexTransaction } from "../../native";
+import {
+  NativeAminoTypes,
+  NativeDexClient,
+  NativeDexTransaction,
+} from "../../native";
 import { TokenRegistry } from "../../native/TokenRegistry";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import { Web3Transaction, Web3WalletProvider } from "../../wallets/ethereum";
@@ -142,7 +152,7 @@ export class EthBridge extends BaseBridge<
     if (wallet instanceof CosmosWalletProvider) {
       const tx = await this.exportToEth(wallet, params);
 
-      if (isBroadcastTxFailure(tx)) {
+      if (isBroadcastTxFailure(tx as BroadcastTxResult)) {
         throw new Error(parseTxFailure(tx).memo);
       }
 
@@ -231,10 +241,25 @@ export class EthBridge extends BaseBridge<
           params.fromAddress,
         );
 
-    const signed = await provider.sign(nativeChain, txDraft);
-    const sent = await provider.broadcast(nativeChain, signed);
+    const nativeStargateClient =
+      await SifSigningStargateClient.connectWithSigner(
+        this.context.sifRpcUrl,
+        await provider.getSendingSigner(nativeChain),
+        {
+          aminoTypes: new NativeAminoTypes(),
+        },
+      );
 
-    return sent;
+    return await nativeStargateClient.signAndBroadcast(
+      params.fromAddress,
+      txDraft.msgs as SifchainEncodeObject[],
+      txDraft.fee
+        ? {
+            amount: [txDraft.fee.price],
+            gas: txDraft.fee.gas,
+          }
+        : DEFAULT_FEE,
+    );
   }
 
   private async importFromEth(
