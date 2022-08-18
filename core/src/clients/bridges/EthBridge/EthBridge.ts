@@ -250,6 +250,11 @@ export class EthBridge extends BaseBridge<
     console.log({ signedTx });
     // return provider.broadcast(nativeChain, signedTx);
 
+    if (signedTx.signed && "authInfoBytes" in signedTx.signed) {
+      console.log("Signed with authInfoBytes");
+      return provider.broadcast(nativeChain, signedTx);
+    }
+
     const sendingSigner = await provider.getSendingSigner(nativeChain);
 
     const nativeStargateClient =
