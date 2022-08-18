@@ -1,5 +1,0 @@
-
-
-balance before: 1.898615
-fee:            0.03537
-amount:         0.00001
