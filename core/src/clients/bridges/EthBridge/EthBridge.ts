@@ -3,6 +3,7 @@ import Long from "long";
 import Web3 from "web3";
 import { provider } from "web3-core";
 import { Contract } from "web3-eth-contract";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 import {
   DEFAULT_FEE,
@@ -249,18 +250,39 @@ export class EthBridge extends BaseBridge<
     console.log({ signedTx });
     // return provider.broadcast(nativeChain, signedTx);
 
+    const sendingSigner = await provider.getSendingSigner(nativeChain);
+
     const nativeStargateClient =
       await SifSigningStargateClient.connectWithSigner(
         this.context.sifRpcUrl,
-        await provider.getSendingSigner(nativeChain),
+        sendingSigner,
         {
           aminoTypes: new NativeAminoTypes(),
         },
       );
 
-    return nativeStargateClient.broadcastTx(
-      signedTx.signed as Uint8Array,
-    ) as Promise<BroadcastTxResult>;
+    // const stargate = await SigningStargateClient.connectWithSigner(
+    //   chainConfig.rpcUrl,
+    //   signer,
+    // );
+    // const result = await stargate.broadcastTx(
+    //   Uint8Array.from(TxRaw.encode(tx.signed as TxRaw).finish()),
+    // );
+    // return result as BroadcastTxResult;
+
+    const encodedMsg = Uint8Array.from(
+      TxRaw.encode(signedTx.signed as TxRaw).finish(),
+    );
+
+    console.log({ encodedMsg });
+
+    const txResult = (await nativeStargateClient.broadcastTx(
+      encodedMsg,
+    )) as BroadcastTxResult;
+
+    console.log({ txResult });
+
+    return txResult;
   }
 
   private async importFromEth(
