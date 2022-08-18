@@ -339,11 +339,6 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
               await SifSigningStargateClient.connectWithSigner(
                 params.fromChain.chainConfig.rpcUrl,
                 await provider.getSendingSigner(params.fromChain),
-                {
-                  // we create amino additions, but these will not be used, because IBC types are already included & assigned
-                  // on top of the amino additions by default
-                  aminoTypes: new NativeAminoTypes(),
-                },
               );
             const sentTx = await sendingClient.signAndBroadcast(
               txDraft.fromAddress,

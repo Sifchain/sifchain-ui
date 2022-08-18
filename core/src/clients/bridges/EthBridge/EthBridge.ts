@@ -27,11 +27,7 @@ import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
 } from "../../bridges/EthBridge/PegTxEventEmitter";
-import {
-  NativeAminoTypes,
-  NativeDexClient,
-  NativeDexTransaction,
-} from "../../native";
+import { NativeDexClient, NativeDexTransaction } from "../../native";
 import { TokenRegistry } from "../../native/TokenRegistry";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import { Web3Transaction, Web3WalletProvider } from "../../wallets/ethereum";
@@ -39,7 +35,6 @@ import { erc20TokenAbi } from "../../wallets/ethereum/erc20TokenAbi";
 import { BaseBridge, BridgeParams, BridgeTx, EthBridgeTx } from "../BaseBridge";
 import { getBridgeBankContract } from "./bridgebankContract";
 import { isOriginallySifchainNativeToken } from "./isOriginallySifchainNativeToken";
-import { StdFee } from "@cosmjs/stargate";
 
 export type EthBridgeContext = {
   sifApiUrl: string;
@@ -263,9 +258,6 @@ export class EthBridge extends BaseBridge<
       await SifSigningStargateClient.connectWithSigner(
         this.context.sifRpcUrl,
         sendingSigner,
-        {
-          aminoTypes: new NativeAminoTypes(),
-        },
       );
 
     const txResult = await nativeStargateClient.signAndBroadcast(
