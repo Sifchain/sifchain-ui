@@ -240,25 +240,29 @@ export class EthBridge extends BaseBridge<
           params.fromAddress,
         );
 
-    const nativeStargateClient =
-      await SifSigningStargateClient.connectWithSigner(
-        this.context.sifRpcUrl,
-        await provider.getSendingSigner(nativeChain),
-        {
-          aminoTypes: new NativeAminoTypes(),
-        },
-      );
+    const signedTx = await provider.sign(params.fromChain, txDraft);
 
-    return await nativeStargateClient.signAndBroadcast(
-      params.fromAddress,
-      txDraft.msgs as SifchainEncodeObject[],
-      txDraft.fee
-        ? {
-            amount: [txDraft.fee.price],
-            gas: txDraft.fee.gas,
-          }
-        : DEFAULT_FEE,
-    );
+    return provider.broadcast(params.fromChain, signedTx);
+
+    // const nativeStargateClient =
+    //   await SifSigningStargateClient.connectWithSigner(
+    //     this.context.sifRpcUrl,
+    //     await provider.getSendingSigner(nativeChain),
+    //     {
+    //       aminoTypes: new NativeAminoTypes(),
+    //     },
+    //   );
+    //
+    // return await nativeStargateClient.signAndBroadcast(
+    //   params.fromAddress,
+    //   txDraft.msgs as SifchainEncodeObject[],
+    //   txDraft.fee
+    //     ? {
+    //         amount: [txDraft.fee.price],
+    //         gas: txDraft.fee.gas,
+    //       }
+    //     : DEFAULT_FEE,
+    // );
   }
 
   private async importFromEth(
