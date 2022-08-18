@@ -9,54 +9,54 @@ export class NativeAminoTypes extends AminoTypes {
     const aminoAdditions = createAminoAdditions();
     super(aminoAdditions);
 
-    type ToAminoFn = (value: any) => any;
+    // type ToAminoFn = (value: any) => any;
 
-    const wrapAdditionToAminoFn = (
-      key: string,
-      wrapFn: (value: any, original: ToAminoFn) => any,
-    ) => {
-      const originalAddition = aminoAdditions[key];
-      if (originalAddition) {
-        const originalToAmino = originalAddition.toAmino;
+    // const wrapAdditionToAminoFn = (
+    //   key: string,
+    //   wrapFn: (value: any, original: ToAminoFn) => any,
+    // ) => {
+    //   const originalAddition = aminoAdditions[key];
+    //   if (originalAddition) {
+    //     const originalToAmino = originalAddition.toAmino;
 
-        // @ts-ignore
-        originalAddition.toAmino = (value: any) => {
-          return wrapFn(value, originalToAmino);
-        };
-      }
-    };
+    //     // @ts-ignore
+    //     originalAddition.toAmino = (value: any) => {
+    //       return wrapFn(value, originalToAmino);
+    //     };
+    //   }
+    // };
 
-    wrapAdditionToAminoFn(
-      "/ibc.applications.transfer.v1.MsgTransfer",
-      (value: any, originalToAmino: ToAminoFn) => {
-        value.timeoutHeight.revisionNumber =
-          value.timeoutHeight.revisionNumber.toString();
-        value.timeoutHeight.revisionHeight =
-          value.timeoutHeight.revisionHeight.toString();
-        const converted = originalToAmino(value);
-        delete converted.timeout_timestamp;
-        if (converted.timeout_height.revision_number == "0") {
-          delete converted.timeout_height.revision_number;
-        }
-        return converted;
-      },
-    );
+    // wrapAdditionToAminoFn(
+    //   "/ibc.applications.transfer.v1.MsgTransfer",
+    //   (value: any, originalToAmino: ToAminoFn) => {
+    //     value.timeoutHeight.revisionNumber =
+    //       value.timeoutHeight.revisionNumber.toString();
+    //     value.timeoutHeight.revisionHeight =
+    //       value.timeoutHeight.revisionHeight.toString();
+    //     const converted = originalToAmino(value);
+    //     delete converted.timeout_timestamp;
+    //     if (converted.timeout_height.revision_number == "0") {
+    //       delete converted.timeout_height.revision_number;
+    //     }
+    //     return converted;
+    //   },
+    // );
 
-    wrapAdditionToAminoFn(
-      "/sifnode.ethbridge.v1.MsgBurn",
-      (value: any, originalToAmino: ToAminoFn) => {
-        value.ethereumChainId = value.ethereumChainId.toString();
-        return originalToAmino(value);
-      },
-    );
+    // wrapAdditionToAminoFn(
+    //   "/sifnode.ethbridge.v1.MsgBurn",
+    //   (value: any, originalToAmino: ToAminoFn) => {
+    //     value.ethereumChainId = value.ethereumChainId.toString();
+    //     return originalToAmino(value);
+    //   },
+    // );
 
-    wrapAdditionToAminoFn(
-      "/sifnode.ethbridge.v1.MsgLock",
-      (value: any, originalToAmino: ToAminoFn) => {
-        value.ethereumChainId = value.ethereumChainId.toString();
-        return originalToAmino(value);
-      },
-    );
+    // wrapAdditionToAminoFn(
+    //   "/sifnode.ethbridge.v1.MsgLock",
+    //   (value: any, originalToAmino: ToAminoFn) => {
+    //     value.ethereumChainId = value.ethereumChainId.toString();
+    //     return originalToAmino(value);
+    //   },
+    // );
   }
 }
 
