@@ -228,7 +228,6 @@ export class EthBridge extends BaseBridge<
       : client.tx.ethbridge.Burn(
           {
             ethereumReceiver: params.toAddress,
-
             amount: params.assetAmount.toBigInt().toString(),
             symbol: entry.denom,
             cosmosSender: params.fromAddress,
