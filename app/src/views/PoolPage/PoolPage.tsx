@@ -1,7 +1,7 @@
 import Long from "long";
 import BigNumber from "bignumber.js";
 import { formatDistance } from "date-fns";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, effect } from "vue";
 import { RouterView } from "vue-router";
 
 import AssetIcon from "@/components/AssetIcon";
@@ -54,10 +54,11 @@ export default defineComponent({
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       lppdRewards: data.lppdRewards,
-      isUnbondingRequired:
+      isUnbondingRequired: computed(() =>
         rewardsParamsQuery.data.value?.params?.liquidityRemovalLockPeriod.gt(
           Long.ZERO,
         ),
+      ),
       isLoading: computed(
         () =>
           data.isLoading.value ||
