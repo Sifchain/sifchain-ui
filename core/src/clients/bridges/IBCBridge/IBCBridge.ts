@@ -32,11 +32,6 @@ import { TokenRegistry } from "../../native/TokenRegistry";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import { BaseBridge, BridgeParams, BridgeTx, IBCBridgeTx } from "../BaseBridge";
 import { getTransferTimeoutData } from "./getTransferTimeoutData";
-import {
-  DEFAULT_FEE,
-  SifchainEncodeObject,
-  SifSigningStargateClient,
-} from "../../../clients/sifchain";
 
 export type IBCBridgeContext = {
   sifRpcUrl: string;
@@ -307,7 +302,7 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
       try {
         const gasAssetAmount = await this.fetchTransferGasFee(params.fromChain);
 
-        const tx = new NativeDexTransaction(params.fromAddress, batch, {
+        const txDraft = new NativeDexTransaction(params.fromAddress, batch, {
           price: {
             denom: params.fromChain.nativeAsset.symbol,
             amount:
@@ -323,19 +318,9 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
         });
 
         if (params.fromChain.chainConfig.chainType === "ibc") {
-          const client = await SigningStargateClient?.connectWithSigner(
-            params.fromChain.chainConfig.rpcUrl,
-            await provider.getSendingSigner(params.fromChain),
-          );
+          const signedTx = await provider.sign(params.fromChain, txDraft);
 
-          const sentTx = await client.signAndBroadcast(
-            tx.fromAddress,
-            tx.msgs,
-            {
-              amount: [tx.fee.price],
-              gas: tx.fee.gas,
-            },
-          );
+          const sentTx = await provider.broadcast(params.fromChain, signedTx);
 
           responses.push(sentTx as BroadcastTxResult);
         }
