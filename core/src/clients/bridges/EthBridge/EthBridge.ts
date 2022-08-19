@@ -1,9 +1,9 @@
 import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { OfflineSigner } from "@cosmjs/proto-signing";
 import Long from "long";
 import Web3 from "web3";
 import { provider } from "web3-core";
 import { Contract } from "web3-eth-contract";
-import { KeplrWalletProvider } from "@sifchain/wallet-keplr";
 
 import {
   DEFAULT_FEE,
@@ -245,9 +245,11 @@ export class EthBridge extends BaseBridge<
      * this check is needed to allow keplr to select the correct signer mode (e.g. direct vs. amino)
      * and therefore support ledger for signing the transaction
      */
-    const sendingSigner =
-      provider instanceof KeplrWalletProvider
-        ? await provider.getOfflineSignerAuto(nativeChain)
+    const sendingSigner: OfflineSigner =
+      "getOfflineSignerAuto" in provider &&
+      // using any here because importing @sifchain/wallet-keplr causes a circular dependency
+      typeof (provider as any).getOfflineSignerAuto === "function"
+        ? await (provider as any).getOfflineSignerAuto(nativeChain)
         : await provider.getSendingSigner(nativeChain);
 
     const nativeStargateClient =

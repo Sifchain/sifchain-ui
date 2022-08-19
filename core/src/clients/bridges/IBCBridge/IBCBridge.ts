@@ -1,5 +1,5 @@
 import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
-import { EncodeObject } from "@cosmjs/proto-signing";
+import { EncodeObject, OfflineSigner } from "@cosmjs/proto-signing";
 import {
   IndexedTx,
   QueryClient,
@@ -331,14 +331,30 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
 
           if (isImport) {
             const signedTx = await provider.sign(params.fromChain, txDraft);
-
             const sentTx = await provider.broadcast(params.fromChain, signedTx);
+
             responses.push(sentTx);
           } else {
+            /**
+             * this check is needed to allow keplr to select the correct signer mode (e.g. direct vs. amino)
+             * and therefore support ledger for signing the transaction
+             */
+            const sendingSigner: OfflineSigner =
+              "getOfflineSignerAuto" in provider &&
+              // using any here because importing @sifchain/wallet-keplr causes a circular dependency
+              typeof (provider as any).getOfflineSignerAuto === "function"
+                ? await (provider as any).getOfflineSignerAuto(params.fromChain)
+                : await provider.getSendingSigner(params.fromChain);
+
             const sendingClient =
               await SifSigningStargateClient.connectWithSigner(
                 params.fromChain.chainConfig.rpcUrl,
-                await provider.getSendingSigner(params.fromChain),
+                sendingSigner,
+                {
+                  // we create amino additions, but these will not be used, because IBC types are already included & assigned
+                  // on top of the amino additions by default
+                  aminoTypes: new NativeAminoTypes(),
+                },
               );
             const sentTx = await sendingClient.signAndBroadcast(
               txDraft.fromAddress,
