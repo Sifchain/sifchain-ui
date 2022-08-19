@@ -330,6 +330,8 @@ export class IBCBridge extends BaseBridge<CosmosWalletProvider> {
             params.toChain.chainConfig.chainId === sifConfig.chainId;
 
           if (isImport) {
+            // TODO: this bit may not be compatible with
+            // foreign chains that are on cosmos sdk .45+
             const signedTx = await provider.sign(params.fromChain, txDraft);
             const sentTx = await provider.broadcast(params.fromChain, signedTx);
 
