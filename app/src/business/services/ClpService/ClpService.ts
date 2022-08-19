@@ -149,25 +149,30 @@ export class ClpService {
   async getLiquidityProvider(params: { asset: IAsset; lpAddress: string }) {
     await this.tokenRegistry.load();
     const entry = await this.tokenRegistry.findAssetEntryOrThrow(params.asset);
-    const response = await this.client.getLiquidityProvider({
-      // cannot use params.asset.ibcDenom because ibcDenom is set when loading balances,
-      // and the user does not always have a balance for the asset they have pooled
-      symbol: entry.denom,
-      lpAddress: params.lpAddress,
-    });
 
-    const { liquidity_provider, native_asset_balance, external_asset_balance } =
-      response.result;
+    const queryClient = await this.dexClientPromise;
 
-    const { liquidity_provider_units, liquidity_provider_address } =
-      liquidity_provider;
+    const { liquidityProvider, externalAssetBalance, nativeAssetBalance } =
+      await queryClient.query.clp.GetLiquidityProvider({
+        // cannot use params.asset.ibcDenom because ibcDenom is set when loading balances,
+        // and the user does not always have a balance for the asset they have pooled
+        symbol: entry.denom,
+        lpAddress: params.lpAddress,
+      });
+
+    if (!liquidityProvider) {
+      throw new Error(`No liquidity provider found for ${params.lpAddress}`);
+    }
+
+    const { liquidityProviderUnits, liquidityProviderAddress } =
+      liquidityProvider;
 
     return new LiquidityProvider(
       params.asset,
-      Amount(liquidity_provider_units),
-      liquidity_provider_address,
-      Amount(native_asset_balance),
-      Amount(external_asset_balance),
+      Amount(liquidityProviderUnits),
+      liquidityProviderAddress,
+      Amount(nativeAssetBalance),
+      Amount(externalAssetBalance),
     );
   }
 

@@ -97,23 +97,23 @@ const routes: DeepReadonly<RouteRecordRaw[]> = [
           title: "Add Liquidity - Sifchain",
         },
       },
-      flagsStore.state.newLiquidityUnlockProcess
-        ? {
-            path: "unbond-liquidity/:externalAsset?",
-            name: "UnbondLiquidity",
-            component: UnbondLiquidity,
-            meta: {
-              title: "UnbondLiquidity - Sifchain",
-            },
-          }
-        : {
-            path: "remove-liquidity/:externalAsset?",
-            name: "RemoveLiquidity",
-            component: Pool_RemoveLiquidity,
-            meta: {
-              title: "Remove Liquidity - Sifchain",
-            },
-          },
+
+      {
+        path: "unbond-liquidity/:externalAsset?",
+        name: "UnbondLiquidity",
+        component: UnbondLiquidity,
+        meta: {
+          title: "UnbondLiquidity - Sifchain",
+        },
+      },
+      {
+        path: "remove-liquidity/:externalAsset?",
+        name: "RemoveLiquidity",
+        component: Pool_RemoveLiquidity,
+        meta: {
+          title: "Remove Liquidity - Sifchain",
+        },
+      },
     ],
   },
   {

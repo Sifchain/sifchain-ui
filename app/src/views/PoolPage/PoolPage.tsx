@@ -1,6 +1,7 @@
+import Long from "long";
 import BigNumber from "bignumber.js";
 import { formatDistance } from "date-fns";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, effect } from "vue";
 import { RouterView } from "vue-router";
 
 import AssetIcon from "@/components/AssetIcon";
@@ -16,6 +17,7 @@ import {
 import {
   useCurrentProviderDistributionPeriod,
   useCurrentRewardPeriod,
+  useRewardsParamsQuery,
 } from "@/domains/clp/queries/params";
 import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import PoolItem from "./PoolItem";
@@ -35,9 +37,12 @@ export default defineComponent({
   },
   setup() {
     const data = usePoolPageData();
+
     const currentRewardPeriod = useCurrentRewardPeriod();
     const currentProviderDistributionPeriod =
       useCurrentProviderDistributionPeriod();
+
+    const rewardsParamsQuery = useRewardsParamsQuery();
 
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
@@ -49,11 +54,17 @@ export default defineComponent({
       rewardProgramsRes: data.rewardProgramsRes,
       allPoolsData: data.allPoolsData,
       lppdRewards: data.lppdRewards,
+      isUnbondingRequired: computed(() =>
+        rewardsParamsQuery.data.value?.params?.liquidityRemovalLockPeriod.gt(
+          Long.ZERO,
+        ),
+      ),
       isLoading: computed(
         () =>
           data.isLoading.value ||
           currentRewardPeriod.isLoading.value ||
-          currentProviderDistributionPeriod.isLoading.value,
+          currentProviderDistributionPeriod.isLoading.value ||
+          rewardsParamsQuery.isLoading.value,
       ),
     };
   },
@@ -254,6 +265,7 @@ export default defineComponent({
 
               return (
                 <PoolItem
+                  key={item.pool.symbol()}
                   currentRewardPeriod={
                     currentRewardPeriod === undefined
                       ? undefined
@@ -267,6 +279,7 @@ export default defineComponent({
                         }
                   }
                   isLPDActive={Boolean(this.currentLPDPeriod.data.value)}
+                  isUnbondingRequired={this.isUnbondingRequired}
                   unLockable={isUnlockable}
                   unlock={
                     unlock === undefined
@@ -312,7 +325,6 @@ export default defineComponent({
                   pool={item.pool}
                   poolStat={item.poolStat}
                   accountPool={item.accountPool}
-                  key={item.pool.symbol()}
                   lppdRewards={item.lppdRewards}
                 />
               );
