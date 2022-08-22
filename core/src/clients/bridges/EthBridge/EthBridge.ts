@@ -28,7 +28,11 @@ import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
 } from "../../bridges/EthBridge/PegTxEventEmitter";
-import { NativeDexClient, NativeDexTransaction } from "../../native";
+import {
+  NativeAminoTypes,
+  NativeDexClient,
+  NativeDexTransaction,
+} from "../../native";
 import { TokenRegistry } from "../../native/TokenRegistry";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import { Web3Transaction, Web3WalletProvider } from "../../wallets/ethereum";
@@ -196,6 +200,8 @@ export class EthBridge extends BaseBridge<
     provider: CosmosWalletProvider,
     params: BridgeParams,
   ) {
+    console.group("EthBridge.exportToEth");
+
     const feeAmount = this.estimateFees(provider, params);
     const nativeChain = params.fromChain;
 
@@ -252,10 +258,21 @@ export class EthBridge extends BaseBridge<
         ? await (provider as any).getOfflineSignerAuto(nativeChain)
         : await provider.getSendingSigner(nativeChain);
 
+    console.log({
+      txDraft,
+      sendingSigner,
+      params,
+    });
+
     const nativeStargateClient =
       await SifSigningStargateClient.connectWithSigner(
         this.context.sifRpcUrl,
         sendingSigner,
+        {
+          // we create amino additions, but these will not be used, because IBC types are already included & assigned
+          // on top of the amino additions by default
+          aminoTypes: new NativeAminoTypes(),
+        },
       );
 
     const txResult = await nativeStargateClient.signAndBroadcast(
