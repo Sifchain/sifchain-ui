@@ -2,7 +2,7 @@ import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
 import { accountStore } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
+import { flagsStore, MARGIN_FE_URL } from "@/store/modules/flags";
 import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
 import useChangeLog from "@/hooks/useChangeLog";
@@ -145,6 +145,13 @@ export default defineComponent({
                   icon="navigation/pool-stats"
                   href="/stats"
                 />
+                {flagsStore.state.margin && (
+                  <NavSidePanelItem
+                    displayName="Margin"
+                    icon="navigation/harvest"
+                    href={MARGIN_FE_URL}
+                  />
+                )}
                 <NavSidePanelItem
                   displayName="Stake"
                   icon="navigation/stake"

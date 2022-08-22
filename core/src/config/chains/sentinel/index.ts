@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: SENTINEL_MAINNET,
   [NetworkEnv.TESTNET]: SENTINEL_MAINNET,
   [NetworkEnv.MAINNET]: SENTINEL_MAINNET,
+  [NetworkEnv.TEMPNET]: SENTINEL_MAINNET,
 };

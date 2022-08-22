@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: AKASH_TESTNET,
   [NetworkEnv.TESTNET]: AKASH_TESTNET,
   [NetworkEnv.MAINNET]: AKASH_MAINNET,
+  [NetworkEnv.TEMPNET]: AKASH_TESTNET,
 };

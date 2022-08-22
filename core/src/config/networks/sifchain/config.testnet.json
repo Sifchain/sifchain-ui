@@ -1,7 +1,7 @@
 {
   "sifAddrPrefix": "sif",
-  "sifApiUrl": "https://api-testnet.sifchain.finance",
-  "sifRpcUrl": "https://rpc-testnet.sifchain.finance",
+  "sifApiUrl": "https://proxies.sifchain.finance/api/sifchain-testnet/rest",
+  "sifRpcUrl": "https://proxies.sifchain.finance/api/sifchain-testnet/rpc",
   "sifChainId": "sifchain-testnet-1",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
@@ -10,8 +10,8 @@
   "keplrChainConfig": {
     "chainName": "Sifchain Testnet",
     "chainId": "sifchain-testnet-1",
-    "rpc": "https://rpc-testnet.sifchain.finance",
-    "rest": "https://api-testnet.sifchain.finance",
+    "rpc": "https://proxies.sifchain.finance/api/sifchain-testnet/rpc",
+    "rest": "https://proxies.sifchain.finance/api/sifchain-testnet/rest",
     "stakeCurrency": {
       "coinDenom": "ROWAN",
       "coinMinimalDenom": "rowan",

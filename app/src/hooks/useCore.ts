@@ -13,6 +13,8 @@ const { tag, sifAssetTag, ethAssetTag } = getEnv({
 });
 console.log("getEnv", { tag, sifAssetTag, ethAssetTag });
 const config = getConfig(tag, sifAssetTag, ethAssetTag);
+
+console.log("config", { config });
 const services = createServices(config);
 const store = createStore();
 const usecases = createUsecases({ store, services });

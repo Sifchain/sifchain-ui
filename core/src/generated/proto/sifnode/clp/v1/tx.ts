@@ -1,11 +1,8 @@
 /* eslint-disable */
+import { Asset } from "./types";
 import Long from "long";
-import * as _m0 from "protobufjs/minimal";
-import { Asset } from "../../../sifnode/clp/v1/types";
-import {
-  RewardPeriod,
-  ProviderDistributionPeriod,
-} from "../../../sifnode/clp/v1/params";
+import { RewardPeriod, ProviderDistributionPeriod } from "./params";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.clp.v1";
 
@@ -128,6 +125,12 @@ export interface MsgCancelUnlock {
 }
 
 export interface MsgCancelUnlockResponse {}
+
+export interface RemovalRequest {
+  id: Long;
+  value: string;
+  msg?: MsgRemoveLiquidity;
+}
 
 export interface MsgModifyLiquidityProtectionRates {
   signer: string;
@@ -1045,13 +1048,13 @@ export const MsgUpdatePmtpParams = {
         ? String(object.pmtpPeriodGovernanceRate)
         : "",
       pmtpPeriodEpochLength: isSet(object.pmtpPeriodEpochLength)
-        ? Long.fromString(object.pmtpPeriodEpochLength)
+        ? Long.fromValue(object.pmtpPeriodEpochLength)
         : Long.ZERO,
       pmtpPeriodStartBlock: isSet(object.pmtpPeriodStartBlock)
-        ? Long.fromString(object.pmtpPeriodStartBlock)
+        ? Long.fromValue(object.pmtpPeriodStartBlock)
         : Long.ZERO,
       pmtpPeriodEndBlock: isSet(object.pmtpPeriodEndBlock)
-        ? Long.fromString(object.pmtpPeriodEndBlock)
+        ? Long.fromValue(object.pmtpPeriodEndBlock)
         : Long.ZERO,
     };
   },
@@ -1601,10 +1604,10 @@ export const MsgUpdateRewardsParamsRequest = {
     return {
       signer: isSet(object.signer) ? String(object.signer) : "",
       liquidityRemovalLockPeriod: isSet(object.liquidityRemovalLockPeriod)
-        ? Long.fromString(object.liquidityRemovalLockPeriod)
+        ? Long.fromValue(object.liquidityRemovalLockPeriod)
         : Long.UZERO,
       liquidityRemovalCancelPeriod: isSet(object.liquidityRemovalCancelPeriod)
-        ? Long.fromString(object.liquidityRemovalCancelPeriod)
+        ? Long.fromValue(object.liquidityRemovalCancelPeriod)
         : Long.UZERO,
     };
   },
@@ -2062,6 +2065,89 @@ export const MsgCancelUnlockResponse = {
   },
 };
 
+function createBaseRemovalRequest(): RemovalRequest {
+  return { id: Long.ZERO, value: "", msg: undefined };
+}
+
+export const RemovalRequest = {
+  encode(
+    message: RemovalRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (!message.id.isZero()) {
+      writer.uint32(8).int64(message.id);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    if (message.msg !== undefined) {
+      MsgRemoveLiquidity.encode(message.msg, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RemovalRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRemovalRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.int64() as Long;
+          break;
+        case 2:
+          message.value = reader.string();
+          break;
+        case 3:
+          message.msg = MsgRemoveLiquidity.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RemovalRequest {
+    return {
+      id: isSet(object.id) ? Long.fromValue(object.id) : Long.ZERO,
+      value: isSet(object.value) ? String(object.value) : "",
+      msg: isSet(object.msg)
+        ? MsgRemoveLiquidity.fromJSON(object.msg)
+        : undefined,
+    };
+  },
+
+  toJSON(message: RemovalRequest): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = (message.id || Long.ZERO).toString());
+    message.value !== undefined && (obj.value = message.value);
+    message.msg !== undefined &&
+      (obj.msg = message.msg
+        ? MsgRemoveLiquidity.toJSON(message.msg)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RemovalRequest>, I>>(
+    object: I,
+  ): RemovalRequest {
+    const message = createBaseRemovalRequest();
+    message.id =
+      object.id !== undefined && object.id !== null
+        ? Long.fromValue(object.id)
+        : Long.ZERO;
+    message.value = object.value ?? "";
+    message.msg =
+      object.msg !== undefined && object.msg !== null
+        ? MsgRemoveLiquidity.fromPartial(object.msg)
+        : undefined;
+    return message;
+  },
+};
+
 function createBaseMsgModifyLiquidityProtectionRates(): MsgModifyLiquidityProtectionRates {
   return { signer: "", currentRowanLiquidityThreshold: "" };
 }
@@ -2260,7 +2346,7 @@ export const MsgUpdateLiquidityProtectionParams = {
         ? String(object.maxRowanLiquidityThresholdAsset)
         : "",
       epochLength: isSet(object.epochLength)
-        ? Long.fromString(object.epochLength)
+        ? Long.fromValue(object.epochLength)
         : Long.UZERO,
       isActive: isSet(object.isActive) ? Boolean(object.isActive) : false,
     };
@@ -2802,10 +2888,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

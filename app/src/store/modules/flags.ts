@@ -3,6 +3,8 @@ import { Chain, IAsset } from "@sifchain/sdk";
 
 import { Vuextra } from "../Vuextra";
 
+export const MARGIN_FE_URL = "https://sifchain-margin.vercel.app";
+
 export const isChainFlaggedDisabled = (chain: Chain) => {
   return (
     flagsStore.state.enableTestChains[
@@ -47,6 +49,7 @@ export const flagsStore = Vuextra.createStore({
     liquidityUnlockCancellation: true,
     asymmetricPooling: false,
     lppdRewards: true,
+    margin: true,
   },
   getters: (state) => ({}),
   mutations: (state) => ({

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import * as _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.ethbridge.v1";
 
@@ -41,8 +41,9 @@ export function claimTypeToJSON(object: ClaimType): string {
       return "CLAIM_TYPE_BURN";
     case ClaimType.CLAIM_TYPE_LOCK:
       return "CLAIM_TYPE_LOCK";
+    case ClaimType.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -179,12 +180,12 @@ export const EthBridgeClaim = {
   fromJSON(object: any): EthBridgeClaim {
     return {
       ethereumChainId: isSet(object.ethereumChainId)
-        ? Long.fromString(object.ethereumChainId)
+        ? Long.fromValue(object.ethereumChainId)
         : Long.ZERO,
       bridgeContractAddress: isSet(object.bridgeContractAddress)
         ? String(object.bridgeContractAddress)
         : "",
-      nonce: isSet(object.nonce) ? Long.fromString(object.nonce) : Long.ZERO,
+      nonce: isSet(object.nonce) ? Long.fromValue(object.nonce) : Long.ZERO,
       symbol: isSet(object.symbol) ? String(object.symbol) : "",
       tokenContractAddress: isSet(object.tokenContractAddress)
         ? String(object.tokenContractAddress)
@@ -408,10 +409,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

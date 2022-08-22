@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import * as _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.tokenregistry.v1";
 
@@ -55,8 +55,9 @@ export function permissionToJSON(object: Permission): string {
       return "DISABLE_BUY";
     case Permission.DISABLE_SELL:
       return "DISABLE_SELL";
+    case Permission.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -381,7 +382,7 @@ export const RegistryEntry = {
   fromJSON(object: any): RegistryEntry {
     return {
       decimals: isSet(object.decimals)
-        ? Long.fromString(object.decimals)
+        ? Long.fromValue(object.decimals)
         : Long.ZERO,
       denom: isSet(object.denom) ? String(object.denom) : "",
       baseDenom: isSet(object.baseDenom) ? String(object.baseDenom) : "",
@@ -502,10 +503,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

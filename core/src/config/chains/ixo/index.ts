@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: IXO_MAINNET,
   [NetworkEnv.TESTNET]: IXO_MAINNET,
   [NetworkEnv.MAINNET]: IXO_MAINNET,
+  [NetworkEnv.TEMPNET]: IXO_MAINNET,
 };

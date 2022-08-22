@@ -7,4 +7,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: OSMOSIS_MAINNET,
   [NetworkEnv.TESTNET]: OSMOSIS_MAINNET,
   [NetworkEnv.MAINNET]: OSMOSIS_MAINNET,
+  [NetworkEnv.TEMPNET]: OSMOSIS_MAINNET,
 };

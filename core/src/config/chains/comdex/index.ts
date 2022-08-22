@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: COMDEX_TESTNET,
   [NetworkEnv.TESTNET]: COMDEX_TESTNET,
   [NetworkEnv.MAINNET]: COMDEX_MAINNET,
+  [NetworkEnv.TEMPNET]: COMDEX_TESTNET,
 };
