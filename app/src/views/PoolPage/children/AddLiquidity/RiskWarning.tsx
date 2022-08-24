@@ -7,18 +7,20 @@ import { Tooltip } from "@/components/Tooltip";
 export default defineComponent({
   name: "AddLiquidityWarning",
   props: {
+    isSlippagePossible: {
+      type: Boolean,
+      required: true,
+    },
     riskFactorStatus: {
       type: Object as PropType<ComputedRef<"" | "bad" | "danger" | "warning">>,
       required: true,
     },
   },
   setup(props) {
-    const riskContent = computed(() => {
+    const slippageRiskContent = computed(() => {
+      if (!props.isSlippagePossible) return;
+
       switch (props.riskFactorStatus.value) {
-        case "":
-          return `
-            Note, this asymmetric liquidity add will induce a slip adjustment on your share of the pool.
-          `;
         case "bad":
         case "warning":
           return `
@@ -31,6 +33,10 @@ export default defineComponent({
           return `
             ATTENTION! ARE YOU SURE?  This asymmetric liquidity add will induce a VERY significant slip adjustment on your share of the pool. 
             STRONGLY consider adding liquidity in smaller chunks (alternating between Rowan and the other token) to reduce the slip adjustment impact.
+          `;
+        default:
+          return `
+            Note, this asymmetric liquidity add will induce a slip adjustment on your share of the pool.
           `;
       }
     });
@@ -54,7 +60,7 @@ export default defineComponent({
           icon: "text-danger-base",
         },
       };
-      return riskContent.value ? (
+      return (
         <div
           class={clsx(
             "relative my-2 rounded border p-4",
@@ -63,7 +69,7 @@ export default defineComponent({
         >
           <div class="absolute top-0 right-0 p-2">
             <Tooltip
-              content={riskContent.value}
+              content={slippageRiskContent.value}
               placement="top"
               interactive
               appendTo={() =>
@@ -83,17 +89,24 @@ export default defineComponent({
             </Tooltip>
           </div>
           <p class={["pr-4 text-slate-300"]}>
-            {riskContent.value} See documentation{" "}
-            <a
-              href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/pool/sifchain-liquidity-pools#asymmetric-liquidity-pool"
-              target="_blank"
-              class="underline"
-            >
-              here
-            </a>
+            Deposits are used to underwrite margin trading. Utilized capital may
+            be locked.
+            <br />
+            {slippageRiskContent.value && (
+              <>
+                {slippageRiskContent.value} See documentation{" "}
+                <a
+                  href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/pool/sifchain-liquidity-pools#asymmetric-liquidity-pool"
+                  target="_blank"
+                  class="underline"
+                >
+                  here
+                </a>
+              </>
+            )}
           </p>
         </div>
-      ) : null;
+      );
     });
     return () => riskDisclaimer.value;
   },

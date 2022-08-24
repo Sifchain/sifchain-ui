@@ -185,9 +185,10 @@ export default defineComponent({
             <div class="grid gap-4">
               <div class="bg-gray-base grid gap-4 rounded-lg p-4">
                 <Form.Details details={detailsRef.value} />
-                {!data.symmetricalPooling.value && (
-                  <RiskWarning riskFactorStatus={data.riskFactorStatus} />
-                )}
+                <RiskWarning
+                  isSlippagePossible={!data.symmetricalPooling.value}
+                  riskFactorStatus={data.riskFactorStatus}
+                />
               </div>
               <div class="flex items-center justify-between overflow-hidden rounded border border-gray-500 p-4">
                 <span class="flex items-center text-slate-300">
@@ -388,9 +389,10 @@ export default defineComponent({
                   ],
                 }}
               />
-              {!data.symmetricalPooling.value && (
-                <RiskWarning riskFactorStatus={data.riskFactorStatus} />
-              )}
+              <RiskWarning
+                isSlippagePossible={!data.symmetricalPooling.value}
+                riskFactorStatus={data.riskFactorStatus}
+              />
             </div>
             {(data.nextStepAllowed.value && !data.hasActiveSafetyLag.value && (
               <Button.CallToAction onClick={() => data.handleNextStepClicked()}>
