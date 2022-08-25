@@ -61,7 +61,9 @@ export class BaseLiquidityClient {
         return new Pool(
           AssetAmount(this.nativeChain.nativeAsset, pool.nativeAssetBalance),
           AssetAmount(asset, pool.externalAssetBalance),
-          Amount(pool.poolUnits),
+          {
+            poolUnits: Amount(pool.poolUnits),
+          },
         );
       })
       .filter((i) => i != null) as Pool[];
@@ -85,7 +87,9 @@ export class BaseLiquidityClient {
         poolRes.pool.nativeAssetBalance || "0",
       ),
       AssetAmount(params.asset, poolRes.pool.externalAssetBalance || "0"),
-      Amount(poolRes.pool.poolUnits),
+      {
+        poolUnits: Amount(poolRes.pool.poolUnits),
+      },
     );
 
     return pool;
