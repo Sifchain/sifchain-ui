@@ -76,8 +76,9 @@ export interface MTP {
   collateralAsset: string;
   collateralAmount: string;
   liabilities: string;
-  interestPaid: string;
-  interestUnpaid: string;
+  interestPaidCollateral: string;
+  interestPaidCustody: string;
+  interestUnpaidCollateral: string;
   custodyAsset: string;
   custodyAmount: string;
   leverage: string;
@@ -497,8 +498,9 @@ function createBaseMTP(): MTP {
     collateralAsset: "",
     collateralAmount: "",
     liabilities: "",
-    interestPaid: "",
-    interestUnpaid: "",
+    interestPaidCollateral: "",
+    interestPaidCustody: "",
+    interestUnpaidCollateral: "",
     custodyAsset: "",
     custodyAmount: "",
     leverage: "",
@@ -522,29 +524,32 @@ export const MTP = {
     if (message.liabilities !== "") {
       writer.uint32(34).string(message.liabilities);
     }
-    if (message.interestPaid !== "") {
-      writer.uint32(42).string(message.interestPaid);
+    if (message.interestPaidCollateral !== "") {
+      writer.uint32(42).string(message.interestPaidCollateral);
     }
-    if (message.interestUnpaid !== "") {
-      writer.uint32(50).string(message.interestUnpaid);
+    if (message.interestPaidCustody !== "") {
+      writer.uint32(50).string(message.interestPaidCustody);
+    }
+    if (message.interestUnpaidCollateral !== "") {
+      writer.uint32(58).string(message.interestUnpaidCollateral);
     }
     if (message.custodyAsset !== "") {
-      writer.uint32(58).string(message.custodyAsset);
+      writer.uint32(66).string(message.custodyAsset);
     }
     if (message.custodyAmount !== "") {
-      writer.uint32(66).string(message.custodyAmount);
+      writer.uint32(74).string(message.custodyAmount);
     }
     if (message.leverage !== "") {
-      writer.uint32(74).string(message.leverage);
+      writer.uint32(82).string(message.leverage);
     }
     if (message.mtpHealth !== "") {
-      writer.uint32(82).string(message.mtpHealth);
+      writer.uint32(90).string(message.mtpHealth);
     }
     if (message.position !== 0) {
-      writer.uint32(88).int32(message.position);
+      writer.uint32(96).int32(message.position);
     }
     if (!message.id.isZero()) {
-      writer.uint32(96).uint64(message.id);
+      writer.uint32(104).uint64(message.id);
     }
     return writer;
   },
@@ -569,27 +574,30 @@ export const MTP = {
           message.liabilities = reader.string();
           break;
         case 5:
-          message.interestPaid = reader.string();
+          message.interestPaidCollateral = reader.string();
           break;
         case 6:
-          message.interestUnpaid = reader.string();
+          message.interestPaidCustody = reader.string();
           break;
         case 7:
-          message.custodyAsset = reader.string();
+          message.interestUnpaidCollateral = reader.string();
           break;
         case 8:
-          message.custodyAmount = reader.string();
+          message.custodyAsset = reader.string();
           break;
         case 9:
-          message.leverage = reader.string();
+          message.custodyAmount = reader.string();
           break;
         case 10:
-          message.mtpHealth = reader.string();
+          message.leverage = reader.string();
           break;
         case 11:
-          message.position = reader.int32() as any;
+          message.mtpHealth = reader.string();
           break;
         case 12:
+          message.position = reader.int32() as any;
+          break;
+        case 13:
           message.id = reader.uint64() as Long;
           break;
         default:
@@ -610,11 +618,14 @@ export const MTP = {
         ? String(object.collateralAmount)
         : "",
       liabilities: isSet(object.liabilities) ? String(object.liabilities) : "",
-      interestPaid: isSet(object.interestPaid)
-        ? String(object.interestPaid)
+      interestPaidCollateral: isSet(object.interestPaidCollateral)
+        ? String(object.interestPaidCollateral)
         : "",
-      interestUnpaid: isSet(object.interestUnpaid)
-        ? String(object.interestUnpaid)
+      interestPaidCustody: isSet(object.interestPaidCustody)
+        ? String(object.interestPaidCustody)
+        : "",
+      interestUnpaidCollateral: isSet(object.interestUnpaidCollateral)
+        ? String(object.interestUnpaidCollateral)
         : "",
       custodyAsset: isSet(object.custodyAsset)
         ? String(object.custodyAsset)
@@ -638,10 +649,12 @@ export const MTP = {
       (obj.collateralAmount = message.collateralAmount);
     message.liabilities !== undefined &&
       (obj.liabilities = message.liabilities);
-    message.interestPaid !== undefined &&
-      (obj.interestPaid = message.interestPaid);
-    message.interestUnpaid !== undefined &&
-      (obj.interestUnpaid = message.interestUnpaid);
+    message.interestPaidCollateral !== undefined &&
+      (obj.interestPaidCollateral = message.interestPaidCollateral);
+    message.interestPaidCustody !== undefined &&
+      (obj.interestPaidCustody = message.interestPaidCustody);
+    message.interestUnpaidCollateral !== undefined &&
+      (obj.interestUnpaidCollateral = message.interestUnpaidCollateral);
     message.custodyAsset !== undefined &&
       (obj.custodyAsset = message.custodyAsset);
     message.custodyAmount !== undefined &&
@@ -661,8 +674,9 @@ export const MTP = {
     message.collateralAsset = object.collateralAsset ?? "";
     message.collateralAmount = object.collateralAmount ?? "";
     message.liabilities = object.liabilities ?? "";
-    message.interestPaid = object.interestPaid ?? "";
-    message.interestUnpaid = object.interestUnpaid ?? "";
+    message.interestPaidCollateral = object.interestPaidCollateral ?? "";
+    message.interestPaidCustody = object.interestPaidCustody ?? "";
+    message.interestUnpaidCollateral = object.interestUnpaidCollateral ?? "";
     message.custodyAsset = object.custodyAsset ?? "";
     message.custodyAmount = object.custodyAmount ?? "";
     message.leverage = object.leverage ?? "";

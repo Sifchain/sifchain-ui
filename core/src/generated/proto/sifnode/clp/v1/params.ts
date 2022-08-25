@@ -72,6 +72,10 @@ export interface ProviderDistributionParams {
   distributionPeriods: ProviderDistributionPeriod[];
 }
 
+export interface SwapFeeRate {
+  swapFeeRate: string;
+}
+
 function createBaseParams(): Params {
   return { minCreatePoolThreshold: Long.UZERO, enableRemovalQueue: false };
 }
@@ -1071,6 +1075,61 @@ export const ProviderDistributionParams = {
       object.distributionPeriods?.map((e) =>
         ProviderDistributionPeriod.fromPartial(e),
       ) || [];
+    return message;
+  },
+};
+
+function createBaseSwapFeeRate(): SwapFeeRate {
+  return { swapFeeRate: "" };
+}
+
+export const SwapFeeRate = {
+  encode(
+    message: SwapFeeRate,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.swapFeeRate !== "") {
+      writer.uint32(10).string(message.swapFeeRate);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SwapFeeRate {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSwapFeeRate();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.swapFeeRate = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SwapFeeRate {
+    return {
+      swapFeeRate: isSet(object.swapFeeRate) ? String(object.swapFeeRate) : "",
+    };
+  },
+
+  toJSON(message: SwapFeeRate): unknown {
+    const obj: any = {};
+    message.swapFeeRate !== undefined &&
+      (obj.swapFeeRate = message.swapFeeRate);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SwapFeeRate>, I>>(
+    object: I,
+  ): SwapFeeRate {
+    const message = createBaseSwapFeeRate();
+    message.swapFeeRate = object.swapFeeRate ?? "";
     return message;
   },
 };
