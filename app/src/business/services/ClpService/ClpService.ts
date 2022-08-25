@@ -205,6 +205,11 @@ export class ClpService {
     const queryClient = await this.dexClientPromise;
     return await queryClient.query.clp.GetPmtpParams({});
   }
+
+  async getSwapFeeRate() {
+    const queryClient = await this.dexClientPromise;
+    return await queryClient.query.clp.GetSwapFeeRate({});
+  }
 }
 
 export default function createClpService(ctx: ClpServiceContext) {
