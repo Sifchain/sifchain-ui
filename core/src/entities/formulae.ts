@@ -253,8 +253,8 @@ export function calculatePriceImpact(x: IAmount, X: IAmount) {
  *
  *  Implements the spec for `Fixed Rate Swap Fees`
  *
- * - proposal - https://github.com/Sifchain/sifnode/blob/feature/swap_formula/docs/proposals/fixed_rate_swap_fees.md
- * - tutorial - https://github.com/Sifchain/sifnode/blob/feature/swap_formula/docs/tutorials/swap-fee-rate.md
+ * - proposal - https://github.com/Sifchain/sifnode/blob/master/docs/proposals/fixed_rate_swap_fees.md
+ * - tutorial - https://github.com/Sifchain/sifnode/blob/master/docs/tutorials/swap-fee-rate.md
  *
  */
 
