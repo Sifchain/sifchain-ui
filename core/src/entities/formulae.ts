@@ -315,18 +315,12 @@ export type SwapParams = {
  * });
  */
 export function calculateSwapFromRowan({
-  inputAmount,
-  inputBalanceInPool,
-  outputBalanceInPool,
-  swapFeeRate,
-  currentRatioShiftingRate,
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
 }: SwapParams) {
-  const f = Amount(swapFeeRate);
-  const r = Amount(currentRatioShiftingRate);
-  const x = Amount(inputAmount);
-  const X = Amount(inputBalanceInPool);
-  const Y = Amount(outputBalanceInPool);
-
   // consider the formula:
   // (1 - f) * (1 + r) * x * Y / (x + X)
   const term1 = ONE.subtract(f); // (1 - f)
@@ -354,11 +348,11 @@ export function calculateSwapFromRowan({
  *
  * @example
  *
- * const inputAmount = BigNumber(200000000000000);
- * const inputBalanceInPool = BigNumber(1999800619938006200);
- * const outputBalanceInPool = BigNumber(2000200000000000000);
- * const swapFeeRate = BigNumber(0.003);
- * const currentRatioShiftingRate = BigNumber(0);
+ * const inputAmount = Amount(200000000000000);
+ * const inputBalanceInPool = Amount(1999800619938006200);
+ * const outputBalanceInPool = Amount(2000200000000000000);
+ * const swapFeeRate = Amount(0.003);
+ * const currentRatioShiftingRate = Amount(0);
  *
  * calculateSwapFeeFromRowan({
  *  inputAmount,
@@ -369,18 +363,12 @@ export function calculateSwapFromRowan({
  * });
  */
 export function calculateSwapFeeFromRowan({
-  inputAmount,
-  inputBalanceInPool,
-  outputBalanceInPool,
-  swapFeeRate,
-  currentRatioShiftingRate,
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
 }: SwapParams) {
-  const f = Amount(swapFeeRate);
-  const r = Amount(currentRatioShiftingRate);
-  const x = Amount(inputAmount);
-  const X = Amount(inputBalanceInPool);
-  const Y = Amount(outputBalanceInPool);
-
   // consider the formula:
   // f * (1 + r) * x * Y / (x + X)
   const term1 = f.multiply(ONE.add(r)); // f * (1 + r)
@@ -407,11 +395,11 @@ export function calculateSwapFeeFromRowan({
  *
  * @example
  *
- * const inputAmount = BigNumber(200000000000000);
- * const inputBalanceInPool = BigNumber(1999800619938006200);
- * const outputBalanceInPool = BigNumber(2000200000000000000);
- * const swapFeeRate = BigNumber(0.003);
- * const currentRatioShiftingRate = BigNumber(0);
+ * const inputAmount = Amount(200000000000000);
+ * const inputBalanceInPool = Amount(1999800619938006200);
+ * const outputBalanceInPool = Amount(2000200000000000000);
+ * const swapFeeRate = Amount(0.003);
+ * const currentRatioShiftingRate = Amount(0);
  *
  * calculateSwapToRowan({
  *  inputAmount,
@@ -422,18 +410,12 @@ export function calculateSwapFeeFromRowan({
  * });
  */
 export function calculateSwapToRowan({
-  inputAmount,
-  inputBalanceInPool,
-  outputBalanceInPool,
-  swapFeeRate,
-  currentRatioShiftingRate,
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
 }: SwapParams) {
-  const f = Amount(swapFeeRate);
-  const r = Amount(currentRatioShiftingRate);
-  const x = Amount(inputAmount);
-  const X = Amount(inputBalanceInPool);
-  const Y = Amount(outputBalanceInPool);
-
   // consider the formula:
   // (1 - f) * x * Y / ((x + X)(1 + r))
   const term1 = ONE.subtract(f); // (1 - f)
@@ -461,11 +443,11 @@ export function calculateSwapToRowan({
  *
  * @example
  *
- * const inputAmount = BigNumber(200000000000000);
- * const inputBalanceInPool = BigNumber(1999800619938006200);
- * const outputBalanceInPool = BigNumber(2000200000000000000);
- * const swapFeeRate = BigNumber(0.003);
- * const currentRatioShiftingRate = BigNumber(0);
+ * const inputAmount = Amount(200000000000000);
+ * const inputBalanceInPool = Amount(1999800619938006200);
+ * const outputBalanceInPool = Amount(2000200000000000000);
+ * const swapFeeRate = Amount(0.003);
+ * const currentRatioShiftingRate = Amount(0);
  *
  * calculateSwapFeeToRowan({
  *  inputAmount,
@@ -476,18 +458,12 @@ export function calculateSwapToRowan({
  * });
  */
 export function calculateSwapFeeToRowan({
-  inputAmount,
-  inputBalanceInPool,
-  outputBalanceInPool,
-  swapFeeRate,
-  currentRatioShiftingRate,
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
 }: SwapParams) {
-  const f = Amount(swapFeeRate);
-  const r = Amount(currentRatioShiftingRate);
-  const x = Amount(inputAmount);
-  const X = Amount(inputBalanceInPool);
-  const Y = Amount(outputBalanceInPool);
-
   // consider the formula:
   // f * x * Y / ((x + X)(1 + r))
   const term1 = f.multiply(x).multiply(Y); // f * x * Y
