@@ -1,4 +1,12 @@
-import { IAsset } from "@sifchain/sdk";
+import {
+  DEFAULT_FEE,
+  IAsset,
+  SifchainEncodeObject,
+  SifSigningStargateClient,
+  TransactionStatus,
+} from "@sifchain/sdk";
+
+import runCatching from "@/utils/runCatching";
 import { Services } from "../../services";
 
 type PickBus = Pick<Services["bus"], "dispatch">;
@@ -20,40 +28,57 @@ type RemoveLiquidityServices = {
 export function RemoveLiquidity({
   bus,
   sif,
-  clp,
-  tokenRegistry,
   wallet,
   chains,
+  tokenRegistry,
 }: RemoveLiquidityServices) {
   return async (asset: IAsset, wBasisPoints: string, asymmetry: string) => {
     const client = await sif.loadNativeDexClient();
+    /*
+     @mccallofthewild - This usecase (if we don't kill it altogether in lieu 
+     of an all-powerful `NativeDexClient`) should really take in an address argument instead
+     of reading state here. Leaving it now to speed up ledger implementation
+    */
+    const { address } = sif.getState();
     const externalAssetEntry = await tokenRegistry.findAssetEntryOrThrow(asset);
-    const txDraft = client.tx.clp.RemoveLiquidity(
+    const tx = client.tx.clp.RemoveLiquidity(
       {
         asymmetry,
         wBasisPoints,
         externalAsset: {
           symbol: externalAssetEntry.denom,
         },
-        /*
-         @mccallofthewild - This usecase (if we don't kill it altogether in lieu 
-         of an all-powerful `NativeDexClient`) should really take in an address argument instead
-         of reading state here. Leaving it now to speed up ledger implementation
-        */
-        signer: sif.getState().address,
+        signer: address,
       },
-      sif.getState().address,
+      address,
     );
 
-    const signedTx = await wallet.keplrProvider.sign(
-      chains.nativeChain,
-      txDraft,
+    const stargateClient = await SifSigningStargateClient.connectWithSigner(
+      sif.unSignedClient.rpcUrl,
+      await wallet.keplrProvider.getOfflineSignerAuto(chains.nativeChain),
     );
-    const sentTx = await wallet.keplrProvider.broadcast(
-      chains.nativeChain,
-      signedTx,
+    const [error, sentTx] = await runCatching(() =>
+      stargateClient.signAndBroadcast(
+        tx.fromAddress,
+        tx.msgs as SifchainEncodeObject[],
+        tx.fee
+          ? {
+              amount: [tx.fee.price],
+              gas: tx.fee.gas,
+            }
+          : DEFAULT_FEE,
+      ),
     );
+
+    if (error !== undefined) {
+      return {
+        state: "rejected",
+        hash: "",
+      } as TransactionStatus;
+    }
+
     const txStatus = client.parseTxResult(sentTx);
+
     if (txStatus.state !== "accepted") {
       bus.dispatch({
         type: "TransactionErrorEvent",

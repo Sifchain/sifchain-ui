@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: KI_TESTNET,
   [NetworkEnv.TESTNET]: KI_TESTNET,
   [NetworkEnv.MAINNET]: KI_TESTNET,
+  [NetworkEnv.TEMPNET]: KI_TESTNET,
 };

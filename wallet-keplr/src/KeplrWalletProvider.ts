@@ -4,6 +4,7 @@ import {
   StargateClient,
 } from "@cosmjs/stargate";
 import { cosmos, ibc } from "@keplr-wallet/cosmos";
+import { AminoMsg } from "@cosmjs/amino";
 
 import { Chain, Network } from "@sifchain/sdk";
 import {
@@ -82,9 +83,14 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   ): Promise<OfflineSigner & OfflineDirectSigner> {
     const chainConfig = this.getIBCChainConfig(chain);
     const keplr = await getKeplrProvider();
-    await keplr?.experimentalSuggestChain(chainConfig.keplrChainInfo);
-    await keplr?.enable(chainConfig.chainId);
-    const sendingSigner = keplr?.getOfflineSigner(chainConfig.chainId);
+
+    if (!keplr) {
+      throw new Error("Keplr not installed");
+    }
+
+    await keplr.experimentalSuggestChain(chainConfig.keplrChainInfo);
+    await keplr.enable(chainConfig.chainId);
+    const sendingSigner = keplr.getOfflineSigner(chainConfig.chainId);
 
     if (!sendingSigner)
       throw new Error(`Failed to get sendingSigner for ${chainConfig.chainId}`);
@@ -167,8 +173,10 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
     const key = await keplr?.getKey(chainConfig.chainId);
     const bech32Address = key!.bech32Address;
 
-    const aminoMsgs = tx.msgs.map(converter.toAmino.bind(converter));
-    const aminoMsg = aminoMsgs[0];
+    const aminoMsgs: AminoMsg[] = tx.msgs.map(
+      converter.toAmino.bind(converter),
+    );
+    const [aminoMsg] = aminoMsgs;
 
     const protoMsg = {
       type_url: "/ibc.applications.transfer.v1.MsgTransfer",
@@ -273,7 +281,7 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
 
     const converter = new NativeAminoTypes();
 
-    const msgs = tx.msgs.map(converter.toAmino.bind(converter));
+    const msgs: AminoMsg[] = tx.msgs.map(converter.toAmino.bind(converter));
 
     const fee = {
       amount: [tx.fee.price],
@@ -289,6 +297,11 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
       );
     }
     const keplr = await getKeplrProvider();
+
+    if (!keplr) {
+      throw new Error("No keplr provider found");
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const signDoc = makeSignDoc(
       msgs,
@@ -318,7 +331,6 @@ export class KeplrWalletProvider extends CosmosWalletProvider {
   }
 
   async broadcast(chain: Chain, tx: NativeDexSignedTransaction<EncodeObject>) {
-    console.log("tx", tx);
     // Broadcast EncodeObject
     if ((tx.signed as TxRaw).authInfoBytes) {
       const chainConfig = this.getIBCChainConfig(chain);

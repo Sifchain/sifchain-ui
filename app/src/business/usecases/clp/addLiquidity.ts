@@ -1,7 +1,6 @@
 import { Services } from "@/business/services";
 import { Store } from "@/business/store";
 import { PoolStore } from "@/business/store/pools";
-import { useCore } from "@/hooks/useCore";
 import runCatching from "@/utils/runCatching";
 import {
   createPoolKey,
@@ -9,6 +8,7 @@ import {
   ErrorCode,
   getErrorMessage,
   IAssetAmount,
+  SifchainEncodeObject,
   SifSigningStargateClient,
   TransactionStatus,
   transactionStatusFromDeliverTxResponse,
@@ -64,7 +64,7 @@ export function AddLiquidity(
     const state = sif.getState();
     if (!state.address) throw "No from address provided for swap";
 
-    const txDraft = hasPool
+    const tx = hasPool
       ? client.tx.clp.AddLiquidity(
           {
             externalAsset: {
@@ -92,8 +92,18 @@ export function AddLiquidity(
       sif.unSignedClient.rpcUrl,
       await wallet.keplrProvider.getOfflineSignerAuto(chains.nativeChain),
     );
+
     const [error, sentTx] = await runCatching(() =>
-      signingClient.signAndBroadcast(address, txDraft.msgs as any, DEFAULT_FEE),
+      signingClient.signAndBroadcast(
+        address,
+        tx.msgs as SifchainEncodeObject[],
+        tx.fee
+          ? {
+              amount: [tx.fee.price],
+              gas: tx.fee.gas,
+            }
+          : DEFAULT_FEE,
+      ),
     );
 
     if (error !== undefined) {

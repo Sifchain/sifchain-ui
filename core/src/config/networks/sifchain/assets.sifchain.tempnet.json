@@ -1,0 +1,59 @@
+{
+  "$schema": "./_assets.schema.json",
+  "assets": [
+    {
+      "symbol": "rowan",
+      "decimals": 18,
+      "name": "Rowan",
+      "imageUrl": "./images/siflogo.png",
+      "network": "sifchain",
+      "displaySymbol": "rowan",
+      "homeNetwork": "sifchain"
+    },
+    {
+      "decimals": 6,
+      "imageUrl": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389",
+      "name": "USD Coin",
+      "network": "sifchain",
+      "symbol": "cusdc",
+      "displaySymbol": "usdc",
+      "homeNetwork": "ethereum"
+    },
+    {
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
+      "name": "Ethereum",
+      "network": "sifchain",
+      "symbol": "ceth",
+      "displaySymbol": "eth",
+      "homeNetwork": "ethereum"
+    },
+    {
+      "decimals": 8,
+      "imageUrl": "https://assets.coingecko.com/coins/images/7598/thumb/wrapped_bitcoin_wbtc.png?1548822744",
+      "name": "Wrapped Bitcoin",
+      "network": "sifchain",
+      "symbol": "cwbtc",
+      "displaySymbol": "wbtc",
+      "homeNetwork": "ethereum"
+    },
+    {
+      "symbol": "uatom",
+      "decimals": 6,
+      "name": "Atom",
+      "network": "sifchain",
+      "imageUrl": "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png?1555657960",
+      "displaySymbol": "atom",
+      "homeNetwork": "cosmoshub"
+    },
+    {
+      "decimals": 18,
+      "imageUrl": "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
+      "name": "Stake",
+      "network": "sifchain",
+      "symbol": "stake",
+      "displaySymbol": "stake",
+      "homeNetwork": "sifchain"
+    }
+  ]
+}

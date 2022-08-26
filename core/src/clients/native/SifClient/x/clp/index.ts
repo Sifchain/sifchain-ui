@@ -124,7 +124,11 @@ export interface ClpExtension {
     getPmtpParams: ClpQueryPmtpParams;
   };
 }
-
+/**
+ * @deprecated use {@link NativeDexClient} instead
+ * @param base
+ * @returns
+ */
 export function setupClpExtension(base: LcdClient): ClpExtension {
   return {
     clp: {
@@ -148,6 +152,11 @@ export function setupClpExtension(base: LcdClient): ClpExtension {
         return await base.post(`/clp/createPool`, params);
       },
 
+      /**
+       * @deprecated use NativeDexClient instead
+       * @param param0
+       * @returns
+       */
       getLiquidityProvider: async ({ symbol, lpAddress }) => {
         return await base.get(
           `/clp/getLiquidityProvider?symbol=${symbol}&lpAddress=${lpAddress}`,

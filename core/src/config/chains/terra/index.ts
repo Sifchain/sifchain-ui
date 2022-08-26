@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: TERRA_TESTNET,
   [NetworkEnv.TESTNET]: TERRA_TESTNET,
   [NetworkEnv.MAINNET]: TERRA_MAINNET,
+  [NetworkEnv.TEMPNET]: TERRA_TESTNET,
 };

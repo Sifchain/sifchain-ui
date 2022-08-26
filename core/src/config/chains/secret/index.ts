@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: SECRET_MAINNET,
   [NetworkEnv.TESTNET]: SECRET_MAINNET,
   [NetworkEnv.MAINNET]: SECRET_MAINNET,
+  [NetworkEnv.TEMPNET]: SECRET_MAINNET,
 };

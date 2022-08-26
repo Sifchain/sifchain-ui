@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import * as _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.admin.v1";
 
@@ -10,6 +10,7 @@ export enum AdminType {
   TOKENREGISTRY = 2,
   ETHBRIDGE = 3,
   ADMIN = 4,
+  MARGIN = 5,
   UNRECOGNIZED = -1,
 }
 
@@ -30,6 +31,9 @@ export function adminTypeFromJSON(object: any): AdminType {
     case 4:
     case "ADMIN":
       return AdminType.ADMIN;
+    case 5:
+    case "MARGIN":
+      return AdminType.MARGIN;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -49,8 +53,11 @@ export function adminTypeToJSON(object: AdminType): string {
       return "ETHBRIDGE";
     case AdminType.ADMIN:
       return "ADMIN";
+    case AdminType.MARGIN:
+      return "MARGIN";
+    case AdminType.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -221,10 +228,9 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

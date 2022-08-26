@@ -1,8 +1,15 @@
-import { isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { BroadcastTxResult, isBroadcastTxFailure } from "@cosmjs/launchpad";
+import { OfflineSigner } from "@cosmjs/proto-signing";
 import Long from "long";
 import Web3 from "web3";
 import { provider } from "web3-core";
 import { Contract } from "web3-eth-contract";
+
+import {
+  DEFAULT_FEE,
+  SifchainEncodeObject,
+  SifSigningStargateClient,
+} from "../../../clients/sifchain";
 
 import {
   AssetAmount,
@@ -21,7 +28,11 @@ import {
   createPegTxEventEmitter,
   PegTxEventEmitter,
 } from "../../bridges/EthBridge/PegTxEventEmitter";
-import { NativeDexClient, NativeDexTransaction } from "../../native";
+import {
+  NativeAminoTypes,
+  NativeDexClient,
+  NativeDexTransaction,
+} from "../../native";
 import { TokenRegistry } from "../../native/TokenRegistry";
 import { CosmosWalletProvider } from "../../wallets/cosmos/CosmosWalletProvider";
 import { Web3Transaction, Web3WalletProvider } from "../../wallets/ethereum";
@@ -142,7 +153,7 @@ export class EthBridge extends BaseBridge<
     if (wallet instanceof CosmosWalletProvider) {
       const tx = await this.exportToEth(wallet, params);
 
-      if (isBroadcastTxFailure(tx)) {
+      if (isBroadcastTxFailure(tx as BroadcastTxResult)) {
         throw new Error(parseTxFailure(tx).memo);
       }
 
@@ -189,7 +200,9 @@ export class EthBridge extends BaseBridge<
     provider: CosmosWalletProvider,
     params: BridgeParams,
   ) {
-    const feeAmount = await this.estimateFees(provider, params);
+    console.group("EthBridge.exportToEth");
+
+    const feeAmount = this.estimateFees(provider, params);
     const nativeChain = params.fromChain;
 
     const client = await NativeDexClient.connectByChain(nativeChain);
@@ -200,11 +213,14 @@ export class EthBridge extends BaseBridge<
 
     const entry = await this.tokenRegistry.findAssetEntryOrThrow(sifAsset);
 
-    const tx = isOriginallySifchainNativeToken(params.assetAmount.asset)
+    if (!feeAmount) {
+      throw new Error("Fee amount not found");
+    }
+
+    const txDraft = isOriginallySifchainNativeToken(params.assetAmount.asset)
       ? client.tx.ethbridge.Lock(
           {
             ethereumReceiver: params.toAddress,
-
             amount: params.assetAmount.toBigInt().toString(),
             symbol: entry.denom,
             cosmosSender: params.fromAddress,
@@ -212,14 +228,13 @@ export class EthBridge extends BaseBridge<
               `${parseInt(params.toChain.chainConfig.chainId)}`,
             ),
             // ethereumReceiver: tokenAddress,
-            cethAmount: feeAmount!.toBigInt().toString(),
+            cethAmount: feeAmount.toBigInt().toString(),
           },
           params.fromAddress,
         )
       : client.tx.ethbridge.Burn(
           {
             ethereumReceiver: params.toAddress,
-
             amount: params.assetAmount.toBigInt().toString(),
             symbol: entry.denom,
             cosmosSender: params.fromAddress,
@@ -232,10 +247,49 @@ export class EthBridge extends BaseBridge<
           params.fromAddress,
         );
 
-    const signed = await provider.sign(nativeChain, tx);
-    const sent = await provider.broadcast(nativeChain, signed);
+    /**
+     * this check is needed to allow keplr to select the correct signer mode (e.g. direct vs. amino)
+     * and therefore support ledger for signing the transaction
+     */
+    const sendingSigner: OfflineSigner =
+      "getOfflineSignerAuto" in provider &&
+      // using any here because importing @sifchain/wallet-keplr causes a circular dependency
+      typeof (provider as any).getOfflineSignerAuto === "function"
+        ? await (provider as any).getOfflineSignerAuto(nativeChain)
+        : await provider.getSendingSigner(nativeChain);
 
-    return sent;
+    console.log({
+      txDraft,
+      sendingSigner,
+      params,
+    });
+
+    const nativeStargateClient =
+      await SifSigningStargateClient.connectWithSigner(
+        this.context.sifRpcUrl,
+        sendingSigner,
+        {
+          // we create amino additions, but these will not be used, because IBC types are already included & assigned
+          // on top of the amino additions by default
+          aminoTypes: new NativeAminoTypes(),
+        },
+      );
+
+    const txResult = await nativeStargateClient.signAndBroadcast(
+      params.fromAddress,
+      txDraft.msgs as SifchainEncodeObject[],
+      txDraft.fee
+        ? {
+            amount: [txDraft.fee.price],
+            gas: txDraft.fee.gas,
+          }
+        : DEFAULT_FEE,
+    );
+
+    console.log({
+      txResult,
+    });
+    return txResult;
   }
 
   private async importFromEth(
