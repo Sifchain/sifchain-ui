@@ -57,7 +57,7 @@ export class Pool extends Pair {
   constructor(
     a: IAssetAmount,
     b: IAssetAmount,
-    params: {
+    params?: {
       poolUnits?: IAmount;
       swapPrices?: SwapPrices;
       /**
@@ -71,11 +71,11 @@ export class Pool extends Pair {
     },
   ) {
     super(a, b);
-    this.swapPrices = params.swapPrices;
-    this.swapFeeRate = params.swapFeeRate;
-    this.currentRatioShiftingRate = params.currentRatioShiftingRate;
+    this.swapPrices = params?.swapPrices;
+    this.swapFeeRate = params?.swapFeeRate;
+    this.currentRatioShiftingRate = params?.currentRatioShiftingRate;
     this.poolUnits =
-      params.poolUnits ||
+      params?.poolUnits ||
       calculatePoolUnits(
         Amount(a),
         Amount(b),
