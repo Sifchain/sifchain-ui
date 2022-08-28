@@ -52,6 +52,7 @@ const UnbondLiquidity = defineComponent({
     const amountRangeRef = ref();
     const buttonErrorMsg = computed(() => {
       if (withdrawalPercentage.value === 0) return "Please enter an amount";
+      return undefined;
     });
 
     const nativeAssetWithDrawalUsd = computed(() =>
