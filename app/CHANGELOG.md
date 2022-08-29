@@ -1,3 +1,8 @@
+## Release 2022.08.29
+
+- Compatibility with cosmos sdk 0.45
+- Auto-hide pool stats < $10k
+
 ## Release 2022.08.04
 
 - Auto-hide pools < $10k
