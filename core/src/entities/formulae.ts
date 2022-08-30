@@ -249,8 +249,6 @@ export function calculatePriceImpact(x: IAmount, X: IAmount) {
 // new swap & liquidity provider fee calculation functions:
 
 /**
- * @TODO update the link once it's merged
- *
  *  Implements the spec for `Fixed Rate Swap Fees`
  *
  * - proposal - https://github.com/Sifchain/sifnode/blob/master/docs/proposals/fixed_rate_swap_fees.md
