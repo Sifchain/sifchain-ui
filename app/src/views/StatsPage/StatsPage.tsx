@@ -1,12 +1,15 @@
-import { defineComponent, computed, Ref, ref } from "vue";
-import PageCard from "@/components/PageCard";
-import Layout from "@/components/Layout";
-import { StatsPageState, useStatsPageData } from "./useStatsPageData";
+import { computed, defineComponent, Ref, ref } from "vue";
+
 import AssetIcon from "@/components/AssetIcon";
-import { prettyNumber } from "@/utils/prettyNumber";
-import { Tooltip } from "@/components/Tooltip";
+import Layout from "@/components/Layout";
+import PageCard from "@/components/PageCard";
 import { SearchBox } from "@/components/SearchBox";
+import Toggle from "@/components/Toggle";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { Tooltip } from "@/components/Tooltip";
+import { prettyNumber } from "@/utils/prettyNumber";
+import { SMALL_POOL_CAP } from "../PoolPage/PoolPage";
+import { StatsPageState, useStatsPageData } from "./useStatsPageData";
 
 export default defineComponent({
   name: "StatsPage",
@@ -79,10 +82,18 @@ export default defineComponent({
     });
 
     const searchQuery = ref("");
+
+    const showSmallPools = ref(false);
+
     const finalStats = computed(() => {
-      if (!searchQuery.value) return statsRef.value;
-      return statsRef.value?.filter((item) => {
-        return item.asset.symbol.toLowerCase().includes(searchQuery.value);
+      return statsRef.value.filter((item) => {
+        const matchesFilter = item.asset.symbol
+          .toLowerCase()
+          .includes(searchQuery.value);
+
+        return showSmallPools.value
+          ? matchesFilter
+          : matchesFilter && item.tvl >= SMALL_POOL_CAP;
       });
     });
 
@@ -158,6 +169,25 @@ export default defineComponent({
                   ))}
                 </div>
               </>
+            }
+            headerAction={
+              <div class="flex-end flex items-center gap-2">
+                <Toggle
+                  class="flex flex-row-reverse"
+                  label={`Show pools under ${SMALL_POOL_CAP.toLocaleString(
+                    undefined,
+                    {
+                      style: "currency",
+                      currency: "USD",
+                      maximumFractionDigits: 0,
+                    },
+                  )} TVL`}
+                  active={showSmallPools.value}
+                  onChange={(active) => {
+                    showSmallPools.value = active;
+                  }}
+                />
+              </div>
             }
           >
             <table class="w-full">

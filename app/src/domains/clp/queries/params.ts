@@ -158,3 +158,25 @@ export function useCurrentProviderDistributionPeriod() {
     },
   );
 }
+
+export function useSwapFeeRate() {
+  const sifchainClients = useSifchainClients();
+
+  return useDependentQuery(
+    [
+      computed(
+        () =>
+          sifchainClients.queryClientStatus === "fulfilled" &&
+          sifchainClients.signingClientStatus === "fulfilled",
+      ),
+    ],
+    "swapFeeRate",
+    async () => {
+      dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
+
+      const { queryClient } = sifchainClients;
+
+      return await queryClient.clp.GetSwapFeeRate({});
+    },
+  );
+}

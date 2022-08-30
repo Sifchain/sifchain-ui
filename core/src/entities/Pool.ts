@@ -4,13 +4,15 @@ import { Pair } from "./Pair";
 import {
   calculatePoolUnits,
   calculatePriceImpact,
-  calculateProviderFee,
   calculateReverseSwapResult,
   calculateSwapResult,
+  calculateSwapFee,
 } from "./formulae";
 import { Amount, IAmount } from "./Amount";
 
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
+
+const NATIVE_ASSET_DENOM = "rowan";
 
 export function getNormalizedSwapPrice(swapAsset: IAsset, pool: IPool) {
   if (!pool.swapPrices) {
@@ -20,7 +22,7 @@ export function getNormalizedSwapPrice(swapAsset: IAsset, pool: IPool) {
   const decimalsDelta = swapAsset.decimals - otherAsset.decimals;
   const decimalAdjust = Math.pow(10, Math.abs(decimalsDelta));
 
-  return swapAsset.symbol === "rowan"
+  return swapAsset.symbol === NATIVE_ASSET_DENOM
     ? pool.swapPrices.native.divide(decimalAdjust)
     : pool.swapPrices.external.multiply(decimalAdjust);
 }
@@ -46,17 +48,34 @@ export type SwapPrices = {
 export class Pool extends Pair {
   poolUnits: IAmount;
   swapPrices?: SwapPrices;
+  swapFeeRate?: IAmount;
+  /**
+   * clp.getPmtpParams pmtp_current_running_rate
+   */
+  currentRatioShiftingRate?: IAmount;
 
   constructor(
     a: IAssetAmount,
     b: IAssetAmount,
-    poolUnits?: IAmount,
-    swapPrices?: SwapPrices,
+    params?: {
+      poolUnits?: IAmount;
+      swapPrices?: SwapPrices;
+      /**
+       * clp.getSwapFeeRate pmtp_current_running_rate
+       */
+      swapFeeRate?: IAmount;
+      /**
+       * clp.getPmtpParams pmtp_current_running_rate
+       */
+      currentRatioShiftingRate?: IAmount;
+    },
   ) {
     super(a, b);
-    this.swapPrices = swapPrices;
+    this.swapPrices = params?.swapPrices;
+    this.swapFeeRate = params?.swapFeeRate;
+    this.currentRatioShiftingRate = params?.currentRatioShiftingRate;
     this.poolUnits =
-      poolUnits ||
+      params?.poolUnits ||
       calculatePoolUnits(
         Amount(a),
         Amount(b),
@@ -75,11 +94,11 @@ export class Pool extends Pair {
   }
 
   get externalAmount() {
-    return this.amounts.find((amount) => amount.symbol !== "rowan")!;
+    return this.amounts.find((amount) => amount.symbol !== NATIVE_ASSET_DENOM)!;
   }
 
   get nativeAmount() {
-    return this.amounts.find((amount) => amount.symbol === "rowan")!;
+    return this.amounts.find((amount) => amount.symbol === NATIVE_ASSET_DENOM)!;
   }
 
   calcProviderFee(x: IAssetAmount) {
@@ -93,7 +112,19 @@ export class Pool extends Pair {
     }
     const Y = this.amounts.find((a) => a.symbol !== x.symbol);
     if (!Y) throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
-    const providerFee = calculateProviderFee(x, X, Y);
+
+    const toRowan = Y.symbol === NATIVE_ASSET_DENOM;
+
+    const providerFee = calculateSwapFee(
+      {
+        inputAmount: x,
+        inputBalanceInPool: X,
+        outputBalanceInPool: Y,
+        swapFeeRate: this.swapFeeRate ?? Amount("0"),
+        currentRatioShiftingRate: this.currentRatioShiftingRate ?? Amount("0"),
+      },
+      toRowan,
+    );
     return AssetAmount(this.otherAsset(x), providerFee);
   }
 
@@ -126,8 +157,8 @@ export class Pool extends Pair {
       throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
     }
 
-    const fromRowan = x.symbol === "rowan";
-    const toRowan = Y.symbol === "rowan";
+    const fromRowan = x.symbol === NATIVE_ASSET_DENOM;
+    const toRowan = Y.symbol === NATIVE_ASSET_DENOM;
 
     const swapResult =
       (fromRowan || toRowan) && this.swapPrices
@@ -160,8 +191,8 @@ export class Pool extends Pair {
       return AssetAmount(otherAsset, "0");
     }
 
-    const fromRowan = Sa.symbol === "rowan";
-    const toRowan = Xa.symbol === "rowan";
+    const fromRowan = Sa.symbol === NATIVE_ASSET_DENOM;
+    const toRowan = Xa.symbol === NATIVE_ASSET_DENOM;
 
     const reverseSwapResult =
       (fromRowan || toRowan) && this.swapPrices
