@@ -1,6 +1,6 @@
-## Release 2022.08.30
+## Release 2022.08.31
 
-- Updated fixed rate swap fee calculation
+- Swap fee updates to a 0.3% flat-fee instead of a slip-based fee.
 - Auto-hide pool stats < $10k
 
 ## Release 2022.08.21
