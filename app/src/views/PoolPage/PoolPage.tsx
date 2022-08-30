@@ -23,7 +23,7 @@ import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
 
-const SMALL_POOL_CAP = 10_000;
+export const SMALL_POOL_CAP = 10_000;
 
 export default defineComponent({
   name: "PoolsPage",

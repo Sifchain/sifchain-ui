@@ -1,3 +1,12 @@
+## Release 2022.08.31
+
+- Swap fee updates to a 0.3% flat-fee instead of a slip-based fee.
+- Auto-hide pool stats < $10k
+
+## Release 2022.08.21
+
+- Compatibility with cosmos sdk 0.45
+
 ## Release 2022.08.04
 
 - Auto-hide pools < $10k
