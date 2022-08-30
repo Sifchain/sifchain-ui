@@ -1,8 +1,11 @@
-## Release 2022.08.29
+## Release 2022.08.30
 
-- Compatibility with cosmos sdk 0.45
 - Updated fixed rate swap fee calculation
 - Auto-hide pool stats < $10k
+
+## Release 2022.08.21
+
+- Compatibility with cosmos sdk 0.45
 
 ## Release 2022.08.04
 
