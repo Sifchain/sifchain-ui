@@ -20,8 +20,8 @@ import AssetIcon from "../AssetIcon";
 import MoreMenu from "./NavMoreMenu";
 import ConnectedWallets from "./ConnectedWallets";
 import RowanPrice from "./RowanPrice";
-import PmtpParam from "./PmtpParam";
 import TVL from "./TVL";
+// import PmtpParam from "./PmtpParam";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -338,7 +338,7 @@ export default defineComponent({
             <div class="bottom mt-[10px]">
               <div class="mb-[2.2vh] w-full text-left transition-all">
                 <TVL />
-                <PmtpParam />
+                {/* <PmtpParam /> */}
                 <RowanPrice />
               </div>
               <ConnectedWallets />
