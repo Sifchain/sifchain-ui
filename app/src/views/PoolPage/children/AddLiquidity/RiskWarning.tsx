@@ -15,6 +15,10 @@ export default defineComponent({
       type: Object as PropType<ComputedRef<"" | "bad" | "danger" | "warning">>,
       required: true,
     },
+    isMarginEnabledPool: {
+      type: Boolean,
+      required: true,
+    },
   },
   setup(props) {
     const slippageRiskContent = computed(() => {
@@ -60,6 +64,15 @@ export default defineComponent({
           icon: "text-danger-base",
         },
       };
+
+      if (
+        !props.riskFactorStatus.value &&
+        !props.isMarginEnabledPool &&
+        !props.isSlippagePossible
+      ) {
+        return;
+      }
+
       return (
         <div
           class={clsx(
@@ -89,9 +102,13 @@ export default defineComponent({
             </Tooltip>
           </div>
           <p class={["pr-4 text-slate-300"]}>
-            Deposits are used to underwrite margin trading. Utilized capital may
-            be locked.
-            <br />
+            {props.isMarginEnabledPool && (
+              <>
+                Deposits are used to underwrite margin trading. Utilized capital
+                may be locked.
+                <br />
+              </>
+            )}
             {slippageRiskContent.value && (
               <>
                 {slippageRiskContent.value} See documentation{" "}

@@ -24,6 +24,10 @@ import { usePoolPageData } from "../../usePoolPageData";
 import SettingsDropdown from "./SettingsDropdown";
 import Toggle from "@/components/Toggle";
 import { flagsStore } from "@/store/modules/flags";
+import {
+  useMarginEnabledPoolsQuery,
+  useMarginParamsQuery,
+} from "@/domains/margin/queries/params";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -49,6 +53,12 @@ export default defineComponent({
 
     const poolPageData = usePoolPageData();
 
+    const pool = computed(() =>
+      poolPageData.allPoolsData.value.find(
+        (x) => x.poolStat.symbol === data.fromSymbol.value,
+      ),
+    );
+
     const poolComposition = computed(() => {
       const defaultPrices = {
         nativeTVL: 0,
@@ -64,23 +74,19 @@ export default defineComponent({
         return defaultPrices;
       }
 
-      const pool = poolPageData.allPoolsData.value.find(
-        (x) => x.poolStat.symbol === data.fromSymbol.value,
-      );
-
-      if (!pool) {
+      if (!pool.value) {
         return defaultPrices;
       }
 
-      const poolTVL = pool.poolStat.poolTVL;
+      const poolTVL = pool.value.poolStat.poolTVL;
 
       if (!poolTVL) {
         return defaultPrices;
       }
 
-      const externalTVL = pool.pool.externalAmount
+      const externalTVL = pool.value.pool.externalAmount
         .toDerived()
-        .multiply(pool.poolStat.priceToken ?? "0")
+        .multiply(pool.value.poolStat.priceToken ?? "0")
         .toNumber();
 
       const nativeTVL = poolTVL - externalTVL;
@@ -92,8 +98,8 @@ export default defineComponent({
         tvlUsd: poolTVL,
         nativeRatio: nativeTVL / baseRatio,
         externalRatio: externalTVL / baseRatio,
-        externalPrice: pool.poolStat.priceToken ?? 0,
-        nativePrice: pool.poolStat.rowanUSD ?? 0,
+        externalPrice: pool.value.poolStat.priceToken ?? 0,
+        nativePrice: pool.value.poolStat.rowanUSD ?? 0,
       };
     });
 
@@ -156,6 +162,21 @@ export default defineComponent({
 
     const { data: rewardsPeriod } = useCurrentRewardPeriodStatistics();
 
+    const { data: marginEnabledPools } = useMarginEnabledPoolsQuery();
+
+    const isMarginEnabledPool = computed(() => {
+      if (!marginEnabledPools.value) {
+        return false;
+      }
+
+      return marginEnabledPools.value.some(
+        (token) =>
+          token.displaySymbol.toLowerCase() ===
+            data.fromSymbol.value.toLowerCase() ||
+          token.baseDenom === data.fromSymbol.value,
+      );
+    });
+
     return () => {
       if (data.modalStatus.value === "processing") {
         return (
@@ -188,6 +209,7 @@ export default defineComponent({
                 <RiskWarning
                   isSlippagePossible={!data.symmetricalPooling.value}
                   riskFactorStatus={data.riskFactorStatus}
+                  isMarginEnabledPool={isMarginEnabledPool.value}
                 />
               </div>
               <div class="flex items-center justify-between overflow-hidden rounded border border-gray-500 p-4">
@@ -392,6 +414,7 @@ export default defineComponent({
               <RiskWarning
                 isSlippagePossible={!data.symmetricalPooling.value}
                 riskFactorStatus={data.riskFactorStatus}
+                isMarginEnabledPool={isMarginEnabledPool.value}
               />
             </div>
             {(data.nextStepAllowed.value && !data.hasActiveSafetyLag.value && (
