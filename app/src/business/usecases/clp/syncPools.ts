@@ -15,7 +15,10 @@ import { flagsStore } from "@/store/modules/flags";
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<
   Services["clp"],
-  "getAccountLiquidityProviderData" | "getRawPools"
+  | "getAccountLiquidityProviderData"
+  | "getRawPools"
+  | "getPmtpParams"
+  | "getSwapFeeRate"
 >;
 
 type PickChains = Pick<
@@ -47,15 +50,17 @@ export function SyncPools(
     const nativeAsset = chains.get(Network.SIFCHAIN).nativeAsset;
     const registry = await tokenRegistry.load();
 
-    const rawPools = await clp.getRawPools();
+    const [rawPoolsRes, pmtpParamsRes, swapFeeRateRes] = await Promise.all([
+      clp.getRawPools(),
+      clp.getPmtpParams(),
+      clp.getSwapFeeRate(),
+    ]);
 
     if (process.env.NODE_ENV === "development") {
-      console.log({ rawPools });
+      console.log({ rawPools: rawPoolsRes });
     }
 
-    const isPMTPEnabled = flagsStore.state.pmtp;
-
-    const pools = rawPools.pools
+    const pools = rawPoolsRes.pools
       .map((pool) => {
         const externalSymbol = pool.externalAsset?.symbol;
         const entry = registry.find(
@@ -82,16 +87,23 @@ export function SyncPools(
           return null;
         }
 
+        const toNativeAmountDerived = (rawAmount: string) =>
+          AssetAmount(nativeAsset, rawAmount).toDerived();
+
         return new Pool(
           AssetAmount(nativeAsset, pool.nativeAssetBalance),
           AssetAmount(asset, pool.externalAssetBalance),
-          Amount(pool.poolUnits),
-          isPMTPEnabled
-            ? {
-                native: Amount(pool.swapPriceNative).divide(1e18),
-                external: Amount(pool.swapPriceExternal).divide(1e18),
-              }
-            : undefined,
+          {
+            poolUnits: Amount(pool.poolUnits),
+            swapPrices: {
+              native: toNativeAmountDerived(pool.swapPriceNative),
+              external: toNativeAmountDerived(pool.swapPriceExternal),
+            },
+            swapFeeRate: toNativeAmountDerived(swapFeeRateRes.swapFeeRate),
+            currentRatioShiftingRate: toNativeAmountDerived(
+              pmtpParamsRes.pmtpRateParams?.pmtpCurrentRunningRate ?? "0",
+            ),
+          },
         );
       })
       .filter(Boolean) as Pool[];

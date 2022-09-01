@@ -245,3 +245,245 @@ export function calculatePriceImpact(x: IAmount, X: IAmount) {
   const denominator = x.add(X);
   return x.divide(denominator);
 }
+
+// new swap & liquidity provider fee calculation functions:
+
+/**
+ *  Implements the spec for `Fixed Rate Swap Fees`
+ *
+ * - proposal - https://github.com/Sifchain/sifnode/blob/master/docs/proposals/fixed_rate_swap_fees.md
+ * - tutorial - https://github.com/Sifchain/sifnode/blob/master/docs/tutorials/swap-fee-rate.md
+ *
+ */
+
+const ONE = Amount(1);
+
+export type SwapParams = {
+  /**
+   * amount to be swapped from
+   */
+  inputAmount: IAmount;
+  /**
+   * amount of input asset in the pool
+   */
+  inputBalanceInPool: IAmount;
+  /**
+   * amount of output asset in the pool
+   */
+  outputBalanceInPool: IAmount;
+  /**
+   * current swap fee rate (sifnode gov param)
+   */
+  swapFeeRate: IAmount;
+  /**
+   * current PMTP ratio shifting rate
+   */
+  currentRatioShiftingRate: IAmount;
+};
+
+/**
+ * Calculate Swap Amount from ROWAN to EXTERNAL ASSET based on formula:
+ * - (1 - f) * (1 + r) * x * Y / (x + X)
+ *
+ * where:
+ * - f is the swap fee rate
+ * - x is the input amount
+ * - X is the balance of input token in the pool
+ * - Y is the balance of output token in the pool
+ * - r is the interest rate
+ *
+ * @param params {SwapParams} - swap parameters
+ *
+ * @returns amount obtained from swap
+ *
+ * @example
+ *
+ * const inputAmount = BigNumber(200000000000000);
+ * const inputBalanceInPool = BigNumber(1999800619938006200);
+ * const outputBalanceInPool = BigNumber(2000200000000000000);
+ * const swapFeeRate = BigNumber(0.003);
+ * const currentRatioShiftingRate = BigNumber(0);
+ *
+ * calculateSwapFromRowan({
+ *  inputAmount,
+ *  inputBalanceInPool,
+ *  outputBalanceInPool,
+ *  swapFeeRate,
+ *  currentRatioShiftingRate
+ * });
+ */
+export function calculateSwapFromRowan({
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
+}: SwapParams) {
+  // consider the formula:
+  // (1 - f) * (1 + r) * x * Y / (x + X)
+  const term1 = ONE.subtract(f); // (1 - f)
+  const term2 = ONE.add(r); // (1 + r)
+  const term3 = x.multiply(Y); // x * Y
+  const term4 = x.add(X); // (x + X)
+
+  return term1.multiply(term2).multiply(term3).divide(term4);
+}
+
+/**
+ * Calculate Swap Fee from ROWAN to EXTERNAL ASSET based on formula:
+ * - f * (1 + r) * x * Y / (x + X)
+ *
+ * where:
+ * - f is the swap fee rate
+ * - x is the input amount
+ * - X is the balance of input token in the pool
+ * - Y is the balance of output token in the pool
+ * - r is the current ratio shifting running rate
+ *
+ * @param params {SwapParams} - swap parameters
+ *
+ * @returns swap fee amount
+ *
+ * @example
+ *
+ * const inputAmount = Amount(200000000000000);
+ * const inputBalanceInPool = Amount(1999800619938006200);
+ * const outputBalanceInPool = Amount(2000200000000000000);
+ * const swapFeeRate = Amount(0.003);
+ * const currentRatioShiftingRate = Amount(0);
+ *
+ * calculateSwapFeeFromRowan({
+ *  inputAmount,
+ *  inputBalanceInPool,
+ *  outputBalanceInPool,
+ *  swapFeeRate,
+ *  currentRatioShiftingRate
+ * });
+ */
+export function calculateSwapFeeFromRowan({
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
+}: SwapParams) {
+  // consider the formula:
+  // f * (1 + r) * x * Y / (x + X)
+  const term1 = f.multiply(ONE.add(r)); // f * (1 + r)
+  const term2 = x.multiply(Y); // x * Y
+  const term3 = x.add(X); // (x + X)
+
+  return term1.multiply(term2).divide(term3);
+}
+
+/**
+ * Calculate Swap Amount from EXTERNAL ASSET to ROWAN based on formula:
+ * - (1 - f) * x * Y / ((x + X)(1 + r))
+ *
+ * where:
+ * - f is the swap fee rate
+ * - x is the input amount
+ * - X is the balance of input token in the pool
+ * - Y is the balance of output token in the pool
+ * - r is the current ratio shifting running rate
+ *
+ * @param params {SwapParams} - swap parameters
+ *
+ * @returns amount obtained from swap
+ *
+ * @example
+ *
+ * const inputAmount = Amount(200000000000000);
+ * const inputBalanceInPool = Amount(1999800619938006200);
+ * const outputBalanceInPool = Amount(2000200000000000000);
+ * const swapFeeRate = Amount(0.003);
+ * const currentRatioShiftingRate = Amount(0);
+ *
+ * calculateSwapToRowan({
+ *  inputAmount,
+ *  inputBalanceInPool,
+ *  outputBalanceInPool,
+ *  swapFeeRate,
+ *  currentRatioShiftingRate
+ * });
+ */
+export function calculateSwapToRowan({
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
+}: SwapParams) {
+  // consider the formula:
+  // (1 - f) * x * Y / ((x + X)(1 + r))
+  const term1 = ONE.subtract(f); // (1 - f)
+  const term2 = x.multiply(Y); // x * Y
+  const term3 = x.add(X); // (x + X)
+  const term4 = ONE.add(r); // (1 + r)
+
+  return term1.multiply(term2).divide(term3.multiply(term4));
+}
+
+/**
+ * Calculate Swap Fee from EXTERNAL ASSET to ROWAN based on formula:
+ * - f * x * Y / ((x + X)(1 + r))
+ *
+ * where:
+ * - f is the swap fee rate
+ * - x is the input amount
+ * - X is the balance of input token in the pool
+ * - Y is the balance of output token in the pool
+ * - r is the current ratio shifting running rate
+ *
+ * @param params {SwapParams} - swap parameters
+ *
+ * @returns swap fee amount
+ *
+ * @example
+ *
+ * const inputAmount = Amount(200000000000000);
+ * const inputBalanceInPool = Amount(1999800619938006200);
+ * const outputBalanceInPool = Amount(2000200000000000000);
+ * const swapFeeRate = Amount(0.003);
+ * const currentRatioShiftingRate = Amount(0);
+ *
+ * calculateSwapFeeToRowan({
+ *  inputAmount,
+ *  inputBalanceInPool,
+ *  outputBalanceInPool,
+ *  swapFeeRate,
+ *  currentRatioShiftingRate
+ * });
+ */
+export function calculateSwapFeeToRowan({
+  inputAmount: x,
+  inputBalanceInPool: X,
+  outputBalanceInPool: Y,
+  swapFeeRate: f,
+  currentRatioShiftingRate: r,
+}: SwapParams) {
+  // consider the formula:
+  // f * x * Y / ((x + X)(1 + r))
+  const term1 = f.multiply(x).multiply(Y); // f * x * Y
+  const term2 = x.add(X); // (x + X)
+  const term3 = ONE.add(r); // (1 + r)
+
+  return term1.divide(term2.multiply(term3));
+}
+
+export const calculateSwap = (params: SwapParams, toRowan: boolean) => {
+  const fn = toRowan ? calculateSwapToRowan : calculateSwapFromRowan;
+
+  return fn(params);
+};
+
+export const calculateSwapFee = (params: SwapParams, toRowan: boolean) => {
+  const fn = toRowan ? calculateSwapFeeToRowan : calculateSwapFeeFromRowan;
+
+  return fn(params);
+};
+
+export const calculateSwapWithFee = (params: SwapParams, toRowan: boolean) => ({
+  swap: calculateSwap(params, toRowan),
+  fee: calculateSwapFee(params, toRowan),
+});
