@@ -11,6 +11,7 @@ import { QueryClientImpl as ClpQueryClient } from "../../generated/proto/sifnode
 import { QueryClientImpl as DispensationQueryClient } from "../../generated/proto/sifnode/dispensation/v1/query";
 import { QueryClientImpl as EthBridgeQueryClient } from "../../generated/proto/sifnode/ethbridge/v1/query";
 import { QueryClientImpl as TokenRegistryQueryClient } from "../../generated/proto/sifnode/tokenregistry/v1/query";
+import { QueryClientImpl as MarginQueryClient } from "../../generated/proto/sifnode/margin/v1/query";
 import { Rpc, StringLiteral } from "./types";
 
 const setupBareExtension =
@@ -36,4 +37,5 @@ export const createQueryClient = async (url: string) =>
     setupBareExtension("dispensation", DispensationQueryClient),
     setupBareExtension("ethBridge", EthBridgeQueryClient),
     setupBareExtension("tokenRegistry", TokenRegistryQueryClient),
+    setupBareExtension("margin", MarginQueryClient),
   );
