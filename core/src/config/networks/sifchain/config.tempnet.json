@@ -2,7 +2,7 @@
   "sifAddrPrefix": "sif",
   "sifApiUrl": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rest",
   "sifRpcUrl": "https://proxies.sifchain.finance/api/sifchain-margin-tempnet/rpc",
-  "sifChainId": "sifchain-tempnet-2c36798",
+  "sifChainId": "sifchain-testnet-1",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
   "blockExplorerUrl": "https://blockexplorer-devnet.sifchain.finance",
