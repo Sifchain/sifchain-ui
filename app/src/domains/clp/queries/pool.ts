@@ -8,7 +8,7 @@ import { useTokenRegistryEntryQuery } from "../../tokenRegistry/queries/tokenReg
 
 export const usePoolQuery = (
   externalAssetBaseDenom: MaybeRef<string>,
-  options?: UseQueryOptions<PoolRes>,
+  options?: Omit<UseQueryOptions<PoolRes>, "queryFn" | "queryKey">,
 ) => {
   const sifchainClients = useSifchainClients();
   const { data: tokenRegistryEntry } = useTokenRegistryEntryQuery(
@@ -29,7 +29,7 @@ export const usePoolQuery = (
           sifchainClients?.queryClientStatus === "fulfilled" &&
           tokenRegistryEntry.value !== undefined,
       ),
-      ...options,
+      ...((options ?? {}) as any),
     },
   );
 };

@@ -6,13 +6,13 @@ export const COSMOSHUB_TESTNET: IBCChainConfig = {
   displayName: "Cosmoshub",
   blockExplorerUrl: "https://mintscan.io/cosmos",
   nativeAssetSymbol: "uphoton",
-  chainId: "cosmoshub-testnet",
+  chainId: "gaia-1",
   rpcUrl: "https://proxies.sifchain.finance/api/cosmoshub-testnet/rpc",
   restUrl: "https://proxies.sifchain.finance/api/cosmoshub-testnet/rest",
   keplrChainInfo: {
     rpc: "https://proxies.sifchain.finance/api/cosmoshub-testnet/rpc",
     rest: "https://proxies.sifchain.finance/api/cosmoshub-testnet/rest",
-    chainId: "cosmoshub-testnet",
+    chainId: "gaia-1",
     chainName: "Cosmos Testnet",
     stakeCurrency: {
       coinDenom: "PHOTON",

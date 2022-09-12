@@ -5,26 +5,26 @@ import {
   Msg,
   Secp256k1HdWallet,
 } from "@cosmjs/launchpad";
-import { reactive } from "@vue/reactivity";
 import {
   Address,
+  IAmount,
   IAsset,
   IAssetAmount,
+  Mnemonic,
   Network,
   TransactionStatus,
-  Mnemonic,
-  IAmount,
 } from "@sifchain/sdk";
+import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import {
   SifClient,
   SifUnSignedClient,
 } from "@sifchain/sdk/src/clients/native/SifClient";
-
-import { ensureSifAddress } from "./utils";
 import { KeplrChainConfig } from "@sifchain/sdk/src/utils/parseConfig";
 import { parseTxFailure } from "@sifchain/sdk/src/utils/parseTxFailure";
-import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import { getKeplrProvider, KeplrProvider } from "@sifchain/wallet-keplr";
+import { reactive } from "vue";
+
+import { ensureSifAddress } from "./utils";
 
 export type SifServiceContext = {
   sifAddrPrefix: string;
