@@ -1,3 +1,8 @@
+## Release 2022.09.13
+
+- Remove PMTP rate from sidebar
+- Preparations for margin release
+
 ## Release 2022.08.31
 
 - Swap fee updates to a 0.3% flat-fee instead of a slip-based fee.
