@@ -3,7 +3,7 @@ import { Chain, IAsset } from "@sifchain/sdk";
 
 import { Vuextra } from "../Vuextra";
 
-export const MARGIN_FE_URL = "https://sifchain-margin.vercel.app";
+export const MARGIN_FE_URL = "https://sifchain-margin.redstarling.com";
 
 export const isChainFlaggedDisabled = (chain: Chain) => {
   return (
