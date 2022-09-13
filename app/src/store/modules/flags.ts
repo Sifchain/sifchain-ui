@@ -90,6 +90,10 @@ export const flagsStore = Vuextra.createStore({
 
       for (const key in response) {
         if (key in currentFlags) {
+          if (process.env.NODE_ENV === "development") {
+            console.log("Setting flag", key, response[key]);
+          }
+
           currentFlags[key] = Boolean(response[key]);
         }
       }
@@ -102,9 +106,8 @@ export const flagsStore = Vuextra.createStore({
   }),
   modules: [],
   init() {
-    self.syncRemoteFlags().then(() => {
-      self.assignSavedState();
-    });
+    self.assignSavedState();
+    self.syncRemoteFlags();
   },
 });
 
