@@ -5,6 +5,23 @@ import { Vuextra } from "../Vuextra";
 
 export const MARGIN_FE_URL = "https://sifchain-margin.redstarling.com";
 
+export const FLAGS_API_ENDPOINT =
+  "https://sifchain-changes-server.vercel.app/api";
+
+export class FlagsApi {
+  static async getFlags(
+    env: "development" | "staging" | "production" = "production",
+  ) {
+    try {
+      const res = await fetch(`${FLAGS_API_ENDPOINT}/flags/${env}`);
+      return res.json() as Promise<Record<string, boolean>>;
+    } catch (error) {
+      console.log("Failed to fetch flags from server, using defaults instead");
+      return {} as Record<string, boolean>;
+    }
+  }
+}
+
 export const isChainFlaggedDisabled = (chain: Chain) => {
   return (
     flagsStore.state.enableTestChains[
@@ -50,6 +67,9 @@ export const flagsStore = Vuextra.createStore({
     asymmetricPooling: false,
     lppdRewards: true,
     margin: true,
+    remoteFlags: {
+      DISABLE_ETH_BRIDGE: false,
+    },
   },
   getters: (state) => ({}),
   mutations: (state) => ({
@@ -63,6 +83,17 @@ export const flagsStore = Vuextra.createStore({
 
       copyPersistedJsonToState(json, state);
     },
+    async syncRemoteFlags() {
+      const response = await FlagsApi.getFlags();
+
+      const currentFlags = state.remoteFlags as Record<string, boolean>;
+
+      for (const key in response) {
+        if (key in currentFlags) {
+          currentFlags[key] = Boolean(response[key]);
+        }
+      }
+    },
   }),
   actions: (ctx) => ({
     persist: () => {
@@ -71,7 +102,9 @@ export const flagsStore = Vuextra.createStore({
   }),
   modules: [],
   init() {
-    self.assignSavedState();
+    self.syncRemoteFlags().then(() => {
+      self.assignSavedState();
+    });
   },
 });
 
