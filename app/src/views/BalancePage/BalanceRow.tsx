@@ -15,6 +15,10 @@ import { getExportLocation } from "./Export/useExportData";
 import { Button } from "@/components/Button/Button";
 import { useChains } from "@/hooks/useChains";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { flagsStore } from "@/store/modules/flags";
+
+const ETH_MERGE_DISCLAIMER =
+  "Due to the upcoming Ethereum merge, all imports/exports of ERC-20 tokens and ETH will be disabled for ~48 hrs starting approximately 24 hours before the merge (estimated to be between Sept 13th, 2022 - Sept 15th, 2022)";
 
 export default defineComponent({
   name: "BalanceRow",
@@ -59,6 +63,12 @@ export default defineComponent({
       },
     }));
 
+    const isEthBridgeDisabled = computed(
+      () =>
+        flagsStore.state.remoteFlags.DISABLE_ETH_BRIDGE &&
+        props.tokenItem.asset.homeNetwork === "ethereum",
+    );
+
     const importItem = computed(() => ({
       tag: RouterLink,
       icon: "interactive/arrow-down",
@@ -66,10 +76,14 @@ export default defineComponent({
       visible: true,
       help: chainConfig.underMaintenance
         ? `${displayName} Connection Under Maintenance`
+        : isEthBridgeDisabled.value
+        ? ETH_MERGE_DISCLAIMER
         : null,
       props: {
         disabled:
-          props.tokenItem.asset.decommissioned || chainConfig.underMaintenance,
+          props.tokenItem.asset.decommissioned ||
+          chainConfig.underMaintenance ||
+          isEthBridgeDisabled.value,
         replace: false,
         to: getImportLocation("select", {
           symbol: props.tokenItem.asset.symbol,
@@ -106,13 +120,13 @@ export default defineComponent({
           ]
         : [
             importItem.value,
-            hasNoBalance.value
+            hasNoBalance.value || isEthBridgeDisabled.value
               ? {
                   tag: "button",
                   icon: "interactive/arrow-up",
                   name: "Export",
                   visible: true,
-                  help: null,
+                  help: isEthBridgeDisabled.value ? ETH_MERGE_DISCLAIMER : null,
                   props: { disabled: true, class: "" },
                 }
               : {
