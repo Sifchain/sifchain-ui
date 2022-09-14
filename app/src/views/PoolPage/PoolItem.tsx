@@ -390,8 +390,8 @@ export default defineComponent({
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
-            {!isNil(this.$props.poolStat?.rewardApr)
-              ? `${(this.$props.poolStat?.rewardApr ?? 0).toFixed(2)}%`
+            {!isNil(this.$props.poolStat?.poolApr)
+              ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
           <div
@@ -401,7 +401,7 @@ export default defineComponent({
             ]}
           >
             {!isNil(this.$props.poolStat?.margin_apr)
-              ? `${(this.$props.poolStat?.margin_apr ?? 0).toFixed(2)}%`
+              ? `${Number(this.$props.poolStat?.margin_apr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
           <div
