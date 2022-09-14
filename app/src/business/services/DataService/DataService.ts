@@ -162,6 +162,7 @@ export default class DataService {
           ),
         60000 * 5, // cache for 5 minutes
       );
+
       return res;
     } catch (error) {
       return {} as PoolStatsResponseData;
