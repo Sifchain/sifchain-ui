@@ -34,6 +34,7 @@ export interface PoolStat {
   tradingApr: number;
   rewardApr: number;
   poolApr: number;
+  margin_apr: number;
 }
 
 export interface Headers {

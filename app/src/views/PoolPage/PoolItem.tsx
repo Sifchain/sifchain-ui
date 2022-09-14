@@ -400,8 +400,8 @@ export default defineComponent({
               "flex items-center font-mono",
             ]}
           >
-            {!isNil(this.$props.poolStat?.poolApr)
-              ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
+            {!isNil(this.$props.poolStat?.margin_apr)
+              ? `${(this.$props.poolStat?.margin_apr ?? 0).toFixed(2)}%`
               : "..."}
           </div>
           <div
