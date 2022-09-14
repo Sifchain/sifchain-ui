@@ -17,7 +17,7 @@ export interface PoolStat {
   symbol: string;
   priceToken: number;
   poolDepth: number;
-  rowanUSD: string;
+  rowanUSD?: number;
   poolTVL: number;
   rowan_24h_lowest: number;
   rowan_24h_highest: number;
@@ -146,7 +146,7 @@ export function usePoolStats() {
       poolStatLookup[asset.symbol] = {
         ...poolStat,
         symbol: asset.symbol,
-        rowanUSD: parseFloat(String(poolStatsRes.data.value?.rowanUSD) ?? "0"),
+        rowanUSD: parseFloat(poolStatsRes.data.value?.rowanUSD ?? "0"),
       };
     });
 
