@@ -29,6 +29,7 @@ export type PoolPageData = ReturnType<typeof usePoolPageData>;
 export type PoolPageColumnId =
   | "token"
   | "apy"
+  | "marginapy"
   | "gainLoss"
   | "rewardApr"
   | "poolTvl"
@@ -69,7 +70,7 @@ export const COLUMNS: PoolPageColumn[] = [
   },
   {
     id: "apy",
-    name: "Pool APR",
+    name: "Reward APR",
     class: "w-[128px] text-right justify-end",
     sortable: true,
     help: (
@@ -79,6 +80,13 @@ export const COLUMNS: PoolPageColumn[] = [
         per year)
       </code>
     ),
+  },
+  {
+    id: "marginapy",
+    name: "Margin APR",
+    class: "w-[128px] text-right justify-end",
+    sortable: true,
+    help: <code class="text-xs">TBD</code>,
   },
   {
     id: "userShare",
