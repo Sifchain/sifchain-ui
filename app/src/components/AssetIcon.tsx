@@ -62,6 +62,7 @@ export type NavIconName =
   | "balances"
   | "dashboard"
   | "changelog"
+  | "charts"
   | "documents"
   | "more"
   | "pool"
