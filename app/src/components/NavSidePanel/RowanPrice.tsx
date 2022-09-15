@@ -1,14 +1,12 @@
-import { computed, defineComponent } from "vue";
-import { usePoolStats } from "@/hooks/usePoolStats";
+import { defineComponent } from "vue";
+import { useRowanPrice } from "@/hooks/useRowanPrice";
+
 import NavSidePanelItem from "./NavSidePanelItem";
 
 export default defineComponent({
   name: "RowanPrice",
   setup() {
-    const poolStats = usePoolStats();
-    const rowanPrice = computed(() => {
-      return poolStats.data.value?.rowanUsd;
-    });
+    const { data: rowanPrice } = useRowanPrice();
 
     return () => (
       <NavSidePanelItem
