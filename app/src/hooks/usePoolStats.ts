@@ -7,33 +7,50 @@ import { useNativeChain } from "./useChains";
 import { useCore } from "./useCore";
 
 export interface PoolStatsResponseData {
-  statusCode: number;
-  headers: Headers;
-  body: Body;
-}
-
-interface Body {
   liqAPY: string;
   rowanUSD: string;
+  last_updated: string;
   pools: PoolStat[];
 }
 
 export interface PoolStat {
   symbol: string;
   priceToken: number;
-  rowanUSD: number;
   poolDepth: number;
+  rowanUSD?: number;
   poolTVL: number;
+  rowan_24h_lowest: number;
+  rowan_24h_highest: number;
+  rowan_24h_average: number;
+  rowan_24h_change: number;
+  volume_24h_lowest: number;
+  volume_24h_highest: number;
+  volume_24h_average: number;
+  volume_24h_change: number;
+  asset_24h_lowest: number;
+  asset_24h_highest: number;
+  asset_24h_average: number;
+  asset_24h_change: number;
+  tvl_24h_lowest: string;
+  tvl_24h_highest: string;
+  tvl_24h_average: string;
+  tvl_24h_change: string;
   volume: number;
   arb: number;
   dailySwapFees: number;
   poolBalance: number;
-  accruedNumSecsRewards: number;
+  poolBalanceInRowan: number;
+  accruedNumBlocksRewards: number;
   rewardPeriodNativeDistributed: number;
-  secsPerYear: number;
-  tradingApr: number;
+  blocksPerYear: number;
   rewardApr: number;
   poolApr: number;
+  margin_apr: number;
+  margin_apr_data_window: number;
+  health: string;
+  nativeCustody: string;
+  nativeLiability: string;
+  interestRate: string;
 }
 
 export interface Headers {
@@ -71,12 +88,12 @@ export function usePoolStats() {
       if (!poolStatsQuery.data.value) {
         return;
       }
-      const { body: poolData } = poolStatsQuery.data.value;
+      const poolData = poolStatsQuery.data.value;
 
       const response = {
         poolData,
         liqAPY: 0,
-        rowanUsd: poolData.rowanUSD,
+        rowanUSD: poolData.rowanUSD,
       };
 
       return response;
@@ -129,7 +146,7 @@ export function usePoolStats() {
       poolStatLookup[asset.symbol] = {
         ...poolStat,
         symbol: asset.symbol,
-        rowanUSD: parseFloat(poolStatsRes.data.value?.rowanUsd ?? "0"),
+        rowanUSD: parseFloat(poolStatsRes.data.value?.rowanUSD ?? "0"),
       };
     });
 
@@ -138,7 +155,7 @@ export function usePoolStats() {
     // exist, then if poolStats doesn't have data default to empty.
     const pools = Object.values(store.pools).map((pool) => ({
       ...pool,
-      rowanUSD: poolStatsRes.data.value?.rowanUsd || 0,
+      rowanUSD: poolStatsRes.data.value?.rowanUSD || 0,
     }));
     return pools.map((pool) => {
       const [, externalAssetAmount] = pool.amounts;

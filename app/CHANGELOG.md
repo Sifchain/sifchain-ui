@@ -1,3 +1,9 @@
+## Release 2022.09.16
+
+- Margin trading release
+- 3rd party charting integration
+- Margin APR’s on Pool and Pool Stats pages
+
 ## Release 2022.09.13
 
 - Remove PMTP rate from sidebar

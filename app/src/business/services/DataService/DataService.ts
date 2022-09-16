@@ -158,10 +158,11 @@ export default class DataService {
         "tokenStats",
         () =>
           fetchJSON<PoolStatsResponseData>(
-            `${this.baseUrl}/beta/asset/tokenStats`,
+            `${this.baseUrl}/beta/asset/tokenStatsPMTP`,
           ),
         60000 * 5, // cache for 5 minutes
       );
+
       return res;
     } catch (error) {
       return {} as PoolStatsResponseData;

@@ -396,6 +396,16 @@ export default defineComponent({
           </div>
           <div
             class={[
+              COLUMNS_LOOKUP.marginapy.class,
+              "flex items-center font-mono",
+            ]}
+          >
+            {!isNil(this.$props.poolStat?.margin_apr)
+              ? `${Number(this.$props.poolStat?.margin_apr ?? 0).toFixed(2)}%`
+              : "..."}
+          </div>
+          <div
+            class={[
               COLUMNS_LOOKUP.userShare.class,
               "flex items-center font-mono",
             ]}
