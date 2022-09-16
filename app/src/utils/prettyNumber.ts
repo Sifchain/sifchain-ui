@@ -9,3 +9,10 @@ export function prettyNumber(n: number, precision = 2) {
   // if (fraction) final += "." + fraction;
   // return final;
 }
+
+export function prettyNumberMinMax(n: number, min = 0, max = 4) {
+  return new Intl.NumberFormat("en-us", {
+    minimumFractionDigits: min,
+    maximumFractionDigits: max,
+  }).format(n);
+}

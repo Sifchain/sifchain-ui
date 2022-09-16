@@ -13,7 +13,8 @@ export type StatsPageState = {
     | "volume"
     | "arbitrage"
     | "poolApr"
-    | "rewardApr";
+    | "rewardApr"
+    | "marginApr";
   sortDirection: "asc" | "desc";
 };
 
@@ -44,6 +45,7 @@ export function useStatsPageData(initialState: StatsPageState) {
           arbitrage: pool.arb == null ? null : pool.arb ?? 0,
           poolApr: pool.poolApr?.toFixed(1),
           rewardApr: pool.rewardApr,
+          marginApr: pool.margin_apr,
         };
 
         return item;
