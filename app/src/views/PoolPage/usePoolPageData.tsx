@@ -86,7 +86,13 @@ export const COLUMNS: PoolPageColumn[] = [
     name: "Margin APR",
     class: "w-[128px] text-right justify-end",
     sortable: true,
-    help: <code class="text-xs">TBD</code>,
+    help: (
+      <code class="text-xs">
+        Margin APR represents the ratio of interest payments to pool balances
+        over a given time period. The current time period is set as the previous
+        600 blocks (≈ 1 hour) of trading activity.
+      </code>
+    ),
   },
   {
     id: "userShare",
