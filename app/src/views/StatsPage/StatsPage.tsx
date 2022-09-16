@@ -72,6 +72,19 @@ export default defineComponent({
           </code>
         ),
       },
+      {
+        name: "Margin APR",
+        sortBy: "marginApr",
+        class: "min-w-[100px] text-right",
+        ref: ref<HTMLElement>(),
+        message: (
+          <code class="text-xs">
+            Margin APR represents the ratio of interest payments to pool
+            balances over a given time period. The current time period is set as
+            the previous 600 blocks (≈ 1 hour) of trading activity.
+          </code>
+        ),
+      },
     ];
     const colStyles = computed(() => {
       return columns.map((col) => {
@@ -246,6 +259,9 @@ export default defineComponent({
                       </td>
                       <td class="text-mono text-right align-middle">
                         {item.poolApr}%
+                      </td>
+                      <td class="text-mono text-right align-middle">
+                        {item.marginApr}%
                       </td>
                     </tr>
                   );
