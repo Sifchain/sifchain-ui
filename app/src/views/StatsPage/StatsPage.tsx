@@ -7,9 +7,10 @@ import { SearchBox } from "@/components/SearchBox";
 import Toggle from "@/components/Toggle";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 import { Tooltip } from "@/components/Tooltip";
-import { prettyNumber } from "@/utils/prettyNumber";
+import { prettyNumber, prettyNumberMinMax } from "@/utils/prettyNumber";
 import { SMALL_POOL_CAP } from "../PoolPage/PoolPage";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
+import { isNil } from "@/utils/assertion";
 
 export default defineComponent({
   name: "StatsPage",
@@ -261,7 +262,9 @@ export default defineComponent({
                         {item.poolApr}%
                       </td>
                       <td class="text-mono text-right align-middle">
-                        {item.marginApr}%
+                        {!isNil(item.marginApr)
+                          ? `${prettyNumberMinMax(item.marginApr ?? 0)}%`
+                          : "..."}
                       </td>
                     </tr>
                   );
