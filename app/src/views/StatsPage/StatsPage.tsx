@@ -7,9 +7,10 @@ import { SearchBox } from "@/components/SearchBox";
 import Toggle from "@/components/Toggle";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 import { Tooltip } from "@/components/Tooltip";
-import { prettyNumber } from "@/utils/prettyNumber";
+import { prettyNumber, prettyNumberMinMax } from "@/utils/prettyNumber";
 import { SMALL_POOL_CAP } from "../PoolPage/PoolPage";
 import { StatsPageState, useStatsPageData } from "./useStatsPageData";
+import { isNil } from "@/utils/assertion";
 
 export default defineComponent({
   name: "StatsPage",
@@ -69,6 +70,19 @@ export default defineComponent({
             Pool reward APR = Total rewards distributed in current program /
             (Total blocks passed in current program * Current pool balance) *
             (Total blocks per year)
+          </code>
+        ),
+      },
+      {
+        name: "Margin APR",
+        sortBy: "marginApr",
+        class: "min-w-[100px] text-right",
+        ref: ref<HTMLElement>(),
+        message: (
+          <code class="text-xs">
+            Margin APR represents the ratio of interest payments to pool
+            balances over a given time period. The current time period is set as
+            the previous 600 blocks (≈ 1 hour) of trading activity.
           </code>
         ),
       },
@@ -246,6 +260,11 @@ export default defineComponent({
                       </td>
                       <td class="text-mono text-right align-middle">
                         {item.poolApr}%
+                      </td>
+                      <td class="text-mono text-right align-middle">
+                        {!isNil(item.marginApr)
+                          ? `${prettyNumberMinMax(item.marginApr ?? 0)}%`
+                          : "..."}
                       </td>
                     </tr>
                   );
