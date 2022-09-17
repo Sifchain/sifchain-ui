@@ -8,7 +8,7 @@ export function useTVL() {
   const loadTVL = async () => {
     const tokenStats = await services.data.getTokenStats();
 
-    const pools = tokenStats.body.pools ?? [];
+    const pools = tokenStats.pools ?? [];
 
     const total = pools.reduce(
       (acc, { poolTVL, poolDepth }) =>

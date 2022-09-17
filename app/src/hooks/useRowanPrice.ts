@@ -3,15 +3,15 @@ import { watchEffect } from "vue";
 import { useCore } from "@/hooks/useCore";
 import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
 
+function isNumeric(s: string): boolean {
+  return Number(s) - 0 === Number(s) && ("" + s).trim().length > 0;
+}
+
 export const useRowanPrice = (params?: { shouldReload: boolean }) => {
   const { services } = useCore();
 
   const price = useAsyncDataCached("rowanPrice", async () => {
-    function isNumeric(s: string): boolean {
-      return Number(s) - 0 === Number(s) && ("" + s).trim().length > 0;
-    }
-
-    const { body: stats } = await services.data.getTokenStats();
+    const stats = await services.data.getTokenStats();
     const rowanPriceInUSDT = stats.rowanUSD ?? "";
 
     if (isNumeric(rowanPriceInUSDT)) {

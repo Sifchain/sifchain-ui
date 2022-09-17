@@ -29,6 +29,7 @@ export type PoolPageData = ReturnType<typeof usePoolPageData>;
 export type PoolPageColumnId =
   | "token"
   | "apy"
+  | "marginapy"
   | "gainLoss"
   | "rewardApr"
   | "poolTvl"
@@ -69,7 +70,7 @@ export const COLUMNS: PoolPageColumn[] = [
   },
   {
     id: "apy",
-    name: "Pool APR",
+    name: "Reward APR",
     class: "w-[128px] text-right justify-end",
     sortable: true,
     help: (
@@ -77,6 +78,19 @@ export const COLUMNS: PoolPageColumn[] = [
         Pool reward APR = Total rewards distributed in current program / (Total
         blocks passed in current program * Current pool balance) * (Total blocks
         per year)
+      </code>
+    ),
+  },
+  {
+    id: "marginapy",
+    name: "Margin APR",
+    class: "w-[128px] text-right justify-end",
+    sortable: true,
+    help: (
+      <code class="text-xs">
+        Margin APR represents the ratio of interest payments to pool balances
+        over a given time period. The current time period is set as the previous
+        600 blocks (≈ 1 hour) of trading activity.
       </code>
     ),
   },

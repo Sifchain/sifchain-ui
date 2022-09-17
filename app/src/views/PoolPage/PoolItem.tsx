@@ -9,7 +9,7 @@ import { useChains, useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useRowanPrice } from "@/hooks/useRowanPrice";
 import { isNil, isNilOrWhitespace } from "@/utils/assertion";
-import { prettyNumber } from "@/utils/prettyNumber";
+import { prettyNumber, prettyNumberMinMax } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
 import { computed, defineComponent, PropType } from "vue";
@@ -392,6 +392,16 @@ export default defineComponent({
           >
             {!isNil(this.$props.poolStat?.poolApr)
               ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
+              : "..."}
+          </div>
+          <div
+            class={[
+              COLUMNS_LOOKUP.marginapy.class,
+              "flex items-center font-mono",
+            ]}
+          >
+            {!isNil(this.$props.poolStat?.margin_apr)
+              ? `${prettyNumberMinMax(this.$props.poolStat?.margin_apr ?? 0)}%`
               : "..."}
           </div>
           <div

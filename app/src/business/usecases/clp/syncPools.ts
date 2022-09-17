@@ -90,9 +90,17 @@ export function SyncPools(
         const toNativeAmountDerived = (rawAmount: string) =>
           AssetAmount(nativeAsset, rawAmount).toDerived();
 
+        const nativeAssetBalance = Amount(pool.nativeAssetBalance)
+          .add(pool.nativeCustody)
+          .add(pool.nativeLiabilities);
+
+        const externalAssetBalance = Amount(pool.externalAssetBalance)
+          .add(pool.externalCustody)
+          .add(pool.externalLiabilities);
+
         return new Pool(
-          AssetAmount(nativeAsset, pool.nativeAssetBalance),
-          AssetAmount(asset, pool.externalAssetBalance),
+          AssetAmount(nativeAsset, nativeAssetBalance),
+          AssetAmount(asset, externalAssetBalance),
           {
             poolUnits: Amount(pool.poolUnits),
             swapPrices: {

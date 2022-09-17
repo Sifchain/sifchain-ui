@@ -313,7 +313,25 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
           // If it's not in the master list of all denom traces, that list may just be outdated...
           // Newly minted tokens aren't added to the master list immediately.
           // @ts-ignore
-          denomTrace = await this.getDenomTraceCached(chain, coin.denom);
+          try {
+            const cachedDenomTrace = await this.getDenomTraceCached(
+              chain,
+              coin.denom,
+            );
+
+            if (cachedDenomTrace) {
+              denomTrace = cachedDenomTrace;
+            }
+          } catch (error) {
+            console.log(
+              "failed to get denom_traces for asset, ignoring balance:",
+              {
+                chain: chain.chainConfig.chainId,
+                denom: coin.denom,
+              },
+            );
+            // invalid token, ignore
+          }
         }
 
         if (!denomTrace) {

@@ -158,6 +158,11 @@ export default defineComponent({
                   href="https://wallet.keplr.app/#/sifchain/stake"
                 />
                 <NavSidePanelItem
+                  displayName="Charts"
+                  icon="navigation/charts"
+                  href="https://dexscreener.com/sifchain/cusdc"
+                />
+                <NavSidePanelItem
                   icon="navigation/changelog"
                   onClick={() => {
                     changelogOpenRef.value = true;
