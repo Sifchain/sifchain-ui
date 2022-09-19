@@ -1,5 +1,5 @@
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 import { accountStore } from "@/store/modules/accounts";
 import { flagsStore, MARGIN_FE_URL } from "@/store/modules/flags";
@@ -21,7 +21,6 @@ import MoreMenu from "./NavMoreMenu";
 import ConnectedWallets from "./ConnectedWallets";
 import RowanPrice from "./RowanPrice";
 import TVL from "./TVL";
-// import PmtpParam from "./PmtpParam";
 
 let VOTE_PARAM_IN_URL = false;
 try {
@@ -282,68 +281,9 @@ export default defineComponent({
                 </div>
               </div>
             )}
-            {hasUniversalCompetition.value &&
-              flagsStore.state.tradingCompetitionsEnabled && (
-                <div class="middle mt-[10px]">
-                  <RouterLink
-                    to={{
-                      name: "Leaderboard",
-                      params: {
-                        type: "vol",
-                      },
-                    }}
-                    class="flex h-[46px] cursor-pointer items-center justify-between rounded-t-[20px] px-[16px] font-semibold text-black"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(93.61deg, #C79E3A 0.77%, #EBCA62 100%)",
-                    }}
-                  >
-                    <div class="flex items-center">
-                      <img class="w-[33px]" src="/images/wreath-tiny.svg" />
-                      <div class="ml-[10px]">Fields of Gold</div>
-                    </div>
-                    <div style={{ transform: "translateY(1px)" }}>
-                      <AssetIcon
-                        icon="interactive/chevron-down"
-                        style={{ transform: "rotate(-90deg)" }}
-                        size={12}
-                      />
-                    </div>
-                  </RouterLink>
-                  <div class="bg-gray-250 text-accent-base rounded-b-[10px] p-[12px] text-left font-medium">
-                    <div class="text-sm">View the Leaderboards</div>
-                    <div class="mt-[8px] flex items-center">
-                      {["vol", "txn"].map((type) => (
-                        <RouterLink
-                          to={{
-                            name: "Leaderboard",
-                            params: {
-                              type,
-                            },
-                          }}
-                          key={type}
-                        >
-                          <div class="border-accent-base rounded-xs mr-[10px] flex h-[22px] items-center whitespace-nowrap border border-solid pl-[8px] pr-[6px] text-sm hover:bg-gray-500">
-                            {type === "vol" ? "Volume" : "Tx Count"}
-                            <AssetIcon
-                              icon="interactive/chevron-down"
-                              size={12}
-                              style={{
-                                transform: "rotate(-90deg)",
-                              }}
-                              class="ml-[4px]"
-                            />
-                          </div>
-                        </RouterLink>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
             <div class="bottom mt-[10px]">
               <div class="mb-[2.2vh] w-full text-left transition-all">
                 <TVL />
-                {/* <PmtpParam /> */}
                 <RowanPrice />
               </div>
               <ConnectedWallets />
