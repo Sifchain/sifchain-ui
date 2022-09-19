@@ -177,6 +177,10 @@ export default defineComponent({
       );
     });
 
+    const hasUnbondingPeriod = computed(
+      () => Number(rewardsPeriod.value?.estimatedLockMs ?? 0) > 0,
+    );
+
     return () => {
       if (data.modalStatus.value === "processing") {
         return (
@@ -212,28 +216,33 @@ export default defineComponent({
                   isMarginEnabledPool={isMarginEnabledPool.value}
                 />
               </div>
-              <div class="flex items-center justify-between overflow-hidden rounded border border-gray-500 p-4">
-                <span class="flex items-center text-slate-300">
-                  Once added, all liquidity will be subject to a{" "}
-                  {formatDistance(0, rewardsPeriod.value?.estimatedLockMs ?? 0)}{" "}
-                  unbonding period. Once your funds are ready, you will have{" "}
-                  {rewardsPeriod.value?.estimatedCancelMs === undefined
-                    ? "..."
-                    : formatDistance(
-                        0,
-                        rewardsPeriod.value?.estimatedCancelMs,
-                      )}{" "}
-                  to remove them before the request is canceled. Please check
-                  back periodically to ensure you don't miss your window!
-                </span>
-                <div>
-                  <AssetIcon
-                    icon="interactive/warning"
-                    class="text-slate-300"
-                    size={22}
-                  />
+              {hasUnbondingPeriod.value && (
+                <div class="flex items-center justify-between overflow-hidden rounded border border-gray-500 p-4">
+                  <span class="flex items-center text-slate-300">
+                    Once added, all liquidity will be subject to a{" "}
+                    {formatDistance(
+                      0,
+                      rewardsPeriod.value?.estimatedLockMs ?? 0,
+                    )}{" "}
+                    unbonding period. Once your funds are ready, you will have{" "}
+                    {rewardsPeriod.value?.estimatedCancelMs === undefined
+                      ? "..."
+                      : formatDistance(
+                          0,
+                          rewardsPeriod.value?.estimatedCancelMs,
+                        )}{" "}
+                    to remove them before the request is canceled. Please check
+                    back periodically to ensure you don't miss your window!
+                  </span>
+                  <div>
+                    <AssetIcon
+                      icon="interactive/warning"
+                      class="text-slate-300"
+                      size={22}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
               <Button.CallToAction
                 onClick={() => {
                   data.handleAskConfirmClicked();
