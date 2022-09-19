@@ -144,7 +144,7 @@ export default defineComponent({
                   icon="navigation/pool-stats"
                   href="/stats"
                 />
-                {flagsStore.state.margin && (
+                {flagsStore.state.remoteFlags.MARGIN && (
                   <NavSidePanelItem
                     displayName="Margin"
                     icon="navigation/harvest"
