@@ -7,7 +7,6 @@ import { governanceStore } from "@/store/modules/governance";
 import Logo from "@/assets/logo-large.svg";
 import useChangeLog from "@/hooks/useChangeLog";
 import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import { useHasUniversalCompetition } from "@/views/LeaderboardPage/useCompetitionData";
 import Tooltip, { TooltipInstance } from "@/components/Tooltip";
 import { Button } from "@/components/Button/Button";
 import { VotingModal } from "@/components/VotingModal/VotingModal";
@@ -79,7 +78,7 @@ export default defineComponent({
       });
     });
 
-    const hasUniversalCompetition = useHasUniversalCompetition();
+    const isMarginOn = computed(() => flagsStore.state.remoteFlags.MARGIN);
 
     const changelog = useChangeLog();
 
@@ -144,7 +143,7 @@ export default defineComponent({
                   icon="navigation/pool-stats"
                   href="/stats"
                 />
-                {flagsStore.state.remoteFlags.MARGIN && (
+                {isMarginOn.value && (
                   <NavSidePanelItem
                     displayName="Margin"
                     icon="navigation/harvest"
