@@ -11,6 +11,8 @@ export const _CallToActionSecondary = (
         `bg-gray-action_button text-accent-base disabled:bg-gray-disabled flex h-[62px] w-full items-center justify-center rounded-[4px] font-sans text-[18px] font-semibold disabled:bg-none disabled:text-gray-800`,
         props.class,
       ]}
+      onClick={undefined}
+      disabled={true}
       style={
         mergeProps(
           {
