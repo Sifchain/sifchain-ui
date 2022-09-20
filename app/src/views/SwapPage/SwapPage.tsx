@@ -1,6 +1,5 @@
 import {
   ComponentPublicInstance,
-  computed,
   defineComponent,
   onMounted,
   ref,
@@ -21,9 +20,6 @@ import { SwapDetails } from "./components/SwapDetails";
 import { SlippageTolerance } from "./components/SlippageTolerance";
 import { TokenInputGroup } from "./components/TokenInputGroup";
 import { useSwapPageData } from "./useSwapPageData";
-import { useLiquidityProtectionParams } from "@/domains/clp/queries/params";
-import { Amount } from "@sifchain/sdk";
-import { AssetAmount } from "@sifchain/sdk/src";
 
 export default defineComponent({
   name: "SwapPage",
