@@ -292,6 +292,15 @@ export const useSwapPageData = () => {
     message,
   });
 
+  const formattedCurrentLiquidityThreshold = computed(() =>
+    currentRowanLiquidityThreshold.value
+      .toDerived()
+      .toNumber()
+      .toLocaleString("en", {
+        notation: "compact",
+      }),
+  );
+
   const nextStepValidityMessage = computed(() => {
     if (!accountStore.state.sifchain.address) {
       return swapValidityMessage(false, "Connect Sifchain Wallet");
@@ -311,15 +320,6 @@ export const useSwapPageData = () => {
         );
       }
     }
-
-    const formattedCurrentLiquidityThreshold = computed(() =>
-      currentRowanLiquidityThreshold.value
-        .toDerived()
-        .toNumber()
-        .toLocaleString("en", {
-          notation: "compact",
-        }),
-    );
 
     switch (state.value) {
       case SwapState.ZERO_AMOUNTS:
@@ -422,6 +422,7 @@ export const useSwapPageData = () => {
     priceRatio,
     priceImpact,
     providerFee,
+    formattedCurrentLiquidityThreshold,
     handleFromMaxClicked() {
       selectedField.value = "from";
       const accountBalance = getAccountBalance();
