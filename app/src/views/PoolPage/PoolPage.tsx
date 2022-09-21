@@ -44,6 +44,10 @@ export default defineComponent({
 
     const rewardsParamsQuery = useRewardsParamsQuery();
 
+    const isATOMPoolsDisabled = computed(
+      () => flagsStore.state.remoteFlags.DISABLE_ATOM_POOL,
+    );
+
     return {
       removeLiquidityMutation: useRemoveLiquidityMutation({
         onSuccess: () => data.reload(),
@@ -66,6 +70,7 @@ export default defineComponent({
           currentProviderDistributionPeriod.isLoading.value ||
           rewardsParamsQuery.isLoading.value,
       ),
+      isATOMPoolsDisabled,
     };
   },
   computed: {
@@ -85,7 +90,13 @@ export default defineComponent({
           const asset = item.pool.externalAmount?.asset;
           if (!asset) return;
 
-          if (isAssetFlaggedDisabled(asset)) return false;
+          if (
+            isAssetFlaggedDisabled(asset) ||
+            // TODO: remove this once atom pool is enabled
+            (this.isATOMPoolsDisabled && item.pool.symbol() === "rowan_uatom")
+          ) {
+            return false;
+          }
 
           if (
             this.searchQuery.length > 0 &&

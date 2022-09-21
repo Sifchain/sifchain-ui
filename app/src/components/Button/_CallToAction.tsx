@@ -11,8 +11,6 @@ export const _CallToAction = (
         `bg-accent-gradient disabled:bg-gray-disabled flex h-[62px] w-full items-center justify-center rounded-[4px] font-sans text-[18px] font-semibold text-white disabled:bg-none disabled:text-gray-800`,
         props.class,
       ]}
-      onClick={undefined}
-      disabled={true}
       style={
         mergeProps(
           {
