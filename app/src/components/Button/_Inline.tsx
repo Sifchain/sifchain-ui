@@ -25,8 +25,6 @@ export function _Inline(
           "!text-gray-disabled pointer-events-none !bg-transparent",
         props.active && !props.disabled && "bg-accent-gradient !text-white",
       ]}
-      onClick={undefined}
-      disabled={true}
     >
       {!!props.icon && (
         <AssetIcon
