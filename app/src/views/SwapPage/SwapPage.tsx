@@ -137,11 +137,13 @@ export default defineComponent({
             {data.fromAsset.value.symbol === "rowan" && (
               <section
                 role="alert"
-                class="border-accent-base text-accent-muted rounded-md border p-2 text-center text-sm"
+                class="border-danger-base text-danger-base rounded-md border p-2 text-center text-sm"
               >
-                Current max swap amount for ROWAN is{" "}
-                {data.formattedCurrentLiquidityThreshold.value}. This value is
-                updated every block (~6 seconds)
+                The current max swap amount is{" "}
+                <span class="font-bold">
+                  {data.formattedCurrentLiquidityThreshold.value} ROWAN
+                </span>
+                . This value updates every block (~6 seconds).
               </section>
             )}
             <Button.CallToAction
