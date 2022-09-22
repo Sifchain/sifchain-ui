@@ -1,10 +1,11 @@
+import { addMilliseconds, minutesToMilliseconds } from "date-fns";
+import { computed } from "vue";
+import { useQuery } from "vue-query";
+
 import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
 import { useBlockTimeQuery } from "@/domains/statistics/queries/blockTime";
 import dangerouslyAssert from "@/utils/dangerouslyAssert";
 import useDependentQuery from "@/utils/useDependentQuery";
-import { addMilliseconds, minutesToMilliseconds } from "date-fns";
-import { computed } from "vue";
-import { useQuery } from "vue-query";
 
 export function useRewardsParamsQuery() {
   const sifchainClients = useSifchainClients();
@@ -177,6 +178,31 @@ export function useSwapFeeRate() {
       const { queryClient } = sifchainClients;
 
       return await queryClient.clp.GetSwapFeeRate({});
+    },
+  );
+}
+
+export function useLiquidityProtectionParams() {
+  const sifchainClients = useSifchainClients();
+
+  return useDependentQuery(
+    [
+      computed(
+        () =>
+          sifchainClients.queryClientStatus === "fulfilled" &&
+          sifchainClients.signingClientStatus === "fulfilled",
+      ),
+    ],
+    "liquidityProtectionParams",
+    async () => {
+      dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
+
+      const { queryClient } = sifchainClients;
+
+      return await queryClient.clp.GetLiquidityProtectionParams({});
+    },
+    {
+      refetchInterval: 6_000,
     },
   );
 }

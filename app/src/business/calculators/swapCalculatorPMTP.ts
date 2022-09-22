@@ -1,4 +1,4 @@
-import { Ref, computed, effect, ref } from "@vue/reactivity";
+import { Ref, computed, effect, ref } from "vue";
 import {
   AssetAmount,
   IPool,
@@ -12,6 +12,7 @@ import {
 import { flagsStore } from "@/store/modules/flags";
 import { useField } from "./useField";
 import { trimZeros, useBalances } from "./utils";
+import { useLiquidityProtectionParams } from "@/domains/clp/queries/params";
 
 export enum SwapState {
   ZERO_AMOUNTS,
@@ -21,6 +22,7 @@ export enum SwapState {
   INSUFFICIENT_LIQUIDITY,
   FRONTRUN_SLIPPAGE,
   INVALID_SLIPPAGE,
+  EXCEEDS_CURRENT_LIQUIDITY_THRESHOLD,
 }
 
 export function calculateFormattedPriceImpact(
@@ -353,11 +355,22 @@ export function useSwapCalculator(input: {
     return AssetAmount(toField.value.asset, minAmount);
   });
 
+  const { data: liquidityProtectionParams } = useLiquidityProtectionParams();
+
+  const currentRowanLiquidityThreshold = computed(() => {
+    const value =
+      liquidityProtectionParams.value?.rateParams
+        ?.currentRowanLiquidityThreshold;
+
+    return AssetAmount("rowan", value ?? "0");
+  });
+
   // Derive state
   const state = computed(() => {
     if (!pool.value) {
       return SwapState.INSUFFICIENT_LIQUIDITY;
     }
+
     const fromTokenLiquidity = (pool.value as IPool).amounts.find(
       (amount) => amount.asset.symbol === fromField.value.asset?.symbol,
     );
@@ -394,12 +407,28 @@ export function useSwapCalculator(input: {
       return SwapState.INSUFFICIENT_LIQUIDITY;
     }
 
-    // slippage > 50% can be social engineered as a non-option as to prevent traders from transacting without understanding the potential price volatility before their transaction will actually execute
-    // user entering a negative slippage is not useful but hopefully works out for them
+    if (
+      fromField.value.asset?.symbol === "rowan" &&
+      fromField.value.fieldAmount.greaterThanOrEqual(
+        currentRowanLiquidityThreshold.value,
+      )
+    ) {
+      if (process.env.NODE_ENV !== "production") {
+        console.log({
+          currentRowanLiquidityThreshold: currentRowanLiquidityThreshold.value
+            .toDerived()
+            .toNumber(),
+        });
+      }
+      return SwapState.EXCEEDS_CURRENT_LIQUIDITY_THRESHOLD;
+    }
+
     if (
       Amount(input.slippage.value).greaterThan(Amount("50.001")) ||
       Amount(input.slippage.value).lessThan(Amount("0"))
     ) {
+      // slippage > 50% can be social engineered as a non-option as to prevent traders from transacting without understanding the potential price volatility before their transaction will actually execute
+      // user entering a negative slippage is not useful but hopefully works out for them
       return SwapState.INVALID_SLIPPAGE;
     }
 
@@ -424,5 +453,6 @@ export function useSwapCalculator(input: {
     swapResult,
     reverseSwapResult,
     priceRatio,
+    currentRowanLiquidityThreshold,
   };
 }
