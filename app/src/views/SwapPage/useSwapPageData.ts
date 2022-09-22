@@ -332,7 +332,7 @@ export const useSwapPageData = () => {
       case SwapState.INSUFFICIENT_LIQUIDITY:
         return swapValidityMessage(false, "Insufficient Liquidity");
       case SwapState.EXCEEDS_CURRENT_LIQUIDITY_THRESHOLD:
-        return swapValidityMessage(false, `Invalid ROWAN Amount`);
+        return swapValidityMessage(false, "Swap");
       case SwapState.INVALID_AMOUNT:
         return swapValidityMessage(false, "Invalid Amount");
       case SwapState.VALID_INPUT:
