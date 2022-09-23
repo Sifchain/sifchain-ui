@@ -120,7 +120,6 @@ export default defineComponent({
                 }
               />
             </div>
-
             <SlippageTolerance
               slippage={data.slippage.value || "0"}
               onUpdate={(v) => {
@@ -135,6 +134,18 @@ export default defineComponent({
               liquidityProviderFee={data.providerFee.value ?? ""}
               minimumReceived={data.minimumReceived.value}
             />
+            {data.fromAsset.value.symbol === "rowan" && (
+              <section
+                role="alert"
+                class="border-danger-base text-danger-base rounded-md border p-2 text-center text-sm"
+              >
+                The current max swap amount is{" "}
+                <span class="font-bold">
+                  {data.formattedCurrentLiquidityThreshold.value} ROWAN
+                </span>
+                . This value updates every block (~6 seconds).
+              </section>
+            )}
             <Button.CallToAction
               onClick={() => {
                 if (!data.nextStepAllowed.value) {
