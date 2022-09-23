@@ -19,6 +19,7 @@ export default defineComponent({
       mainnet: "bg-green-500 text-white",
       devnet: "bg-cyan-500 text-white",
       testnet: "bg-yellow-500 text-white",
+      staging: "bg-blue-500 text-white",
       localnet: "bg-orange-500 text-white",
       panel: "bg-red-500 text-white",
       tempnet: "bg-indigo-500 text-white",
@@ -28,6 +29,7 @@ export default defineComponent({
       [NetworkEnv.MAINNET]: styles.mainnet,
       [NetworkEnv.LOCALNET]: styles.localnet,
       [NetworkEnv.TESTNET]: styles.testnet,
+      [NetworkEnv.STAGING]: styles.staging,
       [NetworkEnv.DEVNET]: styles.devnet,
       [NetworkEnv.TEMPNET]: styles.tempnet,
     };

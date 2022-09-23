@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: STARNAME_TESTNET,
   [NetworkEnv.MAINNET]: STARNAME_MAINNET,
   [NetworkEnv.TEMPNET]: STARNAME_TESTNET,
+  [NetworkEnv.STAGING]: STARNAME_TESTNET,
 };
