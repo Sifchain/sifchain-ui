@@ -181,6 +181,7 @@ export const useSwapPageData = () => {
     providerFee,
     minimumReceived,
     effectiveMinimumReceived,
+    currentRowanLiquidityThreshold,
   } = useSwapCalculator({
     balances: computed(() => store.wallet.get(Network.SIFCHAIN).balances),
     fromAmount,
@@ -291,6 +292,15 @@ export const useSwapPageData = () => {
     message,
   });
 
+  const formattedCurrentLiquidityThreshold = computed(() =>
+    currentRowanLiquidityThreshold.value
+      .toDerived()
+      .toNumber()
+      .toLocaleString("en", {
+        notation: "compact",
+      }),
+  );
+
   const nextStepValidityMessage = computed(() => {
     if (!accountStore.state.sifchain.address) {
       return swapValidityMessage(false, "Connect Sifchain Wallet");
@@ -310,6 +320,7 @@ export const useSwapPageData = () => {
         );
       }
     }
+
     switch (state.value) {
       case SwapState.ZERO_AMOUNTS:
         return swapValidityMessage(false, "Please enter an amount");
@@ -320,6 +331,8 @@ export const useSwapPageData = () => {
         );
       case SwapState.INSUFFICIENT_LIQUIDITY:
         return swapValidityMessage(false, "Insufficient Liquidity");
+      case SwapState.EXCEEDS_CURRENT_LIQUIDITY_THRESHOLD:
+        return swapValidityMessage(false, "Swap");
       case SwapState.INVALID_AMOUNT:
         return swapValidityMessage(false, "Invalid Amount");
       case SwapState.VALID_INPUT:
@@ -331,6 +344,7 @@ export const useSwapPageData = () => {
         );
       case SwapState.INVALID_SLIPPAGE:
         return swapValidityMessage(false, "Invalid slippage");
+
       default:
         return swapValidityMessage(false, "Unknown");
     }
@@ -405,6 +419,7 @@ export const useSwapPageData = () => {
     priceRatio,
     priceImpact,
     providerFee,
+    formattedCurrentLiquidityThreshold,
     handleFromMaxClicked() {
       selectedField.value = "from";
       const accountBalance = getAccountBalance();
