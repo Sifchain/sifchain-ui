@@ -2,6 +2,7 @@
 import localnetconfig from "./networks/sifchain/config.localnet.json";
 import devnetconfig from "./networks/sifchain/config.devnet.json";
 import testnetconfig from "./networks/sifchain/config.testnet.json";
+import stagingconfig from "./networks/sifchain/config.staging.json";
 import tempnetconfig from "./networks/sifchain/config.tempnet.json";
 import mainnnetconfig from "./networks/sifchain/config.mainnet.json";
 
@@ -46,6 +47,9 @@ export function getConfig(
       assetsSifchainMainnet.assets as AssetConfig[],
     ),
     "sifchain.testnet": parseAssets(
+      assetsSifchainDevnet.assets as AssetConfig[],
+    ),
+    "sifchain.staging": parseAssets(
       assetsSifchainDevnet.assets as AssetConfig[],
     ),
     "sifchain.devnet": parseAssets(
@@ -131,6 +135,12 @@ export function getConfig(
       testnetconfig as CoreConfig,
       allAssets,
       chainConfigByNetworkEnv[NetworkEnv.TESTNET],
+      peggyCompatibleCosmosBaseDenoms,
+    ),
+    staging: parseConfig(
+      stagingconfig as CoreConfig,
+      allAssets,
+      chainConfigByNetworkEnv[NetworkEnv.STAGING],
       peggyCompatibleCosmosBaseDenoms,
     ),
     tempnet: parseConfig(

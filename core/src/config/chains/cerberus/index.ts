@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: CERBERUS_TESTNET,
   [NetworkEnv.MAINNET]: CERBERUS_TESTNET,
   [NetworkEnv.TEMPNET]: CERBERUS_TESTNET,
+  [NetworkEnv.STAGING]: CERBERUS_TESTNET,
 };

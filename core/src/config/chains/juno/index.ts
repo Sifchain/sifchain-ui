@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: JUNO_TESTNET,
   [NetworkEnv.MAINNET]: JUNO_MAINNET,
   [NetworkEnv.TEMPNET]: JUNO_TESTNET,
+  [NetworkEnv.STAGING]: JUNO_TESTNET,
 };

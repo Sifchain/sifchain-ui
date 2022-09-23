@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: EMONEY_MAINNET,
   [NetworkEnv.MAINNET]: EMONEY_MAINNET,
   [NetworkEnv.TEMPNET]: EMONEY_MAINNET,
+  [NetworkEnv.STAGING]: EMONEY_MAINNET,
 };

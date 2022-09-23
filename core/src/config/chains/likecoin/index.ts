@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: LIKECOIN_TESTNET,
   [NetworkEnv.MAINNET]: LIKECOIN_MAINNET,
   [NetworkEnv.TEMPNET]: LIKECOIN_TESTNET,
+  [NetworkEnv.STAGING]: LIKECOIN_TESTNET,
 };
