@@ -3,8 +3,7 @@ import uniq from "lodash/fp/uniq";
 
 import { PoolStatsResponseData } from "@/hooks/usePoolStats";
 
-export const BASE_URL_DATA_SERVICES =
-  "http://dataservices.staging.sifchain.finance:8080";
+export const BASE_URL_DATA_SERVICES = "https://data.sifchain.finance";
 
 export type RewardsProgramConfig = {
   start_height: number;
