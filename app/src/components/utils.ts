@@ -7,6 +7,8 @@ import {
   format,
 } from "@sifchain/sdk";
 
+import { BASE_URL_DATA_SERVICES } from "../business/services/DataService/DataService";
+
 export function shortenHash(hash: string, startLength = 7, endLength = 7) {
   const start = hash.slice(0, startLength);
   const end = hash.slice(-endLength);
@@ -103,5 +105,5 @@ export function getBlockExplorerUrl(
 }
 
 export function getRewardEarningsUrl(): string {
-  return `https://data.sifchain.finance/beta/network`;
+  return `${BASE_URL_DATA_SERVICES}/beta/network`;
 }
