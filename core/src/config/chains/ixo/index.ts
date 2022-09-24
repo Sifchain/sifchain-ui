@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: IXO_MAINNET,
   [NetworkEnv.MAINNET]: IXO_MAINNET,
   [NetworkEnv.TEMPNET]: IXO_MAINNET,
+  [NetworkEnv.STAGING]: IXO_MAINNET,
 };

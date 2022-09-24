@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: GRAVITY_MAINNET,
   [NetworkEnv.MAINNET]: GRAVITY_MAINNET,
   [NetworkEnv.TEMPNET]: GRAVITY_MAINNET,
+  [NetworkEnv.STAGING]: GRAVITY_MAINNET,
 };

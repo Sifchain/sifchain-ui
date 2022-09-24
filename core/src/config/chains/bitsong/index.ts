@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: BITSONG_TESTNET,
   [NetworkEnv.MAINNET]: BITSONG_TESTNET,
   [NetworkEnv.TEMPNET]: BITSONG_TESTNET,
+  [NetworkEnv.STAGING]: BITSONG_TESTNET,
 };
