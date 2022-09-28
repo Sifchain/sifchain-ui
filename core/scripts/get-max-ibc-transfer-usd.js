@@ -4,7 +4,10 @@ console.log({ JSBI });
 const {
   assets,
 } = require("../src/config/networks/sifchain/assets.sifchain.mainnet.json");
-fetch(`https://data.sifchain.finance/beta/asset/tokenStats`)
+const {
+  BASE_URL_DATA_SERVICES,
+} = require("../../app/src/business/services/DataService/DataService");
+fetch(`${BASE_URL_DATA_SERVICES}/beta/asset/tokenStats`)
   .then((d) => d.json())
   .then((data) => {
     console.log(data);

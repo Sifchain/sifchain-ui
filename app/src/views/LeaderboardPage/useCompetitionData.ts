@@ -9,6 +9,8 @@ import { IconName } from "@/components/AssetIcon";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { useCore } from "@/hooks/useCore";
 
+import { BASE_URL_DATA_SERVICES } from "../../business/services/DataService/DataService";
+
 export const COMPETITIONS: Record<
   string,
   {
@@ -166,7 +168,7 @@ const parseApiLeaderboardItem = (
 
 export const getTransactionData = async (symbol: string) => {
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    ["https://data.sifchain.finance/beta/trade/tx_vol/txn", symbol || ""]
+    [`${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/txn`, symbol || ""]
       .filter(Boolean)
       .join("/"),
   );
@@ -176,7 +178,7 @@ export const getTransactionData = async (symbol: string) => {
 
 export const getVolumeData = async (symbol: string) => {
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    ["https://data.sifchain.finance/beta/trade/tx_vol/vol", symbol || ""]
+    [`${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/vol`, symbol || ""]
       .filter(Boolean)
       .join("/"),
   );
@@ -188,7 +190,7 @@ export const getAccountData = async (symbol: string, address?: string) => {
   if (!address) return null;
 
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    `https://data.sifchain.finance/beta/trade/tx_vol/${[address, symbol]
+    `${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/${[address, symbol]
       .filter(Boolean)
       .join("/")}`,
   );
@@ -248,7 +250,7 @@ export const useLeaderboardCompetitions = () => {
             winners: number;
           },
         ]
-      >("https://data.sifchain.finance/beta/trade/tx_vol/type");
+      >(`${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/type`);
 
       const lookup: CompetitionsBySymbolLookup = {};
 

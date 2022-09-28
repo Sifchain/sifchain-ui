@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: EVMOS_MAINNET,
   [NetworkEnv.MAINNET]: EVMOS_MAINNET,
   [NetworkEnv.TEMPNET]: EVMOS_MAINNET,
+  [NetworkEnv.STAGING]: EVMOS_MAINNET,
 };

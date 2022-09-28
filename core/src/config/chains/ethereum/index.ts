@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.LOCALNET]: ETHEREUM_TESTNET,
   [NetworkEnv.MAINNET]: ETHEREUM_MAINNET,
   [NetworkEnv.TEMPNET]: ETHEREUM_TESTNET,
+  [NetworkEnv.STAGING]: ETHEREUM_TESTNET,
 };

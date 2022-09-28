@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.DEVNET]: COSMOSHUB_TESTNET,
   [NetworkEnv.TESTNET]: COSMOSHUB_TESTNET,
   [NetworkEnv.TEMPNET]: COSMOSHUB_TESTNET,
+  [NetworkEnv.STAGING]: COSMOSHUB_TESTNET,
 };

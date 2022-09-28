@@ -3,7 +3,8 @@ import uniq from "lodash/fp/uniq";
 
 import { PoolStatsResponseData } from "@/hooks/usePoolStats";
 
-export const BASE_URL = "https://data.sifchain.finance";
+export const BASE_URL_DATA_SERVICES =
+  "https://proxies.sifchain.finance/api/vanir/testnet";
 
 export type RewardsProgramConfig = {
   start_height: number;
@@ -148,7 +149,7 @@ async function cached<T>(
 }
 
 export default class DataService {
-  constructor(private baseUrl: string = BASE_URL) {
+  constructor(private baseUrl: string = BASE_URL_DATA_SERVICES) {
     this.baseUrl = baseUrl;
   }
 
@@ -158,7 +159,7 @@ export default class DataService {
         "tokenStats",
         () =>
           fetchJSON<PoolStatsResponseData>(
-            `${this.baseUrl}/beta/asset/tokenStatsPMTP`,
+            `${this.baseUrl}/asset/tokenStatsPMTP`,
           ),
         60000 * 5, // cache for 5 minutes
       );
@@ -175,7 +176,7 @@ export default class DataService {
         "rewardsPrograms",
         () =>
           fetchJSON<RewardProgramsResponse>(
-            `${this.baseUrl}/beta/network/rewardconfig/all`,
+            `${this.baseUrl}/network/rewardconfig/all`,
           ),
         60000 * 60, // cache for 1 hour
       );
@@ -206,7 +207,7 @@ export default class DataService {
         ["userRewards", address],
         () =>
           fetchJSON<UserRewardsResponse>(
-            `${this.baseUrl}/beta/network/rewardPay/${address}`,
+            `${this.baseUrl}/network/rewardPay/${address}`,
           ),
         60000 * 5, // cache for 5 minute
       );

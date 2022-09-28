@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: KI_TESTNET,
   [NetworkEnv.MAINNET]: KI_TESTNET,
   [NetworkEnv.TEMPNET]: KI_TESTNET,
+  [NetworkEnv.STAGING]: KI_TESTNET,
 };

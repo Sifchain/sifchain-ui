@@ -9,4 +9,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: PERSISTENCE_TESTNET,
   [NetworkEnv.MAINNET]: PERSISTENCE_MAINNET,
   [NetworkEnv.TEMPNET]: PERSISTENCE_TESTNET,
+  [NetworkEnv.STAGING]: PERSISTENCE_TESTNET,
 };

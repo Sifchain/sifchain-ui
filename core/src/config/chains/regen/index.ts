@@ -8,4 +8,5 @@ export default <NetEnvChainConfigLookup>{
   [NetworkEnv.TESTNET]: REGEN_MAINNET,
   [NetworkEnv.MAINNET]: REGEN_MAINNET,
   [NetworkEnv.TEMPNET]: REGEN_MAINNET,
+  [NetworkEnv.STAGING]: REGEN_MAINNET,
 };
