@@ -29,6 +29,7 @@ export type WithService<T extends keyof Services = keyof Services> = {
 
 export type ServiceContext = {
   blockExplorerUrl: string;
+  vanirUrl: string;
   assets: IAsset[];
 } & SifServiceContext &
   ClpServiceContext &
@@ -51,7 +52,7 @@ export function createServices(context: ServiceContext) {
   const ClpService = clpService(context);
   const EventBusService = eventBusService(context);
   const DispensationService = createDispensationService(context);
-  const DataService = createDataService();
+  const DataService = createDataService(context.vanirUrl);
   const StorageService = storageService(context);
   const WalletService = createWalletService({
     ...context,
