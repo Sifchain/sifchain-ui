@@ -70,6 +70,7 @@ export type CoreConfig = {
   sifAddrPrefix: string;
   sifApiUrl: string;
   sifRpcUrl: string;
+  vanirUrl: string;
   sifChainId: string;
   blockExplorerUrl: string;
   web3Provider: "metamask" | string;
@@ -126,6 +127,7 @@ export function parseConfig(
     nativeAsset,
     bridgebankContractAddress: config.bridgebankContractAddress,
     bridgetokenContractAddress,
+    vanirUrl: config.vanirUrl,
     keplrChainConfig: {
       ...config.keplrChainConfig,
       rest: config.sifApiUrl,

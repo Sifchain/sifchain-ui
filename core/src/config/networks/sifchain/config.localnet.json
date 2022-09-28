@@ -2,6 +2,7 @@
   "sifAddrPrefix": "sif",
   "sifApiUrl": "http://localhost:3000/api/sifchain-local/rest",
   "sifRpcUrl": "http://localhost:3000/api/sifchain-local/rpc",
+  "vanirUrl": "https://proxies.sifchain.finance/api/vanir/testnet/beta",
   "sifChainId": "localnet",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",
