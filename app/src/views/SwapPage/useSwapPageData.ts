@@ -181,7 +181,7 @@ export const useSwapPageData = () => {
     providerFee,
     minimumReceived,
     effectiveMinimumReceived,
-    currentRowanLiquidityThreshold,
+    currentAssetLiquidityThreshold,
   } = useSwapCalculator({
     balances: computed(() => store.wallet.get(Network.SIFCHAIN).balances),
     fromAmount,
@@ -293,7 +293,7 @@ export const useSwapPageData = () => {
   });
 
   const formattedCurrentLiquidityThreshold = computed(() =>
-    currentRowanLiquidityThreshold.value
+    currentAssetLiquidityThreshold.value
       .toDerived()
       .toNumber()
       .toLocaleString("en", {
