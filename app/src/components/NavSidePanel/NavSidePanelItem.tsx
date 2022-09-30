@@ -50,26 +50,18 @@ export default defineComponent({
             to: props.href,
           })
         : null;
+
     const isActive = computed(() => {
       return !isExternal.value && linkRef?.isActive?.value;
     });
-
-    const isMarginUrl = props.href === MARGIN_FE_URL;
-    let rel = "noopener noreferrer";
-    let target = "_blank";
-
-    if (isMarginUrl) {
-      rel = "noopener";
-      target = "_self";
-    }
 
     return () => {
       return (
         <Cmp.value
           {...(isExternal.value && {
             href: props.href,
-            rel,
-            target,
+            rel: "noopener noreferrer",
+            target: "_blank",
           })}
           {...(Cmp.value === RouterLink && {
             to: props.href,
