@@ -357,12 +357,16 @@ export function useSwapCalculator(input: {
 
   const { data: liquidityProtectionParams } = useLiquidityProtectionParams();
 
-  const currentRowanLiquidityThreshold = computed(() => {
+  const currentAssetLiquidityThreshold = computed(() => {
     const value =
       liquidityProtectionParams.value?.rateParams
         ?.currentRowanLiquidityThreshold;
 
-    return AssetAmount("rowan", value ?? "0");
+    return AssetAmount(
+      liquidityProtectionParams.value?.params
+        ?.maxRowanLiquidityThresholdAsset ?? "rowan",
+      value ?? "0",
+    );
   });
 
   // Derive state
@@ -410,12 +414,12 @@ export function useSwapCalculator(input: {
     if (
       fromField.value.asset?.symbol === "rowan" &&
       fromField.value.fieldAmount.greaterThanOrEqual(
-        currentRowanLiquidityThreshold.value,
+        currentAssetLiquidityThreshold.value,
       )
     ) {
       if (process.env.NODE_ENV !== "production") {
         console.log({
-          currentRowanLiquidityThreshold: currentRowanLiquidityThreshold.value
+          currentRowanLiquidityThreshold: currentAssetLiquidityThreshold.value
             .toDerived()
             .toNumber(),
         });
@@ -453,6 +457,6 @@ export function useSwapCalculator(input: {
     swapResult,
     reverseSwapResult,
     priceRatio,
-    currentRowanLiquidityThreshold,
+    currentAssetLiquidityThreshold,
   };
 }
