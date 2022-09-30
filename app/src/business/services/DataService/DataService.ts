@@ -278,7 +278,7 @@ export default class DataService {
         ["lpUserRewards", address],
         () =>
           fetchJSON<LPUserRewardsResponse>(
-            `${this.baseUrl}/beta/network/lppdreward/${address}`,
+            `${this.baseUrl}/network/lppdreward/${address}`,
           ),
         60000 * 5, // cache for 5 minute
       );

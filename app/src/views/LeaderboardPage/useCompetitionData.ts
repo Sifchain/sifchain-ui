@@ -168,7 +168,7 @@ const parseApiLeaderboardItem = (
 
 export const getTransactionData = async (symbol: string) => {
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    [`${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/txn`, symbol || ""]
+    [`${BASE_URL_DATA_SERVICES}/trade/tx_vol/txn`, symbol || ""]
       .filter(Boolean)
       .join("/"),
   );
@@ -178,7 +178,7 @@ export const getTransactionData = async (symbol: string) => {
 
 export const getVolumeData = async (symbol: string) => {
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    [`${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/vol`, symbol || ""]
+    [`${BASE_URL_DATA_SERVICES}/trade/tx_vol/vol`, symbol || ""]
       .filter(Boolean)
       .join("/"),
   );
@@ -190,7 +190,7 @@ export const getAccountData = async (symbol: string, address?: string) => {
   if (!address) return null;
 
   const items = await fetchJsonWithError<RawApiLeaderboardItem[]>(
-    `${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/${[address, symbol]
+    `${BASE_URL_DATA_SERVICES}/trade/tx_vol/${[address, symbol]
       .filter(Boolean)
       .join("/")}`,
   );
@@ -250,7 +250,7 @@ export const useLeaderboardCompetitions = () => {
             winners: number;
           },
         ]
-      >(`${BASE_URL_DATA_SERVICES}/beta/trade/tx_vol/type`);
+      >(`${BASE_URL_DATA_SERVICES}/trade/tx_vol/type`);
 
       const lookup: CompetitionsBySymbolLookup = {};
 

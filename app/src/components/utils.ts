@@ -105,5 +105,5 @@ export function getBlockExplorerUrl(
 }
 
 export function getRewardEarningsUrl(): string {
-  return `${BASE_URL_DATA_SERVICES}/beta/network`;
+  return `${BASE_URL_DATA_SERVICES}/network`;
 }
