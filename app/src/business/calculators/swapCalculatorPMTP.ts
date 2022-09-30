@@ -413,9 +413,9 @@ export function useSwapCalculator(input: {
 
     if (
       fromField.value.asset?.symbol === "rowan" &&
-      fromField.value.fieldAmount.greaterThanOrEqual(
-        currentAssetLiquidityThreshold.value,
-      )
+      fromField.value.fieldAmount
+        .toDerived()
+        .greaterThanOrEqual(currentAssetLiquidityThreshold.value.toDerived())
     ) {
       if (process.env.NODE_ENV !== "production") {
         console.log({
