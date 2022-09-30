@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { defineComponent, PropType, HTMLAttributes, computed } from "vue";
 import { useLink, RouterLink } from "vue-router";
-
+import { MARGIN_FE_URL } from "@/store/modules/flags";
 import AssetIcon, { IconName } from "../AssetIcon";
 
 export default defineComponent({
@@ -50,6 +50,7 @@ export default defineComponent({
             to: props.href,
           })
         : null;
+
     const isActive = computed(() => {
       return !isExternal.value && linkRef?.isActive?.value;
     });
@@ -59,6 +60,8 @@ export default defineComponent({
         <Cmp.value
           {...(isExternal.value && {
             href: props.href,
+            rel: "noopener noreferrer",
+            target: "_blank",
           })}
           {...(Cmp.value === RouterLink && {
             to: props.href,
@@ -84,7 +87,7 @@ export default defineComponent({
           >
             {props.displayName}
 
-            {isExternal.value && (
+            {isExternal.value && !isMarginUrl && (
               <AssetIcon
                 icon="interactive/open-external"
                 size={16}
