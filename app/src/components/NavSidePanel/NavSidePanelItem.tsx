@@ -87,7 +87,7 @@ export default defineComponent({
           >
             {props.displayName}
 
-            {isExternal.value && !isMarginUrl && (
+            {isExternal.value && (
               <AssetIcon
                 icon="interactive/open-external"
                 size={16}
