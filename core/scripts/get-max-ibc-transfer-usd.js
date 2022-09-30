@@ -7,7 +7,7 @@ const {
 const {
   BASE_URL_DATA_SERVICES,
 } = require("../../app/src/business/services/DataService/DataService");
-fetch(`${BASE_URL_DATA_SERVICES}/beta/asset/tokenStats`)
+fetch(`${BASE_URL_DATA_SERVICES}/asset/tokenStats`)
   .then((d) => d.json())
   .then((data) => {
     console.log(data);
