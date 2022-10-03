@@ -54,6 +54,12 @@ export class Pool extends Pair {
    */
   currentRatioShiftingRate?: IAmount;
 
+  nativeLiabilities?: IAssetAmount;
+  externalLiabilities?: IAssetAmount;
+
+  nativeCustody?: IAssetAmount;
+  externalCustody?: IAssetAmount;
+
   constructor(
     a: IAssetAmount,
     b: IAssetAmount,
@@ -68,12 +74,25 @@ export class Pool extends Pair {
        * clp.getPmtpParams pmtp_current_running_rate
        */
       currentRatioShiftingRate?: IAmount;
+
+      nativeLiabilities?: IAssetAmount;
+      externalLiabilities?: IAssetAmount;
+
+      nativeCustody?: IAssetAmount;
+      externalCustody?: IAssetAmount;
     },
   ) {
     super(a, b);
     this.swapPrices = params?.swapPrices;
     this.swapFeeRate = params?.swapFeeRate;
     this.currentRatioShiftingRate = params?.currentRatioShiftingRate;
+
+    this.nativeLiabilities = params?.nativeLiabilities;
+    this.externalLiabilities = params?.externalLiabilities;
+
+    this.nativeCustody = params?.nativeCustody;
+    this.externalCustody = params?.externalCustody;
+
     this.poolUnits =
       params?.poolUnits ||
       calculatePoolUnits(
