@@ -78,28 +78,32 @@ export default defineComponent({
         return defaultPrices;
       }
 
-      const poolTVL = pool.value.poolStat.poolTVL;
+      const { pool: currentPool, poolStat } = pool.value;
+
+      const nativeBalance = currentPool.nativeAmount.toDerived().toNumber();
+
+      const nativeTVL = nativeBalance * (poolStat.rowanUSD ?? 0);
+
+      const externalBalance = currentPool.externalAmount.toDerived().toNumber();
+
+      const externalTVL = externalBalance * (poolStat.priceToken ?? 0);
+
+      const poolTVL = nativeTVL + externalTVL;
 
       if (!poolTVL) {
         return defaultPrices;
       }
 
-      const externalTVL = pool.value.pool.externalAmount
-        .toDerived()
-        .multiply(pool.value.poolStat.priceToken ?? "0")
-        .toNumber();
-
-      const nativeTVL = poolTVL - externalTVL;
       const baseRatio = poolTVL / 100;
 
       return {
-        externalTVL,
-        nativeTVL,
+        externalTVL: externalTVL,
+        nativeTVL: nativeTVL,
         tvlUsd: poolTVL,
-        nativeRatio: nativeTVL / baseRatio,
-        externalRatio: externalTVL / baseRatio,
-        externalPrice: pool.value.poolStat.priceToken ?? 0,
-        nativePrice: pool.value.poolStat.rowanUSD ?? 0,
+        nativeRatio: nativeTVL / baseRatio, // e.g: 50%
+        externalRatio: externalTVL / baseRatio, // e.g: 50%
+        externalPrice: poolStat.priceToken ?? 0,
+        nativePrice: poolStat.rowanUSD ?? 0,
       };
     });
 
