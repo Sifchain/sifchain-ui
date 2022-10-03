@@ -90,13 +90,13 @@ export function SyncPools(
         const toNativeAmountDerived = (rawAmount: string) =>
           AssetAmount(nativeAsset, rawAmount).toDerived();
 
-        const nativeAssetBalance = Amount(pool.nativeAssetBalance)
-          .add(pool.nativeCustody)
-          .add(pool.nativeLiabilities);
+        const nativeAssetBalance = Amount(pool.nativeAssetBalance).add(
+          pool.nativeLiabilities,
+        );
 
-        const externalAssetBalance = Amount(pool.externalAssetBalance)
-          .add(pool.externalCustody)
-          .add(pool.externalLiabilities);
+        const externalAssetBalance = Amount(pool.externalAssetBalance).add(
+          pool.externalLiabilities,
+        );
 
         return new Pool(
           AssetAmount(nativeAsset, nativeAssetBalance),
@@ -111,6 +111,10 @@ export function SyncPools(
             currentRatioShiftingRate: toNativeAmountDerived(
               pmtpParamsRes.pmtpRateParams?.pmtpCurrentRunningRate ?? "0",
             ),
+            nativeLiabilities: AssetAmount(nativeAsset, pool.nativeLiabilities),
+            externalLiabilities: AssetAmount(asset, pool.externalLiabilities),
+            nativeCustody: AssetAmount(nativeAsset, pool.nativeCustody),
+            externalCustody: AssetAmount(asset, pool.externalCustody),
           },
         );
       })
