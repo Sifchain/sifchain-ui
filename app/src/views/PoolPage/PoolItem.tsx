@@ -12,12 +12,14 @@ import { isNil, isNilOrWhitespace } from "@/utils/assertion";
 import { prettyNumber, prettyNumberMinMax } from "@/utils/prettyNumber";
 import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
 import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
+import { Amount } from "@sifchain/sdk/src";
 import { computed, defineComponent, PropType } from "vue";
 import { useRouter } from "vue-router";
 import {
   Competition,
   CompetitionsLookup,
 } from "../LeaderboardPage/useCompetitionData";
+import { useMaxwithdrawData } from "./children/RemoveLiquidity/useRemoveLiquidityData";
 import { COLUMNS_LOOKUP } from "./usePoolPageData";
 import { useUserPoolData } from "./useUserPoolData";
 
@@ -113,10 +115,7 @@ export default defineComponent({
       type: Object as PropType<CompetitionsLookup>,
       required: false,
     },
-    liquidityProvider: {
-      type: Object as PropType<LiquidityProviderData>,
-      required: false,
-    },
+
     lppdRewards: {
       type: Object as PropType<LPUserReward>,
       required: false,
@@ -151,27 +150,43 @@ export default defineComponent({
           ) as Competition[])
         : [];
     },
+
+    lpBalances() {
+      const { accountPool } = this;
+
+      const { nativeAsset } = useNativeChain();
+
+      const externalAsset = accountPool?.lp.asset;
+
+      const maxWithdrawal = useMaxwithdrawData({
+        nativeAssetSymbol: computed(() => nativeAsset.symbol),
+        externalAssetSymbol: computed(() => externalAsset?.symbol ?? null),
+        liquidityProvider: computed(() => accountPool?.lp ?? null),
+      });
+
+      return {
+        ...maxWithdrawal,
+        nativeBalance: maxWithdrawal.withdrawNativeAssetAmount,
+        externalBalance: maxWithdrawal.withdrawExternalAssetAmount,
+      };
+    },
+
     myPoolValue(): string | undefined {
       if (
-        !this.accountPool ||
-        !this.poolStat ||
-        this.rowanPrice.isLoading.value
-      )
+        !this.lpBalances.nativeBalance?.value ||
+        !this.lpBalances.externalBalance?.value ||
+        !this.poolStat
+      ) {
         return;
+      }
 
-      const externalAmount = AssetAmount(
-        this.accountPool.lp.asset,
-        this.accountPool.lp.externalAmount,
-      ).toDerived();
-      const nativeAmount = AssetAmount(
-        useChains().get(Network.SIFCHAIN).nativeAsset,
-        this.accountPool.lp.nativeAmount,
-      ).toDerived();
+      const { nativeBalance, externalBalance } = this.lpBalances;
 
-      const nativeDollarAmount = nativeAmount.multiply(
+      const nativeDollarAmount = Amount(nativeBalance.value).multiply(
         this.rowanPrice.data.value ?? 0,
       );
-      const externalDollarAmount = externalAmount.multiply(
+
+      const externalDollarAmount = Amount(externalBalance.value).multiply(
         this.poolStat.priceToken ?? 0,
       );
 
@@ -194,21 +209,10 @@ export default defineComponent({
         this.accountPool?.lp && [
           "Your Liquidity",
           <div class="flex items-center">
-            {String(
-              +formatAssetAmount(
-                AssetAmount(nativeAsset, this.accountPool.lp.nativeAmount),
-              ),
-            )}
+            {prettyNumber(Number(this.lpBalances.nativeBalance.value), 6)}
             <TokenIcon assetValue={nativeAsset} size={14} class="ml-[2px]" />
             ,<span class="ml-[4px]" />
-            {String(
-              +formatAssetAmount(
-                AssetAmount(
-                  this.accountPool.lp.asset,
-                  this.accountPool.lp.externalAmount,
-                ),
-              ),
-            )}
+            {prettyNumber(Number(this.lpBalances.externalBalance.value), 6)}
             <TokenIcon
               assetValue={this.accountPool.lp.asset}
               class="ml-[2px]"

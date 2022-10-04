@@ -1,4 +1,4 @@
-import { Ref } from "@vue/reactivity";
+import { Ref, computed } from "vue";
 
 import {
   Amount,
@@ -12,7 +12,6 @@ import {
 import { calculateWithdrawal } from "@sifchain/sdk/src/entities/formulae";
 
 import { PoolState } from "./addLiquidityCalculator";
-import { computed } from "vue";
 
 export function useRemoveLiquidityCalculator(input: {
   externalAssetSymbol: Ref<string | null>;
