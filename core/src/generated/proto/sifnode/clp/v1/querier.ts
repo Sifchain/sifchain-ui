@@ -1,15 +1,15 @@
 /* eslint-disable */
-import { Pool } from "./pool";
 import {
-  PageRequest,
-  PageResponse,
-} from "../../../cosmos/base/query/v1beta1/pagination";
-import {
+  Pool,
   LiquidityProvider,
   PmtpEpoch,
   Asset,
   LiquidityProviderData,
 } from "./types";
+import {
+  PageRequest,
+  PageResponse,
+} from "../../../cosmos/base/query/v1beta1/pagination";
 import {
   Params,
   RewardParams,
