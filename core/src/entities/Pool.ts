@@ -80,6 +80,11 @@ export class Pool extends Pair {
 
       nativeCustody?: IAssetAmount;
       externalCustody?: IAssetAmount;
+
+      /**
+       * Whether the pools is enabled for margin trading
+       */
+      isMarginEnabled?: boolean;
     },
   ) {
     super(a, b);

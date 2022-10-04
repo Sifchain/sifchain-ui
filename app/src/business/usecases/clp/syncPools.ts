@@ -10,7 +10,6 @@ import { Services } from "@/business/services";
 import { Store } from "@/business/store";
 import { createPoolKey } from "@sifchain/sdk/src/utils";
 import { AccountPool } from "@/business/store/pools";
-import { flagsStore } from "@/store/modules/flags";
 
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<
@@ -55,10 +54,6 @@ export function SyncPools(
       clp.getPmtpParams(),
       clp.getSwapFeeRate(),
     ]);
-
-    if (process.env.NODE_ENV === "development") {
-      console.log({ rawPools: rawPoolsRes });
-    }
 
     const pools = rawPoolsRes.pools
       .map((pool) => {
@@ -121,7 +116,9 @@ export function SyncPools(
       .filter(Boolean) as Pool[];
 
     for (const pool of pools) {
-      store.pools[pool.symbol()] = pool;
+      const key = pool.symbol();
+
+      store.pools[key] = pool;
     }
   }
 
@@ -170,6 +167,11 @@ export function SyncPools(
         throw new Error("Missing liquidity provider");
       }
 
+      const pool = createPoolKey(
+        asset,
+        chains.get(Network.SIFCHAIN).nativeAsset,
+      );
+
       const lp = new LiquidityProvider(
         asset,
         Amount(lpItem.liquidityProvider.liquidityProviderUnits),
@@ -177,10 +179,7 @@ export function SyncPools(
         Amount(lpItem.nativeAssetBalance),
         Amount(lpItem.externalAssetBalance),
       );
-      const pool = createPoolKey(
-        asset,
-        chains.get(Network.SIFCHAIN).nativeAsset,
-      );
+
       currentAccountPools[pool] = { lp, pool };
     });
 

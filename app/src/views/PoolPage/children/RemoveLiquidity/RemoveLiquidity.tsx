@@ -27,6 +27,8 @@ export default defineComponent({
       tx: data.transactionStatus,
     });
 
+    console.log("data", { data });
+
     const detailsRef = computed<FormDetailsType>(() => ({
       label: "You will receive:",
       details: [

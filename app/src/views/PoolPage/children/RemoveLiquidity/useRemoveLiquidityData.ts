@@ -9,6 +9,30 @@ import { accountStore } from "@/store/modules/accounts";
 import { useRemoveLiquidityCalculator } from "@/business/calculators";
 import { PoolState } from "@/business/calculators/addLiquidityCalculator";
 
+export function useMaxwithdrawData(params: {
+  externalAssetSymbol: Ref<string | null>;
+  nativeAssetSymbol: Ref<string | null>;
+  liquidityProvider: Ref<LiquidityProvider | null>;
+}) {
+  const { poolFinder } = useCore();
+
+  const { externalAssetSymbol, nativeAssetSymbol, liquidityProvider } = params;
+
+  const address = accountStore.refs.sifchain.address.computed();
+
+  const calcData = useRemoveLiquidityCalculator({
+    externalAssetSymbol,
+    nativeAssetSymbol,
+    wBasisPoints: ref("10000"),
+    asymmetry: ref("0"),
+    liquidityProvider,
+    sifAddress: address,
+    poolFinder,
+  });
+
+  return calcData;
+}
+
 export function useRemoveLiquidityData() {
   const { usecases, poolFinder, services } = useCore();
   const route = useRoute();
@@ -59,7 +83,7 @@ export function useRemoveLiquidityData() {
   watch(
     [wBasisPoints, asymmetry, liquidityProvider],
     debounce(() => {
-      const calcData = useRemoveLiquidityCalculator({
+      const removeLiquidityParams = {
         externalAssetSymbol,
         nativeAssetSymbol,
         wBasisPoints,
@@ -67,7 +91,10 @@ export function useRemoveLiquidityData() {
         liquidityProvider,
         sifAddress: address,
         poolFinder,
-      });
+      };
+
+      const calcData = useRemoveLiquidityCalculator(removeLiquidityParams);
+
       state.value = calcData.state.value;
       withdrawExternalAssetAmount.value =
         calcData.withdrawExternalAssetAmount.value;
