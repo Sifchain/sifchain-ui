@@ -16,6 +16,17 @@ export interface Pool {
   swapPriceNative: string;
   swapPriceExternal: string;
   rewardPeriodNativeDistributed: string;
+  externalLiabilities: string;
+  externalCustody: string;
+  nativeLiabilities: string;
+  nativeCustody: string;
+  health: string;
+  interestRate: string;
+  lastHeightInterestRateComputed: Long;
+  unsettledExternalLiabilities: string;
+  unsettledNativeLiabilities: string;
+  blockInterestNative: string;
+  blockInterestExternal: string;
 }
 
 export interface LiquidityProvider {
@@ -49,6 +60,13 @@ export interface EventPolicy {
   eventType: string;
   pmtpPeriodStartBlock: string;
   pmtpPeriodEndBlock: string;
+}
+
+export interface RemovalQueue {
+  count: Long;
+  id: Long;
+  startHeight: Long;
+  totalValue: string;
 }
 
 function createBaseAsset(): Asset {
@@ -109,6 +127,17 @@ function createBasePool(): Pool {
     swapPriceNative: "",
     swapPriceExternal: "",
     rewardPeriodNativeDistributed: "",
+    externalLiabilities: "",
+    externalCustody: "",
+    nativeLiabilities: "",
+    nativeCustody: "",
+    health: "",
+    interestRate: "",
+    lastHeightInterestRateComputed: Long.ZERO,
+    unsettledExternalLiabilities: "",
+    unsettledNativeLiabilities: "",
+    blockInterestNative: "",
+    blockInterestExternal: "",
   };
 }
 
@@ -134,6 +163,39 @@ export const Pool = {
     }
     if (message.rewardPeriodNativeDistributed !== "") {
       writer.uint32(58).string(message.rewardPeriodNativeDistributed);
+    }
+    if (message.externalLiabilities !== "") {
+      writer.uint32(66).string(message.externalLiabilities);
+    }
+    if (message.externalCustody !== "") {
+      writer.uint32(74).string(message.externalCustody);
+    }
+    if (message.nativeLiabilities !== "") {
+      writer.uint32(82).string(message.nativeLiabilities);
+    }
+    if (message.nativeCustody !== "") {
+      writer.uint32(90).string(message.nativeCustody);
+    }
+    if (message.health !== "") {
+      writer.uint32(98).string(message.health);
+    }
+    if (message.interestRate !== "") {
+      writer.uint32(106).string(message.interestRate);
+    }
+    if (!message.lastHeightInterestRateComputed.isZero()) {
+      writer.uint32(112).int64(message.lastHeightInterestRateComputed);
+    }
+    if (message.unsettledExternalLiabilities !== "") {
+      writer.uint32(122).string(message.unsettledExternalLiabilities);
+    }
+    if (message.unsettledNativeLiabilities !== "") {
+      writer.uint32(130).string(message.unsettledNativeLiabilities);
+    }
+    if (message.blockInterestNative !== "") {
+      writer.uint32(138).string(message.blockInterestNative);
+    }
+    if (message.blockInterestExternal !== "") {
+      writer.uint32(146).string(message.blockInterestExternal);
     }
     return writer;
   },
@@ -166,6 +228,39 @@ export const Pool = {
         case 7:
           message.rewardPeriodNativeDistributed = reader.string();
           break;
+        case 8:
+          message.externalLiabilities = reader.string();
+          break;
+        case 9:
+          message.externalCustody = reader.string();
+          break;
+        case 10:
+          message.nativeLiabilities = reader.string();
+          break;
+        case 11:
+          message.nativeCustody = reader.string();
+          break;
+        case 12:
+          message.health = reader.string();
+          break;
+        case 13:
+          message.interestRate = reader.string();
+          break;
+        case 14:
+          message.lastHeightInterestRateComputed = reader.int64() as Long;
+          break;
+        case 15:
+          message.unsettledExternalLiabilities = reader.string();
+          break;
+        case 16:
+          message.unsettledNativeLiabilities = reader.string();
+          break;
+        case 17:
+          message.blockInterestNative = reader.string();
+          break;
+        case 18:
+          message.blockInterestExternal = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -195,6 +290,39 @@ export const Pool = {
       rewardPeriodNativeDistributed: isSet(object.rewardPeriodNativeDistributed)
         ? String(object.rewardPeriodNativeDistributed)
         : "",
+      externalLiabilities: isSet(object.externalLiabilities)
+        ? String(object.externalLiabilities)
+        : "",
+      externalCustody: isSet(object.externalCustody)
+        ? String(object.externalCustody)
+        : "",
+      nativeLiabilities: isSet(object.nativeLiabilities)
+        ? String(object.nativeLiabilities)
+        : "",
+      nativeCustody: isSet(object.nativeCustody)
+        ? String(object.nativeCustody)
+        : "",
+      health: isSet(object.health) ? String(object.health) : "",
+      interestRate: isSet(object.interestRate)
+        ? String(object.interestRate)
+        : "",
+      lastHeightInterestRateComputed: isSet(
+        object.lastHeightInterestRateComputed,
+      )
+        ? Long.fromValue(object.lastHeightInterestRateComputed)
+        : Long.ZERO,
+      unsettledExternalLiabilities: isSet(object.unsettledExternalLiabilities)
+        ? String(object.unsettledExternalLiabilities)
+        : "",
+      unsettledNativeLiabilities: isSet(object.unsettledNativeLiabilities)
+        ? String(object.unsettledNativeLiabilities)
+        : "",
+      blockInterestNative: isSet(object.blockInterestNative)
+        ? String(object.blockInterestNative)
+        : "",
+      blockInterestExternal: isSet(object.blockInterestExternal)
+        ? String(object.blockInterestExternal)
+        : "",
     };
   },
 
@@ -216,6 +344,29 @@ export const Pool = {
     message.rewardPeriodNativeDistributed !== undefined &&
       (obj.rewardPeriodNativeDistributed =
         message.rewardPeriodNativeDistributed);
+    message.externalLiabilities !== undefined &&
+      (obj.externalLiabilities = message.externalLiabilities);
+    message.externalCustody !== undefined &&
+      (obj.externalCustody = message.externalCustody);
+    message.nativeLiabilities !== undefined &&
+      (obj.nativeLiabilities = message.nativeLiabilities);
+    message.nativeCustody !== undefined &&
+      (obj.nativeCustody = message.nativeCustody);
+    message.health !== undefined && (obj.health = message.health);
+    message.interestRate !== undefined &&
+      (obj.interestRate = message.interestRate);
+    message.lastHeightInterestRateComputed !== undefined &&
+      (obj.lastHeightInterestRateComputed = (
+        message.lastHeightInterestRateComputed || Long.ZERO
+      ).toString());
+    message.unsettledExternalLiabilities !== undefined &&
+      (obj.unsettledExternalLiabilities = message.unsettledExternalLiabilities);
+    message.unsettledNativeLiabilities !== undefined &&
+      (obj.unsettledNativeLiabilities = message.unsettledNativeLiabilities);
+    message.blockInterestNative !== undefined &&
+      (obj.blockInterestNative = message.blockInterestNative);
+    message.blockInterestExternal !== undefined &&
+      (obj.blockInterestExternal = message.blockInterestExternal);
     return obj;
   },
 
@@ -232,6 +383,23 @@ export const Pool = {
     message.swapPriceExternal = object.swapPriceExternal ?? "";
     message.rewardPeriodNativeDistributed =
       object.rewardPeriodNativeDistributed ?? "";
+    message.externalLiabilities = object.externalLiabilities ?? "";
+    message.externalCustody = object.externalCustody ?? "";
+    message.nativeLiabilities = object.nativeLiabilities ?? "";
+    message.nativeCustody = object.nativeCustody ?? "";
+    message.health = object.health ?? "";
+    message.interestRate = object.interestRate ?? "";
+    message.lastHeightInterestRateComputed =
+      object.lastHeightInterestRateComputed !== undefined &&
+      object.lastHeightInterestRateComputed !== null
+        ? Long.fromValue(object.lastHeightInterestRateComputed)
+        : Long.ZERO;
+    message.unsettledExternalLiabilities =
+      object.unsettledExternalLiabilities ?? "";
+    message.unsettledNativeLiabilities =
+      object.unsettledNativeLiabilities ?? "";
+    message.blockInterestNative = object.blockInterestNative ?? "";
+    message.blockInterestExternal = object.blockInterestExternal ?? "";
     return message;
   },
 };
@@ -719,6 +887,105 @@ export const EventPolicy = {
     message.eventType = object.eventType ?? "";
     message.pmtpPeriodStartBlock = object.pmtpPeriodStartBlock ?? "";
     message.pmtpPeriodEndBlock = object.pmtpPeriodEndBlock ?? "";
+    return message;
+  },
+};
+
+function createBaseRemovalQueue(): RemovalQueue {
+  return {
+    count: Long.ZERO,
+    id: Long.ZERO,
+    startHeight: Long.ZERO,
+    totalValue: "",
+  };
+}
+
+export const RemovalQueue = {
+  encode(
+    message: RemovalQueue,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (!message.count.isZero()) {
+      writer.uint32(8).int64(message.count);
+    }
+    if (!message.id.isZero()) {
+      writer.uint32(16).int64(message.id);
+    }
+    if (!message.startHeight.isZero()) {
+      writer.uint32(24).int64(message.startHeight);
+    }
+    if (message.totalValue !== "") {
+      writer.uint32(34).string(message.totalValue);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RemovalQueue {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRemovalQueue();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.count = reader.int64() as Long;
+          break;
+        case 2:
+          message.id = reader.int64() as Long;
+          break;
+        case 3:
+          message.startHeight = reader.int64() as Long;
+          break;
+        case 4:
+          message.totalValue = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RemovalQueue {
+    return {
+      count: isSet(object.count) ? Long.fromValue(object.count) : Long.ZERO,
+      id: isSet(object.id) ? Long.fromValue(object.id) : Long.ZERO,
+      startHeight: isSet(object.startHeight)
+        ? Long.fromValue(object.startHeight)
+        : Long.ZERO,
+      totalValue: isSet(object.totalValue) ? String(object.totalValue) : "",
+    };
+  },
+
+  toJSON(message: RemovalQueue): unknown {
+    const obj: any = {};
+    message.count !== undefined &&
+      (obj.count = (message.count || Long.ZERO).toString());
+    message.id !== undefined && (obj.id = (message.id || Long.ZERO).toString());
+    message.startHeight !== undefined &&
+      (obj.startHeight = (message.startHeight || Long.ZERO).toString());
+    message.totalValue !== undefined && (obj.totalValue = message.totalValue);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RemovalQueue>, I>>(
+    object: I,
+  ): RemovalQueue {
+    const message = createBaseRemovalQueue();
+    message.count =
+      object.count !== undefined && object.count !== null
+        ? Long.fromValue(object.count)
+        : Long.ZERO;
+    message.id =
+      object.id !== undefined && object.id !== null
+        ? Long.fromValue(object.id)
+        : Long.ZERO;
+    message.startHeight =
+      object.startHeight !== undefined && object.startHeight !== null
+        ? Long.fromValue(object.startHeight)
+        : Long.ZERO;
+    message.totalValue = object.totalValue ?? "";
     return message;
   },
 };

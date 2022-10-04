@@ -10,7 +10,15 @@ import {
   PageRequest,
   PageResponse,
 } from "../../../cosmos/base/query/v1beta1/pagination";
-import { Params, RewardParams, PmtpParams, PmtpRateParams } from "./params";
+import {
+  Params,
+  RewardParams,
+  PmtpParams,
+  PmtpRateParams,
+  LiquidityProtectionParams,
+  LiquidityProtectionRateParams,
+  ProviderDistributionParams,
+} from "./params";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
@@ -99,6 +107,7 @@ export interface ParamsReq {}
 export interface ParamsRes {
   params?: Params;
   symmetryThreshold: string;
+  symmetryRatioThreshold: string;
 }
 
 export interface RewardParamsReq {}
@@ -114,6 +123,26 @@ export interface PmtpParamsRes {
   pmtpRateParams?: PmtpRateParams;
   pmtpEpoch?: PmtpEpoch;
   height: Long;
+}
+
+export interface LiquidityProtectionParamsReq {}
+
+export interface LiquidityProtectionParamsRes {
+  params?: LiquidityProtectionParams;
+  rateParams?: LiquidityProtectionRateParams;
+  height: Long;
+}
+
+export interface ProviderDistributionParamsReq {}
+
+export interface ProviderDistributionParamsRes {
+  params?: ProviderDistributionParams;
+}
+
+export interface SwapFeeRateReq {}
+
+export interface SwapFeeRateRes {
+  swapFeeRate: string;
 }
 
 function createBasePoolReq(): PoolReq {
@@ -1328,7 +1357,11 @@ export const ParamsReq = {
 };
 
 function createBaseParamsRes(): ParamsRes {
-  return { params: undefined, symmetryThreshold: "" };
+  return {
+    params: undefined,
+    symmetryThreshold: "",
+    symmetryRatioThreshold: "",
+  };
 }
 
 export const ParamsRes = {
@@ -1341,6 +1374,9 @@ export const ParamsRes = {
     }
     if (message.symmetryThreshold !== "") {
       writer.uint32(18).string(message.symmetryThreshold);
+    }
+    if (message.symmetryRatioThreshold !== "") {
+      writer.uint32(26).string(message.symmetryRatioThreshold);
     }
     return writer;
   },
@@ -1358,6 +1394,9 @@ export const ParamsRes = {
         case 2:
           message.symmetryThreshold = reader.string();
           break;
+        case 3:
+          message.symmetryRatioThreshold = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1372,6 +1411,9 @@ export const ParamsRes = {
       symmetryThreshold: isSet(object.symmetryThreshold)
         ? String(object.symmetryThreshold)
         : "",
+      symmetryRatioThreshold: isSet(object.symmetryRatioThreshold)
+        ? String(object.symmetryRatioThreshold)
+        : "",
     };
   },
 
@@ -1381,6 +1423,8 @@ export const ParamsRes = {
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
     message.symmetryThreshold !== undefined &&
       (obj.symmetryThreshold = message.symmetryThreshold);
+    message.symmetryRatioThreshold !== undefined &&
+      (obj.symmetryRatioThreshold = message.symmetryRatioThreshold);
     return obj;
   },
 
@@ -1393,6 +1437,7 @@ export const ParamsRes = {
         ? Params.fromPartial(object.params)
         : undefined;
     message.symmetryThreshold = object.symmetryThreshold ?? "";
+    message.symmetryRatioThreshold = object.symmetryRatioThreshold ?? "";
     return message;
   },
 };
@@ -1667,6 +1712,377 @@ export const PmtpParamsRes = {
   },
 };
 
+function createBaseLiquidityProtectionParamsReq(): LiquidityProtectionParamsReq {
+  return {};
+}
+
+export const LiquidityProtectionParamsReq = {
+  encode(
+    _: LiquidityProtectionParamsReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): LiquidityProtectionParamsReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLiquidityProtectionParamsReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): LiquidityProtectionParamsReq {
+    return {};
+  },
+
+  toJSON(_: LiquidityProtectionParamsReq): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<LiquidityProtectionParamsReq>, I>>(
+    _: I,
+  ): LiquidityProtectionParamsReq {
+    const message = createBaseLiquidityProtectionParamsReq();
+    return message;
+  },
+};
+
+function createBaseLiquidityProtectionParamsRes(): LiquidityProtectionParamsRes {
+  return { params: undefined, rateParams: undefined, height: Long.ZERO };
+}
+
+export const LiquidityProtectionParamsRes = {
+  encode(
+    message: LiquidityProtectionParamsRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.params !== undefined) {
+      LiquidityProtectionParams.encode(
+        message.params,
+        writer.uint32(10).fork(),
+      ).ldelim();
+    }
+    if (message.rateParams !== undefined) {
+      LiquidityProtectionRateParams.encode(
+        message.rateParams,
+        writer.uint32(18).fork(),
+      ).ldelim();
+    }
+    if (!message.height.isZero()) {
+      writer.uint32(24).int64(message.height);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): LiquidityProtectionParamsRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLiquidityProtectionParamsRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.params = LiquidityProtectionParams.decode(
+            reader,
+            reader.uint32(),
+          );
+          break;
+        case 2:
+          message.rateParams = LiquidityProtectionRateParams.decode(
+            reader,
+            reader.uint32(),
+          );
+          break;
+        case 3:
+          message.height = reader.int64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LiquidityProtectionParamsRes {
+    return {
+      params: isSet(object.params)
+        ? LiquidityProtectionParams.fromJSON(object.params)
+        : undefined,
+      rateParams: isSet(object.rateParams)
+        ? LiquidityProtectionRateParams.fromJSON(object.rateParams)
+        : undefined,
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.ZERO,
+    };
+  },
+
+  toJSON(message: LiquidityProtectionParamsRes): unknown {
+    const obj: any = {};
+    message.params !== undefined &&
+      (obj.params = message.params
+        ? LiquidityProtectionParams.toJSON(message.params)
+        : undefined);
+    message.rateParams !== undefined &&
+      (obj.rateParams = message.rateParams
+        ? LiquidityProtectionRateParams.toJSON(message.rateParams)
+        : undefined);
+    message.height !== undefined &&
+      (obj.height = (message.height || Long.ZERO).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<LiquidityProtectionParamsRes>, I>>(
+    object: I,
+  ): LiquidityProtectionParamsRes {
+    const message = createBaseLiquidityProtectionParamsRes();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? LiquidityProtectionParams.fromPartial(object.params)
+        : undefined;
+    message.rateParams =
+      object.rateParams !== undefined && object.rateParams !== null
+        ? LiquidityProtectionRateParams.fromPartial(object.rateParams)
+        : undefined;
+    message.height =
+      object.height !== undefined && object.height !== null
+        ? Long.fromValue(object.height)
+        : Long.ZERO;
+    return message;
+  },
+};
+
+function createBaseProviderDistributionParamsReq(): ProviderDistributionParamsReq {
+  return {};
+}
+
+export const ProviderDistributionParamsReq = {
+  encode(
+    _: ProviderDistributionParamsReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): ProviderDistributionParamsReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProviderDistributionParamsReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): ProviderDistributionParamsReq {
+    return {};
+  },
+
+  toJSON(_: ProviderDistributionParamsReq): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProviderDistributionParamsReq>, I>>(
+    _: I,
+  ): ProviderDistributionParamsReq {
+    const message = createBaseProviderDistributionParamsReq();
+    return message;
+  },
+};
+
+function createBaseProviderDistributionParamsRes(): ProviderDistributionParamsRes {
+  return { params: undefined };
+}
+
+export const ProviderDistributionParamsRes = {
+  encode(
+    message: ProviderDistributionParamsRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.params !== undefined) {
+      ProviderDistributionParams.encode(
+        message.params,
+        writer.uint32(10).fork(),
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): ProviderDistributionParamsRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProviderDistributionParamsRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.params = ProviderDistributionParams.decode(
+            reader,
+            reader.uint32(),
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProviderDistributionParamsRes {
+    return {
+      params: isSet(object.params)
+        ? ProviderDistributionParams.fromJSON(object.params)
+        : undefined,
+    };
+  },
+
+  toJSON(message: ProviderDistributionParamsRes): unknown {
+    const obj: any = {};
+    message.params !== undefined &&
+      (obj.params = message.params
+        ? ProviderDistributionParams.toJSON(message.params)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ProviderDistributionParamsRes>, I>>(
+    object: I,
+  ): ProviderDistributionParamsRes {
+    const message = createBaseProviderDistributionParamsRes();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? ProviderDistributionParams.fromPartial(object.params)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseSwapFeeRateReq(): SwapFeeRateReq {
+  return {};
+}
+
+export const SwapFeeRateReq = {
+  encode(
+    _: SwapFeeRateReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SwapFeeRateReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSwapFeeRateReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): SwapFeeRateReq {
+    return {};
+  },
+
+  toJSON(_: SwapFeeRateReq): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SwapFeeRateReq>, I>>(
+    _: I,
+  ): SwapFeeRateReq {
+    const message = createBaseSwapFeeRateReq();
+    return message;
+  },
+};
+
+function createBaseSwapFeeRateRes(): SwapFeeRateRes {
+  return { swapFeeRate: "" };
+}
+
+export const SwapFeeRateRes = {
+  encode(
+    message: SwapFeeRateRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.swapFeeRate !== "") {
+      writer.uint32(10).string(message.swapFeeRate);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SwapFeeRateRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSwapFeeRateRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.swapFeeRate = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SwapFeeRateRes {
+    return {
+      swapFeeRate: isSet(object.swapFeeRate) ? String(object.swapFeeRate) : "",
+    };
+  },
+
+  toJSON(message: SwapFeeRateRes): unknown {
+    const obj: any = {};
+    message.swapFeeRate !== undefined &&
+      (obj.swapFeeRate = message.swapFeeRate);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SwapFeeRateRes>, I>>(
+    object: I,
+  ): SwapFeeRateRes {
+    const message = createBaseSwapFeeRateRes();
+    message.swapFeeRate = object.swapFeeRate ?? "";
+    return message;
+  },
+};
+
 export interface Query {
   GetPool(request: PoolReq): Promise<PoolRes>;
   GetPools(request: PoolsReq): Promise<PoolsRes>;
@@ -1686,6 +2102,13 @@ export interface Query {
   GetParams(request: ParamsReq): Promise<ParamsRes>;
   GetRewardParams(request: RewardParamsReq): Promise<RewardParamsRes>;
   GetPmtpParams(request: PmtpParamsReq): Promise<PmtpParamsRes>;
+  GetLiquidityProtectionParams(
+    request: LiquidityProtectionParamsReq,
+  ): Promise<LiquidityProtectionParamsRes>;
+  GetProviderDistributionParams(
+    request: ProviderDistributionParamsReq,
+  ): Promise<ProviderDistributionParamsRes>;
+  GetSwapFeeRate(request: SwapFeeRateReq): Promise<SwapFeeRateRes>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1702,6 +2125,11 @@ export class QueryClientImpl implements Query {
     this.GetParams = this.GetParams.bind(this);
     this.GetRewardParams = this.GetRewardParams.bind(this);
     this.GetPmtpParams = this.GetPmtpParams.bind(this);
+    this.GetLiquidityProtectionParams =
+      this.GetLiquidityProtectionParams.bind(this);
+    this.GetProviderDistributionParams =
+      this.GetProviderDistributionParams.bind(this);
+    this.GetSwapFeeRate = this.GetSwapFeeRate.bind(this);
   }
   GetPool(request: PoolReq): Promise<PoolRes> {
     const data = PoolReq.encode(request).finish();
@@ -1805,6 +2233,44 @@ export class QueryClientImpl implements Query {
       data,
     );
     return promise.then((data) => PmtpParamsRes.decode(new _m0.Reader(data)));
+  }
+
+  GetLiquidityProtectionParams(
+    request: LiquidityProtectionParamsReq,
+  ): Promise<LiquidityProtectionParamsRes> {
+    const data = LiquidityProtectionParamsReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetLiquidityProtectionParams",
+      data,
+    );
+    return promise.then((data) =>
+      LiquidityProtectionParamsRes.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetProviderDistributionParams(
+    request: ProviderDistributionParamsReq,
+  ): Promise<ProviderDistributionParamsRes> {
+    const data = ProviderDistributionParamsReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetProviderDistributionParams",
+      data,
+    );
+    return promise.then((data) =>
+      ProviderDistributionParamsRes.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetSwapFeeRate(request: SwapFeeRateReq): Promise<SwapFeeRateRes> {
+    const data = SwapFeeRateReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetSwapFeeRate",
+      data,
+    );
+    return promise.then((data) => SwapFeeRateRes.decode(new _m0.Reader(data)));
   }
 }
 

@@ -60,6 +60,22 @@ export interface MsgDewhitelist {
 
 export interface MsgDewhitelistResponse {}
 
+export interface MsgAdminCloseAll {
+  signer: string;
+  takeMarginFund: boolean;
+}
+
+export interface MsgAdminCloseAllResponse {}
+
+export interface MsgAdminClose {
+  signer: string;
+  mtpAddress: string;
+  id: Long;
+  takeMarginFund: boolean;
+}
+
+export interface MsgAdminCloseResponse {}
+
 function createBaseMsgOpen(): MsgOpen {
   return {
     signer: "",
@@ -919,6 +935,254 @@ export const MsgDewhitelistResponse = {
   },
 };
 
+function createBaseMsgAdminCloseAll(): MsgAdminCloseAll {
+  return { signer: "", takeMarginFund: false };
+}
+
+export const MsgAdminCloseAll = {
+  encode(
+    message: MsgAdminCloseAll,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.takeMarginFund === true) {
+      writer.uint32(16).bool(message.takeMarginFund);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAdminCloseAll {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAdminCloseAll();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.takeMarginFund = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgAdminCloseAll {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      takeMarginFund: isSet(object.takeMarginFund)
+        ? Boolean(object.takeMarginFund)
+        : false,
+    };
+  },
+
+  toJSON(message: MsgAdminCloseAll): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.takeMarginFund !== undefined &&
+      (obj.takeMarginFund = message.takeMarginFund);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAdminCloseAll>, I>>(
+    object: I,
+  ): MsgAdminCloseAll {
+    const message = createBaseMsgAdminCloseAll();
+    message.signer = object.signer ?? "";
+    message.takeMarginFund = object.takeMarginFund ?? false;
+    return message;
+  },
+};
+
+function createBaseMsgAdminCloseAllResponse(): MsgAdminCloseAllResponse {
+  return {};
+}
+
+export const MsgAdminCloseAllResponse = {
+  encode(
+    _: MsgAdminCloseAllResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAdminCloseAllResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAdminCloseAllResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgAdminCloseAllResponse {
+    return {};
+  },
+
+  toJSON(_: MsgAdminCloseAllResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAdminCloseAllResponse>, I>>(
+    _: I,
+  ): MsgAdminCloseAllResponse {
+    const message = createBaseMsgAdminCloseAllResponse();
+    return message;
+  },
+};
+
+function createBaseMsgAdminClose(): MsgAdminClose {
+  return { signer: "", mtpAddress: "", id: Long.UZERO, takeMarginFund: false };
+}
+
+export const MsgAdminClose = {
+  encode(
+    message: MsgAdminClose,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.mtpAddress !== "") {
+      writer.uint32(18).string(message.mtpAddress);
+    }
+    if (!message.id.isZero()) {
+      writer.uint32(24).uint64(message.id);
+    }
+    if (message.takeMarginFund === true) {
+      writer.uint32(32).bool(message.takeMarginFund);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAdminClose {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAdminClose();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.mtpAddress = reader.string();
+          break;
+        case 3:
+          message.id = reader.uint64() as Long;
+          break;
+        case 4:
+          message.takeMarginFund = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgAdminClose {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      mtpAddress: isSet(object.mtpAddress) ? String(object.mtpAddress) : "",
+      id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
+      takeMarginFund: isSet(object.takeMarginFund)
+        ? Boolean(object.takeMarginFund)
+        : false,
+    };
+  },
+
+  toJSON(message: MsgAdminClose): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.mtpAddress !== undefined && (obj.mtpAddress = message.mtpAddress);
+    message.id !== undefined &&
+      (obj.id = (message.id || Long.UZERO).toString());
+    message.takeMarginFund !== undefined &&
+      (obj.takeMarginFund = message.takeMarginFund);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAdminClose>, I>>(
+    object: I,
+  ): MsgAdminClose {
+    const message = createBaseMsgAdminClose();
+    message.signer = object.signer ?? "";
+    message.mtpAddress = object.mtpAddress ?? "";
+    message.id =
+      object.id !== undefined && object.id !== null
+        ? Long.fromValue(object.id)
+        : Long.UZERO;
+    message.takeMarginFund = object.takeMarginFund ?? false;
+    return message;
+  },
+};
+
+function createBaseMsgAdminCloseResponse(): MsgAdminCloseResponse {
+  return {};
+}
+
+export const MsgAdminCloseResponse = {
+  encode(
+    _: MsgAdminCloseResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAdminCloseResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAdminCloseResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgAdminCloseResponse {
+    return {};
+  },
+
+  toJSON(_: MsgAdminCloseResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgAdminCloseResponse>, I>>(
+    _: I,
+  ): MsgAdminCloseResponse {
+    const message = createBaseMsgAdminCloseResponse();
+    return message;
+  },
+};
+
 export interface Msg {
   Open(request: MsgOpen): Promise<MsgOpenResponse>;
   Close(request: MsgClose): Promise<MsgCloseResponse>;
@@ -927,6 +1191,8 @@ export interface Msg {
   UpdatePools(request: MsgUpdatePools): Promise<MsgUpdatePoolsResponse>;
   Whitelist(request: MsgWhitelist): Promise<MsgWhitelistResponse>;
   Dewhitelist(request: MsgDewhitelist): Promise<MsgDewhitelistResponse>;
+  AdminClose(request: MsgAdminClose): Promise<MsgAdminCloseResponse>;
+  AdminCloseAll(request: MsgAdminCloseAll): Promise<MsgAdminCloseAllResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -940,6 +1206,8 @@ export class MsgClientImpl implements Msg {
     this.UpdatePools = this.UpdatePools.bind(this);
     this.Whitelist = this.Whitelist.bind(this);
     this.Dewhitelist = this.Dewhitelist.bind(this);
+    this.AdminClose = this.AdminClose.bind(this);
+    this.AdminCloseAll = this.AdminCloseAll.bind(this);
   }
   Open(request: MsgOpen): Promise<MsgOpenResponse> {
     const data = MsgOpen.encode(request).finish();
@@ -1012,6 +1280,30 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgDewhitelistResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  AdminClose(request: MsgAdminClose): Promise<MsgAdminCloseResponse> {
+    const data = MsgAdminClose.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.margin.v1.Msg",
+      "AdminClose",
+      data,
+    );
+    return promise.then((data) =>
+      MsgAdminCloseResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  AdminCloseAll(request: MsgAdminCloseAll): Promise<MsgAdminCloseAllResponse> {
+    const data = MsgAdminCloseAll.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.margin.v1.Msg",
+      "AdminCloseAll",
+      data,
+    );
+    return promise.then((data) =>
+      MsgAdminCloseAllResponse.decode(new _m0.Reader(data)),
     );
   }
 }
