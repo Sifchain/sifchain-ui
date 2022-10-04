@@ -1,4 +1,4 @@
-import { Ref, toRefs } from "@vue/reactivity";
+import { Ref, toRefs } from "vue";
 import { Asset, IAsset, Pool, Network } from "@sifchain/sdk";
 import { createPoolKey } from "@sifchain/sdk/src/utils/pool";
 
