@@ -1,4 +1,4 @@
-import { computed, effect, Ref } from "@vue/reactivity";
+import { computed, effect, Ref } from "vue";
 
 import {
   Asset,
@@ -318,8 +318,8 @@ export function useReactivePoolCalculator(input: {
       input.lastFocusedTokenField.value !== null
     ) {
       if (
-        bPerARatio === null ||
-        aPerBRatio === null ||
+        bPerARatio.value === null ||
+        aPerBRatio.value === null ||
         !assetA.value ||
         !assetB.value
       ) {

@@ -1,5 +1,4 @@
-import { TransactionStatus } from "@sifchain/sdk";
-import { effect, Ref, ref, ComputedRef } from "@vue/reactivity";
+import { Ref } from "vue";
 import { IAssetAmount, IAmount, Amount } from "@sifchain/sdk";
 
 // We set this static fee to minus from some ROWAN transactions such

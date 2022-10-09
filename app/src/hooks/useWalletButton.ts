@@ -1,6 +1,6 @@
 import { useCore } from "@/hooks/useCore";
 import { Network } from "@sifchain/sdk";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 
 export function useWalletButton(props?: {
   connectType?: "connectToAny" | "connectToAll" | "connectToSif";
