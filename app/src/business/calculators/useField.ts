@@ -1,4 +1,4 @@
-import { computed, Ref } from "@vue/reactivity";
+import { computed, Ref } from "vue";
 import { Asset, AssetAmount } from "@sifchain/sdk";
 import { toBaseUnits } from "@sifchain/sdk/src/utils";
 

@@ -1,6 +1,6 @@
 import { vitest, describe, test, expect, beforeEach } from "vitest";
 
-import { ref, Ref } from "@vue/reactivity";
+import { ref, Ref } from "vue";
 
 import { Amount, AssetAmount, LiquidityProvider, Pool } from "@sifchain/sdk";
 import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
@@ -63,7 +63,9 @@ describe("useRemoveLiquidityCalculator", () => {
           new Pool(
             AssetAmount(CATK, "1000000000000000000000000"),
             AssetAmount(ROWAN, "1000000000000000000000000"),
-            Amount("1000000000000000000000000"),
+            {
+              poolUnits: Amount("1000000000000000000000000"),
+            },
           ),
         ) as Ref<Pool>,
     );

@@ -1,4 +1,4 @@
-import { computed, Ref } from "@vue/reactivity";
+import { computed, Ref } from "vue";
 import { IAssetAmount } from "@sifchain/sdk";
 
 export function trimZeros(amount: string) {

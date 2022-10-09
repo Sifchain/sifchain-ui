@@ -1,6 +1,6 @@
 import { vitest, test, describe, expect, beforeEach, afterEach } from "vitest";
 
-import { ref, Ref, effect } from "@vue/reactivity";
+import { ref, Ref, effect } from "vue";
 import {
   Amount,
   Asset,
@@ -410,7 +410,9 @@ describe("addLiquidityCalculator", () => {
             const pool = new Pool(
               AssetAmount(ROWAN, poolNative),
               AssetAmount(Asset.get(externalSymbol), poolExternal),
-              Amount(poolUnits),
+              {
+                poolUnits: Amount(poolUnits),
+              },
             );
 
             return pool;
@@ -479,7 +481,9 @@ describe("addLiquidityCalculator", () => {
         new Pool(
           AssetAmount(ATK, "1000000000000000000000000"),
           AssetAmount(ROWAN, "1000000000000000000000000"),
-          Amount("1000000000000000000000000"),
+          {
+            poolUnits: Amount("1001000000000000000000000"),
+          },
         ),
     );
 
@@ -519,7 +523,9 @@ describe("addLiquidityCalculator", () => {
         new Pool(
           AssetAmount(ATK, "1000000000000000000000000"),
           AssetAmount(ROWAN, "1000000000000000000000000"),
-          Amount("1000000000000000000000000"),
+          {
+            poolUnits: Amount("1001000000000000000000000"),
+          },
         ),
     );
 

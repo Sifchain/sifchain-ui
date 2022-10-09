@@ -8,39 +8,49 @@ import { debounce } from "@/views/utils/debounce";
 import { accountStore } from "@/store/modules/accounts";
 import { useRemoveLiquidityCalculator } from "@/business/calculators";
 import { PoolState } from "@/business/calculators/addLiquidityCalculator";
+import { useNativeChain } from "@/hooks/useChains";
+import dangerouslyAssert from "@/utils/dangerouslyAssert";
 
 export function useMaxwithdrawData(params: {
   externalAssetSymbol: Ref<string | null>;
-  nativeAssetSymbol: Ref<string | null>;
-  liquidityProvider: Ref<LiquidityProvider | null>;
+  nativeAssetSymbol?: Ref<string | null>;
+  liquidityProvider?: Ref<LiquidityProvider | null>;
+  /**
+   * wBasisPoints is the amount of liquidity to remove as a percentage of the total liquidity (0 - 10000)
+   */
+  wBasisPoints?: Ref<number>;
 }) {
-  const { poolFinder } = useCore();
+  const { poolFinder, accountPoolFinder } = useCore();
 
-  const { externalAssetSymbol, nativeAssetSymbol, liquidityProvider } = params;
+  const { externalAssetSymbol, nativeAssetSymbol } = params;
 
-  const address = accountStore.refs.sifchain.address.computed();
+  const { nativeAsset } = useNativeChain();
 
-  const calcData = useRemoveLiquidityCalculator({
-    externalAssetSymbol,
-    nativeAssetSymbol,
-    wBasisPoints: ref("10000"),
-    asymmetry: ref("0"),
-    liquidityProvider,
-    sifAddress: address,
+  const sifAddress = accountStore.refs.sifchain.address.computed();
+  const liquidityProvider = computed(
+    () =>
+      accountPoolFinder(externalAssetSymbol.value ?? "", nativeAsset)?.value
+        ?.lp ?? null,
+  );
+
+  return useRemoveLiquidityCalculator({
     poolFinder,
+    externalAssetSymbol,
+    liquidityProvider,
+    sifAddress,
+    nativeAssetSymbol: nativeAssetSymbol ?? ref(nativeAsset.symbol),
+    wBasisPoints: computed(() =>
+      String(params?.wBasisPoints?.value ?? "10000"),
+    ),
+    asymmetry: ref("0"),
   });
-
-  return calcData;
 }
 
 export function useRemoveLiquidityData() {
   const { usecases, poolFinder, services } = useCore();
   const route = useRoute();
-
   const transactionStatus = ref<TransactionStatus | null>(null);
-
   const modalStatus = ref<"setup" | "confirm" | "processing">("setup");
-
   const asymmetry = ref("0");
   const wBasisPoints = ref("0");
   const nativeAssetSymbol = ref("rowan");

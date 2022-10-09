@@ -1,4 +1,4 @@
-import { reactive } from "@vue/reactivity";
+import { reactive } from "vue";
 
 import { TransactionStatus } from "@sifchain/sdk";
 import { BridgeTx } from "@sifchain/sdk/src/clients/bridges/BaseBridge";

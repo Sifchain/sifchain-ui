@@ -1,6 +1,6 @@
 import { test, describe, expect, vitest } from "vitest";
 
-import { Ref, ref } from "@vue/reactivity";
+import { Ref, ref } from "vue";
 import { AssetAmount, IAsset, IAssetAmount, Pool } from "@sifchain/sdk";
 import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
 import { SwapState, useSwapCalculator } from "./swapCalculator";
