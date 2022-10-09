@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { reactive } from "@vue/reactivity";
+import { reactive } from "vue";
 import { useCore } from "@/hooks/useCore";
 
 import { INotification } from "./INotification";

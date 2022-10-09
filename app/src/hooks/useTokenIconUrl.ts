@@ -1,5 +1,5 @@
 import { useCore } from "@/hooks/useCore";
-import { computed, ref } from "@vue/reactivity";
+import { computed } from "vue";
 import { Ref } from "vue";
 
 export const useTokenIconUrl = (props: { symbol: Ref<string> }) => {

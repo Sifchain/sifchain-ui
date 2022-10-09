@@ -1,4 +1,4 @@
-import { reactive } from "@vue/reactivity";
+import { reactive } from "vue";
 import { IAsset } from "@sifchain/sdk";
 
 export type AssetStore = {

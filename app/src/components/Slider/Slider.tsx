@@ -1,5 +1,5 @@
 import { defineComponent, PropType } from "vue";
-import { computed, ref } from "@vue/reactivity";
+import { computed, ref } from "vue";
 import "./Slider.scss";
 export const Slider = defineComponent({
   props: {

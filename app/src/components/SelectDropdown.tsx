@@ -1,4 +1,4 @@
-import { effect } from "@vue/reactivity";
+import { effect } from "vue";
 import {
   defineComponent,
   onMounted,

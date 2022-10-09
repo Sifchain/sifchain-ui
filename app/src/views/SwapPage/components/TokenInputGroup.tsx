@@ -1,5 +1,11 @@
-import { computed, defineComponent, HTMLAttributes, PropType } from "vue";
-import { ref, toRefs } from "@vue/reactivity";
+import {
+  computed,
+  defineComponent,
+  HTMLAttributes,
+  PropType,
+  ref,
+  toRefs,
+} from "vue";
 import { IAsset } from "@sifchain/sdk";
 
 import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
@@ -141,7 +147,7 @@ export const TokenInputGroup = defineComponent({
                   if (isNaN(parseFloat(v)) || parseFloat(v) < 0) {
                     v = "0";
                   }
-                  props.onInputAmount(v || "");
+                  props.onInputAmount?.(v || "");
                 }}
               />
               {Boolean(props.dollarValue) && (
@@ -158,7 +164,7 @@ export const TokenInputGroup = defineComponent({
             }}
             onSelectAsset={(asset) => {
               selectIsOpen.value = false;
-              props.onSelectAsset(asset);
+              props.onSelectAsset?.(asset);
             }}
             active={selectIsOpen}
           />

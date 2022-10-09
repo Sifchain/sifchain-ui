@@ -2,6 +2,7 @@ import { useCore } from "@/hooks/useCore";
 import { isNil } from "@/utils/assertion";
 import BigNumber from "bignumber.js";
 import { computed, Ref } from "vue";
+
 import { useTokenRegistryEntriesQuery } from "../../tokenRegistry/queries/tokenRegistry";
 import { useLiquidityProviderQuery } from "./liquidityProvider";
 

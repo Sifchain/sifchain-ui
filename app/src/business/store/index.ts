@@ -1,4 +1,4 @@
-import { reactive } from "@vue/reactivity";
+import { reactive } from "vue";
 import { wallet, WalletStore } from "./wallet";
 import { asset, AssetStore } from "./asset";
 import { accountpools, AccountPoolStore, pools, PoolStore } from "./pools";
