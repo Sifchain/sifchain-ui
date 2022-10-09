@@ -5,13 +5,12 @@ import { Button } from "@/components/Button/Button";
 import { TokenIcon } from "@/components/TokenIcon";
 import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
 import { formatAssetAmount } from "@/components/utils";
-import { useChains, useNativeChain } from "@/hooks/useChains";
+import { useNativeChain } from "@/hooks/useChains";
 import { PoolStat } from "@/hooks/usePoolStats";
 import { useRowanPrice } from "@/hooks/useRowanPrice";
 import { isNil, isNilOrWhitespace } from "@/utils/assertion";
 import { prettyNumber, prettyNumberMinMax } from "@/utils/prettyNumber";
-import { AssetAmount, IAssetAmount, Network, Pool } from "@sifchain/sdk";
-import { LiquidityProviderData } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/types";
+import { IAssetAmount, Pool } from "@sifchain/sdk";
 import { Amount } from "@sifchain/sdk/src";
 import { computed, defineComponent, PropType } from "vue";
 import { useRouter } from "vue-router";
@@ -161,7 +160,6 @@ export default defineComponent({
       const maxWithdrawal = useMaxwithdrawData({
         nativeAssetSymbol: computed(() => nativeAsset.symbol),
         externalAssetSymbol: computed(() => externalAsset?.symbol ?? null),
-        liquidityProvider: computed(() => accountPool?.lp ?? null),
       });
 
       return {

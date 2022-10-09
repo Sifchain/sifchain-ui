@@ -1,5 +1,5 @@
 import { Address, IAmount, IAsset, Network } from "@sifchain/sdk";
-import { effect, ReactiveEffectRunner, stop } from "@vue/reactivity";
+import { effect, ReactiveEffectRunner, stop } from "vue";
 
 import { UsecaseContext } from "..";
 

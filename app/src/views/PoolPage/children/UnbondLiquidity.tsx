@@ -12,10 +12,11 @@ import { usePoolStats } from "@/hooks/usePoolStats";
 import { useDeliverTxDetails } from "@/hooks/useTransactionDetails";
 import { useWalletButton } from "@/hooks/useWalletButton";
 import { accountStore } from "@/store/modules/accounts";
-import { Network } from "@sifchain/sdk";
+import { Amount, Network } from "@sifchain/sdk";
 import { formatDistance } from "date-fns";
 import { computed, defineComponent, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useMaxwithdrawData } from "./RemoveLiquidity/useRemoveLiquidityData";
 
 /**
  * Near clone of RemoveLiquidity
@@ -55,25 +56,29 @@ const UnbondLiquidity = defineComponent({
       return undefined;
     });
 
+    const withdrawData = useMaxwithdrawData({
+      externalAssetSymbol: externalAssetBaseDenom,
+      wBasisPoints: computed(() => withdrawalPercentage.value * 100),
+    });
+
     const nativeAssetWithDrawalUsd = computed(() =>
-      unlockLiquidityData.value.nativeAssetAmount
-        ?.multipliedBy(poolStats.data.value?.rowanUsd ?? 0)
+      Amount(withdrawData.withdrawNativeAssetAmount.value)
+        ?.multiply(poolStats.data.value?.rowanUSD ?? 0)
         .toNumber(),
     );
 
-    const externalAssetWithdrawalUsd = computed(() => {
-      const price = poolStats.data.value?.poolData.pools.find(
-        (x) => x.symbol === externalAssetBaseDenom.value,
-      )?.priceToken;
+    const externalAssetPriceUsd = computed(
+      () =>
+        poolStats.data.value?.poolData.pools.find(
+          (x) => x.symbol === externalAssetBaseDenom.value,
+        )?.priceToken,
+    );
 
-      return unlockLiquidityData.value.externalAssetAmount
-        ?.multipliedBy(price ?? 0)
+    const externalAssetWithdrawalUsd = computed(() => {
+      return Amount(withdrawData.withdrawExternalAssetAmount.value)
+        ?.multiply(externalAssetPriceUsd.value ?? 0)
         .toNumber();
     });
-
-    // const transactionDetails = useTransactionDetails({
-    //   tx: data.transactionStatus,
-    // });
 
     const detailsRef = computed<FormDetailsType>(() => ({
       label: "Est. amount you will receive:",
@@ -82,7 +87,7 @@ const UnbondLiquidity = defineComponent({
           <div class="uppercase">{nativeAsset.value?.displaySymbol}</div>,
           <div class="flex flex-row gap-[4px] align-middle font-mono">
             <div>
-              {unlockLiquidityData.value.nativeAssetAmount?.toFixed(6) ?? 0} (~
+              {withdrawData.withdrawNativeAssetAmount.value} (~
               {nativeAssetWithDrawalUsd.value?.toLocaleString("en-US", {
                 style: "currency",
                 currency: "USD",
@@ -96,8 +101,7 @@ const UnbondLiquidity = defineComponent({
           <div class="uppercase">{externalAsset.value?.displaySymbol}</div>,
           <div class="flex flex-row gap-[4px] align-middle font-mono">
             <div>
-              {unlockLiquidityData.value.externalAssetAmount?.toFixed(6) ?? 0}{" "}
-              (~
+              {withdrawData.withdrawExternalAssetAmount.value} (~
               {externalAssetWithdrawalUsd.value?.toLocaleString("en-US", {
                 style: "currency",
                 currency: "USD",
