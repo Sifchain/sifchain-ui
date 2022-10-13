@@ -18,7 +18,7 @@ import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon
 import { flagsStore } from "@/store/modules/flags";
 
 const ETH_MERGE_DISCLAIMER =
-  "Due to the upcoming Ethereum merge, all imports/exports of ERC-20 tokens and ETH will be disabled for ~48 hrs starting approximately 24 hours before the merge (estimated to be between Sept 13th, 2022 - Sept 15th, 2022)";
+  "All imports/exports of ERC-20 tokens and ETH are currently unavailable.";
 
 export default defineComponent({
   name: "BalanceRow",
