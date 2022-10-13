@@ -1,6 +1,6 @@
 import { defineComponent } from "vue";
 
-import { useTVL } from "@/hooks/useTVL";
+import { useTVL } from "~/hooks/useTVL";
 import NavSidePanelItem from "./NavSidePanelItem";
 
 export default defineComponent({

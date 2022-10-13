@@ -1,9 +1,9 @@
 import { watch } from "vue";
 import { Asset, toBaseUnits } from "@sifchain/sdk";
 
-import { useCore } from "@/hooks/useCore";
-import { accountStore } from "@/store/modules/accounts";
-import { flagsStore } from "@/store/modules/flags";
+import { useCore } from "~/hooks/useCore";
+import { accountStore } from "~/store/modules/accounts";
+import { flagsStore } from "~/store/modules/flags";
 
 import { Vuextra } from "../Vuextra";
 

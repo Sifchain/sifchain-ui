@@ -1,15 +1,15 @@
 import {
-  Pool,
-  AssetAmount,
   Amount,
-  Network,
+  AssetAmount,
   LiquidityProvider,
+  Network,
+  Pool,
 } from "@sifchain/sdk";
 
-import { Services } from "@/business/services";
-import { Store } from "@/business/store";
 import { createPoolKey } from "@sifchain/sdk/src/utils";
-import { AccountPool } from "@/business/store/pools";
+import { Services } from "~/business/services";
+import { Store } from "~/business/store";
+import { AccountPool } from "~/business/store/pools";
 
 type PickSif = Pick<Services["sif"], "getState">;
 type PickClp = Pick<

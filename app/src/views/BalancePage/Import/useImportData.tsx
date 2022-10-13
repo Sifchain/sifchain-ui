@@ -1,25 +1,26 @@
-import { RouteLocationRaw, useRouter } from "vue-router";
+import {
+  Asset,
+  AssetAmount,
+  IAssetAmount,
+  Network,
+  toBaseUnits,
+} from "@sifchain/sdk";
+import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 import { computed, ref, Ref, watch } from "vue";
-import { TokenIcon } from "@/components/TokenIcon";
+import { RouteLocationRaw, useRouter } from "vue-router";
+
+import { Button } from "~/components/Button/Button";
+import { TokenIcon } from "~/components/TokenIcon";
+import { formatAssetAmount } from "~/components/utils";
+import { useBoundRoute } from "~/hooks/useBoundRoute";
 import {
   useAndPollNetworkBalances,
   useToken,
   useTokenList,
-} from "@/hooks/useToken";
-import { formatAssetAmount } from "@/components/utils";
-import {
-  Network,
-  AssetAmount,
-  toBaseUnits,
-  IAssetAmount,
-  Asset,
-} from "@sifchain/sdk";
-import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
-import { Button } from "@/components/Button/Button";
-import { rootStore } from "@/store";
-import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
-import { ImportDraft } from "@/store/modules/import";
-import { useBoundRoute } from "@/hooks/useBoundRoute";
+} from "~/hooks/useToken";
+import { useBridgeEventDetails } from "~/hooks/useTransactionDetails";
+import { rootStore } from "~/store";
+import { ImportDraft } from "~/store/modules/import";
 
 export type ImportStep = "select" | "confirm" | "processing";
 

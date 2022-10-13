@@ -1,5 +1,5 @@
-import { useCore } from "@/hooks/useCore";
-import { isNil } from "@/utils/assertion";
+import { useCore } from "~/hooks/useCore";
+import { isNil } from "~/utils/assertion";
 import BigNumber from "bignumber.js";
 import { computed, Ref } from "vue";
 

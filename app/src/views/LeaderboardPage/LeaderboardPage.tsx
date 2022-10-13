@@ -1,9 +1,4 @@
-import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { Button } from "@/components/Button/Button";
-import PageCard from "@/components/PageCard";
-import { Tooltip } from "@/components/Tooltip";
-import Layout from "@/components/Layout";
-import { useBoundRoute } from "@/hooks/useBoundRoute";
+import { IAsset } from "@sifchain/sdk";
 import {
   defineComponent,
   onMounted,
@@ -11,29 +6,35 @@ import {
   ref,
   TransitionGroup,
 } from "vue";
-import {
-  CompetitionType,
-  LeaderboardItem,
-  useLeaderboardData,
-  COMPETITION_TYPE_DISPLAY_DATA,
-  Competition,
-  COMPETITION_UNIVERSAL_SYMBOL,
-  COMPETITIONS,
-} from "./useCompetitionData";
-import { LeaderboardRow } from "./children/LeaderboardRow";
-import { LeaderboardPodium } from "./children/LeaderboardPodium";
 import { RouterLink } from "vue-router";
-import router from "@/router";
+
+import AssetIcon, { IconName } from "~/components/AssetIcon";
+import { Button } from "~/components/Button/Button";
+import Layout from "~/components/Layout";
+import PageCard from "~/components/PageCard";
 import {
   SelectDropdown,
   SelectDropdownOption,
-} from "@/components/SelectDropdown";
-import { useNativeChain } from "@/hooks/useChains";
-import { TokenIcon } from "@/components/TokenIcon";
-import { IAsset } from "@sifchain/sdk";
-import { useCore } from "@/hooks/useCore";
-import TermsModal from "./TermsModal";
+} from "~/components/SelectDropdown";
+import { TokenIcon } from "~/components/TokenIcon";
+import { Tooltip } from "~/components/Tooltip";
+import { useBoundRoute } from "~/hooks/useBoundRoute";
+import { useNativeChain } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import router from "~/router";
+import { LeaderboardPodium } from "./children/LeaderboardPodium";
+import { LeaderboardRow } from "./children/LeaderboardRow";
 import { getCompetitionPrizeDistributionByRank } from "./getCompetitionPrizeDistribution";
+import TermsModal from "./TermsModal";
+import {
+  Competition,
+  COMPETITIONS,
+  CompetitionType,
+  COMPETITION_TYPE_DISPLAY_DATA,
+  COMPETITION_UNIVERSAL_SYMBOL,
+  LeaderboardItem,
+  useLeaderboardData,
+} from "./useCompetitionData";
 
 export default defineComponent({
   name: "LeaderboardPage",
@@ -80,7 +81,7 @@ export default defineComponent({
     return { ...data, symbol: symbolRef };
   },
   data() {
-    const hasAgreed = useCore().services.storage.getJSONItem<Boolean>(
+    const hasAgreed = useCore().services.storage.getJSONItem<boolean>(
       "leaderboard_toc_agreed",
     );
     return {
@@ -92,7 +93,7 @@ export default defineComponent({
   methods: {
     setAgreed(agreed: boolean) {
       this.hasAgreed = agreed;
-      useCore().services.storage.setJSONItem<Boolean>(
+      useCore().services.storage.setJSONItem<boolean>(
         "leaderboard_toc_agreed",
         agreed,
       );
@@ -298,7 +299,7 @@ export default defineComponent({
             !this.hasAgreed && "blur-md filter",
           ]}
           headerAction={
-            Boolean(this.currentCompetition) ? (
+            this.currentCompetition ? (
               <div class="flex items-center">
                 <div class="mr-[84px] flex items-center">
                   <div class="text-accent-base">Days Remaining</div>
@@ -374,6 +375,7 @@ export default defineComponent({
                     ].description(competition)}
                   >
                     <Button.InlineHelp
+                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                       // @ts-ignore
                       onClick={() => {
                         window.open(

@@ -1,5 +1,5 @@
 import { ButtonHTMLAttributes, SetupContext } from "vue";
-import AssetIcon, { IconName } from "@/components/AssetIcon";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
 
 export function _Select(
   props: ButtonHTMLAttributes & {

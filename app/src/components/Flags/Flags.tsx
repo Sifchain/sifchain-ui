@@ -1,10 +1,10 @@
 import { defineComponent } from "vue";
 import { Network } from "@sifchain/sdk";
 
-import { useChains, useNativeChain } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
-import { flagsStore } from "@/store/modules/flags";
-import Button from "@/components/Button";
+import { useChains, useNativeChain } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import { flagsStore } from "~/store/modules/flags";
+import Button from "~/components/Button";
 
 const isProduction =
   import.meta.env.VITE_APP_DEPLOYMENT === "production" ||

@@ -1,14 +1,14 @@
 import { PropType } from "vue";
 
-import { useCore } from "@/hooks/useCore";
-import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
-import { TokenListItem } from "@/hooks/useToken";
-import { accountStore } from "@/store/modules/accounts";
-import { TokenSortBy } from "@/utils/sortAndFilterTokens";
+import { useCore } from "~/hooks/useCore";
+import { PoolStat, usePoolStats } from "~/hooks/usePoolStats";
+import { TokenListItem } from "~/hooks/useToken";
+import { accountStore } from "~/store/modules/accounts";
+import { TokenSortBy } from "~/utils/sortAndFilterTokens";
 import { defineComponent } from "@vue/runtime-core";
-import { useNativeChain } from "@/hooks/useChains";
-import { ReportTransactionError } from "@/business/usecases/utils";
-import { governanceStore } from "@/store/modules/governance";
+import { useNativeChain } from "~/hooks/useChains";
+import { ReportTransactionError } from "~/business/usecases/utils";
+import { governanceStore } from "~/store/modules/governance";
 
 import Modal from "../Modal";
 import { Button } from "../Button/Button";

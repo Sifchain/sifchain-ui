@@ -1,5 +1,5 @@
-import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-import { symbolWithoutPrefix } from "@/utils/symbol";
+import { flagsStore, isAssetFlaggedDisabled } from "~/store/modules/flags";
+import { symbolWithoutPrefix } from "~/utils/symbol";
 import { IAsset } from "@sifchain/sdk";
 import { computed } from "vue";
 import { useQuery } from "vue-query";

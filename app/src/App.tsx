@@ -1,17 +1,15 @@
-import { defineComponent, watchEffect, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { Amount } from "@sifchain/sdk";
+import { defineComponent, onMounted, ref, watchEffect } from "vue";
+import { useRouter } from "vue-router";
 
-import { useInitialize } from "@/hooks/useInitialize";
-
-import EnvSwitcher from "@/components/EnvSwitcher";
-import SideBar from "@/components/NavSidePanel";
-import Notifications from "@/components/Notifications";
-import Flags from "@/components/Flags";
-
-import { accountStore } from "@/store/modules/accounts";
-import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import OnboardingModal from "@/components/OnboardingModal";
+import { useInitialize } from "~/hooks/useInitialize";
+import EnvSwitcher from "~/components/EnvSwitcher";
+import Flags from "~/components/Flags";
+import SideBar from "~/components/NavSidePanel";
+import Notifications from "~/components/Notifications";
+import OnboardingModal from "~/components/OnboardingModal";
+import { shouldAllowFaucetFunding } from "~/hooks/useFaucet";
+import { accountStore } from "~/store/modules/accounts";
 
 import "./App.scss";
 import { SifchainClientsProvider } from "./business/providers/SifchainClientsProvider";

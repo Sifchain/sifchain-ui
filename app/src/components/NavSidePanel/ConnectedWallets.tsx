@@ -1,10 +1,10 @@
 import { defineComponent } from "vue";
 
-import { accountStore } from "@/store/modules/accounts";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { formatAssetAmount } from "@/components/utils";
-import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import WalletPicker from "@/components/WalletPicker/WalletPicker";
+import { accountStore } from "~/store/modules/accounts";
+import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
+import { formatAssetAmount } from "~/components/utils";
+import Tooltip, { TooltipInstance } from "~/components/Tooltip";
+import WalletPicker from "~/components/WalletPicker/WalletPicker";
 
 import NavSidePanelItem from "./NavSidePanelItem";
 import AssetIcon from "../AssetIcon";

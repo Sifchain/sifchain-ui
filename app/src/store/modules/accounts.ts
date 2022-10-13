@@ -1,8 +1,8 @@
 import { IAsset, IAssetAmount, Network } from "@sifchain/sdk";
 
-import { useChains } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
-import { Vuextra } from "@/store/Vuextra";
+import { useChains } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import { Vuextra } from "~/store/Vuextra";
 
 const serializeAsKey = (balances: IAssetAmount[]) =>
   balances

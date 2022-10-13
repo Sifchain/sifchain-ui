@@ -1,8 +1,8 @@
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import { useBlockTimeQuery } from "@/domains/statistics/queries/blockTime";
-import { useCore } from "@/hooks/useCore";
-import dangerouslyAssert from "@/utils/dangerouslyAssert";
-import useDependentQuery from "@/utils/useDependentQuery";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
+import { useBlockTimeQuery } from "~/domains/statistics/queries/blockTime";
+import { useCore } from "~/hooks/useCore";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
+import useDependentQuery from "~/utils/useDependentQuery";
 import { Network } from "@sifchain/sdk";
 import { computed } from "vue";
 import { MaybeRef } from "vue-query/lib/vue/types";

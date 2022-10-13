@@ -1,10 +1,10 @@
 import { computed, onUnmounted, ref, Ref, watch } from "vue";
 import { AssetAmount, Network, IAsset, IAssetAmount } from "@sifchain/sdk";
 
-import { isLikeSymbol } from "@/utils/symbol";
-import { accountStore } from "@/store/modules/accounts";
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
-import { PendingTransferItem } from "@/business/store/tx";
+import { isLikeSymbol } from "~/utils/symbol";
+import { accountStore } from "~/store/modules/accounts";
+import { isAssetFlaggedDisabled } from "~/store/modules/flags";
+import { PendingTransferItem } from "~/business/store/tx";
 
 import { useAsyncData } from "./useAsyncData";
 import { useCore } from "./useCore";

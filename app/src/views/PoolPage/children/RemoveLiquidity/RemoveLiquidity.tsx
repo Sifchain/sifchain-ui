@@ -2,17 +2,17 @@ import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Network } from "@sifchain/sdk";
 
-import Button from "@/components/Button";
-import { Form, FormDetailsType } from "@/components/Form";
-import Modal from "@/components/Modal";
-import { TokenIcon } from "@/components/TokenIcon";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import Button from "~/components/Button";
+import { Form, FormDetailsType } from "~/components/Form";
+import Modal from "~/components/Modal";
+import { TokenIcon } from "~/components/TokenIcon";
+import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
 import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
-import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { accountStore } from "@/store/modules/accounts";
-import { PoolState } from "@/business/calculators";
-import { flagsStore } from "@/store/modules/flags";
+import { useTransactionDetails } from "~/hooks/useTransactionDetails";
+import TransactionDetailsModal from "~/components/TransactionDetailsModal";
+import { accountStore } from "~/store/modules/accounts";
+import { PoolState } from "~/business/calculators";
+import { flagsStore } from "~/store/modules/flags";
 
 export default defineComponent({
   setup() {

@@ -1,10 +1,10 @@
 import { defineComponent, PropType, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { accountStore } from "@/store/modules/accounts";
-import { tryFundingAccount } from "@/hooks/useFaucet";
-import Modal from "@/components/Modal";
-import { Button } from "@/components/Button/Button";
+import { accountStore } from "~/store/modules/accounts";
+import { tryFundingAccount } from "~/hooks/useFaucet";
+import Modal from "~/components/Modal";
+import { Button } from "~/components/Button/Button";
 
 export default defineComponent({
   name: "GetRowanModal",

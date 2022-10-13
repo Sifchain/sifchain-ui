@@ -1,4 +1,4 @@
-import { useChains } from "@/hooks/useChains";
+import { useChains } from "~/hooks/useChains";
 import { Chain, IAsset } from "@sifchain/sdk";
 
 import { Vuextra } from "../Vuextra";

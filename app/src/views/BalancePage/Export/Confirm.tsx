@@ -1,10 +1,11 @@
 import { defineComponent } from "vue";
-import router from "@/router";
-import Modal from "@/components/Modal";
+
+import { Button } from "~/components/Button/Button";
+import { Form } from "~/components/Form";
+import Modal from "~/components/Modal";
+import router from "~/router";
+import { exportStore } from "~/store/modules/export";
 import { getExportLocation, useExportData } from "./useExportData";
-import { Form } from "@/components/Form";
-import { Button } from "@/components/Button/Button";
-import { exportStore } from "@/store/modules/export";
 
 export default defineComponent({
   name: "ExportConfirmModal",

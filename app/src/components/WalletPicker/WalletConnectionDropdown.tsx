@@ -1,8 +1,8 @@
 import { defineComponent, PropType, computed, ref, onUnmounted } from "vue";
 import copy from "copy-to-clipboard";
 
-import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { accountStore } from "@/store/modules/accounts";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
+import { accountStore } from "~/store/modules/accounts";
 import { WalletConnection } from "./constants";
 
 export default defineComponent({

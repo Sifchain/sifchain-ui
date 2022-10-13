@@ -1,9 +1,9 @@
 import { reactive, computed, onMounted, onUnmounted } from "vue";
 import { Asset } from "@sifchain/sdk";
 
-import { usePoolStats } from "@/hooks/usePoolStats";
-import { useCore } from "@/hooks/useCore";
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { usePoolStats } from "~/hooks/usePoolStats";
+import { useCore } from "~/hooks/useCore";
+import { isAssetFlaggedDisabled } from "~/store/modules/flags";
 
 export type StatsPageState = {
   sortBy:

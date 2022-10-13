@@ -1,7 +1,8 @@
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
-import { useCore } from "@/hooks/useCore";
 import { computed, Ref } from "vue";
 import { useQuery } from "vue-query";
+
+import { useAsyncDataCached } from "~/hooks/useAsyncDataCached";
+import { useCore } from "~/hooks/useCore";
 
 export function useTokenStats() {
   const { data } = useCore().services;

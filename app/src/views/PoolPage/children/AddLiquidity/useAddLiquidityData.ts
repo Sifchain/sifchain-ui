@@ -9,20 +9,20 @@ import {
 } from "@sifchain/sdk";
 import { slipAdjustment } from "@sifchain/sdk/src/entities/formulae";
 
-import { accountStore } from "@/store/modules/accounts";
-import { useWalletButton } from "@/hooks/useWalletButton";
-import { useCore } from "@/hooks/useCore";
-import { useCurrencyFieldState } from "@/hooks/useCurrencyFieldState";
-import { getMaxAmount } from "@/views/utils/getMaxAmount";
-import { formatAssetAmount, formatNumber } from "@/components/utils";
-import { useAssetBySymbol } from "@/hooks/useAssetBySymbol";
-import { PoolState, useReactivePoolCalculator } from "@/business/calculators";
+import { accountStore } from "~/store/modules/accounts";
+import { useWalletButton } from "~/hooks/useWalletButton";
+import { useCore } from "~/hooks/useCore";
+import { useCurrencyFieldState } from "~/hooks/useCurrencyFieldState";
+import { getMaxAmount } from "~/views/utils/getMaxAmount";
+import { formatAssetAmount, formatNumber } from "~/components/utils";
+import { useAssetBySymbol } from "~/hooks/useAssetBySymbol";
+import { PoolState, useReactivePoolCalculator } from "~/business/calculators";
 import { useQueryClient } from "vue-query";
 import {
   LIQUIDITY_PROVIDERS_KEY,
   LIQUIDITY_PROVIDER_KEY,
-} from "@/domains/clp/queries/liquidityProvider";
-import { usePoolStats } from "@/hooks/usePoolStats";
+} from "~/domains/clp/queries/liquidityProvider";
+import { usePoolStats } from "~/hooks/usePoolStats";
 
 export const useAddLiquidityData = () => {
   const queryClient = useQueryClient();

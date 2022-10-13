@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { useRowanPrice } from "@/hooks/useRowanPrice";
+import { useRowanPrice } from "~/hooks/useRowanPrice";
 
 import NavSidePanelItem from "./NavSidePanelItem";
 

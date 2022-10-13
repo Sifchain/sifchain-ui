@@ -1,5 +1,5 @@
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import dangerouslyAssert from "@/utils/dangerouslyAssert";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
 import { PoolRes } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/querier";
 import { computed } from "vue";
 import { useQuery, UseQueryOptions } from "vue-query";

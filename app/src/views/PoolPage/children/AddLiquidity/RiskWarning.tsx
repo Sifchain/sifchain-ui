@@ -1,8 +1,8 @@
 import { computed, defineComponent, PropType, ComputedRef } from "vue";
 import clsx from "clsx";
 
-import AssetIcon from "@/components/AssetIcon";
-import { Tooltip } from "@/components/Tooltip";
+import AssetIcon from "~/components/AssetIcon";
+import { Tooltip } from "~/components/Tooltip";
 
 export default defineComponent({
   name: "AddLiquidityWarning",

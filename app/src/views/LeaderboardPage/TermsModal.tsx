@@ -1,4 +1,4 @@
-import Modal from "@/components/Modal";
+import Modal from "~/components/Modal";
 import { defineComponent, PropType } from "@vue/runtime-core";
 
 export default defineComponent({

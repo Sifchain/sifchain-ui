@@ -1,10 +1,10 @@
-import { createServices, createUsecases } from "@/business";
+import { createServices, createUsecases } from "~/business";
 import { Asset, getConfig, getEnv, switchEnv } from "@sifchain/sdk";
 import {
   createAccountPoolFinder,
   createPoolFinder,
   createStore,
-} from "@/business/store";
+} from "~/business/store";
 
 switchEnv({ location: window.location });
 

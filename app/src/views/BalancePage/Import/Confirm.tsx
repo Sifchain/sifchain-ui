@@ -1,11 +1,11 @@
 import { defineComponent, toRefs } from "vue";
 import { Network } from "@sifchain/sdk";
 
-import Modal from "@/components/Modal";
-import router from "@/router";
-import { Button } from "@/components/Button/Button";
+import Modal from "~/components/Modal";
+import router from "~/router";
+import { Button } from "~/components/Button/Button";
 import { getImportLocation, useImportData } from "./useImportData";
-import { Form } from "@/components/Form";
+import { Form } from "~/components/Form";
 
 export default defineComponent({
   name: "ImportConfirmModal",

@@ -2,22 +2,22 @@ import { useQuery } from "vue-query";
 import { computed } from "vue";
 import { createPoolKey, LiquidityProvider, Network, Pool } from "@sifchain/sdk";
 
-import { AccountPool } from "@/business/store/pools";
-import { useLiquidityProvidersQuery } from "@/domains/clp/queries/liquidityProvider";
-import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
-import { useChains } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
+import { AccountPool } from "~/business/store/pools";
+import { useLiquidityProvidersQuery } from "~/domains/clp/queries/liquidityProvider";
+import { useTokenRegistryEntriesQuery } from "~/domains/tokenRegistry/queries/tokenRegistry";
+import { useChains } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
 import {
   usePublicPoolsSubscriber,
   useUserPoolsSubscriber,
-} from "@/hooks/usePoolsSubscriber";
-import { usePoolStats } from "@/hooks/usePoolStats";
-import { accountStore } from "@/store/modules/accounts";
+} from "~/hooks/usePoolsSubscriber";
+import { usePoolStats } from "~/hooks/usePoolStats";
+import { accountStore } from "~/store/modules/accounts";
 import { RewardProgram } from "../RewardsPage/useRewardsPageData";
 import {
   useLPUserRewards,
   useRewardsPrograms,
-} from "@/business/services/DataService";
+} from "~/business/services/DataService";
 
 export type PoolPageAccountPool = {
   lp: LiquidityProvider;
