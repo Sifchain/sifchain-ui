@@ -185,6 +185,11 @@ export default defineComponent({
       () => Number(rewardsPeriod.value?.estimatedLockMs ?? 0) > 0,
     );
 
+    console.log({ flags: JSON.stringify(flagsStore.state) });
+    const isAsymmetricPoolingEnabled = computed(
+      () => flagsStore.state.remoteFlags.ASYMETRIC_POOLING,
+    );
+
     return () => {
       if (data.modalStatus.value === "processing") {
         return (
@@ -293,7 +298,7 @@ export default defineComponent({
                   </div>
                 </div>
               </Tooltip>
-              {flagsStore.state.asymmetricPooling && (
+              {isAsymmetricPoolingEnabled.value && (
                 <SettingsDropdown
                   items={[
                     {

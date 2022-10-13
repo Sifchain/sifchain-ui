@@ -57,7 +57,9 @@ export default defineComponent({
       });
     };
 
-    const isAsymetricPoolingEnabled = flagsStore.state.asymmetricPooling;
+    const isAsymetricPoolingEnabled = computed(
+      () => flagsStore.state.remoteFlags.ASYMETRIC_POOLING,
+    );
 
     return () => {
       if (data.modalStatus.value === "processing") {
@@ -179,7 +181,7 @@ export default defineComponent({
               </div>
             </div>
           </Form.FieldSet>
-          {isAsymetricPoolingEnabled && (
+          {isAsymetricPoolingEnabled.value && (
             <Form.FieldSet class="mt-[10px]">
               <Form.Label class="w-full">Withdraw Ratio</Form.Label>
               <div class="flex w-full flex-row">
