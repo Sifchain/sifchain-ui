@@ -1,12 +1,12 @@
-import { computed, defineComponent, Ref, ref } from "vue";
 import { Network } from "@sifchain/sdk";
+import { computed, defineComponent, Ref, ref } from "vue";
 
-import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
-import { convertImageUrlToDataUrl } from "@/utils/convertImageUrlToDataUrl";
-import { useCore } from "@/hooks/useCore";
-import { exportStore } from "@/store/modules/export";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { Button } from "@/components/Button/Button";
+import { Button } from "~/components/Button/Button";
+import TransactionDetailsModal from "~/components/TransactionDetailsModal";
+import { useCore } from "~/hooks/useCore";
+import { exportStore } from "~/store/modules/export";
+import { convertImageUrlToDataUrl } from "~/utils/convertImageUrlToDataUrl";
+import { getTokenIconUrl } from "~/utils/getTokenIconUrl";
 import { useExportData } from "./useExportData";
 
 export default defineComponent({

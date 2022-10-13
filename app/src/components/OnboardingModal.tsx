@@ -1,9 +1,9 @@
 import { defineComponent, PropType } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
-import Modal from "@/components/Modal";
-import { Button } from "@/components/Button/Button";
-import { getImportLocation } from "@/views/BalancePage/Import/useImportData";
+import Modal from "~/components/Modal";
+import { Button } from "~/components/Button/Button";
+import { getImportLocation } from "~/views/BalancePage/Import/useImportData";
 
 export default defineComponent({
   name: "OnboardingModal",

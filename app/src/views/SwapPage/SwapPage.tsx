@@ -7,14 +7,14 @@ import {
 } from "vue";
 import { RouterView, useRouter } from "vue-router";
 
-import { useCore } from "@/hooks/useCore";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { usePublicPoolsSubscriber } from "@/hooks/usePoolsSubscriber";
+import { useCore } from "~/hooks/useCore";
+import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
+import { usePublicPoolsSubscriber } from "~/hooks/usePoolsSubscriber";
 
-import PageCard from "@/components/PageCard";
-import Layout from "@/components/Layout";
-import AssetIcon from "@/components/AssetIcon";
-import Button from "@/components/Button";
+import PageCard from "~/components/PageCard";
+import Layout from "~/components/Layout";
+import AssetIcon from "~/components/AssetIcon";
+import Button from "~/components/Button";
 
 import { SwapDetails } from "./components/SwapDetails";
 import { SlippageTolerance } from "./components/SlippageTolerance";

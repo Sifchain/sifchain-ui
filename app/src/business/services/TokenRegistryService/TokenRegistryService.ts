@@ -1,4 +1,4 @@
-import { useChains } from "@/hooks/useChains";
+import { useChains } from "~/hooks/useChains";
 import { Network } from "@sifchain/sdk";
 import { TokenRegistry } from "@sifchain/sdk/src/clients/native/TokenRegistry";
 

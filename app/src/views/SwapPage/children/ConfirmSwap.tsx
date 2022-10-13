@@ -1,13 +1,14 @@
-import { Button } from "@/components/Button/Button";
-import { Form } from "@/components/Form";
-import Modal from "@/components/Modal";
-import { TokenIcon } from "@/components/TokenIcon";
-import { formatAssetAmount } from "@/components/utils";
-import AssetIcon from "@/components/AssetIcon";
 import { defineComponent } from "vue";
+
+import AssetIcon from "~/components/AssetIcon";
+import { Button } from "~/components/Button/Button";
+import { Form } from "~/components/Form";
+import Modal from "~/components/Modal";
+import { TokenIcon } from "~/components/TokenIcon";
+import { Tooltip } from "~/components/Tooltip";
+import { formatAssetAmount } from "~/components/utils";
 import { SwapDetails } from "../components/SwapDetails";
 import { useSwapPageData } from "../useSwapPageData";
-import { Tooltip } from "@/components/Tooltip";
 
 export const ConfirmSwap = defineComponent({
   setup() {

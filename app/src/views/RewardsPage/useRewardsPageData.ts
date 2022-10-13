@@ -1,7 +1,7 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { useCore } from "@/hooks/useCore";
-import { accountStore } from "@/store/modules/accounts";
+import { useAsyncData } from "~/hooks/useAsyncData";
+import { useCore } from "~/hooks/useCore";
+import { accountStore } from "~/store/modules/accounts";
 
 // TODO REACTIVE
 

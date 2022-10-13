@@ -1,30 +1,26 @@
-import { defineComponent, ref, computed, Ref } from "vue";
+import { computed, defineComponent, ref, Ref } from "vue";
 
-import { Amount, Network, format } from "@sifchain/sdk";
+import { Amount, format, Network } from "@sifchain/sdk";
 
-import { exportStore } from "@/store/modules/export";
-import { accountStore } from "@/store/modules/accounts";
-
-import { useChains } from "@/hooks/useChains";
-import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
-import { useCore } from "@/hooks/useCore";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-
-import { getMaxAmount } from "@/views/utils/getMaxAmount";
-
-import Modal from "@/components/Modal";
-import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { formatAssetAmount } from "@/components/utils";
-
+import { accountStore } from "~/store/modules/accounts";
+import { exportStore } from "~/store/modules/export";
+import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
+import { useChains } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import { useManagedInputValueRef } from "~/hooks/useManagedInputValueRef";
+import { getMaxAmount } from "~/views/utils/getMaxAmount";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
+import Modal from "~/components/Modal";
+import { formatAssetAmount } from "~/components/utils";
+import { Button } from "~/components/Button/Button";
+import { Form } from "~/components/Form";
+import { Input } from "~/components/Input/Input";
 import {
   SelectDropdown,
   SelectDropdownOption,
-} from "@/components/SelectDropdown";
-import { Input } from "@/components/Input/Input";
-import { Button } from "@/components/Button/Button";
-import router from "@/router";
+} from "~/components/SelectDropdown";
+import router from "~/router";
 import { getExportLocation, useExportData } from "./useExportData";
-import { Form } from "@/components/Form";
 
 export default defineComponent({
   name: "ExportSelect",
@@ -77,7 +73,7 @@ export default defineComponent({
 
     const validationErrorRef = computed(() => {
       if (!exportTokenRef.value) {
-        ("Select Token");
+        return "Select Token";
       }
       if (
         feeAssetBalanceRef.value &&
@@ -122,6 +118,8 @@ export default defineComponent({
       if (chain.chainConfig.underMaintenance) {
         return `${chain.displayName} Connection Under Maintenance`;
       }
+
+      return null;
     });
 
     const buttonRef = computed(() => {
@@ -235,7 +233,7 @@ export default defineComponent({
             inputRef={inputRef}
             containerClass="mt-[10px]"
             startContent={
-              Boolean(exportTokenRef.value) ? (
+              exportTokenRef.value ? (
                 <Button.Pill onClick={handleSetMax}>MAX</Button.Pill>
               ) : null
             }

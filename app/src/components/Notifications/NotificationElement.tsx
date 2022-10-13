@@ -6,7 +6,7 @@ import {
   computed,
   ref,
 } from "vue";
-import AssetIcon, { IconName } from "@/components/AssetIcon";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
 import { INotification } from "./INotification";
 
 const notificationData = {

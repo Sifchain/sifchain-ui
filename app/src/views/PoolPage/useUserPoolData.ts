@@ -1,10 +1,10 @@
 import { computed, ref, ToRefs } from "vue";
 
-import { getAssetLabel, getBlockExplorerUrl } from "@/components/utils";
-import { useCore } from "@/hooks/useCore";
+import { getAssetLabel, getBlockExplorerUrl } from "~/components/utils";
+import { useCore } from "~/hooks/useCore";
 import { format } from "@sifchain/sdk/src/utils/format";
 import { Amount } from "@sifchain/sdk";
-import { useNativeChain } from "@/hooks/useChains";
+import { useNativeChain } from "~/hooks/useChains";
 
 const DECIMALS = 5;
 

@@ -1,13 +1,14 @@
-import { computed, Ref, ref, watch } from "vue";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
-import { accountStore } from "@/store/modules/accounts";
 import { Asset, IAsset } from "@sifchain/sdk";
-import { useNativeChain } from "@/hooks/useChains";
-import { prettyNumber } from "@/utils/prettyNumber";
-import { flagsStore } from "@/store/modules/flags";
-import { IconName } from "@/components/AssetIcon";
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { useCore } from "@/hooks/useCore";
+import { computed, Ref, ref, watch } from "vue";
+
+import { IconName } from "~/components/AssetIcon";
+import { useAsyncData } from "~/hooks/useAsyncData";
+import { useAsyncDataCached } from "~/hooks/useAsyncDataCached";
+import { useNativeChain } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import { accountStore } from "~/store/modules/accounts";
+import { flagsStore } from "~/store/modules/flags";
+import { prettyNumber } from "~/utils/prettyNumber";
 
 import { BASE_URL_DATA_SERVICES } from "../../business/services/DataService/DataService";
 

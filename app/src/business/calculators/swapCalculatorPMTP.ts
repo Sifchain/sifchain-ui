@@ -1,18 +1,18 @@
-import { Ref, computed, effect, ref } from "vue";
 import {
-  AssetAmount,
-  IPool,
-  CompositePool,
-  IAssetAmount,
   Amount,
+  AssetAmount,
+  CompositePool,
   format,
   IAsset,
+  IAssetAmount,
+  IPool,
 } from "@sifchain/sdk";
+import { computed, effect, Ref, ref } from "vue";
 
-import { flagsStore } from "@/store/modules/flags";
+import { useLiquidityProtectionParams } from "~/domains/clp/queries/params";
+import { flagsStore } from "~/store/modules/flags";
 import { useField } from "./useField";
 import { trimZeros, useBalances } from "./utils";
-import { useLiquidityProtectionParams } from "@/domains/clp/queries/params";
 
 export enum SwapState {
   ZERO_AMOUNTS,

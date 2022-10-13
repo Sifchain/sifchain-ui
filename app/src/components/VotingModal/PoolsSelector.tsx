@@ -2,9 +2,9 @@ import { PropType } from "vue";
 import { defineComponent } from "@vue/runtime-core";
 import { Asset, IAsset } from "@sifchain/sdk";
 
-import { PoolStat, usePoolStats } from "@/hooks/usePoolStats";
-import { TokenListItem } from "@/hooks/useToken";
-import { TokenSortBy } from "@/utils/sortAndFilterTokens";
+import { PoolStat, usePoolStats } from "~/hooks/usePoolStats";
+import { TokenListItem } from "~/hooks/useToken";
+import { TokenSortBy } from "~/utils/sortAndFilterTokens";
 
 import AssetIcon from "../AssetIcon";
 import { TokenIcon } from "../TokenIcon";

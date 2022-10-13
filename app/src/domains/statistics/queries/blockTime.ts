@@ -1,5 +1,5 @@
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import dangerouslyAssert from "@/utils/dangerouslyAssert";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
 import { differenceInMilliseconds, parseISO } from "date-fns";
 import { computed } from "vue";
 import { useQuery } from "vue-query";

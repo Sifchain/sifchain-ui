@@ -1,8 +1,8 @@
 import { defineComponent, HTMLAttributes, PropType } from "vue";
 
-import ResourcefulTextTransition from "@/components/ResourcefulTextTransition/ResourcefulTextTransition";
-import { TokenIcon } from "@/components/TokenIcon";
-import { prettyNumber } from "@/utils/prettyNumber";
+import ResourcefulTextTransition from "~/components/ResourcefulTextTransition/ResourcefulTextTransition";
+import { TokenIcon } from "~/components/TokenIcon";
+import { prettyNumber } from "~/utils/prettyNumber";
 import {
   Competition,
   COMPETITION_TYPE_DISPLAY_DATA,

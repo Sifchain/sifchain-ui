@@ -1,7 +1,14 @@
-import { ref, Ref } from "vue";
-import { defineComponent, PropType, watch, HTMLAttributes } from "vue";
 import { IAsset } from "@sifchain/sdk";
-import { getTokenIconUrl } from "@/utils/getTokenIconUrl";
+import {
+  defineComponent,
+  HTMLAttributes,
+  PropType,
+  ref,
+  Ref,
+  watch,
+} from "vue";
+
+import { getTokenIconUrl } from "~/utils/getTokenIconUrl";
 
 export const TokenIcon = defineComponent({
   props: {

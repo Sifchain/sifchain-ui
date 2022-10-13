@@ -1,9 +1,9 @@
 import { computed } from "vue";
 import { useQuery } from "vue-query";
 
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import dangerouslyAssert from "@/utils/dangerouslyAssert";
-import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
+import { useTokenRegistryEntriesQuery } from "~/domains/tokenRegistry/queries/tokenRegistry";
 
 export function useMarginParamsQuery() {
   const sifchainClients = useSifchainClients();

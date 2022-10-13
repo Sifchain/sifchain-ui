@@ -9,9 +9,9 @@ import {
   ref,
 } from "vue";
 
-import { useCore } from "@/hooks/useCore";
-import AssetIcon from "@/components/AssetIcon";
-import { Tooltip, TooltipInstance } from "@/components/Tooltip";
+import { useCore } from "~/hooks/useCore";
+import AssetIcon from "~/components/AssetIcon";
+import { Tooltip, TooltipInstance } from "~/components/Tooltip";
 
 const layoutBgKey = "layout_bg";
 const layoutBgDefault = "default";

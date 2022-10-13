@@ -1,9 +1,9 @@
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import { useBlockTimeQuery } from "@/domains/statistics/queries/blockTime";
-import { useTokenRegistryEntriesQuery } from "@/domains/tokenRegistry/queries/tokenRegistry";
-import { useCore } from "@/hooks/useCore";
-import { isNil } from "@/utils/assertion";
-import { UseQueryDataType } from "@/utils/types";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
+import { useBlockTimeQuery } from "~/domains/statistics/queries/blockTime";
+import { useTokenRegistryEntriesQuery } from "~/domains/tokenRegistry/queries/tokenRegistry";
+import { useCore } from "~/hooks/useCore";
+import { isNil } from "~/utils/assertion";
+import { UseQueryDataType } from "~/utils/types";
 import {
   DeliverTxResponse,
   isDeliverTxFailure,

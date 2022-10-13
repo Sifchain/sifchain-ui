@@ -1,4 +1,4 @@
-import AssetIcon, { IconName } from "@/components/AssetIcon";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, SetupContext } from "vue";
 import { RouteLocationRaw, RouterLink } from "vue-router";
 

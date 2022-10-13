@@ -2,26 +2,26 @@ import { defineComponent, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { AssetAmount, Network, toBaseUnits, format } from "@sifchain/sdk";
 
-import { importStore } from "@/store/modules/import";
-import { accountStore } from "@/store/modules/accounts";
+import { importStore } from "~/store/modules/import";
+import { accountStore } from "~/store/modules/accounts";
 
-import Modal from "@/components/Modal";
-import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { formatAssetAmount } from "@/components/utils";
+import Modal from "~/components/Modal";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
+import { formatAssetAmount } from "~/components/utils";
 import {
   SelectDropdown,
   SelectDropdownOption,
-} from "@/components/SelectDropdown";
-import { useCore } from "@/hooks/useCore";
-import { getMaxAmount } from "@/views/utils/getMaxAmount";
-import { Input } from "@/components/Input/Input";
-import { Button } from "@/components/Button/Button";
+} from "~/components/SelectDropdown";
+import { useCore } from "~/hooks/useCore";
+import { getMaxAmount } from "~/views/utils/getMaxAmount";
+import { Input } from "~/components/Input/Input";
+import { Button } from "~/components/Button/Button";
 import { getImportLocation, useImportData } from "./useImportData";
-import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
-import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
-import { useChains } from "@/hooks/useChains";
-import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
+import { TokenSelectDropdown } from "~/components/TokenSelectDropdown";
+import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
+import { useManagedInputValueRef } from "~/hooks/useManagedInputValueRef";
+import { useChains } from "~/hooks/useChains";
+import { TokenNetworkIcon } from "~/components/TokenNetworkIcon/TokenNetworkIcon";
 
 export default defineComponent({
   name: "ImportSelect",

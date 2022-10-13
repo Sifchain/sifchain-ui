@@ -1,7 +1,7 @@
 import { defineComponent } from "vue";
 
-import Layout from "@/components/Layout";
-import PageCard from "@/components/PageCard";
+import Layout from "~/components/Layout";
+import PageCard from "~/components/PageCard";
 
 export default defineComponent({
   name: "RewardsPage",

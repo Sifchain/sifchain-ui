@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { computed, defineComponent, ref } from "vue";
 
-import { useCurrentRouteBannerMessage } from "@/hooks/useCurrentRouteBannerMessage";
+import { useCurrentRouteBannerMessage } from "~/hooks/useCurrentRouteBannerMessage";
 
 import Button from "./Button";
 

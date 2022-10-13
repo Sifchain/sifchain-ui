@@ -1,7 +1,7 @@
 import { defineComponent, onMounted, PropType } from "vue";
 
-import Modal from "@/components/Modal";
-import useChangeLog from "@/hooks/useChangeLog";
+import Modal from "~/components/Modal";
+import useChangeLog from "~/hooks/useChangeLog";
 
 import Button from "./Button";
 
@@ -43,7 +43,7 @@ export default defineComponent({
           heading="Changelog"
           icon="navigation/changelog"
           showClose
-          onClose={props.onClose}
+          onClose={() => props.onClose?.()}
         >
           <div class="w-[calc(100% + 4px)] max-h-[70vh] overflow-y-scroll">
             <div

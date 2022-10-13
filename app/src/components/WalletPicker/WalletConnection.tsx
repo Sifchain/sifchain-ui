@@ -1,10 +1,10 @@
 import { defineComponent, PropType, ref } from "vue";
 
-import { shortenHash } from "@/components/utils";
-import AssetIcon from "@/components/AssetIcon";
-import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import { accountStore } from "@/store/modules/accounts";
-import { useCore } from "@/hooks/useCore";
+import { shortenHash } from "~/components/utils";
+import AssetIcon from "~/components/AssetIcon";
+import Tooltip, { TooltipInstance } from "~/components/Tooltip";
+import { accountStore } from "~/store/modules/accounts";
+import { useCore } from "~/hooks/useCore";
 
 import { WalletConnection } from "./constants";
 import WalletConnectionDropdown from "./WalletConnectionDropdown";

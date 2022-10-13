@@ -11,11 +11,11 @@ import {
   watch,
 } from "vue";
 
-import { formatAssetAmount } from "@/components/utils";
-import AssetIcon from "@/components/AssetIcon";
-import { useCore } from "@/hooks/useCore";
-import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
-import { TokenListItem, useTokenList } from "@/hooks/useToken";
+import AssetIcon from "~/components/AssetIcon";
+import { formatAssetAmount } from "~/components/utils";
+import { useCore } from "~/hooks/useCore";
+import { TokenListItem, useTokenList } from "~/hooks/useToken";
+import { sortAndFilterTokens, TokenSortBy } from "~/utils/sortAndFilterTokens";
 import { TokenNetworkIcon } from "./TokenNetworkIcon/TokenNetworkIcon";
 
 export const TokenSelectDropdown = defineComponent({
@@ -165,10 +165,7 @@ export const TokenSelectDropdown = defineComponent({
                   boxShadow: "0px 20px 20px 0px #00000080",
                   position: "absolute",
                   top: (boundingClientRect.value?.y ?? 0) + "px",
-                  left:
-                    (boundingClientRect.value?.x ?? 0) +
-                    // (boundingClientRect.value?.width ?? 0) +
-                    "px",
+                  left: (boundingClientRect.value?.x ?? 0) + "px",
                 }}
                 class=" bg-gray-input border-gray-input_outline z-50 mt-[7px] w-[440px] overflow-hidden rounded-[4px] border-[1px] border-solid"
               >
@@ -177,7 +174,7 @@ export const TokenSelectDropdown = defineComponent({
                     <AssetIcon
                       size={20}
                       icon="interactive/search"
-                      class={[`ml-3 h-4 w-4`, false ? "text-[#6E6E6E]" : ""]}
+                      class="ml-3 h-4 w-4"
                     />
                     <input
                       id="token-search"
@@ -190,7 +187,7 @@ export const TokenSelectDropdown = defineComponent({
                           (e as KeyboardEvent).key === "Enter" &&
                           sortedAndFilteredTokens.value.length > 0
                         ) {
-                          props.onSelectAsset(
+                          props.onSelectAsset?.(
                             sortedAndFilteredTokens.value[0].asset,
                           );
                           searchQuery.value = "";
@@ -219,7 +216,7 @@ export const TokenSelectDropdown = defineComponent({
                           return (
                             <div
                               onClick={(e: MouseEvent) => {
-                                props.onSelectAsset(token.asset);
+                                props.onSelectAsset?.(token.asset);
                                 (e as any).handled = true;
                               }}
                               key={token.asset.symbol}
