@@ -206,9 +206,9 @@ export class ClpService {
     return await queryClient.query.clp.GetPmtpParams({});
   }
 
-  async getSwapFeeRate() {
+  async GetSwapFeeParams() {
     const queryClient = await this.dexClientPromise;
-    return await queryClient.query.clp.GetSwapFeeRate({});
+    return await queryClient.query.clp.GetSwapFeeParams({});
   }
 }
 
