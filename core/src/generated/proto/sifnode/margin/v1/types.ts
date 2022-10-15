@@ -68,6 +68,7 @@ export interface Params {
   closedPools: string[];
   incrementalInterestPaymentEnabled: boolean;
   whitelistingEnabled: boolean;
+  rowanCollateralEnabled: boolean;
 }
 
 export interface MTP {
@@ -166,6 +167,7 @@ function createBaseParams(): Params {
     closedPools: [],
     incrementalInterestPaymentEnabled: false,
     whitelistingEnabled: false,
+    rowanCollateralEnabled: false,
   };
 }
 
@@ -236,6 +238,9 @@ export const Params = {
     if (message.whitelistingEnabled === true) {
       writer.uint32(168).bool(message.whitelistingEnabled);
     }
+    if (message.rowanCollateralEnabled === true) {
+      writer.uint32(176).bool(message.rowanCollateralEnabled);
+    }
     return writer;
   },
 
@@ -305,6 +310,9 @@ export const Params = {
           break;
         case 21:
           message.whitelistingEnabled = reader.bool();
+          break;
+        case 22:
+          message.rowanCollateralEnabled = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -378,6 +386,9 @@ export const Params = {
       whitelistingEnabled: isSet(object.whitelistingEnabled)
         ? Boolean(object.whitelistingEnabled)
         : false,
+      rowanCollateralEnabled: isSet(object.rowanCollateralEnabled)
+        ? Boolean(object.rowanCollateralEnabled)
+        : false,
     };
   },
 
@@ -433,6 +444,8 @@ export const Params = {
         message.incrementalInterestPaymentEnabled);
     message.whitelistingEnabled !== undefined &&
       (obj.whitelistingEnabled = message.whitelistingEnabled);
+    message.rowanCollateralEnabled !== undefined &&
+      (obj.rowanCollateralEnabled = message.rowanCollateralEnabled);
     return obj;
   },
 
@@ -467,6 +480,7 @@ export const Params = {
     message.incrementalInterestPaymentEnabled =
       object.incrementalInterestPaymentEnabled ?? false;
     message.whitelistingEnabled = object.whitelistingEnabled ?? false;
+    message.rowanCollateralEnabled = object.rowanCollateralEnabled ?? false;
     return message;
   },
 };
