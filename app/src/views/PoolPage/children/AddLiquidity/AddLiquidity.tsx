@@ -24,10 +24,7 @@ import { usePoolPageData } from "../../usePoolPageData";
 import SettingsDropdown from "./SettingsDropdown";
 import Toggle from "~/components/Toggle";
 import { flagsStore } from "~/store/modules/flags";
-import {
-  useMarginEnabledPoolsQuery,
-  useMarginParamsQuery,
-} from "~/domains/margin/queries/params";
+import { useMarginEnabledPoolsQuery } from "~/domains/margin/queries/params";
 
 export default defineComponent({
   setup(): () => JSX.Element {
