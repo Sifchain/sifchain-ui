@@ -66,7 +66,7 @@ export const flagsStore = Vuextra.createStore({
     liquidityUnlockCancellation: true,
     lppdRewards: true,
     remoteFlags: {
-      ASYMETRIC_POOLING: false,
+      ASYMMETRIC_POOLING: false,
       MARGIN: false,
       DISABLE_ETH_BRIDGE: false,
       DISABLE_ATOM_POOL: false,

@@ -58,7 +58,7 @@ export default defineComponent({
     };
 
     const isAsymetricPoolingEnabled = computed(
-      () => flagsStore.state.remoteFlags.ASYMETRIC_POOLING,
+      () => flagsStore.state.remoteFlags.ASYMMETRIC_POOLING,
     );
 
     return () => {
