@@ -17,7 +17,7 @@ type PickClp = Pick<
   | "getAccountLiquidityProviderData"
   | "getRawPools"
   | "getPmtpParams"
-  | "getSwapFeeRate"
+  | "GetSwapFeeParams"
 >;
 
 type PickChains = Pick<
@@ -49,10 +49,10 @@ export function SyncPools(
     const nativeAsset = chains.get(Network.SIFCHAIN).nativeAsset;
     const registry = await tokenRegistry.load();
 
-    const [rawPoolsRes, pmtpParamsRes, swapFeeRateRes] = await Promise.all([
+    const [rawPoolsRes, pmtpParamsRes, swapFeeParamsRes] = await Promise.all([
       clp.getRawPools(),
       clp.getPmtpParams(),
-      clp.getSwapFeeRate(),
+      clp.GetSwapFeeParams(),
     ]);
 
     const pools = rawPoolsRes.pools
@@ -102,7 +102,7 @@ export function SyncPools(
               native: toNativeAmountDerived(pool.swapPriceNative),
               external: toNativeAmountDerived(pool.swapPriceExternal),
             },
-            swapFeeRate: toNativeAmountDerived(swapFeeRateRes.swapFeeRate),
+            swapFeeRate: toNativeAmountDerived(swapFeeParamsRes.swapFeeRate),
             currentRatioShiftingRate: toNativeAmountDerived(
               pmtpParamsRes.pmtpRateParams?.pmtpCurrentRunningRate ?? "0",
             ),
