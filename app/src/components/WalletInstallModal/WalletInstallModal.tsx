@@ -1,7 +1,7 @@
 import { defineComponent, PropType } from "vue";
-import Modal from "@/components/Modal";
-import { Button } from "@/components/Button/Button";
-import router from "@/router";
+import Modal from "~/components/Modal";
+import { Button } from "~/components/Button/Button";
+import router from "~/router";
 import { WalletConfig, walletConfigLookup } from "../WalletPicker/constants";
 
 export const WalletInstallModal = defineComponent({

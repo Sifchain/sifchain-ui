@@ -1,7 +1,7 @@
-import { formatAssetAmount } from "@/components/utils";
-import { useChainsList } from "@/hooks/useChains";
-import { TokenListItem } from "@/hooks/useToken";
-import { isAssetFlaggedDisabled } from "@/store/modules/flags";
+import { formatAssetAmount } from "~/components/utils";
+import { useChainsList } from "~/hooks/useChains";
+import { TokenListItem } from "~/hooks/useToken";
+import { isAssetFlaggedDisabled } from "~/store/modules/flags";
 import { Network } from "@sifchain/sdk";
 
 export type TokenSortBy = "balance" | "symbol";

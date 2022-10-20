@@ -5,9 +5,9 @@ import {
   RegistryEntry,
 } from "@sifchain/sdk/src/generated/proto/sifnode/tokenregistry/v1/types";
 
-import { useChains, useChainsList, useNativeChain } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
-import { Vuextra } from "@/store/Vuextra";
+import { useChains, useChainsList, useNativeChain } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import { Vuextra } from "~/store/Vuextra";
 
 import { accountStore } from "./accounts";
 import { flagsStore, isChainFlaggedDisabled } from "./flags";

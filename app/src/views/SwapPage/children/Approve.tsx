@@ -1,10 +1,10 @@
 import { Network } from "@sifchain/sdk";
-import { defineComponent, watchEffect, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, watchEffect } from "vue";
 
-import { FormDetailsType } from "@/components/Form";
-import { TokenIcon } from "@/components/TokenIcon";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { useTransactionDetails } from "@/hooks/useTransactionDetails";
+import { FormDetailsType } from "~/components/Form";
+import { TokenIcon } from "~/components/TokenIcon";
+import TransactionDetailsModal from "~/components/TransactionDetailsModal";
+import { useTransactionDetails } from "~/hooks/useTransactionDetails";
 
 import { useSwapPageData } from "../useSwapPageData";
 

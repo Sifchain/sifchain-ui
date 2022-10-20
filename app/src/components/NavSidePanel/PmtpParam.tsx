@@ -1,8 +1,8 @@
 import { computed, defineComponent } from "vue";
 import { Amount, format } from "@sifchain/sdk";
 
-import usePmtpParams from "@/hooks/usePMTP";
-import { flagsStore } from "@/store/modules/flags";
+import usePmtpParams from "~/hooks/usePMTP";
+import { flagsStore } from "~/store/modules/flags";
 import NavSidePanelItem from "./NavSidePanelItem";
 
 const PMTP_ROADMAP_URL =

@@ -2,14 +2,14 @@ import { ref, watch, computed, effect, Ref } from "vue";
 import { useRoute } from "vue-router";
 import { LiquidityProvider, Network, TransactionStatus } from "@sifchain/sdk";
 
-import { useWalletButton } from "@/hooks/useWalletButton";
-import { useCore } from "@/hooks/useCore";
-import { debounce } from "@/views/utils/debounce";
-import { accountStore } from "@/store/modules/accounts";
-import { useRemoveLiquidityCalculator } from "@/business/calculators";
-import { PoolState } from "@/business/calculators/addLiquidityCalculator";
-import { useNativeChain } from "@/hooks/useChains";
-import dangerouslyAssert from "@/utils/dangerouslyAssert";
+import { useWalletButton } from "~/hooks/useWalletButton";
+import { useCore } from "~/hooks/useCore";
+import { debounce } from "~/views/utils/debounce";
+import { accountStore } from "~/store/modules/accounts";
+import { useRemoveLiquidityCalculator } from "~/business/calculators";
+import { PoolState } from "~/business/calculators/addLiquidityCalculator";
+import { useNativeChain } from "~/hooks/useChains";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
 
 export function useMaxwithdrawData(params: {
   externalAssetSymbol: Ref<string | null>;

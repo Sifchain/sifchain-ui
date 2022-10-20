@@ -46,6 +46,13 @@ export interface MsgUpdatePools {
 
 export interface MsgUpdatePoolsResponse {}
 
+export interface MsgUpdateRowanCollateral {
+  signer: string;
+  rowanCollateralEnabled: boolean;
+}
+
+export interface MsgUpdateRowanCollateralResponse {}
+
 export interface MsgWhitelist {
   signer: string;
   whitelistedAddress: string;
@@ -709,6 +716,122 @@ export const MsgUpdatePoolsResponse = {
   },
 };
 
+function createBaseMsgUpdateRowanCollateral(): MsgUpdateRowanCollateral {
+  return { signer: "", rowanCollateralEnabled: false };
+}
+
+export const MsgUpdateRowanCollateral = {
+  encode(
+    message: MsgUpdateRowanCollateral,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.rowanCollateralEnabled === true) {
+      writer.uint32(16).bool(message.rowanCollateralEnabled);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateRowanCollateral {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateRowanCollateral();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.rowanCollateralEnabled = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateRowanCollateral {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      rowanCollateralEnabled: isSet(object.rowanCollateralEnabled)
+        ? Boolean(object.rowanCollateralEnabled)
+        : false,
+    };
+  },
+
+  toJSON(message: MsgUpdateRowanCollateral): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.rowanCollateralEnabled !== undefined &&
+      (obj.rowanCollateralEnabled = message.rowanCollateralEnabled);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateRowanCollateral>, I>>(
+    object: I,
+  ): MsgUpdateRowanCollateral {
+    const message = createBaseMsgUpdateRowanCollateral();
+    message.signer = object.signer ?? "";
+    message.rowanCollateralEnabled = object.rowanCollateralEnabled ?? false;
+    return message;
+  },
+};
+
+function createBaseMsgUpdateRowanCollateralResponse(): MsgUpdateRowanCollateralResponse {
+  return {};
+}
+
+export const MsgUpdateRowanCollateralResponse = {
+  encode(
+    _: MsgUpdateRowanCollateralResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgUpdateRowanCollateralResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUpdateRowanCollateralResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateRowanCollateralResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateRowanCollateralResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<
+    I extends Exact<DeepPartial<MsgUpdateRowanCollateralResponse>, I>,
+  >(_: I): MsgUpdateRowanCollateralResponse {
+    const message = createBaseMsgUpdateRowanCollateralResponse();
+    return message;
+  },
+};
+
 function createBaseMsgWhitelist(): MsgWhitelist {
   return { signer: "", whitelistedAddress: "" };
 }
@@ -1189,6 +1312,9 @@ export interface Msg {
   ForceClose(request: MsgForceClose): Promise<MsgForceCloseResponse>;
   UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
   UpdatePools(request: MsgUpdatePools): Promise<MsgUpdatePoolsResponse>;
+  UpdateRowanCollateral(
+    request: MsgUpdateRowanCollateral,
+  ): Promise<MsgUpdateRowanCollateralResponse>;
   Whitelist(request: MsgWhitelist): Promise<MsgWhitelistResponse>;
   Dewhitelist(request: MsgDewhitelist): Promise<MsgDewhitelistResponse>;
   AdminClose(request: MsgAdminClose): Promise<MsgAdminCloseResponse>;
@@ -1204,6 +1330,7 @@ export class MsgClientImpl implements Msg {
     this.ForceClose = this.ForceClose.bind(this);
     this.UpdateParams = this.UpdateParams.bind(this);
     this.UpdatePools = this.UpdatePools.bind(this);
+    this.UpdateRowanCollateral = this.UpdateRowanCollateral.bind(this);
     this.Whitelist = this.Whitelist.bind(this);
     this.Dewhitelist = this.Dewhitelist.bind(this);
     this.AdminClose = this.AdminClose.bind(this);
@@ -1256,6 +1383,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgUpdatePoolsResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  UpdateRowanCollateral(
+    request: MsgUpdateRowanCollateral,
+  ): Promise<MsgUpdateRowanCollateralResponse> {
+    const data = MsgUpdateRowanCollateral.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.margin.v1.Msg",
+      "UpdateRowanCollateral",
+      data,
+    );
+    return promise.then((data) =>
+      MsgUpdateRowanCollateralResponse.decode(new _m0.Reader(data)),
     );
   }
 

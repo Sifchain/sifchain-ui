@@ -1,8 +1,8 @@
 import { computed, Ref } from "vue";
 import { IAssetAmount } from "@sifchain/sdk";
 
-import { formatAssetAmount } from "@/components/utils";
-import { accountStore } from "@/store/modules/accounts";
+import { formatAssetAmount } from "~/components/utils";
+import { accountStore } from "~/store/modules/accounts";
 
 export function useFormattedTokenBalance(tokenSymbol: Ref<string | null>) {
   const accountBalance = useTokenBalance(tokenSymbol);

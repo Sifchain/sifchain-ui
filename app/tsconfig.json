@@ -9,7 +9,7 @@
     "baseUrl": ".",
     "types": ["vite/client", "jest"],
     "paths": {
-      "@/*": ["src/*"]
+      "~/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },

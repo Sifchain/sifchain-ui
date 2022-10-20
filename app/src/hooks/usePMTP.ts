@@ -1,6 +1,6 @@
 import { useQuery } from "vue-query";
 
-import { flagsStore } from "@/store/modules/flags";
+import { flagsStore } from "~/store/modules/flags";
 import { useCore } from "./useCore";
 
 const MOCK_PMTP_RESPONSE = {

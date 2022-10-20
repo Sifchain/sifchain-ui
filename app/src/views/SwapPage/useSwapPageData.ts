@@ -12,20 +12,20 @@ import {
 import { computed, ref, watch, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { ServiceContext } from "@/business";
+import { ServiceContext } from "~/business";
 import {
   SwapState,
   useSwapCalculator,
-} from "@/business/calculators/swapCalculatorPMTP";
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import { formatAssetAmount } from "@/components/utils";
-import { useBoundRoute } from "@/hooks/useBoundRoute";
-import { useChains, useNativeChain } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
-import { useFormattedTokenBalance } from "@/hooks/useFormattedTokenBalance";
-import { useTokenIconUrl } from "@/hooks/useTokenIconUrl";
-import { useWalletButton } from "@/hooks/useWalletButton";
-import { accountStore } from "@/store/modules/accounts";
+} from "~/business/calculators/swapCalculatorPMTP";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
+import { formatAssetAmount } from "~/components/utils";
+import { useBoundRoute } from "~/hooks/useBoundRoute";
+import { useChains, useNativeChain } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import { useFormattedTokenBalance } from "~/hooks/useFormattedTokenBalance";
+import { useTokenIconUrl } from "~/hooks/useTokenIconUrl";
+import { useWalletButton } from "~/hooks/useWalletButton";
+import { accountStore } from "~/store/modules/accounts";
 import { getMaxAmount } from "../utils/getMaxAmount";
 
 export type SwapPageState = "idle" | "confirm" | "submit" | "fail" | "success";

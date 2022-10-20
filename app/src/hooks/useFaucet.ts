@@ -1,8 +1,8 @@
 import { ref, watch } from "vue";
 import { AppCookies, getNetworkEnv } from "@sifchain/sdk";
 
-import { accountStore, IWalletServiceState } from "@/store/modules/accounts";
-import { createFaucetGraphqlClient } from "@/utils/createFaucetGraphqlClient";
+import { accountStore, IWalletServiceState } from "~/store/modules/accounts";
+import { createFaucetGraphqlClient } from "~/utils/createFaucetGraphqlClient";
 import { useCore } from "./useCore";
 
 const key = "faucet_signature";

@@ -1,4 +1,4 @@
-import AssetIcon from "@/components/AssetIcon";
+import AssetIcon from "~/components/AssetIcon";
 import {
   ButtonHTMLAttributes,
   defineComponent,

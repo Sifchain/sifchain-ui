@@ -1,6 +1,6 @@
-import { useAsyncData } from "@/hooks/useAsyncData";
-import { useCore } from "@/hooks/useCore";
-import { prettyNumber } from "@/utils/prettyNumber";
+import { useAsyncData } from "~/hooks/useAsyncData";
+import { useCore } from "~/hooks/useCore";
+import { prettyNumber } from "~/utils/prettyNumber";
 
 export function useTVL() {
   const { services } = useCore();

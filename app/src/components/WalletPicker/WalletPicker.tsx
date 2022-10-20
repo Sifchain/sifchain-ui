@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { isChainFlaggedDisabled } from "@/store/modules/flags";
+import { isChainFlaggedDisabled } from "~/store/modules/flags";
 
 import WalletConnection from "./WalletConnection";
 import { walletConnections } from "./constants";

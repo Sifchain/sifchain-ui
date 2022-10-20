@@ -1,7 +1,7 @@
 import { defineComponent, PropType, ComputedRef, ref } from "vue";
 import { Asset, IAsset } from "@sifchain/sdk";
 
-import { TokenIcon } from "@/components/TokenIcon";
+import { TokenIcon } from "~/components/TokenIcon";
 
 export default defineComponent({
   name: "AssetPair",

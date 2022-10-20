@@ -1,7 +1,7 @@
 import { watchEffect } from "vue";
 
-import { useCore } from "@/hooks/useCore";
-import { useAsyncDataCached } from "@/hooks/useAsyncDataCached";
+import { useCore } from "~/hooks/useCore";
+import { useAsyncDataCached } from "~/hooks/useAsyncDataCached";
 
 function isNumeric(s: string): boolean {
   return Number(s) - 0 === Number(s) && ("" + s).trim().length > 0;

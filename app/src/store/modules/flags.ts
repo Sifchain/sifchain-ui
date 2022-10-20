@@ -1,4 +1,4 @@
-import { useChains } from "@/hooks/useChains";
+import { useChains } from "~/hooks/useChains";
 import { Chain, IAsset } from "@sifchain/sdk";
 
 import { Vuextra } from "../Vuextra";
@@ -64,9 +64,9 @@ export const flagsStore = Vuextra.createStore({
     pmtp: true,
     newLiquidityUnlockProcess: true,
     liquidityUnlockCancellation: true,
-    asymmetricPooling: false,
     lppdRewards: true,
     remoteFlags: {
+      ASYMMETRIC_POOLING: false,
       MARGIN: false,
       DISABLE_ETH_BRIDGE: false,
       DISABLE_ATOM_POOL: false,

@@ -1,21 +1,19 @@
-import { defineComponent, PropType, computed, ref } from "vue";
-import cx from "clsx";
-import { RouterLink } from "vue-router";
 import { Network } from "@sifchain/sdk";
+import cx from "clsx";
+import { computed, defineComponent, PropType, ref } from "vue";
+import { RouterLink } from "vue-router";
 
-import { TokenListItem } from "@/hooks/useToken";
-import { formatAssetAmount } from "@/components/utils";
-
-import AssetIcon, { IconName } from "@/components/AssetIcon";
-import Tooltip from "@/components/Tooltip";
-import { shortenHash } from "@/components/utils";
-import { getAssetLabel } from "@/components/utils";
-import { getImportLocation } from "./Import/useImportData";
+import { formatAssetAmount } from "~/components/utils";
+import { TokenListItem } from "~/hooks/useToken";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
+import { Button } from "~/components/Button/Button";
+import { TokenNetworkIcon } from "~/components/TokenNetworkIcon/TokenNetworkIcon";
+import Tooltip from "~/components/Tooltip";
+import { getAssetLabel, shortenHash } from "~/components/utils";
+import { useChains } from "~/hooks/useChains";
+import { flagsStore } from "~/store/modules/flags";
 import { getExportLocation } from "./Export/useExportData";
-import { Button } from "@/components/Button/Button";
-import { useChains } from "@/hooks/useChains";
-import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
-import { flagsStore } from "@/store/modules/flags";
+import { getImportLocation } from "./Import/useImportData";
 
 const ETH_MERGE_DISCLAIMER =
   "All imports/exports of ERC-20 tokens and ETH are currently unavailable.";

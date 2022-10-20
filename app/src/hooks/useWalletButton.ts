@@ -1,4 +1,4 @@
-import { useCore } from "@/hooks/useCore";
+import { useCore } from "~/hooks/useCore";
 import { Network } from "@sifchain/sdk";
 import { computed } from "vue";
 

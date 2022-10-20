@@ -1,4 +1,3 @@
-import { useCore } from "@/hooks/useCore";
 import { createQueryClient, SifSigningStargateClient } from "@sifchain/sdk";
 import {
   defineComponent,
@@ -8,6 +7,8 @@ import {
   provide,
   reactive,
 } from "vue";
+
+import { useCore } from "~/hooks/useCore";
 
 type QueryClient = Awaited<ReturnType<typeof createQueryClient>>;
 

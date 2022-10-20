@@ -1,10 +1,10 @@
 import { SetupContext } from "vue";
 import clsx from "clsx";
 
-import { prettyNumber } from "@/utils/prettyNumber";
-import { Button } from "@/components/Button/Button";
-import { Input } from "@/components/Input/Input";
-import PageCard from "@/components/PageCard";
+import { prettyNumber } from "~/utils/prettyNumber";
+import { Button } from "~/components/Button/Button";
+import { Input } from "~/components/Input/Input";
+import PageCard from "~/components/PageCard";
 
 const formatNumber = (number: number) =>
   number >= 100 ** 10

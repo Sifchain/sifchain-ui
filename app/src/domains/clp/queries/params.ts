@@ -2,10 +2,10 @@ import { addMilliseconds, minutesToMilliseconds } from "date-fns";
 import { computed } from "vue";
 import { useQuery } from "vue-query";
 
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
-import { useBlockTimeQuery } from "@/domains/statistics/queries/blockTime";
-import dangerouslyAssert from "@/utils/dangerouslyAssert";
-import useDependentQuery from "@/utils/useDependentQuery";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
+import { useBlockTimeQuery } from "~/domains/statistics/queries/blockTime";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
+import useDependentQuery from "~/utils/useDependentQuery";
 
 export function useRewardsParamsQuery() {
   const sifchainClients = useSifchainClients();

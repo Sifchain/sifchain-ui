@@ -1,5 +1,5 @@
-import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
-import { symbolWithoutPrefix } from "@/utils/symbol";
+import { flagsStore, isAssetFlaggedDisabled } from "~/store/modules/flags";
+import { symbolWithoutPrefix } from "~/utils/symbol";
 import { IAsset } from "@sifchain/sdk";
 import { computed } from "vue";
 import { useQuery } from "vue-query";
@@ -127,6 +127,7 @@ export function usePoolStats() {
       });
 
     const poolStatLookup: Record<string, PoolStat> = {};
+
     poolStatsRes.data.value?.poolData.pools.forEach((poolStat) => {
       const asset =
         assetLookup[poolStat.symbol.toLowerCase()] ||

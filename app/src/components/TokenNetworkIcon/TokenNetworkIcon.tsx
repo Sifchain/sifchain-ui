@@ -9,8 +9,8 @@ import {
 } from "vue";
 import { IAsset } from "@sifchain/sdk";
 
-import { useChains } from "@/hooks/useChains";
-import { isLikeSymbol } from "@/utils/symbol";
+import { useChains } from "~/hooks/useChains";
+import { isLikeSymbol } from "~/utils/symbol";
 import { TokenIcon } from "../TokenIcon";
 import { Tooltip } from "../Tooltip";
 import AssetIcon from "../AssetIcon";

@@ -4,22 +4,22 @@ import { formatDistance } from "date-fns";
 import { computed, defineComponent, effect } from "vue";
 import { RouterView } from "vue-router";
 
-import AssetIcon from "@/components/AssetIcon";
-import { Button } from "@/components/Button/Button";
-import Layout from "@/components/Layout";
-import PageCard from "@/components/PageCard";
-import { SearchBox } from "@/components/SearchBox";
-import Toggle from "@/components/Toggle";
+import AssetIcon from "~/components/AssetIcon";
+import { Button } from "~/components/Button/Button";
+import Layout from "~/components/Layout";
+import PageCard from "~/components/PageCard";
+import { SearchBox } from "~/components/SearchBox";
+import Toggle from "~/components/Toggle";
 import {
   useCancelLiquidityUnlockMutation,
   useRemoveLiquidityMutation,
-} from "@/domains/clp/mutation/liquidity";
+} from "~/domains/clp/mutation/liquidity";
 import {
   useCurrentProviderDistributionPeriod,
   useCurrentRewardPeriod,
   useRewardsParamsQuery,
-} from "@/domains/clp/queries/params";
-import { flagsStore, isAssetFlaggedDisabled } from "@/store/modules/flags";
+} from "~/domains/clp/queries/params";
+import { flagsStore, isAssetFlaggedDisabled } from "~/store/modules/flags";
 import PoolItem from "./PoolItem";
 import { COLUMNS, PoolPageColumnId, usePoolPageData } from "./usePoolPageData";
 
