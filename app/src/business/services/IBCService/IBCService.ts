@@ -1,7 +1,6 @@
-import { IBCBridge } from "@sifchain/sdk/src/clients/bridges/IBCBridge/IBCBridge";
+import { IBCChainConfig, Network } from "@sifchain/sdk";
 import type { IBCBridgeContext as _IBCServiceContext } from "@sifchain/sdk/src/clients/bridges/IBCBridge/IBCBridge";
-import { Network, IBCChainConfig } from "@sifchain/sdk";
-import { useChains } from "@/hooks/useChains";
+import { IBCBridge } from "@sifchain/sdk/src/clients/bridges/IBCBridge/IBCBridge";
 import { KeplrWalletProvider } from "@sifchain/wallet-keplr";
 
 export type IBCServiceContext = _IBCServiceContext;

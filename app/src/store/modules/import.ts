@@ -1,5 +1,5 @@
-import { useChainsList, useChains, useNativeChain } from "@/hooks/useChains";
-import { useCore } from "@/hooks/useCore";
+import { useChainsList, useChains, useNativeChain } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
 import { Asset, IAssetAmount, Network } from "@sifchain/sdk";
 import {
   BridgeEvent,

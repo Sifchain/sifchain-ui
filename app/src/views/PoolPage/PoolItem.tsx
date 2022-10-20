@@ -1,19 +1,20 @@
-import { LPUserReward } from "@/business/services/DataService";
-import { AccountPool } from "@/business/store/pools";
-import AssetIcon from "@/components/AssetIcon";
-import { Button } from "@/components/Button/Button";
-import { TokenIcon } from "@/components/TokenIcon";
-import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
-import { formatAssetAmount } from "@/components/utils";
-import { useNativeChain } from "@/hooks/useChains";
-import { PoolStat } from "@/hooks/usePoolStats";
-import { useRowanPrice } from "@/hooks/useRowanPrice";
-import { isNil, isNilOrWhitespace } from "@/utils/assertion";
-import { prettyNumber, prettyNumberMinMax } from "@/utils/prettyNumber";
 import { IAssetAmount, Pool } from "@sifchain/sdk";
 import { Amount } from "@sifchain/sdk/src";
 import { computed, defineComponent, PropType } from "vue";
 import { useRouter } from "vue-router";
+
+import { LPUserReward } from "~/business/services/DataService";
+import { AccountPool } from "~/business/store/pools";
+import AssetIcon from "~/components/AssetIcon";
+import { Button } from "~/components/Button/Button";
+import { TokenIcon } from "~/components/TokenIcon";
+import { TokenNetworkIcon } from "~/components/TokenNetworkIcon/TokenNetworkIcon";
+import { formatAssetAmount } from "~/components/utils";
+import { useNativeChain } from "~/hooks/useChains";
+import { PoolStat } from "~/hooks/usePoolStats";
+import { useRowanPrice } from "~/hooks/useRowanPrice";
+import { isNil, isNilOrWhitespace } from "~/utils/assertion";
+import { prettyNumber, prettyNumberMinMax } from "~/utils/prettyNumber";
 import {
   Competition,
   CompetitionsLookup,

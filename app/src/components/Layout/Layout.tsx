@@ -1,6 +1,6 @@
 import { defineComponent, HtmlHTMLAttributes, PropType } from "vue";
 
-import BetaWarningBanner from "@/components/BetaWarningBanner";
+import BetaWarningBanner from "~/components/BetaWarningBanner";
 
 import LayoutBackground from "./LayoutBackground";
 import AlertBanner from "../AlertBanner";

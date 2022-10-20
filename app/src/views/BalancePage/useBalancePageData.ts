@@ -1,9 +1,10 @@
-import { computed, reactive, ref, toRefs } from "vue";
-import { useTokenList, TokenListItem } from "@/hooks/useToken";
-import { sortAndFilterTokens, TokenSortBy } from "@/utils/sortAndFilterTokens";
 import { Network } from "@sifchain/sdk";
-import { useBoundRoute } from "@/hooks/useBoundRoute";
-import { accountStore } from "@/store/modules/accounts";
+import { computed, reactive, ref, toRefs } from "vue";
+
+import { useBoundRoute } from "~/hooks/useBoundRoute";
+import { TokenListItem, useTokenList } from "~/hooks/useToken";
+import { accountStore } from "~/store/modules/accounts";
+import { sortAndFilterTokens, TokenSortBy } from "~/utils/sortAndFilterTokens";
 
 export type BalancePageState = {
   searchQuery: string;

@@ -1,11 +1,11 @@
 import { defineComponent } from "vue";
 import { reactive } from "vue";
-import { useCore } from "@/hooks/useCore";
+import { useCore } from "~/hooks/useCore";
 
 import { INotification } from "./INotification";
 import { NotificationElement } from "./NotificationElement";
-import { formatAssetAmount } from "@/components/utils";
-import { AppEvent } from "@/business/services/EventBusService";
+import { formatAssetAmount } from "~/components/utils";
+import { AppEvent } from "~/business/services/EventBusService";
 
 let nextNotificationKey = 0;
 

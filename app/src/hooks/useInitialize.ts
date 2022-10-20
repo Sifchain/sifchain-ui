@@ -5,8 +5,8 @@ import {
   bridgeTxEmitter,
 } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 
-import { accountStore } from "@/store/modules/accounts";
-import { isChainFlaggedDisabled } from "@/store/modules/flags";
+import { accountStore } from "~/store/modules/accounts";
+import { isChainFlaggedDisabled } from "~/store/modules/flags";
 
 import { useCore } from "./useCore";
 import { useChains } from "./useChains";

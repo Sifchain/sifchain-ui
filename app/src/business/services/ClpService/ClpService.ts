@@ -3,7 +3,7 @@ import { Amount, IAsset, IAssetAmount, LiquidityProvider } from "@sifchain/sdk";
 import { NativeDexClient } from "@sifchain/sdk/src/clients";
 import { SifUnSignedClient } from "@sifchain/sdk/src/clients/native/SifClient";
 
-import TokenRegistryService from "@/business/services/TokenRegistryService";
+import TokenRegistryService from "~/business/services/TokenRegistryService";
 
 export type ClpServiceContext = {
   nativeAsset: IAsset;
@@ -206,9 +206,9 @@ export class ClpService {
     return await queryClient.query.clp.GetPmtpParams({});
   }
 
-  async getSwapFeeRate() {
+  async GetSwapFeeParams() {
     const queryClient = await this.dexClientPromise;
-    return await queryClient.query.clp.GetSwapFeeRate({});
+    return await queryClient.query.clp.GetSwapFeeParams({});
   }
 }
 

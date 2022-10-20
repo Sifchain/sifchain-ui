@@ -1,12 +1,13 @@
 import {
   defineComponent,
-  PropType,
-  SetupContext,
   HTMLAttributes,
   onMounted,
   onUnmounted,
+  PropType,
+  SetupContext,
 } from "vue";
-import AssetIcon, { IconName } from "@/components/AssetIcon";
+
+import AssetIcon, { IconName } from "~/components/AssetIcon";
 
 export type ModalProps = {
   onClose: () => void;
@@ -56,7 +57,7 @@ export default defineComponent({
       default: () => true,
     },
   },
-  name: "Modal",
+  name: "sif-modal",
   setup(props, context: SetupContext) {
     const onKeypress = (ev: KeyboardEvent) => {
       if (ev.key === "Escape" && props.onClose && props.escapeToClose) {

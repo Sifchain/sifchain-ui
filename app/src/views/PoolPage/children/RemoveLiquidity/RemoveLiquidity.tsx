@@ -2,17 +2,17 @@ import { computed, defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Network } from "@sifchain/sdk";
 
-import Button from "@/components/Button";
-import { Form, FormDetailsType } from "@/components/Form";
-import Modal from "@/components/Modal";
-import { TokenIcon } from "@/components/TokenIcon";
-import { useAppWalletPicker } from "@/hooks/useAppWalletPicker";
+import Button from "~/components/Button";
+import { Form, FormDetailsType } from "~/components/Form";
+import Modal from "~/components/Modal";
+import { TokenIcon } from "~/components/TokenIcon";
+import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
 import { useRemoveLiquidityData } from "./useRemoveLiquidityData";
-import { useTransactionDetails } from "@/hooks/useTransactionDetails";
-import TransactionDetailsModal from "@/components/TransactionDetailsModal";
-import { accountStore } from "@/store/modules/accounts";
-import { PoolState } from "@/business/calculators";
-import { flagsStore } from "@/store/modules/flags";
+import { useTransactionDetails } from "~/hooks/useTransactionDetails";
+import TransactionDetailsModal from "~/components/TransactionDetailsModal";
+import { accountStore } from "~/store/modules/accounts";
+import { PoolState } from "~/business/calculators";
+import { flagsStore } from "~/store/modules/flags";
 
 export default defineComponent({
   setup() {
@@ -57,7 +57,9 @@ export default defineComponent({
       });
     };
 
-    const isAsymetricPoolingEnabled = flagsStore.state.asymmetricPooling;
+    const isAsymetricPoolingEnabled = computed(
+      () => flagsStore.state.remoteFlags.ASYMMETRIC_POOLING,
+    );
 
     return () => {
       if (data.modalStatus.value === "processing") {
@@ -179,7 +181,7 @@ export default defineComponent({
               </div>
             </div>
           </Form.FieldSet>
-          {isAsymetricPoolingEnabled && (
+          {isAsymetricPoolingEnabled.value && (
             <Form.FieldSet class="mt-[10px]">
               <Form.Label class="w-full">Withdraw Ratio</Form.Label>
               <div class="flex w-full flex-row">

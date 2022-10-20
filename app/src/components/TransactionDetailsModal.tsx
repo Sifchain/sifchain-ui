@@ -1,14 +1,13 @@
-import { defineComponent, PropType, Ref } from "vue";
 import { Network } from "@sifchain/sdk";
+import { defineComponent, PropType, Ref } from "vue";
 
-import { TransactionDetails } from "@/hooks/useTransactionDetails";
-import { Form } from "./Form";
-import Modal from "./Modal";
-import { useCore } from "@/hooks/useCore";
-import { useChains } from "@/hooks/useChains";
+import { useChains } from "~/hooks/useChains";
+import { useCore } from "~/hooks/useCore";
+import { TransactionDetails } from "~/hooks/useTransactionDetails";
 import AssetIcon, { IconName } from "./AssetIcon";
-import { FormDetailsType } from "./Form";
 import Button from "./Button";
+import { Form, FormDetailsType } from "./Form";
+import Modal from "./Modal";
 
 export default defineComponent({
   name: "TransactionDetailsModal",
@@ -49,7 +48,7 @@ export default defineComponent({
         <Modal
           heading={props.transactionDetails.value?.heading}
           icon={props.icon}
-          onClose={props.onClose}
+          onClose={() => props.onClose?.()}
           showClose
         >
           <div class="bg-gray-base rounded-lg p-4">

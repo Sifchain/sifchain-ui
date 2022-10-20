@@ -1,4 +1,4 @@
-import { flagsStore } from "@/store/modules/flags";
+import { flagsStore } from "~/store/modules/flags";
 import { createGraphQLClient } from "./createGraphQLClient";
 
 export const createCryptoeconGqlClient = () => {

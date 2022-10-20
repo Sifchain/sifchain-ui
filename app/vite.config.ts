@@ -62,16 +62,16 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "/src"),
+      "~": path.resolve(__dirname, "/src"),
       stream: "stream-browserify",
     },
   },
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "@/scss/typography.scss";
-       @import "@/scss/variables.scss";
-       @import "@/scss/mixins.scss";`,
+        additionalData: `@import "~/scss/typography.scss";
+       @import "~/scss/variables.scss";
+       @import "~/scss/mixins.scss";`,
       },
     },
   },

@@ -1,14 +1,14 @@
-import AssetIcon, { IconName } from "@/components/AssetIcon";
-import { TokenIcon } from "@/components/TokenIcon";
+import AssetIcon, { IconName } from "~/components/AssetIcon";
+import { TokenIcon } from "~/components/TokenIcon";
 import { Asset, IAsset } from "@sifchain/sdk";
-import { Button } from "@/components/Button/Button";
+import { Button } from "~/components/Button/Button";
 import { defineComponent, PropType } from "vue";
-import { useCore } from "@/hooks/useCore";
-import { accountStore } from "@/store/modules/accounts";
+import { useCore } from "~/hooks/useCore";
+import { accountStore } from "~/store/modules/accounts";
 import { rewardColumnsLookup, RewardProgram } from "../useRewardsPageData";
 import { getClaimableAmountString } from "../getClaimableAmountString";
-import { symbolWithoutPrefix } from "@/utils/symbol";
-import { useNativeChain } from "@/hooks/useChains";
+import { symbolWithoutPrefix } from "~/utils/symbol";
+import { useNativeChain } from "~/hooks/useChains";
 
 const REWARD_TYPE_DISPLAY_DATA: Record<string, { icon: IconName }> = {
   harvest: {

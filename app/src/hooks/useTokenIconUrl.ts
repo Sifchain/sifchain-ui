@@ -1,4 +1,4 @@
-import { useCore } from "@/hooks/useCore";
+import { useCore } from "~/hooks/useCore";
 import { computed } from "vue";
 import { Ref } from "vue";
 

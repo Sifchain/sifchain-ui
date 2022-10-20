@@ -8,12 +8,12 @@ import {
 } from "vue";
 import { IAsset } from "@sifchain/sdk";
 
-import { TokenSelectDropdown } from "@/components/TokenSelectDropdown";
-import { Input } from "@/components/Input/Input";
-import { Button } from "@/components/Button/Button";
-import { useManagedInputValueRef } from "@/hooks/useManagedInputValueRef";
-import { TokenNetworkIcon } from "@/components/TokenNetworkIcon/TokenNetworkIcon";
-import { prettyNumber } from "@/utils/prettyNumber";
+import { TokenSelectDropdown } from "~/components/TokenSelectDropdown";
+import { Input } from "~/components/Input/Input";
+import { Button } from "~/components/Button/Button";
+import { useManagedInputValueRef } from "~/hooks/useManagedInputValueRef";
+import { TokenNetworkIcon } from "~/components/TokenNetworkIcon/TokenNetworkIcon";
+import { prettyNumber } from "~/utils/prettyNumber";
 
 function required<T>(type: T) {
   return {

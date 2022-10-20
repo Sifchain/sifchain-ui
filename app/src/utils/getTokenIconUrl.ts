@@ -1,4 +1,4 @@
-import { useCore } from "@/hooks/useCore";
+import { useCore } from "~/hooks/useCore";
 import { IAsset } from "@sifchain/sdk";
 
 // All token svg icons are passed in as a <symbol, path> lookup via vite.config.ts.

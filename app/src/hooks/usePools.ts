@@ -1,4 +1,4 @@
-import { useSifchainClients } from "@/business/providers/SifchainClientsProvider";
+import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
 import { useAsyncData } from "./useAsyncData";
 
 export default function usePools() {

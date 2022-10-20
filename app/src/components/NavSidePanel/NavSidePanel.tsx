@@ -1,18 +1,18 @@
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 
-import { accountStore } from "@/store/modules/accounts";
-import { flagsStore, MARGIN_FE_URL } from "@/store/modules/flags";
-import { governanceStore } from "@/store/modules/governance";
-import Logo from "@/assets/logo-large.svg";
-import useChangeLog from "@/hooks/useChangeLog";
-import { shouldAllowFaucetFunding } from "@/hooks/useFaucet";
-import Tooltip, { TooltipInstance } from "@/components/Tooltip";
-import { Button } from "@/components/Button/Button";
-import { VotingModal } from "@/components/VotingModal/VotingModal";
+import { accountStore } from "~/store/modules/accounts";
+import { flagsStore, MARGIN_FE_URL } from "~/store/modules/flags";
+import { governanceStore } from "~/store/modules/governance";
+import Logo from "~/assets/logo-large.svg";
+import useChangeLog from "~/hooks/useChangeLog";
+import { shouldAllowFaucetFunding } from "~/hooks/useFaucet";
+import Tooltip, { TooltipInstance } from "~/components/Tooltip";
+import { Button } from "~/components/Button/Button";
+import { VotingModal } from "~/components/VotingModal/VotingModal";
 import ChangelogModal, {
   changelogViewedVersion,
-} from "@/components/ChangelogModal";
+} from "~/components/ChangelogModal";
 
 import NavSidePanelItem from "./NavSidePanelItem";
 import AssetIcon from "../AssetIcon";

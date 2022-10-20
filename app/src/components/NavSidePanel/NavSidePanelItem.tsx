@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { defineComponent, PropType, HTMLAttributes, computed } from "vue";
 import { useLink, RouterLink } from "vue-router";
-import { MARGIN_FE_URL } from "@/store/modules/flags";
+import { MARGIN_FE_URL } from "~/store/modules/flags";
 import AssetIcon, { IconName } from "../AssetIcon";
 
 export default defineComponent({

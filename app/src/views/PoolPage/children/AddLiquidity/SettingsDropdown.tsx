@@ -1,5 +1,5 @@
-import AssetIcon from "@/components/AssetIcon";
-import { Tooltip, TooltipInstance } from "@/components/Tooltip";
+import AssetIcon from "~/components/AssetIcon";
+import { Tooltip, TooltipInstance } from "~/components/Tooltip";
 import { defineComponent, PropType, ref } from "vue";
 
 export default defineComponent({

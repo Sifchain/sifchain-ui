@@ -2,7 +2,7 @@
   "sifAddrPrefix": "sif",
   "sifApiUrl": "https://proxies.sifchain.finance/api/sifchain-staging/rest",
   "sifRpcUrl": "https://proxies.sifchain.finance/api/sifchain-staging/rpc",
-  "vanirUrl": "https://proxies.sifchain.finance/api/vanir/testnet/beta",
+  "vanirUrl": "https://data.sifchain.finance/beta",
   "sifChainId": "sifchain-testnet-1",
   "web3Provider": "metamask",
   "nativeAsset": "rowan",

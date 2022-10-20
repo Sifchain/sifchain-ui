@@ -1,7 +1,7 @@
 import groupBy from "lodash/groupBy";
 import uniq from "lodash/fp/uniq";
 
-import { PoolStatsResponseData } from "@/hooks/usePoolStats";
+import { PoolStatsResponseData } from "~/hooks/usePoolStats";
 
 export const BASE_URL_DATA_SERVICES =
   "https://proxies.sifchain.finance/api/vanir/testnet";

@@ -1,4 +1,4 @@
-import { flagsStore } from "@/store/modules/flags";
+import { flagsStore } from "~/store/modules/flags";
 import { defineComponent } from "vue";
 
 export default defineComponent({

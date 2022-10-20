@@ -2,17 +2,17 @@ import { ref, computed, Ref } from "vue";
 import { RouteLocationRaw, useRouter } from "vue-router";
 import { toBaseUnits, Network, AssetAmount } from "@sifchain/sdk";
 
-import { Button } from "@/components/Button/Button";
-import { TokenIcon } from "@/components/TokenIcon";
-import { useToken } from "@/hooks/useToken";
-import { formatAssetAmount, getUnpeggedSymbol } from "@/components/utils";
-import { useCore } from "@/hooks/useCore";
+import { Button } from "~/components/Button/Button";
+import { TokenIcon } from "~/components/TokenIcon";
+import { useToken } from "~/hooks/useToken";
+import { formatAssetAmount, getUnpeggedSymbol } from "~/components/utils";
+import { useCore } from "~/hooks/useCore";
 
-import { useBridgeEventDetails } from "@/hooks/useTransactionDetails";
-import { rootStore } from "@/store";
-import { useBoundRoute } from "@/hooks/useBoundRoute";
-import { useChains } from "@/hooks/useChains";
-import { accountStore } from "@/store/modules/accounts";
+import { useBridgeEventDetails } from "~/hooks/useTransactionDetails";
+import { rootStore } from "~/store";
+import { useBoundRoute } from "~/hooks/useBoundRoute";
+import { useChains } from "~/hooks/useChains";
+import { accountStore } from "~/store/modules/accounts";
 import { BridgeEvent } from "@sifchain/sdk/src/clients/bridges/BaseBridge";
 
 export type ExportParams = {
