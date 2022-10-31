@@ -93,6 +93,12 @@ export function SyncPools(
           pool.externalLiabilities,
         );
 
+        const poolDenom = pool.externalAsset?.symbol ?? "";
+
+        const swapFeeRate =
+          swapFeeParamsRes.tokenParams.find((x) => x.asset === poolDenom)
+            ?.swapFeeRate ?? swapFeeParamsRes.defaultSwapFeeRate;
+
         return new Pool(
           AssetAmount(nativeAsset, nativeAssetBalance),
           AssetAmount(asset, externalAssetBalance),
@@ -102,7 +108,7 @@ export function SyncPools(
               native: toNativeAmountDerived(pool.swapPriceNative),
               external: toNativeAmountDerived(pool.swapPriceExternal),
             },
-            swapFeeRate: toNativeAmountDerived(swapFeeParamsRes.swapFeeRate),
+            swapFeeRate: toNativeAmountDerived(swapFeeRate),
             currentRatioShiftingRate: toNativeAmountDerived(
               pmtpParamsRes.pmtpRateParams?.pmtpCurrentRunningRate ?? "0",
             ),
