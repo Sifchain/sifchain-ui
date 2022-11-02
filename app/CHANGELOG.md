@@ -1,3 +1,7 @@
+## Release 2022.11.4
+
+- Margin APR’s on Pool Stats page
+
 ## Release 2022.09.17
 
 - Margin APR’s on Pool Stats page
