@@ -16,9 +16,8 @@ export default defineComponent({
         }}
       >
         <div class="bg-accent-gradient w-[80vw] max-w-[990px] rounded-bl p-[20px] text-sm">
-          Welcome to our BetaNet! Please be aware that while this has passed
-          several public security audits, it is still in Beta. We encourage you
-          to first understand how it works before transacting on it and exercise
+          Welcome to our MainNet-Beta! We encourage you to first understand how
+          everything works before transacting on the DEX, and to exercise
           caution at all times.{" "}
           <a
             class="underline"
@@ -43,7 +42,7 @@ export default defineComponent({
             size={20}
             class="mr-[10px]"
           />
-          BetaNet
+          MainNet-Beta
         </button>
       </div>
     );
