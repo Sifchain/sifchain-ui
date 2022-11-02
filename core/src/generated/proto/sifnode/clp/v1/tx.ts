@@ -162,7 +162,7 @@ export interface MsgAddProviderDistributionPeriodResponse {}
 
 export interface MsgUpdateSwapFeeParamsRequest {
   signer: string;
-  swapFeeRate: string;
+  defaultSwapFeeRate: string;
   tokenParams: SwapFeeTokenParams[];
 }
 
@@ -2572,7 +2572,7 @@ export const MsgAddProviderDistributionPeriodResponse = {
 };
 
 function createBaseMsgUpdateSwapFeeParamsRequest(): MsgUpdateSwapFeeParamsRequest {
-  return { signer: "", swapFeeRate: "", tokenParams: [] };
+  return { signer: "", defaultSwapFeeRate: "", tokenParams: [] };
 }
 
 export const MsgUpdateSwapFeeParamsRequest = {
@@ -2583,8 +2583,8 @@ export const MsgUpdateSwapFeeParamsRequest = {
     if (message.signer !== "") {
       writer.uint32(10).string(message.signer);
     }
-    if (message.swapFeeRate !== "") {
-      writer.uint32(18).string(message.swapFeeRate);
+    if (message.defaultSwapFeeRate !== "") {
+      writer.uint32(18).string(message.defaultSwapFeeRate);
     }
     for (const v of message.tokenParams) {
       SwapFeeTokenParams.encode(v!, writer.uint32(26).fork()).ldelim();
@@ -2606,7 +2606,7 @@ export const MsgUpdateSwapFeeParamsRequest = {
           message.signer = reader.string();
           break;
         case 2:
-          message.swapFeeRate = reader.string();
+          message.defaultSwapFeeRate = reader.string();
           break;
         case 3:
           message.tokenParams.push(
@@ -2624,7 +2624,9 @@ export const MsgUpdateSwapFeeParamsRequest = {
   fromJSON(object: any): MsgUpdateSwapFeeParamsRequest {
     return {
       signer: isSet(object.signer) ? String(object.signer) : "",
-      swapFeeRate: isSet(object.swapFeeRate) ? String(object.swapFeeRate) : "",
+      defaultSwapFeeRate: isSet(object.defaultSwapFeeRate)
+        ? String(object.defaultSwapFeeRate)
+        : "",
       tokenParams: Array.isArray(object?.tokenParams)
         ? object.tokenParams.map((e: any) => SwapFeeTokenParams.fromJSON(e))
         : [],
@@ -2634,8 +2636,8 @@ export const MsgUpdateSwapFeeParamsRequest = {
   toJSON(message: MsgUpdateSwapFeeParamsRequest): unknown {
     const obj: any = {};
     message.signer !== undefined && (obj.signer = message.signer);
-    message.swapFeeRate !== undefined &&
-      (obj.swapFeeRate = message.swapFeeRate);
+    message.defaultSwapFeeRate !== undefined &&
+      (obj.defaultSwapFeeRate = message.defaultSwapFeeRate);
     if (message.tokenParams) {
       obj.tokenParams = message.tokenParams.map((e) =>
         e ? SwapFeeTokenParams.toJSON(e) : undefined,
@@ -2651,7 +2653,7 @@ export const MsgUpdateSwapFeeParamsRequest = {
   ): MsgUpdateSwapFeeParamsRequest {
     const message = createBaseMsgUpdateSwapFeeParamsRequest();
     message.signer = object.signer ?? "";
-    message.swapFeeRate = object.swapFeeRate ?? "";
+    message.defaultSwapFeeRate = object.defaultSwapFeeRate ?? "";
     message.tokenParams =
       object.tokenParams?.map((e) => SwapFeeTokenParams.fromPartial(e)) || [];
     return message;
