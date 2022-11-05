@@ -109,6 +109,7 @@ export function SyncPools(
               external: toNativeAmountDerived(pool.swapPriceExternal),
             },
             swapFeeRate: toNativeAmountDerived(swapFeeRate),
+            swapFeeTokens: swapFeeParamsRes.tokenParams,
             currentRatioShiftingRate: toNativeAmountDerived(
               pmtpParamsRes.pmtpRateParams?.pmtpCurrentRunningRate ?? "0",
             ),
