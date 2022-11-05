@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { Asset, IAsset } from "./Asset";
 import { AssetAmount, IAssetAmount } from "./AssetAmount";
 import { Pair } from "./Pair";
@@ -9,6 +10,7 @@ import {
   calculateSwapFee,
 } from "./formulae";
 import { Amount, IAmount } from "./Amount";
+import { SwapFeeTokenParams } from "generated/proto/sifnode/clp/v1/params";
 
 export type IPool = Omit<Pool, "poolUnits" | "calculatePoolUnits">;
 
@@ -49,6 +51,7 @@ export class Pool extends Pair {
   poolUnits: IAmount;
   swapPrices?: SwapPrices;
   swapFeeRate?: IAmount;
+  swapFeeTokens?: SwapFeeTokenParams[];
   /**
    * clp.getPmtpParams pmtp_current_running_rate
    */
@@ -70,6 +73,7 @@ export class Pool extends Pair {
        * clp.getSwapFeeRate pmtp_current_running_rate
        */
       swapFeeRate?: IAmount;
+      swapFeeTokens?: SwapFeeTokenParams[];
       /**
        * clp.getPmtpParams pmtp_current_running_rate
        */
@@ -90,6 +94,7 @@ export class Pool extends Pair {
     super(a, b);
     this.swapPrices = params?.swapPrices;
     this.swapFeeRate = params?.swapFeeRate;
+    this.swapFeeTokens = params?.swapFeeTokens;
     this.currentRatioShiftingRate = params?.currentRatioShiftingRate;
 
     this.nativeLiabilities = params?.nativeLiabilities;
@@ -138,13 +143,22 @@ export class Pool extends Pair {
     if (!Y) throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
 
     const toRowan = Y.symbol === NATIVE_ASSET_DENOM;
+    const swapFromTokens = this.swapFeeTokens?.find(
+      (i) => i.asset === x.symbol,
+    )?.swapFeeRate;
+
+    // @TODO: Line 152 is hardcoded rowan decimals, because right now we only have rowan
+    //        We need a way to lookup the symbol
+    const swapFeeRate = swapFromTokens
+      ? Amount(Number(swapFromTokens) / 10 ** x.decimals)
+      : this.swapFeeRate;
 
     const providerFee = calculateSwapFee(
       {
         inputAmount: x,
         inputBalanceInPool: X,
         outputBalanceInPool: Y,
-        swapFeeRate: this.swapFeeRate ?? Amount("0"),
+        swapFeeRate: swapFeeRate ?? Amount("0"),
         currentRatioShiftingRate: this.currentRatioShiftingRate ?? Amount("0"),
       },
       toRowan,
