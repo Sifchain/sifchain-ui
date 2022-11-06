@@ -1,6 +1,6 @@
 {
   "name": "sifchain-ui",
-  "version": "2.14.2",
+  "version": "2.14.3",
   "private": true,
   "license": "UNLICENSED",
   "packageManager": "yarn@3.2.0",
