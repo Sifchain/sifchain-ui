@@ -88,7 +88,7 @@ export function useSwapCalculator(input: {
       return null;
     }
 
-    return CompositePool(fromPair.value, toPair.value);
+    return new CompositePool(fromPair.value, toPair.value);
   });
 
   // Get the balance of the from the users account
@@ -444,6 +444,12 @@ export function useSwapCalculator(input: {
     return SwapState.VALID_INPUT;
   });
 
+  const swapFeeRate = computed(() => {
+    return fromField.value.asset
+      ? pool.value?.getSwapFeeRate(fromField.value.asset)
+      : pool.value?.swapFeeRate;
+  });
+
   return {
     state,
     fromFieldAmount: fromField.value.fieldAmount,
@@ -458,5 +464,6 @@ export function useSwapCalculator(input: {
     reverseSwapResult,
     priceRatio,
     currentAssetLiquidityThreshold,
+    swapFeeRate,
   };
 }

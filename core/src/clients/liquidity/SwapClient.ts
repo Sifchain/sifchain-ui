@@ -67,7 +67,7 @@ export class SwapClient extends BaseLiquidityClient {
     const compositePool =
       params.fromPool === params.toPool
         ? params.fromPool
-        : CompositePool(params.fromPool, params.toPool);
+        : new CompositePool(params.fromPool, params.toPool);
 
     let fromAmount =
       params.fromAmount || compositePool.calcReverseSwapResult(params.toAmount);

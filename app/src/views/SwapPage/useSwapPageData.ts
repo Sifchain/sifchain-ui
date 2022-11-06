@@ -182,6 +182,7 @@ export const useSwapPageData = () => {
     minimumReceived,
     effectiveMinimumReceived,
     currentAssetLiquidityThreshold,
+    swapFeeRate,
   } = useSwapCalculator({
     balances: computed(() => store.wallet.get(Network.SIFCHAIN).balances),
     fromAmount,
@@ -452,5 +453,6 @@ export const useSwapPageData = () => {
     handleBeginSwap,
     isFromMaxActive,
     selectedField,
+    swapFeeRate,
   };
 };

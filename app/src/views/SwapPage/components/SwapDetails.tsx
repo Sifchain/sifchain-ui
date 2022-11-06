@@ -1,4 +1,4 @@
-import { IAsset } from "@sifchain/sdk";
+import { IAmount, IAsset } from "@sifchain/sdk";
 import { computed, defineComponent, PropType, Ref } from "vue";
 
 import Button from "~/components/Button";
@@ -9,6 +9,7 @@ export const SwapDetails = defineComponent({
     minimumReceived: String,
     priceImpact: String,
     liquidityProviderFee: String,
+    swapFeeRate: Object as PropType<IAmount>,
     priceRatio: Object as PropType<Ref<string>>,
     toAsset: Object as PropType<Ref<IAsset>>,
     fromAsset: Object as PropType<Ref<IAsset>>,
@@ -111,7 +112,8 @@ export const SwapDetails = defineComponent({
           <div class="text-md w-full pl-[20px] text-left font-sans font-medium capitalize text-white">
             Liquidity Provider Fee
             <Button.InlineHelp>
-              This is the fee paid to the liquidity providers of this pool.
+              This is the fee paid to the liquidity providers of this pool.{" "}
+              (Current rate: {(props.swapFeeRate?.toNumber() ?? 0) * 100}%)
             </Button.InlineHelp>
           </div>
           <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium text-white">
