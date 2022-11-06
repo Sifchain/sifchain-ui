@@ -133,6 +133,7 @@ export default defineComponent({
               priceImpact={(data.priceImpact.value ?? "") + "%"}
               liquidityProviderFee={data.providerFee.value ?? ""}
               minimumReceived={data.minimumReceived.value}
+              swapFeeRate={data.swapFeeRate.value}
             />
             {data.fromAsset.value.symbol === "rowan" && (
               <section
