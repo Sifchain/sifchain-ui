@@ -198,7 +198,7 @@ describe("Pool", () => {
         AssetAmount(ETH, "1000000"),
       );
       expect(() => {
-        CompositePool(pair1, pair2);
+        new CompositePool(pair1, pair2);
       }).toThrow();
     });
 
@@ -213,7 +213,7 @@ describe("Pool", () => {
         AssetAmount(BTK, "1000000000000"),
       );
 
-      const compositePool = CompositePool(pair1, pair2);
+      const compositePool = new CompositePool(pair1, pair2);
 
       expect(compositePool.contains(BTK)).toBe(true);
       expect(compositePool.contains(ATK)).toBe(true);
@@ -231,7 +231,7 @@ describe("Pool", () => {
         AssetAmount(BTK, "1000000000000"),
       );
 
-      const compositePool = CompositePool(pair1, pair2);
+      const compositePool = new CompositePool(pair1, pair2);
 
       expect(compositePool.getAmount("atk").toString()).toBe(
         "2000000000000 ATK",
@@ -257,7 +257,7 @@ describe("Pool", () => {
         AssetAmount(BTK, "1000000000000000000000000000000"),
       );
 
-      const compositePool = CompositePool(pair1, pair2);
+      const compositePool = new CompositePool(pair1, pair2);
 
       const inputAmount = AssetAmount(ATK, "10000000000000000000");
 
@@ -283,7 +283,7 @@ describe("Pool", () => {
         AssetAmount(BTK, "1000000000000000000000000000000"),
       );
 
-      const compositePool = CompositePool(pair1, pair2);
+      const compositePool = new CompositePool(pair1, pair2);
       const inputAmount = AssetAmount(ATK, "1000000000000000000");
       const compositeSwapAmount = compositePool.calcSwapResult(inputAmount);
 
@@ -338,7 +338,7 @@ describe("Pool", () => {
         AssetAmount(TOKENS.btk, "1000000000000000000000000000000"),
         AssetAmount(TOKENS.rowan, "1000000000000000000000000000000"),
       );
-      const compositePool = CompositePool(pair1, pair2);
+      const compositePool = new CompositePool(pair1, pair2);
       expect(
         compositePool
           .calcSwapResult(AssetAmount(TOKENS.atk, "100000000000000000000"))
