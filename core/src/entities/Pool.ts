@@ -51,7 +51,7 @@ export class Pool extends Pair {
   poolUnits: IAmount;
   swapPrices?: SwapPrices;
   swapFeeRate?: IAmount;
-  swapFeeTokens?: SwapFeeTokenParams[];
+  swapFeeTokenParams?: SwapFeeTokenParams[];
   /**
    * clp.getPmtpParams pmtp_current_running_rate
    */
@@ -73,7 +73,7 @@ export class Pool extends Pair {
        * clp.getSwapFeeRate pmtp_current_running_rate
        */
       swapFeeRate?: IAmount;
-      swapFeeTokens?: SwapFeeTokenParams[];
+      swapFeeTokenParams?: SwapFeeTokenParams[];
       /**
        * clp.getPmtpParams pmtp_current_running_rate
        */
@@ -94,7 +94,7 @@ export class Pool extends Pair {
     super(a, b);
     this.swapPrices = params?.swapPrices;
     this.swapFeeRate = params?.swapFeeRate;
-    this.swapFeeTokens = params?.swapFeeTokens;
+    this.swapFeeTokenParams = params?.swapFeeTokenParams;
     this.currentRatioShiftingRate = params?.currentRatioShiftingRate;
 
     this.nativeLiabilities = params?.nativeLiabilities;
@@ -131,7 +131,7 @@ export class Pool extends Pair {
   }
 
   getSwapFeeRate(asset: IAsset) {
-    const swapFeeTokenParams = this.swapFeeTokens?.find(
+    const swapFeeTokenParams = this.swapFeeTokenParams?.find(
       (token) => token.asset === asset.symbol,
     );
 
@@ -284,12 +284,12 @@ export class CompositePool implements IPool {
       );
     }
 
-    const amounts = [
+    this.amounts = [
       ...pool1.amounts.filter((a) => a.symbol !== nativeSymbol),
       ...pool2.amounts.filter((a) => a.symbol !== nativeSymbol),
-    ];
+    ] as [IAssetAmount, IAssetAmount];
 
-    if (amounts.length !== 2) {
+    if (this.amounts.length !== 2) {
       throw new Error(
         "Cannot create composite pair because pairs do not share a common symbol",
       );
@@ -357,6 +357,7 @@ export class CompositePool implements IPool {
     const [first, second] = this.pool1.contains(x)
       ? [this.pool1, this.pool2]
       : [this.pool2, this.pool1];
+
     const firstSwapFee = first.calcProviderFee(x);
     const firstSwapOutput = first.calcSwapResult(x);
     const secondSwapFee = second.calcProviderFee(firstSwapOutput);
