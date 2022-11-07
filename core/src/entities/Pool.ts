@@ -357,7 +357,6 @@ export class CompositePool implements IPool {
     const [first, second] = this.pool1.contains(x)
       ? [this.pool1, this.pool2]
       : [this.pool2, this.pool1];
-
     const firstSwapFee = first.calcProviderFee(x);
     const firstSwapOutput = first.calcSwapResult(x);
     const secondSwapFee = second.calcProviderFee(firstSwapOutput);
