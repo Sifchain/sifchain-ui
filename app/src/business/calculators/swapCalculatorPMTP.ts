@@ -273,6 +273,12 @@ export function useSwapCalculator(input: {
     );
   });
 
+  const swapFeeRate = computed(() => {
+    return fromField.value.asset
+      ? pool.value?.getSwapFeeRate(fromField.value.asset)
+      : pool.value?.swapFeeRate;
+  });
+
   const effectiveMinimumReceived = computed(() => {
     if (
       !input.slippage.value ||
@@ -442,12 +448,6 @@ export function useSwapCalculator(input: {
     }
 
     return SwapState.VALID_INPUT;
-  });
-
-  const swapFeeRate = computed(() => {
-    return fromField.value.asset
-      ? pool.value?.getSwapFeeRate(fromField.value.asset)
-      : pool.value?.swapFeeRate;
   });
 
   return {
