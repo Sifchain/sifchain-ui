@@ -450,6 +450,12 @@ export function useSwapCalculator(input: {
     return SwapState.VALID_INPUT;
   });
 
+  const swapFeeRate = computed(() => {
+    return fromField.value.asset
+      ? pool.value?.getSwapFeeRate(fromField.value.asset)
+      : pool.value?.swapFeeRate;
+  });
+
   return {
     state,
     fromFieldAmount: fromField.value.fieldAmount,
