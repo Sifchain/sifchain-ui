@@ -400,8 +400,14 @@ export function useReactivePoolCalculator(input: {
       return PoolState.ZERO_AMOUNTS_NEW_POOL;
     }
 
-    if (aAmountIsZeroOrFalsy || bAmountIsZeroOrFalsy) {
-      return PoolState.ZERO_AMOUNTS;
+    if (input.symmetricalPooling.value) {
+      if (aAmountIsZeroOrFalsy || bAmountIsZeroOrFalsy) {
+        return PoolState.ZERO_AMOUNTS;
+      }
+    } else {
+      if (aAmountIsZeroOrFalsy && bAmountIsZeroOrFalsy) {
+        return PoolState.ZERO_AMOUNTS;
+      }
     }
 
     // Insufficient Funds
