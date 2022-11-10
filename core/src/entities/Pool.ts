@@ -150,7 +150,9 @@ export class Pool extends Pair {
       );
     }
     const Y = this.amounts.find((a) => a.symbol !== x.symbol);
-    if (!Y) throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
+    if (!Y) {
+      throw new Error("Pool does not have an opposite asset."); // For Typescript's sake will probably never happen
+    }
 
     const toRowan = Y.symbol === NATIVE_ASSET_DENOM;
     const tokenSwapFeeRate = this.getSwapFeeRate(x);

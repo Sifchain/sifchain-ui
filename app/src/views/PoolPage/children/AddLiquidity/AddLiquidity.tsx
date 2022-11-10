@@ -205,11 +205,11 @@ export default defineComponent({
           <Modal
             heading="Add Liquidity"
             icon="interactive/plus"
-            showClose
+            showClose={true}
             onClose={close}
             headingAction={
               <div class="flex justify-end md:min-w-[200px]">
-                <AssetPair hideTokenSymbol asset={data.fromAsset} />
+                <AssetPair hideTokenSymbol={true} asset={data.fromAsset} />
               </div>
             }
           >
@@ -265,7 +265,7 @@ export default defineComponent({
         <Modal
           heading="Add Liquidity"
           icon="interactive/plus"
-          showClose
+          showClose={true}
           headingAction={
             <div class="flex items-center justify-between gap-2">
               <Tooltip
@@ -281,7 +281,7 @@ export default defineComponent({
                 }
               >
                 <div class="flex items-center justify-center gap-2">
-                  <AssetPair hideTokenSymbol asset={data.fromAsset} />
+                  <AssetPair hideTokenSymbol={true} asset={data.fromAsset} />
                   <div class="grid gap-0.5">
                     <div class="text-accent-base/80 text-sm !font-semibold">
                       Pool composition
@@ -323,7 +323,7 @@ export default defineComponent({
           <div class="grid gap-4">
             <div>
               <TokenInputGroup
-                shouldShowNumberInputOnLeft
+                shouldShowNumberInputOnLeft={true}
                 excludeSymbols={["rowan"]}
                 heading={fromTokenLabel.value}
                 asset={data.fromAsset.value}
@@ -349,8 +349,8 @@ export default defineComponent({
                 />
               </div>
               <TokenInputGroup
-                selectDisabled
-                shouldShowNumberInputOnLeft
+                selectDisabled={true}
+                shouldShowNumberInputOnLeft={true}
                 heading={toTokenLabel.value}
                 asset={data.toAsset.value}
                 amount={data.toAmount.value}

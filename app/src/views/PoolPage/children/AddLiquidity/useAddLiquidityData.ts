@@ -62,7 +62,9 @@ export const useAddLiquidityData = () => {
         (a) => a.symbol.toUpperCase() === v.toUpperCase(),
       );
       const symbol = asset?.symbol;
-      if (!symbol) return;
+      if (!symbol) {
+        return;
+      }
       router.replace({
         ...router.currentRoute.value,
         params: {
@@ -76,7 +78,9 @@ export const useAddLiquidityData = () => {
     const accountBalance = balances.value.find(
       (balance) => balance.asset.symbol === fromSymbol.value,
     );
-    if (!accountBalance) return;
+    if (!accountBalance) {
+      return;
+    }
     return (
       fromAmount.value === format(accountBalance.amount, accountBalance.asset)
     );
@@ -89,7 +93,9 @@ export const useAddLiquidityData = () => {
     const accountBalance = balances.value.find(
       (balance) => balance.asset.symbol === toSymbol.value,
     );
-    if (!accountBalance) return;
+    if (!accountBalance) {
+      return;
+    }
     return (
       toAmount.value === format(accountBalance.amount, accountBalance.asset)
     );
@@ -110,9 +116,11 @@ export const useAddLiquidityData = () => {
   const riskFactor = computed(() => {
     const rFactor = Amount("1");
     if (
-      !tokenAField.value.fieldAmount ||
-      !tokenBField.value.fieldAmount ||
-      !poolAmounts.value
+      !(
+        tokenAField.value.fieldAmount &&
+        tokenBField.value.fieldAmount &&
+        poolAmounts.value
+      )
     ) {
       return rFactor;
     }
@@ -157,20 +165,24 @@ export const useAddLiquidityData = () => {
   });
 
   function handleNextStepClicked() {
-    if (!tokenAField.value.fieldAmount)
+    if (!tokenAField.value.fieldAmount) {
       throw new Error("from field amount is not defined");
-    if (!tokenBField.value.fieldAmount)
+    }
+    if (!tokenBField.value.fieldAmount) {
       throw new Error("to field amount is not defined");
+    }
 
     modalStatus.value = "confirm";
   }
 
   async function handleAskConfirmClicked() {
-    if (!tokenAField.value.fieldAmount)
+    if (!tokenAField.value.fieldAmount) {
       throw new Error("Token A field amount is not defined");
+    }
 
-    if (!tokenBField.value.fieldAmount)
+    if (!tokenBField.value.fieldAmount) {
       throw new Error("Token B field amount is not defined");
+    }
 
     modalStatus.value = "processing";
     transactionStatus.value = {
@@ -197,7 +209,7 @@ export const useAddLiquidityData = () => {
       queryClient.invalidateQueries(LIQUIDITY_PROVIDERS_KEY),
     ]);
 
-    if (!tokenAField.value.fieldAmount || !tokenBField.value.fieldAmount) {
+    if (!(tokenAField.value.fieldAmount && tokenBField.value.fieldAmount)) {
       throw new Error("Token A or Token B field amount is not defined");
     }
 
@@ -210,21 +222,20 @@ export const useAddLiquidityData = () => {
       useCore().services.bus.dispatch({
         type: "SuccessEvent",
         payload: {
-          message:
-            `Added ` +
-            [
-              tokenAField.value.fieldAmount.greaterThan("0") &&
-                `${formatAssetAmount(
-                  tokenAField.value.fieldAmount,
-                )} ${tokenAField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
-              tokenBField.value.fieldAmount.greaterThan("0") &&
-                `${formatAssetAmount(
-                  tokenBField.value.fieldAmount,
-                )} ${tokenBField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
-            ]
-              .filter(Boolean)
-              .join(" and ") +
-            ` to ${pool.nativeAmount?.displaySymbol.toUpperCase()} / ${pool.externalAmount?.displaySymbol.toUpperCase()} pool`,
+          message: `Added ${[
+            tokenAField.value.fieldAmount.greaterThan("0") &&
+              `${formatAssetAmount(
+                tokenAField.value.fieldAmount,
+              )} ${tokenAField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
+            tokenBField.value.fieldAmount.greaterThan("0") &&
+              `${formatAssetAmount(
+                tokenBField.value.fieldAmount,
+              )} ${tokenBField.value.fieldAmount?.displaySymbol.toUpperCase()}`,
+          ]
+            .filter(Boolean)
+            .join(
+              " and ",
+            )} to ${pool.nativeAmount?.displaySymbol.toUpperCase()} / ${pool.externalAmount?.displaySymbol.toUpperCase()} pool`,
         },
       });
     }
@@ -268,11 +279,12 @@ export const useAddLiquidityData = () => {
       switch (state.value) {
         case PoolState.SELECT_TOKENS:
           return "Select Tokens";
-        case PoolState.ZERO_AMOUNTS:
+        case PoolState.ZERO_AMOUNTS: {
           if (symmetricalPooling.value) {
             return "Please enter an amount";
           }
           return "Please enter both amounts";
+        }
         case PoolState.ZERO_AMOUNTS_NEW_POOL:
           return "Both inputs required";
         case PoolState.INSUFFICIENT_FUNDS:
@@ -288,7 +300,7 @@ export const useAddLiquidityData = () => {
       }
     }),
     toggleLabel: computed(() => {
-      return !preExistingPool.value ? null : "Pool Equally";
+      return preExistingPool.value ? "Pool Equally" : null;
     }),
     nextStepAllowed: computed(() => {
       return state.value === PoolState.VALID_INPUT;
@@ -348,7 +360,9 @@ export const useAddLiquidityData = () => {
         (balance) => balance.asset.symbol === fromSymbol.value,
       );
 
-      if (!accountBalance) return;
+      if (!accountBalance) {
+        return;
+      }
       fromAmount.value = formatAssetAmount(accountBalance);
     },
     handleToMaxClicked() {
@@ -357,7 +371,9 @@ export const useAddLiquidityData = () => {
       const accountBalance = balances.value.find(
         (balance) => balance.asset.symbol === toSymbol.value,
       );
-      if (!accountBalance) return;
+      if (!accountBalance) {
+        return;
+      }
       const maxAmount = getMaxAmount(toSymbol, accountBalance);
       toAmount.value = format(maxAmount, accountBalance.asset, {
         mantissa: 18,
@@ -367,7 +383,9 @@ export const useAddLiquidityData = () => {
     formatNumber,
     poolUnits: totalLiquidityProviderUnits,
     riskFactorStatus: computed<"" | "bad" | "danger" | "warning">(() => {
-      if (!riskFactor.value || symmetricalPooling.value) return "";
+      if (!riskFactor.value || symmetricalPooling.value) {
+        return "";
+      }
       if (riskFactor.value.lessThanOrEqual("0.01")) {
         return "";
       } else if (riskFactor.value.lessThanOrEqual("0.1")) {
