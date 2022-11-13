@@ -272,6 +272,8 @@ export class CompositePool implements IPool {
     AssetAmount("rowan", "0"),
   ];
 
+  #nativeSymbol: string;
+
   constructor(public readonly pool1: IPool, public readonly pool2: IPool) {
     // The combined asset is the
     const pool1Assets = pool1.amounts.map((a) => a.symbol);
@@ -286,9 +288,11 @@ export class CompositePool implements IPool {
       );
     }
 
+    this.#nativeSymbol = nativeSymbol;
+
     this.amounts = [
-      ...pool1.amounts.filter((a) => a.symbol !== nativeSymbol),
-      ...pool2.amounts.filter((a) => a.symbol !== nativeSymbol),
+      ...pool1.amounts.filter((a) => a.symbol !== this.#nativeSymbol),
+      ...pool2.amounts.filter((a) => a.symbol !== this.#nativeSymbol),
     ] as [IAssetAmount, IAssetAmount];
 
     if (this.amounts.length !== 2) {
@@ -319,9 +323,8 @@ export class CompositePool implements IPool {
   }
 
   getAmount(asset: IAsset | string) {
-    const nativeSymbol = this.nativeAmount.symbol;
-    if (Asset(asset).symbol === nativeSymbol) {
-      throw new Error(`Asset ${nativeSymbol} doesnt exist in pair`);
+    if (Asset(asset).symbol === this.#nativeSymbol) {
+      throw new Error(`Asset ${this.#nativeSymbol} doesnt exist in pair`);
     }
 
     // quicker to try catch than contains
