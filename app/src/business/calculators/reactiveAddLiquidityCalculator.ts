@@ -41,7 +41,7 @@ export function useReactivePoolCalculator(input: {
   const balanceMap = useBalances(input.balances);
 
   const preExistingPool = computed(() => {
-    if (!tokenAField.value.asset || !tokenBField.value.asset) {
+    if (!(tokenAField.value.asset && tokenBField.value.asset)) {
       return null;
     }
 
@@ -69,7 +69,7 @@ export function useReactivePoolCalculator(input: {
   });
 
   const tokenABalance = computed(() => {
-    if (!tokenAField.value.fieldAmount || !tokenAField.value.asset) {
+    if (!(tokenAField.value.fieldAmount && tokenAField.value.asset)) {
       return null;
     }
 
@@ -92,8 +92,12 @@ export function useReactivePoolCalculator(input: {
   });
 
   const fromBalanceOverdrawn = computed(() => {
-    if (!tokenABalance.value) return false;
-    if (!tokenAField.value.fieldAmount) return false;
+    if (!tokenABalance.value) {
+      return false;
+    }
+    if (!tokenAField.value.fieldAmount) {
+      return false;
+    }
 
     const fieldAmount = tokenAField.value.fieldAmount;
     const balance = tokenABalance.value;
@@ -110,10 +114,12 @@ export function useReactivePoolCalculator(input: {
       return preExistingPool.value;
     }
     if (
-      !tokenAField.value.fieldAmount ||
-      !tokenBField.value.fieldAmount ||
-      !tokenAField.value.asset ||
-      !tokenBField.value.asset
+      !(
+        tokenAField.value.fieldAmount &&
+        tokenBField.value.fieldAmount &&
+        tokenAField.value.asset &&
+        tokenBField.value.asset
+      )
     ) {
       return null;
     }
@@ -127,9 +133,11 @@ export function useReactivePoolCalculator(input: {
   // pool units for this prospective transaction [total, newUnits]
   const provisionedPoolUnitsArray = computed(() => {
     if (
-      !liquidityPool.value ||
-      !tokenBField.value.fieldAmount ||
-      !tokenAField.value.fieldAmount
+      !(
+        liquidityPool.value &&
+        tokenBField.value.fieldAmount &&
+        tokenAField.value.fieldAmount
+      )
     ) {
       return [Amount("0"), Amount("0")];
     }
@@ -142,7 +150,9 @@ export function useReactivePoolCalculator(input: {
 
   // pool units from the perspective of the liquidity provider
   const liquidityProviderPoolUnitsArray = computed(() => {
-    if (!provisionedPoolUnitsArray.value) return [Amount("0"), Amount("0")];
+    if (!provisionedPoolUnitsArray.value) {
+      return [Amount("0"), Amount("0")];
+    }
 
     const [totalPoolUnits, newUnits] = provisionedPoolUnitsArray.value;
 
@@ -163,19 +173,25 @@ export function useReactivePoolCalculator(input: {
   );
 
   const shareOfPool = computed(() => {
-    if (!liquidityProviderPoolUnitsArray.value) return Amount("0");
+    if (!liquidityProviderPoolUnitsArray.value) {
+      return Amount("0");
+    }
 
     const [units, lpUnits] = liquidityProviderPoolUnitsArray.value;
 
     // shareOfPool should be 0 if units and lpUnits are zero
-    if (units.equalTo("0") && lpUnits.equalTo("0")) return Amount("0");
+    if (units.equalTo("0") && lpUnits.equalTo("0")) {
+      return Amount("0");
+    }
 
     // if no units lp owns 100% of pool
     return units.equalTo("0") ? Amount("1") : lpUnits.divide(units);
   });
 
   const shareOfPoolPercent = computed(() => {
-    if (shareOfPool.value.multiply("10000").lessThan("1")) return "< 0.01%";
+    if (shareOfPool.value.multiply("10000").lessThan("1")) {
+      return "< 0.01%";
+    }
     return `${format(shareOfPool.value, {
       mantissa: 2,
       mode: "percent",
@@ -183,11 +199,13 @@ export function useReactivePoolCalculator(input: {
   });
 
   const poolAmounts = computed(() => {
-    if (!preExistingPool.value || !tokenAField.value.asset) {
+    if (!(preExistingPool.value && tokenAField.value.asset)) {
       return null;
     }
 
-    if (!preExistingPool.value.contains(tokenAField.value.asset)) return null;
+    if (!preExistingPool.value.contains(tokenAField.value.asset)) {
+      return null;
+    }
     const externalBalance = preExistingPool.value.externalAmount;
 
     const nativeBalance = preExistingPool.value.nativeAmount;
@@ -197,8 +215,12 @@ export function useReactivePoolCalculator(input: {
 
   // external_balance / native_balance
   const aPerBRatio = computed(() => {
-    if (!poolAmounts.value) return 0;
-    if (!preExistingPool.value) return 0;
+    if (!poolAmounts.value) {
+      return 0;
+    }
+    if (!preExistingPool.value) {
+      return 0;
+    }
 
     const [native, external] = poolAmounts.value;
 
@@ -224,8 +246,12 @@ export function useReactivePoolCalculator(input: {
 
   // native_balance / external_balance
   const bPerARatio = computed(() => {
-    if (!poolAmounts.value) return 0;
-    if (!preExistingPool.value) return 0;
+    if (!poolAmounts.value) {
+      return 0;
+    }
+    if (!preExistingPool.value) {
+      return 0;
+    }
 
     const [native, external] = poolAmounts.value;
 
@@ -253,11 +279,14 @@ export function useReactivePoolCalculator(input: {
   // (external_balance + external_added) / (native_balance + native_added)
   const aPerBRatioProjected = computed(() => {
     if (
-      !poolAmounts.value ||
-      !tokenAField.value.fieldAmount ||
-      !tokenBField.value.fieldAmount
-    )
+      !(
+        poolAmounts.value &&
+        tokenAField.value.fieldAmount &&
+        tokenBField.value.fieldAmount
+      )
+    ) {
       return null;
+    }
 
     const [native, external] = poolAmounts.value;
     const derivedNative = native.toDerived();
@@ -282,11 +311,14 @@ export function useReactivePoolCalculator(input: {
   // (native_balance + native_added)/(external_balance + external_added)
   const bPerARatioProjected = computed(() => {
     if (
-      !poolAmounts.value ||
-      !tokenAField.value.fieldAmount ||
-      !tokenBField.value.fieldAmount
-    )
+      !(
+        poolAmounts.value &&
+        tokenAField.value.fieldAmount &&
+        tokenBField.value.fieldAmount
+      )
+    ) {
       return null;
+    }
 
     const [native, external] = poolAmounts.value;
     const derivedNative = native.toDerived();
@@ -368,8 +400,14 @@ export function useReactivePoolCalculator(input: {
       return PoolState.ZERO_AMOUNTS_NEW_POOL;
     }
 
-    if (aAmountIsZeroOrFalsy || bAmountIsZeroOrFalsy) {
-      return PoolState.ZERO_AMOUNTS;
+    if (input.symmetricalPooling.value) {
+      if (aAmountIsZeroOrFalsy || bAmountIsZeroOrFalsy) {
+        return PoolState.ZERO_AMOUNTS;
+      }
+    } else {
+      if (aAmountIsZeroOrFalsy && bAmountIsZeroOrFalsy) {
+        return PoolState.ZERO_AMOUNTS;
+      }
     }
 
     // Insufficient Funds

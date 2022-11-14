@@ -508,12 +508,12 @@ describe("addLiquidityCalculator", () => {
     expect(bPerARatioProjectedMessage.value).toBe("1.00000000");
     // New shareOfPoolPercent for liquidity provider (inc prev liquidity)
     //2000/1002000 = 0.001996007984031936 so roughtly 0.2%
-    expect(shareOfPoolPercent.value).toBe("66.67%");
+    expect(shareOfPoolPercent.value).toBe("66.63%");
 
     // New pool units for liquidity provider (inc prev liquidity)
-    expect(totalLiquidityProviderUnits.value).toBe("1000000000000000000000000");
+    expect(totalLiquidityProviderUnits.value).toBe("1000500000000000000000000");
 
-    expect(totalPoolUnits.value).toBe("1500000000000000000000000");
+    expect(totalPoolUnits.value).toBe("1501500000000000000000000");
   });
 
   test("poolCalculator with preexisting pool but no preexisting liquidity", () => {
@@ -548,9 +548,9 @@ describe("addLiquidityCalculator", () => {
     expect(shareOfPoolPercent.value).toBe("33.33%");
 
     // New pool units for liquidity provider (inc prev liquidity)
-    expect(totalLiquidityProviderUnits.value).toBe("500000000000000000000000");
+    expect(totalLiquidityProviderUnits.value).toBe("500500000000000000000000");
 
-    expect(totalPoolUnits.value).toBe("1500000000000000000000000");
+    expect(totalPoolUnits.value).toBe("1501500000000000000000000");
   });
 
   test("Can handle division by zero", () => {

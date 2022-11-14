@@ -1,30 +1,29 @@
+import { Network } from "@sifchain/sdk";
+import { formatDistance } from "date-fns";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
-import { formatDistance } from "date-fns";
-import { Network } from "@sifchain/sdk";
 
-import { useTransactionDetails } from "~/hooks/useTransactionDetails";
-import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
-import { useFormattedTokenBalance } from "~/hooks/useFormattedTokenBalance";
+import AssetIcon from "~/components/AssetIcon";
 import { Button } from "~/components/Button/Button";
 import { Form, FormDetailsType } from "~/components/Form";
 import Modal from "~/components/Modal";
+import Toggle from "~/components/Toggle";
 import { TokenIcon } from "~/components/TokenIcon";
-import AssetIcon from "~/components/AssetIcon";
-import TransactionDetailsModal from "~/components/TransactionDetailsModal";
 import { Tooltip } from "~/components/Tooltip";
-import { TokenInputGroup } from "~/views/SwapPage/components/TokenInputGroup";
+import TransactionDetailsModal from "~/components/TransactionDetailsModal";
 import { useCurrentRewardPeriodStatistics } from "~/domains/clp/queries/params";
+import { useMarginEnabledPoolsQuery } from "~/domains/margin/queries/params";
+import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
+import { useFormattedTokenBalance } from "~/hooks/useFormattedTokenBalance";
+import { useTransactionDetails } from "~/hooks/useTransactionDetails";
+import { flagsStore } from "~/store/modules/flags";
 import { prettyNumber } from "~/utils/prettyNumber";
-
-import { useAddLiquidityData } from "./useAddLiquidityData";
+import { usePoolPageData } from "~/views/PoolPage/usePoolPageData";
+import { TokenInputGroup } from "~/views/SwapPage/components/TokenInputGroup";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
-import { usePoolPageData } from "../../usePoolPageData";
 import SettingsDropdown from "./SettingsDropdown";
-import Toggle from "~/components/Toggle";
-import { flagsStore } from "~/store/modules/flags";
-import { useMarginEnabledPoolsQuery } from "~/domains/margin/queries/params";
+import { useAddLiquidityData } from "./useAddLiquidityData";
 
 export default defineComponent({
   setup(): () => JSX.Element {
@@ -205,11 +204,11 @@ export default defineComponent({
           <Modal
             heading="Add Liquidity"
             icon="interactive/plus"
-            showClose
+            showClose={true}
             onClose={close}
             headingAction={
               <div class="flex justify-end md:min-w-[200px]">
-                <AssetPair hideTokenSymbol asset={data.fromAsset} />
+                <AssetPair hideTokenSymbol={true} asset={data.fromAsset} />
               </div>
             }
           >
@@ -265,7 +264,7 @@ export default defineComponent({
         <Modal
           heading="Add Liquidity"
           icon="interactive/plus"
-          showClose
+          showClose={true}
           headingAction={
             <div class="flex items-center justify-between gap-2">
               <Tooltip
@@ -281,7 +280,7 @@ export default defineComponent({
                 }
               >
                 <div class="flex items-center justify-center gap-2">
-                  <AssetPair hideTokenSymbol asset={data.fromAsset} />
+                  <AssetPair hideTokenSymbol={true} asset={data.fromAsset} />
                   <div class="grid gap-0.5">
                     <div class="text-accent-base/80 text-sm !font-semibold">
                       Pool composition
@@ -323,7 +322,7 @@ export default defineComponent({
           <div class="grid gap-4">
             <div>
               <TokenInputGroup
-                shouldShowNumberInputOnLeft
+                shouldShowNumberInputOnLeft={true}
                 excludeSymbols={["rowan"]}
                 heading={fromTokenLabel.value}
                 asset={data.fromAsset.value}
@@ -349,8 +348,8 @@ export default defineComponent({
                 />
               </div>
               <TokenInputGroup
-                selectDisabled
-                shouldShowNumberInputOnLeft
+                selectDisabled={true}
+                shouldShowNumberInputOnLeft={true}
                 heading={toTokenLabel.value}
                 asset={data.toAsset.value}
                 amount={data.toAmount.value}
