@@ -59,19 +59,19 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[320px] text-left justify-start",
+    class: "w-[280px] text-left justify-start whitespace-nowrap",
     sortable: true,
   },
   {
     id: "poolTvl",
     name: "Pool TVL",
     sortable: true,
-    class: "w-[168px] text-right justify-end",
+    class: "w-[200px] text-right justify-end whitespace-nowrap",
   },
   {
     id: "apy",
     name: "Reward APR",
-    class: "w-[128px] text-right justify-end",
+    class: "w-[128px] text-right justify-end whitespace-nowrap",
     sortable: true,
     help: (
       <code class="text-xs">
@@ -84,26 +84,19 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "marginapy",
     name: "Margin APY",
-    class: "w-[128px] text-right justify-end",
+    class: "w-[128px] text-right justify-end whitespace-nowrap",
     sortable: true,
-    // help: (
-    //   <code class="text-xs">
-    //     Margin APR represents the ratio of interest payments to pool balances
-    //     over a given time period. The current time period is set as the previous
-    //     600 blocks (≈ 1 hour) of trading activity.
-    //   </code>
-    // ),
   },
   {
     id: "userShare",
     name: "Your Pool Share",
-    class: "w-[128px] text-right justify-end",
+    class: "w-[128px] text-right justify-end whitespace-nowrap",
   },
   {
     id: "userValue",
     name: "Your Pool Value",
     help: "This is your estimated pool value in USD assuming you remove your liquidity equally across both tokens. This number does not take into consideration any projected or earned rewards.",
-    class: "w-[168px] text-right justify-end",
+    class: "w-[168px] text-right justify-end whitespace-nowrap",
   },
 ];
 
@@ -127,7 +120,9 @@ export const usePoolPageData = () => {
     ["userPoolsData", accountStore.refs.sifchain.connected.computed()],
     () => {
       const address = accountStore.state.sifchain.address;
-      if (!address) return;
+      if (!address) {
+        return;
+      }
 
       return useCore().usecases.clp.syncPools.syncUserPools(address);
     },
