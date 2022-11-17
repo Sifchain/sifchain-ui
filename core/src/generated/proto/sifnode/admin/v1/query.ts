@@ -1,6 +1,6 @@
 /* eslint-disable */
+import { Params, AdminAccount } from "./types";
 import Long from "long";
-import { AdminAccount } from "./types";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.admin.v1";
@@ -9,6 +9,12 @@ export interface ListAccountsRequest {}
 
 export interface ListAccountsResponse {
   keys: AdminAccount[];
+}
+
+export interface GetParamsRequest {}
+
+export interface GetParamsResponse {
+  params?: Params;
 }
 
 function createBaseListAccountsRequest(): ListAccountsRequest {
@@ -120,9 +126,112 @@ export const ListAccountsResponse = {
   },
 };
 
+function createBaseGetParamsRequest(): GetParamsRequest {
+  return {};
+}
+
+export const GetParamsRequest = {
+  encode(
+    _: GetParamsRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetParamsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetParamsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetParamsRequest {
+    return {};
+  },
+
+  toJSON(_: GetParamsRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetParamsRequest>, I>>(
+    _: I,
+  ): GetParamsRequest {
+    const message = createBaseGetParamsRequest();
+    return message;
+  },
+};
+
+function createBaseGetParamsResponse(): GetParamsResponse {
+  return { params: undefined };
+}
+
+export const GetParamsResponse = {
+  encode(
+    message: GetParamsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.params !== undefined) {
+      Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetParamsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.params = Params.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetParamsResponse {
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+    };
+  },
+
+  toJSON(message: GetParamsResponse): unknown {
+    const obj: any = {};
+    message.params !== undefined &&
+      (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetParamsResponse>, I>>(
+    object: I,
+  ): GetParamsResponse {
+    const message = createBaseGetParamsResponse();
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? Params.fromPartial(object.params)
+        : undefined;
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   ListAccounts(request: ListAccountsRequest): Promise<ListAccountsResponse>;
+  GetParams(request: GetParamsRequest): Promise<GetParamsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -130,6 +239,7 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.ListAccounts = this.ListAccounts.bind(this);
+    this.GetParams = this.GetParams.bind(this);
   }
   ListAccounts(request: ListAccountsRequest): Promise<ListAccountsResponse> {
     const data = ListAccountsRequest.encode(request).finish();
@@ -140,6 +250,18 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       ListAccountsResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetParams(request: GetParamsRequest): Promise<GetParamsResponse> {
+    const data = GetParamsRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.admin.v1.Query",
+      "GetParams",
+      data,
+    );
+    return promise.then((data) =>
+      GetParamsResponse.decode(new _m0.Reader(data)),
     );
   }
 }
@@ -183,4 +305,8 @@ export type Exact<P, I extends P> = P extends Builtin
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }
