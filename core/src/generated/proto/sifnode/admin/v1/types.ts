@@ -70,6 +70,10 @@ export interface AdminAccount {
   adminAddress: string;
 }
 
+export interface Params {
+  submitProposalFee: string;
+}
+
 function createBaseGenesisState(): GenesisState {
   return { adminAccounts: [] };
 }
@@ -200,6 +204,61 @@ export const AdminAccount = {
     const message = createBaseAdminAccount();
     message.adminType = object.adminType ?? 0;
     message.adminAddress = object.adminAddress ?? "";
+    return message;
+  },
+};
+
+function createBaseParams(): Params {
+  return { submitProposalFee: "" };
+}
+
+export const Params = {
+  encode(
+    message: Params,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.submitProposalFee !== "") {
+      writer.uint32(10).string(message.submitProposalFee);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Params {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.submitProposalFee = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Params {
+    return {
+      submitProposalFee: isSet(object.submitProposalFee)
+        ? String(object.submitProposalFee)
+        : "",
+    };
+  },
+
+  toJSON(message: Params): unknown {
+    const obj: any = {};
+    message.submitProposalFee !== undefined &&
+      (obj.submitProposalFee = message.submitProposalFee);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
+    const message = createBaseParams();
+    message.submitProposalFee = object.submitProposalFee ?? "";
     return message;
   },
 };

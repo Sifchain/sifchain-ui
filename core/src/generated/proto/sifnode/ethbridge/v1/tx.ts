@@ -5,6 +5,13 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.ethbridge.v1";
 
+export interface MsgPause {
+  signer: string;
+  isPaused: boolean;
+}
+
+export interface MsgPauseResponse {}
+
 /** MsgLock defines a message for locking coins and triggering a related event */
 export interface MsgLock {
   cosmosSender: string;
@@ -65,6 +72,111 @@ export interface MsgSetBlacklist {
 }
 
 export interface MsgSetBlacklistResponse {}
+
+function createBaseMsgPause(): MsgPause {
+  return { signer: "", isPaused: false };
+}
+
+export const MsgPause = {
+  encode(
+    message: MsgPause,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.isPaused === true) {
+      writer.uint32(16).bool(message.isPaused);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgPause {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgPause();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.isPaused = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgPause {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      isPaused: isSet(object.isPaused) ? Boolean(object.isPaused) : false,
+    };
+  },
+
+  toJSON(message: MsgPause): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.isPaused !== undefined && (obj.isPaused = message.isPaused);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgPause>, I>>(object: I): MsgPause {
+    const message = createBaseMsgPause();
+    message.signer = object.signer ?? "";
+    message.isPaused = object.isPaused ?? false;
+    return message;
+  },
+};
+
+function createBaseMsgPauseResponse(): MsgPauseResponse {
+  return {};
+}
+
+export const MsgPauseResponse = {
+  encode(
+    _: MsgPauseResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgPauseResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgPauseResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgPauseResponse {
+    return {};
+  },
+
+  toJSON(_: MsgPauseResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgPauseResponse>, I>>(
+    _: I,
+  ): MsgPauseResponse {
+    const message = createBaseMsgPauseResponse();
+    return message;
+  },
+};
 
 function createBaseMsgLock(): MsgLock {
   return {
@@ -1007,6 +1119,7 @@ export interface Msg {
   ): Promise<MsgUpdateCethReceiverAccountResponse>;
   RescueCeth(request: MsgRescueCeth): Promise<MsgRescueCethResponse>;
   SetBlacklist(request: MsgSetBlacklist): Promise<MsgSetBlacklistResponse>;
+  SetPause(request: MsgPause): Promise<MsgPauseResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1020,6 +1133,7 @@ export class MsgClientImpl implements Msg {
     this.UpdateCethReceiverAccount = this.UpdateCethReceiverAccount.bind(this);
     this.RescueCeth = this.RescueCeth.bind(this);
     this.SetBlacklist = this.SetBlacklist.bind(this);
+    this.SetPause = this.SetPause.bind(this);
   }
   Lock(request: MsgLock): Promise<MsgLockResponse> {
     const data = MsgLock.encode(request).finish();
@@ -1096,6 +1210,18 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgSetBlacklistResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  SetPause(request: MsgPause): Promise<MsgPauseResponse> {
+    const data = MsgPause.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.ethbridge.v1.Msg",
+      "SetPause",
+      data,
+    );
+    return promise.then((data) =>
+      MsgPauseResponse.decode(new _m0.Reader(data)),
     );
   }
 }
