@@ -1,19 +1,19 @@
+import { Network } from "@sifchain/sdk";
+import { computed, unref } from "vue";
+import { MaybeRef } from "vue-query/lib/vue/types";
 import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
 import { useBlockTimeQuery } from "~/domains/statistics/queries/blockTime";
-import { useCore } from "~/hooks/useCore";
-import dangerouslyAssert from "~/utils/dangerouslyAssert";
-import useDependentQuery from "~/utils/useDependentQuery";
-import { Network } from "@sifchain/sdk";
-import { computed } from "vue";
-import { MaybeRef } from "vue-query/lib/vue/types";
 import {
   useTokenRegistryEntriesQuery,
   useTokenRegistryEntryQuery,
-} from "../../tokenRegistry/queries/tokenRegistry";
+} from "~/domains/tokenRegistry/queries/tokenRegistry";
+import { useCore } from "~/hooks/useCore";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
+import useDependentQuery from "~/utils/useDependentQuery";
+
 import { addDetailToLiquidityProvider } from "../utils";
 import { useRewardsParamsQuery } from "./params";
 
-// TODO: duplicate logic that needed to be cleanup, too tired, getting sloppy ==
 export const LIQUIDITY_PROVIDER_KEY = "liquidityProvider";
 export const LIQUIDITY_PROVIDERS_KEY = "liquidityProviders";
 
@@ -169,3 +169,36 @@ export const useLiquidityProvidersQuery = () => {
     },
   );
 };
+
+export function usePoolshareEstimateQuery(input: {
+  externalAssetBaseDenom: MaybeRef<string>;
+  externalAssetAmount: MaybeRef<string>;
+  nativeAssetAmount: MaybeRef<string>;
+}) {
+  const sifchainClients = useSifchainClients();
+
+  return useDependentQuery(
+    [
+      computed(
+        () =>
+          sifchainClients.signingClientStatus === "fulfilled" &&
+          sifchainClients.queryClientStatus === "fulfilled",
+      ),
+    ],
+    "poolshareEstimate",
+    async () => {
+      dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
+      dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
+
+      const poolshareEstimate =
+        await sifchainClients.queryClient.clp.GetPoolShareEstimate({
+          externalAssetAmount: unref(input.externalAssetAmount),
+          externalAsset: {
+            symbol: unref(input.externalAssetBaseDenom),
+          },
+          nativeAssetAmount: unref(input.nativeAssetAmount),
+        });
+      return poolshareEstimate;
+    },
+  );
+}
