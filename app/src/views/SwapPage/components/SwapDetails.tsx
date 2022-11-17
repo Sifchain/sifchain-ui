@@ -16,7 +16,7 @@ export const SwapDetails = defineComponent({
   },
   setup: (props) => {
     const priceRatios = computed(() => {
-      if (!props.priceRatio?.value || !Number(props.priceRatio.value)) {
+      if (!(props.priceRatio?.value && Number(props.priceRatio.value))) {
         const zero = "0.000000";
         return [zero, zero] as const;
       }
@@ -25,6 +25,13 @@ export const SwapDetails = defineComponent({
 
       return [ratio.toFixed(6), (1 / ratio).toFixed(6)] as const;
     });
+
+    const displayFeeRate = computed(
+      () =>
+        `${props.swapFeeRate?.toNumber().toLocaleString(undefined, {
+          style: "percent",
+        })}`,
+    );
 
     return () => (
       <div class="mt-[10px] w-full">
@@ -80,7 +87,7 @@ export const SwapDetails = defineComponent({
           </div>
           <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium capitalize text-white">
             <span class="mr-[4px]">{props.minimumReceived}</span>
-            <TokenIcon asset={props.toAsset} size={18}></TokenIcon>
+            <TokenIcon asset={props.toAsset} size={18} />
           </div>
         </div>
         <div
@@ -104,25 +111,23 @@ export const SwapDetails = defineComponent({
         </div>
         <div
           class={`
-          bg-gray-base border-gray-input_outline box-border flex h-[49px] w-full
-          items-center justify-center
-          rounded-b-[6px] border-[1px] border-b-[1px] border-t-0 border-solid
-        `}
+            bg-gray-base border-gray-input_outline box-border flex h-[49px] w-full
+            items-center justify-center
+            rounded-b-[6px] border-[1px] border-b-[1px]
+            border-t-0 border-solid
+          `}
         >
           <div class="text-md w-full pl-[20px] text-left font-sans font-medium capitalize text-white">
-            Liquidity Provider Fee
+            Liquidity Provider Fee{" "}
+            {displayFeeRate.value && <>({displayFeeRate.value})</>}
             <Button.InlineHelp>
               This is the fee paid to the liquidity providers of this pool.{" "}
-              (Current rate: {(props.swapFeeRate?.toNumber() ?? 0) * 100}%)
+              (Current rate: {displayFeeRate.value})
             </Button.InlineHelp>
           </div>
           <div class="text-md mr-[14px] flex w-full flex-row items-center justify-end pl-[20px] text-right font-mono font-medium text-white">
             <span class="mr-[4px]">{props.liquidityProviderFee}</span>
-            {props.toAsset ? (
-              <TokenIcon asset={props.toAsset} size={18}></TokenIcon>
-            ) : (
-              ""
-            )}
+            {props.toAsset ? <TokenIcon asset={props.toAsset} size={18} /> : ""}
           </div>
         </div>
       </div>
