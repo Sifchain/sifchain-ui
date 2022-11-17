@@ -104,7 +104,8 @@ export default defineComponent({
               <TokenInputGroup
                 onSelectAsset={(asset) => {
                   data.toSymbol.value = asset.symbol;
-                  data.toAmount.value = "";
+                  data.toAmount.value = "0";
+                  data.fromAmount.value = "0";
                 }}
                 class="-mt-4 overflow-hidden"
                 tokenIconUrl={data.toTokenIconUrl.value ?? ""}
