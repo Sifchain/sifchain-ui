@@ -260,6 +260,8 @@ export const useAddLiquidityData = () => {
     fromSymbol,
     toAmount,
     toSymbol,
+    tokenAField,
+    tokenBField,
     isToMaxActive,
     isFromMaxActive,
     connected,

@@ -1,4 +1,5 @@
-import { Network } from "@sifchain/sdk";
+import { Amount, AssetAmount, Network } from "@sifchain/sdk";
+import { PoolShareEstimateRes } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/querier";
 import { formatDistance } from "date-fns";
 import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
@@ -11,6 +12,7 @@ import Toggle from "~/components/Toggle";
 import { TokenIcon } from "~/components/TokenIcon";
 import { Tooltip } from "~/components/Tooltip";
 import TransactionDetailsModal from "~/components/TransactionDetailsModal";
+import { usePoolshareEstimateQuery } from "~/domains/clp/queries/liquidityProvider";
 import { useCurrentRewardPeriodStatistics } from "~/domains/clp/queries/params";
 import { useMarginEnabledPoolsQuery } from "~/domains/margin/queries/params";
 import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
@@ -151,12 +153,6 @@ export default defineComponent({
             </div>
           </div>,
         ],
-        [
-          <span>Est. pool share</span>,
-          <div class="flex items-center gap-[4px] font-mono">
-            <div>{data.shareOfPoolPercent.value}</div>
-          </div>,
-        ],
       ],
     }));
 
@@ -181,7 +177,6 @@ export default defineComponent({
       () => Number(rewardsPeriod.value?.estimatedLockMs ?? 0) > 0,
     );
 
-    console.log({ flags: JSON.stringify(flagsStore.state) });
     const isAsymmetricPoolingEnabled = computed(
       () => flagsStore.state.remoteFlags.ASYMMETRIC_POOLING,
     );
@@ -200,6 +195,78 @@ export default defineComponent({
       }
 
       if (data.modalStatus.value === "confirm") {
+        const externalAssetBaseDenom = computed(
+          () => data.fromAsset.value?.symbol ?? "",
+        );
+
+        const { data: poolShareQuote, error } = usePoolshareEstimateQuery({
+          nativeAssetAmount: computed(
+            () =>
+              data.tokenBField.value.fieldAmount ?? AssetAmount("rowan", "0"),
+          ),
+          externalAssetAmount: computed(
+            () =>
+              data.tokenAField.value.fieldAmount ?? AssetAmount("rowan", "0"),
+          ),
+          externalAssetBaseDenom,
+        });
+
+        const quote = computed((): PoolShareEstimateRes => {
+          if (error.value || !poolShareQuote.value) {
+            return {
+              nativeAssetAmount: "0",
+              externalAssetAmount: "0",
+              percentage: "0",
+            };
+          }
+
+          return poolShareQuote.value;
+        });
+
+        const poolShare = computed(() =>
+          AssetAmount("rowan", quote.value.percentage).toDerived().toNumber(),
+        );
+
+        const enhancedDetailsRef = computed<FormDetailsType>(() => ({
+          details: [
+            [
+              <div class="flex items-center">
+                <TokenIcon asset={data.fromAsset} size={18} />
+                <span class="ml-[4px]">{fromTokenLabel.value}</span>
+              </div>,
+              <div class="text-right">
+                <div class="font-mono">{data.fromAmount.value}</div>
+                <div class="font-mono text-sm text-white/60">
+                  ≈${prettyNumber(fromTokenPriceUSD.value)}
+                </div>
+              </div>,
+            ],
+            [
+              <div class="flex items-center">
+                <TokenIcon asset={data.toAsset} size={18} />
+                <span class="ml-[4px]">{toTokenLabel.value}</span>
+              </div>,
+              <div class="text-right">
+                <div class="font-mono">{data.toAmount.value}</div>
+                <div class="font-mono text-sm text-white/60">
+                  ≈${prettyNumber(toTokenPriceUSD.value)}
+                </div>
+              </div>,
+            ],
+            [
+              <span>Est. pool share</span>,
+              <div class="flex items-center gap-[4px] font-mono">
+                <div>
+                  {poolShare.value.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                    style: "percent",
+                  })}
+                </div>
+              </div>,
+            ],
+          ],
+        }));
+
         return (
           <Modal
             heading="Add Liquidity"
@@ -214,7 +281,7 @@ export default defineComponent({
           >
             <div class="grid gap-4">
               <div class="bg-gray-base grid gap-4 rounded-lg p-4">
-                <Form.Details details={detailsRef.value} />
+                <Form.Details details={enhancedDetailsRef.value} />
                 <RiskWarning
                   isSlippagePossible={!data.symmetricalPooling.value}
                   riskFactorStatus={data.riskFactorStatus}

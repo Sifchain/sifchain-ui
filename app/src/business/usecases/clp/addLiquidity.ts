@@ -63,7 +63,9 @@ export function AddLiquidity(
     );
     const reportTransactionError = ReportTransactionError(bus);
     const state = sif.getState();
-    if (!state.address) throw "No from address provided for swap";
+    if (!state.address) {
+      throw "No from address provided for swap";
+    }
 
     const tx = hasPool
       ? client.tx.clp.AddLiquidity(

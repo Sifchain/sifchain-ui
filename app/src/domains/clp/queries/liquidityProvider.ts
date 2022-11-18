@@ -1,5 +1,7 @@
-import { Network } from "@sifchain/sdk";
+import { AssetAmount, IAssetAmount, Network } from "@sifchain/sdk";
+import { PoolShareEstimateRes } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/querier";
 import { computed, unref } from "vue";
+import { UseQueryOptions } from "vue-query";
 import { MaybeRef } from "vue-query/lib/vue/types";
 import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
 import { useBlockTimeQuery } from "~/domains/statistics/queries/blockTime";
@@ -170,11 +172,14 @@ export const useLiquidityProvidersQuery = () => {
   );
 };
 
-export function usePoolshareEstimateQuery(input: {
-  externalAssetBaseDenom: MaybeRef<string>;
-  externalAssetAmount: MaybeRef<string>;
-  nativeAssetAmount: MaybeRef<string>;
-}) {
+export function usePoolshareEstimateQuery(
+  input: {
+    externalAssetBaseDenom: MaybeRef<string>;
+    externalAssetAmount: MaybeRef<IAssetAmount>;
+    nativeAssetAmount: MaybeRef<IAssetAmount>;
+  },
+  options?: UseQueryOptions<PoolShareEstimateRes | null>,
+) {
   const sifchainClients = useSifchainClients();
 
   return useDependentQuery(
@@ -185,20 +190,40 @@ export function usePoolshareEstimateQuery(input: {
           sifchainClients.queryClientStatus === "fulfilled",
       ),
     ],
-    "poolshareEstimate",
+    ["poolshareEstimate", input],
     async () => {
       dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
       dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
 
-      const poolshareEstimate =
-        await sifchainClients.queryClient.clp.GetPoolShareEstimate({
+      try {
+        const unreffed = {
+          externalAssetBaseDenom: unref(input.externalAssetBaseDenom),
           externalAssetAmount: unref(input.externalAssetAmount),
-          externalAsset: {
-            symbol: unref(input.externalAssetBaseDenom),
-          },
           nativeAssetAmount: unref(input.nativeAssetAmount),
+        };
+
+        const poolshareEstimate =
+          await sifchainClients.queryClient.clp.GetPoolShareEstimate({
+            externalAssetAmount: unreffed.externalAssetAmount
+              .toBigInt()
+              .toString(),
+            nativeAssetAmount: unreffed.nativeAssetAmount.toBigInt().toString(),
+            externalAsset: {
+              symbol: unreffed.externalAssetBaseDenom,
+            },
+          });
+
+        console.log({
+          poolshareEstimate,
+          input,
         });
-      return poolshareEstimate;
+
+        return poolshareEstimate;
+      } catch (error) {
+        console.error("poolshareEstimate", { input, error });
+        return null;
+      }
     },
+    options,
   );
 }
