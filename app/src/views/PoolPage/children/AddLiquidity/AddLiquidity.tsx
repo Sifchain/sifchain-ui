@@ -227,6 +227,29 @@ export default defineComponent({
           AssetAmount("rowan", quote.value.percentage).toDerived().toNumber(),
         );
 
+        const nativeAmount = computed(() =>
+          AssetAmount("rowan", quote.value.nativeAssetAmount)
+            .toDerived()
+            .toNumber()
+            .toLocaleString(undefined, {
+              style: "decimal",
+              maximumFractionDigits: 6,
+            }),
+        );
+
+        const externalAmount = computed(() =>
+          AssetAmount(
+            externalAssetBaseDenom.value,
+            quote.value.externalAssetAmount,
+          )
+            .toDerived()
+            .toNumber()
+            .toLocaleString(undefined, {
+              style: "decimal",
+              maximumFractionDigits: 6,
+            }),
+        );
+
         const enhancedDetailsRef = computed<FormDetailsType>(() => ({
           details: [
             [
@@ -235,7 +258,7 @@ export default defineComponent({
                 <span class="ml-[4px]">{fromTokenLabel.value}</span>
               </div>,
               <div class="text-right">
-                <div class="font-mono">{data.fromAmount.value}</div>
+                <div class="font-mono">{externalAmount.value}</div>
                 <div class="font-mono text-sm text-white/60">
                   ≈${prettyNumber(fromTokenPriceUSD.value)}
                 </div>
@@ -247,7 +270,7 @@ export default defineComponent({
                 <span class="ml-[4px]">{toTokenLabel.value}</span>
               </div>,
               <div class="text-right">
-                <div class="font-mono">{data.toAmount.value}</div>
+                <div class="font-mono">{nativeAmount.value}</div>
                 <div class="font-mono text-sm text-white/60">
                   ≈${prettyNumber(toTokenPriceUSD.value)}
                 </div>
@@ -482,14 +505,7 @@ export default defineComponent({
                   isError: !!data.riskFactorStatus.value,
                   errorType: data.riskFactorStatus.value || undefined,
                   label: "",
-                  details: [
-                    [
-                      <span>Est. pool share</span>,
-                      <div class="flex items-center gap-[4px] font-mono">
-                        <div>{data.shareOfPoolPercent.value}</div>
-                      </div>,
-                    ],
-                  ],
+                  details: [],
                 }}
               />
               <RiskWarning
