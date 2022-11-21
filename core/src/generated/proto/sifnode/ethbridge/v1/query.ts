@@ -32,6 +32,12 @@ export interface QueryBlacklistResponse {
   addresses: string[];
 }
 
+export interface QueryPauseRequest {}
+
+export interface QueryPauseResponse {
+  isPaused: boolean;
+}
+
 function createBaseQueryEthProphecyRequest(): QueryEthProphecyRequest {
   return {
     ethereumChainId: Long.ZERO,
@@ -358,6 +364,104 @@ export const QueryBlacklistResponse = {
   },
 };
 
+function createBaseQueryPauseRequest(): QueryPauseRequest {
+  return {};
+}
+
+export const QueryPauseRequest = {
+  encode(
+    _: QueryPauseRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryPauseRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryPauseRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryPauseRequest {
+    return {};
+  },
+
+  toJSON(_: QueryPauseRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryPauseRequest>, I>>(
+    _: I,
+  ): QueryPauseRequest {
+    const message = createBaseQueryPauseRequest();
+    return message;
+  },
+};
+
+function createBaseQueryPauseResponse(): QueryPauseResponse {
+  return { isPaused: false };
+}
+
+export const QueryPauseResponse = {
+  encode(
+    message: QueryPauseResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.isPaused === true) {
+      writer.uint32(8).bool(message.isPaused);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryPauseResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryPauseResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.isPaused = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryPauseResponse {
+    return {
+      isPaused: isSet(object.isPaused) ? Boolean(object.isPaused) : false,
+    };
+  },
+
+  toJSON(message: QueryPauseResponse): unknown {
+    const obj: any = {};
+    message.isPaused !== undefined && (obj.isPaused = message.isPaused);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryPauseResponse>, I>>(
+    object: I,
+  ): QueryPauseResponse {
+    const message = createBaseQueryPauseResponse();
+    message.isPaused = object.isPaused ?? false;
+    return message;
+  },
+};
+
 /** Query service for queries */
 export interface Query {
   /** EthProphecy queries an EthProphecy */
@@ -365,6 +469,7 @@ export interface Query {
     request: QueryEthProphecyRequest,
   ): Promise<QueryEthProphecyResponse>;
   GetBlacklist(request: QueryBlacklistRequest): Promise<QueryBlacklistResponse>;
+  GetPauseStatus(request: QueryPauseRequest): Promise<QueryPauseResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -373,6 +478,7 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.EthProphecy = this.EthProphecy.bind(this);
     this.GetBlacklist = this.GetBlacklist.bind(this);
+    this.GetPauseStatus = this.GetPauseStatus.bind(this);
   }
   EthProphecy(
     request: QueryEthProphecyRequest,
@@ -399,6 +505,18 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       QueryBlacklistResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetPauseStatus(request: QueryPauseRequest): Promise<QueryPauseResponse> {
+    const data = QueryPauseRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.ethbridge.v1.Query",
+      "GetPauseStatus",
+      data,
+    );
+    return promise.then((data) =>
+      QueryPauseResponse.decode(new _m0.Reader(data)),
     );
   }
 }

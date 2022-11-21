@@ -104,6 +104,8 @@ export default defineComponent({
               <TokenInputGroup
                 onSelectAsset={(asset) => {
                   data.toSymbol.value = asset.symbol;
+                  data.toAmount.value = "0";
+                  data.fromAmount.value = "0";
                 }}
                 class="-mt-4 overflow-hidden"
                 tokenIconUrl={data.toTokenIconUrl.value ?? ""}
@@ -130,7 +132,7 @@ export default defineComponent({
               fromAsset={data.fromAsset}
               toAsset={data.toAsset}
               priceRatio={data.priceRatio}
-              priceImpact={(data.priceImpact.value ?? "") + "%"}
+              priceImpact={`${data.priceImpact.value}%`}
               liquidityProviderFee={data.providerFee.value ?? ""}
               minimumReceived={data.minimumReceived.value}
               swapFeeRate={data.swapFeeRate.value}

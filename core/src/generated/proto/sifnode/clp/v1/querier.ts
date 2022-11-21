@@ -147,6 +147,18 @@ export interface SwapFeeParamsRes {
   tokenParams: SwapFeeTokenParams[];
 }
 
+export interface PoolShareEstimateReq {
+  externalAsset?: Asset;
+  nativeAssetAmount: string;
+  externalAssetAmount: string;
+}
+
+export interface PoolShareEstimateRes {
+  percentage: string;
+  nativeAssetAmount: string;
+  externalAssetAmount: string;
+}
+
 function createBasePoolReq(): PoolReq {
   return { symbol: "" };
 }
@@ -2107,6 +2119,180 @@ export const SwapFeeParamsRes = {
   },
 };
 
+function createBasePoolShareEstimateReq(): PoolShareEstimateReq {
+  return {
+    externalAsset: undefined,
+    nativeAssetAmount: "",
+    externalAssetAmount: "",
+  };
+}
+
+export const PoolShareEstimateReq = {
+  encode(
+    message: PoolShareEstimateReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.externalAsset !== undefined) {
+      Asset.encode(message.externalAsset, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.nativeAssetAmount !== "") {
+      writer.uint32(18).string(message.nativeAssetAmount);
+    }
+    if (message.externalAssetAmount !== "") {
+      writer.uint32(26).string(message.externalAssetAmount);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): PoolShareEstimateReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePoolShareEstimateReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.externalAsset = Asset.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.nativeAssetAmount = reader.string();
+          break;
+        case 3:
+          message.externalAssetAmount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PoolShareEstimateReq {
+    return {
+      externalAsset: isSet(object.externalAsset)
+        ? Asset.fromJSON(object.externalAsset)
+        : undefined,
+      nativeAssetAmount: isSet(object.nativeAssetAmount)
+        ? String(object.nativeAssetAmount)
+        : "",
+      externalAssetAmount: isSet(object.externalAssetAmount)
+        ? String(object.externalAssetAmount)
+        : "",
+    };
+  },
+
+  toJSON(message: PoolShareEstimateReq): unknown {
+    const obj: any = {};
+    message.externalAsset !== undefined &&
+      (obj.externalAsset = message.externalAsset
+        ? Asset.toJSON(message.externalAsset)
+        : undefined);
+    message.nativeAssetAmount !== undefined &&
+      (obj.nativeAssetAmount = message.nativeAssetAmount);
+    message.externalAssetAmount !== undefined &&
+      (obj.externalAssetAmount = message.externalAssetAmount);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<PoolShareEstimateReq>, I>>(
+    object: I,
+  ): PoolShareEstimateReq {
+    const message = createBasePoolShareEstimateReq();
+    message.externalAsset =
+      object.externalAsset !== undefined && object.externalAsset !== null
+        ? Asset.fromPartial(object.externalAsset)
+        : undefined;
+    message.nativeAssetAmount = object.nativeAssetAmount ?? "";
+    message.externalAssetAmount = object.externalAssetAmount ?? "";
+    return message;
+  },
+};
+
+function createBasePoolShareEstimateRes(): PoolShareEstimateRes {
+  return { percentage: "", nativeAssetAmount: "", externalAssetAmount: "" };
+}
+
+export const PoolShareEstimateRes = {
+  encode(
+    message: PoolShareEstimateRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.percentage !== "") {
+      writer.uint32(10).string(message.percentage);
+    }
+    if (message.nativeAssetAmount !== "") {
+      writer.uint32(18).string(message.nativeAssetAmount);
+    }
+    if (message.externalAssetAmount !== "") {
+      writer.uint32(26).string(message.externalAssetAmount);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): PoolShareEstimateRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePoolShareEstimateRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.percentage = reader.string();
+          break;
+        case 2:
+          message.nativeAssetAmount = reader.string();
+          break;
+        case 3:
+          message.externalAssetAmount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PoolShareEstimateRes {
+    return {
+      percentage: isSet(object.percentage) ? String(object.percentage) : "",
+      nativeAssetAmount: isSet(object.nativeAssetAmount)
+        ? String(object.nativeAssetAmount)
+        : "",
+      externalAssetAmount: isSet(object.externalAssetAmount)
+        ? String(object.externalAssetAmount)
+        : "",
+    };
+  },
+
+  toJSON(message: PoolShareEstimateRes): unknown {
+    const obj: any = {};
+    message.percentage !== undefined && (obj.percentage = message.percentage);
+    message.nativeAssetAmount !== undefined &&
+      (obj.nativeAssetAmount = message.nativeAssetAmount);
+    message.externalAssetAmount !== undefined &&
+      (obj.externalAssetAmount = message.externalAssetAmount);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<PoolShareEstimateRes>, I>>(
+    object: I,
+  ): PoolShareEstimateRes {
+    const message = createBasePoolShareEstimateRes();
+    message.percentage = object.percentage ?? "";
+    message.nativeAssetAmount = object.nativeAssetAmount ?? "";
+    message.externalAssetAmount = object.externalAssetAmount ?? "";
+    return message;
+  },
+};
+
 export interface Query {
   GetPool(request: PoolReq): Promise<PoolRes>;
   GetPools(request: PoolsReq): Promise<PoolsRes>;
@@ -2133,6 +2319,9 @@ export interface Query {
     request: ProviderDistributionParamsReq,
   ): Promise<ProviderDistributionParamsRes>;
   GetSwapFeeParams(request: SwapFeeParamsReq): Promise<SwapFeeParamsRes>;
+  GetPoolShareEstimate(
+    request: PoolShareEstimateReq,
+  ): Promise<PoolShareEstimateRes>;
 }
 
 export class QueryClientImpl implements Query {
@@ -2154,6 +2343,7 @@ export class QueryClientImpl implements Query {
     this.GetProviderDistributionParams =
       this.GetProviderDistributionParams.bind(this);
     this.GetSwapFeeParams = this.GetSwapFeeParams.bind(this);
+    this.GetPoolShareEstimate = this.GetPoolShareEstimate.bind(this);
   }
   GetPool(request: PoolReq): Promise<PoolRes> {
     const data = PoolReq.encode(request).finish();
@@ -2296,6 +2486,20 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       SwapFeeParamsRes.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetPoolShareEstimate(
+    request: PoolShareEstimateReq,
+  ): Promise<PoolShareEstimateRes> {
+    const data = PoolShareEstimateReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetPoolShareEstimate",
+      data,
+    );
+    return promise.then((data) =>
+      PoolShareEstimateRes.decode(new _m0.Reader(data)),
     );
   }
 }
