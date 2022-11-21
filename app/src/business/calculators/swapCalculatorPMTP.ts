@@ -285,9 +285,12 @@ export function useSwapCalculator(input: {
   });
 
   const swapFeeRate = computed(() => {
-    return fromField.value.asset
-      ? pool.value?.getSwapFeeRate(fromField.value.asset)
+    const effectiveFeeRate = fromField.value.asset
+      ? pool.value?.getSwapFeeRate(fromField.value.asset) ??
+        pool.value?.swapFeeRate
       : pool.value?.swapFeeRate;
+
+    return effectiveFeeRate;
   });
 
   const effectiveMinimumReceived = computed(() => {

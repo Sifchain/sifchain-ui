@@ -79,6 +79,7 @@ export const ConfirmSwap = defineComponent({
             priceImpact={`${data.priceImpact.value}%`}
             liquidityProviderFee={data.providerFee.value ?? ""}
             minimumReceived={data.minimumReceived.value}
+            swapFeeRate={data.swapFeeRate.value}
           />
         </Form.FieldSet>
         <Button.CallToAction
