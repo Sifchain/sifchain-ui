@@ -63,7 +63,7 @@ export function useSwapCalculator(input: {
 
   // We use a composite pool pair to work out rates
   const pool = computed<IPool | null>(() => {
-    if (!input.fromSymbol.value || !input.toSymbol.value) {
+    if (!(input.fromSymbol.value && input.toSymbol.value)) {
       return null;
     }
 
@@ -84,7 +84,7 @@ export function useSwapCalculator(input: {
     const fromPair = input.poolFinder(input.fromSymbol.value, "rowan");
     const toPair = input.poolFinder(input.toSymbol.value, "rowan");
 
-    if (!fromPair || !toPair) {
+    if (!(fromPair && toPair)) {
       return null;
     }
 
@@ -108,7 +108,7 @@ export function useSwapCalculator(input: {
       return "0.0";
     }
 
-    if (!fromField.value?.fieldAmount || !toField.value?.fieldAmount) {
+    if (!(fromField.value?.fieldAmount && toField.value?.fieldAmount)) {
       return "0.0";
     }
 
@@ -227,18 +227,23 @@ export function useSwapCalculator(input: {
 
   // Cache pool contains asset for reuse as is a little
   const poolContainsFromAsset = computed(() => {
-    if (!fromField.value.asset || !pool.value) return false;
+    if (!(fromField.value.asset && pool.value)) {
+      return false;
+    }
     return pool.value.contains(fromField.value.asset);
   });
 
   const priceImpact = computed(() => {
     if (
-      !pool.value ||
-      !fromField.value.asset ||
-      !fromField.value.fieldAmount ||
-      !poolContainsFromAsset.value
-    )
+      !(
+        pool.value &&
+        fromField.value.asset &&
+        fromField.value.fieldAmount &&
+        poolContainsFromAsset.value
+      )
+    ) {
       return null;
+    }
 
     return calculateFormattedPriceImpact(
       pool.value as IPool,
@@ -248,24 +253,30 @@ export function useSwapCalculator(input: {
 
   const providerFee = computed(() => {
     if (
-      !pool.value ||
-      !fromField.value.asset ||
-      !fromField.value.fieldAmount ||
-      !poolContainsFromAsset.value
-    )
+      !(
+        pool.value &&
+        fromField.value.asset &&
+        fromField.value.fieldAmount &&
+        poolContainsFromAsset.value
+      )
+    ) {
       return null;
+    }
 
     return pool.value.calcProviderFee(fromField.value.fieldAmount);
   });
 
   const formattedProviderFee = computed(() => {
     if (
-      !pool.value ||
-      !fromField.value.asset ||
-      !fromField.value.fieldAmount ||
-      !poolContainsFromAsset.value
-    )
+      !(
+        pool.value &&
+        fromField.value.asset &&
+        fromField.value.fieldAmount &&
+        poolContainsFromAsset.value
+      )
+    ) {
       return null;
+    }
 
     return calculateFormattedProviderFee(
       pool.value as IPool,
@@ -281,14 +292,17 @@ export function useSwapCalculator(input: {
 
   const effectiveMinimumReceived = computed(() => {
     if (
-      !input.slippage.value ||
-      !toField.value.asset ||
-      !swapResult.value ||
-      !providerFee.value ||
-      !pool.value ||
-      !fromField.value.fieldAmount
-    )
+      !(
+        input.slippage.value &&
+        toField.value.asset &&
+        swapResult.value &&
+        providerFee.value &&
+        pool.value &&
+        fromField.value.fieldAmount
+      )
+    ) {
       return null;
+    }
 
     const slippage = Amount(input.slippage.value).divide(Amount("100"));
 
@@ -319,14 +333,17 @@ export function useSwapCalculator(input: {
   // minimumReceived
   const minimumReceived = computed(() => {
     if (
-      !input.slippage.value ||
-      !toField.value.asset ||
-      !swapResult.value ||
-      !providerFee.value ||
-      !pool.value ||
-      !fromField.value.fieldAmount
-    )
+      !(
+        input.slippage.value &&
+        toField.value.asset &&
+        swapResult.value &&
+        providerFee.value &&
+        pool.value &&
+        fromField.value.fieldAmount
+      )
+    ) {
       return null;
+    }
 
     const slippage = Amount(input.slippage.value).divide(Amount("100"));
 
@@ -390,10 +407,12 @@ export function useSwapCalculator(input: {
     );
 
     if (
-      !fromTokenLiquidity ||
-      !toTokenLiquidity ||
-      !fromField.value.fieldAmount ||
-      !toField.value.fieldAmount ||
+      !(
+        fromTokenLiquidity &&
+        toTokenLiquidity &&
+        fromField.value.fieldAmount &&
+        toField.value.fieldAmount
+      ) ||
       (fromField.value.fieldAmount?.equalTo("0") &&
         toField.value.fieldAmount?.equalTo("0"))
     ) {
@@ -407,8 +426,11 @@ export function useSwapCalculator(input: {
       return SwapState.INVALID_AMOUNT;
     }
 
-    if (!balance.value?.greaterThanOrEqual(fromField.value.fieldAmount || "0"))
+    if (
+      !balance.value?.greaterThanOrEqual(fromField.value.fieldAmount || "0")
+    ) {
       return SwapState.INSUFFICIENT_FUNDS;
+    }
 
     if (
       fromTokenLiquidity.lessThan(fromField.value.fieldAmount) ||
