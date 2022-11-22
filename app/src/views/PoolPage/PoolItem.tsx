@@ -43,6 +43,7 @@ const ExternalLink = defineComponent({
         <AssetIcon icon="interactive/open-external" size={12} />
       ) : null,
     );
+
     return () =>
       isExternal.value ? (
         <a
@@ -361,12 +362,8 @@ export default defineComponent({
       <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent">
         <div
           role="button"
-          onClick={() => {
-            return this.toggleExpanded();
-          }}
-          onKeyup={() => {
-            return this.toggleExpanded();
-          }}
+          onClick={this.toggleExpanded}
+          onKeypress={this.toggleExpanded}
           class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>

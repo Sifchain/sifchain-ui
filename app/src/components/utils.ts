@@ -29,7 +29,9 @@ export function formatPercentage(amount: string) {
 }
 // TODO: make this work for AssetAmounts and Fractions / Amounts
 export function formatNumber(displayNumber: string) {
-  if (!displayNumber) return "0";
+  if (!displayNumber) {
+    return "0";
+  }
   const amount = parseFloat(displayNumber);
   if (amount < 100000) {
     return amount.toFixed(6);
@@ -39,7 +41,9 @@ export function formatNumber(displayNumber: string) {
 }
 
 export function formatAssetAmount(value: IAssetAmount) {
-  if (!value || value.equalTo("0")) return "0";
+  if (!value || value.equalTo("0")) {
+    return "0";
+  }
   const { amount, asset } = value;
   return amount.greaterThan(toBaseUnits("100000", asset))
     ? format(amount, asset, { mantissa: 2 })
@@ -47,7 +51,9 @@ export function formatAssetAmount(value: IAssetAmount) {
 }
 
 export function getUnpeggedSymbol(symbol: string) {
-  if (symbol.toLowerCase() === "rowan") return "eROWAN";
+  if (symbol.toLowerCase() === "rowan") {
+    return "eROWAN";
+  }
   return symbol.indexOf("c") === 0 ? symbol.slice(1) : symbol;
 }
 
@@ -86,20 +92,34 @@ export function getBlockExplorerUrl(
   }
 
   switch (sifChainId) {
-    case "sifchain":
-      if (!txHash) return "https://blockexplorer.sifchain.finance/";
+    case "sifchain": {
+      if (!txHash) {
+        return "https://blockexplorer.sifchain.finance/";
+      }
       return `https://blockexplorer.sifchain.finance/transactions/${txHash}`;
-    case "sifchain-devnet-042":
-      if (!txHash) return "https://blockexplorer.sifchain.finance/";
+    }
+    case "sifchain-devnet-042": {
+      if (!txHash) {
+        return "https://blockexplorer.sifchain.finance/";
+      }
       return `https://blockexplorer-devnet-042.sifchain.finance/transactions/${txHash}`;
-    case "sifchain-testnet-1":
-      if (!txHash) return "https://blockexplorer.sifchain.finance/";
+    }
+    case "sifchain-testnet-1": {
+      if (!txHash) {
+        return "https://blockexplorer.sifchain.finance/";
+      }
       return `https://blockexplorer-testnet-042.sifchain.finance/transactions/${txHash}`;
-    case "sifchain-testnet":
-      if (!txHash) return `https://blockexplorer-testnet.sifchain.finance/`;
+    }
+    case "sifchain-testnet": {
+      if (!txHash) {
+        return "https://blockexplorer-testnet.sifchain.finance/";
+      }
       return `https://blockexplorer-testnet.sifchain.finance/transactions/${txHash}`;
+    }
     default:
-      if (!txHash) return "https://blockexplorer-devnet.sifchain.finance/";
+      if (!txHash) {
+        return "https://blockexplorer-devnet.sifchain.finance/";
+      }
       return `https://blockexplorer-devnet.sifchain.finance/transactions/${txHash}`;
   }
 }
