@@ -83,7 +83,7 @@ export const AssetPairFieldSet = defineComponent({
     return () => (
       <Form.FieldSet>
         <div class="w-full px-[4px]">
-          <Field
+          <AssetPairRow
             assetAmount={props.fromAssetAmount}
             tooltip={props.fromTooltip}
           />
@@ -94,19 +94,34 @@ export const AssetPairFieldSet = defineComponent({
               size={20}
             />
           </div>
-          <Field assetAmount={props.toAssetAmount} tooltip={props.toTooltip} />
+          <AssetPairRow
+            assetAmount={props.toAssetAmount}
+            tooltip={props.toTooltip}
+          />
         </div>
       </Form.FieldSet>
     );
   },
 });
 
-const Field = (props: {
+export const AssetPairRow = (props: {
   assetAmount: Ref<IAssetAmount>;
+  assetPrice?: Ref<number>;
   tooltip?: TippyContent;
 }) => {
   const displayAssetAmount = (
-    <div class="font-mono">{formatAssetAmount(props.assetAmount.value)}</div>
+    <div class="relative font-mono tabular-nums">
+      {formatAssetAmount(props.assetAmount.value)}
+      {props.assetPrice && (
+        <small class="absolute -bottom-3 right-0 whitespace-nowrap text-sm text-gray-500">
+          {"≈ "}
+          {props.assetPrice.value.toLocaleString(undefined, {
+            style: "currency",
+            currency: "USD",
+          })}
+        </small>
+      )}
+    </div>
   );
   return (
     <div class="flex items-center justify-between">

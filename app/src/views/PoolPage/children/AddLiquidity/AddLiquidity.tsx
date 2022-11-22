@@ -1,7 +1,13 @@
-import { AssetAmount, formatAssetAmount, Network } from "@sifchain/sdk";
+import {
+  AssetAmount,
+  formatAssetAmount,
+  IAsset,
+  IAssetAmount,
+  Network,
+} from "@sifchain/sdk";
 import { PoolShareEstimateRes } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/querier";
 import { formatDistance } from "date-fns";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, PropType, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import AssetIcon from "~/components/AssetIcon";
@@ -21,7 +27,10 @@ import { useTransactionDetails } from "~/hooks/useTransactionDetails";
 import { flagsStore } from "~/store/modules/flags";
 import { prettyNumber } from "~/utils/prettyNumber";
 import { usePoolPageData } from "~/views/PoolPage/usePoolPageData";
-import { AssetPairFieldSet } from "~/views/SwapPage/children/ConfirmSwap";
+import {
+  AssetPairFieldSet,
+  AssetPairRow,
+} from "~/views/SwapPage/children/ConfirmSwap";
 import { TokenInputGroup } from "~/views/SwapPage/components/TokenInputGroup";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
@@ -327,6 +336,20 @@ export default defineComponent({
           } as FormDetailsType;
         });
 
+        const estimatedExternalUSD = computed(() => {
+          return (
+            poolComposition.value.externalPrice *
+            externalAmount.value.toDerived().toNumber()
+          );
+        });
+
+        const estimatedNativeUSD = computed(() => {
+          return (
+            poolComposition.value.nativePrice *
+            nativeAmount.value.toDerived().toNumber()
+          );
+        });
+
         return (
           <Modal
             heading="Add Liquidity"
@@ -342,25 +365,27 @@ export default defineComponent({
             <div class="grid gap-4">
               {!data.symmetricalPooling.value && (
                 <>
-                  <AssetPairFieldSet
-                    fromAssetAmount={computed(
+                  <TokenGroupCard
+                    label="User added"
+                    asset1={computed(
                       () =>
                         data.tokenAField.value.fieldAmount ??
                         AssetAmount("rowan", "0"),
                     )}
-                    fromTooltip={`Amount of ${fromTokenLabel.value} you want to add to the pool`}
-                    toAssetAmount={externalAmount}
-                    toTooltip={`Amount of ${fromTokenLabel.value} that will be added to your pool share`}
-                  />
-                  <AssetPairFieldSet
-                    fromAssetAmount={computed(
+                    asset2={computed(
                       () =>
                         data.tokenBField.value.fieldAmount ??
                         AssetAmount("rowan", "0"),
                     )}
-                    fromTooltip={`Amount of ${toTokenLabel.value} tokens you want to add to the pool`}
-                    toAssetAmount={nativeAmount}
-                    toTooltip={`Amount of ${toTokenLabel.value} that will be added to your pool share`}
+                    asset1Price={fromTokenPriceUSD}
+                    asset2Price={toTokenPriceUSD}
+                  />
+                  <TokenGroupCard
+                    label="Amount pooled after swap"
+                    asset1={externalAmount}
+                    asset2={nativeAmount}
+                    asset1Price={estimatedExternalUSD}
+                    asset2Price={estimatedNativeUSD}
                   />
                 </>
               )}
@@ -600,5 +625,46 @@ export default defineComponent({
         </Modal>
       );
     };
+  },
+});
+
+export const TokenGroupCard = defineComponent({
+  name: "TokenGroupCard",
+  props: {
+    label: {
+      type: String,
+      required: true,
+    },
+    asset1: {
+      type: Object as PropType<Ref<IAssetAmount>>,
+      required: true,
+    },
+    asset1Price: {
+      type: Object as PropType<Ref<number>>,
+      required: true,
+    },
+    asset2: {
+      type: Object as PropType<Ref<IAssetAmount>>,
+      required: true,
+    },
+    asset2Price: {
+      type: Object as PropType<Ref<number>>,
+      required: true,
+    },
+  },
+  setup(props) {
+    return () => (
+      <section class="bg-gray-base grid gap-4 rounded-lg p-4">
+        <h3 class="text-md text-white/80">{props.label}</h3>
+        <AssetPairRow
+          assetAmount={props.asset1}
+          assetPrice={props.asset1Price}
+        />
+        <AssetPairRow
+          assetAmount={props.asset2}
+          assetPrice={props.asset2Price}
+        />
+      </section>
+    );
   },
 });
