@@ -213,11 +213,6 @@ export function usePoolshareEstimateQuery(
             },
           });
 
-        console.log({
-          poolshareEstimate,
-          input,
-        });
-
         return poolshareEstimate;
       } catch (error) {
         console.error("poolshareEstimate", { input, error });

@@ -424,6 +424,7 @@ export const useSwapPageData = () => {
     fromAmount,
     toAmount,
     effectiveToAmount: formattedEffectiveToAmount,
+    effectiveMinimumReceived,
     fromSymbol,
     fromTokenIconUrl,
     toTokenIconUrl,

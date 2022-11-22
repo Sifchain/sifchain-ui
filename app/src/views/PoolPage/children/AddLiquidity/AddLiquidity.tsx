@@ -1,4 +1,4 @@
-import { Amount, AssetAmount, Network } from "@sifchain/sdk";
+import { AssetAmount, formatAssetAmount, Network } from "@sifchain/sdk";
 import { PoolShareEstimateRes } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/querier";
 import { formatDistance } from "date-fns";
 import { computed, defineComponent } from "vue";
@@ -21,6 +21,7 @@ import { useTransactionDetails } from "~/hooks/useTransactionDetails";
 import { flagsStore } from "~/store/modules/flags";
 import { prettyNumber } from "~/utils/prettyNumber";
 import { usePoolPageData } from "~/views/PoolPage/usePoolPageData";
+import { AssetPairFieldSet } from "~/views/SwapPage/children/ConfirmSwap";
 import { TokenInputGroup } from "~/views/SwapPage/components/TokenInputGroup";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
@@ -228,67 +229,103 @@ export default defineComponent({
         );
 
         const nativeAmount = computed(() =>
-          AssetAmount("rowan", quote.value.nativeAssetAmount)
-            .toDerived()
-            .toNumber()
-            .toLocaleString(undefined, {
-              style: "decimal",
-              maximumFractionDigits: 6,
-            }),
+          AssetAmount("rowan", quote.value.nativeAssetAmount),
         );
 
         const externalAmount = computed(() =>
           AssetAmount(
             externalAssetBaseDenom.value,
             quote.value.externalAssetAmount,
-          )
-            .toDerived()
-            .toNumber()
-            .toLocaleString(undefined, {
-              style: "decimal",
-              maximumFractionDigits: 6,
-            }),
+          ),
         );
 
-        const enhancedDetailsRef = computed<FormDetailsType>(() => ({
-          details: [
-            [
-              <div class="flex items-center">
-                <TokenIcon asset={data.fromAsset} size={18} />
-                <span class="ml-[4px]">{fromTokenLabel.value}</span>
-              </div>,
-              <div class="text-right">
-                <div class="font-mono">{externalAmount.value}</div>
-                <div class="font-mono text-sm text-white/60">
-                  ≈${prettyNumber(fromTokenPriceUSD.value)}
-                </div>
-              </div>,
-            ],
-            [
-              <div class="flex items-center">
-                <TokenIcon asset={data.toAsset} size={18} />
-                <span class="ml-[4px]">{toTokenLabel.value}</span>
-              </div>,
-              <div class="text-right">
-                <div class="font-mono">{nativeAmount.value}</div>
-                <div class="font-mono text-sm text-white/60">
-                  ≈${prettyNumber(toTokenPriceUSD.value)}
-                </div>
-              </div>,
-            ],
-            [
-              <span>Est. pool share</span>,
-              <div class="flex items-center gap-[4px] font-mono">
-                <div>
-                  {poolShare.value.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                    style: "percent",
-                  })}
-                </div>
-              </div>,
-            ],
-          ],
-        }));
+        const enhancedDetailsRef = computed(() => {
+          const estimatedPoolShareField = [
+            <span>Est. pool share</span>,
+            <div class="flex items-center gap-[4px] font-mono">
+              <div>
+                {poolShare.value.toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                  style: "percent",
+                })}
+              </div>
+            </div>,
+          ];
+
+          const isBuyingRowan =
+            quote.value.swapInfo?.status === 3; /* SwapStatus.BUY_NATIVE */
+
+          return {
+            details: data.symmetricalPooling.value
+              ? [
+                  [
+                    <div class="flex items-center">
+                      <TokenIcon asset={data.fromAsset} size={18} />
+                      <span class="ml-[4px]">{fromTokenLabel.value}</span>
+                    </div>,
+                    <div class="text-right">
+                      <div class="font-mono">
+                        {formatAssetAmount(externalAmount.value)}
+                      </div>
+                      <div class="font-mono text-sm text-white/60">
+                        ≈${prettyNumber(fromTokenPriceUSD.value)}
+                      </div>
+                    </div>,
+                  ],
+                  [
+                    <div class="flex items-center">
+                      <TokenIcon asset={data.toAsset} size={18} />
+                      <span class="ml-[4px]">{toTokenLabel.value}</span>
+                    </div>,
+                    <div class="text-right">
+                      <div class="font-mono">
+                        {formatAssetAmount(nativeAmount.value)}
+                      </div>
+                      <div class="font-mono text-sm text-white/60">
+                        ≈${prettyNumber(toTokenPriceUSD.value)}
+                      </div>
+                    </div>,
+                  ],
+                  estimatedPoolShareField,
+                ]
+              : [
+                  [
+                    <div class="flex items-center">
+                      Liquidity Provider Fee (
+                      {AssetAmount(
+                        "rowan",
+                        quote.value.swapInfo?.feeRate ?? "0",
+                      )
+                        .toDerived()
+                        .toNumber()
+                        .toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                          style: "percent",
+                        })}
+                      )
+                    </div>,
+                    <div class="text-right">
+                      <div class="flex items-center gap-2 font-mono">
+                        {formatAssetAmount(
+                          AssetAmount(
+                            isBuyingRowan
+                              ? "rowan"
+                              : externalAssetBaseDenom.value,
+                            quote.value.swapInfo?.fee ?? "0",
+                          ),
+                        )}
+
+                        <TokenIcon
+                          asset={isBuyingRowan ? data.toAsset : data.fromAsset}
+                          size={18}
+                        />
+                      </div>
+                    </div>,
+                  ],
+                  estimatedPoolShareField,
+                ],
+          } as FormDetailsType;
+        });
 
         return (
           <Modal
@@ -303,7 +340,31 @@ export default defineComponent({
             }
           >
             <div class="grid gap-4">
-              <div class="bg-gray-base grid gap-4 rounded-lg p-4">
+              {!data.symmetricalPooling.value && (
+                <>
+                  <AssetPairFieldSet
+                    fromAssetAmount={computed(
+                      () =>
+                        data.tokenAField.value.fieldAmount ??
+                        AssetAmount("rowan", "0"),
+                    )}
+                    fromTooltip="Amount of external tokens you want to add to the pool"
+                    toAssetAmount={externalAmount}
+                    toTooltip="Amount of external asset you will receive"
+                  />
+                  <AssetPairFieldSet
+                    fromAssetAmount={computed(
+                      () =>
+                        data.tokenBField.value.fieldAmount ??
+                        AssetAmount("rowan", "0"),
+                    )}
+                    fromTooltip="Amount of native tokens you want to add to the pool"
+                    toAssetAmount={nativeAmount}
+                    toTooltip="Amount of native asset you will receive"
+                  />
+                </>
+              )}
+              <div class="bg-gray-base grid gap-2 rounded-lg p-4">
                 <Form.Details details={enhancedDetailsRef.value} />
                 <RiskWarning
                   isSlippagePossible={!data.symmetricalPooling.value}

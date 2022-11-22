@@ -1,4 +1,6 @@
-import { defineComponent } from "vue";
+import { AssetAmount, IAssetAmount } from "@sifchain/sdk";
+import { computed, defineComponent, PropType, ref, Ref } from "vue";
+import { TippyContent } from "vue-tippy";
 
 import AssetIcon from "~/components/AssetIcon";
 import { Button } from "~/components/Button/Button";
@@ -21,55 +23,22 @@ export const ConfirmSwap = defineComponent({
         onClose={data.requestTransactionModalClose}
         showClose={true}
       >
-        <Form.FieldSet>
-          <div class="w-full px-[4px]">
-            <div class="flex w-full flex-row justify-between">
-              <div class="flex flex-row items-center">
-                {data.toAsset.value && (
-                  <TokenIcon asset={data.fromAsset} size={22} />
-                )}
-                <span class="text-md ml-[10px] font-medium">
-                  {data.fromAsset?.value?.displaySymbol?.toUpperCase()}
-                </span>
-              </div>
-              <div class="font-mono">
-                {data.fromFieldAmount &&
-                  formatAssetAmount(data.fromFieldAmount)}
-              </div>
-            </div>
-            <div class="my-[10px] flex w-full justify-center">
-              <AssetIcon
-                class="text-accent-base"
-                icon="interactive/chevron-down"
-                size={20}
-              />
-            </div>
-            <div class="flex w-full flex-row justify-between">
-              <div class="flex items-center">
-                {data.toAsset.value && (
-                  <TokenIcon asset={data.toAsset} size={22} />
-                )}
-                <span class="text-md ml-[10px] font-medium">
-                  {data.toAsset?.value?.displaySymbol?.toUpperCase()}
-                </span>
-              </div>
+        <AssetPairFieldSet
+          fromAssetAmount={ref(
+            data.fromFieldAmount ?? AssetAmount("rowan", "0"),
+          )}
+          toAssetAmount={computed(
+            () =>
+              data.effectiveMinimumReceived.value ?? AssetAmount("rowan", "0"),
+          )}
+          toTooltip={
+            <>
+              This is the estimated amount you will receive after subtracting
+              the price impact and LP fee from the initial swap result.
+            </>
+          }
+        />
 
-              <Tooltip
-                content={
-                  <>
-                    This is the estimated amount you will receive after
-                    subtracting the price impact and LP fee from the initial
-                    swap result.
-                  </>
-                }
-              >
-                <div class="font-mono">
-                  {data.effectiveToAmount.value && data.effectiveToAmount.value}
-                </div>
-              </Tooltip>
-            </div>
-          </div>
-        </Form.FieldSet>
         <Form.FieldSet class="mt-[10px]">
           <Form.Label>Output is estimated</Form.Label>
           <SwapDetails
@@ -92,3 +61,68 @@ export const ConfirmSwap = defineComponent({
     );
   },
 });
+
+export const AssetPairFieldSet = defineComponent({
+  props: {
+    fromAssetAmount: {
+      type: Object as PropType<Ref<IAssetAmount>>,
+      required: true,
+    },
+    fromTooltip: {
+      type: Object as PropType<TippyContent>,
+    },
+    toAssetAmount: {
+      type: Object as PropType<Ref<IAssetAmount>>,
+      required: true,
+    },
+    toTooltip: {
+      type: Object as PropType<TippyContent>,
+    },
+  },
+  setup(props) {
+    return () => (
+      <Form.FieldSet>
+        <div class="w-full px-[4px]">
+          <Field
+            assetAmount={props.fromAssetAmount}
+            tooltip={props.fromTooltip}
+          />
+          <div class="my-[10px] flex w-full justify-center">
+            <AssetIcon
+              class="text-accent-base"
+              icon="interactive/chevron-down"
+              size={20}
+            />
+          </div>
+          <Field assetAmount={props.toAssetAmount} tooltip={props.toTooltip} />
+        </div>
+      </Form.FieldSet>
+    );
+  },
+});
+
+const Field = (props: {
+  assetAmount: Ref<IAssetAmount>;
+  tooltip?: TippyContent;
+}) => {
+  const displayAssetAmount = (
+    <div class="font-mono">{formatAssetAmount(props.assetAmount.value)}</div>
+  );
+  return (
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        {props.assetAmount.value && (
+          <TokenIcon asset={props.assetAmount} size={22} />
+        )}
+        <span class="text-md ml-[10px] font-medium">
+          {props.assetAmount?.value?.displaySymbol?.toUpperCase()}
+        </span>
+      </div>
+      {props.tooltip ? (
+        <Tooltip content={props.tooltip}>{displayAssetAmount}</Tooltip>
+      ) : (
+        displayAssetAmount
+      )}
+    </div>
+  );
+};
