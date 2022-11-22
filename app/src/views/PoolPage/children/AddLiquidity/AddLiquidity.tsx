@@ -348,9 +348,9 @@ export default defineComponent({
                         data.tokenAField.value.fieldAmount ??
                         AssetAmount("rowan", "0"),
                     )}
-                    fromTooltip="Amount of external tokens you want to add to the pool"
+                    fromTooltip={`Amount of ${fromTokenLabel.value} you want to add to the pool`}
                     toAssetAmount={externalAmount}
-                    toTooltip="Amount of external asset you will receive"
+                    toTooltip={`Amount of ${fromTokenLabel.value} that will be added to your pool share`}
                   />
                   <AssetPairFieldSet
                     fromAssetAmount={computed(
@@ -358,9 +358,9 @@ export default defineComponent({
                         data.tokenBField.value.fieldAmount ??
                         AssetAmount("rowan", "0"),
                     )}
-                    fromTooltip="Amount of native tokens you want to add to the pool"
+                    fromTooltip={`Amount of ${toTokenLabel.value} tokens you want to add to the pool`}
                     toAssetAmount={nativeAmount}
-                    toTooltip="Amount of native asset you will receive"
+                    toTooltip={`Amount of ${toTokenLabel.value} that will be added to your pool share`}
                   />
                 </>
               )}
