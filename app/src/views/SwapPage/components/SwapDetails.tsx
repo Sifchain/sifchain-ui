@@ -26,11 +26,11 @@ export const SwapDetails = defineComponent({
       return [ratio.toFixed(6), (1 / ratio).toFixed(6)] as const;
     });
 
-    const displayFeeRate = computed(
-      () =>
-        `${props.swapFeeRate?.toNumber().toLocaleString(undefined, {
-          style: "percent",
-        })}`,
+    const displayFeeRate = computed(() =>
+      props.swapFeeRate?.toNumber().toLocaleString(undefined, {
+        style: "percent",
+        maximumFractionDigits: 2,
+      }),
     );
 
     return () => (
@@ -117,9 +117,13 @@ export const SwapDetails = defineComponent({
             border-t-0 border-solid
           `}
         >
-          <div class="text-md w-full pl-[20px] text-left font-sans font-medium capitalize text-white">
+          <div class="text-md w-full whitespace-nowrap pl-[20px] text-left font-sans font-medium capitalize text-white">
             Liquidity Provider Fee{" "}
-            {displayFeeRate.value && <>({displayFeeRate.value})</>}
+            {displayFeeRate.value && (
+              <span class="text-accent-muted text-[.9em]">
+                ({displayFeeRate.value})
+              </span>
+            )}
             <Button.InlineHelp>
               This is the fee paid to the liquidity providers of this pool.{" "}
               (Current rate: {displayFeeRate.value})

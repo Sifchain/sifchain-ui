@@ -25,6 +25,51 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.clp.v1";
 
+export enum SwapStatus {
+  UNSPECIFIED = 0,
+  NO_SWAP = 1,
+  SELL_NATIVE = 2,
+  BUY_NATIVE = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function swapStatusFromJSON(object: any): SwapStatus {
+  switch (object) {
+    case 0:
+    case "UNSPECIFIED":
+      return SwapStatus.UNSPECIFIED;
+    case 1:
+    case "NO_SWAP":
+      return SwapStatus.NO_SWAP;
+    case 2:
+    case "SELL_NATIVE":
+      return SwapStatus.SELL_NATIVE;
+    case 3:
+    case "BUY_NATIVE":
+      return SwapStatus.BUY_NATIVE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return SwapStatus.UNRECOGNIZED;
+  }
+}
+
+export function swapStatusToJSON(object: SwapStatus): string {
+  switch (object) {
+    case SwapStatus.UNSPECIFIED:
+      return "UNSPECIFIED";
+    case SwapStatus.NO_SWAP:
+      return "NO_SWAP";
+    case SwapStatus.SELL_NATIVE:
+      return "SELL_NATIVE";
+    case SwapStatus.BUY_NATIVE:
+      return "BUY_NATIVE";
+    case SwapStatus.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface PoolReq {
   symbol: string;
 }
@@ -157,6 +202,15 @@ export interface PoolShareEstimateRes {
   percentage: string;
   nativeAssetAmount: string;
   externalAssetAmount: string;
+  swapInfo?: SwapInfo;
+}
+
+export interface SwapInfo {
+  status: SwapStatus;
+  fee: string;
+  feeRate: string;
+  amount: string;
+  result: string;
 }
 
 function createBasePoolReq(): PoolReq {
@@ -2213,7 +2267,12 @@ export const PoolShareEstimateReq = {
 };
 
 function createBasePoolShareEstimateRes(): PoolShareEstimateRes {
-  return { percentage: "", nativeAssetAmount: "", externalAssetAmount: "" };
+  return {
+    percentage: "",
+    nativeAssetAmount: "",
+    externalAssetAmount: "",
+    swapInfo: undefined,
+  };
 }
 
 export const PoolShareEstimateRes = {
@@ -2229,6 +2288,9 @@ export const PoolShareEstimateRes = {
     }
     if (message.externalAssetAmount !== "") {
       writer.uint32(26).string(message.externalAssetAmount);
+    }
+    if (message.swapInfo !== undefined) {
+      SwapInfo.encode(message.swapInfo, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -2252,6 +2314,9 @@ export const PoolShareEstimateRes = {
         case 3:
           message.externalAssetAmount = reader.string();
           break;
+        case 4:
+          message.swapInfo = SwapInfo.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -2269,6 +2334,9 @@ export const PoolShareEstimateRes = {
       externalAssetAmount: isSet(object.externalAssetAmount)
         ? String(object.externalAssetAmount)
         : "",
+      swapInfo: isSet(object.swapInfo)
+        ? SwapInfo.fromJSON(object.swapInfo)
+        : undefined,
     };
   },
 
@@ -2279,6 +2347,10 @@ export const PoolShareEstimateRes = {
       (obj.nativeAssetAmount = message.nativeAssetAmount);
     message.externalAssetAmount !== undefined &&
       (obj.externalAssetAmount = message.externalAssetAmount);
+    message.swapInfo !== undefined &&
+      (obj.swapInfo = message.swapInfo
+        ? SwapInfo.toJSON(message.swapInfo)
+        : undefined);
     return obj;
   },
 
@@ -2289,6 +2361,99 @@ export const PoolShareEstimateRes = {
     message.percentage = object.percentage ?? "";
     message.nativeAssetAmount = object.nativeAssetAmount ?? "";
     message.externalAssetAmount = object.externalAssetAmount ?? "";
+    message.swapInfo =
+      object.swapInfo !== undefined && object.swapInfo !== null
+        ? SwapInfo.fromPartial(object.swapInfo)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseSwapInfo(): SwapInfo {
+  return { status: 0, fee: "", feeRate: "", amount: "", result: "" };
+}
+
+export const SwapInfo = {
+  encode(
+    message: SwapInfo,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.status !== 0) {
+      writer.uint32(8).int32(message.status);
+    }
+    if (message.fee !== "") {
+      writer.uint32(18).string(message.fee);
+    }
+    if (message.feeRate !== "") {
+      writer.uint32(26).string(message.feeRate);
+    }
+    if (message.amount !== "") {
+      writer.uint32(34).string(message.amount);
+    }
+    if (message.result !== "") {
+      writer.uint32(42).string(message.result);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SwapInfo {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSwapInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.status = reader.int32() as any;
+          break;
+        case 2:
+          message.fee = reader.string();
+          break;
+        case 3:
+          message.feeRate = reader.string();
+          break;
+        case 4:
+          message.amount = reader.string();
+          break;
+        case 5:
+          message.result = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SwapInfo {
+    return {
+      status: isSet(object.status) ? swapStatusFromJSON(object.status) : 0,
+      fee: isSet(object.fee) ? String(object.fee) : "",
+      feeRate: isSet(object.feeRate) ? String(object.feeRate) : "",
+      amount: isSet(object.amount) ? String(object.amount) : "",
+      result: isSet(object.result) ? String(object.result) : "",
+    };
+  },
+
+  toJSON(message: SwapInfo): unknown {
+    const obj: any = {};
+    message.status !== undefined &&
+      (obj.status = swapStatusToJSON(message.status));
+    message.fee !== undefined && (obj.fee = message.fee);
+    message.feeRate !== undefined && (obj.feeRate = message.feeRate);
+    message.amount !== undefined && (obj.amount = message.amount);
+    message.result !== undefined && (obj.result = message.result);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SwapInfo>, I>>(object: I): SwapInfo {
+    const message = createBaseSwapInfo();
+    message.status = object.status ?? 0;
+    message.fee = object.fee ?? "";
+    message.feeRate = object.feeRate ?? "";
+    message.amount = object.amount ?? "";
+    message.result = object.result ?? "";
     return message;
   },
 };

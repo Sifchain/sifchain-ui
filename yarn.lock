@@ -8344,6 +8344,7 @@ __metadata:
     postcss: ^8.4.14
     prettier: ^2.6.2
     prettier-plugin-tailwindcss: ^0.1.11
+    rambda: ^7.4.0
     react-dom: ^17.0.2
     rollup-plugin-analyzer: ^4.0.0
     rollup-plugin-visualizer: ^5.6.0
@@ -21571,6 +21572,13 @@ __metadata:
   version: 5.1.1
   resolution: "quick-lru@npm:5.1.1"
   checksum: a516faa25574be7947969883e6068dbe4aa19e8ef8e8e0fd96cddd6d36485e9106d85c0041a27153286b0770b381328f4072aa40d3b18a19f5f7d2b78b94b5ed
+  languageName: node
+  linkType: hard
+
+"rambda@npm:^7.4.0":
+  version: 7.4.0
+  resolution: "rambda@npm:7.4.0"
+  checksum: 9c3f1fecd81121b94c261cdaef777c570c3df7f981f1d3cd60e671869088b9dcd29f331f049a7f29862ed392c5acce12c8f2a6c1c50d14ae75db745a350caff9
   languageName: node
   linkType: hard
 
