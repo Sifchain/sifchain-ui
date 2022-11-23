@@ -80,7 +80,9 @@ export default defineComponent({
             props.containerClass,
           ]}
           onClick={() => {
-            if (props.backdropClickToClose) props.onClose?.();
+            if (props.backdropClickToClose) {
+              props.onClose?.();
+            }
           }}
         >
           <div
@@ -91,27 +93,29 @@ export default defineComponent({
             ]}
             onClick={(e) => e.stopPropagation()}
           >
-            {!!props.heading && (
-              <div class="flex w-full flex-row items-center justify-between pb-4">
-                <div class="flex items-center">
-                  {props.icon ? (
-                    <AssetIcon icon={props.icon} active size={32} />
-                  ) : null}
-                  <span class="text-accent-base ml-2 font-sans text-[26px] font-semibold">
-                    {props.heading}
-                  </span>
+            <div class="md:max-h-[90vh] md:overflow-y-scroll">
+              {!!props.heading && (
+                <div class="flex w-full flex-row items-center justify-between pb-4">
+                  <div class="flex items-center">
+                    {props.icon ? (
+                      <AssetIcon icon={props.icon} active={true} size={32} />
+                    ) : null}
+                    <span class="text-accent-base ml-2 font-sans text-[26px] font-semibold">
+                      {props.heading}
+                    </span>
+                  </div>
+                  <div class="flex-1">{props.headingAction}</div>
+                  <div class="flex items-center">
+                    {props.showClose && (
+                      <button onClick={() => props.onClose?.()}>
+                        <AssetIcon icon="interactive/close" size={24} />
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div class="flex-1">{props.headingAction}</div>
-                <div class="flex items-center">
-                  {props.showClose && (
-                    <button onClick={() => props.onClose?.()}>
-                      <AssetIcon icon="interactive/close" size={24} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-            <div class="w-full">{context.slots.default?.()}</div>
+              )}
+              <div class="w-full">{context.slots.default?.()}</div>
+            </div>
           </div>
         </div>
       </div>
