@@ -279,10 +279,9 @@ export const useAddLiquidityData = () => {
         case PoolState.SELECT_TOKENS:
           return "Select Tokens";
         case PoolState.ZERO_AMOUNTS: {
-          if (symmetricalPooling.value) {
-            return "Please enter an amount";
-          }
-          return "Please enter both amounts";
+          return symmetricalPooling.value
+            ? "Please enter both amounts"
+            : "Please enter an amount";
         }
         case PoolState.ZERO_AMOUNTS_NEW_POOL:
           return "Both inputs required";
