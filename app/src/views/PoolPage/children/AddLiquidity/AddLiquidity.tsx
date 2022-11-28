@@ -1,6 +1,13 @@
-import { Network } from "@sifchain/sdk";
+import {
+  AssetAmount,
+  formatAssetAmount,
+  IAsset,
+  IAssetAmount,
+  Network,
+} from "@sifchain/sdk";
+import { PoolShareEstimateRes } from "@sifchain/sdk/build/typescript/generated/proto/sifnode/clp/v1/querier";
 import { formatDistance } from "date-fns";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, PropType, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import AssetIcon from "~/components/AssetIcon";
@@ -11,6 +18,7 @@ import Toggle from "~/components/Toggle";
 import { TokenIcon } from "~/components/TokenIcon";
 import { Tooltip } from "~/components/Tooltip";
 import TransactionDetailsModal from "~/components/TransactionDetailsModal";
+import { usePoolshareEstimateQuery } from "~/domains/clp/queries/liquidityProvider";
 import { useCurrentRewardPeriodStatistics } from "~/domains/clp/queries/params";
 import { useMarginEnabledPoolsQuery } from "~/domains/margin/queries/params";
 import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
@@ -19,6 +27,10 @@ import { useTransactionDetails } from "~/hooks/useTransactionDetails";
 import { flagsStore } from "~/store/modules/flags";
 import { prettyNumber } from "~/utils/prettyNumber";
 import { usePoolPageData } from "~/views/PoolPage/usePoolPageData";
+import {
+  AssetPairFieldSet,
+  AssetPairRow,
+} from "~/views/SwapPage/children/ConfirmSwap";
 import { TokenInputGroup } from "~/views/SwapPage/components/TokenInputGroup";
 import AssetPair from "./AssetPair";
 import RiskWarning from "./RiskWarning";
@@ -151,12 +163,6 @@ export default defineComponent({
             </div>
           </div>,
         ],
-        [
-          <span>Est. pool share</span>,
-          <div class="flex items-center gap-[4px] font-mono">
-            <div>{data.shareOfPoolPercent.value}</div>
-          </div>,
-        ],
       ],
     }));
 
@@ -181,7 +187,6 @@ export default defineComponent({
       () => Number(rewardsPeriod.value?.estimatedLockMs ?? 0) > 0,
     );
 
-    console.log({ flags: JSON.stringify(flagsStore.state) });
     const isAsymmetricPoolingEnabled = computed(
       () => flagsStore.state.remoteFlags.ASYMMETRIC_POOLING,
     );
@@ -200,6 +205,151 @@ export default defineComponent({
       }
 
       if (data.modalStatus.value === "confirm") {
+        const externalAssetBaseDenom = computed(
+          () => data.fromAsset.value?.symbol ?? "",
+        );
+
+        const { data: poolShareQuote, error } = usePoolshareEstimateQuery({
+          nativeAssetAmount: computed(
+            () =>
+              data.tokenBField.value.fieldAmount ?? AssetAmount("rowan", "0"),
+          ),
+          externalAssetAmount: computed(
+            () =>
+              data.tokenAField.value.fieldAmount ?? AssetAmount("rowan", "0"),
+          ),
+          externalAssetBaseDenom,
+        });
+
+        const quote = computed((): PoolShareEstimateRes => {
+          if (error.value || !poolShareQuote.value) {
+            return {
+              nativeAssetAmount: "0",
+              externalAssetAmount: "0",
+              percentage: "0",
+            };
+          }
+
+          return poolShareQuote.value;
+        });
+
+        const poolShare = computed(() =>
+          AssetAmount("rowan", quote.value.percentage).toDerived().toNumber(),
+        );
+
+        const nativeAmount = computed(() =>
+          AssetAmount("rowan", quote.value.nativeAssetAmount),
+        );
+
+        const externalAmount = computed(() =>
+          AssetAmount(
+            externalAssetBaseDenom.value,
+            quote.value.externalAssetAmount,
+          ),
+        );
+
+        const enhancedDetailsRef = computed(() => {
+          const estimatedPoolShareField = [
+            <span>Est. pool share</span>,
+            <div class="flex items-center gap-[4px] font-mono">
+              <div>
+                {poolShare.value.toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                  style: "percent",
+                })}
+              </div>
+            </div>,
+          ];
+
+          const isBuyingRowan =
+            quote.value.swapInfo?.status === 3; /* SwapStatus.BUY_NATIVE */
+
+          return {
+            details: data.symmetricalPooling.value
+              ? [
+                  [
+                    <div class="flex items-center">
+                      <TokenIcon asset={data.fromAsset} size={18} />
+                      <span class="ml-[4px]">{fromTokenLabel.value}</span>
+                    </div>,
+                    <div class="text-right">
+                      <div class="font-mono">
+                        {formatAssetAmount(externalAmount.value)}
+                      </div>
+                      <div class="font-mono text-sm text-white/60">
+                        ≈${prettyNumber(fromTokenPriceUSD.value)}
+                      </div>
+                    </div>,
+                  ],
+                  [
+                    <div class="flex items-center">
+                      <TokenIcon asset={data.toAsset} size={18} />
+                      <span class="ml-[4px]">{toTokenLabel.value}</span>
+                    </div>,
+                    <div class="text-right">
+                      <div class="font-mono">
+                        {formatAssetAmount(nativeAmount.value)}
+                      </div>
+                      <div class="font-mono text-sm text-white/60">
+                        ≈${prettyNumber(toTokenPriceUSD.value)}
+                      </div>
+                    </div>,
+                  ],
+                  estimatedPoolShareField,
+                ]
+              : [
+                  [
+                    <div class="flex items-center">
+                      Liquidity Provider Fee (
+                      {AssetAmount(
+                        "rowan",
+                        quote.value.swapInfo?.feeRate ?? "0",
+                      )
+                        .toDerived()
+                        .toNumber()
+                        .toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                          style: "percent",
+                        })}
+                      )
+                    </div>,
+                    <div class="text-right">
+                      <div class="flex items-center gap-2 font-mono">
+                        {formatAssetAmount(
+                          AssetAmount(
+                            isBuyingRowan
+                              ? "rowan"
+                              : externalAssetBaseDenom.value,
+                            quote.value.swapInfo?.fee ?? "0",
+                          ),
+                        )}
+
+                        <TokenIcon
+                          asset={isBuyingRowan ? data.toAsset : data.fromAsset}
+                          size={18}
+                        />
+                      </div>
+                    </div>,
+                  ],
+                  estimatedPoolShareField,
+                ],
+          } as FormDetailsType;
+        });
+
+        const estimatedExternalUSD = computed(() => {
+          return (
+            poolComposition.value.externalPrice *
+            externalAmount.value.toDerived().toNumber()
+          );
+        });
+
+        const estimatedNativeUSD = computed(() => {
+          return (
+            poolComposition.value.nativePrice *
+            nativeAmount.value.toDerived().toNumber()
+          );
+        });
+
         return (
           <Modal
             heading="Add Liquidity"
@@ -213,8 +363,34 @@ export default defineComponent({
             }
           >
             <div class="grid gap-4">
-              <div class="bg-gray-base grid gap-4 rounded-lg p-4">
-                <Form.Details details={detailsRef.value} />
+              {!data.symmetricalPooling.value && (
+                <>
+                  <TokenGroupCard
+                    label="User added"
+                    asset1={computed(
+                      () =>
+                        data.tokenAField.value.fieldAmount ??
+                        AssetAmount("rowan", "0"),
+                    )}
+                    asset2={computed(
+                      () =>
+                        data.tokenBField.value.fieldAmount ??
+                        AssetAmount("rowan", "0"),
+                    )}
+                    asset1Price={fromTokenPriceUSD}
+                    asset2Price={toTokenPriceUSD}
+                  />
+                  <TokenGroupCard
+                    label="Amount pooled after swap"
+                    asset1={externalAmount}
+                    asset2={nativeAmount}
+                    asset1Price={estimatedExternalUSD}
+                    asset2Price={estimatedNativeUSD}
+                  />
+                </>
+              )}
+              <div class="bg-gray-base grid gap-2 rounded-lg p-4">
+                <Form.Details details={enhancedDetailsRef.value} />
                 <RiskWarning
                   isSlippagePossible={!data.symmetricalPooling.value}
                   riskFactorStatus={data.riskFactorStatus}
@@ -415,14 +591,7 @@ export default defineComponent({
                   isError: !!data.riskFactorStatus.value,
                   errorType: data.riskFactorStatus.value || undefined,
                   label: "",
-                  details: [
-                    [
-                      <span>Est. pool share</span>,
-                      <div class="flex items-center gap-[4px] font-mono">
-                        <div>{data.shareOfPoolPercent.value}</div>
-                      </div>,
-                    ],
-                  ],
+                  details: [],
                 }}
               />
               <RiskWarning
@@ -456,5 +625,46 @@ export default defineComponent({
         </Modal>
       );
     };
+  },
+});
+
+export const TokenGroupCard = defineComponent({
+  name: "TokenGroupCard",
+  props: {
+    label: {
+      type: String,
+      required: true,
+    },
+    asset1: {
+      type: Object as PropType<Ref<IAssetAmount>>,
+      required: true,
+    },
+    asset1Price: {
+      type: Object as PropType<Ref<number>>,
+      required: true,
+    },
+    asset2: {
+      type: Object as PropType<Ref<IAssetAmount>>,
+      required: true,
+    },
+    asset2Price: {
+      type: Object as PropType<Ref<number>>,
+      required: true,
+    },
+  },
+  setup(props) {
+    return () => (
+      <section class="bg-gray-base grid gap-4 rounded-lg p-4">
+        <h3 class="text-md text-white/80">{props.label}</h3>
+        <AssetPairRow
+          assetAmount={props.asset1}
+          assetPrice={props.asset1Price}
+        />
+        <AssetPairRow
+          assetAmount={props.asset2}
+          assetPrice={props.asset2Price}
+        />
+      </section>
+    );
   },
 });

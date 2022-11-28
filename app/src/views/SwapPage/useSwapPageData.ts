@@ -139,8 +139,8 @@ export const useSwapPageData = () => {
   const fromAsset = computed(() => {
     const found = core.config.assets.find(
       (asset) =>
-        asset.symbol == fromSymbol.value ||
-        asset.symbol == `c${fromSymbol.value}`,
+        asset.symbol === fromSymbol.value ||
+        asset.symbol === `c${fromSymbol.value}`,
     );
     return found ?? (core.config.assets[0] as IAsset);
   });
@@ -148,7 +148,8 @@ export const useSwapPageData = () => {
   const toAsset = computed(() => {
     const found = core.config.assets.find(
       (asset) =>
-        asset.symbol == toSymbol.value || asset.symbol == `c${toSymbol.value}`,
+        asset.symbol === toSymbol.value ||
+        asset.symbol === `c${toSymbol.value}`,
     );
 
     return found ?? (core.config.assets[0] as IAsset);
@@ -195,8 +196,12 @@ export const useSwapPageData = () => {
   });
 
   function handleNextStepClicked() {
-    if (!fromFieldAmount) throw new Error("from field amount is not defined");
-    if (!toFieldAmount) throw new Error("to field amount is not defined");
+    if (!fromFieldAmount) {
+      throw new Error("from field amount is not defined");
+    }
+    if (!toFieldAmount) {
+      throw new Error("to field amount is not defined");
+    }
 
     router.replace({
       name: "ConfirmSwap",
@@ -204,10 +209,15 @@ export const useSwapPageData = () => {
   }
 
   function checkSwapInputs() {
-    if (!fromFieldAmount) throw new Error("from field amount is not defined");
-    if (!toFieldAmount) throw new Error("to field amount is not defined");
-    if (!minimumReceived.value)
+    if (!fromFieldAmount) {
+      throw new Error("from field amount is not defined");
+    }
+    if (!toFieldAmount) {
+      throw new Error("to field amount is not defined");
+    }
+    if (!minimumReceived.value) {
       throw new Error("minimumReceived amount is not defined");
+    }
   }
 
   async function handleAskConfirmClicked() {
@@ -352,7 +362,9 @@ export const useSwapPageData = () => {
   });
 
   const formattedMinimumReceived = computed(() => {
-    if (!minimumReceived.value) return "";
+    if (!minimumReceived.value) {
+      return "";
+    }
     const { amount, asset } = minimumReceived.value;
     return amount.greaterThanOrEqual(Amount("0"))
       ? format(amount, asset, { mantissa: 6, trimMantissa: true })
@@ -360,7 +372,9 @@ export const useSwapPageData = () => {
   });
 
   const formattedEffectiveToAmount = computed(() => {
-    if (!effectiveMinimumReceived.value) return "";
+    if (!effectiveMinimumReceived.value) {
+      return "";
+    }
     const { amount, asset } = effectiveMinimumReceived.value;
     return amount.greaterThanOrEqual(Amount("0"))
       ? format(amount, asset, { mantissa: 6, trimMantissa: true })
@@ -399,7 +413,9 @@ export const useSwapPageData = () => {
     },
     handleNextStepClicked,
     handleBlur() {
-      if (isFromMaxActive.value) return;
+      if (isFromMaxActive.value) {
+        return;
+      }
       selectedField.value = null;
     },
     slippage,
@@ -408,6 +424,7 @@ export const useSwapPageData = () => {
     fromAmount,
     toAmount,
     effectiveToAmount: formattedEffectiveToAmount,
+    effectiveMinimumReceived,
     fromSymbol,
     fromTokenIconUrl,
     toTokenIconUrl,
@@ -424,7 +441,9 @@ export const useSwapPageData = () => {
     handleFromMaxClicked() {
       selectedField.value = "from";
       const accountBalance = getAccountBalance();
-      if (!accountBalance) return;
+      if (!accountBalance) {
+        return;
+      }
       const maxAmount = getMaxAmount(fromSymbol, accountBalance);
       fromAmount.value = format(maxAmount, accountBalance.asset, {
         mantissa: accountBalance.asset.decimals,
