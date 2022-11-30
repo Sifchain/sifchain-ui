@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AdminAccount } from "./types";
+import { AdminAccount, Params } from "./types";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
@@ -18,6 +18,13 @@ export interface MsgRemoveAccount {
 }
 
 export interface MsgRemoveAccountResponse {}
+
+export interface MsgSetParams {
+  signer: string;
+  params?: Params;
+}
+
+export interface MsgSetParamsResponse {}
 
 function createBaseMsgAddAccount(): MsgAddAccount {
   return { signer: "", account: undefined };
@@ -255,9 +262,124 @@ export const MsgRemoveAccountResponse = {
   },
 };
 
+function createBaseMsgSetParams(): MsgSetParams {
+  return { signer: "", params: undefined };
+}
+
+export const MsgSetParams = {
+  encode(
+    message: MsgSetParams,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.params !== undefined) {
+      Params.encode(message.params, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetParams {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetParams();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.params = Params.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSetParams {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+    };
+  },
+
+  toJSON(message: MsgSetParams): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    message.params !== undefined &&
+      (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSetParams>, I>>(
+    object: I,
+  ): MsgSetParams {
+    const message = createBaseMsgSetParams();
+    message.signer = object.signer ?? "";
+    message.params =
+      object.params !== undefined && object.params !== null
+        ? Params.fromPartial(object.params)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseMsgSetParamsResponse(): MsgSetParamsResponse {
+  return {};
+}
+
+export const MsgSetParamsResponse = {
+  encode(
+    _: MsgSetParamsResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgSetParamsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetParamsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSetParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgSetParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSetParamsResponse>, I>>(
+    _: I,
+  ): MsgSetParamsResponse {
+    const message = createBaseMsgSetParamsResponse();
+    return message;
+  },
+};
+
 export interface Msg {
   AddAccount(request: MsgAddAccount): Promise<MsgAddAccountResponse>;
   RemoveAccount(request: MsgRemoveAccount): Promise<MsgRemoveAccountResponse>;
+  SetParams(request: MsgSetParams): Promise<MsgSetParamsResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -266,6 +388,7 @@ export class MsgClientImpl implements Msg {
     this.rpc = rpc;
     this.AddAccount = this.AddAccount.bind(this);
     this.RemoveAccount = this.RemoveAccount.bind(this);
+    this.SetParams = this.SetParams.bind(this);
   }
   AddAccount(request: MsgAddAccount): Promise<MsgAddAccountResponse> {
     const data = MsgAddAccount.encode(request).finish();
@@ -288,6 +411,14 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgRemoveAccountResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  SetParams(request: MsgSetParams): Promise<MsgSetParamsResponse> {
+    const data = MsgSetParams.encode(request).finish();
+    const promise = this.rpc.request("sifnode.admin.v1.Msg", "SetParams", data);
+    return promise.then((data) =>
+      MsgSetParamsResponse.decode(new _m0.Reader(data)),
     );
   }
 }

@@ -79,6 +79,10 @@ export interface GenesisState {
   peggyTokens: string[];
 }
 
+export interface Pause {
+  isPaused: boolean;
+}
+
 function createBaseEthBridgeClaim(): EthBridgeClaim {
   return {
     ethereumChainId: Long.ZERO,
@@ -381,6 +385,55 @@ export const GenesisState = {
     const message = createBaseGenesisState();
     message.cethReceiveAccount = object.cethReceiveAccount ?? "";
     message.peggyTokens = object.peggyTokens?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBasePause(): Pause {
+  return { isPaused: false };
+}
+
+export const Pause = {
+  encode(message: Pause, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.isPaused === true) {
+      writer.uint32(8).bool(message.isPaused);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Pause {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePause();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.isPaused = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Pause {
+    return {
+      isPaused: isSet(object.isPaused) ? Boolean(object.isPaused) : false,
+    };
+  },
+
+  toJSON(message: Pause): unknown {
+    const obj: any = {};
+    message.isPaused !== undefined && (obj.isPaused = message.isPaused);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<Pause>, I>>(object: I): Pause {
+    const message = createBasePause();
+    message.isPaused = object.isPaused ?? false;
     return message;
   },
 };

@@ -95,12 +95,17 @@ export default function useDependentQuery<
   );
 
   const status = computed(() => {
-    if (unref(baseUseQuery.status) !== "idle")
+    if (unref(baseUseQuery.status) !== "idle") {
       return unref(baseUseQuery.status);
+    }
 
-    if (unref(isError)) return "idle";
+    if (unref(isError)) {
+      return "idle";
+    }
 
-    if (unref(isLoading)) return "loading";
+    if (unref(isLoading)) {
+      return "loading";
+    }
 
     return unref(baseUseQuery.status);
   });

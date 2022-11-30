@@ -2,10 +2,10 @@ import { EthChainConfig, Network } from "../../../entities";
 
 export const ETHEREUM_TESTNET: EthChainConfig = {
   chainType: "eth",
-  chainId: "0x3", // Ropsten
+  chainId: "0x5", // Goerli
   network: Network.ETHEREUM,
   displayName: "Ethereum",
-  blockExplorerUrl: "https://ropsten.etherscan.io",
-  blockExplorerApiUrl: "https://api-ropsten.etherscan.io",
+  blockExplorerUrl: "https://goerli.etherscan.io",
+  blockExplorerApiUrl: "https://api-goerli.etherscan.io",
   nativeAssetSymbol: "eth",
 };

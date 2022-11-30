@@ -124,15 +124,15 @@ export function calculateWithdrawal({
     withdrawNativeAssetAmountPreSwap,
   );
 
-  const withdrawNativeAssetAmount = !asymmetry.lessThan("0")
-    ? withdrawNativeAssetAmountPreSwap.subtract(swapAmount)
-    : withdrawNativeAssetAmountPreSwap.add(
+  const withdrawNativeAssetAmount = asymmetry.lessThan("0")
+    ? withdrawNativeAssetAmountPreSwap.add(
         calculateSwapResult(
           abs(swapAmount),
           newExternalAssetBalance,
           newNativeAssetBalance,
         ),
-      );
+      )
+    : withdrawNativeAssetAmountPreSwap.subtract(swapAmount);
 
   const withdrawExternalAssetAmount = asymmetry.lessThan("0")
     ? withdrawExternalAssetAmountPreSwap.subtract(swapAmount)

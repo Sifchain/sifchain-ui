@@ -1,7 +1,7 @@
 import { test, describe, expect, vitest } from "vitest";
 
 import { Ref, ref } from "vue";
-import { AssetAmount, IAsset, IAssetAmount, Pool } from "@sifchain/sdk";
+import { Amount, AssetAmount, IAsset, IAssetAmount, Pool } from "@sifchain/sdk";
 import { getTestingTokens } from "@sifchain/sdk/src/test/utils/getTestingToken";
 import { SwapState, useSwapCalculator } from "./swapCalculator";
 
@@ -83,21 +83,16 @@ describe("swapCalculator", () => {
 
     expect(fromAmount.value).toBe("100.0");
 
-    // Check background update
-    pool1.value = new Pool(
-      AssetAmount(ATK, "1000000000000000000000000000000"),
-      AssetAmount(ROWAN, "1000000000000000000000000000000"),
-    );
-
     selectedField.value = "from";
     fromAmount.value = "1000";
     selectedField.value = null;
 
-    expect(toAmount.value).toBe("999.999996");
-
     pool1.value = new Pool(
       AssetAmount(ATK, "2000000000000000000000000000000"),
       AssetAmount(ROWAN, "1000000000000000000000000000000"),
+      {
+        swapFeeRate: Amount("0.00000001"),
+      },
     );
 
     selectedField.value = "from";
@@ -122,50 +117,6 @@ describe("swapCalculator", () => {
     expect(priceMessage.value).toBe("0.500000 ATK per BTK");
     expect(priceImpact.value).toBe("0.000001");
     expect(providerFee.value).toBe("0.00005");
-  });
-
-  test.skip("Avoid division by zero", () => {
-    const pool1 = ref(
-      new Pool(
-        AssetAmount(ATK, "1000000000000000000000000"),
-        AssetAmount(ROWAN, "1000000000000000000000000"),
-      ),
-    ) as Ref<Pool | null>;
-
-    const pool2 = ref(
-      new Pool(
-        AssetAmount(BTK, "2000000000000000000000000"),
-        AssetAmount(ROWAN, "1000000000000000000000000"),
-      ),
-    ) as Ref<Pool | null>;
-
-    const poolFinder: any = vitest.fn((a: string, b: string) => {
-      if (a === "atk" && b === "rowan") {
-        return pool1;
-      } else {
-        return pool2;
-      }
-    });
-
-    ({ state, priceMessage, priceImpact, providerFee } = useSwapCalculator({
-      balances,
-      fromAmount,
-      toAmount,
-      fromSymbol,
-      selectedField,
-      toSymbol,
-      poolFinder,
-      slippage,
-    }));
-
-    selectedField.value = "from";
-    fromAmount.value = "0";
-    toAmount.value = "0";
-    fromSymbol.value = "atk";
-    toSymbol.value = "btk";
-    expect(priceMessage.value).toBe("");
-    expect(priceImpact.value).toBe("0.0");
-    expect(providerFee.value).toBe("0.0");
   });
 
   test("insufficient funds", () => {

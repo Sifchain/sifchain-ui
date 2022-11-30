@@ -1,19 +1,21 @@
+import { AssetAmount, IAssetAmount, Network } from "@sifchain/sdk";
+import { PoolShareEstimateRes } from "@sifchain/sdk/src/generated/proto/sifnode/clp/v1/querier";
+import { computed, unref } from "vue";
+import { UseQueryOptions } from "vue-query";
+import { MaybeRef } from "vue-query/lib/vue/types";
 import { useSifchainClients } from "~/business/providers/SifchainClientsProvider";
 import { useBlockTimeQuery } from "~/domains/statistics/queries/blockTime";
-import { useCore } from "~/hooks/useCore";
-import dangerouslyAssert from "~/utils/dangerouslyAssert";
-import useDependentQuery from "~/utils/useDependentQuery";
-import { Network } from "@sifchain/sdk";
-import { computed } from "vue";
-import { MaybeRef } from "vue-query/lib/vue/types";
 import {
   useTokenRegistryEntriesQuery,
   useTokenRegistryEntryQuery,
-} from "../../tokenRegistry/queries/tokenRegistry";
+} from "~/domains/tokenRegistry/queries/tokenRegistry";
+import { useCore } from "~/hooks/useCore";
+import dangerouslyAssert from "~/utils/dangerouslyAssert";
+import useDependentQuery from "~/utils/useDependentQuery";
+
 import { addDetailToLiquidityProvider } from "../utils";
 import { useRewardsParamsQuery } from "./params";
 
-// TODO: duplicate logic that needed to be cleanup, too tired, getting sloppy ==
 export const LIQUIDITY_PROVIDER_KEY = "liquidityProvider";
 export const LIQUIDITY_PROVIDERS_KEY = "liquidityProviders";
 
@@ -169,3 +171,54 @@ export const useLiquidityProvidersQuery = () => {
     },
   );
 };
+
+export function usePoolshareEstimateQuery(
+  input: {
+    externalAssetBaseDenom: MaybeRef<string>;
+    externalAssetAmount: MaybeRef<IAssetAmount>;
+    nativeAssetAmount: MaybeRef<IAssetAmount>;
+  },
+  options?: UseQueryOptions<PoolShareEstimateRes | null>,
+) {
+  const sifchainClients = useSifchainClients();
+
+  return useDependentQuery(
+    [
+      computed(
+        () =>
+          sifchainClients.signingClientStatus === "fulfilled" &&
+          sifchainClients.queryClientStatus === "fulfilled",
+      ),
+    ],
+    ["poolshareEstimate", input],
+    async () => {
+      dangerouslyAssert<"fulfilled">(sifchainClients.queryClientStatus);
+      dangerouslyAssert<"fulfilled">(sifchainClients.signingClientStatus);
+
+      try {
+        const unreffed = {
+          externalAssetBaseDenom: unref(input.externalAssetBaseDenom),
+          externalAssetAmount: unref(input.externalAssetAmount),
+          nativeAssetAmount: unref(input.nativeAssetAmount),
+        };
+
+        const poolshareEstimate =
+          await sifchainClients.queryClient.clp.GetPoolShareEstimate({
+            externalAssetAmount: unreffed.externalAssetAmount
+              .toBigInt()
+              .toString(),
+            nativeAssetAmount: unreffed.nativeAssetAmount.toBigInt().toString(),
+            externalAsset: {
+              symbol: unreffed.externalAssetBaseDenom,
+            },
+          });
+
+        return poolshareEstimate;
+      } catch (error) {
+        console.error("poolshareEstimate", { input, error });
+        return null;
+      }
+    },
+    options,
+  );
+}

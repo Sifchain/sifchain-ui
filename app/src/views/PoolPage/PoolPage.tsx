@@ -77,7 +77,9 @@ export default defineComponent({
     sanitizedPoolData(): ReturnType<
       typeof usePoolPageData
     >["allPoolsData"]["value"] {
-      if (this.isLoading) return [];
+      if (this.isLoading) {
+        return [];
+      }
 
       const result = this.allPoolsData
         .filter((item) =>
@@ -88,7 +90,9 @@ export default defineComponent({
         )
         .filter((item) => {
           const asset = item.pool.externalAmount?.asset;
-          if (!asset) return;
+          if (!asset) {
+            return;
+          }
 
           if (
             isAssetFlaggedDisabled(asset) ||
@@ -137,8 +141,12 @@ export default defineComponent({
               +a.accountPool.lp.units.toString()
             );
           }
-          if (a.accountPool && !b.accountPool) return -1;
-          if (b.accountPool && !a.accountPool) return 1;
+          if (a.accountPool && !b.accountPool) {
+            return -1;
+          }
+          if (b.accountPool && !a.accountPool) {
+            return 1;
+          }
           return 0;
         });
 
@@ -172,7 +180,7 @@ export default defineComponent({
           <PageCard
             heading="Pool"
             iconName="navigation/pool"
-            withOverflowSpace
+            withOverflowSpace={true}
             headerAction={
               <div class="flex-end flex items-center gap-2">
                 <Toggle
@@ -192,8 +200,8 @@ export default defineComponent({
                 />
                 <Button.Inline
                   to={{ name: "AddLiquidity", params: {} }}
-                  active
-                  replace
+                  active={true}
+                  replace={true}
                   class={["text-md !h-[40px] px-[17px]"]}
                   icon="interactive/plus"
                 >
@@ -215,8 +223,11 @@ export default defineComponent({
                   {COLUMNS.map((column) => (
                     <div
                       key={column.name}
+                      role="button"
                       onClick={() => {
-                        if (!column.sortable) return;
+                        if (!column.sortable) {
+                          return;
+                        }
                         if (this.sortBy === column.id) {
                           this.sortReverse = !this.sortReverse;
                         } else {
@@ -237,7 +248,8 @@ export default defineComponent({
                       <AssetIcon
                         icon="interactive/arrow-down"
                         class={[
-                          "mr-[-22px] pl-[2px]",
+                          "border",
+                          "pl-[2px]",
                           (!column.sortable || this.sortBy !== column.id) &&
                             "invisible",
                           this.sortReverse && "rotate-180",

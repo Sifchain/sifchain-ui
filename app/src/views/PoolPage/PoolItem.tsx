@@ -43,6 +43,7 @@ const ExternalLink = defineComponent({
         <AssetIcon icon="interactive/open-external" size={12} />
       ) : null,
     );
+
     return () =>
       isExternal.value ? (
         <a
@@ -172,9 +173,11 @@ export default defineComponent({
 
     myPoolValue(): string | undefined {
       if (
-        !this.lpBalances.nativeBalance?.value ||
-        !this.lpBalances.externalBalance?.value ||
-        !this.poolStat
+        !(
+          this.lpBalances.nativeBalance?.value &&
+          this.lpBalances.externalBalance?.value &&
+          this.poolStat
+        )
       ) {
         return;
       }
@@ -200,7 +203,9 @@ export default defineComponent({
       return this.$props.pool.nativeAmount;
     },
     details(): [string, JSX.Element][] {
-      if (!this.expanded) return []; // don't compute unless expanded
+      if (!this.expanded) {
+        return []; // don't compute unless expanded
+      }
 
       const { nativeAsset } = useNativeChain();
 
@@ -227,7 +232,7 @@ export default defineComponent({
               ) && [
                 <span class="flex items-center gap-1">
                   Your total LP distribution for this pool{" "}
-                  <ExternalLink href={`/balances`} label="view balance" />
+                  <ExternalLink href={"/balances"} label="view balance" />
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(
@@ -246,7 +251,7 @@ export default defineComponent({
               ) && [
                 <span class="flex items-center gap-1">
                   Your total reward distribution for this pool{" "}
-                  <ExternalLink href={`/balances`} label="view balance" />
+                  <ExternalLink href={"/balances"} label="view balance" />
                 </span>,
                 <span class="flex items-center font-mono">
                   {prettyNumber(this.lppdRewards.poolRewardsReceivedInRowan)}
@@ -259,8 +264,9 @@ export default defineComponent({
               ],
             ]
           : []),
-        ...(!this.currentRewardPeriod?.isDistributingToWallets
-          ? [
+        ...(this.currentRewardPeriod?.isDistributingToWallets
+          ? []
+          : [
               this.poolStat?.rewardPeriodNativeDistributed && [
                 "Rewards paid to the pool for current period",
                 <span class="flex items-center font-mono">
@@ -283,8 +289,7 @@ export default defineComponent({
                   {this.currentRewardPeriod.endEta}
                 </span>,
               ],
-            ]
-          : []),
+            ]),
         [
           `Network Pooled ${this.externalAmount.displaySymbol.toUpperCase()}`,
           <span class="font-mono">
@@ -292,13 +297,13 @@ export default defineComponent({
           </span>,
         ],
         [
-          `Network Pooled ROWAN`,
+          "Network Pooled ROWAN",
           <span class="font-mono">
             {prettyNumber(+formatAssetAmount(this.nativeAmount), 5)}
           </span>,
         ],
         [
-          `Price of Token USD`,
+          "Price of Token USD",
           <span class="font-mono">
             {this.$props.poolStat?.priceToken != null
               ? `$${prettyNumber(
@@ -356,7 +361,9 @@ export default defineComponent({
     return (
       <div class="group w-full border-b border-solid border-gray-200 border-opacity-80 py-[10px] align-middle last:border-none last:border-transparent">
         <div
-          onClick={() => this.toggleExpanded()}
+          role="button"
+          onClick={this.toggleExpanded}
+          onKeypress={this.toggleExpanded}
           class="flex h-[32px] w-full cursor-pointer items-center justify-between font-mono font-medium group-hover:opacity-80"
         >
           <div class={["flex items-center", COLUMNS_LOOKUP.token.class]}>
@@ -393,9 +400,9 @@ export default defineComponent({
           <div
             class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
           >
-            {!isNil(this.$props.poolStat?.poolApr)
-              ? `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`
-              : "..."}
+            {isNil(this.$props.poolStat?.poolApr)
+              ? "..."
+              : `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`}
           </div>
           <div
             class={[
@@ -403,9 +410,9 @@ export default defineComponent({
               "flex items-center font-mono",
             ]}
           >
-            {!isNil(this.$props.poolStat?.margin_apr)
-              ? `${prettyNumberMinMax(this.$props.poolStat?.margin_apr ?? 0)}%`
-              : "..."}
+            {isNil(this.$props.poolStat?.margin_apr)
+              ? "..."
+              : `${prettyNumberMinMax(this.$props.poolStat?.margin_apr ?? 0)}%`}
           </div>
           <div
             class={[
@@ -425,12 +432,12 @@ export default defineComponent({
           >
             {this.myPoolValue == null
               ? ""
-              : !this.myPoolValue
-              ? "..."
-              : `$${this.myPoolValue}`}
+              : this.myPoolValue
+              ? `$${this.myPoolValue}`
+              : "..."}
           </div>
           <div class="flex flex-1 justify-end text-right">
-            <button>
+            <button type="button">
               <AssetIcon
                 size={24}
                 class={[
@@ -542,7 +549,7 @@ export default defineComponent({
                       externalAsset: this.externalAmount.symbol.toLowerCase(),
                     },
                   }}
-                  replace
+                  replace={true}
                   class="!text-accent-base w-[140px] !bg-black"
                   icon="interactive/plus"
                 >
@@ -560,7 +567,7 @@ export default defineComponent({
                             this.externalAmount.symbol.toLowerCase(),
                         },
                       }}
-                      replace
+                      replace={true}
                       class="!text-accent-base mt-[6px] w-[140px] !bg-black"
                       icon="interactive/minus"
                     >
@@ -576,7 +583,7 @@ export default defineComponent({
                             this.externalAmount.symbol.toLowerCase(),
                         },
                       }}
-                      replace
+                      replace={true}
                       class="!text-accent-base mt-[6px] w-[140px] !bg-black"
                       icon="interactive/minus"
                     >

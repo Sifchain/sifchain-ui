@@ -33,7 +33,9 @@ export const isChainFlaggedDisabled = (chain: Chain) => {
 const DISABLED_ASSETS: string[] = [];
 
 export const isAssetFlaggedDisabled = (asset: IAsset) => {
-  if (!asset.homeNetwork) return false;
+  if (!asset.homeNetwork) {
+    return false;
+  }
   if (DISABLED_ASSETS.includes(asset.symbol.toLowerCase())) {
     return false;
   }

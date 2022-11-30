@@ -5,8 +5,9 @@ import {
   Network,
   Pool,
 } from "@sifchain/sdk";
-
 import { createPoolKey } from "@sifchain/sdk/src/utils";
+import { dissoc } from "rambda";
+
 import { Services } from "~/business/services";
 import { Store } from "~/business/store";
 import { AccountPool } from "~/business/store/pools";
@@ -146,7 +147,9 @@ export function SyncPools(
 
     rawLpData.forEach((lpItem) => {
       const symbol = lpItem.liquidityProvider?.asset?.symbol;
-      if (!symbol) return;
+      if (!symbol) {
+        return;
+      }
 
       const entry = registry.find(
         ({ denom, baseDenom }) => denom === symbol || baseDenom === symbol,
@@ -190,12 +193,19 @@ export function SyncPools(
       currentAccountPools[pool] = { lp, pool };
     });
 
-    Object.keys(store.accountpools[address]).forEach((poolId) => {
-      // If pool is gone now, delete. Ie user removed all liquidity
-      if (!currentAccountPools[poolId]) {
-        delete store.accountpools[address][poolId];
-      }
-    });
+    const poolIdsToRemove = Object.keys(store.accountpools[address]).filter(
+      (id) => !currentAccountPools[id],
+    );
+
+    store.accountpools[address] = poolIdsToRemove.reduce(
+      (poolsById, idToRemove) => {
+        if (idToRemove in poolsById) {
+          return dissoc(idToRemove, poolsById);
+        }
+        return poolsById;
+      },
+      store.accountpools[address],
+    );
 
     Object.keys(currentAccountPools).forEach((poolId) => {
       store.accountpools[address][poolId] = currentAccountPools[poolId];
