@@ -205,8 +205,11 @@ export default defineComponent({
       }
 
       if (data.modalStatus.value === "confirm") {
-        const externalAssetBaseDenom = computed(
-          () => data.fromAsset.value?.symbol ?? "",
+        const externalAssetDenomOrSymbol = computed(
+          () =>
+            data.fromAsset.value?.ibcDenom ??
+            data.fromAsset.value?.symbol ??
+            "",
         );
 
         const { data: poolShareQuote, error } = usePoolshareEstimateQuery({
@@ -218,7 +221,7 @@ export default defineComponent({
             () =>
               data.tokenAField.value.fieldAmount ?? AssetAmount("rowan", "0"),
           ),
-          externalAssetBaseDenom,
+          externalAssetDenomOrSymbol,
         });
 
         const quote = computed((): PoolShareEstimateRes => {
