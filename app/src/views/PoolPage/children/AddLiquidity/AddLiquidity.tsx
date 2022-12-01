@@ -205,7 +205,13 @@ export default defineComponent({
       }
 
       if (data.modalStatus.value === "confirm") {
-        const externalAssetBaseDenom = computed(
+        const externalAssetDenomOrSymbol = computed(
+          () =>
+            data.fromAsset.value?.ibcDenom ??
+            data.fromAsset.value?.symbol ??
+            "",
+        );
+        const externalAssetSymbol = computed(
           () => data.fromAsset.value?.symbol ?? "",
         );
 
@@ -218,7 +224,7 @@ export default defineComponent({
             () =>
               data.tokenAField.value.fieldAmount ?? AssetAmount("rowan", "0"),
           ),
-          externalAssetBaseDenom,
+          externalAssetDenomOrSymbol,
         });
 
         const quote = computed((): PoolShareEstimateRes => {
@@ -243,7 +249,7 @@ export default defineComponent({
 
         const externalAmount = computed(() =>
           AssetAmount(
-            externalAssetBaseDenom.value,
+            externalAssetSymbol.value,
             quote.value.externalAssetAmount,
           ),
         );
@@ -317,9 +323,7 @@ export default defineComponent({
                       <div class="flex items-center gap-2 font-mono">
                         {formatAssetAmount(
                           AssetAmount(
-                            isBuyingRowan
-                              ? "rowan"
-                              : externalAssetBaseDenom.value,
+                            isBuyingRowan ? "rowan" : externalAssetSymbol.value,
                             quote.value.swapInfo?.fee ?? "0",
                           ),
                         )}
