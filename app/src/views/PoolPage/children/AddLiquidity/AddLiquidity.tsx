@@ -211,6 +211,9 @@ export default defineComponent({
             data.fromAsset.value?.symbol ??
             "",
         );
+        const externalAssetSymbol = computed(
+          () => data.fromAsset.value?.symbol ?? "",
+        );
 
         const { data: poolShareQuote, error } = usePoolshareEstimateQuery({
           nativeAssetAmount: computed(
@@ -246,7 +249,7 @@ export default defineComponent({
 
         const externalAmount = computed(() =>
           AssetAmount(
-            externalAssetDenomOrSymbol.value,
+            externalAssetSymbol.value,
             quote.value.externalAssetAmount,
           ),
         );
@@ -320,9 +323,7 @@ export default defineComponent({
                       <div class="flex items-center gap-2 font-mono">
                         {formatAssetAmount(
                           AssetAmount(
-                            isBuyingRowan
-                              ? "rowan"
-                              : externalAssetDenomOrSymbol.value,
+                            isBuyingRowan ? "rowan" : externalAssetSymbol.value,
                             quote.value.swapInfo?.fee ?? "0",
                           ),
                         )}
