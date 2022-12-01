@@ -174,7 +174,7 @@ export const useLiquidityProvidersQuery = () => {
 
 export function usePoolshareEstimateQuery(
   input: {
-    externalAssetBaseDenom: MaybeRef<string>;
+    externalAssetDenomOrSymbol: MaybeRef<string>;
     externalAssetAmount: MaybeRef<IAssetAmount>;
     nativeAssetAmount: MaybeRef<IAssetAmount>;
   },
@@ -197,7 +197,7 @@ export function usePoolshareEstimateQuery(
 
       try {
         const unreffed = {
-          externalAssetBaseDenom: unref(input.externalAssetBaseDenom),
+          externalAssetDenomOrSymbol: unref(input.externalAssetDenomOrSymbol),
           externalAssetAmount: unref(input.externalAssetAmount),
           nativeAssetAmount: unref(input.nativeAssetAmount),
         };
@@ -209,7 +209,7 @@ export function usePoolshareEstimateQuery(
               .toString(),
             nativeAssetAmount: unreffed.nativeAssetAmount.toBigInt().toString(),
             externalAsset: {
-              symbol: unreffed.externalAssetBaseDenom,
+              symbol: unreffed.externalAssetDenomOrSymbol,
             },
           });
 
