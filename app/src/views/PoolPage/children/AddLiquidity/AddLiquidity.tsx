@@ -246,7 +246,7 @@ export default defineComponent({
 
         const externalAmount = computed(() =>
           AssetAmount(
-            externalAssetBaseDenom.value,
+            externalAssetDenomOrSymbol.value,
             quote.value.externalAssetAmount,
           ),
         );
@@ -322,7 +322,7 @@ export default defineComponent({
                           AssetAmount(
                             isBuyingRowan
                               ? "rowan"
-                              : externalAssetBaseDenom.value,
+                              : externalAssetDenomOrSymbol.value,
                             quote.value.swapInfo?.fee ?? "0",
                           ),
                         )}
