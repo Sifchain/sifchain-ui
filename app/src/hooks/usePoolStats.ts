@@ -128,7 +128,7 @@ export function usePoolStats() {
 
     const poolStatLookup: Record<string, PoolStat> = {};
 
-    poolStatsRes.data.value?.poolData.pools.forEach((poolStat) => {
+    poolStatsRes.data.value?.poolData.pools?.forEach((poolStat) => {
       const asset =
         assetLookup[poolStat.symbol.toLowerCase()] ||
         assetLookup[poolStat.symbol];
