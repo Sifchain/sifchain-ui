@@ -221,6 +221,7 @@ export default defineComponent({
                 />
                 <div class="mb-[-5px] flex w-full flex-row justify-start pb-[5px]">
                   {COLUMNS.map((column) => (
+                    // rome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                     <div
                       key={column.name}
                       role="button"
