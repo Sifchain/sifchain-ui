@@ -3,7 +3,7 @@ import { Chain, IAsset } from "@sifchain/sdk";
 
 import { Vuextra } from "../Vuextra";
 
-export const MARGIN_FE_URL = "https://sifchain-margin.redstarling.com";
+export const MARGIN_FE_URL = "https://margin.sifchain.network";
 
 export const FLAGS_API_ENDPOINT =
   "https://sifchain-changes-server.vercel.app/api";
