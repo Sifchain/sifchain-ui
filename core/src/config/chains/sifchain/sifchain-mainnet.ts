@@ -7,14 +7,14 @@ export const SIFCHAIN_MAINNET: IBCChainConfig = {
   blockExplorerUrl: "https://www.mintscan.io/sifchain",
   nativeAssetSymbol: "rowan",
   chainId: "sifchain-1",
-  rpcUrl: "https://rpc.sifchain.finance",
-  restUrl: "https://api-int.sifchain.finance",
+  rpcUrl: "https://proxies.sifchain.finance/api/sifchain-1/rpc",
+  restUrl: "https://proxies.sifchain.finance/api/sifchain-1/rest",
   denomTracesPath: "/ibc/apps/transfer/v1/denom_traces",
   keplrChainInfo: {
     chainName: "Sifchain",
     chainId: "sifchain-1",
-    rpc: "https://rpc.sifchain.finance",
-    rest: "https://api-int.sifchain.finance",
+    rpc: "https://proxies.sifchain.finance/api/sifchain-1/rpc",
+    rest: "https://proxies.sifchain.finance/api/sifchain-1/rest",
     stakeCurrency: {
       coinDenom: "ROWAN",
       coinMinimalDenom: "rowan",
