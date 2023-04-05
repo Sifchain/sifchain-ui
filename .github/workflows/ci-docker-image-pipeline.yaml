@@ -72,16 +72,16 @@ jobs:
 
           docker push ${image}:${DOCKER_TAG}
 
-      - name: "Forble Tag Update"
-        shell: bash
-        env:
-          FORBLE_USERNAME: "${{ secrets.FORBLE_USERNAME }}"
-          FORBLE_PASSWORD: "${{ secrets.FORBLE_PASSWORD }}"
-        run: |
-          set +x
-          data_payload="{\"parameters\":{\"tag\":\"${DOCKER_TAG}\"}}"
-          echo "${data_payload}"
-          curl -X POST -H "Content-Type: application/json" -d "${data_payload}" https://sifchain-deploy.forbole.com/akash/deploysifchain -u "${FORBLE_USERNAME}:${FORBLE_PASSWORD}"
+      # - name: "Forble Tag Update"
+      #   shell: bash
+      #   env:
+      #     FORBLE_USERNAME: "${{ secrets.FORBLE_USERNAME }}"
+      #     FORBLE_PASSWORD: "${{ secrets.FORBLE_PASSWORD }}"
+      #   run: |
+      #     set +x
+      #     data_payload="{\"parameters\":{\"tag\":\"${DOCKER_TAG}\"}}"
+      #     echo "${data_payload}"
+      #     curl -X POST -H "Content-Type: application/json" -d "${data_payload}" https://sifchain-deploy.forbole.com/akash/deploysifchain -u "${FORBLE_USERNAME}:${FORBLE_PASSWORD}"
 
       - name: "ZIP Release Contents"
         shell: bash
