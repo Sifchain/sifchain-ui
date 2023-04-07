@@ -70,6 +70,7 @@ export const flagsStore = Vuextra.createStore({
     remoteFlags: {
       ASYMMETRIC_POOLING: false,
       MARGIN: false,
+      DISABLE_ETH_BRIDGE_EXPORT: false,
       DISABLE_ETH_BRIDGE: false,
       DISABLE_ATOM_POOL: false,
     },

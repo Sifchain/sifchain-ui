@@ -17,6 +17,8 @@ import { getImportLocation } from "./Import/useImportData";
 
 const ETH_MERGE_DISCLAIMER =
   "All imports/exports of ERC-20 tokens and ETH are currently unavailable.";
+const ETH_BRIDGE_EXPORT_DISCLAIMER =
+  "At the moment, exporting ERC-20 tokens and ETH is not possible. However, you can withdraw your funds by exchanging them for an IBC token and then exporting them through IBC.";
 
 export default defineComponent({
   name: "BalanceRow",
@@ -64,6 +66,12 @@ export default defineComponent({
     const isEthBridgeDisabled = computed(
       () =>
         flagsStore.state.remoteFlags.DISABLE_ETH_BRIDGE &&
+        props.tokenItem.asset.homeNetwork === "ethereum",
+    );
+
+    const isEthBridgeExportDisabled = computed(
+      () =>
+        flagsStore.state.remoteFlags.DISABLE_ETH_BRIDGE_EXPORT &&
         props.tokenItem.asset.homeNetwork === "ethereum",
     );
 
@@ -118,13 +126,19 @@ export default defineComponent({
           ]
         : [
             importItem.value,
-            hasNoBalance.value || isEthBridgeDisabled.value
+            hasNoBalance.value ||
+            isEthBridgeDisabled.value ||
+            isEthBridgeExportDisabled.value
               ? {
                   tag: "button",
                   icon: "interactive/arrow-up",
                   name: "Export",
                   visible: true,
-                  help: isEthBridgeDisabled.value ? ETH_MERGE_DISCLAIMER : null,
+                  help: isEthBridgeExportDisabled.value
+                    ? ETH_BRIDGE_EXPORT_DISCLAIMER
+                    : isEthBridgeDisabled.value
+                    ? ETH_MERGE_DISCLAIMER
+                    : null,
                   props: { disabled: true, class: "" },
                 }
               : {
