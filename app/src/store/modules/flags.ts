@@ -1,5 +1,5 @@
 import { useChains } from "~/hooks/useChains";
-import { Chain, IAsset } from "@sifchain/sdk";
+import { AppCookies, Chain, IAsset, NetworkEnv } from "@sifchain/sdk";
 
 import { Vuextra } from "../Vuextra";
 
@@ -70,8 +70,8 @@ export const flagsStore = Vuextra.createStore({
     remoteFlags: {
       ASYMMETRIC_POOLING: false,
       MARGIN: false,
-      DISABLE_ETH_BRIDGE_EXPORT: false,
       DISABLE_ETH_BRIDGE: false,
+      DISABLE_ETH_BRIDGE_EXPORT: false,
       DISABLE_ATOM_POOL: false,
     },
   },
@@ -88,7 +88,20 @@ export const flagsStore = Vuextra.createStore({
       copyPersistedJsonToState(json, state);
     },
     async syncRemoteFlags() {
-      const response = await FlagsApi.getFlags();
+      const env = AppCookies().getEnv();
+      let response: Record<string, boolean>;
+      switch (env) {
+        case NetworkEnv.STAGING:
+        case NetworkEnv.TESTNET:
+          response = await FlagsApi.getFlags("staging");
+          break;
+        case NetworkEnv.DEVNET:
+        case NetworkEnv.LOCALNET:
+          response = await FlagsApi.getFlags("development");
+          break;
+        default:
+          response = await FlagsApi.getFlags("production");
+      }
 
       const currentFlags = state.remoteFlags as Record<string, boolean>;
 
