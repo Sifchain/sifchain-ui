@@ -337,7 +337,11 @@ export default defineComponent({
           </div>
         </section>
 
-        <Button.CallToAction {...buttonRef.value.props} class="mt-[10px]">
+        <Button.CallToAction
+          {...buttonRef.value.props}
+          class="mt-[10px]"
+          disabled={networkValue.value === "ethereum"}
+        >
           {!!buttonRef.value.icon && (
             <AssetIcon
               icon={buttonRef.value.icon}
