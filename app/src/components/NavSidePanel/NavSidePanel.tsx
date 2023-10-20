@@ -147,7 +147,9 @@ export default defineComponent({
                   <NavSidePanelItem
                     displayName="Margin"
                     icon="navigation/harvest"
-                    href={MARGIN_FE_URL}
+                    href=""
+                    class="opacity-50"
+                    style="pointer-events: none;"
                   />
                 )}
                 <NavSidePanelItem
