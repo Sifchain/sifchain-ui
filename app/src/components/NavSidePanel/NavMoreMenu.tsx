@@ -20,7 +20,7 @@ export default defineComponent({
       },
       {
         name: "Legal Disclaimer",
-        href: "https://www.sifchain.finance/legal-disclamer/",
+        href: "https://sifchain.network/legal-disclaimer/",
       },
       {
         name: "Roadmap",
