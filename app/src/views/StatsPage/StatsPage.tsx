@@ -97,7 +97,7 @@ export default defineComponent({
 
     const searchQuery = ref("");
 
-    const showSmallPools = ref(false);
+    const showSmallPools = ref(true);
 
     const finalStats = computed(() => {
       return statsRef.value.filter((item) => {
