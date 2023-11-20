@@ -29,7 +29,7 @@ export type PoolPageData = ReturnType<typeof usePoolPageData>;
 export type PoolPageColumnId =
   | "token"
   | "apy"
-  | "marginapy"
+  // | "marginapy"
   | "gainLoss"
   | "rewardApr"
   | "poolTvl"
@@ -81,12 +81,12 @@ export const COLUMNS: PoolPageColumn[] = [
       </code>
     ),
   },
-  {
-    id: "marginapy",
-    name: "Margin APY",
-    class: "w-[128px] text-right justify-end whitespace-nowrap",
-    sortable: true,
-  },
+  // {
+  //   id: "marginapy",
+  //   name: "Margin APY",
+  //   class: "w-[128px] text-right justify-end whitespace-nowrap",
+  //   sortable: true,
+  // },
   {
     id: "userShare",
     name: "Your Pool Share",
