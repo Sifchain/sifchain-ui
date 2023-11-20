@@ -32,7 +32,7 @@ export default defineComponent({
       sortBy: "rewardApy" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
-      showSmallPools: false,
+      showSmallPools: true,
     };
   },
   setup() {
