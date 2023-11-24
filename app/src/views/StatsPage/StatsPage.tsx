@@ -261,11 +261,11 @@ export default defineComponent({
                       <td class="text-mono text-right align-middle">
                         {item.poolApr}%
                       </td>
-                      <td class="text-mono text-right align-middle">
+                      {/* <td class="text-mono text-right align-middle">
                         {!isNil(item.marginApr)
                           ? `${prettyNumberMinMax(item.marginApr ?? 0)}%`
                           : "..."}
-                      </td>
+                      </td> */}
                     </tr>
                   );
                 })}
