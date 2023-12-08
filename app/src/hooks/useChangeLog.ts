@@ -14,8 +14,7 @@ async function fetchChangelogData() {
     ? `v${VITE_APP_SHA}`
     : VITE_APP_SHA;
 
-  const data = await fetch(`${CHANGES_SERVER_URL}/api/changes/2.14.9`).then(
-    // const data = await fetch(`${CHANGES_SERVER_URL}/api/changes/${tag}`).then(
+  const data = await fetch(`${CHANGES_SERVER_URL}/api/changes/${tag}`).then(
     (res) => res.json() as Promise<ChangelogData>,
   );
 
