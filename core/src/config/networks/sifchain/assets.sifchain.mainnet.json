@@ -955,6 +955,24 @@
       "network": "sifchain",
       "imageUrl": "https://assets.coingecko.com/coins/images/22363/small/stars.png?1645256657",
       "homeNetwork": "stargaze"
+    },
+    {
+      "symbol": "uaxlusdc",
+      "displaySymbol": "USDC (Axelar)",
+      "decimals": 6,
+      "name": "USD Coin (Axelar)",
+      "network": "sifchain",
+      "imageUrl": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389",
+      "homeNetwork": "osmosis"
+    },
+    {
+      "symbol": "uusdc",
+      "displaySymbol": "USDC (Noble)",
+      "decimals": 6,
+      "name": "USD Coin (Noble)",
+      "network": "sifchain",
+      "imageUrl": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png?1547042389",
+      "homeNetwork": "noble"
     }
   ]
 }

@@ -1,7 +1,7 @@
 import { reactive, computed, onMounted, onUnmounted } from "vue";
 import { Asset } from "@sifchain/sdk";
 
-import { usePoolStats } from "~/hooks/usePoolStats";
+import { PoolStat, usePoolStats } from "~/hooks/usePoolStats";
 import { useCore } from "~/hooks/useCore";
 import { isAssetFlaggedDisabled } from "~/store/modules/flags";
 
@@ -33,9 +33,9 @@ export function useStatsPageData(initialState: StatsPageState) {
   const statsRef = computed(() => {
     if (!res.data.value) return [];
     const { poolData } = res.data.value;
-
-    const array = poolData.pools
-      .map((pool) => {
+    const pools = poolData.pools as Record<string, PoolStat>;
+    const array = Object.entries(pools)
+      .map(([key, pool]) => {
         const asset = Asset.get(pool.symbol);
         const item = {
           asset,

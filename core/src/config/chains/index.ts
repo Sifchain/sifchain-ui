@@ -10,6 +10,7 @@ import cryptoOrg from "./crypto-org";
 import persistence from "./persistence";
 import regen from "./regen";
 import osmosis from "./osmosis";
+import noble from "./noble";
 import terra from "./terra";
 import juno from "./juno";
 import ixo from "./ixo";
@@ -40,6 +41,7 @@ export const chainConfigByNetworkEnv = Object.fromEntries(
         [Network.ETHEREUM]: ethereum[env],
         [Network.CRYPTO_ORG]: cryptoOrg[env],
         [Network.OSMOSIS]: osmosis[env],
+        [Network.NOBLE]: noble[env],
         [Network.PERSISTENCE]: persistence[env],
         [Network.REGEN]: regen[env],
         [Network.TERRA]: terra[env],

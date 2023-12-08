@@ -11,6 +11,7 @@ export enum Network {
   JUNO = "juno",
   LIKECOIN = "likecoin",
   OSMOSIS = "osmosis",
+  NOBLE = "noble",
   PERSISTENCE = "persistence",
   REGEN = "regen",
   SENTINEL = "sentinel",
