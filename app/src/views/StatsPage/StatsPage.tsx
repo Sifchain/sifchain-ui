@@ -31,7 +31,7 @@ export default defineComponent({
       {
         name: "Token",
         sortBy: "asset",
-        class: "min-w-[120px] text-left",
+        class: "min-w-[170px] text-left",
         ref: ref<HTMLElement>(),
       },
       {
@@ -51,7 +51,7 @@ export default defineComponent({
       {
         name: "Pool TVL (USD)",
         sortBy: "tvl",
-        class: "min-w-[120px] text-right",
+        class: "min-w-[110px] text-right",
         ref: ref<HTMLElement>(),
       },
       {
@@ -61,15 +61,26 @@ export default defineComponent({
         ref: ref<HTMLElement>(),
       },
       {
-        name: "Pool APR",
-        sortBy: "poolApr",
-        class: "min-w-[100px] text-right",
+        name: "Rowan APR",
+        sortBy: "rowanApr",
+        class: "min-w-[80px] text-right",
         ref: ref<HTMLElement>(),
         message: (
           <code class="text-xs">
-            Pool reward APR = Total rewards distributed in current program /
-            (Total blocks passed in current program * Current pool balance) *
-            (Total blocks per year)
+            Annualized reward rate, paid in Rowan. Pool rowan APR = Total
+            rewards distributed in current program / (Total blocks passed in
+            current program * Current pool balance) * (Total blocks per year)
+          </code>
+        ),
+      },
+      {
+        name: "Paired APR",
+        sortBy: "pairedApr",
+        class: "min-w-[80px] text-right",
+        ref: ref<HTMLElement>(),
+        message: (
+          <code class="text-xs">
+            Annualized reward rate, paid in the paired token.
           </code>
         ),
       },
@@ -260,6 +271,9 @@ export default defineComponent({
                       </td>
                       <td class="text-mono text-right align-middle">
                         {item.poolApr}%
+                      </td>
+                      <td class="text-mono text-right align-middle">
+                        {item.pairedApr}%
                       </td>
                       {/* <td class="text-mono text-right align-middle">
                         {!isNil(item.marginApr)

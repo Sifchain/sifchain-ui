@@ -28,7 +28,8 @@ export type PoolPageData = ReturnType<typeof usePoolPageData>;
 
 export type PoolPageColumnId =
   | "token"
-  | "apy"
+  | "rowanApr"
+  | "pairedApr"
   // | "marginapy"
   | "gainLoss"
   | "rewardApr"
@@ -59,25 +60,36 @@ export const COLUMNS: PoolPageColumn[] = [
   {
     id: "token",
     name: "Token Pair",
-    class: "w-[280px] text-left justify-start whitespace-nowrap",
+    class: "w-[260px] text-left justify-start whitespace-nowrap",
     sortable: true,
   },
   {
     id: "poolTvl",
     name: "Pool TVL",
     sortable: true,
-    class: "w-[200px] text-right justify-end whitespace-nowrap",
+    class: "w-[128px] text-right justify-end whitespace-nowrap",
   },
   {
-    id: "apy",
-    name: "Reward APR",
+    id: "rowanApr",
+    name: "Rowan APR",
     class: "w-[128px] text-right justify-end whitespace-nowrap",
     sortable: true,
     help: (
       <code class="text-xs">
-        Pool reward APR = Total rewards distributed in current program / (Total
-        blocks passed in current program * Current pool balance) * (Total blocks
-        per year)
+        Annualized reward rate, paid in Rowan. Rowan APR = Total rewards
+        distributed in current program / (Total blocks passed in current program
+        * Current pool balance) * (Total blocks per year)
+      </code>
+    ),
+  },
+  {
+    id: "pairedApr",
+    name: "Paired APR",
+    class: "w-[128px] text-right justify-end whitespace-nowrap",
+    sortable: true,
+    help: (
+      <code class="text-xs">
+        Annualized reward rate, paid in the paired token.
       </code>
     ),
   },
