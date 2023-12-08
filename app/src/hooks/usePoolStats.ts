@@ -152,30 +152,6 @@ export function usePoolStats() {
       };
     });
 
-    // poolStats endpoint might not have data for EVERY pool that exists
-    // in store.pools. so use store.pools as source of truth for which pools
-    // exist, then if poolStats doesn't have data default to empty.
-    // const pools = Object.values(store.pools).map((pool) => ({
-    //   ...pool,
-    //   rowanUSD: poolStatsRes.data.value?.rowanUSD || 0,
-    // }));
-    // return pools.map((pool) => {
-    //   const [, externalAssetAmount] = pool.amounts;
-    //   console.log(
-    //     "externalAssetAmount.asset.symbol=",
-    //     externalAssetAmount.asset.symbol,
-    //   );
-    //   return (
-    //     poolStatLookup[externalAssetAmount.asset.symbol] || {
-    //       symbol: externalAssetAmount.asset.symbol,
-    //       priceToken: null,
-    //       rowanUSD: null,
-    //       poolDepth: null,
-    //       volume: null,
-    //       arb: null,
-    //     }
-    //   );
-    // });
     return poolStatLookup;
   });
 
