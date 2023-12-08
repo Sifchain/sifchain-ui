@@ -28,6 +28,7 @@ import {
 } from "../clients/chains";
 
 import { Network } from "..";
+import { NobleChain } from "./chains/NobleChain";
 
 export const networkChainCtorLookup = {
   [Network.SIFCHAIN]: SifchainChain,
@@ -40,6 +41,7 @@ export const networkChainCtorLookup = {
   [Network.PERSISTENCE]: PersistenceChain,
   [Network.REGEN]: RegenChain,
   [Network.OSMOSIS]: OsmosisChain,
+  [Network.NOBLE]: NobleChain,
   [Network.TERRA]: TerraChain,
   [Network.JUNO]: JunoChain,
   [Network.IXO]: IxoChain,

@@ -333,15 +333,23 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
             // invalid token, ignore
           }
         }
-
         if (!denomTrace) {
           continue; // Ignore, it's an invalid coin from invalid chain
         }
 
         const registry = await this.tokenRegistry.load();
-        const entry = registry.find((e) => {
-          return e.baseDenom === denomTrace.baseDenom;
-        });
+        // TODO - refactor (this logic should be redundant) - special handling for Osmosis USDC.axl
+        const entry =
+          denomTrace.baseDenom === "uusdc" &&
+          coin.denom !==
+            "ibc/8FCD92E4B97E69EC1A334EADDFF903A6C44408A8C9B03A40B3FBCABE575A8359"
+            ? registry.find((e) => {
+                return e.baseDenom === "uaxlusdc";
+              })
+            : registry.find((e) => {
+                return e.baseDenom === denomTrace.baseDenom;
+              });
+        console.log("entry=", entry);
         if (!entry) continue;
 
         try {

@@ -49,7 +49,10 @@ export class BaseChain implements Chain {
   }
 
   findAssetWithLikeSymbol(symbol: string) {
-    return this.assets.find((asset) => isLikeSymbol(asset.symbol, symbol));
+    return this.assets.find(
+      (asset) => asset.symbol.toLowerCase() === symbol.toLowerCase(),
+    );
+    // return this.assets.find((asset) => isLikeSymbol(asset.symbol, symbol));
   }
 
   findAssetWithLikeSymbolOrThrow(symbol: string) {

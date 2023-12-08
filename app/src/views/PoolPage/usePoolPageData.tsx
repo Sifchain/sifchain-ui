@@ -135,43 +135,57 @@ export const usePoolPageData = () => {
   const allPoolsData = computed(() => {
     const sifchainChain = useChains().get(Network.SIFCHAIN);
 
-    return (statsRes.data?.value?.poolData?.pools || []).map((poolStat) => {
-      const poolKey = createPoolKey(
-        sifchainChain.lookupAssetOrThrow("rowan"),
-        sifchainChain.lookupAssetOrThrow(poolStat.symbol),
-      );
-      let accountPool: AccountPool | undefined = undefined;
-      if (sifAddress.value) {
-        accountPool = useCore().store.accountpools[sifAddress.value][poolKey];
-      }
-
-      const liquidityProvider =
-        liquidityProvidersQuery.data.value?.liquidityProviderData.find((x) => {
-          const tokenRegistryEntry =
-            tokenRegistryEntriesQuery.data.value?.registry?.entries.find(
-              (y) => y.denom === x.liquidityProvider?.asset?.symbol,
-            );
-
-          return tokenRegistryEntry?.baseDenom === poolStat.symbol;
-        });
-
-      const pool = useCore().store.pools[poolKey];
-
-      const denomOrSymbol =
-        pool.externalAmount.ibcDenom ?? pool.externalAmount.symbol;
-
-      const lppdPoolRewards = lppdRewards?.value?.hasRewards
-        ? lppdRewards.value.rewards.byPool[denomOrSymbol]
-        : undefined;
-
+    if (!statsRes.data.value) {
       return {
-        poolStat,
-        pool,
-        accountPool,
-        liquidityProvider,
-        lppdRewards: lppdPoolRewards,
+        poolStat: null,
+        pool: null,
+        accountPool: null,
+        liquidityProvider: null,
+        lppdRewards: null,
       };
-    });
+    } else {
+      const { poolData } = statsRes.data.value;
+      const pools = poolData.pools as Record<string, PoolStat>;
+      return Object.entries(pools).map(([key, poolStat]) => {
+        const poolKey = createPoolKey(
+          sifchainChain.lookupAssetOrThrow("rowan"),
+          sifchainChain.lookupAssetOrThrow(poolStat.symbol),
+        );
+        let accountPool: AccountPool | undefined = undefined;
+        if (sifAddress.value) {
+          accountPool = useCore().store.accountpools[sifAddress.value][poolKey];
+        }
+
+        const liquidityProvider =
+          liquidityProvidersQuery.data.value?.liquidityProviderData.find(
+            (x) => {
+              const tokenRegistryEntry =
+                tokenRegistryEntriesQuery.data.value?.registry?.entries.find(
+                  (y) => y.denom === x.liquidityProvider?.asset?.symbol,
+                );
+
+              return tokenRegistryEntry?.baseDenom === poolStat.symbol;
+            },
+          );
+
+        const pool = useCore().store.pools[poolKey];
+
+        const denomOrSymbol =
+          pool.externalAmount.ibcDenom ?? pool.externalAmount.symbol;
+
+        const lppdPoolRewards = lppdRewards?.value?.hasRewards
+          ? lppdRewards.value.rewards.byPool[denomOrSymbol]
+          : undefined;
+
+        return {
+          poolStat,
+          pool,
+          accountPool,
+          liquidityProvider,
+          lppdRewards: lppdPoolRewards,
+        };
+      });
+    }
   });
 
   return {

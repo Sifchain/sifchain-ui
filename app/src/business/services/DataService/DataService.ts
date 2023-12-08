@@ -159,7 +159,8 @@ export default class DataService {
         "tokenStats",
         () =>
           fetchJSON<PoolStatsResponseData>(
-            `${this.baseUrl}/asset/tokenStatsPMTP`,
+            // `${this.baseUrl}/asset/tokenStatsPMTP`,
+            "https://proxies.sifchain.finance/api/vanir/betanet/beta/asset/tokenStatsPMTP",
           ),
         60000 * 5, // cache for 5 minutes
       );

@@ -94,11 +94,7 @@ export default defineComponent({
             return;
           }
 
-          if (
-            isAssetFlaggedDisabled(asset) ||
-            // TODO: remove this once atom pool is enabled
-            (this.isATOMPoolsDisabled && item.pool.symbol() === "rowan_uatom")
-          ) {
+          if (isAssetFlaggedDisabled(asset)) {
             return false;
           }
 
