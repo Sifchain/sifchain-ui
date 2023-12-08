@@ -29,7 +29,7 @@ export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      sortBy: "rewardApy" as PoolPageColumnId,
+      sortBy: "rowanApr" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
       showSmallPools: true,

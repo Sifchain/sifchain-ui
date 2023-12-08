@@ -398,11 +398,24 @@ export default defineComponent({
               : "..."}
           </div>
           <div
-            class={[COLUMNS_LOOKUP.apy.class, "flex items-center font-mono"]}
+            class={[
+              COLUMNS_LOOKUP.rowanApr.class,
+              "flex items-center font-mono",
+            ]}
           >
             {isNil(this.$props.poolStat?.poolApr)
               ? "..."
               : `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`}
+          </div>
+          <div
+            class={[
+              COLUMNS_LOOKUP.pairedApr.class,
+              "flex items-center font-mono",
+            ]}
+          >
+            {isNil(this.$props.poolStat?.pairedApr)
+              ? "..."
+              : `${(this.$props.poolStat?.pairedApr ?? 0).toFixed(2)}%`}
           </div>
           {/* <div
             class={[

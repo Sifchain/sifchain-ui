@@ -52,6 +52,7 @@ export interface PoolStat {
   nativeCustody: string;
   nativeLiability: string;
   interestRate: string;
+  pairedApr: number;
 }
 
 export interface Headers {
