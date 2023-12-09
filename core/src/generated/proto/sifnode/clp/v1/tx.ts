@@ -6,6 +6,7 @@ import {
   ProviderDistributionPeriod,
   SwapFeeTokenParams,
 } from "./params";
+import { Coin } from "../../../cosmos/base/coin";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.clp.v1";
@@ -103,6 +104,12 @@ export interface MsgUpdateRewardsParamsRequest {
   liquidityRemovalLockPeriod: Long;
   /** in blocks */
   liquidityRemovalCancelPeriod: Long;
+  /** in blocks */
+  rewardsLockPeriod: Long;
+  /** week, day, hour, etc */
+  rewardsEpochIdentifier: string;
+  /** true or false */
+  rewardsDistribute: boolean;
 }
 
 export interface MsgUpdateRewardsParamsResponse {}
@@ -167,6 +174,13 @@ export interface MsgUpdateSwapFeeParamsRequest {
 }
 
 export interface MsgUpdateSwapFeeParamsResponse {}
+
+export interface MsgAddLiquidityToRewardsBucketRequest {
+  signer: string;
+  amount: Coin[];
+}
+
+export interface MsgAddLiquidityToRewardsBucketResponse {}
 
 function createBaseMsgUpdateStakingRewardParams(): MsgUpdateStakingRewardParams {
   return { signer: "", minter: "", params: "" };
@@ -1565,6 +1579,9 @@ function createBaseMsgUpdateRewardsParamsRequest(): MsgUpdateRewardsParamsReques
     signer: "",
     liquidityRemovalLockPeriod: Long.UZERO,
     liquidityRemovalCancelPeriod: Long.UZERO,
+    rewardsLockPeriod: Long.UZERO,
+    rewardsEpochIdentifier: "",
+    rewardsDistribute: false,
   };
 }
 
@@ -1581,6 +1598,15 @@ export const MsgUpdateRewardsParamsRequest = {
     }
     if (!message.liquidityRemovalCancelPeriod.isZero()) {
       writer.uint32(24).uint64(message.liquidityRemovalCancelPeriod);
+    }
+    if (!message.rewardsLockPeriod.isZero()) {
+      writer.uint32(32).uint64(message.rewardsLockPeriod);
+    }
+    if (message.rewardsEpochIdentifier !== "") {
+      writer.uint32(42).string(message.rewardsEpochIdentifier);
+    }
+    if (message.rewardsDistribute === true) {
+      writer.uint32(48).bool(message.rewardsDistribute);
     }
     return writer;
   },
@@ -1604,6 +1630,15 @@ export const MsgUpdateRewardsParamsRequest = {
         case 3:
           message.liquidityRemovalCancelPeriod = reader.uint64() as Long;
           break;
+        case 4:
+          message.rewardsLockPeriod = reader.uint64() as Long;
+          break;
+        case 5:
+          message.rewardsEpochIdentifier = reader.string();
+          break;
+        case 6:
+          message.rewardsDistribute = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1621,6 +1656,15 @@ export const MsgUpdateRewardsParamsRequest = {
       liquidityRemovalCancelPeriod: isSet(object.liquidityRemovalCancelPeriod)
         ? Long.fromValue(object.liquidityRemovalCancelPeriod)
         : Long.UZERO,
+      rewardsLockPeriod: isSet(object.rewardsLockPeriod)
+        ? Long.fromValue(object.rewardsLockPeriod)
+        : Long.UZERO,
+      rewardsEpochIdentifier: isSet(object.rewardsEpochIdentifier)
+        ? String(object.rewardsEpochIdentifier)
+        : "",
+      rewardsDistribute: isSet(object.rewardsDistribute)
+        ? Boolean(object.rewardsDistribute)
+        : false,
     };
   },
 
@@ -1635,6 +1679,14 @@ export const MsgUpdateRewardsParamsRequest = {
       (obj.liquidityRemovalCancelPeriod = (
         message.liquidityRemovalCancelPeriod || Long.UZERO
       ).toString());
+    message.rewardsLockPeriod !== undefined &&
+      (obj.rewardsLockPeriod = (
+        message.rewardsLockPeriod || Long.UZERO
+      ).toString());
+    message.rewardsEpochIdentifier !== undefined &&
+      (obj.rewardsEpochIdentifier = message.rewardsEpochIdentifier);
+    message.rewardsDistribute !== undefined &&
+      (obj.rewardsDistribute = message.rewardsDistribute);
     return obj;
   },
 
@@ -1653,6 +1705,13 @@ export const MsgUpdateRewardsParamsRequest = {
       object.liquidityRemovalCancelPeriod !== null
         ? Long.fromValue(object.liquidityRemovalCancelPeriod)
         : Long.UZERO;
+    message.rewardsLockPeriod =
+      object.rewardsLockPeriod !== undefined &&
+      object.rewardsLockPeriod !== null
+        ? Long.fromValue(object.rewardsLockPeriod)
+        : Long.UZERO;
+    message.rewardsEpochIdentifier = object.rewardsEpochIdentifier ?? "";
+    message.rewardsDistribute = object.rewardsDistribute ?? false;
     return message;
   },
 };
@@ -2707,6 +2766,125 @@ export const MsgUpdateSwapFeeParamsResponse = {
   },
 };
 
+function createBaseMsgAddLiquidityToRewardsBucketRequest(): MsgAddLiquidityToRewardsBucketRequest {
+  return { signer: "", amount: [] };
+}
+
+export const MsgAddLiquidityToRewardsBucketRequest = {
+  encode(
+    message: MsgAddLiquidityToRewardsBucketRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAddLiquidityToRewardsBucketRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddLiquidityToRewardsBucketRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.signer = reader.string();
+          break;
+        case 2:
+          message.amount.push(Coin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgAddLiquidityToRewardsBucketRequest {
+    return {
+      signer: isSet(object.signer) ? String(object.signer) : "",
+      amount: Array.isArray(object?.amount)
+        ? object.amount.map((e: any) => Coin.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: MsgAddLiquidityToRewardsBucketRequest): unknown {
+    const obj: any = {};
+    message.signer !== undefined && (obj.signer = message.signer);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toJSON(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
+    return obj;
+  },
+
+  fromPartial<
+    I extends Exact<DeepPartial<MsgAddLiquidityToRewardsBucketRequest>, I>,
+  >(object: I): MsgAddLiquidityToRewardsBucketRequest {
+    const message = createBaseMsgAddLiquidityToRewardsBucketRequest();
+    message.signer = object.signer ?? "";
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseMsgAddLiquidityToRewardsBucketResponse(): MsgAddLiquidityToRewardsBucketResponse {
+  return {};
+}
+
+export const MsgAddLiquidityToRewardsBucketResponse = {
+  encode(
+    _: MsgAddLiquidityToRewardsBucketResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): MsgAddLiquidityToRewardsBucketResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddLiquidityToRewardsBucketResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgAddLiquidityToRewardsBucketResponse {
+    return {};
+  },
+
+  toJSON(_: MsgAddLiquidityToRewardsBucketResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<
+    I extends Exact<DeepPartial<MsgAddLiquidityToRewardsBucketResponse>, I>,
+  >(_: I): MsgAddLiquidityToRewardsBucketResponse {
+    const message = createBaseMsgAddLiquidityToRewardsBucketResponse();
+    return message;
+  },
+};
+
 export interface Msg {
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
@@ -2756,6 +2934,9 @@ export interface Msg {
   UpdateSwapFeeParams(
     request: MsgUpdateSwapFeeParamsRequest,
   ): Promise<MsgUpdateSwapFeeParamsResponse>;
+  AddLiquidityToRewardsBucket(
+    request: MsgAddLiquidityToRewardsBucketRequest,
+  ): Promise<MsgAddLiquidityToRewardsBucketResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -2783,6 +2964,8 @@ export class MsgClientImpl implements Msg {
     this.AddProviderDistributionPeriod =
       this.AddProviderDistributionPeriod.bind(this);
     this.UpdateSwapFeeParams = this.UpdateSwapFeeParams.bind(this);
+    this.AddLiquidityToRewardsBucket =
+      this.AddLiquidityToRewardsBucket.bind(this);
   }
   RemoveLiquidity(
     request: MsgRemoveLiquidity,
@@ -3018,6 +3201,20 @@ export class MsgClientImpl implements Msg {
     );
     return promise.then((data) =>
       MsgUpdateSwapFeeParamsResponse.decode(new _m0.Reader(data)),
+    );
+  }
+
+  AddLiquidityToRewardsBucket(
+    request: MsgAddLiquidityToRewardsBucketRequest,
+  ): Promise<MsgAddLiquidityToRewardsBucketResponse> {
+    const data = MsgAddLiquidityToRewardsBucketRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Msg",
+      "AddLiquidityToRewardsBucket",
+      data,
+    );
+    return promise.then((data) =>
+      MsgAddLiquidityToRewardsBucketResponse.decode(new _m0.Reader(data)),
     );
   }
 }
