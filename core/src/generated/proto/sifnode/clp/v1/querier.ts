@@ -20,6 +20,7 @@ import {
   ProviderDistributionParams,
   SwapFeeTokenParams,
 } from "./params";
+import { RewardsBucket } from "./rewards_bucket";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 
@@ -211,6 +212,23 @@ export interface SwapInfo {
   feeRate: string;
   amount: string;
   result: string;
+}
+
+export interface RewardsBucketReq {
+  denom: string;
+}
+
+export interface RewardsBucketRes {
+  rewardsBucket?: RewardsBucket;
+}
+
+export interface AllRewardsBucketReq {
+  pagination?: PageRequest;
+}
+
+export interface AllRewardsBucketRes {
+  rewardsBucket: RewardsBucket[];
+  pagination?: PageResponse;
 }
 
 function createBasePoolReq(): PoolReq {
@@ -2458,6 +2476,272 @@ export const SwapInfo = {
   },
 };
 
+function createBaseRewardsBucketReq(): RewardsBucketReq {
+  return { denom: "" };
+}
+
+export const RewardsBucketReq = {
+  encode(
+    message: RewardsBucketReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.denom !== "") {
+      writer.uint32(10).string(message.denom);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RewardsBucketReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRewardsBucketReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RewardsBucketReq {
+    return {
+      denom: isSet(object.denom) ? String(object.denom) : "",
+    };
+  },
+
+  toJSON(message: RewardsBucketReq): unknown {
+    const obj: any = {};
+    message.denom !== undefined && (obj.denom = message.denom);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RewardsBucketReq>, I>>(
+    object: I,
+  ): RewardsBucketReq {
+    const message = createBaseRewardsBucketReq();
+    message.denom = object.denom ?? "";
+    return message;
+  },
+};
+
+function createBaseRewardsBucketRes(): RewardsBucketRes {
+  return { rewardsBucket: undefined };
+}
+
+export const RewardsBucketRes = {
+  encode(
+    message: RewardsBucketRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.rewardsBucket !== undefined) {
+      RewardsBucket.encode(
+        message.rewardsBucket,
+        writer.uint32(10).fork(),
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RewardsBucketRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRewardsBucketRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.rewardsBucket = RewardsBucket.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RewardsBucketRes {
+    return {
+      rewardsBucket: isSet(object.rewardsBucket)
+        ? RewardsBucket.fromJSON(object.rewardsBucket)
+        : undefined,
+    };
+  },
+
+  toJSON(message: RewardsBucketRes): unknown {
+    const obj: any = {};
+    message.rewardsBucket !== undefined &&
+      (obj.rewardsBucket = message.rewardsBucket
+        ? RewardsBucket.toJSON(message.rewardsBucket)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RewardsBucketRes>, I>>(
+    object: I,
+  ): RewardsBucketRes {
+    const message = createBaseRewardsBucketRes();
+    message.rewardsBucket =
+      object.rewardsBucket !== undefined && object.rewardsBucket !== null
+        ? RewardsBucket.fromPartial(object.rewardsBucket)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseAllRewardsBucketReq(): AllRewardsBucketReq {
+  return { pagination: undefined };
+}
+
+export const AllRewardsBucketReq = {
+  encode(
+    message: AllRewardsBucketReq,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AllRewardsBucketReq {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllRewardsBucketReq();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AllRewardsBucketReq {
+    return {
+      pagination: isSet(object.pagination)
+        ? PageRequest.fromJSON(object.pagination)
+        : undefined,
+    };
+  },
+
+  toJSON(message: AllRewardsBucketReq): unknown {
+    const obj: any = {};
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AllRewardsBucketReq>, I>>(
+    object: I,
+  ): AllRewardsBucketReq {
+    const message = createBaseAllRewardsBucketReq();
+    message.pagination =
+      object.pagination !== undefined && object.pagination !== null
+        ? PageRequest.fromPartial(object.pagination)
+        : undefined;
+    return message;
+  },
+};
+
+function createBaseAllRewardsBucketRes(): AllRewardsBucketRes {
+  return { rewardsBucket: [], pagination: undefined };
+}
+
+export const AllRewardsBucketRes = {
+  encode(
+    message: AllRewardsBucketRes,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    for (const v of message.rewardsBucket) {
+      RewardsBucket.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork(),
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AllRewardsBucketRes {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAllRewardsBucketRes();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.rewardsBucket.push(
+            RewardsBucket.decode(reader, reader.uint32()),
+          );
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AllRewardsBucketRes {
+    return {
+      rewardsBucket: Array.isArray(object?.rewardsBucket)
+        ? object.rewardsBucket.map((e: any) => RewardsBucket.fromJSON(e))
+        : [],
+      pagination: isSet(object.pagination)
+        ? PageResponse.fromJSON(object.pagination)
+        : undefined,
+    };
+  },
+
+  toJSON(message: AllRewardsBucketRes): unknown {
+    const obj: any = {};
+    if (message.rewardsBucket) {
+      obj.rewardsBucket = message.rewardsBucket.map((e) =>
+        e ? RewardsBucket.toJSON(e) : undefined,
+      );
+    } else {
+      obj.rewardsBucket = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AllRewardsBucketRes>, I>>(
+    object: I,
+  ): AllRewardsBucketRes {
+    const message = createBaseAllRewardsBucketRes();
+    message.rewardsBucket =
+      object.rewardsBucket?.map((e) => RewardsBucket.fromPartial(e)) || [];
+    message.pagination =
+      object.pagination !== undefined && object.pagination !== null
+        ? PageResponse.fromPartial(object.pagination)
+        : undefined;
+    return message;
+  },
+};
+
 export interface Query {
   GetPool(request: PoolReq): Promise<PoolRes>;
   GetPools(request: PoolsReq): Promise<PoolsRes>;
@@ -2487,6 +2771,11 @@ export interface Query {
   GetPoolShareEstimate(
     request: PoolShareEstimateReq,
   ): Promise<PoolShareEstimateRes>;
+  /** Queries a list of RewardsBucket items. */
+  GetRewardsBucket(request: RewardsBucketReq): Promise<RewardsBucketRes>;
+  GetRewardsBucketAll(
+    request: AllRewardsBucketReq,
+  ): Promise<AllRewardsBucketRes>;
 }
 
 export class QueryClientImpl implements Query {
@@ -2509,6 +2798,8 @@ export class QueryClientImpl implements Query {
       this.GetProviderDistributionParams.bind(this);
     this.GetSwapFeeParams = this.GetSwapFeeParams.bind(this);
     this.GetPoolShareEstimate = this.GetPoolShareEstimate.bind(this);
+    this.GetRewardsBucket = this.GetRewardsBucket.bind(this);
+    this.GetRewardsBucketAll = this.GetRewardsBucketAll.bind(this);
   }
   GetPool(request: PoolReq): Promise<PoolRes> {
     const data = PoolReq.encode(request).finish();
@@ -2665,6 +2956,32 @@ export class QueryClientImpl implements Query {
     );
     return promise.then((data) =>
       PoolShareEstimateRes.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetRewardsBucket(request: RewardsBucketReq): Promise<RewardsBucketRes> {
+    const data = RewardsBucketReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetRewardsBucket",
+      data,
+    );
+    return promise.then((data) =>
+      RewardsBucketRes.decode(new _m0.Reader(data)),
+    );
+  }
+
+  GetRewardsBucketAll(
+    request: AllRewardsBucketReq,
+  ): Promise<AllRewardsBucketRes> {
+    const data = AllRewardsBucketReq.encode(request).finish();
+    const promise = this.rpc.request(
+      "sifnode.clp.v1.Query",
+      "GetRewardsBucketAll",
+      data,
+    );
+    return promise.then((data) =>
+      AllRewardsBucketRes.decode(new _m0.Reader(data)),
     );
   }
 }
