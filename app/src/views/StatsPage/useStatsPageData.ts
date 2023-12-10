@@ -44,8 +44,8 @@ export function useStatsPageData(initialState: StatsPageState) {
           tvl: pool.poolTVL,
           volume: pool.volume ?? 0,
           arbitrage: pool.arb == null ? null : pool.arb ?? 0,
-          poolApr: pool.poolApr?.toFixed(1),
-          pairedApr: pool.pairedApr?.toFixed(1),
+          poolApr: Number(pool.poolApr).toFixed(2),
+          pairedApr: Number(pool.pairedApr).toFixed(1),
           rewardApr: pool.rewardApr,
           marginApr: pool.margin_apr,
         };
