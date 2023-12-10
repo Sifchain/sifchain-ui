@@ -18,12 +18,6 @@ export interface RewardParams {
   rewardPeriods: RewardPeriod[];
   /** start time of the current (or last) reward period */
   rewardPeriodStartTime: string;
-  /** in blocks */
-  rewardsLockPeriod: Long;
-  /** week, day, hour, etc */
-  rewardsEpochIdentifier: string;
-  /** true if reward bucket should be distributed */
-  rewardsDistribute: boolean;
 }
 
 /** These params are non-governable and are calculated on chain */
@@ -167,9 +161,6 @@ function createBaseRewardParams(): RewardParams {
     liquidityRemovalCancelPeriod: Long.UZERO,
     rewardPeriods: [],
     rewardPeriodStartTime: "",
-    rewardsLockPeriod: Long.UZERO,
-    rewardsEpochIdentifier: "",
-    rewardsDistribute: false,
   };
 }
 
@@ -189,15 +180,6 @@ export const RewardParams = {
     }
     if (message.rewardPeriodStartTime !== "") {
       writer.uint32(42).string(message.rewardPeriodStartTime);
-    }
-    if (!message.rewardsLockPeriod.isZero()) {
-      writer.uint32(48).uint64(message.rewardsLockPeriod);
-    }
-    if (message.rewardsEpochIdentifier !== "") {
-      writer.uint32(58).string(message.rewardsEpochIdentifier);
-    }
-    if (message.rewardsDistribute === true) {
-      writer.uint32(64).bool(message.rewardsDistribute);
     }
     return writer;
   },
@@ -223,15 +205,6 @@ export const RewardParams = {
         case 5:
           message.rewardPeriodStartTime = reader.string();
           break;
-        case 6:
-          message.rewardsLockPeriod = reader.uint64() as Long;
-          break;
-        case 7:
-          message.rewardsEpochIdentifier = reader.string();
-          break;
-        case 8:
-          message.rewardsDistribute = reader.bool();
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -254,15 +227,6 @@ export const RewardParams = {
       rewardPeriodStartTime: isSet(object.rewardPeriodStartTime)
         ? String(object.rewardPeriodStartTime)
         : "",
-      rewardsLockPeriod: isSet(object.rewardsLockPeriod)
-        ? Long.fromValue(object.rewardsLockPeriod)
-        : Long.UZERO,
-      rewardsEpochIdentifier: isSet(object.rewardsEpochIdentifier)
-        ? String(object.rewardsEpochIdentifier)
-        : "",
-      rewardsDistribute: isSet(object.rewardsDistribute)
-        ? Boolean(object.rewardsDistribute)
-        : false,
     };
   },
 
@@ -285,14 +249,6 @@ export const RewardParams = {
     }
     message.rewardPeriodStartTime !== undefined &&
       (obj.rewardPeriodStartTime = message.rewardPeriodStartTime);
-    message.rewardsLockPeriod !== undefined &&
-      (obj.rewardsLockPeriod = (
-        message.rewardsLockPeriod || Long.UZERO
-      ).toString());
-    message.rewardsEpochIdentifier !== undefined &&
-      (obj.rewardsEpochIdentifier = message.rewardsEpochIdentifier);
-    message.rewardsDistribute !== undefined &&
-      (obj.rewardsDistribute = message.rewardsDistribute);
     return obj;
   },
 
@@ -313,13 +269,6 @@ export const RewardParams = {
     message.rewardPeriods =
       object.rewardPeriods?.map((e) => RewardPeriod.fromPartial(e)) || [];
     message.rewardPeriodStartTime = object.rewardPeriodStartTime ?? "";
-    message.rewardsLockPeriod =
-      object.rewardsLockPeriod !== undefined &&
-      object.rewardsLockPeriod !== null
-        ? Long.fromValue(object.rewardsLockPeriod)
-        : Long.UZERO;
-    message.rewardsEpochIdentifier = object.rewardsEpochIdentifier ?? "";
-    message.rewardsDistribute = object.rewardsDistribute ?? false;
     return message;
   },
 };
