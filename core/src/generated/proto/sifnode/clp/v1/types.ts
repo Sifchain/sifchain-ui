@@ -1,6 +1,5 @@
 /* eslint-disable */
 import Long from "long";
-import { Coin } from "../../../cosmos/base/coin";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.clp.v1";
@@ -28,8 +27,6 @@ export interface Pool {
   unsettledNativeLiabilities: string;
   blockInterestNative: string;
   blockInterestExternal: string;
-  /** the amount of external asset rewards distributed to liquidity providers from reward buckets */
-  rewardAmountExternal: string;
 }
 
 export interface LiquidityProvider {
@@ -37,10 +34,6 @@ export interface LiquidityProvider {
   liquidityProviderUnits: string;
   liquidityProviderAddress: string;
   unlocks: LiquidityUnlock[];
-  /** contains the block height of the last update */
-  lastUpdatedBlock: Long;
-  /** distributed or added to liquidity provider shares rewards */
-  rewardAmount: Coin[];
 }
 
 export interface LiquidityUnlock {
@@ -145,7 +138,6 @@ function createBasePool(): Pool {
     unsettledNativeLiabilities: "",
     blockInterestNative: "",
     blockInterestExternal: "",
-    rewardAmountExternal: "",
   };
 }
 
@@ -204,9 +196,6 @@ export const Pool = {
     }
     if (message.blockInterestExternal !== "") {
       writer.uint32(146).string(message.blockInterestExternal);
-    }
-    if (message.rewardAmountExternal !== "") {
-      writer.uint32(154).string(message.rewardAmountExternal);
     }
     return writer;
   },
@@ -272,9 +261,6 @@ export const Pool = {
         case 18:
           message.blockInterestExternal = reader.string();
           break;
-        case 19:
-          message.rewardAmountExternal = reader.string();
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -337,9 +323,6 @@ export const Pool = {
       blockInterestExternal: isSet(object.blockInterestExternal)
         ? String(object.blockInterestExternal)
         : "",
-      rewardAmountExternal: isSet(object.rewardAmountExternal)
-        ? String(object.rewardAmountExternal)
-        : "",
     };
   },
 
@@ -384,8 +367,6 @@ export const Pool = {
       (obj.blockInterestNative = message.blockInterestNative);
     message.blockInterestExternal !== undefined &&
       (obj.blockInterestExternal = message.blockInterestExternal);
-    message.rewardAmountExternal !== undefined &&
-      (obj.rewardAmountExternal = message.rewardAmountExternal);
     return obj;
   },
 
@@ -419,7 +400,6 @@ export const Pool = {
       object.unsettledNativeLiabilities ?? "";
     message.blockInterestNative = object.blockInterestNative ?? "";
     message.blockInterestExternal = object.blockInterestExternal ?? "";
-    message.rewardAmountExternal = object.rewardAmountExternal ?? "";
     return message;
   },
 };
@@ -430,8 +410,6 @@ function createBaseLiquidityProvider(): LiquidityProvider {
     liquidityProviderUnits: "",
     liquidityProviderAddress: "",
     unlocks: [],
-    lastUpdatedBlock: Long.ZERO,
-    rewardAmount: [],
   };
 }
 
@@ -451,12 +429,6 @@ export const LiquidityProvider = {
     }
     for (const v of message.unlocks) {
       LiquidityUnlock.encode(v!, writer.uint32(34).fork()).ldelim();
-    }
-    if (!message.lastUpdatedBlock.isZero()) {
-      writer.uint32(40).int64(message.lastUpdatedBlock);
-    }
-    for (const v of message.rewardAmount) {
-      Coin.encode(v!, writer.uint32(50).fork()).ldelim();
     }
     return writer;
   },
@@ -480,12 +452,6 @@ export const LiquidityProvider = {
         case 4:
           message.unlocks.push(LiquidityUnlock.decode(reader, reader.uint32()));
           break;
-        case 5:
-          message.lastUpdatedBlock = reader.int64() as Long;
-          break;
-        case 6:
-          message.rewardAmount.push(Coin.decode(reader, reader.uint32()));
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -506,12 +472,6 @@ export const LiquidityProvider = {
       unlocks: Array.isArray(object?.unlocks)
         ? object.unlocks.map((e: any) => LiquidityUnlock.fromJSON(e))
         : [],
-      lastUpdatedBlock: isSet(object.lastUpdatedBlock)
-        ? Long.fromValue(object.lastUpdatedBlock)
-        : Long.ZERO,
-      rewardAmount: Array.isArray(object?.rewardAmount)
-        ? object.rewardAmount.map((e: any) => Coin.fromJSON(e))
-        : [],
     };
   },
 
@@ -530,17 +490,6 @@ export const LiquidityProvider = {
     } else {
       obj.unlocks = [];
     }
-    message.lastUpdatedBlock !== undefined &&
-      (obj.lastUpdatedBlock = (
-        message.lastUpdatedBlock || Long.ZERO
-      ).toString());
-    if (message.rewardAmount) {
-      obj.rewardAmount = message.rewardAmount.map((e) =>
-        e ? Coin.toJSON(e) : undefined,
-      );
-    } else {
-      obj.rewardAmount = [];
-    }
     return obj;
   },
 
@@ -556,12 +505,6 @@ export const LiquidityProvider = {
     message.liquidityProviderAddress = object.liquidityProviderAddress ?? "";
     message.unlocks =
       object.unlocks?.map((e) => LiquidityUnlock.fromPartial(e)) || [];
-    message.lastUpdatedBlock =
-      object.lastUpdatedBlock !== undefined && object.lastUpdatedBlock !== null
-        ? Long.fromValue(object.lastUpdatedBlock)
-        : Long.ZERO;
-    message.rewardAmount =
-      object.rewardAmount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
 };

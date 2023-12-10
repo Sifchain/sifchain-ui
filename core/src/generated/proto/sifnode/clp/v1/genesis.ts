@@ -2,7 +2,6 @@
 import { Params } from "./params";
 import Long from "long";
 import { Pool, LiquidityProvider } from "./types";
-import { RewardsBucket } from "./rewards_bucket";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "sifnode.clp.v1";
@@ -17,7 +16,6 @@ export interface GenesisState {
   addressWhitelist: string[];
   poolList: Pool[];
   liquidityProviders: LiquidityProvider[];
-  rewardsBucketList: RewardsBucket[];
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -26,7 +24,6 @@ function createBaseGenesisState(): GenesisState {
     addressWhitelist: [],
     poolList: [],
     liquidityProviders: [],
-    rewardsBucketList: [],
   };
 }
 
@@ -46,9 +43,6 @@ export const GenesisState = {
     }
     for (const v of message.liquidityProviders) {
       LiquidityProvider.encode(v!, writer.uint32(34).fork()).ldelim();
-    }
-    for (const v of message.rewardsBucketList) {
-      RewardsBucket.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -74,11 +68,6 @@ export const GenesisState = {
             LiquidityProvider.decode(reader, reader.uint32()),
           );
           break;
-        case 5:
-          message.rewardsBucketList.push(
-            RewardsBucket.decode(reader, reader.uint32()),
-          );
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -100,9 +89,6 @@ export const GenesisState = {
         ? object.liquidityProviders.map((e: any) =>
             LiquidityProvider.fromJSON(e),
           )
-        : [],
-      rewardsBucketList: Array.isArray(object?.rewardsBucketList)
-        ? object.rewardsBucketList.map((e: any) => RewardsBucket.fromJSON(e))
         : [],
     };
   },
@@ -130,13 +116,6 @@ export const GenesisState = {
     } else {
       obj.liquidityProviders = [];
     }
-    if (message.rewardsBucketList) {
-      obj.rewardsBucketList = message.rewardsBucketList.map((e) =>
-        e ? RewardsBucket.toJSON(e) : undefined,
-      );
-    } else {
-      obj.rewardsBucketList = [];
-    }
     return obj;
   },
 
@@ -153,8 +132,6 @@ export const GenesisState = {
     message.liquidityProviders =
       object.liquidityProviders?.map((e) => LiquidityProvider.fromPartial(e)) ||
       [];
-    message.rewardsBucketList =
-      object.rewardsBucketList?.map((e) => RewardsBucket.fromPartial(e)) || [];
     return message;
   },
 };
