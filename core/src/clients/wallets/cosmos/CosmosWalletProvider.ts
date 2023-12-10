@@ -349,7 +349,6 @@ export abstract class CosmosWalletProvider extends WalletProvider<EncodeObject> 
             : registry.find((e) => {
                 return e.baseDenom === denomTrace.baseDenom;
               });
-        console.log("entry=", entry);
         if (!entry) continue;
 
         try {

@@ -387,35 +387,33 @@ export default defineComponent({
           <div
             class={[
               COLUMNS_LOOKUP.poolTvl.class,
-              "flex items-center font-mono",
+              "flex items-center justify-end font-mono",
             ]}
           >
-            {typeof this.$props.poolStat?.poolTVL === "number"
-              ? this.$props.poolStat.poolTVL.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })
-              : "..."}
+            {Number(this.$props.poolStat?.poolTVL).toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            })}
           </div>
           <div
             class={[
               COLUMNS_LOOKUP.rowanApr.class,
-              "flex items-center font-mono",
+              "flex items-center justify-end font-mono",
             ]}
           >
             {isNil(this.$props.poolStat?.poolApr)
               ? "..."
-              : `${(this.$props.poolStat?.poolApr ?? 0).toFixed(2)}%`}
+              : `${(Number(this.$props.poolStat?.poolApr) ?? 0).toFixed(2)}%`}
           </div>
           <div
             class={[
               COLUMNS_LOOKUP.pairedApr.class,
-              "flex items-center font-mono",
+              "flex items-center justify-end font-mono",
             ]}
           >
             {isNil(this.$props.poolStat?.pairedApr)
               ? "..."
-              : `${(this.$props.poolStat?.pairedApr ?? 0).toFixed(2)}%`}
+              : `${(Number(this.$props.poolStat?.pairedApr) ?? 0).toFixed(2)}%`}
           </div>
           {/* <div
             class={[
@@ -430,7 +428,7 @@ export default defineComponent({
           <div
             class={[
               COLUMNS_LOOKUP.userShare.class,
-              "flex items-center font-mono",
+              "flex items-center justify-end font-mono",
             ]}
           >
             {this.userPoolData.myPoolShare?.value
@@ -440,7 +438,7 @@ export default defineComponent({
           <div
             class={[
               COLUMNS_LOOKUP.userValue.class,
-              "flex items-center font-mono",
+              "flex items-center justify-end font-mono",
             ]}
           >
             {this.myPoolValue == null
