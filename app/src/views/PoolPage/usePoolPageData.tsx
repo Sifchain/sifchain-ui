@@ -32,7 +32,6 @@ export type PoolPageColumnId =
   | "pairedApr"
   // | "marginapy"
   | "gainLoss"
-  | "rewardApr"
   | "poolTvl"
   | "userShare"
   | "userValue";

@@ -17,7 +17,7 @@ export default defineComponent({
   props: {},
   setup() {
     const { res, statsRef, state } = useStatsPageData({
-      sortBy: "rewardApr",
+      sortBy: "pairedApr",
       sortDirection: "desc",
     } as StatsPageState);
 
@@ -183,7 +183,7 @@ export default defineComponent({
                             class="h-[12px] w-[12px] transition-all"
                             style={{
                               transform:
-                                state.sortDirection === "asc"
+                                state.sortDirection === "desc"
                                   ? "rotate(0deg)"
                                   : "rotate(180deg)",
                             }}
@@ -270,7 +270,7 @@ export default defineComponent({
                         ${prettyNumber(item.volume)}
                       </td>
                       <td class="text-mono text-right align-middle">
-                        {item.poolApr}%
+                        {item.rewardApr}%
                       </td>
                       <td class="text-mono text-right align-middle">
                         {item.pairedApr}%
