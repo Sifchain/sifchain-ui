@@ -29,7 +29,7 @@ export default defineComponent({
   name: "PoolsPage",
   data() {
     return {
-      sortBy: "rowanApr" as PoolPageColumnId,
+      sortBy: "pairedApr" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
       showSmallPools: true,
@@ -119,14 +119,20 @@ export default defineComponent({
               const bAsset = b.pool.externalAmount?.asset.displaySymbol;
               return aAsset.localeCompare(bAsset);
             }
-            case "rewardApr":
+            case "rowanApr":
               return (
                 Number(b.poolStat?.rewardApr) - Number(a.poolStat?.rewardApr)
+              );
+            case "pairedApr":
+              return (
+                Number(b.poolStat?.pairedApr) - Number(a.poolStat?.pairedApr)
               );
             case "poolTvl":
               return Number(b.poolStat?.poolTVL) - Number(a.poolStat?.poolTVL);
             default:
-              return Number(b.poolStat?.poolApr) - Number(a.poolStat?.poolApr);
+              return (
+                Number(b.poolStat?.rewardApr) - Number(a.poolStat?.rewardApr)
+              );
           }
         })
         // Then sort by balance

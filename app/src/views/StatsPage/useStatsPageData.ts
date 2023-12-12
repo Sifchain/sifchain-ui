@@ -12,7 +12,6 @@ export type StatsPageState = {
     | "tvl"
     | "volume"
     | "arbitrage"
-    | "poolApr"
     | "rowanApr"
     | "pairedApr"
     | "marginApr";
@@ -44,9 +43,8 @@ export function useStatsPageData(initialState: StatsPageState) {
           tvl: pool.poolTVL,
           volume: pool.volume ?? 0,
           arbitrage: pool.arb == null ? null : pool.arb ?? 0,
-          poolApr: Number(pool.poolApr).toFixed(2),
           pairedApr: Number(pool.pairedApr).toFixed(1),
-          rewardApr: pool.rewardApr,
+          rewardApr: Number(pool.rewardApr).toFixed(2),
           marginApr: pool.margin_apr,
         };
 
