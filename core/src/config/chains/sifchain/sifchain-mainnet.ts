@@ -4,7 +4,7 @@ export const SIFCHAIN_MAINNET: IBCChainConfig = {
   network: Network.SIFCHAIN,
   chainType: "ibc",
   displayName: "Sifchain",
-  blockExplorerUrl: "https://www.mintscan.io/sifchain",
+  blockExplorerUrl: "https://ping.pub/sifchain",
   nativeAssetSymbol: "rowan",
   chainId: "sifchain-1",
   rpcUrl: "https://proxies.sifchain.finance/api/sifchain-1/rpc",
