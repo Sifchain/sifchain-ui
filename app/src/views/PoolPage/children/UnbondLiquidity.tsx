@@ -69,7 +69,7 @@ const UnbondLiquidity = defineComponent({
 
     const externalAssetPriceUsd = computed(
       () =>
-        poolStats.data.value?.poolData.pools.find(
+        poolStats.value?.data?.poolData?.pools.find(
           (x) => x.symbol === externalAssetBaseDenom.value,
         )?.priceToken,
     );
