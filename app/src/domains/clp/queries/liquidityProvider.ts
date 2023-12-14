@@ -54,16 +54,17 @@ export const useLiquidityProviderQuery = (
         services.chains.get(Network.SIFCHAIN),
       );
 
-      const liquidityProvider =
-        await sifchainClients.queryClient.clp.GetLiquidityProvider({
-          lpAddress: walletAddress,
-          symbol: externalAssetEntryQuery.data.value?.denom ?? "",
-        });
+      const liquidityProvider = externalAssetEntryQuery.data.value?.denom
+        ? await sifchainClients.queryClient.clp.GetLiquidityProvider({
+            lpAddress: walletAddress,
+            symbol: externalAssetEntryQuery.data.value?.denom,
+          })
+        : null;
 
       const currentHeight = await sifchainClients.signingClient.getHeight();
 
       const lpWithAddedDetails =
-        liquidityProvider.liquidityProvider === undefined ||
+        liquidityProvider?.liquidityProvider === undefined ||
         rewardsParamsQuery.data.value?.params === undefined
           ? undefined
           : addDetailToLiquidityProvider(

@@ -8,7 +8,7 @@ import { useCurrentRewardPeriodStatistics } from "~/domains/clp/queries/params";
 import { useUnlockLiquidityByPercentage } from "~/domains/clp/queries/unlockLiquidityByPercentage";
 import { useAppWalletPicker } from "~/hooks/useAppWalletPicker";
 import { useAssetBySymbol } from "~/hooks/useAssetBySymbol";
-import { usePoolStats } from "~/hooks/usePoolStats";
+import { PoolStat, usePoolStats } from "~/hooks/usePoolStats";
 import { useDeliverTxDetails } from "~/hooks/useTransactionDetails";
 import { useWalletButton } from "~/hooks/useWalletButton";
 import { accountStore } from "~/store/modules/accounts";
@@ -67,12 +67,13 @@ const UnbondLiquidity = defineComponent({
         .toNumber(),
     );
 
-    const externalAssetPriceUsd = computed(
-      () =>
-        poolStats.data.value?.poolData.pools.find(
-          (x) => x.symbol === externalAssetBaseDenom.value,
-        )?.priceToken,
-    );
+    const externalAssetPriceUsd = computed(() => {
+      const poolData = poolStats.data?.value?.poolData;
+      const pools = poolData?.pools as Record<string, PoolStat>;
+      return Object.values(pools).find(
+        (x) => x.symbol === externalAssetBaseDenom.value,
+      )?.priceToken;
+    });
 
     const externalAssetWithdrawalUsd = computed(() => {
       return Amount(withdrawData.withdrawExternalAssetAmount.value)

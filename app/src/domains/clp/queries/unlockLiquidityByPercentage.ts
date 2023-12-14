@@ -15,17 +15,17 @@ export const useUnlockLiquidityByPercentage = (
   const tokenEntries = useTokenRegistryEntriesQuery();
 
   return computed(() => {
-    if (!isNil(lpQuery.error.value) || !isNil(tokenEntries.error.value)) {
+    if (!isNil(lpQuery?.error.value) || !isNil(tokenEntries.error.value)) {
       return { status: "rejected" as const };
     }
 
-    if (lpQuery.isLoading.value || tokenEntries.isLoading.value) {
+    if (lpQuery?.isLoading.value || tokenEntries.isLoading.value) {
       return { status: "pending" as const };
     }
 
-    const externalAssetBalance = lpQuery.data.value?.externalAssetBalance;
-    const nativeAssetBalance = lpQuery.data.value?.nativeAssetBalance;
-    const lp = lpQuery.data.value?.liquidityProvider;
+    const externalAssetBalance = lpQuery?.data.value?.externalAssetBalance;
+    const nativeAssetBalance = lpQuery?.data.value?.nativeAssetBalance;
+    const lp = lpQuery?.data.value?.liquidityProvider;
 
     const externalAssetFractionalDigits =
       tokenEntries.data.value?.registry?.entries
