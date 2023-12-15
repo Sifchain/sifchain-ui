@@ -66,13 +66,15 @@ export default defineComponent({
     const isEthBridgeDisabled = computed(
       () =>
         flagsStore.state.remoteFlags.DISABLE_ETH_BRIDGE &&
-        props.tokenItem.asset.homeNetwork === "ethereum",
+        (props.tokenItem.asset.homeNetwork === "ethereum" ||
+          props.tokenItem.asset.homeNetwork === "sifchain"), // disable rowan imports
     );
 
     const isEthBridgeExportDisabled = computed(
       () =>
         flagsStore.state.remoteFlags.DISABLE_ETH_BRIDGE_EXPORT &&
-        props.tokenItem.asset.homeNetwork === "ethereum",
+        (props.tokenItem.asset.homeNetwork === "ethereum" ||
+          props.tokenItem.asset.homeNetwork === "sifchain"), // disable rowan exports
     );
 
     const importItem = computed(() => ({
