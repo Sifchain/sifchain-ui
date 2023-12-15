@@ -72,9 +72,15 @@ export default defineComponent({
     };
 
     const validationErrorRef = computed(() => {
+      const chain = useChains().get(exportStore.state.draft.network);
+      if (chain.chainConfig.underMaintenance) {
+        return `${chain.displayName} Connection Under Maintenance`;
+      }
+
       if (!exportTokenRef.value) {
         return "Select Token";
       }
+
       if (
         feeAssetBalanceRef.value &&
         feeAmountRef.value &&
@@ -112,11 +118,6 @@ export default defineComponent({
         )
       ) {
         return "Amount Too Large";
-      }
-
-      const chain = useChains().get(exportStore.state.draft.network);
-      if (chain.chainConfig.underMaintenance) {
-        return `${chain.displayName} Connection Under Maintenance`;
       }
 
       return null;
