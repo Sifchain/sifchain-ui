@@ -180,9 +180,11 @@ export const usePoolPageData = () => {
           );
 
         const pool = useCore().store.pools[poolKey];
-
-        const denomOrSymbol =
-          pool.externalAmount.ibcDenom ?? pool.externalAmount.symbol;
+        const ibcDenom =
+          tokenRegistryEntriesQuery.data.value?.registry?.entries.find(
+            (y) => y.baseDenom === pool.externalAmount.symbol,
+          )?.denom;
+        const denomOrSymbol = ibcDenom ?? pool.externalAmount.symbol;
 
         const lppdPoolRewards = lppdRewards?.value?.hasRewards
           ? lppdRewards.value.rewards.byPool[denomOrSymbol]

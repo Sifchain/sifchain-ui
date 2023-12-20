@@ -226,6 +226,21 @@ export default defineComponent({
         ],
         ...(this.lppdRewards
           ? [
+              Boolean(this.lppdRewards.poolRewardsReceivedInPairedToken) && [
+                <span class="flex items-center gap-1">
+                  Your total rewards paid in the pool in the paired token
+                </span>,
+                <span class="flex items-center font-mono">
+                  {prettyNumber(
+                    this.lppdRewards.poolRewardsReceivedInPairedToken,
+                  )}
+                  <TokenIcon
+                    assetValue={this.externalAmount.asset}
+                    size={14}
+                    class="ml-[3px]"
+                  />
+                </span>,
+              ],
               Boolean(
                 this.isLPDActive &&
                   this.lppdRewards.poolLPDistributionReceivedInRowan,

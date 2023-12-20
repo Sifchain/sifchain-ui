@@ -63,6 +63,7 @@ export type UserRewards = {
 export type LPUserReward = {
   poolLPDistributionReceivedInRowan: number;
   poolRewardsReceivedInRowan: number;
+  poolRewardsReceivedInPairedToken: number;
 };
 
 export type LPUserRewards = {
@@ -72,6 +73,7 @@ export type LPUserRewards = {
   totalRewardsReceivedInRowan: string;
   poolLPDistributionReceivedInRowan: string;
   poolRewardsReceivedInRowan: string;
+  poolRewardsReceivedInPairedToken: number;
 };
 
 export type LPUserRewardsResponse = {
@@ -298,14 +300,17 @@ export default class DataService {
                 poolLPDistributionReceivedInRowan: Math.random() * 10000,
 
                 poolRewardsReceivedInRowan: Math.random() * 10000,
+                poolRewardsReceivedInPairedToken: Math.random() * 10000,
               },
               ujuno: {
                 poolLPDistributionReceivedInRowan: Math.random() * 10000,
                 poolRewardsReceivedInRowan: Math.random() * 10000,
+                poolRewardsReceivedInPairedToken: Math.random() * 10000,
               },
               uatom: {
                 poolLPDistributionReceivedInRowan: Math.random() * 10000,
                 poolRewardsReceivedInRowan: Math.random() * 10000,
+                poolRewardsReceivedInPairedToken: Math.random() * 10000,
               },
             },
           },
@@ -331,6 +336,9 @@ export default class DataService {
                 ),
                 poolRewardsReceivedInRowan: Number(
                   entry.poolRewardsReceivedInRowan,
+                ),
+                poolRewardsReceivedInPairedToken: Number(
+                  entry.poolRewardsReceivedInPairedToken,
                 ),
               },
             }),
