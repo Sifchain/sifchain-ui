@@ -113,7 +113,7 @@ export default defineComponent({
               <>
                 {slippageRiskContent.value} See documentation{" "}
                 <a
-                  href="https://docs.sifchain.finance/using-the-website/web-ui-step-by-step/pool/sifchain-liquidity-pools#asymmetric-liquidity-pool"
+                  href="https://docs.sifchain.network/sifchain/using-the-dex/web-ui-step-by-step/pool/sifchain-liquidity-pools#asymmetric-liquidity-pool"
                   target="_blank"
                   class="underline"
                 >

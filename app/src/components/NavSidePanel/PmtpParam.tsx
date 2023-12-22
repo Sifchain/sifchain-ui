@@ -6,7 +6,7 @@ import { flagsStore } from "~/store/modules/flags";
 import NavSidePanelItem from "./NavSidePanelItem";
 
 const PMTP_ROADMAP_URL =
-  "https://docs.sifchain.finance/project/about-sifchain/roadmap/pmtp";
+  "https://docs.sifchain.network/sifchain/project/about-sifchain/roadmap/pmtp";
 
 export default defineComponent({
   name: "PmtpParam",

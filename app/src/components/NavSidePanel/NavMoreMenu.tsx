@@ -12,7 +12,7 @@ export default defineComponent({
     const items = [
       {
         name: "Documentation",
-        href: "https://docs.sifchain.finance/using-the-website/web-ui-step-by-step",
+        href: "https://docs.sifchain.network/sifchain/using-the-dex/web-ui-step-by-step",
       },
       {
         name: "Newsletter",
