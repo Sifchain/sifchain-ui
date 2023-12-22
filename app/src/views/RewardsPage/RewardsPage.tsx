@@ -22,7 +22,7 @@ export default defineComponent({
               please visit our documents site{" "}
               <a
                 class="text-accent-base hover:underline"
-                href="https://docs.sifchain.finance/project/about-sifchain/community-run-tools-and-products"
+                href="https://docs.sifchain.network/sifchain/project/about-sifchain/community-run-tools-and-products"
                 target="_blank"
                 rel="noopener noreferrer"
               >
