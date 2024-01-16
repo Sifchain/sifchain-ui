@@ -160,7 +160,10 @@ export default defineComponent({
                 <NavSidePanelItem
                   displayName="Charts"
                   icon="navigation/charts"
-                  href="https://dexscreener.com/sifchain/cusdc"
+                  href=""
+                  class="opacity-50"
+                  style="pointer-events: none;"
+                  // href="https://dexscreener.com/sifchain/cusdc"
                 />
                 <NavSidePanelItem
                   icon="navigation/changelog"
@@ -203,7 +206,10 @@ export default defineComponent({
                     <NavSidePanelItem
                       displayName="Rowan Faucet"
                       icon="navigation/rowan"
-                      href="https://stakely.io/faucet/sifchain-rowan"
+                      // href="https://stakely.io/faucet/sifchain-rowan"
+                      href=""
+                      class="opacity-50"
+                      style="pointer-events: none;"
                     />
                   )}
                 <Tooltip

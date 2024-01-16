@@ -32,7 +32,7 @@ export default defineComponent({
       sortBy: "pairedApr" as PoolPageColumnId,
       sortReverse: false,
       searchQuery: "",
-      showSmallPools: true,
+      showSmallPools: false,
     };
   },
   setup() {
