@@ -6,7 +6,7 @@ import { Vuextra } from "../Vuextra";
 export const MARGIN_FE_URL = "https://margin.sifchain.network";
 
 export const FLAGS_API_ENDPOINT =
-  "https://sifchain-changes-server.vercel.app/api";
+  "https://changes-server-1l594d9x0-sifchain.vercel.app/api";
 
 export class FlagsApi {
   static async getFlags(
