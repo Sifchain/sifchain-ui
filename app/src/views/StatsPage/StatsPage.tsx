@@ -269,9 +269,7 @@ export default defineComponent({
                       <td class="text-mono text-right align-middle">
                         ${prettyNumber(item.volume)}
                       </td>
-                      <td class="text-mono text-right align-middle">
-                        {item.rewardApr}%
-                      </td>
+                      <td class="text-mono text-right align-middle">0.00%</td>
                       <td class="text-mono text-right align-middle">
                         {item.pairedApr}%
                       </td>

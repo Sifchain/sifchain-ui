@@ -416,9 +416,7 @@ export default defineComponent({
               "flex items-center justify-end font-mono",
             ]}
           >
-            {isNil(this.$props.poolStat?.rewardApr)
-              ? "..."
-              : `${(Number(this.$props.poolStat?.rewardApr) ?? 0).toFixed(2)}%`}
+            {isNil(this.$props.poolStat?.rewardApr) ? "..." : `0.00%`}
           </div>
           <div
             class={[
